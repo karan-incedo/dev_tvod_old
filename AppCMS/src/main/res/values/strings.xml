@@ -1,0 +1,5 @@
+<resources>
+    <string name="default_app_name">App CMS</string>
+    <string name="error_parsing_layout_data">Error Parsing Layout Data</string>
+    <string name="fragment_page_bundle_key">fragment_page</string>
+</resources>
