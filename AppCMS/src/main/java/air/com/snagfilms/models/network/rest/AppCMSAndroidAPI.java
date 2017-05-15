@@ -9,7 +9,7 @@ import retrofit2.http.Url;
  * Created by viewlift on 5/4/17.
  */
 
-public interface AppCMSAndroidAPI extends AppCMSAPI<Android> {
+public interface AppCMSAndroidAPI {
     @GET
     Call<Android> get(@Url String url);
 }

@@ -9,7 +9,10 @@ public class Component {
 
     @SerializedName("Layout")
     @Expose
-    private List<Layout_> layout = null;
+    private List<Layout> layout = null;
+    @SerializedName("action")
+    @Expose
+    private String action;
     @SerializedName("fontFamily")
     @Expose
     private String fontFamily;
@@ -28,15 +31,21 @@ public class Component {
     @SerializedName("textColor")
     @Expose
     private String textColor;
+    @SerializedName("text")
+    @Expose
+    private String text;
     @SerializedName("type")
     @Expose
     private String type;
     @SerializedName("backgroundColor")
     @Expose
-    private int backgroundColor;
+    private String backgroundColor;
+    @SerializedName("backgroundSelectedColor")
+    @Expose
+    private String backgroundSelectedColor;
     @SerializedName("collectionGridComponents")
     @Expose
-    private List<CollectionGridComponent> collectionGridComponents = null;
+    private List<Component> collectionGridComponents = null;
     @SerializedName("cornerRadius")
     @Expose
     private int cornerRadius;
@@ -52,13 +61,48 @@ public class Component {
     @SerializedName("trayPadding")
     @Expose
     private int trayPadding;
+    @SerializedName("imageName")
+    @Expose
+    private String imageName;
+    @SerializedName("progressColor")
+    @Expose
+    private String progressColor;
+    @SerializedName("unprogressColor")
+    @Expose
+    private String unprogressColor;
+    @SerializedName("view")
+    @Expose
+    private String view;
+    @SerializedName("borderColor")
+    @Expose
+    private String borderColor;
+    @SerializedName("borderWidth")
+    @Expose
+    private int borderWidth;
+    @SerializedName("apiUrl")
+    @Expose
+    private String apiUrl;
+    @SerializedName("component")
+    @Expose
+    private List<Component> component = null;
+    @SerializedName("id")
+    @Expose
+    private String id;
 
-    public List<Layout_> getLayout() {
+    public List<Layout> getLayout() {
         return layout;
     }
 
-    public void setLayout(List<Layout_> layout) {
+    public void setLayout(List<Layout> layout) {
         this.layout = layout;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
     }
 
     public String getFontFamily() {
@@ -109,6 +153,14 @@ public class Component {
         this.textColor = textColor;
     }
 
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
     public String getType() {
         return type;
     }
@@ -117,19 +169,27 @@ public class Component {
         this.type = type;
     }
 
-    public int getBackgroundColor() {
+    public String getBackgroundColor() {
         return backgroundColor;
     }
 
-    public void setBackgroundColor(int backgroundColor) {
+    public void setBackgroundColor(String backgroundColor) {
         this.backgroundColor = backgroundColor;
     }
 
-    public List<CollectionGridComponent> getCollectionGridComponents() {
+    public String getBackgroundSelectedColor() {
+        return backgroundSelectedColor;
+    }
+
+    public void setBackgroundSelectedColor(String backgroundSelectedColor) {
+        this.backgroundSelectedColor = backgroundSelectedColor;
+    }
+
+    public List<Component> getCollectionGridComponents() {
         return collectionGridComponents;
     }
 
-    public void setCollectionGridComponents(List<CollectionGridComponent> collectionGridComponents) {
+    public void setCollectionGridComponents(List<Component> collectionGridComponents) {
         this.collectionGridComponents = collectionGridComponents;
     }
 
@@ -173,4 +233,75 @@ public class Component {
         this.trayPadding = trayPadding;
     }
 
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
+
+    public String getProgressColor() {
+        return progressColor;
+    }
+
+    public void setProgressColor(String progressColor) {
+        this.progressColor = progressColor;
+    }
+
+    public String getUnprogressColor() {
+        return unprogressColor;
+    }
+
+    public void setUnprogressColor(String unprogressColor) {
+        this.unprogressColor = unprogressColor;
+    }
+
+    public String getView() {
+        return view;
+    }
+
+    public void setView(String view) {
+        this.view = view;
+    }
+
+    public String getBorderColor() {
+        return borderColor;
+    }
+
+    public void setBorderColor(String borderColor) {
+        this.borderColor = borderColor;
+    }
+
+    public int getBorderWidth() {
+        return borderWidth;
+    }
+
+    public void setBorderWidth(int borderWidth) {
+        this.borderWidth = borderWidth;
+    }
+
+    public String getApiUrl() {
+        return apiUrl;
+    }
+
+    public void setApiUrl(String apiUrl) {
+        this.apiUrl = apiUrl;
+    }
+
+    public List<Component> getComponent() {
+        return component;
+    }
+
+    public void setComponent(List<Component> component) {
+        this.component = component;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }

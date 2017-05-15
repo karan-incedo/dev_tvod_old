@@ -33,7 +33,7 @@ public class Android {
     private String shortAppName;
     @SerializedName("Pages")
     @Expose
-    private List<Page> pages = null;
+    private List<MetaPage> metaPages = null;
 
     public String getVersion() {
         return version;
@@ -99,12 +99,12 @@ public class Android {
         this.shortAppName = shortAppName;
     }
 
-    public List<Page> getPages() {
-        return pages;
+    public List<MetaPage> getMetaPages() {
+        return metaPages;
     }
 
-    public void setPages(List<Page> pages) {
-        this.pages = pages;
+    public void setMetaPages(List<MetaPage> metaPages) {
+        this.metaPages = metaPages;
     }
 
 }

@@ -2,11 +2,10 @@ package air.com.snagfilms.models.network.components;
 
 import javax.inject.Singleton;
 
-import air.com.snagfilms.models.data.appcms.android.Android;
-import air.com.snagfilms.models.data.appcms.main.Main;
-import air.com.snagfilms.models.data.appcms.page.Page;
 import air.com.snagfilms.models.network.modules.AppCMSAPIModule;
-import air.com.snagfilms.models.network.rest.AppCMSCall;
+import air.com.snagfilms.models.network.rest.AppCMSAndroidCall;
+import air.com.snagfilms.models.network.rest.AppCMSMainCall;
+import air.com.snagfilms.models.network.rest.AppCMSPageCall;
 import dagger.Component;
 
 /**
@@ -16,7 +15,7 @@ import dagger.Component;
 @Singleton
 @Component(modules={AppCMSAPIModule.class})
 public interface AppCMSAPIComponent {
-    AppCMSCall<Main> appCMSMainCall();
-    AppCMSCall<Android> appCMSAndroidCall();
-    AppCMSCall<Page> appCMSPageCall();
+    AppCMSMainCall appCMSMainCall();
+    AppCMSAndroidCall appCMSAndroidCall();
+    AppCMSPageCall appCMSPageCall();
 }

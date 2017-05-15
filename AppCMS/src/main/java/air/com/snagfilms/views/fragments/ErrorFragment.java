@@ -21,7 +21,7 @@ public class ErrorFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.error_landing_page_layout, container);
+        View view = inflater.inflate(R.layout.fragment_error_page, container, false);
         return view;
     }
 }

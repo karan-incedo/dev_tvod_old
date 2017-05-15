@@ -19,7 +19,7 @@ public class AppCMSApplication extends Application {
         super.onCreate();
         appCMSAPIComponent = DaggerAppCMSAPIComponent
                 .builder()
-                .appCMSAPIModule(new AppCMSAPIModule())
+                .appCMSAPIModule(new AppCMSAPIModule(getString(R.string.app_cms_api_baseurl), getFilesDir()))
                 .build();
     }
 

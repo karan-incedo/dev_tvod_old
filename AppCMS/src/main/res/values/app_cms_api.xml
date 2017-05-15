@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_cms_main_url">https://s3.amazonaws.com/appcms-config/test-site-april-5/main.json</string>
+    <string name="app_cms_api_baseurl">https://s3.amazonaws.com</string>
+    <string name="app_cms_main_url">%1$s/appcms-config/%2$s/main.json</string>
+    <string name="app_cms_app_name">test-site-april-5</string>
 </resources>

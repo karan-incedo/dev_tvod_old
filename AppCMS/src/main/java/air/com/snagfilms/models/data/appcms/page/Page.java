@@ -18,7 +18,7 @@ public class Page {
     private String id;
     @SerializedName("moduleList")
     @Expose
-    private List<ModuleList> moduleList = null;
+    private List<Component> moduleList = null;
     @SerializedName("title")
     @Expose
     private String title;
@@ -50,11 +50,11 @@ public class Page {
         this.id = id;
     }
 
-    public List<ModuleList> getModuleList() {
+    public List<Component> getModuleList() {
         return moduleList;
     }
 
-    public void setModuleList(List<ModuleList> moduleList) {
+    public void setModuleList(List<Component> moduleList) {
         this.moduleList = moduleList;
     }
 

@@ -1,4 +1,4 @@
-package snagfilms.com.air.appcms;
+package air.com.snagfilms;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

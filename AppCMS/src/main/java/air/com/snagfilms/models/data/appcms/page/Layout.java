@@ -36,6 +36,12 @@ public class Layout {
     @SerializedName("yAxis")
     @Expose
     private int yAxis;
+    @SerializedName("gridHeight")
+    @Expose
+    private int gridHeight;
+    @SerializedName("gridWidth")
+    @Expose
+    private int gridWidth;
 
     public double getBottomMargin() {
         return bottomMargin;
@@ -117,4 +123,19 @@ public class Layout {
         this.yAxis = yAxis;
     }
 
+    public int getGridHeight() {
+        return gridHeight;
+    }
+
+    public void setGridHeight(int gridHeight) {
+        this.gridHeight = gridHeight;
+    }
+
+    public int getGridWidth() {
+        return gridWidth;
+    }
+
+    public void setGridWidth(int gridWidth) {
+        this.gridWidth = gridWidth;
+    }
 }

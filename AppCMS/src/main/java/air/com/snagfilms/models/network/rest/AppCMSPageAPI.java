@@ -1,6 +1,6 @@
 package air.com.snagfilms.models.network.rest;
 
-import air.com.snagfilms.models.data.appcms.android.Page;
+import air.com.snagfilms.models.data.appcms.page.Page;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Url;
@@ -9,7 +9,7 @@ import retrofit2.http.Url;
  * Created by viewlift on 5/4/17.
  */
 
-public interface AppCMSPageAPI extends AppCMSAPI<Page> {
+public interface AppCMSPageAPI {
     @GET
     Call<Page> get(@Url String url);
 }
