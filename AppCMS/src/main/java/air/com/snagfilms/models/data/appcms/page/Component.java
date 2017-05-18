@@ -1,54 +1,56 @@
 
 package air.com.snagfilms.models.data.appcms.page;
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Component {
 
-    @SerializedName("Layout")
-    @Expose
-    private List<Layout> layout = null;
-    @SerializedName("action")
-    @Expose
-    private String action;
-    @SerializedName("fontFamily")
-    @Expose
-    private String fontFamily;
-    @SerializedName("fontSize")
-    @Expose
-    private int fontSize;
-    @SerializedName("key")
-    @Expose
-    private String key;
-    @SerializedName("numberOfLines")
-    @Expose
-    private int numberOfLines;
-    @SerializedName("textAlignment")
-    @Expose
-    private String textAlignment;
-    @SerializedName("textColor")
-    @Expose
-    private String textColor;
     @SerializedName("text")
     @Expose
     private String text;
-    @SerializedName("type")
+    @SerializedName("textColor")
     @Expose
-    private String type;
+    private String textColor;
     @SerializedName("backgroundColor")
     @Expose
     private String backgroundColor;
+    @SerializedName("layout")
+    @Expose
+    private Layout_ layout;
     @SerializedName("backgroundSelectedColor")
     @Expose
     private String backgroundSelectedColor;
-    @SerializedName("collectionGridComponents")
+    @SerializedName("action")
     @Expose
-    private List<Component> collectionGridComponents = null;
+    private String action;
+    @SerializedName("type")
+    @Expose
+    private String type;
+    @SerializedName("key")
+    @Expose
+    private String key;
+    @SerializedName("borderColor")
+    @Expose
+    private String borderColor;
+    @SerializedName("borderWidth")
+    @Expose
+    private Integer borderWidth;
+    @SerializedName("imageName")
+    @Expose
+    private String imageName;
+    @SerializedName("textAlignment")
+    @Expose
+    private String textAlignment;
+    @SerializedName("numberOfLines")
+    @Expose
+    private int numberOfLines;
+    @SerializedName("trayPadding")
+    @Expose
+    private int trayPadding;
     @SerializedName("cornerRadius")
     @Expose
-    private int cornerRadius;
+    private int cornerRaidus;
     @SerializedName("isHorizontalScroll")
     @Expose
     private boolean isHorizontalScroll;
@@ -58,91 +60,19 @@ public class Component {
     @SerializedName("trayClickAction")
     @Expose
     private String trayClickAction;
-    @SerializedName("trayPadding")
+    @SerializedName("fontFamily")
     @Expose
-    private int trayPadding;
-    @SerializedName("imageName")
+    private String fontFamily;
+    @SerializedName("fontSize")
     @Expose
-    private String imageName;
-    @SerializedName("progressColor")
-    @Expose
-    private String progressColor;
-    @SerializedName("unprogressColor")
-    @Expose
-    private String unprogressColor;
-    @SerializedName("view")
-    @Expose
-    private String view;
-    @SerializedName("borderColor")
-    @Expose
-    private String borderColor;
-    @SerializedName("borderWidth")
-    @Expose
-    private int borderWidth;
-    @SerializedName("apiUrl")
-    @Expose
-    private String apiUrl;
-    @SerializedName("component")
-    @Expose
-    private List<Component> component = null;
-    @SerializedName("id")
-    @Expose
-    private String id;
+    private int fontSize;
 
-    public List<Layout> getLayout() {
-        return layout;
+    public String getText() {
+        return text;
     }
 
-    public void setLayout(List<Layout> layout) {
-        this.layout = layout;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public String getFontFamily() {
-        return fontFamily;
-    }
-
-    public void setFontFamily(String fontFamily) {
-        this.fontFamily = fontFamily;
-    }
-
-    public int getFontSize() {
-        return fontSize;
-    }
-
-    public void setFontSize(int fontSize) {
-        this.fontSize = fontSize;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public int getNumberOfLines() {
-        return numberOfLines;
-    }
-
-    public void setNumberOfLines(int numberOfLines) {
-        this.numberOfLines = numberOfLines;
-    }
-
-    public String getTextAlignment() {
-        return textAlignment;
-    }
-
-    public void setTextAlignment(String textAlignment) {
-        this.textAlignment = textAlignment;
+    public void setText(String text) {
+        this.text = text;
     }
 
     public String getTextColor() {
@@ -153,28 +83,20 @@ public class Component {
         this.textColor = textColor;
     }
 
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public String getBackgroundColor() {
         return backgroundColor;
     }
 
     public void setBackgroundColor(String backgroundColor) {
         this.backgroundColor = backgroundColor;
+    }
+
+    public Layout_ getLayout() {
+        return layout;
+    }
+
+    public void setLayout(Layout_ layout) {
+        this.layout = layout;
     }
 
     public String getBackgroundSelectedColor() {
@@ -185,28 +107,92 @@ public class Component {
         this.backgroundSelectedColor = backgroundSelectedColor;
     }
 
-    public List<Component> getCollectionGridComponents() {
-        return collectionGridComponents;
+    public String getAction() {
+        return action;
     }
 
-    public void setCollectionGridComponents(List<Component> collectionGridComponents) {
-        this.collectionGridComponents = collectionGridComponents;
+    public void setAction(String action) {
+        this.action = action;
     }
 
-    public int getCornerRadius() {
-        return cornerRadius;
+    public String getType() {
+        return type;
     }
 
-    public void setCornerRadius(int cornerRadius) {
-        this.cornerRadius = cornerRadius;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public boolean isIsHorizontalScroll() {
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getBorderColor() {
+        return borderColor;
+    }
+
+    public void setBorderColor(String borderColor) {
+        this.borderColor = borderColor;
+    }
+
+    public Integer getBorderWidth() {
+        return borderWidth;
+    }
+
+    public void setBorderWidth(Integer borderWidth) {
+        this.borderWidth = borderWidth;
+    }
+
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
+
+    public String getTextAlignment() {
+        return textAlignment;
+    }
+
+    public void setTextAlignment(String textAlignment) {
+        this.textAlignment = textAlignment;
+    }
+
+    public int getNumberOfLines() {
+        return numberOfLines;
+    }
+
+    public void setNumberOfLines(int numberOfLines) {
+        this.numberOfLines = numberOfLines;
+    }
+
+    public int getTrayPadding() {
+        return trayPadding;
+    }
+
+    public void setTrayPadding(int trayPadding) {
+        this.trayPadding = trayPadding;
+    }
+
+    public int getCornerRaidus() {
+        return cornerRaidus;
+    }
+
+    public void setCornerRaidus(int cornerRaidus) {
+        this.cornerRaidus = cornerRaidus;
+    }
+
+    public boolean isHorizontalScroll() {
         return isHorizontalScroll;
     }
 
-    public void setIsHorizontalScroll(boolean isHorizontalScroll) {
-        this.isHorizontalScroll = isHorizontalScroll;
+    public void setHorizontalScroll(boolean horizontalScroll) {
+        isHorizontalScroll = horizontalScroll;
     }
 
     public boolean isSupportPagination() {
@@ -225,83 +211,19 @@ public class Component {
         this.trayClickAction = trayClickAction;
     }
 
-    public int getTrayPadding() {
-        return trayPadding;
+    public String getFontFamily() {
+        return fontFamily;
     }
 
-    public void setTrayPadding(int trayPadding) {
-        this.trayPadding = trayPadding;
+    public void setFontFamily(String fontFamily) {
+        this.fontFamily = fontFamily;
     }
 
-    public String getImageName() {
-        return imageName;
+    public int getFontSize() {
+        return fontSize;
     }
 
-    public void setImageName(String imageName) {
-        this.imageName = imageName;
-    }
-
-    public String getProgressColor() {
-        return progressColor;
-    }
-
-    public void setProgressColor(String progressColor) {
-        this.progressColor = progressColor;
-    }
-
-    public String getUnprogressColor() {
-        return unprogressColor;
-    }
-
-    public void setUnprogressColor(String unprogressColor) {
-        this.unprogressColor = unprogressColor;
-    }
-
-    public String getView() {
-        return view;
-    }
-
-    public void setView(String view) {
-        this.view = view;
-    }
-
-    public String getBorderColor() {
-        return borderColor;
-    }
-
-    public void setBorderColor(String borderColor) {
-        this.borderColor = borderColor;
-    }
-
-    public int getBorderWidth() {
-        return borderWidth;
-    }
-
-    public void setBorderWidth(int borderWidth) {
-        this.borderWidth = borderWidth;
-    }
-
-    public String getApiUrl() {
-        return apiUrl;
-    }
-
-    public void setApiUrl(String apiUrl) {
-        this.apiUrl = apiUrl;
-    }
-
-    public List<Component> getComponent() {
-        return component;
-    }
-
-    public void setComponent(List<Component> component) {
-        this.component = component;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+    public void setFontSize(int fontSize) {
+        this.fontSize = fontSize;
     }
 }

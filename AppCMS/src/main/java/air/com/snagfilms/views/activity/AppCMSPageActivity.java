@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import air.com.snagfilms.models.data.binders.AppCMSBinder;
+import air.com.snagfilms.presenters.AppCMSPresenter;
 import air.com.snagfilms.views.fragments.AppCMSPageFragment;
 import snagfilms.com.air.appcms.R;
 
@@ -22,6 +23,8 @@ public class AppCMSPageActivity extends FragmentActivity implements AppCMSPageFr
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        AppCMSPresenter.getAppCMSPresenter().pushActivityToStack(this);
         setContentView(R.layout.activity_appcms_page);
         Intent intent = getIntent();
         Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
@@ -30,7 +33,7 @@ public class AppCMSPageActivity extends FragmentActivity implements AppCMSPageFr
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         Fragment appCMSPageFragment = AppCMSPageFragment.newInstance(this, appCMSBinder);
-        fragmentTransaction.add(appCMSPageFragment, appCMSBinder.getPage().getTitle());
+        fragmentTransaction.add(R.id.app_cms_fragment, appCMSPageFragment, appCMSBinder.getPageName());
         fragmentTransaction.commit();
     }
 
@@ -46,5 +49,13 @@ public class AppCMSPageActivity extends FragmentActivity implements AppCMSPageFr
         args.putBinder(getString(R.string.app_cms_binder_key), appCMSBinder);
         resultIntent.putExtra(getString(R.string.app_cms_bundle_key), args);
         setResult(resultCode, resultIntent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (this != AppCMSPresenter.getAppCMSPresenter().popActivityFromStack()) {
+
+        }
     }
 }

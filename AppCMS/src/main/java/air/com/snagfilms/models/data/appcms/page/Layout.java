@@ -6,136 +6,49 @@ import com.google.gson.annotations.SerializedName;
 
 public class Layout {
 
-    @SerializedName("bottomMargin")
+    @SerializedName("tabletPortrait")
     @Expose
-    private double bottomMargin;
-    @SerializedName("height")
+    private TabletPortrait tabletPortrait;
+    @SerializedName("desktop")
     @Expose
-    private int height;
-    @SerializedName("isVerticalyCentered")
+    private Desktop desktop;
+    @SerializedName("mobile")
     @Expose
-    private boolean isVerticalyCentered;
-    @SerializedName("type")
+    private Mobile mobile;
+    @SerializedName("tabletLandscape")
     @Expose
-    private String type;
-    @SerializedName("width")
-    @Expose
-    private int width;
-    @SerializedName("leftMargin")
-    @Expose
-    private int leftMargin;
-    @SerializedName("rightMargin")
-    @Expose
-    private int rightMargin;
-    @SerializedName("topMargin")
-    @Expose
-    private double topMargin;
-    @SerializedName("xAxis")
-    @Expose
-    private int xAxis;
-    @SerializedName("yAxis")
-    @Expose
-    private int yAxis;
-    @SerializedName("gridHeight")
-    @Expose
-    private int gridHeight;
-    @SerializedName("gridWidth")
-    @Expose
-    private int gridWidth;
+    private TabletLandscape tabletLandscape;
 
-    public double getBottomMargin() {
-        return bottomMargin;
+    public TabletPortrait getTabletPortrait() {
+        return tabletPortrait;
     }
 
-    public void setBottomMargin(double bottomMargin) {
-        this.bottomMargin = bottomMargin;
+    public void setTabletPortrait(TabletPortrait tabletPortrait) {
+        this.tabletPortrait = tabletPortrait;
     }
 
-    public int getHeight() {
-        return height;
+    public Desktop getDesktop() {
+        return desktop;
     }
 
-    public void setHeight(int height) {
-        this.height = height;
+    public void setDesktop(Desktop desktop) {
+        this.desktop = desktop;
     }
 
-    public boolean isIsVerticalyCentered() {
-        return isVerticalyCentered;
+    public Mobile getMobile() {
+        return mobile;
     }
 
-    public void setIsVerticalyCentered(boolean isVerticalyCentered) {
-        this.isVerticalyCentered = isVerticalyCentered;
+    public void setMobile(Mobile mobile) {
+        this.mobile = mobile;
     }
 
-    public String getType() {
-        return type;
+    public TabletLandscape getTabletLandscape() {
+        return tabletLandscape;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTabletLandscape(TabletLandscape tabletLandscape) {
+        this.tabletLandscape = tabletLandscape;
     }
 
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getLeftMargin() {
-        return leftMargin;
-    }
-
-    public void setLeftMargin(int leftMargin) {
-        this.leftMargin = leftMargin;
-    }
-
-    public int getRightMargin() {
-        return rightMargin;
-    }
-
-    public void setRightMargin(int rightMargin) {
-        this.rightMargin = rightMargin;
-    }
-
-    public double getTopMargin() {
-        return topMargin;
-    }
-
-    public void setTopMargin(double topMargin) {
-        this.topMargin = topMargin;
-    }
-
-    public int getXAxis() {
-        return xAxis;
-    }
-
-    public void setXAxis(int xAxis) {
-        this.xAxis = xAxis;
-    }
-
-    public int getYAxis() {
-        return yAxis;
-    }
-
-    public void setYAxis(int yAxis) {
-        this.yAxis = yAxis;
-    }
-
-    public int getGridHeight() {
-        return gridHeight;
-    }
-
-    public void setGridHeight(int gridHeight) {
-        this.gridHeight = gridHeight;
-    }
-
-    public int getGridWidth() {
-        return gridWidth;
-    }
-
-    public void setGridWidth(int gridWidth) {
-        this.gridWidth = gridWidth;
-    }
 }

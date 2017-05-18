@@ -1,6 +1,10 @@
 package air.com.snagfilms;
 
+import android.content.Context;
 import android.net.Uri;
+import android.text.TextUtils;
+
+import com.google.gson.JsonElement;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +13,6 @@ import java.io.File;
 import java.util.List;
 
 import air.com.snagfilms.models.data.appcms.android.Android;
-import air.com.snagfilms.models.data.appcms.main.Main;
 import air.com.snagfilms.models.data.appcms.page.Page;
 import air.com.snagfilms.models.network.components.AppCMSAPIComponent;
 import air.com.snagfilms.models.network.components.DaggerAppCMSAPIComponent;
@@ -18,6 +21,7 @@ import air.com.snagfilms.models.network.rest.AppCMSAndroidCall;
 import air.com.snagfilms.models.network.rest.AppCMSMainCall;
 import air.com.snagfilms.models.network.rest.AppCMSPageCall;
 import air.com.snagfilms.presenters.AppCMSPresenter;
+import snagfilms.com.air.appcms.R;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -30,12 +34,15 @@ import static org.mockito.Mockito.when;
 
 public class RESTUnitTest {
     private AppCMSAPIComponent appCMSAPIComponent;
-    private static final String BASEURL = "https://s3.amazonaws.com";
-    private static final String APP_CMS_APP_NAME = "test-site-april-5";
-    private static final String APP_CMS_MAIN_URL = "%1$s/appcms-config/%2$s/main.json";
-    private static final String APP_CMS_ANDROID_URL = "https://s3.amazonaws.com/appcms-config/test-site-april-5/android.json";
+    private static final String BASEURL = "https://appcms.viewlift.com";
+    private static final String APP_CMS_APP_NAME = "0f11bfb4-bf6c-4702-9883-1d24c4a5ba60";
+    private static final String APP_CMS_MAIN_URL = "%1$s/%2$s/main.json";
+    private static final String APP_CMS_ANDROID_URL = "https://appcms.viewlift.com/0f11bfb4-bf6c-4702-9883-1d24c4a5ba60/android.json";
     private static final String APP_CMS_SPLASH_PAGE_URL = "https://s3.amazonaws.com/appcms-config/test-site-april-5/ios/SplashPage.json";
-    private static final String APP_CMS_HOME_PAGE_URL = "https://s3.amazonaws.com/appcms-config/test-site-april-5/ios/HomePage.json";
+
+    private static final String APP_CMS_MAIN_VERSION_KEY = "version";
+    private static final String APP_CMS_MAIN_OLD_VERSION_KEY = "old_version";
+    private static final String APP_CMS_MAIN_ANDROID_KEY = "Android";
 
     private Uri mainUri = mock(Uri.class);
     private List<String> mainUriPathList = mock(List.class);
@@ -43,16 +50,11 @@ public class RESTUnitTest {
     private List<String> androidUriPathList = mock(List.class);
     private Uri splashPageUri = mock(Uri.class);
     private List<String> splashPageUriPathList = mock(List.class);
-    private Uri homePageUri = mock(Uri.class);
-    private List<String> homePageUriPathList = mock(List.class);
+
+    private Context context = mock(Context.class);
 
     @Before
     public void initialize() {
-        appCMSAPIComponent = DaggerAppCMSAPIComponent
-                .builder()
-                .appCMSAPIModule(new AppCMSAPIModule(BASEURL, new File("")))
-                .build();
-
         when(mainUri.getPathSegments()).thenReturn(mainUriPathList);
         String mainUrl = String.format(APP_CMS_MAIN_URL, BASEURL, APP_CMS_APP_NAME);
         when(mainUri.toString()).thenReturn(mainUrl);
@@ -69,20 +71,26 @@ public class RESTUnitTest {
         when(splashPageUriPathList.size()).thenReturn(3);
         when(splashPageUriPathList.get(2)).thenReturn("SplashPage.json");
 
-        when(homePageUri.getPathSegments()).thenReturn(homePageUriPathList);
-        when(homePageUri.toString()).thenReturn(APP_CMS_HOME_PAGE_URL);
-        when(homePageUriPathList.size()).thenReturn(3);
-        when(homePageUriPathList.get(2)).thenReturn("HomePage.json");
+        when(context.getString(R.string.app_cms_main_version_key))
+                .thenReturn(APP_CMS_MAIN_VERSION_KEY);
+        when(context.getString(R.string.app_cms_main_old_version_key))
+                .thenReturn(APP_CMS_MAIN_OLD_VERSION_KEY);
+        when(context.getString(R.string.app_cms_main_android_key))
+                .thenReturn(APP_CMS_MAIN_ANDROID_KEY);
+        when(context.getPackageName()).thenReturn("myPackage");
+
+        appCMSAPIComponent = DaggerAppCMSAPIComponent
+                .builder()
+                .appCMSAPIModule(new AppCMSAPIModule(BASEURL, new File(""), context))
+                .build();
     }
 
     @Test
     public void test_appCMSMainCall() throws Exception {
         AppCMSMainCall appCMSMainCall = appCMSAPIComponent.appCMSMainCall();
-        Main main = appCMSMainCall.call(mainUri, false);
+        JsonElement main = appCMSMainCall.call(mainUri);
         assertNotNull(main);
-        assertNotNull(main.getMain());
-        assertNotNull(main.getMain().getAndroid());
-        assertTrue(!main.getMain().getAndroid().isEmpty());
+        assertTrue(!TextUtils.isEmpty(main.getAsJsonObject().get(APP_CMS_MAIN_ANDROID_KEY).getAsString()));
     }
 
     @Test
@@ -90,14 +98,11 @@ public class RESTUnitTest {
         AppCMSAndroidCall appCMSAndroidCall = appCMSAPIComponent.appCMSAndroidCall();
         Android android = appCMSAndroidCall.call(androidUri, false);
         assertNotNull(android);
+        assertNotNull(android.getMetaPages());
         assertTrue(android.getMetaPages().size() > 0);
         for (int i = 0; i < android.getMetaPages().size(); i++) {
             assertNotNull(android.getMetaPages().get(i));
-            assertNotNull(android.getMetaPages().get(i).getPageName());
-            AppCMSPresenter.PageName pageName =
-                    AppCMSPresenter.PageName.fromString(android.getMetaPages().get(i).getPageName());
-            assertTrue(pageName == AppCMSPresenter.PageName.HOME_PAGE ||
-                    pageName == AppCMSPresenter.PageName.SPLASH_PAGE);
+            assertTrue(!TextUtils.isEmpty(android.getMetaPages().get(i).getPageName()));
         }
     }
 
@@ -106,16 +111,5 @@ public class RESTUnitTest {
         AppCMSPageCall appCMSPageCall = appCMSAPIComponent.appCMSPageCall();
         Page splashPage = appCMSPageCall.call(splashPageUri, false);
         assertNotNull(splashPage);
-        assertTrue(splashPage.getTitle().equals("Splash Page"));
-        assertTrue(splashPage.getType().equals("Welcome Page"));
-    }
-
-    @Test
-    public void test_appCMSHomePageCall() throws Exception {
-        AppCMSPageCall appCMSPageCall = appCMSAPIComponent.appCMSPageCall();
-        Page homePage = appCMSPageCall.call(homePageUri, false);
-        assertNotNull(homePage);
-        assertTrue(homePage.getTitle().equals("Featured Page"));
-        assertTrue(homePage.getType().equals("Modular Page"));
     }
 }

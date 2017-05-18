@@ -3,9 +3,13 @@ package air.com.snagfilms.views.modules;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
+import java.util.Map;
+
 import javax.inject.Singleton;
 
+import air.com.snagfilms.models.data.appcms.AppCMSKeyType;
 import air.com.snagfilms.models.data.appcms.page.Page;
+import air.com.snagfilms.models.network.modules.AppCMSAPIModule;
 import air.com.snagfilms.views.customviews.PageView;
 import air.com.snagfilms.views.customviews.ViewCreator;
 import dagger.Module;
@@ -19,10 +23,14 @@ import dagger.Provides;
 public class AppCMSPageViewModule {
     private final Context context;
     private final Page page;
+    private final Map<AppCMSKeyType, String> jsonValueKeyMap;
 
-    public AppCMSPageViewModule(Context context, Page page) {
+    public AppCMSPageViewModule(Context context,
+                                Page page,
+                                Map<AppCMSKeyType, String> jsonValueKeyMap) {
         this.context = context;
         this.page = page;
+        this.jsonValueKeyMap = jsonValueKeyMap;
     }
 
     @Provides
@@ -35,6 +43,6 @@ public class AppCMSPageViewModule {
     @Singleton
     @Nullable
     public PageView providesViewFromPage(ViewCreator viewCreator) {
-        return viewCreator.generatePage(context, page);
+        return viewCreator.generatePage(context, page, jsonValueKeyMap);
     }
 }

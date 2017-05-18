@@ -7,72 +7,28 @@ import com.google.gson.annotations.SerializedName;
 
 public class Android {
 
-    @SerializedName("version")
+    @SerializedName("navigation")
     @Expose
-    private String version;
-    @SerializedName("advertising")
-    @Expose
-    private Advertising advertising;
-    @SerializedName("analytics")
-    @Expose
-    private Analytics analytics;
-    @SerializedName("appName")
-    @Expose
-    private String appName;
-    @SerializedName("customerService")
-    @Expose
-    private CustomerService customerService;
+    private Navigation navigation;
     @SerializedName("images")
     @Expose
     private Images images;
-    @SerializedName("notifications")
-    @Expose
-    private Notifications notifications;
-    @SerializedName("shortAppName")
-    @Expose
-    private String shortAppName;
-    @SerializedName("Pages")
+    @SerializedName("pages")
     @Expose
     private List<MetaPage> metaPages = null;
+    @SerializedName("analytics")
+    @Expose
+    private Analytics analytics;
+    @SerializedName("version")
+    @Expose
+    private String version;
 
-    public String getVersion() {
-        return version;
+    public Navigation getNavigation() {
+        return navigation;
     }
 
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public Advertising getAdvertising() {
-        return advertising;
-    }
-
-    public void setAdvertising(Advertising advertising) {
-        this.advertising = advertising;
-    }
-
-    public Analytics getAnalytics() {
-        return analytics;
-    }
-
-    public void setAnalytics(Analytics analytics) {
-        this.analytics = analytics;
-    }
-
-    public String getAppName() {
-        return appName;
-    }
-
-    public void setAppName(String appName) {
-        this.appName = appName;
-    }
-
-    public CustomerService getCustomerService() {
-        return customerService;
-    }
-
-    public void setCustomerService(CustomerService customerService) {
-        this.customerService = customerService;
+    public void setNavigation(Navigation navigation) {
+        this.navigation = navigation;
     }
 
     public Images getImages() {
@@ -83,28 +39,28 @@ public class Android {
         this.images = images;
     }
 
-    public Notifications getNotifications() {
-        return notifications;
-    }
-
-    public void setNotifications(Notifications notifications) {
-        this.notifications = notifications;
-    }
-
-    public String getShortAppName() {
-        return shortAppName;
-    }
-
-    public void setShortAppName(String shortAppName) {
-        this.shortAppName = shortAppName;
-    }
-
     public List<MetaPage> getMetaPages() {
         return metaPages;
     }
 
     public void setMetaPages(List<MetaPage> metaPages) {
         this.metaPages = metaPages;
+    }
+
+    public Analytics getAnalytics() {
+        return analytics;
+    }
+
+    public void setAnalytics(Analytics analytics) {
+        this.analytics = analytics;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
 }

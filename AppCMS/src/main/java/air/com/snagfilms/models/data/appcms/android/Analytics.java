@@ -6,19 +6,28 @@ import com.google.gson.annotations.SerializedName;
 
 public class Analytics {
 
-    @SerializedName("appFlyer")
+    @SerializedName("googleTagManagerId")
     @Expose
-    private AppFlyer appFlyer;
+    private String googleTagManagerId;
     @SerializedName("googleAnalyticsId")
     @Expose
     private String googleAnalyticsId;
+    @SerializedName("kochavaAppId")
+    @Expose
+    private String kochavaAppId;
+    @SerializedName("appflyerDevKey")
+    @Expose
+    private String appflyerDevKey;
+    @SerializedName("omnitureAppSDKConfigFile")
+    @Expose
+    private String omnitureAppSDKConfigFile;
 
-    public AppFlyer getAppFlyer() {
-        return appFlyer;
+    public String getGoogleTagManagerId() {
+        return googleTagManagerId;
     }
 
-    public void setAppFlyer(AppFlyer appFlyer) {
-        this.appFlyer = appFlyer;
+    public void setGoogleTagManagerId(String googleTagManagerId) {
+        this.googleTagManagerId = googleTagManagerId;
     }
 
     public String getGoogleAnalyticsId() {
@@ -27,6 +36,30 @@ public class Analytics {
 
     public void setGoogleAnalyticsId(String googleAnalyticsId) {
         this.googleAnalyticsId = googleAnalyticsId;
+    }
+
+    public String getKochavaAppId() {
+        return kochavaAppId;
+    }
+
+    public void setKochavaAppId(String kochavaAppId) {
+        this.kochavaAppId = kochavaAppId;
+    }
+
+    public String getAppflyerDevKey() {
+        return appflyerDevKey;
+    }
+
+    public void setAppflyerDevKey(String appflyerDevKey) {
+        this.appflyerDevKey = appflyerDevKey;
+    }
+
+    public String getOmnitureAppSDKConfigFile() {
+        return omnitureAppSDKConfigFile;
+    }
+
+    public void setOmnitureAppSDKConfigFile(String omnitureAppSDKConfigFile) {
+        this.omnitureAppSDKConfigFile = omnitureAppSDKConfigFile;
     }
 
 }

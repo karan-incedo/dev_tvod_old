@@ -9,15 +9,18 @@ public class MetaPage {
     @SerializedName("Page-Name")
     @Expose
     private String pageName;
-    @SerializedName("Page-API")
+    @SerializedName("Page-Type")
     @Expose
-    private String pageAPI;
+    private String pageType;
+    @SerializedName("Page-ID")
+    @Expose
+    private String pageID;
     @SerializedName("Page-UI")
     @Expose
     private String pageUI;
-    @SerializedName("Page-type")
+    @SerializedName("Page-API")
     @Expose
-    private String pageType;
+    private String pageAPI;
 
     public String getPageName() {
         return pageName;
@@ -27,12 +30,20 @@ public class MetaPage {
         this.pageName = pageName;
     }
 
-    public String getPageAPI() {
-        return pageAPI;
+    public String getPageType() {
+        return pageType;
     }
 
-    public void setPageAPI(String pageAPI) {
-        this.pageAPI = pageAPI;
+    public void setPageType(String pageType) {
+        this.pageType = pageType;
+    }
+
+    public String getPageID() {
+        return pageID;
+    }
+
+    public void setPageID(String pageID) {
+        this.pageID = pageID;
     }
 
     public String getPageUI() {
@@ -43,12 +54,12 @@ public class MetaPage {
         this.pageUI = pageUI;
     }
 
-    public String getPageType() {
-        return pageType;
+    public String getPageAPI() {
+        return pageAPI;
     }
 
-    public void setPageType(String pageType) {
-        this.pageType = pageType;
+    public void setPageAPI(String pageAPI) {
+        this.pageAPI = pageAPI;
     }
 
 }

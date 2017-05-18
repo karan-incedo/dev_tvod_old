@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_cms_api_baseurl">https://s3.amazonaws.com</string>
-    <string name="app_cms_main_url">%1$s/appcms-config/%2$s/main.json</string>
-    <string name="app_cms_app_name">test-site-april-5</string>
+    <string name="app_cms_api_baseurl">https://appcms.viewlift.com/</string>
+    <string name="app_cms_main_url">%1$s/%2$s/main.json</string>
+    <string name="app_cms_app_name">0f11bfb4-bf6c-4702-9883-1d24c4a5ba60</string>
+    <string name="app_cms_main_version_key">version</string>
+    <string name="app_cms_main_old_version_key">old_version</string>
 </resources>

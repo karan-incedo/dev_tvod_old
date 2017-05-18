@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.JsonElement;
@@ -12,19 +13,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import air.com.snagfilms.models.data.appcms.AppCMSKeyType;
 import air.com.snagfilms.models.data.appcms.android.Android;
 import air.com.snagfilms.models.data.appcms.android.MetaPage;
-import air.com.snagfilms.models.data.appcms.main.Main;
 import air.com.snagfilms.models.data.binders.AppCMSBinder;
 import air.com.snagfilms.models.data.appcms.page.Page;
 import air.com.snagfilms.models.network.background.tasks.GetAppCMSAndroidAsyncTask;
 import air.com.snagfilms.models.network.background.tasks.GetAppCMSMainAsyncTask;
 import air.com.snagfilms.models.network.background.tasks.GetAppCMSPageAsyncTask;
 import air.com.snagfilms.models.network.components.AppCMSAPIComponent;
+import air.com.snagfilms.models.network.modules.AppCMSAPIModule;
 import air.com.snagfilms.views.activity.AppCMSPageActivity;
 import air.com.snagfilms.views.activity.ErrorActivity;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
 
@@ -33,35 +37,7 @@ import snagfilms.com.air.appcms.R;
  */
 
 public class AppCMSPresenter {
-    public static int REQUEST_SPLASH_SCREEN = 1000;
-
-    private static int SPLASH_PAGE_DELAY = 3000;
-
     private static final String TAG = "AppCMSPresenter";
-
-    public enum PageName {
-        HOME_PAGE("HomePage"),
-        SPLASH_PAGE("SplashPage");
-
-        final String name;
-        PageName(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-
-        public static PageName fromString(String value) {
-            for (PageName pageName : PageName.values()) {
-                if (pageName.toString().equals(value)) {
-                    return pageName;
-                }
-            }
-            throw new IllegalArgumentException("No enum constant " + value);
-        }
-    }
 
     public enum PresenterAction {
         CREATE,
@@ -84,11 +60,13 @@ public class AppCMSPresenter {
 
     private static AppCMSPresenter presenter;
 
-    private static final String ERROR_TAG = "error_fragment";
-
     private Queue<MetaPage> pagesToProcess;
 
     private Map<String, Page> navigationPages;
+
+    private Stack<Activity> activityStack;
+
+    private Map<AppCMSKeyType, String> jsonValueKeyMap;
 
     public static AppCMSPresenter getAppCMSPresenter() {
         if (presenter == null) {
@@ -99,6 +77,7 @@ public class AppCMSPresenter {
 
     private AppCMSPresenter() {
         navigationPages = new HashMap<>();
+        activityStack = new Stack<>();
     }
 
     public boolean launchPageActivity(Activity activity,
@@ -106,27 +85,14 @@ public class AppCMSPresenter {
                                       boolean loadFromFile) {
         if (navigationPages.containsKey(navigationNode)) {
             Bundle args = new Bundle();
-            AppCMSBinder appCMSBinder = new AppCMSBinder(navigationPages.get(navigationNode), loadFromFile);
+            AppCMSBinder appCMSBinder = new AppCMSBinder(navigationPages.get(navigationNode),
+                    loadFromFile,
+                    navigationNode,
+                    jsonValueKeyMap);
             args.putBinder(activity.getString(R.string.app_cms_binder_key), appCMSBinder);
             Intent appCMSIntent = new Intent(activity, AppCMSPageActivity.class);
             appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
             activity.startActivity(appCMSIntent);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean launchPageActivityForResult(Activity activity,
-                                               String navigationNode,
-                                               int requestCode,
-                                               boolean loadFromFile) {
-        if (navigationPages.containsKey(navigationNode)) {
-            Bundle args = new Bundle();
-            AppCMSBinder appCMSBinder = new AppCMSBinder(navigationPages.get(navigationNode), loadFromFile);
-            args.putBinder(activity.getString(R.string.app_cms_binder_key), appCMSBinder);
-            Intent appCMSIntent = new Intent(activity, AppCMSPageActivity.class);
-            appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
-            activity.startActivityForResult(appCMSIntent, requestCode);
             return true;
         }
         return false;
@@ -138,26 +104,41 @@ public class AppCMSPresenter {
     }
 
     public void loadMain(Activity activity, AppCMSAPIComponent appCMSAPIComponent, String url) {
+        pushActivityToStack(activity);
+        jsonValueKeyMap = appCMSAPIComponent.jsonValueKeyMap();
         getAppCMSMain(activity, appCMSAPIComponent, url);
     }
 
     private void getAppCMSMain(final Activity activity,
                                final AppCMSAPIComponent appCMSAPIComponent,
                                String url) {
-        new GetAppCMSMainAsyncTask(appCMSAPIComponent.appCMSMainCall(), new Action1<Main>() {
+        new GetAppCMSMainAsyncTask(appCMSAPIComponent.appCMSMainCall(), new Action1<JsonElement>() {
             @Override
-            public void call(Main main) {
+            public void call(JsonElement main) {
                 if (main == null ||
-                        main.getMain() == null ||
-                        main.getMain().getAndroid() == null ||
-                        main.getMain().getAndroid().isEmpty()) {
+                        TextUtils.isEmpty(main
+                                .getAsJsonObject()
+                                .get(jsonValueKeyMap.get(AppCMSKeyType.MAIN_ANDROID_KEY))
+                                .getAsString())) {
                     Log.e(TAG, "AppCMS keys for main not found");
                     launchErrorActivity(activity);
                 } else {
+                    String androidUrl = main
+                            .getAsJsonObject()
+                            .get(jsonValueKeyMap.get(AppCMSKeyType.MAIN_ANDROID_KEY))
+                            .getAsString();
+                    String version = main
+                            .getAsJsonObject()
+                            .get(jsonValueKeyMap.get(AppCMSKeyType.MAIN_VERSION_KEY))
+                            .getAsString();
+                    String oldVersion = main
+                            .getAsJsonObject()
+                            .get(jsonValueKeyMap.get(AppCMSKeyType.MAIN_OLD_VERSION_KEY))
+                            .getAsString();
                     getAppCMSAndroid(activity,
                             appCMSAPIComponent,
-                            main.getMain().getAndroid(),
-                            !main.getVersion().equals(main.getOldVersion()));
+                            androidUrl,
+                            !version.equals(oldVersion));
                 }
             }
         }).execute(Uri.parse(url));
@@ -178,7 +159,17 @@ public class AppCMSPresenter {
                     launchErrorActivity(activity);
                 } else {
                     queueMetaPages(android.getMetaPages());
-                    processMetaPagesQueue(appCMSAPIComponent, activity, loadFromFile);
+                    final MetaPage firstPage = pagesToProcess.peek();
+                    processMetaPagesQueue(appCMSAPIComponent,
+                            loadFromFile,
+                            new Action0() {
+                                @Override
+                                public void call() {
+                                    launchPageActivity(activity,
+                                            firstPage.getPageName(),
+                                             loadFromFile);
+                                }
+                            });
                 }
             }
         }).execute(runOptions);
@@ -204,19 +195,18 @@ public class AppCMSPresenter {
                 pagesToProcess.add(metaPageList.get(pageToQueueIndex));
                 metaPageList.remove(pageToQueueIndex);
                 queueMetaPages(metaPageList);
+            } else {
+                for (int i = 0; i < metaPageList.size(); i++) {
+                    pagesToProcess.add(metaPageList.get(i));
+                }
             }
-            pageToQueueIndex = getHomePage(metaPageList);
-            if (pageToQueueIndex >= 0) {
-                pagesToProcess.add(metaPageList.get(pageToQueueIndex));
-                metaPageList.remove(pageToQueueIndex);
-                queueMetaPages(metaPageList);
-            }
+
         }
     }
 
-    public void processMetaPagesQueue(AppCMSAPIComponent appCMSAPIComponent,
-                                      final Activity activity,
-                                      final boolean loadFromFile) {
+    public void processMetaPagesQueue(final AppCMSAPIComponent appCMSAPIComponent,
+                                      final boolean loadFromFile,
+                                      final Action0 onPagesFinishedAction) {
         final MetaPage metaPage = pagesToProcess.remove();
         getAppCMSPage(appCMSAPIComponent,
                 metaPage.getPageUI(),
@@ -224,13 +214,12 @@ public class AppCMSPresenter {
                     @Override
                     public void call(Page page) {
                         navigationPages.put(metaPage.getPageName(), page);
-                        if (PageName.fromString(metaPage.getPageName()) == PageName.HOME_PAGE) {
-                            launchPageActivityForResult(activity,
-                                    metaPage.getPageName(),
-                                    REQUEST_SPLASH_SCREEN,
-                                    loadFromFile);
+                        if (pagesToProcess.size() > 0) {
+                            processMetaPagesQueue(appCMSAPIComponent,
+                                    loadFromFile,
+                                    onPagesFinishedAction);
                         } else {
-                            launchPageActivity(activity, metaPage.getPageName(), loadFromFile);
+                            onPagesFinishedAction.call();
                         }
                     }
                 },
@@ -241,18 +230,20 @@ public class AppCMSPresenter {
 
     }
 
-    private int getSplashPage(List<MetaPage> metaPageList) {
-        for (int i = 0; i < metaPageList.size(); i++) {
-            if (PageName.fromString(metaPageList.get(i).getPageName()) == PageName.SPLASH_PAGE) {
-                return i;
-            }
-        }
-        return -1;
+    public void pushActivityToStack(Activity activity) {
+        activityStack.add(activity);
     }
 
-    private int getHomePage(List<MetaPage> metaPageList) {
+    public Activity popActivityFromStack() {
+        return activityStack.pop();
+    }
+
+    private int getSplashPage(List<MetaPage> metaPageList) {
         for (int i = 0; i < metaPageList.size(); i++) {
-            if (PageName.fromString(metaPageList.get(i).getPageName()) == PageName.HOME_PAGE) {
+            if (metaPageList
+                    .get(i)
+                    .getPageName()
+                    .equals(jsonValueKeyMap.get(AppCMSKeyType.ANDROID_SPLASH_SCREEN_KEY))) {
                 return i;
             }
         }

@@ -8,11 +8,14 @@ import android.view.ViewGroup;
 import com.google.gson.JsonElement;
 
 import java.util.List;
+import java.util.Map;
 
+import air.com.snagfilms.models.data.appcms.AppCMSKeyType;
 import air.com.snagfilms.models.data.appcms.page.Component;
 import air.com.snagfilms.views.components.AppCMSViewComponent;
 import air.com.snagfilms.views.components.DaggerAppCMSViewComponent;
 import air.com.snagfilms.views.customviews.ComponentView;
+import air.com.snagfilms.views.customviews.ViewCreator;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -23,19 +26,25 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private List<JsonElement> adapterData;
     private Context context;
     private Component component;
+    private ViewCreator viewCreator;
+    private Map<AppCMSKeyType, String> jsonValueKeyMap;
 
-    public AppCMSViewAdapter(Context context, Component component, List<JsonElement> adapterData) {
+    public AppCMSViewAdapter(Context context, Component component) {
         this.appCMSViewComponent = DaggerAppCMSViewComponent
                 .builder()
                 .build();
-        this.adapterData = adapterData;
         this.context = context;
         this.component = component;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = appCMSViewComponent.viewCreator().generateComponent(context, component);
+        View view = appCMSViewComponent
+                .viewCreator()
+                .generateComponent(context,
+                        component,
+                        ViewCreator.NOOP_ON_COMPONENT_LOADED,
+                        jsonValueKeyMap);
         return new ViewHolder(view);
     }
 
@@ -56,5 +65,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             super(itemView);
             this.componentView = (ComponentView) itemView;
         }
+    }
+
+    public void updateAdapterData(List<JsonElement> adapterData) {
+        this.adapterData = adapterData;
+        notifyDataSetChanged();
     }
 }

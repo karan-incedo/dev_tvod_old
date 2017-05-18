@@ -1,6 +1,7 @@
 package air.com.snagfilms.models.network.rest;
 
-import air.com.snagfilms.models.data.appcms.main.Main;
+import com.google.gson.JsonElement;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Url;
@@ -11,5 +12,5 @@ import retrofit2.http.Url;
 
 public interface AppCMSMainAPI {
     @GET
-    Call<Main> get(@Url String url);
+    Call<JsonElement> get(@Url String url);
 }
