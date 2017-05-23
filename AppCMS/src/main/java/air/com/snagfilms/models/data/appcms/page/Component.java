@@ -17,7 +17,7 @@ public class Component {
     private String backgroundColor;
     @SerializedName("layout")
     @Expose
-    private Layout_ layout;
+    private Layout layout;
     @SerializedName("backgroundSelectedColor")
     @Expose
     private String backgroundSelectedColor;
@@ -91,11 +91,11 @@ public class Component {
         this.backgroundColor = backgroundColor;
     }
 
-    public Layout_ getLayout() {
+    public Layout getLayout() {
         return layout;
     }
 
-    public void setLayout(Layout_ layout) {
+    public void setLayout(Layout layout) {
         this.layout = layout;
     }
 

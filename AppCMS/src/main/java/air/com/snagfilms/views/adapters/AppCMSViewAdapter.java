@@ -14,7 +14,7 @@ import air.com.snagfilms.models.data.appcms.AppCMSKeyType;
 import air.com.snagfilms.models.data.appcms.page.Component;
 import air.com.snagfilms.views.components.AppCMSViewComponent;
 import air.com.snagfilms.views.components.DaggerAppCMSViewComponent;
-import air.com.snagfilms.views.customviews.ComponentView;
+import air.com.snagfilms.views.customviews.CollectionGridView;
 import air.com.snagfilms.views.customviews.ViewCreator;
 
 /**
@@ -39,9 +39,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = appCMSViewComponent
+        CollectionGridView view = appCMSViewComponent
                 .viewCreator()
-                .generateComponent(context,
+                .createCollectionGridView(context,
                         component,
                         ViewCreator.NOOP_ON_COMPONENT_LOADED,
                         jsonValueKeyMap);
@@ -58,17 +58,17 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         return (adapterData == null ? 0 : adapterData.size());
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        ComponentView componentView;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            this.componentView = (ComponentView) itemView;
-        }
-    }
-
     public void updateAdapterData(List<JsonElement> adapterData) {
         this.adapterData = adapterData;
         notifyDataSetChanged();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        CollectionGridView componentView;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            this.componentView = (CollectionGridView) itemView;
+        }
     }
 }

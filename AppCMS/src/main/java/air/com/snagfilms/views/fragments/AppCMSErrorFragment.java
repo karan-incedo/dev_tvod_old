@@ -13,9 +13,9 @@ import snagfilms.com.air.appcms.R;
  * Created by viewlift on 5/4/17.
  */
 
-public class ErrorFragment extends Fragment {
-    public static ErrorFragment newInstance() {
-        return new ErrorFragment();
+public class AppCMSErrorFragment extends Fragment {
+    public static AppCMSErrorFragment newInstance() {
+        return new AppCMSErrorFragment();
     }
 
     @Nullable

@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.support.test.espresso.idling.CountingIdlingResource;
 import android.os.Bundle;
 
-import air.com.snagfilms.LaunchActivity;
+import air.com.snagfilms.AppCMSLaunchActivity;
 
-public class LaunchTestActivity extends LaunchActivity {
+public class AppCMSLaunchTestActivity extends AppCMSLaunchActivity {
     private CountingIdlingResource launchActivityIdlingResource = new CountingIdlingResource("launchActivityIdlingResource");
 
     @Override

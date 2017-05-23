@@ -6,6 +6,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class Mobile {
 
+    @SerializedName("width")
+    @Expose
+    private Integer width;
     @SerializedName("height")
     @Expose
     private Integer height;
@@ -18,9 +21,23 @@ public class Mobile {
     @SerializedName("leftMargin")
     @Expose
     private Integer leftMargin;
+    @SerializedName("topMargin")
+    @Expose
+    private Float topMargin;
+    @SerializedName("bottomMargin")
+    @Expose
+    private Float bottomMargin;
     @SerializedName("xAxis")
     @Expose
     private Integer xAxis;
+
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(Integer width) {
+        this.width = width;
+    }
 
     public Integer getHeight() {
         return height;
@@ -52,6 +69,22 @@ public class Mobile {
 
     public void setLeftMargin(Integer leftMargin) {
         this.leftMargin = leftMargin;
+    }
+
+    public Float getTopMargin() {
+        return topMargin;
+    }
+
+    public void setTopMargin(Float topMargin) {
+        this.topMargin = topMargin;
+    }
+
+    public Float getBottomMargin() {
+        return bottomMargin;
+    }
+
+    public void setBottomMargin(Float bottomMargin) {
+        this.bottomMargin = bottomMargin;
     }
 
     public Integer getXAxis() {

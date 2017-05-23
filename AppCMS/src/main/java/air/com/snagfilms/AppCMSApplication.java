@@ -2,9 +2,12 @@ package air.com.snagfilms;
 
 import android.app.Application;
 
-import air.com.snagfilms.models.network.components.AppCMSAPIComponent;
+import air.com.snagfilms.models.network.components.AppCMSUIComponent;
 import air.com.snagfilms.models.network.components.DaggerAppCMSAPIComponent;
-import air.com.snagfilms.models.network.modules.AppCMSAPIModule;
+import air.com.snagfilms.models.network.modules.AppCMSUIModule;
+import air.com.snagfilms.views.components.AppCMSPresenterComponent;
+import air.com.snagfilms.views.components.DaggerAppCMSPresenterComponent;
+import air.com.snagfilms.views.modules.AppCMSPresenterModule;
 import snagfilms.com.air.appcms.R;
 
 /**
@@ -12,20 +15,19 @@ import snagfilms.com.air.appcms.R;
  */
 
 public class AppCMSApplication extends Application {
-    private AppCMSAPIComponent appCMSAPIComponent;
+    private AppCMSPresenterComponent appCMSPresenterComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        appCMSAPIComponent = DaggerAppCMSAPIComponent
+        appCMSPresenterComponent = DaggerAppCMSPresenterComponent
                 .builder()
-                .appCMSAPIModule(new AppCMSAPIModule(getString(R.string.app_cms_api_baseurl),
-                        getFilesDir(),
-                        this))
+                .appCMSUIModule(new AppCMSUIModule(this))
+                .appCMSPresenterModule(new AppCMSPresenterModule())
                 .build();
     }
 
-    public AppCMSAPIComponent getAppCMSAPIComponent() {
-        return appCMSAPIComponent;
+    public AppCMSPresenterComponent getAppCMSPresenterComponent() {
+        return appCMSPresenterComponent;
     }
 }

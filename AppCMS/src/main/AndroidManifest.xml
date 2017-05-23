@@ -16,16 +16,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="air.com.snagfilms.LaunchActivity">
+        <activity android:name="air.com.snagfilms.AppCMSLaunchActivity" android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name="air.com.snagfilms.views.activity.AppCMSPageActivity" />
-        <activity android:name="air.com.snagfilms.views.activity.ErrorActivity" />
-        <activity android:name="air.com.snagfilms.activities.LaunchTestActivity"></activity>
+        <activity android:name="air.com.snagfilms.views.activity.AppCMSErrorActivity" />
+        <activity android:name="air.com.snagfilms.activities.AppCMSLaunchTestActivity"></activity>
     </application>
 
 </manifest>

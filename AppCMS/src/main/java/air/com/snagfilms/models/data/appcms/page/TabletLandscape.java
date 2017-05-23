@@ -9,6 +9,9 @@ public class TabletLandscape {
     @SerializedName("yAxis")
     @Expose
     private Integer yAxis;
+    @SerializedName("width")
+    @Expose
+    private Integer width;
     @SerializedName("height")
     @Expose
     private Integer height;
@@ -18,6 +21,12 @@ public class TabletLandscape {
     @SerializedName("leftMargin")
     @Expose
     private Integer leftMargin;
+    @SerializedName("topMargin")
+    @Expose
+    private Float topMargin;
+    @SerializedName("bottomMargin")
+    @Expose
+    private Float bottomMargin;
     @SerializedName("xAxis")
     @Expose
     private Integer xAxis;
@@ -38,6 +47,14 @@ public class TabletLandscape {
         this.height = height;
     }
 
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(Integer width) {
+        this.width = width;
+    }
+
     public Integer getRightMargin() {
         return rightMargin;
     }
@@ -52,6 +69,22 @@ public class TabletLandscape {
 
     public void setLeftMargin(Integer leftMargin) {
         this.leftMargin = leftMargin;
+    }
+
+    public Float getTopMargin() {
+        return topMargin;
+    }
+
+    public void setTopMargin(Float topMargin) {
+        this.topMargin = topMargin;
+    }
+
+    public Float getBottomMargin() {
+        return bottomMargin;
+    }
+
+    public void setBottomMargin(Float bottomMargin) {
+        this.bottomMargin = bottomMargin;
     }
 
     public Integer getXAxis() {

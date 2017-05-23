@@ -6,7 +6,7 @@ import android.os.AsyncTask;
 import java.io.IOException;
 
 import air.com.snagfilms.models.data.appcms.android.Android;
-import air.com.snagfilms.models.network.rest.AppCMSAndroidCall;
+import air.com.snagfilms.models.network.rest.AppCMSAndroidUICall;
 import rx.Observable;
 import rx.functions.Action1;
 
@@ -14,8 +14,8 @@ import rx.functions.Action1;
  * Created by viewlift on 5/4/17.
  */
 
-public class GetAppCMSAndroidAsyncTask extends AsyncTask<GetAppCMSAndroidAsyncTask.RunOptions, Integer, Android> {
-    private final AppCMSAndroidCall call;
+public class GetAppCMSAndroidUIAsyncTask extends AsyncTask<GetAppCMSAndroidUIAsyncTask.RunOptions, Integer, Android> {
+    private final AppCMSAndroidUICall call;
     private final Action1<Android> readyAction;
 
     public static class RunOptions {
@@ -23,7 +23,7 @@ public class GetAppCMSAndroidAsyncTask extends AsyncTask<GetAppCMSAndroidAsyncTa
         public boolean loadFromFile;
     }
 
-    public GetAppCMSAndroidAsyncTask(AppCMSAndroidCall call, Action1<Android> readyAction) {
+    public GetAppCMSAndroidUIAsyncTask(AppCMSAndroidUICall call, Action1<Android> readyAction) {
         this.call = call;
         this.readyAction = readyAction;
     }

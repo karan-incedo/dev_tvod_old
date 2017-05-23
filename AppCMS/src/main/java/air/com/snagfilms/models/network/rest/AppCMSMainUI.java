@@ -7,10 +7,10 @@ import retrofit2.http.GET;
 import retrofit2.http.Url;
 
 /**
- * Created by viewlift on 5/9/17.
+ * Created by viewlift on 5/4/17.
  */
 
-public interface ContentAPI {
+public interface AppCMSMainUI {
     @GET
     Call<JsonElement> get(@Url String url);
 }

@@ -12,16 +12,18 @@ import javax.inject.Inject;
  * Created by viewlift on 5/9/17.
  */
 
-public class ContentAPICall {
-    private ContentAPI contentAPI;
+public class AppCMSPageAPICall {
+    private final AppCMSPageAPI appCMSPageAPI;
+    private final String apiKey;
 
     @Inject
-    public ContentAPICall(ContentAPI contentAPI) {
-        this.contentAPI = contentAPI;
+    public AppCMSPageAPICall(AppCMSPageAPI appCMSPageAPI, String apiKey) {
+        this.appCMSPageAPI = appCMSPageAPI;
+        this.apiKey = apiKey;
     }
 
     @WorkerThread
     public JsonElement call(String url) throws IOException {
-        return contentAPI.get(url).execute().body();
+        return appCMSPageAPI.get(apiKey, url).execute().body();
     }
 }

@@ -7,14 +7,14 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
-import air.com.snagfilms.views.fragments.ErrorFragment;
+import air.com.snagfilms.views.fragments.AppCMSErrorFragment;
 import snagfilms.com.air.appcms.R;
 
 /**
  * Created by viewlift on 5/5/17.
  */
 
-public class ErrorActivity extends FragmentActivity {
+public class AppCMSErrorActivity extends FragmentActivity {
     private static final String ERROR_TAG = "error_fragment";
 
     @Override
@@ -23,7 +23,7 @@ public class ErrorActivity extends FragmentActivity {
         setContentView(R.layout.activity_error);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        Fragment errorFragment = ErrorFragment.newInstance();
+        Fragment errorFragment = AppCMSErrorFragment.newInstance();
         fragmentTransaction.add(R.id.error_fragment, errorFragment, ERROR_TAG);
         fragmentTransaction.commit();
     }

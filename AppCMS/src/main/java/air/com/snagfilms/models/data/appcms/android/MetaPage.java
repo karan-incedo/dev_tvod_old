@@ -14,7 +14,7 @@ public class MetaPage {
     private String pageType;
     @SerializedName("Page-ID")
     @Expose
-    private String pageID;
+    private String pageId;
     @SerializedName("Page-UI")
     @Expose
     private String pageUI;
@@ -38,12 +38,12 @@ public class MetaPage {
         this.pageType = pageType;
     }
 
-    public String getPageID() {
-        return pageID;
+    public String getPageId() {
+        return pageId;
     }
 
-    public void setPageID(String pageID) {
-        this.pageID = pageID;
+    public void setPageId(String pageId) {
+        this.pageId = pageId;
     }
 
     public String getPageUI() {

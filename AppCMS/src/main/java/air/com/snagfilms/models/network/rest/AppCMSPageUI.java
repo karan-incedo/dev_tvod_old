@@ -1,7 +1,6 @@
 package air.com.snagfilms.models.network.rest;
 
-import com.google.gson.JsonElement;
-
+import air.com.snagfilms.models.data.appcms.page.Page;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Url;
@@ -10,7 +9,7 @@ import retrofit2.http.Url;
  * Created by viewlift on 5/4/17.
  */
 
-public interface AppCMSMainAPI {
+public interface AppCMSPageUI {
     @GET
-    Call<JsonElement> get(@Url String url);
+    Call<Page> get(@Url String url);
 }

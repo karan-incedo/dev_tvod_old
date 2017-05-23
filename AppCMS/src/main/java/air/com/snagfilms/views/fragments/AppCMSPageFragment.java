@@ -9,7 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import air.com.snagfilms.models.data.binders.AppCMSBinder;
+import air.com.snagfilms.AppCMSApplication;
+import air.com.snagfilms.views.binders.AppCMSBinder;
+import air.com.snagfilms.presenters.AppCMSPresenter;
 import air.com.snagfilms.views.components.AppCMSViewComponent;
 import air.com.snagfilms.views.components.DaggerAppCMSViewComponent;
 import air.com.snagfilms.views.customviews.PageView;
@@ -44,11 +46,15 @@ public class AppCMSPageFragment extends Fragment {
             onPageCreationError = (OnPageCreationError) context;
             AppCMSBinder appCMSBinder =
                     ((AppCMSBinder) getArguments().getBinder(context.getString(R.string.fragment_page_bundle_key)));
+            AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
+                    .getAppCMSPresenterComponent()
+                    .appCMSPresenter();
             appCMSViewComponent = DaggerAppCMSViewComponent
                     .builder()
                     .appCMSPageViewModule(new AppCMSPageViewModule(context,
                             appCMSBinder.getPage(),
-                            appCMSBinder.getJsonValueKeyMap()))
+                            appCMSBinder.getJsonValueKeyMap(),
+                            appCMSPresenter))
                     .build();
         } else {
             throw new RuntimeException("Attached context must implement " +

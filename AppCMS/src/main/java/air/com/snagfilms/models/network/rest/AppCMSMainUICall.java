@@ -1,16 +1,15 @@
 package air.com.snagfilms.models.network.rest;
 
+import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,26 +18,28 @@ import java.util.Scanner;
 
 import javax.inject.Inject;
 
+import snagfilms.com.air.appcms.R;
+
 /**
  * Created by viewlift on 5/4/17.
  */
 
-public class AppCMSMainCall {
-    private static final String TAG = "AppCMSMainCall";
+public class AppCMSMainUICall {
+    private static final String TAG = "AppCMSMainUICall";
 
-    private final AppCMSMainAPI appCMSMainAPI;
+    private final AppCMSMainUI appCMSMainUI;
     private final Gson gson;
     private final File storageDirectory;
     private final String mainVersionKey;
     private final String mainOldVersionKey;
 
     @Inject
-    public AppCMSMainCall(AppCMSMainAPI appCMSMainAPI,
-                          Gson gson,
-                          File storageDirectory,
-                          String mainVersionKey,
-                          String mainOldVersionKey) {
-        this.appCMSMainAPI = appCMSMainAPI;
+    public AppCMSMainUICall(AppCMSMainUI appCMSMainUI,
+                            Gson gson,
+                            File storageDirectory,
+                            String mainVersionKey,
+                            String mainOldVersionKey) {
+        this.appCMSMainUI = appCMSMainUI;
         this.gson = gson;
         this.storageDirectory = storageDirectory;
         this.mainVersionKey = mainVersionKey;
@@ -46,8 +47,12 @@ public class AppCMSMainCall {
     }
 
     @WorkerThread
-    public JsonElement call(Uri dataUri) throws IOException {
-        JsonElement main = appCMSMainAPI.get(dataUri.toString()).execute().body();
+    public JsonElement call(Context context, String siteId) throws IOException {
+        String appCMSMainUrl = context.getString(R.string.app_cms_main_url,
+                context.getString(R.string.app_cms_api_baseurl),
+                siteId);
+        Uri dataUri = Uri.parse(appCMSMainUrl);
+        JsonElement main = appCMSMainUI.get(dataUri.toString()).execute().body();
         JsonElement mainInStorage = null;
         try {
             mainInStorage = readMainFromFile(dataUri);
@@ -63,7 +68,7 @@ public class AppCMSMainCall {
                         mainInStorage.getAsJsonObject().get(mainVersionKey));
                 useExistingOldVersion = false;
             } catch (IllegalStateException e) {
-                Log.w(TAG, "Previous file is invalid");
+                Log.w(TAG, "Previous file is invalid: " + e.toString());
             }
         }
 

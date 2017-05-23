@@ -1,10 +1,7 @@
 package air.com.snagfilms.views.customviews;
 
 import android.content.Context;
-import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,11 +10,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.util.List;
 import java.util.Map;
@@ -26,7 +23,8 @@ import air.com.snagfilms.models.data.appcms.AppCMSKeyType;
 import air.com.snagfilms.models.data.appcms.page.Component;
 import air.com.snagfilms.models.data.appcms.page.ModuleList;
 import air.com.snagfilms.models.data.appcms.page.Page;
-import air.com.snagfilms.models.network.modules.AppCMSAPIModule;
+import air.com.snagfilms.presenters.AppCMSPresenter;
+import snagfilms.com.air.appcms.R;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -35,11 +33,18 @@ import air.com.snagfilms.models.network.modules.AppCMSAPIModule;
 public class ViewCreator {
     private static final String TAG = "ViewCreator";
 
+    private enum LayoutType {
+        MOBILE,
+        TABLET_PORTRAIT,
+        TABLET_LANDSCAPE
+    }
+
     public PageView generatePage(Context context,
                                  Page page,
-                                 Map<AppCMSKeyType, String> jsonValueKeyMap) {
+                                 Map<AppCMSKeyType, String> jsonValueKeyMap,
+                                 AppCMSPresenter appCMSPresenter) {
         PageView pageView = new PageView(context, page);
-        generateModularPage(context, page, pageView, jsonValueKeyMap);
+        createPageView(context, page, pageView, jsonValueKeyMap, appCMSPresenter);
         return pageView;
     }
 
@@ -54,14 +59,15 @@ public class ViewCreator {
         }
     };
 
-    protected void generateModularPage(Context context,
-                                       Page page,
-                                       final PageView pageView,
-                                       Map<AppCMSKeyType, String> jsonValueKeyMap) {
+    protected void createPageView(Context context,
+                                  Page page,
+                                  final PageView pageView,
+                                  Map<AppCMSKeyType, String> jsonValueKeyMap,
+                                  AppCMSPresenter appCMSPresenter) {
         List<ModuleList> modulesList = page.getModuleList();
-        LinearLayout childrenContainer = pageView.getChildrenContainer(context, LinearLayout.VERTICAL);
+        ViewGroup childrenContainer = pageView.getChildrenContainer(context, LinearLayout.VERTICAL);
         for (ModuleList module : modulesList) {
-            View childView = generateModule(context,
+            View childView = createModuleView(context,
                     module,
                     new OnComponentLoaded() {
                         @Override
@@ -69,127 +75,135 @@ public class ViewCreator {
                             pageView.setBackground(drawable);
                         }
                     },
-                    jsonValueKeyMap);
+                    jsonValueKeyMap,
+                    appCMSPresenter);
             if (childView != null) {
                 childrenContainer.addView(childView);
             }
         }
     }
 
-    public View generateModule(final Context context,
-                               final ModuleList modules,
-                               final OnComponentLoaded onComponentLoaded,
-                               Map<AppCMSKeyType, String> jsonValueKeyMap) {
-        ModuleView moduleView = new ModuleView(context, modules);
-        for (Component component : modules.getComponents()) {
-            View componentView = generateComponent(context,
-                    component,
-                    onComponentLoaded,
-                    jsonValueKeyMap);
-            if (componentView != null) {
-                moduleView.addView(componentView);
+    public View createModuleView(final Context context,
+                                 final ModuleList module,
+                                 final OnComponentLoaded onComponentLoaded,
+                                 Map<AppCMSKeyType, String> jsonValueKeyMap,
+                                 AppCMSPresenter appCMSPresenter) {
+        ModuleView moduleView = new ModuleView(context, module);
+        ViewGroup childrenContainer = moduleView.getChildrenContainer(context, LinearLayout.VERTICAL);
+        if (module.getComponents() != null) {
+            for (int i = 0; i < module.getComponents().size(); i++) {
+                Component component = module.getComponents().get(i);
+                View componentView = createComponentView(context,
+                        component,
+                        onComponentLoaded,
+                        jsonValueKeyMap,
+                        appCMSPresenter);
+                if (componentView != null) {
+                    childrenContainer.addView(componentView);
+                    moduleView.setComponentHasView(i, true);
+                } else {
+                    moduleView.setComponentHasView(i, false);
+                }
             }
         }
         return moduleView;
     }
 
-    public View generateComponent(final Context context,
-                                  final Component component,
-                                  final OnComponentLoaded onComponentLoaded,
-                                  Map<AppCMSKeyType, String> jsonValueKeyMap) {
-        View moduleView = null;
+    public View createComponentView(final Context context,
+                                    final Component component,
+                                    final OnComponentLoaded onComponentLoaded,
+                                    Map<AppCMSKeyType, String> jsonValueKeyMap,
+                                    final AppCMSPresenter appCMSPresenter) {
+        View componentView = null;
 
-        if (component
-                .getType()
+        if (component.getType()
                 .equals(jsonValueKeyMap.get(AppCMSKeyType.PAGE_COLLECTIONGRID_KEY))) {
-            moduleView = new RecyclerView(context);
+            componentView = new RecyclerView(context);
             if (component.isHorizontalScroll()) {
-                ((RecyclerView) moduleView)
-                        .setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+                ((RecyclerView) componentView)
+                        .setLayoutManager(new LinearLayoutManager(context,
+                                LinearLayoutManager.HORIZONTAL,
+                                false));
             } else {
-                ((RecyclerView) moduleView)
-                        .setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+                ((RecyclerView) componentView)
+                        .setLayoutManager(new LinearLayoutManager(context,
+                                LinearLayoutManager.VERTICAL,
+                                false));
             }
-        } else if (component
-                .getType()
+        } else if (component.getType()
                 .endsWith(jsonValueKeyMap.get(AppCMSKeyType.PAGE_BUTTON_KEY))) {
-            moduleView = new Button(context);
-            ViewGroup.LayoutParams buttonLayoutParams =
-                    new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT);
-            moduleView.setLayoutParams(buttonLayoutParams);
-            ((Button) moduleView).setText(component.getText());
-            ((Button) moduleView).setTextColor(Color.parseColor("#" + component.getTextColor()));
+            componentView = new Button(context);
+            ((Button) componentView).setText(component.getText());
+            Log.d(TAG, "Button text color: " + component.getTextColor());
+            ((Button) componentView).setTextColor(Color.parseColor(getColor(component.getTextColor())));
             if (!TextUtils.isEmpty(component.getBackgroundColor())) {
-                moduleView.setBackgroundColor(Color.parseColor("#" + component.getBackgroundColor()));
+                componentView.setBackgroundColor(Color.parseColor(getColor(component.getBackgroundColor())));
             }
-            moduleView.setOnClickListener(new View.OnClickListener() {
+            componentView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // TODO: Call AppPresenter with the ID from the Action field
+                    Log.d(TAG, "Button click event: " +
+                            component.getText() +
+                            " -> " +
+                            component.getAction());
+                    if (!TextUtils.isEmpty(component.getAction())) {
+                        boolean launchResult = appCMSPresenter.launchAction(component.getAction(),
+                                null);
+                        if (!launchResult) {
+                            Log.e(TAG, "Failed to launch " + component.getAction());
+                            appCMSPresenter.launchErrorActivity(appCMSPresenter.getCurrentActivity());
+                        }
+                    }
                 }
             });
-        } else if (component
-                .getType()
+        } else if (component.getType()
                 .endsWith(jsonValueKeyMap.get(AppCMSKeyType.PAGE_LABEL_KEY))) {
-            moduleView = new TextView(context);
-            ViewGroup.LayoutParams labelLayoutParams =
-                    new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT);
-            moduleView.setLayoutParams(labelLayoutParams);
-            ((TextView) moduleView).setText(component.getText());
-            ((TextView) moduleView).setTextColor(Color.parseColor("#" + component.getTextColor()));
+            componentView = new TextView(context);
+            ((TextView) componentView).setText(component.getText());
+            Log.d(TAG, "Texview text color: " + component.getTextColor());
+            ((TextView) componentView).setTextColor(Color.parseColor(getColor(component.getTextColor())));
             if (!TextUtils.isEmpty(component.getBackgroundColor())) {
-                moduleView.setBackgroundColor(Color.parseColor("#" + component.getBackgroundColor()));
+                componentView.setBackgroundColor(Color.parseColor(getColor(component.getBackgroundColor())));
             }
-        } else if (component
-                .getType()
+        } else if (component.getType()
                 .equals(jsonValueKeyMap.get(AppCMSKeyType.PAGE_IMAGE_KEY))) {
             if (!TextUtils.isEmpty(component.getImageName())) {
-                Picasso.with(context)
-                        .load(component.getImageName())
-                        .placeholder(android.R.drawable.screen_background_dark_transparent)
-                        .into(new Target() {
-                            @Override
-                            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                                onComponentLoaded.onBitmapLoaded(new BitmapDrawable(context.getResources(), bitmap));
-                            }
-
-                            @Override
-                            public void onBitmapFailed(Drawable errorDrawable) {
-                                Log.e(TAG, "Drawable failed to load: " + component.getImageName());
-                                onComponentLoaded
-                                        .onBitmapLoaded(context.getResources()
-                                                .getDrawable(android.R.drawable.screen_background_dark_transparent, context.getTheme()));
-                            }
-
-                            @Override
-                            public void onPrepareLoad(Drawable placeHolderDrawable) {
-                                Log.i(TAG, "Preparing to load drawable: " + component.getImageName());
-                            }
-                        });
+                if (component.getImageName().equals(jsonValueKeyMap.get(AppCMSKeyType.PAGE_BG_KEY))) {
+                    onComponentLoaded.onBitmapLoaded(context.getDrawable(R.drawable.bg));
+                } else if (component.getImageName().equals(jsonValueKeyMap.get(AppCMSKeyType.PAGE_LOGO_KEY))) {
+                    componentView = new ImageView(context);
+                    ((ImageView) componentView).setImageDrawable(context.getDrawable(R.drawable.logo));
+                } else {
+                    componentView = new ImageView(context);
+                    Picasso.with(context)
+                            .load(component.getImageName())
+                            .into((ImageView) componentView);
+                }
             } else {
-                onComponentLoaded
-                        .onBitmapLoaded(context.getResources()
-                                .getDrawable(android.R.drawable.screen_background_dark_transparent, context.getTheme()));
+                onComponentLoaded.onBitmapLoaded(context.getResources()
+                        .getDrawable(android.R.drawable.screen_background_dark_transparent, context.getTheme()));
             }
         }
 
-        return moduleView;
+        return componentView;
     }
 
-    protected boolean isTablet(Context context) {
-        int largeScreenLayout =
-                (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK);
-        int xLargeScreenLayout =
-                (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK);
-
-        return (largeScreenLayout == Configuration.SCREENLAYOUT_SIZE_LARGE ||
-                xLargeScreenLayout == Configuration.SCREENLAYOUT_SIZE_XLARGE);
+    public CollectionGridView createCollectionGridView(final Context context,
+                                                       final Component component,
+                                                       final OnComponentLoaded onComponentLoaded,
+                                                       Map<AppCMSKeyType, String> jsonValueKeyMap) {
+        // TODO: Parse json data and map to child elements
+        throw new IllegalArgumentException(getClass().getCanonicalName() +
+                "." +
+                getClass().getEnclosingMethod().getName() +
+                ": operation not supported.");
     }
 
-    protected boolean isLandscape(Context context) {
-        int layoutDirection = context.getResources().getConfiguration().getLayoutDirection();
-        return layoutDirection == Configuration.ORIENTATION_LANDSCAPE;
+    private String getColor(String color) {
+        if (color.indexOf("#") != 0) {
+            return "#" + color;
+        }
+        return color;
     }
 }

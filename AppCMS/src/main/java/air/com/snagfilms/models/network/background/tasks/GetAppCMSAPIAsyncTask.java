@@ -6,7 +6,7 @@ import com.google.gson.JsonElement;
 
 import java.io.IOException;
 
-import air.com.snagfilms.models.network.rest.ContentAPICall;
+import air.com.snagfilms.models.network.rest.AppCMSPageAPICall;
 import rx.Observable;
 import rx.functions.Action1;
 
@@ -14,11 +14,11 @@ import rx.functions.Action1;
  * Created by viewlift on 5/9/17.
  */
 
-public class ContentAPIAsyncTask extends AsyncTask<String, Integer, JsonElement> {
-    private final ContentAPICall call;
+public class GetAppCMSAPIAsyncTask extends AsyncTask<String, Integer, JsonElement> {
+    private final AppCMSPageAPICall call;
     private final Action1<JsonElement> readyAction;
 
-    public ContentAPIAsyncTask(ContentAPICall call, Action1<JsonElement> readyAction) {
+    public GetAppCMSAPIAsyncTask(AppCMSPageAPICall call, Action1<JsonElement> readyAction) {
         this.call = call;
         this.readyAction = readyAction;
     }
