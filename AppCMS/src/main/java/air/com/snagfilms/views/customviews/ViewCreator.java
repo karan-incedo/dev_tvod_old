@@ -19,10 +19,10 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 import java.util.Map;
 
-import air.com.snagfilms.models.data.appcms.AppCMSKeyType;
-import air.com.snagfilms.models.data.appcms.page.Component;
-import air.com.snagfilms.models.data.appcms.page.ModuleList;
-import air.com.snagfilms.models.data.appcms.page.Page;
+import air.com.snagfilms.models.data.appcms.ui.AppCMSUIKeyType;
+import air.com.snagfilms.models.data.appcms.ui.page.AppCMSPageUI;
+import air.com.snagfilms.models.data.appcms.ui.page.Component;
+import air.com.snagfilms.models.data.appcms.ui.page.ModuleList;
 import air.com.snagfilms.presenters.AppCMSPresenter;
 import snagfilms.com.air.appcms.R;
 
@@ -33,18 +33,12 @@ import snagfilms.com.air.appcms.R;
 public class ViewCreator {
     private static final String TAG = "ViewCreator";
 
-    private enum LayoutType {
-        MOBILE,
-        TABLET_PORTRAIT,
-        TABLET_LANDSCAPE
-    }
-
     public PageView generatePage(Context context,
-                                 Page page,
-                                 Map<AppCMSKeyType, String> jsonValueKeyMap,
+                                 AppCMSPageUI appCMSPageUI,
+                                 Map<AppCMSUIKeyType, String> jsonValueKeyMap,
                                  AppCMSPresenter appCMSPresenter) {
-        PageView pageView = new PageView(context, page);
-        createPageView(context, page, pageView, jsonValueKeyMap, appCMSPresenter);
+        PageView pageView = new PageView(context, appCMSPageUI);
+        createPageView(context, appCMSPageUI, pageView, jsonValueKeyMap, appCMSPresenter);
         return pageView;
     }
 
@@ -60,11 +54,11 @@ public class ViewCreator {
     };
 
     protected void createPageView(Context context,
-                                  Page page,
+                                  AppCMSPageUI appCMSPageUI,
                                   final PageView pageView,
-                                  Map<AppCMSKeyType, String> jsonValueKeyMap,
+                                  Map<AppCMSUIKeyType, String> jsonValueKeyMap,
                                   AppCMSPresenter appCMSPresenter) {
-        List<ModuleList> modulesList = page.getModuleList();
+        List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer(context, LinearLayout.VERTICAL);
         for (ModuleList module : modulesList) {
             View childView = createModuleView(context,
@@ -86,7 +80,7 @@ public class ViewCreator {
     public View createModuleView(final Context context,
                                  final ModuleList module,
                                  final OnComponentLoaded onComponentLoaded,
-                                 Map<AppCMSKeyType, String> jsonValueKeyMap,
+                                 Map<AppCMSUIKeyType, String> jsonValueKeyMap,
                                  AppCMSPresenter appCMSPresenter) {
         ModuleView moduleView = new ModuleView(context, module);
         ViewGroup childrenContainer = moduleView.getChildrenContainer(context, LinearLayout.VERTICAL);
@@ -112,12 +106,12 @@ public class ViewCreator {
     public View createComponentView(final Context context,
                                     final Component component,
                                     final OnComponentLoaded onComponentLoaded,
-                                    Map<AppCMSKeyType, String> jsonValueKeyMap,
+                                    Map<AppCMSUIKeyType, String> jsonValueKeyMap,
                                     final AppCMSPresenter appCMSPresenter) {
         View componentView = null;
 
         if (component.getType()
-                .equals(jsonValueKeyMap.get(AppCMSKeyType.PAGE_COLLECTIONGRID_KEY))) {
+                .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY))) {
             componentView = new RecyclerView(context);
             if (component.isHorizontalScroll()) {
                 ((RecyclerView) componentView)
@@ -131,7 +125,7 @@ public class ViewCreator {
                                 false));
             }
         } else if (component.getType()
-                .endsWith(jsonValueKeyMap.get(AppCMSKeyType.PAGE_BUTTON_KEY))) {
+                .endsWith(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_BUTTON_KEY))) {
             componentView = new Button(context);
             ((Button) componentView).setText(component.getText());
             Log.d(TAG, "Button text color: " + component.getTextColor());
@@ -158,7 +152,7 @@ public class ViewCreator {
                 }
             });
         } else if (component.getType()
-                .endsWith(jsonValueKeyMap.get(AppCMSKeyType.PAGE_LABEL_KEY))) {
+                .endsWith(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_LABEL_KEY))) {
             componentView = new TextView(context);
             ((TextView) componentView).setText(component.getText());
             Log.d(TAG, "Texview text color: " + component.getTextColor());
@@ -167,11 +161,11 @@ public class ViewCreator {
                 componentView.setBackgroundColor(Color.parseColor(getColor(component.getBackgroundColor())));
             }
         } else if (component.getType()
-                .equals(jsonValueKeyMap.get(AppCMSKeyType.PAGE_IMAGE_KEY))) {
+                .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_IMAGE_KEY))) {
             if (!TextUtils.isEmpty(component.getImageName())) {
-                if (component.getImageName().equals(jsonValueKeyMap.get(AppCMSKeyType.PAGE_BG_KEY))) {
+                if (component.getImageName().equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_BG_KEY))) {
                     onComponentLoaded.onBitmapLoaded(context.getDrawable(R.drawable.bg));
-                } else if (component.getImageName().equals(jsonValueKeyMap.get(AppCMSKeyType.PAGE_LOGO_KEY))) {
+                } else if (component.getImageName().equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_LOGO_KEY))) {
                     componentView = new ImageView(context);
                     ((ImageView) componentView).setImageDrawable(context.getDrawable(R.drawable.logo));
                 } else {
@@ -192,7 +186,7 @@ public class ViewCreator {
     public CollectionGridView createCollectionGridView(final Context context,
                                                        final Component component,
                                                        final OnComponentLoaded onComponentLoaded,
-                                                       Map<AppCMSKeyType, String> jsonValueKeyMap) {
+                                                       Map<AppCMSUIKeyType, String> jsonValueKeyMap) {
         // TODO: Parse json data and map to child elements
         throw new IllegalArgumentException(getClass().getCanonicalName() +
                 "." +

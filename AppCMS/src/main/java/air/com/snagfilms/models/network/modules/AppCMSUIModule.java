@@ -10,14 +10,14 @@ import java.util.Map;
 
 import javax.inject.Singleton;
 
-import air.com.snagfilms.models.data.appcms.AppCMSActionType;
-import air.com.snagfilms.models.data.appcms.AppCMSKeyType;
-import air.com.snagfilms.models.data.appcms.page.Page;
-import air.com.snagfilms.models.network.rest.AppCMSAndroidUI;
+import air.com.snagfilms.models.data.appcms.ui.page.AppCMSPageUI;
+import air.com.snagfilms.models.network.rest.AppCMSMainUIRest;
+import air.com.snagfilms.models.network.rest.AppCMSPageUIRest;
+import air.com.snagfilms.presenters.AppCMSActionType;
+import air.com.snagfilms.models.data.appcms.ui.AppCMSUIKeyType;
+import air.com.snagfilms.models.network.rest.AppCMSAndroidUIRest;
 import air.com.snagfilms.models.network.rest.AppCMSAndroidUICall;
-import air.com.snagfilms.models.network.rest.AppCMSMainUI;
 import air.com.snagfilms.models.network.rest.AppCMSMainUICall;
-import air.com.snagfilms.models.network.rest.AppCMSPageUI;
 import air.com.snagfilms.models.network.rest.AppCMSPageUICall;
 import dagger.Module;
 import dagger.Provides;
@@ -33,9 +33,9 @@ import snagfilms.com.air.appcms.R;
 public class AppCMSUIModule {
     private final String baseUrl;
     private final File storageDirectory;
-    private final Map<AppCMSKeyType, String> jsonValueKeyMap;
+    private final Map<AppCMSUIKeyType, String> jsonValueKeyMap;
     private final Map<String, String> pageNameToActionMap;
-    private final Map<String, Page> actionToPageMap;
+    private final Map<String, AppCMSPageUI> actionToPageMap;
     private final Map<String, AppCMSActionType> actionToActionTypeMap;
 
     public AppCMSUIModule(Context context) {
@@ -56,27 +56,27 @@ public class AppCMSUIModule {
     }
 
     private void createJsonValueKeyMap(Context context) {
-        this.jsonValueKeyMap.put(AppCMSKeyType.MAIN_VERSION_KEY,
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.MAIN_VERSION_KEY,
                 context.getString(R.string.app_cms_main_version_key));
-        this.jsonValueKeyMap.put(AppCMSKeyType.MAIN_OLD_VERSION_KEY,
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.MAIN_OLD_VERSION_KEY,
                 context.getString(R.string.app_cms_main_old_version_key));
-        this.jsonValueKeyMap.put(AppCMSKeyType.MAIN_ANDROID_KEY,
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.MAIN_ANDROID_KEY,
                 context.getString(R.string.app_cms_main_android_key));
-        this.jsonValueKeyMap.put(AppCMSKeyType.ANDROID_SPLASH_SCREEN_KEY,
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY,
                 context.getString(R.string.app_cms_pagename_splashscreen_key));
-        this.jsonValueKeyMap.put(AppCMSKeyType.ANDROID_HOME_SCREEN_KEY,
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY,
                 context.getString(R.string.app_cms_pagename_homepage_key));
-        this.jsonValueKeyMap.put(AppCMSKeyType.PAGE_BUTTON_KEY,
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_BUTTON_KEY,
                 context.getString(R.string.app_cms_page_button_key));
-        this.jsonValueKeyMap.put(AppCMSKeyType.PAGE_LABEL_KEY,
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_LABEL_KEY,
                 context.getString(R.string.app_cms_page_label_key));
-        this.jsonValueKeyMap.put(AppCMSKeyType.PAGE_COLLECTIONGRID_KEY,
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY,
                 context.getString(R.string.app_cms_page_collection_grid_key));
-        this.jsonValueKeyMap.put(AppCMSKeyType.PAGE_IMAGE_KEY,
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_IMAGE_KEY,
                 context.getString(R.string.app_cms_page_image_key));
-        this.jsonValueKeyMap.put(AppCMSKeyType.PAGE_BG_KEY,
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_BG_KEY,
                 context.getString(R.string.app_cms_page_bg_key));
-        this.jsonValueKeyMap.put(AppCMSKeyType.PAGE_LOGO_KEY,
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_LOGO_KEY,
                 context.getString(R.string.app_cms_page_logo_key));
     }
 
@@ -121,47 +121,47 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSMainUI providesAppCMSMainAPI(Retrofit retrofit) {
-        return retrofit.create(AppCMSMainUI.class);
+    public AppCMSMainUIRest providesAppCMSMainUIRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSMainUIRest.class);
     }
 
     @Provides
     @Singleton
-    public AppCMSAndroidUI providesAppCMSAndroidAPI(Retrofit retrofit) {
-        return retrofit.create(AppCMSAndroidUI.class);
+    public AppCMSAndroidUIRest providesAppCMSAndroidUIRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSAndroidUIRest.class);
     }
 
     @Provides
     @Singleton
-    public AppCMSPageUI providesAppCMSPageAPI(Retrofit retrofit) {
-        return retrofit.create(AppCMSPageUI.class);
+    public AppCMSPageUIRest providesAppCMSPageUIRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSPageUIRest.class);
     }
 
     @Provides
     @Singleton
-    public AppCMSMainUICall providesAppCMSMainCall(AppCMSMainUI appCMSAPI, Gson gson) {
-        return new AppCMSMainUICall(appCMSAPI,
+    public AppCMSMainUICall providesAppCMSMainUICall(AppCMSMainUIRest appCMSMainUIRest, Gson gson) {
+        return new AppCMSMainUICall(appCMSMainUIRest,
                 gson,
                 storageDirectory,
-                jsonValueKeyMap.get(AppCMSKeyType.MAIN_VERSION_KEY),
-                jsonValueKeyMap.get(AppCMSKeyType.MAIN_OLD_VERSION_KEY));
+                jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_VERSION_KEY),
+                jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_OLD_VERSION_KEY));
     }
 
     @Provides
     @Singleton
-    public AppCMSAndroidUICall providesAppCMSAndroidCall(AppCMSAndroidUI appCMSAPI, Gson gson) {
-        return new AppCMSAndroidUICall(appCMSAPI, gson, storageDirectory);
+    public AppCMSAndroidUICall providesAppCMSAndroidUICall(AppCMSAndroidUIRest appCMSAndroidUIRest, Gson gson) {
+        return new AppCMSAndroidUICall(appCMSAndroidUIRest, gson, storageDirectory);
     }
 
     @Provides
     @Singleton
-    public AppCMSPageUICall providesAppCMSPageCall(AppCMSPageUI appCMSAPI, Gson gson) {
-        return new AppCMSPageUICall(appCMSAPI, gson, storageDirectory);
+    public AppCMSPageUICall providesAppCMSPageUICall(AppCMSPageUIRest appCMSPageUIRest, Gson gson) {
+        return new AppCMSPageUICall(appCMSPageUIRest, gson, storageDirectory);
     }
 
     @Provides
     @Singleton
-    public Map<AppCMSKeyType, String> providesJsonValueKeyMap() {
+    public Map<AppCMSUIKeyType, String> providesJsonValueKeyMap() {
         return jsonValueKeyMap;
     }
 
@@ -173,7 +173,7 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public Map<String, Page> providesActionToPageMap() {
+    public Map<String, AppCMSPageUI> providesActionToPageMap() {
         return actionToPageMap;
     }
 

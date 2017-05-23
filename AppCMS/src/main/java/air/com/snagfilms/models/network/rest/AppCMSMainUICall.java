@@ -27,19 +27,19 @@ import snagfilms.com.air.appcms.R;
 public class AppCMSMainUICall {
     private static final String TAG = "AppCMSMainUICall";
 
-    private final AppCMSMainUI appCMSMainUI;
+    private final AppCMSMainUIRest appCMSMainUIRest;
     private final Gson gson;
     private final File storageDirectory;
     private final String mainVersionKey;
     private final String mainOldVersionKey;
 
     @Inject
-    public AppCMSMainUICall(AppCMSMainUI appCMSMainUI,
+    public AppCMSMainUICall(AppCMSMainUIRest appCMSMainUIRest,
                             Gson gson,
                             File storageDirectory,
                             String mainVersionKey,
                             String mainOldVersionKey) {
-        this.appCMSMainUI = appCMSMainUI;
+        this.appCMSMainUIRest = appCMSMainUIRest;
         this.gson = gson;
         this.storageDirectory = storageDirectory;
         this.mainVersionKey = mainVersionKey;
@@ -51,11 +51,11 @@ public class AppCMSMainUICall {
         String appCMSMainUrl = context.getString(R.string.app_cms_main_url,
                 context.getString(R.string.app_cms_api_baseurl),
                 siteId);
-        Uri dataUri = Uri.parse(appCMSMainUrl);
-        JsonElement main = appCMSMainUI.get(dataUri.toString()).execute().body();
+        JsonElement main = appCMSMainUIRest.get(appCMSMainUrl).execute().body();
         JsonElement mainInStorage = null;
+        String filename = getResourceFilename(appCMSMainUrl);
         try {
-            mainInStorage = readMainFromFile(dataUri);
+            mainInStorage = readMainFromFile(filename);
         } catch (IOException exception) {
             Log.w(TAG, "Previous version of Main.json file is not in storage");
         }
@@ -77,11 +77,10 @@ public class AppCMSMainUICall {
                     main.getAsJsonObject().get(mainVersionKey));
         }
 
-        return writeMainToFile(dataUri, main);
+        return writeMainToFile(filename, main);
     }
 
-    private JsonElement writeMainToFile(Uri dataUri, JsonElement main) throws IOException {
-        String outputFilename = dataUri.getPathSegments().get(dataUri.getPathSegments().size() - 1);
+    private JsonElement writeMainToFile(String outputFilename, JsonElement main) throws IOException {
         OutputStream outputStream = new FileOutputStream(
                 new File(storageDirectory.toString() + outputFilename));
         String output = main.toString();
@@ -90,8 +89,7 @@ public class AppCMSMainUICall {
         return main;
     }
 
-    private JsonElement readMainFromFile(Uri dataUri) throws IOException {
-        String inputFilename = dataUri.getPathSegments().get(dataUri.getPathSegments().size() - 1);
+    private JsonElement readMainFromFile(String inputFilename) throws IOException {
         InputStream inputStream = new FileInputStream(storageDirectory.toString() + inputFilename);
         Scanner scanner = new Scanner(inputStream);
         StringBuffer sb = new StringBuffer();
@@ -102,5 +100,16 @@ public class AppCMSMainUICall {
         scanner.close();
         inputStream.close();
         return main;
+    }
+
+    private String getResourceFilename(String url) {
+        final String PATH_SEP = "/";
+        final String JSON_EXT = ".json";
+        int endIndex = url.indexOf(JSON_EXT) + JSON_EXT.length();
+        int startIndex = url.lastIndexOf(PATH_SEP);
+        if (0 <= startIndex && startIndex < endIndex) {
+            return url.substring(startIndex+1, endIndex);
+        }
+        return url;
     }
 }

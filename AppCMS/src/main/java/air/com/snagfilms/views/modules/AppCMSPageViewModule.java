@@ -7,8 +7,8 @@ import java.util.Map;
 
 import javax.inject.Singleton;
 
-import air.com.snagfilms.models.data.appcms.AppCMSKeyType;
-import air.com.snagfilms.models.data.appcms.page.Page;
+import air.com.snagfilms.models.data.appcms.ui.AppCMSUIKeyType;
+import air.com.snagfilms.models.data.appcms.ui.page.AppCMSPageUI;
 import air.com.snagfilms.presenters.AppCMSPresenter;
 import air.com.snagfilms.views.customviews.PageView;
 import air.com.snagfilms.views.customviews.ViewCreator;
@@ -22,16 +22,16 @@ import dagger.Provides;
 @Module
 public class AppCMSPageViewModule {
     private final Context context;
-    private final Page page;
-    private final Map<AppCMSKeyType, String> jsonValueKeyMap;
+    private final AppCMSPageUI appCMSPageUI;
+    private final Map<AppCMSUIKeyType, String> jsonValueKeyMap;
     private final AppCMSPresenter appCMSPresenter;
 
     public AppCMSPageViewModule(Context context,
-                                Page page,
-                                Map<AppCMSKeyType, String> jsonValueKeyMap,
+                                AppCMSPageUI appCMSPageUI,
+                                Map<AppCMSUIKeyType, String> jsonValueKeyMap,
                                 AppCMSPresenter appCMSPresenter) {
         this.context = context;
-        this.page = page;
+        this.appCMSPageUI = appCMSPageUI;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.appCMSPresenter = appCMSPresenter;
     }
@@ -46,6 +46,6 @@ public class AppCMSPageViewModule {
     @Singleton
     @Nullable
     public PageView providesViewFromPage(ViewCreator viewCreator) {
-        return viewCreator.generatePage(context, page, jsonValueKeyMap, appCMSPresenter);
+        return viewCreator.generatePage(context, appCMSPageUI, jsonValueKeyMap, appCMSPresenter);
     }
 }

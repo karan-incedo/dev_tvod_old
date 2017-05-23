@@ -2,8 +2,7 @@ package air.com.snagfilms;
 
 import android.app.Application;
 
-import air.com.snagfilms.models.network.components.AppCMSUIComponent;
-import air.com.snagfilms.models.network.components.DaggerAppCMSAPIComponent;
+import air.com.snagfilms.models.network.modules.AppCMSAPIModule;
 import air.com.snagfilms.models.network.modules.AppCMSUIModule;
 import air.com.snagfilms.views.components.AppCMSPresenterComponent;
 import air.com.snagfilms.views.components.DaggerAppCMSPresenterComponent;
@@ -23,6 +22,7 @@ public class AppCMSApplication extends Application {
         appCMSPresenterComponent = DaggerAppCMSPresenterComponent
                 .builder()
                 .appCMSUIModule(new AppCMSUIModule(this))
+                .appCMSAPIModule(new AppCMSAPIModule(getString(R.string.app_cms_api_key)))
                 .appCMSPresenterModule(new AppCMSPresenterModule())
                 .build();
     }

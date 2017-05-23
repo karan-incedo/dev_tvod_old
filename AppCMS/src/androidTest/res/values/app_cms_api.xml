@@ -18,7 +18,7 @@
     <string name="app_cms_page_bg_key">bg</string>
     <string name="app_cms_page_logo_key">logo</string>
 
-    <!-- AppCMS Page names for Actions -->
+    <!-- AppAppCMSPageUIPage names for Actions -->
     <string name="app_cms_pagename_splashscreen_key">Splash Screen</string>
     <string name="app_cms_pagename_homepage_key">Home Page</string>
     <string name="app_cms_pagename_videopage_key">Video Page</string>

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -20,18 +19,20 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.inject.Inject;
 
-import air.com.snagfilms.models.data.appcms.AppCMSActionType;
-import air.com.snagfilms.models.data.appcms.AppCMSKeyType;
-import air.com.snagfilms.models.data.appcms.android.Android;
-import air.com.snagfilms.models.data.appcms.android.MetaPage;
-import air.com.snagfilms.models.data.appcms.android.Navigation;
-import air.com.snagfilms.views.binders.AppCMSBinder;
-import air.com.snagfilms.models.data.appcms.page.Page;
+import air.com.snagfilms.models.data.appcms.api.AppCMSPageAPI;
+import air.com.snagfilms.models.data.appcms.ui.AppCMSUIKeyType;
+import air.com.snagfilms.models.data.appcms.ui.android.AppCMSAndroidUI;
+import air.com.snagfilms.models.data.appcms.ui.android.MetaPage;
+import air.com.snagfilms.models.data.appcms.ui.android.Navigation;
+import air.com.snagfilms.models.data.appcms.ui.AppCMSBinder;
+import air.com.snagfilms.models.data.appcms.ui.page.AppCMSPageUI;
+import air.com.snagfilms.models.network.background.tasks.GetAppCMSAPIAsyncTask;
 import air.com.snagfilms.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
 import air.com.snagfilms.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import air.com.snagfilms.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
 import air.com.snagfilms.models.network.rest.AppCMSAndroidUICall;
 import air.com.snagfilms.models.network.rest.AppCMSMainUICall;
+import air.com.snagfilms.models.network.rest.AppCMSPageAPICall;
 import air.com.snagfilms.models.network.rest.AppCMSPageUICall;
 import air.com.snagfilms.views.activity.AppCMSPageActivity;
 import air.com.snagfilms.views.activity.AppCMSErrorActivity;
@@ -65,15 +66,17 @@ public class AppCMSPresenter {
 
     private final AppCMSPageUICall appCMSPageUICall;
 
+    private final AppCMSPageAPICall appCMSPageAPICall;
+
     private Queue<MetaPage> pagesToProcess;
 
-    private Map<String, Page> navigationPages;
+    private Map<String, AppCMSPageUI> navigationPages;
 
-    private final Map<AppCMSKeyType, String> jsonValueKeyMap;
+    private final Map<AppCMSUIKeyType, String> jsonValueKeyMap;
 
     private final Map<String, String> pageNameToActionMap;
 
-    private final Map<String, Page> actionToPageMap;
+    private final Map<String, AppCMSPageUI> actionToPageMap;
 
     private final Map<String, AppCMSActionType> actionToActionTypeMap;
 
@@ -81,13 +84,15 @@ public class AppCMSPresenter {
     public AppCMSPresenter(AppCMSMainUICall appCMSMainUICall,
                            AppCMSAndroidUICall appCMSAndroidUICall,
                            AppCMSPageUICall appCMSPageUICall,
-                           Map<AppCMSKeyType, String> jsonValueKeyMap,
+                           AppCMSPageAPICall appCMSPageAPICall,
+                           Map<AppCMSUIKeyType, String> jsonValueKeyMap,
                            Map<String, String> pageNameToActionMap,
-                           Map<String, Page> actionToPageMap,
+                           Map<String, AppCMSPageUI> actionToPageMap,
                            Map<String, AppCMSActionType> actionToActionTypeMap) {
         this.appCMSMainUICall = appCMSMainUICall;
         this.appCMSAndroidUICall = appCMSAndroidUICall;
         this.appCMSPageUICall = appCMSPageUICall;
+        this.appCMSPageAPICall = appCMSPageAPICall;
         this.navigationPages = new HashMap<>();
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.pageNameToActionMap = pageNameToActionMap;
@@ -133,10 +138,10 @@ public class AppCMSPresenter {
                         default:
                             break;
                     }
-                    Page page = actionToPageMap.get(action);
+                    AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
                     launchPageActivity(currentActivity,
-                            page,
-                            getPageId(page),
+                            appCMSPageUI,
+                            getPageId(appCMSPageUI),
                             loadFromFile,
                             appbarPresent,
                             fullscreen);
@@ -148,13 +153,13 @@ public class AppCMSPresenter {
     }
 
     private void launchPageActivity(Activity activity,
-                                      Page page,
-                                      String pageID,
-                                      boolean loadFromFile,
-                                      boolean appbarPresent,
-                                      boolean fullscreen) {
+                                    AppCMSPageUI appCMSPageUI,
+                                    String pageID,
+                                    boolean loadFromFile,
+                                    boolean appbarPresent,
+                                    boolean fullscreen) {
         Bundle args = new Bundle();
-        AppCMSBinder appCMSBinder = new AppCMSBinder(page,
+        AppCMSBinder appCMSBinder = new AppCMSBinder(appCMSPageUI,
                 navigation,
                 loadFromFile,
                 pageID,
@@ -186,7 +191,11 @@ public class AppCMSPresenter {
     private void getAppCMSMain(final Activity activity,
                                String siteId,
                                final boolean userLoggedIn) {
-        new GetAppCMSMainUIAsyncTask(currentActivity, appCMSMainUICall, new Action1<JsonElement>() {
+        GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
+                .context(currentActivity)
+                .siteId(siteId)
+                .build();
+        new GetAppCMSMainUIAsyncTask(appCMSMainUICall, new Action1<JsonElement>() {
             @Override
             public void call(JsonElement main) {
                 if (main == null) {
@@ -194,22 +203,22 @@ public class AppCMSPresenter {
                     launchErrorActivity(activity);
                 } else if (TextUtils.isEmpty(main
                         .getAsJsonObject()
-                        .get(jsonValueKeyMap.get(AppCMSKeyType.MAIN_ANDROID_KEY))
+                        .get(jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_ANDROID_KEY))
                         .getAsString())) {
                     Log.e(TAG, "AppCMS keys for main not found");
                     launchErrorActivity(activity);
                 } else {
                     String androidUrl = main
                             .getAsJsonObject()
-                            .get(jsonValueKeyMap.get(AppCMSKeyType.MAIN_ANDROID_KEY))
+                            .get(jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_ANDROID_KEY))
                             .getAsString();
                     String version = main
                             .getAsJsonObject()
-                            .get(jsonValueKeyMap.get(AppCMSKeyType.MAIN_VERSION_KEY))
+                            .get(jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_VERSION_KEY))
                             .getAsString();
                     String oldVersion = main
                             .getAsJsonObject()
-                            .get(jsonValueKeyMap.get(AppCMSKeyType.MAIN_OLD_VERSION_KEY))
+                            .get(jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_OLD_VERSION_KEY))
                             .getAsString();
                     loadFromFile = version.equals(oldVersion);
                     getAppCMSAndroid(activity,
@@ -217,27 +226,28 @@ public class AppCMSPresenter {
                             userLoggedIn);
                 }
             }
-        }).execute(siteId);
+        }).execute(params);
     }
 
     private void getAppCMSAndroid(final Activity activity,
                                   String url,
                                   final boolean userLoggedIn) {
-        GetAppCMSAndroidUIAsyncTask.RunOptions runOptions =
-                new GetAppCMSAndroidUIAsyncTask.RunOptions();
-        runOptions.dataUri = Uri.parse(url);
-        runOptions.loadFromFile = loadFromFile;
-        new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, new Action1<Android>() {
+        GetAppCMSAndroidUIAsyncTask.Params params =
+                new GetAppCMSAndroidUIAsyncTask.Params.Builder()
+                    .url(url)
+                    .loadFromFile(loadFromFile)
+                    .build();
+        new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, new Action1<AppCMSAndroidUI>() {
             @Override
-            public void call(final Android android) {
-                if (android == null ||
-                        android.getMetaPages() == null ||
-                        android.getMetaPages().size() < 1) {
-                    Log.e(TAG, "AppCMS keys for pages for android not found");
+            public void call(final AppCMSAndroidUI appCMSAndroidUI) {
+                if (appCMSAndroidUI == null ||
+                        appCMSAndroidUI.getMetaPages() == null ||
+                        appCMSAndroidUI.getMetaPages().size() < 1) {
+                    Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
                     launchErrorActivity(activity);
                 } else {
-                    navigation = android.getNavigation();
-                    queueMetaPages(android.getMetaPages(), userLoggedIn);
+                    navigation = appCMSAndroidUI.getNavigation();
+                    queueMetaPages(appCMSAndroidUI.getMetaPages(), userLoggedIn);
                     final MetaPage firstPage = pagesToProcess.peek();
                     Log.d(TAG, "Processing meta pages queue");
                     processMetaPagesQueue(loadFromFile,
@@ -255,16 +265,17 @@ public class AppCMSPresenter {
                             });
                 }
             }
-        }).execute(runOptions);
+        }).execute(params);
     }
 
     private void getAppCMSPage(String url,
-                               final Action1<Page> onPageReady,
+                               final Action1<AppCMSPageUI> onPageReady,
                                boolean loadFromFile) {
-        GetAppCMSPageUIAsyncTask.RunOptions runOptions = new GetAppCMSPageUIAsyncTask.RunOptions();
-        runOptions.dataUri = Uri.parse(url);
-        runOptions.loadFromFile = loadFromFile;
-        new GetAppCMSPageUIAsyncTask(appCMSPageUICall, onPageReady).execute(runOptions);
+        GetAppCMSPageUIAsyncTask.Params params =
+                new GetAppCMSPageUIAsyncTask.Params.Builder()
+                        .url(url)
+                        .loadFromFile(loadFromFile).build();
+        new GetAppCMSPageUIAsyncTask(appCMSPageUICall, onPageReady).execute(params);
     }
 
     private void queueMetaPages(List<MetaPage> metaPageList, boolean userLoggedIn) {
@@ -289,17 +300,17 @@ public class AppCMSPresenter {
     }
 
     private void processMetaPagesQueue(final boolean loadFromFile,
-                                      final Action0 onPagesFinishedAction) {
+                                       final Action0 onPagesFinishedAction) {
         final MetaPage metaPage = pagesToProcess.remove();
         Log.d(TAG, "Processing meta page: " + metaPage.getPageName() + ": " + metaPage.getPageId());
         getAppCMSPage(metaPage.getPageUI(),
-                new Action1<Page>() {
+                new Action1<AppCMSPageUI>() {
                     @Override
-                    public void call(Page page) {
-                        navigationPages.put(metaPage.getPageId(), page);
+                    public void call(AppCMSPageUI appCMSPageUI) {
+                        navigationPages.put(metaPage.getPageId(), appCMSPageUI);
                         String action = pageNameToActionMap.get(metaPage.getPageName());
                         if (action != null && actionToPageMap.containsKey(action)) {
-                            actionToPageMap.put(action, page);
+                            actionToPageMap.put(action, appCMSPageUI);
                         }
                         if (pagesToProcess.size() > 0) {
                             processMetaPagesQueue(loadFromFile,
@@ -312,8 +323,12 @@ public class AppCMSPresenter {
                 loadFromFile);
     }
 
-    public void getContent(String url, Action1<JsonElement> readyAction) {
-
+    public void getContent(String url, Action1<AppCMSPageAPI> readyAction) {
+        GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
+                .context(currentActivity)
+                .url(url)
+                .build();
+        new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
     }
 
     public boolean isUserLoggedIn(Context context) {
@@ -330,7 +345,7 @@ public class AppCMSPresenter {
         for (int i = 0; i < metaPageList.size(); i++) {
             if (metaPageList.get(i)
                     .getPageName()
-                    .equals(jsonValueKeyMap.get(AppCMSKeyType.ANDROID_SPLASH_SCREEN_KEY))) {
+                    .equals(jsonValueKeyMap.get(AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY))) {
                 return i;
             }
         }
@@ -341,16 +356,16 @@ public class AppCMSPresenter {
         for (int i = 0; i < metaPageList.size(); i++) {
             if (metaPageList.get(i)
                     .getPageName()
-                    .equals(jsonValueKeyMap.get(AppCMSKeyType.ANDROID_HOME_SCREEN_KEY))) {
+                    .equals(jsonValueKeyMap.get(AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY))) {
                 return i;
             }
         }
         return -1;
     }
 
-    private String getPageId(Page page) {
+    private String getPageId(AppCMSPageUI appCMSPageUI) {
         for (String key : navigationPages.keySet()) {
-            if (navigationPages.get(page) == page) {
+            if (navigationPages.get(appCMSPageUI) == appCMSPageUI) {
                 return key;
             }
         }

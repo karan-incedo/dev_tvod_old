@@ -7,7 +7,8 @@ import com.google.gson.JsonElement;
 
 import javax.inject.Inject;
 
-import air.com.snagfilms.models.data.appcms.page.Component;
+import air.com.snagfilms.models.data.appcms.api.AppCMSPageAPI;
+import air.com.snagfilms.models.data.appcms.ui.page.Component;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -23,8 +24,11 @@ public class CollectionGridView extends CardView {
         init();
     }
 
-    public void bindView(JsonElement data) throws IllegalArgumentException {
+    public void bindView(AppCMSPageAPI data) throws IllegalArgumentException {
         // TODO: Parse json data and map to child elements
+
+
+
         throw new IllegalArgumentException(getClass().getCanonicalName() +
                 "." +
                 getClass().getEnclosingMethod().getName() +

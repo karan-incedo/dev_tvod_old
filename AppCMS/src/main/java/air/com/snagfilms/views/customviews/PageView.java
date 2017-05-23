@@ -5,19 +5,19 @@ import android.widget.FrameLayout;
 
 import javax.inject.Inject;
 
-import air.com.snagfilms.models.data.appcms.page.Page;
+import air.com.snagfilms.models.data.appcms.ui.page.AppCMSPageUI;
 
 /**
  * Created by viewlift on 5/4/17.
  */
 
 public class PageView extends BaseView {
-    private final Page page;
+    private final AppCMSPageUI appCMSPageUI;
 
     @Inject
-    public PageView(Context context, Page page) {
+    public PageView(Context context, AppCMSPageUI appCMSPageUI) {
         super(context);
-        this.page = page;
+        this.appCMSPageUI = appCMSPageUI;
         init();
     }
 

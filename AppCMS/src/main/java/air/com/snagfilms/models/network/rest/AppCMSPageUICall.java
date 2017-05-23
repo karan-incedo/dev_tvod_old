@@ -17,7 +17,7 @@ import java.util.Scanner;
 
 import javax.inject.Inject;
 
-import air.com.snagfilms.models.data.appcms.page.Page;
+import air.com.snagfilms.models.data.appcms.ui.page.AppCMSPageUI;
 
 /**
  * Created by viewlift on 5/9/17.
@@ -26,44 +26,43 @@ import air.com.snagfilms.models.data.appcms.page.Page;
 public class AppCMSPageUICall {
     private static final String TAG = "AppCMSPageUICall";
 
-    private final AppCMSPageUI appCMSPageUI;
+    private final AppCMSPageUIRest appCMSPageUIRest;
     private final Gson gson;
     private final File storageDirectory;
 
     @Inject
-    public AppCMSPageUICall(AppCMSPageUI appCMSPageUI, Gson gson, File storageDirectory) {
-        this.appCMSPageUI = appCMSPageUI;
+    public AppCMSPageUICall(AppCMSPageUIRest appCMSPageUIRest, Gson gson, File storageDirectory) {
+        this.appCMSPageUIRest = appCMSPageUIRest;
         this.gson = gson;
         this.storageDirectory = storageDirectory;
     }
 
     @WorkerThread
-    public Page call(Uri dataUri, boolean loadFromFile) throws IOException {
+    public AppCMSPageUI call(String url, boolean loadFromFile) throws IOException {
+        String filename = getResourceFilename(url);
         if (loadFromFile) {
-            return readPageFromFile(dataUri);
+            return readPageFromFile(filename);
         }
-        Page page = null;
+        AppCMSPageUI appCMSPageUI = null;
         try {
-            page = appCMSPageUI.get(dataUri.toString()).execute().body();
-            page = writePageToFile(dataUri, page);
+            appCMSPageUI = appCMSPageUIRest.get(url).execute().body();
+            appCMSPageUI = writePageToFile(filename, appCMSPageUI);
         } catch (JsonSyntaxException e) {
-            Log.w(TAG, "Error trying to parse input JSON: " + dataUri.toString());
+            Log.w(TAG, "Error trying to parse input JSON: " + url);
         }
-        return page;
+        return appCMSPageUI;
     }
 
-    private Page writePageToFile(Uri dataUri, Page page) throws IOException {
-        String outputFilename = dataUri.getPathSegments().get(dataUri.getPathSegments().size() - 1);
+    private AppCMSPageUI writePageToFile(String outputFilename, AppCMSPageUI appCMSPageUI) throws IOException {
         OutputStream outputStream = new FileOutputStream(
                 new File(storageDirectory.toString() + outputFilename));
-        String output = gson.toJson(page, Page.class);
+        String output = gson.toJson(appCMSPageUI, AppCMSPageUI.class);
         outputStream.write(output.getBytes());
         outputStream.close();
-        return page;
+        return appCMSPageUI;
     }
 
-    private Page readPageFromFile(Uri dataUri) throws IOException {
-        String inputFilename = dataUri.getPathSegments().get(dataUri.getPathSegments().size() - 1);
+    private AppCMSPageUI readPageFromFile(String inputFilename) throws IOException {
         InputStream inputStream = new FileInputStream(
                 new File(storageDirectory.toString() + inputFilename));
         Scanner scanner = new Scanner(inputStream);
@@ -71,9 +70,21 @@ public class AppCMSPageUICall {
         while (scanner.hasNextLine()) {
             sb.append(scanner.nextLine());
         }
-        Page page = gson.fromJson(sb.toString(), Page.class);
+        AppCMSPageUI appCMSPageUI =
+                gson.fromJson(sb.toString(), AppCMSPageUI.class);
         scanner.close();
         inputStream.close();
-        return page;
+        return appCMSPageUI;
+    }
+
+    private String getResourceFilename(String url) {
+        final String PATH_SEP = "/";
+        final String JSON_EXT = ".json";
+        int startIndex = url.lastIndexOf(PATH_SEP);
+        int endIndex = url.indexOf(JSON_EXT) + JSON_EXT.length();
+        if (0 <= startIndex && startIndex < endIndex) {
+            return url.substring(startIndex+1, endIndex);
+        }
+        return url;
     }
 }

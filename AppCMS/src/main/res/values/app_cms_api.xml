@@ -18,7 +18,7 @@
     <string name="app_cms_page_bg_key">bg</string>
     <string name="app_cms_page_logo_key">logo</string>
 
-    <!-- AppCMS Page names for Actions -->
+    <!-- AppAppCMSPageUIPage names for Actions -->
     <string name="app_cms_pagename_splashscreen_key">Splash Screen</string>
     <string name="app_cms_pagename_homepage_key">Home Page</string>
     <string name="app_cms_pagename_videopage_key">Video Page</string>
@@ -30,5 +30,6 @@
     <string name="app_cms_action_videopage_key">lectureDetailPage</string>
 
     <!-- AppCMS Data values -->
-    <string name="app_cms_page_api_url">%1</string>
+    <string name="app_cms_page_api_url">%1$s&amp;includeContent=true</string>
+    <string name="app_cms_api_key">XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F</string>
 </resources>

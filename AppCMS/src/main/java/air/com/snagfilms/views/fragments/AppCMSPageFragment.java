@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import air.com.snagfilms.AppCMSApplication;
-import air.com.snagfilms.views.binders.AppCMSBinder;
+import air.com.snagfilms.models.data.appcms.ui.AppCMSBinder;
 import air.com.snagfilms.presenters.AppCMSPresenter;
 import air.com.snagfilms.views.components.AppCMSViewComponent;
 import air.com.snagfilms.views.components.DaggerAppCMSViewComponent;
@@ -52,7 +52,7 @@ public class AppCMSPageFragment extends Fragment {
             appCMSViewComponent = DaggerAppCMSViewComponent
                     .builder()
                     .appCMSPageViewModule(new AppCMSPageViewModule(context,
-                            appCMSBinder.getPage(),
+                            appCMSBinder.getAppCMSPageUI(),
                             appCMSBinder.getJsonValueKeyMap(),
                             appCMSPresenter))
                     .build();
@@ -65,7 +65,9 @@ public class AppCMSPageFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         PageView pageView = appCMSViewComponent.appCMSPageView();
         if (pageView == null) {
             Log.e(TAG, "AppCMS page creation error");

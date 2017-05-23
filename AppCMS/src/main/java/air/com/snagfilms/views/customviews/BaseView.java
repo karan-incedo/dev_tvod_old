@@ -10,10 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import air.com.snagfilms.models.data.appcms.page.Layout;
-import air.com.snagfilms.models.data.appcms.page.Mobile;
-import air.com.snagfilms.models.data.appcms.page.TabletLandscape;
-import air.com.snagfilms.models.data.appcms.page.TabletPortrait;
+import air.com.snagfilms.models.data.appcms.ui.page.Layout;
+import air.com.snagfilms.models.data.appcms.ui.page.Mobile;
+import air.com.snagfilms.models.data.appcms.ui.page.TabletLandscape;
+import air.com.snagfilms.models.data.appcms.ui.page.TabletPortrait;
 
 /**
  * Created by viewlift on 5/17/17.
@@ -67,25 +67,35 @@ public abstract class BaseView extends FrameLayout {
         int parentViewHeight = parentView.getMeasuredHeight();
         int measuredWidth = measurementCount == 0 ? deviceWidth : parentViewWidth;
         int measuredHeight = measurementCount == 0 ? deviceHeight : parentViewHeight;
+        boolean verticalMarginsFromHeight = false;
+        boolean horizontalMarginsFromWidth = false;
         if (isTablet(context)) {
             if (isLandscape(context)) {
                 TabletLandscape tabletLandscape = layout.getTabletLandscape();
                 if (tabletLandscape != null) {
                     if (tabletLandscape.getWidth() != null) {
                         viewWidth = tabletLandscape.getWidth();
+                        if (tabletLandscape.getXAxis() != null) {
+                            verticalMarginsFromHeight = true;
+                            lm = (int) convertDpToPixel(tabletLandscape.getXAxis(), context);
+                        }
                     }
                     if (tabletLandscape.getHeight() != null) {
                         viewHeight = tabletLandscape.getHeight();
+                        if (tabletLandscape.getYAxis() != null) {
+                            horizontalMarginsFromWidth = true;
+                            tm = tabletLandscape.getXAxis();
+                        }
                     }
-                    if (tabletLandscape.getLeftMargin() != null) {
+                    if (!horizontalMarginsFromWidth && tabletLandscape.getLeftMargin() != null) {
                         lm = ((int) ((float) tabletLandscape.getLeftMargin() / 100.0f)) * measuredWidth;
                     }
-                    if (tabletLandscape.getRightMargin() != null) {
+                    if (!horizontalMarginsFromWidth && tabletLandscape.getRightMargin() != null) {
                         rm = ((int) (tabletLandscape.getRightMargin() / 100.0f)) * measuredWidth;
                     }
-                    if (tabletLandscape.getTopMargin() != null) {
+                    if (!verticalMarginsFromHeight && tabletLandscape.getTopMargin() != null) {
                         tm = (int) ((tabletLandscape.getTopMargin() / 100.0f) * measuredHeight);
-                    } else if (tabletLandscape.getBottomMargin() != null) {
+                    } else if (!verticalMarginsFromHeight && tabletLandscape.getBottomMargin() != null) {
                         int marginDiff = viewHeight;
                         if (marginDiff < 0) {
                             marginDiff = 0;
@@ -99,19 +109,27 @@ public abstract class BaseView extends FrameLayout {
                 if (tabletPortrait != null) {
                     if (tabletPortrait.getWidth() != null) {
                         viewWidth = tabletPortrait.getWidth();
+                        if (tabletPortrait.getXAxis() != null) {
+                            verticalMarginsFromHeight = true;
+                            lm = (int) convertDpToPixel(tabletPortrait.getXAxis(), context);
+                        }
                     }
                     if (tabletPortrait.getHeight() != null) {
                         viewHeight = tabletPortrait.getHeight();
+                        if (tabletPortrait.getYAxis() != null) {
+                            horizontalMarginsFromWidth = true;
+                            tm = tabletPortrait.getXAxis();
+                        }
                     }
-                    if (tabletPortrait.getLeftMargin() != null) {
+                    if (!horizontalMarginsFromWidth && tabletPortrait.getLeftMargin() != null) {
                         lm = ((int) ((float) tabletPortrait.getLeftMargin() / 100.0f)) * measuredWidth;
                     }
-                    if (tabletPortrait.getRightMargin() != null) {
+                    if (!horizontalMarginsFromWidth && tabletPortrait.getRightMargin() != null) {
                         rm = ((int) ((float) tabletPortrait.getRightMargin() / 100.0f)) * measuredWidth;
                     }
-                    if (tabletPortrait.getTopMargin() != null) {
+                    if (!verticalMarginsFromHeight && tabletPortrait.getTopMargin() != null) {
                         tm = (int) ((tabletPortrait.getTopMargin() / 100.0f) * measuredHeight);
-                    } else if (tabletPortrait.getBottomMargin() != null) {
+                    } else if (!verticalMarginsFromHeight && tabletPortrait.getBottomMargin() != null) {
                         int marginDiff = viewHeight;
                         if (marginDiff < 0) {
                             marginDiff = 0;
@@ -126,19 +144,27 @@ public abstract class BaseView extends FrameLayout {
             if (mobile != null) {
                 if (mobile.getWidth() != null) {
                     viewWidth = (int) convertDpToPixel(mobile.getWidth(), context);
+                    if (mobile.getXAxis() != null) {
+                        verticalMarginsFromHeight = true;
+                        lm = (int) convertDpToPixel(mobile.getXAxis(), context);
+                    }
                 }
                 if (mobile.getHeight() != null) {
                     viewHeight = (int) convertDpToPixel(mobile.getHeight(), context);
+                    if (mobile.getYAxis() != null) {
+                        horizontalMarginsFromWidth = true;
+                        tm = mobile.getXAxis();
+                    }
                 }
-                if (mobile.getLeftMargin() != null) {
+                if (!horizontalMarginsFromWidth && mobile.getLeftMargin() != null) {
                     lm = ((int) ((float) mobile.getLeftMargin() / 100.0f)) * measuredWidth;
                 }
-                if (mobile.getRightMargin() != null) {
+                if (!horizontalMarginsFromWidth && mobile.getRightMargin() != null) {
                     rm = ((int) ((float) mobile.getRightMargin() / 100.0f)) * measuredWidth;
                 }
-                if (mobile.getTopMargin() != null) {
+                if (!verticalMarginsFromHeight && mobile.getTopMargin() != null) {
                     tm = (int) ((mobile.getTopMargin() / 100.0f) * measuredHeight);
-                } else if (mobile.getBottomMargin() != null) {
+                } else if (!verticalMarginsFromHeight && mobile.getBottomMargin() != null) {
                     int marginDiff = viewHeight;
                     if (marginDiff < 0) {
                         marginDiff = 0;

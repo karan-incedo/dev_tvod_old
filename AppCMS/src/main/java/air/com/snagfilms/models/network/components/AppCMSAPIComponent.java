@@ -13,5 +13,5 @@ import dagger.Component;
 @Singleton
 @Component(modules={AppCMSAPIModule.class})
 public interface AppCMSAPIComponent {
-    AppCMSPageAPICall contentAPICall();
+    AppCMSPageAPICall appCMSPageAPICall();
 }

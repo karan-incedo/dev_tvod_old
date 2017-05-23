@@ -7,7 +7,7 @@ import android.widget.FrameLayout;
 
 import com.google.gson.JsonElement;
 
-import air.com.snagfilms.models.data.appcms.page.ModuleList;
+import air.com.snagfilms.models.data.appcms.ui.page.ModuleList;
 
 /**
  * Created by viewlift on 5/17/17.

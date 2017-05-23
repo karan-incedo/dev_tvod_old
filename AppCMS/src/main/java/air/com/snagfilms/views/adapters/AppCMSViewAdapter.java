@@ -5,13 +5,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.gson.JsonElement;
-
 import java.util.List;
 import java.util.Map;
 
-import air.com.snagfilms.models.data.appcms.AppCMSKeyType;
-import air.com.snagfilms.models.data.appcms.page.Component;
+import air.com.snagfilms.models.data.appcms.api.AppCMSPageAPI;
+import air.com.snagfilms.models.data.appcms.ui.AppCMSUIKeyType;
+import air.com.snagfilms.models.data.appcms.ui.page.Component;
 import air.com.snagfilms.views.components.AppCMSViewComponent;
 import air.com.snagfilms.views.components.DaggerAppCMSViewComponent;
 import air.com.snagfilms.views.customviews.CollectionGridView;
@@ -23,11 +22,11 @@ import air.com.snagfilms.views.customviews.ViewCreator;
 
 public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.ViewHolder> {
     private AppCMSViewComponent appCMSViewComponent;
-    private List<JsonElement> adapterData;
+    private List<AppCMSPageAPI> adapterData;
     private Context context;
     private Component component;
     private ViewCreator viewCreator;
-    private Map<AppCMSKeyType, String> jsonValueKeyMap;
+    private Map<AppCMSUIKeyType, String> jsonValueKeyMap;
 
     public AppCMSViewAdapter(Context context, Component component) {
         this.appCMSViewComponent = DaggerAppCMSViewComponent
@@ -58,7 +57,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         return (adapterData == null ? 0 : adapterData.size());
     }
 
-    public void updateAdapterData(List<JsonElement> adapterData) {
+    public void updateAdapterData(List<AppCMSPageAPI> adapterData) {
         this.adapterData = adapterData;
         notifyDataSetChanged();
     }

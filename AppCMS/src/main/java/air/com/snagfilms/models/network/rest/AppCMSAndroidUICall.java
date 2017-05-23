@@ -15,46 +15,45 @@ import java.util.Scanner;
 
 import javax.inject.Inject;
 
-import air.com.snagfilms.models.data.appcms.android.Android;
+import air.com.snagfilms.models.data.appcms.ui.android.AppCMSAndroidUI;
 
 /**
  * Created by viewlift on 5/9/17.
  */
 
 public class AppCMSAndroidUICall {
-    private static final String SAVE_PATH = "Android/";
+    private static final String SAVE_PATH = "AppCMSAndroidUIRest/";
 
-    private final AppCMSAndroidUI appCMSAndroidUI;
+    private final AppCMSAndroidUIRest appCMSAndroidUIRest;
     private final Gson gson;
     private final File storageDirectory;
 
     @Inject
-    public AppCMSAndroidUICall(AppCMSAndroidUI appCMSAndroidUI, Gson gson, File storageDirectory) {
-        this.appCMSAndroidUI = appCMSAndroidUI;
+    public AppCMSAndroidUICall(AppCMSAndroidUIRest appCMSAndroidUIRest, Gson gson, File storageDirectory) {
+        this.appCMSAndroidUIRest = appCMSAndroidUIRest;
         this.gson = gson;
         this.storageDirectory = storageDirectory;
     }
 
     @WorkerThread
-    public Android call(Uri dataUri, boolean loadFromFile) throws IOException {
+    public AppCMSAndroidUI call(String url, boolean loadFromFile) throws IOException {
+        String filename = getResourceFilename(url);
         if (loadFromFile) {
-            return readAndroidFromfile(dataUri);
+            return readAndroidFromFile(filename);
         }
-        return writeAndroidToFile(dataUri, appCMSAndroidUI.get(dataUri.toString()).execute().body());
+        return writeAndroidToFile(filename, appCMSAndroidUIRest.get(url).execute().body());
     }
 
-    private Android writeAndroidToFile(Uri dataUri, Android android) throws IOException {
-        String outputFilename = dataUri.getPathSegments().get(dataUri.getPathSegments().size() - 1);
+    private AppCMSAndroidUI writeAndroidToFile(String outputFilename, AppCMSAndroidUI appCMSAndroidUI) throws IOException {
         OutputStream outputStream = new FileOutputStream(
                 new File(storageDirectory.toString() + outputFilename));
-        String output = gson.toJson(android, Android.class);
+        String output = gson.toJson(appCMSAndroidUI, AppCMSAndroidUI.class);
         outputStream.write(output.getBytes());
         outputStream.close();
-        return android;
+        return appCMSAndroidUI;
     }
 
-    private Android readAndroidFromfile(Uri dataUri) throws IOException {
-        String inputFilename = dataUri.getPathSegments().get(dataUri.getPathSegments().size() - 1);
+    private AppCMSAndroidUI readAndroidFromFile(String inputFilename) throws IOException {
         InputStream inputStream = new FileInputStream(
                 new File(storageDirectory.toString() + inputFilename));
         Scanner scanner = new Scanner(inputStream);
@@ -62,9 +61,20 @@ public class AppCMSAndroidUICall {
         while (scanner.hasNextLine()) {
             sb.append(scanner.nextLine());
         }
-        Android android = gson.fromJson(sb.toString(), Android.class);
+        AppCMSAndroidUI appCMSAndroidUI = gson.fromJson(sb.toString(), AppCMSAndroidUI.class);
         scanner.close();
         inputStream.close();
-        return android;
+        return appCMSAndroidUI;
+    }
+
+    private String getResourceFilename(String url) {
+        final String PATH_SEP = "/";
+        final String JSON_EXT = ".json";
+        int endIndex = url.indexOf(JSON_EXT) + JSON_EXT.length();
+        int startIndex = url.lastIndexOf(PATH_SEP);
+        if (0 <= startIndex && startIndex < endIndex) {
+            return url.substring(startIndex+1, endIndex);
+        }
+        return url;
     }
 }

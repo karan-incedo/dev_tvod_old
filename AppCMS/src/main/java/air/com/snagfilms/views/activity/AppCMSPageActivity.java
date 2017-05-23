@@ -23,7 +23,7 @@ import android.view.View;
 import java.util.Stack;
 
 import air.com.snagfilms.AppCMSApplication;
-import air.com.snagfilms.views.binders.AppCMSBinder;
+import air.com.snagfilms.models.data.appcms.ui.AppCMSBinder;
 import air.com.snagfilms.presenters.AppCMSPresenter;
 import air.com.snagfilms.views.fragments.AppCMSPageFragment;
 import snagfilms.com.air.appcms.R;
