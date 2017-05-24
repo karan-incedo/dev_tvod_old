@@ -9,19 +9,19 @@
     <uses-permission android:name="appCMSAndroidUI.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
-        android:name="air.com.snagfilms.AppCMSApplication"
+        android:name="com.viewlift.AppCMSApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/default_app_name"
         android:supportsRtl="true">
-        <activity android:name="air.com.snagfilms.activities.AppCMSLaunchTestActivity">
+        <activity android:name="com.viewlift.activities.AppCMSLaunchTestActivity">
             <intent-filter>
                 <action android:name="appCMSAndroidUI.intent.action.MAIN" />
                 <category android:name="appCMSAndroidUI.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="air.com.snagfilms.views.activity.AppCMSPageActivity"/>
-        <activity android:name="air.com.snagfilms.views.activity.AppCMSErrorActivity"/>
+        <activity android:name="com.viewlift.views.activity.AppCMSPageActivity"/>
+        <activity android:name="com.viewlift.views.activity.AppCMSErrorActivity"/>
     </application>
 
 </manifest>
