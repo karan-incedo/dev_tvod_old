@@ -1,7 +1,10 @@
 package com.viewlift.models.network.modules;
 
+import com.google.gson.Gson;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageAPIRest;
+
+import java.io.File;
 
 import javax.inject.Singleton;
 
@@ -29,7 +32,9 @@ public class AppCMSAPIModule {
 
     @Provides
     @Singleton
-    public AppCMSPageAPICall providesAppCMSPageAPICall(AppCMSPageAPIRest appCMSPageAPI) {
-        return new AppCMSPageAPICall(appCMSPageAPI, apiKey);
+    public AppCMSPageAPICall providesAppCMSPageAPICall(AppCMSPageAPIRest appCMSPageAPI,
+                                                       Gson gson,
+                                                       File storageDirectory) {
+        return new AppCMSPageAPICall(appCMSPageAPI, apiKey, gson, storageDirectory);
     }
 }

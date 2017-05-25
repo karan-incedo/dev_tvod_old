@@ -30,6 +30,12 @@ public class TabletLandscape {
     @SerializedName("xAxis")
     @Expose
     private Integer xAxis;
+    @SerializedName("gridHeight")
+    @Expose
+    private Integer gridHeight;
+    @SerializedName("gridWidth")
+    @Expose
+    private Integer gridWidth;
 
     public Integer getYAxis() {
         return yAxis;
@@ -95,4 +101,35 @@ public class TabletLandscape {
         this.xAxis = xAxis;
     }
 
+    public Integer getyAxis() {
+        return yAxis;
+    }
+
+    public void setyAxis(Integer yAxis) {
+        this.yAxis = yAxis;
+    }
+
+    public Integer getxAxis() {
+        return xAxis;
+    }
+
+    public void setxAxis(Integer xAxis) {
+        this.xAxis = xAxis;
+    }
+
+    public Integer getGridHeight() {
+        return gridHeight;
+    }
+
+    public void setGridHeight(Integer gridHeight) {
+        this.gridHeight = gridHeight;
+    }
+
+    public Integer getGridWidth() {
+        return gridWidth;
+    }
+
+    public void setGridWidth(Integer gridWidth) {
+        this.gridWidth = gridWidth;
+    }
 }

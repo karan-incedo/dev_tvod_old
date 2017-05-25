@@ -30,6 +30,12 @@ public class Mobile {
     @SerializedName("xAxis")
     @Expose
     private Integer xAxis;
+    @SerializedName("gridWidth")
+    @Expose
+    private Integer gridWidth;
+    @SerializedName("gridHeight")
+    @Expose
+    private Integer gridHeight;
 
     public Integer getWidth() {
         return width;
@@ -95,4 +101,35 @@ public class Mobile {
         this.xAxis = xAxis;
     }
 
+    public Integer getyAxis() {
+        return yAxis;
+    }
+
+    public void setyAxis(Integer yAxis) {
+        this.yAxis = yAxis;
+    }
+
+    public Integer getxAxis() {
+        return xAxis;
+    }
+
+    public void setxAxis(Integer xAxis) {
+        this.xAxis = xAxis;
+    }
+
+    public Integer getGridWidth() {
+        return gridWidth;
+    }
+
+    public void setGridWidth(Integer gridWidth) {
+        this.gridWidth = gridWidth;
+    }
+
+    public Integer getGridHeight() {
+        return gridHeight;
+    }
+
+    public void setGridHeight(Integer gridHeight) {
+        this.gridHeight = gridHeight;
+    }
 }

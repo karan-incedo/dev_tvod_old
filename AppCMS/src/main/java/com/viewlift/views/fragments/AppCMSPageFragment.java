@@ -54,6 +54,7 @@ public class AppCMSPageFragment extends Fragment {
                     .builder()
                     .appCMSPageViewModule(new AppCMSPageViewModule(context,
                             appCMSBinder.getAppCMSPageUI(),
+                            appCMSBinder.getAppCMSPageAPI(),
                             appCMSBinder.getJsonValueKeyMap(),
                             appCMSPresenter))
                     .build();

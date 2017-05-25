@@ -4,6 +4,8 @@ package com.viewlift.models.data.appcms.ui.page;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class Component {
 
     @SerializedName("text")
@@ -66,6 +68,14 @@ public class Component {
     @SerializedName("fontSize")
     @Expose
     private int fontSize;
+    @SerializedName("components")
+    @Expose
+    private List<Component> components;
+    @SerializedName("progressColor")
+    @Expose
+    private String progressColor;
+    @SerializedName("unprogressColor")
+    private String unprogressColor;
 
     public String getText() {
         return text;
@@ -225,5 +235,29 @@ public class Component {
 
     public void setFontSize(int fontSize) {
         this.fontSize = fontSize;
+    }
+
+    public List<Component> getComponents() {
+        return components;
+    }
+
+    public void setComponents(List<Component> components) {
+        this.components = components;
+    }
+
+    public String getProgressColor() {
+        return progressColor;
+    }
+
+    public void setProgressColor(String progressColor) {
+        this.progressColor = progressColor;
+    }
+
+    public String getUnprogressColor() {
+        return unprogressColor;
+    }
+
+    public void setUnprogressColor(String unprogressColor) {
+        this.unprogressColor = unprogressColor;
     }
 }

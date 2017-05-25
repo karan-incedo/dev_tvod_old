@@ -84,6 +84,7 @@ public class RESTUnitTest {
 
         appCMSAPIComponent = DaggerAppCMSAPIComponent
                 .builder()
+                .appCMSUIModule(new AppCMSUIModule(context))
                 .appCMSAPIModule(new AppCMSAPIModule(API_KEY))
                 .build();
     }

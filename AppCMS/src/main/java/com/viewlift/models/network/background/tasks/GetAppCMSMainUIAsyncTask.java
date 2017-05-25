@@ -64,7 +64,7 @@ public class GetAppCMSMainUIAsyncTask extends AsyncTask<GetAppCMSMainUIAsyncTask
     }
 
     @Override
-    protected void onPostExecute(JsonElement main) {
-        Observable.just(main).subscribe(readyAction);
+    protected void onPostExecute(JsonElement result) {
+        Observable.just(result).subscribe(readyAction);
     }
 }

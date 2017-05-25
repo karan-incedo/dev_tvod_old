@@ -38,6 +38,7 @@ public class AppCMSPageUICall {
     @WorkerThread
     public AppCMSPageUI call(String url, boolean loadFromFile) throws IOException {
         String filename = getResourceFilename(url);
+        // TODO: Change this logic to remove the input variable loadFromFile and determine to load from file if there is a network error
         if (loadFromFile) {
             return readPageFromFile(filename);
         }

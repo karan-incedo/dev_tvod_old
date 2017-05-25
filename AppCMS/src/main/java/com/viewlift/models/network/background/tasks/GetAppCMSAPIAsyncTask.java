@@ -59,7 +59,7 @@ public class GetAppCMSAPIAsyncTask extends AsyncTask<GetAppCMSAPIAsyncTask.Param
     }
 
     @Override
-    protected void onPostExecute(AppCMSPageAPI jsonElement) {
-        Observable.just(jsonElement).subscribe(readyAction);
+    protected void onPostExecute(AppCMSPageAPI result) {
+        Observable.just(result).subscribe(readyAction);
     }
 }

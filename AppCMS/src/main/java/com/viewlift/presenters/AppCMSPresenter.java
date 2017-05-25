@@ -51,7 +51,6 @@ public class AppCMSPresenter {
     public static final String PRESENTER_CLOSE_SCREEN_ACTION = "appcms_presenter_close_action";
 
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
-
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
 
     private final AppCMSMainUICall appCMSMainUICall;
@@ -250,10 +249,10 @@ public class AppCMSPresenter {
                             .getAsJsonObject()
                             .get(jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_OLD_VERSION_KEY))
                             .getAsString();
-                    loadFromFile = version.equals(oldVersion);
-                    getAppCMSAndroid(activity,
-                            androidUrl,
-                            userLoggedIn);
+                    Log.d(TAG, "Version: " + version);
+                    Log.d(TAG, "OldVersion: " + oldVersion);
+                    loadFromFile = false;
+                    getAppCMSAndroid(activity, androidUrl, userLoggedIn);
                 }
             }
         }).execute(params);
@@ -267,6 +266,7 @@ public class AppCMSPresenter {
                     .url(url)
                     .loadFromFile(loadFromFile)
                     .build();
+        Log.d(TAG, "Params: " + url + " " + loadFromFile);
         new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, new Action1<AppCMSAndroidUI>() {
             @Override
             public void call(final AppCMSAndroidUI appCMSAndroidUI) {
@@ -319,6 +319,11 @@ public class AppCMSPresenter {
             }
             if (pageToQueueIndex >= 0) {
                 pagesToProcess.add(metaPageList.get(pageToQueueIndex));
+                Log.d(TAG, "Queuing meta page: " +
+                        metaPageList.get(pageToQueueIndex).getPageName() + ": " +
+                        metaPageList.get(pageToQueueIndex).getPageId() + " " +
+                        metaPageList.get(pageToQueueIndex).getPageUI() + " " +
+                        metaPageList.get(pageToQueueIndex).getPageAPI());
                 metaPageList.remove(pageToQueueIndex);
                 queueMetaPages(metaPageList, userLoggedIn);
             } else {
@@ -332,7 +337,11 @@ public class AppCMSPresenter {
     private void processMetaPagesQueue(final boolean loadFromFile,
                                        final Action0 onPagesFinishedAction) {
         final MetaPage metaPage = pagesToProcess.remove();
-        Log.d(TAG, "Processing meta page: " + metaPage.getPageName() + ": " + metaPage.getPageId());
+        Log.d(TAG, "Processing meta page: " +
+                metaPage.getPageName() + ": " +
+                metaPage.getPageId() + " " +
+                metaPage.getPageUI() + " " +
+                metaPage.getPageAPI());
         getAppCMSPage(metaPage.getPageUI(),
                 new Action1<AppCMSPageUI>() {
                     @Override
@@ -343,6 +352,7 @@ public class AppCMSPresenter {
                         if (action != null && actionToPageMap.containsKey(action)) {
                             actionToPageMap.put(action, appCMSPageUI);
                             actionToPageAPIUrlMap.put(action, metaPage.getPageAPI());
+                            Log.d(TAG, "Action: " + action + " PageAPIURL: " + metaPage.getPageAPI());
                         }
                         if (pagesToProcess.size() > 0) {
                             processMetaPagesQueue(loadFromFile,

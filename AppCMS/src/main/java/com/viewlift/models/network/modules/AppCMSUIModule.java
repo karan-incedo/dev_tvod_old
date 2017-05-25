@@ -77,12 +77,28 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_page_label_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY,
                 context.getString(R.string.app_cms_page_collection_grid_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY,
+                context.getString(R.string.app_cms_page_progress_view_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_IMAGE_KEY,
                 context.getString(R.string.app_cms_page_image_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_BG_KEY,
                 context.getString(R.string.app_cms_page_bg_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_LOGO_KEY,
                 context.getString(R.string.app_cms_page_logo_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_INFO_KEY,
+                context.getString(R.string.app_cms_page_info_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_PLAY_KEY,
+                context.getString(R.string.app_cms_page_play_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY,
+                context.getString(R.string.app_cms_page_thumbnail_image_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY,
+                context.getString(R.string.app_cms_page_thumbnail_title_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_API_THUMBNAIL_URL,
+                context.getString(R.string.app_cms_page_api_thumbnail_url_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_API_TITLE,
+                context.getString(R.string.app_cms_page_api_title_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY,
+                context.getString(R.string.app_cms_page_tray_title_key));
     }
 
     private void createPageNameToActionMap(Context context) {
@@ -119,6 +135,12 @@ public class AppCMSUIModule {
     @Singleton
     public Gson providesGson() {
         return new Gson();
+    }
+
+    @Provides
+    @Singleton
+    public File providesStorageDirectory() {
+        return storageDirectory;
     }
 
     @Provides

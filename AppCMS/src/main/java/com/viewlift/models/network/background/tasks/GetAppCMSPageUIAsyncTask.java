@@ -58,7 +58,7 @@ public class GetAppCMSPageUIAsyncTask extends AsyncTask<GetAppCMSPageUIAsyncTask
     }
 
     @Override
-    protected void onPostExecute(AppCMSPageUI appCMSPageUI) {
-        Observable.just(appCMSPageUI).subscribe(readyAction);
+    protected void onPostExecute(AppCMSPageUI result) {
+        Observable.just(result).subscribe(readyAction);
     }
 }

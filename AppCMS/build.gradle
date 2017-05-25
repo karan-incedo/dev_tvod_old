@@ -20,6 +20,9 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
 }
 
 dependencies {
@@ -49,5 +52,4 @@ dependencies {
     compile "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
     provided "javax.annotation:jsr250-api:$rootProject.ext.jsr250_apiVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }

@@ -3,6 +3,7 @@ package com.viewlift.views.modules;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
+import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.Map;
@@ -24,15 +25,18 @@ import dagger.Provides;
 public class AppCMSPageViewModule {
     private final Context context;
     private final AppCMSPageUI appCMSPageUI;
+    private final AppCMSPageAPI appCMSPageAPI;
     private final Map<AppCMSUIKeyType, String> jsonValueKeyMap;
     private final AppCMSPresenter appCMSPresenter;
 
     public AppCMSPageViewModule(Context context,
                                 AppCMSPageUI appCMSPageUI,
+                                AppCMSPageAPI appCMSPageAPI,
                                 Map<AppCMSUIKeyType, String> jsonValueKeyMap,
                                 AppCMSPresenter appCMSPresenter) {
         this.context = context;
         this.appCMSPageUI = appCMSPageUI;
+        this.appCMSPageAPI = appCMSPageAPI;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.appCMSPresenter = appCMSPresenter;
     }
@@ -47,6 +51,10 @@ public class AppCMSPageViewModule {
     @Singleton
     @Nullable
     public PageView providesViewFromPage(ViewCreator viewCreator) {
-        return viewCreator.generatePage(context, appCMSPageUI, jsonValueKeyMap, appCMSPresenter);
+        return viewCreator.generatePage(context,
+                appCMSPageUI,
+                appCMSPageAPI,
+                jsonValueKeyMap,
+                appCMSPresenter);
     }
 }

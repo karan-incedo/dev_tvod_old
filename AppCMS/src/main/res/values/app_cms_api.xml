@@ -14,9 +14,17 @@
     <string name="app_cms_page_image_key">image</string>
     <string name="app_cms_page_label_key">label</string>
     <string name="app_cms_page_collection_grid_key">collectionGrid</string>
+    <string name="app_cms_page_progress_view_key">progressView</string>
     <string name="app_cms_page_carousel_key">Carousel</string>
     <string name="app_cms_page_bg_key">bg</string>
     <string name="app_cms_page_logo_key">logo</string>
+    <string name="app_cms_page_info_key">info</string>
+    <string name="app_cms_page_play_key">play</string>
+    <string name="app_cms_page_tray_title_key">trayTitle</string>
+    <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
+    <string name="app_cms_page_thumbnail_title_key">thumbnailTitle</string>
+    <string name="app_cms_page_api_thumbnail_url_key">thumbnail</string>
+    <string name="app_cms_page_api_title_key">title</string>
 
     <!-- AppAppCMSPageUIPage names for Actions -->
     <string name="app_cms_pagename_splashscreen_key">Splash Screen</string>

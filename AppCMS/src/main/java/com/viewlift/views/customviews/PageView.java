@@ -1,11 +1,16 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
+import android.support.v4.widget.NestedScrollView;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import javax.inject.Inject;
 
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
+import com.viewlift.models.data.appcms.ui.page.Component;
+import com.viewlift.models.data.appcms.ui.page.Layout;
 
 /**
  * Created by viewlift on 5/4/17.
@@ -27,5 +32,33 @@ public class PageView extends BaseView {
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.MATCH_PARENT);
         this.setLayoutParams(layoutParams);
+    }
+
+    @Override
+    protected Component getChildComponent(int index) {
+        return null;
+    }
+
+    @Override
+    protected Layout getLayout() {
+        return null;
+    }
+
+    @Override
+    protected ViewGroup createChildrenContainer(Context context) {
+        childrenContainer = new LinearLayout(context);
+        LinearLayout.LayoutParams childContainerLayoutParams =
+                new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+                        LayoutParams.MATCH_PARENT);
+        childrenContainer.setLayoutParams(childContainerLayoutParams);
+        ((LinearLayout) childrenContainer).setOrientation(LinearLayout.VERTICAL);
+        NestedScrollView nestedScrollView = new NestedScrollView(context);
+        NestedScrollView.LayoutParams nestedScrollViewLayoutParams =
+                new NestedScrollView.LayoutParams(LayoutParams.MATCH_PARENT,
+                        LayoutParams.MATCH_PARENT);
+        nestedScrollView.setLayoutParams(nestedScrollViewLayoutParams);
+        nestedScrollView.addView(childrenContainer);
+        this.addView(nestedScrollView);
+        return childrenContainer;
     }
 }
