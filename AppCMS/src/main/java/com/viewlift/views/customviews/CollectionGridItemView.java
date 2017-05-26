@@ -98,7 +98,7 @@ public class CollectionGridItemView extends BaseView {
         int containerWidth = getViewWidth(context,
                 component.getLayout(),
                 LayoutParams.WRAP_CONTENT);
-        int containerHeight = getViewWidth(context,
+        int containerHeight = getViewHeight(context,
                 component.getLayout(),
                 LayoutParams.WRAP_CONTENT);
 
@@ -135,13 +135,16 @@ public class CollectionGridItemView extends BaseView {
                           View view,
                           ContentDatum data,
                           Map<AppCMSUIKeyType, String> jsonValueKeyMap) {
-        forceLayout();
         Component childComponent = matchComponentToView(view);
         if (childComponent != null) {
             if (childComponent.getKey()
                     .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY))) {
-                if (!TextUtils.isEmpty(data.getGist().getThumbnail())) {
-                    Picasso.with(context).load(data.getGist().getThumbnail()).into((ImageView) view);
+                if (!TextUtils.isEmpty(data.getGist().getPosterImageUrl())) {
+                    Picasso.with(context)
+                            .load(data.getGist().getPosterImageUrl())
+                            .resize(super.getViewWidth(context, childComponent.getLayout(), 1),
+                                    super.getViewHeight(context, childComponent.getLayout(), 1))
+                            .into((ImageView) view);
                 }
             } else if (childComponent.getKey()
                     .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY))) {

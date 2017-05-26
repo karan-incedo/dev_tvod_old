@@ -3,12 +3,14 @@
     <!-- Primary app values -->
     <string name="app_cms_api_baseurl">https://appcms.viewlift.com/</string>
     <string name="app_cms_main_url">%1$s/%2$s/main.json</string>
-    <string name="app_cms_app_name">49428a08-4d82-402e-9f86-0623d9a2c918</string>
+    <string name="app_cms_app_name">a358d9c8-27e5-45fe-9a21-a7f889932605</string>
 
     <!-- AppCMS JSON data input keys -->
     <string name="app_cms_main_version_key">version</string>
     <string name="app_cms_main_old_version_key">old_version</string>
     <string name="app_cms_main_android_key">Android</string>
+    <string name="app_cms_main_api_base_url_key">apiBaseUrl</string>
+    <string name="app_cms_main_api_site_key">site</string>
     <string name="app_cms_android_navigation_key">navigation</string>
     <string name="app_cms_page_button_key">button</string>
     <string name="app_cms_page_image_key">image</string>
@@ -38,6 +40,6 @@
     <string name="app_cms_action_videopage_key">lectureDetailPage</string>
 
     <!-- AppCMS Data values -->
-    <string name="app_cms_page_api_url">%1$s&amp;includeContent=true</string>
+    <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;pageId=%4$s&amp;includeContent=true</string>
     <string name="app_cms_api_key">XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F</string>
 </resources>

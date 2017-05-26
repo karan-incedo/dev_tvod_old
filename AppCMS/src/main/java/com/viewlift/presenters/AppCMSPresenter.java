@@ -66,6 +66,8 @@ public class AppCMSPresenter {
     private Activity currentActivity;
     private Navigation navigation;
     private boolean loadFromFile;
+    private String apiBaseUrl;
+    private String apiSiteName;
     private Queue<MetaPage> pagesToProcess;
     private Map<String, AppCMSPageUI> navigationPages;
     private Map<String, AppCMSPageAPI> navigationPageData;
@@ -149,7 +151,10 @@ public class AppCMSPresenter {
                     final AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
                     AppCMSPageAPI currentAppCMSPageAPI = actionToPageAPIMap.get(action);
                     if (currentAppCMSPageAPI == null) {
-                        getContent(actionToPageAPIUrlMap.get(action),
+                        getContent(apiBaseUrl,
+                                actionToPageAPIUrlMap.get(action),
+                                apiSiteName,
+                                getPageId(appCMSPageUI),
                                 new AppCMSPageAPIAction(appbarPresent, fullscreen) {
                                     @Override
                                     public void call(AppCMSPageAPI appCMSPageAPI) {
@@ -218,7 +223,7 @@ public class AppCMSPresenter {
     }
 
     private void getAppCMSMain(final Activity activity,
-                               String siteId,
+                               final String siteId,
                                final boolean userLoggedIn) {
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
@@ -234,7 +239,19 @@ public class AppCMSPresenter {
                         .getAsJsonObject()
                         .get(jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_ANDROID_KEY))
                         .getAsString())) {
-                    Log.e(TAG, "AppCMS keys for main not found");
+                    Log.e(TAG, "AppCMS key for main not found");
+                    launchErrorActivity(activity);
+                } else if (TextUtils.isEmpty(main
+                        .getAsJsonObject()
+                        .get(jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_API_BASE_URL))
+                        .getAsString())) {
+                    Log.e(TAG, "AppCMS key for API Base URL not found");
+                    launchErrorActivity(activity);
+                } else if (TextUtils.isEmpty(main
+                        .getAsJsonObject()
+                        .get(jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_SITE_ID))
+                        .getAsString())) {
+                    Log.e(TAG, "AppCMS key for API Site ID not found");
                     launchErrorActivity(activity);
                 } else {
                     String androidUrl = main
@@ -248,6 +265,14 @@ public class AppCMSPresenter {
                     String oldVersion = main
                             .getAsJsonObject()
                             .get(jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_OLD_VERSION_KEY))
+                            .getAsString();
+                    apiBaseUrl = main
+                            .getAsJsonObject()
+                            .get(jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_API_BASE_URL))
+                            .getAsString();
+                    apiSiteName = main
+                            .getAsJsonObject()
+                            .get(jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_SITE_ID))
                             .getAsString();
                     Log.d(TAG, "Version: " + version);
                     Log.d(TAG, "OldVersion: " + oldVersion);
@@ -313,7 +338,7 @@ public class AppCMSPresenter {
             pagesToProcess = new ConcurrentLinkedQueue<>();
         }
         if (metaPageList.size() > 0) {
-            int pageToQueueIndex = !userLoggedIn ? getSoftwallPage(metaPageList) : -1;
+            int pageToQueueIndex = -1;
             if (pageToQueueIndex < 0) {
                 pageToQueueIndex = getHomePage(metaPageList);
             }
@@ -365,10 +390,17 @@ public class AppCMSPresenter {
                 loadFromFile);
     }
 
-    public void getContent(String url, Action1<AppCMSPageAPI> readyAction) {
+    public void getContent(String baseUrl,
+                           String endPoint,
+                           String siteId,
+                           String pageId,
+                           Action1<AppCMSPageAPI> readyAction) {
         GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
                 .context(currentActivity)
-                .url(url)
+                .baseUrl(baseUrl)
+                .endpoint(endPoint)
+                .siteId(siteId)
+                .pageId(pageId)
                 .build();
         new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
     }
@@ -407,7 +439,7 @@ public class AppCMSPresenter {
 
     private String getPageId(AppCMSPageUI appCMSPageUI) {
         for (String key : navigationPages.keySet()) {
-            if (navigationPages.get(appCMSPageUI) == appCMSPageUI) {
+            if (navigationPages.get(key) == appCMSPageUI) {
                 return key;
             }
         }

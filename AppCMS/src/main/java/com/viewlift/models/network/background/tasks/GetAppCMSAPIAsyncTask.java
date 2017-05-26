@@ -21,7 +21,10 @@ public class GetAppCMSAPIAsyncTask extends AsyncTask<GetAppCMSAPIAsyncTask.Param
 
     public static class Params {
         Context context;
-        String url;
+        String baseUrl;
+        String endpoint;
+        String siteId;
+        String pageId;
         public static class Builder {
             private Params params;
             public Builder() {
@@ -31,8 +34,20 @@ public class GetAppCMSAPIAsyncTask extends AsyncTask<GetAppCMSAPIAsyncTask.Param
                 params.context = context;
                 return this;
             }
-            public Builder url(String url) {
-                params.url = url;
+            public Builder baseUrl(String baseUrl) {
+                params.baseUrl = baseUrl;
+                return this;
+            }
+            public Builder endpoint(String endpoint) {
+                params.endpoint = endpoint;
+                return this;
+            }
+            public Builder siteId(String siteId) {
+                params.siteId = siteId;
+                return this;
+            }
+            public Builder pageId(String pageId) {
+                params.pageId = pageId;
                 return this;
             }
             public Params build() {
@@ -50,7 +65,11 @@ public class GetAppCMSAPIAsyncTask extends AsyncTask<GetAppCMSAPIAsyncTask.Param
     protected AppCMSPageAPI doInBackground(GetAppCMSAPIAsyncTask.Params... params) {
         if (params.length > 0) {
             try {
-                return call.call(params[0].context, params[0].url);
+                return call.call(params[0].context,
+                        params[0].baseUrl,
+                        params[0].endpoint,
+                        params[0].siteId,
+                        params[0].pageId);
             } catch (IOException e) {
 
             }

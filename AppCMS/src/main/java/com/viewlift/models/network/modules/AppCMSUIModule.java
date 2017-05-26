@@ -67,6 +67,10 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_main_old_version_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.MAIN_ANDROID_KEY,
                 context.getString(R.string.app_cms_main_android_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.MAIN_API_BASE_URL,
+                context.getString(R.string.app_cms_main_api_base_url_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.MAIN_SITE_ID,
+                context.getString(R.string.app_cms_main_api_site_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY,
                 context.getString(R.string.app_cms_pagename_splashscreen_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY,

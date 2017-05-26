@@ -47,7 +47,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.component = component;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.moduleAPI = moduleAPI;
-        this.adapterData = moduleAPI.getContentData();
+        this.adapterData = moduleAPI != null ? moduleAPI.getContentData() : null;
     }
 
     @Override

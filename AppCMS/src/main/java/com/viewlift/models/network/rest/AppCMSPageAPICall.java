@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.WorkerThread;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -37,14 +36,23 @@ public class AppCMSPageAPICall {
     }
 
     @WorkerThread
-    public AppCMSPageAPI call(Context context, String url) throws IOException {
-        String urlWithContent = context.getString(R.string.app_cms_page_api_url, url);
-        String filename = getResourceFilename(url);
-        return writeMainToFile(filename,
+    public AppCMSPageAPI call(Context context,
+                              String baseUrl,
+                              String endpoint,
+                              String siteId,
+                              String pageId) throws IOException {
+        String urlWithContent =
+                context.getString(R.string.app_cms_page_api_url,
+                        baseUrl,
+                        endpoint,
+                        siteId,
+                        pageId);
+        String filename = getResourceFilename(pageId);
+        return writePageToFile(filename,
                 appCMSPageAPIRest.get(apiKey, urlWithContent).execute().body());
     }
 
-    private AppCMSPageAPI writeMainToFile(String outputFilename,
+    private AppCMSPageAPI writePageToFile(String outputFilename,
                                           AppCMSPageAPI appCMSPageAPI) throws IOException {
         OutputStream outputStream = new FileOutputStream(
                 new File(storageDirectory.toString() + outputFilename));
@@ -54,13 +62,9 @@ public class AppCMSPageAPICall {
         return appCMSPageAPI;
     }
 
-    private String getResourceFilename(String url) {
+    private String getResourceFilename(String pageId) {
+        final String API_SUFFIX = "_API";
         final String JSON_EXT = ".json";
-        final String PAGE_ID_PARAM = "pageId=";
-        int startIndex = url.indexOf(PAGE_ID_PARAM) + PAGE_ID_PARAM.length();
-        if (0 <= startIndex) {
-            return url.substring(startIndex+1, url.length()) + JSON_EXT;
-        }
-        return url;
+        return pageId + API_SUFFIX + JSON_EXT;
     }
 }

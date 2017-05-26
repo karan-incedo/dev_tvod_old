@@ -120,14 +120,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             drawerLayout.addDrawerListener(drawerToggle);
 
             setSupportActionBar(toolbar);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            getSupportActionBar().setHomeButtonEnabled(false);
         }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         Fragment appCMSPageFragment = AppCMSPageFragment.newInstance(this, appCMSBinder);
-        fragmentTransaction.add(R.id.app_cms_fragment, appCMSPageFragment, appCMSBinder.getPageId());
+        fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment, appCMSBinder.getPageId());
         fragmentTransaction.commit();
 
     }

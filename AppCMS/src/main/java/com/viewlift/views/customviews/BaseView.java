@@ -198,7 +198,6 @@ public abstract class BaseView extends FrameLayout {
         Log.d(TAG, "viewWidth: " + viewWidth + " viewHeight: " + viewHeight);
         Log.d(TAG, "parentViewWidth: " + parentViewWidth + " parentViewHeight: " + parentViewHeight);
         Log.d(TAG, "lm: " + lm + " tm: " + tm + " rm: " + rm + " bm: " + bm);
-        Log.d(TAG, "View width: " + view.getWidth() + " height: " + view.getHeight());
         MarginLayoutParams marginLayoutParams = new MarginLayoutParams(viewWidth, viewHeight);
         marginLayoutParams.topMargin = tm;
         marginLayoutParams.leftMargin = lm;
@@ -206,6 +205,7 @@ public abstract class BaseView extends FrameLayout {
         layoutParams.width = viewWidth;
         layoutParams.height = viewHeight;
         view.setLayoutParams(layoutParams);
+        Log.d(TAG, "view width: " + view.getWidth() + " height: " + view.getHeight());
     }
 
     public static float convertDpToPixel(float dp, Context context){

@@ -27,6 +27,9 @@ public class Gist {
     @SerializedName("thumbnail")
     @Expose
     private String thumbnail;
+    @SerializedName("posterImageUrl")
+    @Expose
+    private String posterImageUrl;
     @SerializedName("updateDate")
     @Expose
     private Long updateDate;
@@ -117,4 +120,11 @@ public class Gist {
         this.contentType = contentType;
     }
 
+    public String getPosterImageUrl() {
+        return posterImageUrl;
+    }
+
+    public void setPosterImageUrl(String posterImageUrl) {
+        this.posterImageUrl = posterImageUrl;
+    }
 }

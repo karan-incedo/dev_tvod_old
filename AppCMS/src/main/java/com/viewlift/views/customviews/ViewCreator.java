@@ -256,6 +256,8 @@ public class ViewCreator {
                     if (TextUtils.isEmpty(component.getKey()) ||
                             !component.getKey().equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY))) {
                         onComponentLoaded.onBitmapLoaded(context.getDrawable(R.drawable.bg));
+                    } else {
+                        componentView = new ImageView(context);
                     }
                 } else if (component.getImageName().equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_LOGO_KEY))) {
                     componentView = new ImageView(context);
@@ -293,9 +295,13 @@ public class ViewCreator {
     }
 
     private Module matchModuleAPIToModuleUI(ModuleList module, AppCMSPageAPI appCMSPageAPI) {
-        for (Module moduleAPI : appCMSPageAPI.getModules()) {
-            if (module.getId().equals(moduleAPI.getId())) {
-                return moduleAPI;
+        if (appCMSPageAPI != null && appCMSPageAPI.getModules() != null) {
+            if (appCMSPageAPI.getModules() != null) {
+                for (Module moduleAPI : appCMSPageAPI.getModules()) {
+                    if (module.getId().equals(moduleAPI.getId())) {
+                        return moduleAPI;
+                    }
+                }
             }
         }
         return null;
