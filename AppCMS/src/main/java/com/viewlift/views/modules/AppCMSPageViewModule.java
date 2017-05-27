@@ -4,8 +4,11 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.network.modules.AppCMSAPIModule;
 import com.viewlift.presenters.AppCMSPresenter;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Singleton;
@@ -16,6 +19,7 @@ import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.ViewCreator;
 import dagger.Module;
 import dagger.Provides;
+import snagfilms.com.air.appcms.R;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -28,6 +32,7 @@ public class AppCMSPageViewModule {
     private final AppCMSPageAPI appCMSPageAPI;
     private final Map<AppCMSUIKeyType, String> jsonValueKeyMap;
     private final AppCMSPresenter appCMSPresenter;
+    private final List<String> modulesToIgnoreList;
 
     public AppCMSPageViewModule(Context context,
                                 AppCMSPageUI appCMSPageUI,
@@ -39,6 +44,8 @@ public class AppCMSPageViewModule {
         this.appCMSPageAPI = appCMSPageAPI;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.appCMSPresenter = appCMSPresenter;
+        this.modulesToIgnoreList =
+                Arrays.asList(context.getResources().getStringArray(R.array.app_cms_modules_to_ignore));
     }
 
     @Provides
@@ -55,6 +62,7 @@ public class AppCMSPageViewModule {
                 appCMSPageUI,
                 appCMSPageAPI,
                 jsonValueKeyMap,
-                appCMSPresenter);
+                appCMSPresenter,
+                modulesToIgnoreList);
     }
 }

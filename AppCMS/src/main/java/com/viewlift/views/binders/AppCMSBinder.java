@@ -18,27 +18,30 @@ public class AppCMSBinder extends Binder {
     private final AppCMSPageUI appCMSPageUI;
     private final AppCMSPageAPI appCMSPageAPI;
     private final Navigation navigation;
-    private final boolean loadedFromFile;
     private final String pageId;
+    private final boolean loadedFromFile;
     private final boolean appbarPresent;
     private final boolean fullScreen;
+    private final boolean userLoggedIn;
     private final Map<AppCMSUIKeyType, String> jsonValueKeyMap;
 
     public AppCMSBinder(AppCMSPageUI appCMSPageUI,
                         AppCMSPageAPI appCMSPageAPI,
                         Navigation navigation,
-                        boolean loadedFromFile,
                         String pageId,
+                        boolean loadedFromFile,
                         boolean appbarPresent,
                         boolean fullScreen,
+                        boolean userLoggedIn,
                         Map<AppCMSUIKeyType, String> jsonValueKeyMap) {
         this.appCMSPageUI = appCMSPageUI;
         this.appCMSPageAPI = appCMSPageAPI;
         this.navigation = navigation;
-        this.loadedFromFile = loadedFromFile;
         this.pageId = pageId;
+        this.loadedFromFile = loadedFromFile;
         this.appbarPresent = appbarPresent;
         this.fullScreen = fullScreen;
+        this.userLoggedIn = userLoggedIn;
         this.jsonValueKeyMap = jsonValueKeyMap;
     }
 
@@ -50,20 +53,16 @@ public class AppCMSBinder extends Binder {
         return appCMSPageAPI;
     }
 
-    public boolean getLoadedFromFile() {
-        return loadedFromFile;
-    }
-
     public Navigation getNavigation() {
         return navigation;
     }
 
-    public Map<AppCMSUIKeyType, String> getJsonValueKeyMap() {
-        return jsonValueKeyMap;
-    }
-
     public String getPageId() {
         return pageId;
+    }
+
+    public boolean getLoadedFromFile() {
+        return loadedFromFile;
     }
 
     public boolean isLoadedFromFile() {
@@ -76,5 +75,13 @@ public class AppCMSBinder extends Binder {
 
     public boolean isFullScreen() {
         return fullScreen;
+    }
+
+    public boolean isUserLoggedIn() {
+        return userLoggedIn;
+    }
+
+    public Map<AppCMSUIKeyType, String> getJsonValueKeyMap() {
+        return jsonValueKeyMap;
     }
 }

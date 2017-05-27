@@ -5,9 +5,9 @@
     <string name="app_cms_binder_key">app_cms_binder</string>
     <string name="app_cms_bundle_key">app_cms_bundle</string>
     <string name="launch_binder_key">launch_binder</string>
+    <string name="video_player_data_key">video_player_data</string>
     <string name="drawer_open">drawer_open</string>
     <string name="drawer_close">drawer_close</string>
     <string name="page_id">initial_url</string>
-    <string name="is_logged_in_key">is_logged_in</string>
     <string name="close_self_key">close_self</string>
 </resources>

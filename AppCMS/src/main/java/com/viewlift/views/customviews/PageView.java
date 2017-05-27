@@ -45,14 +45,14 @@ public class PageView extends BaseView {
     }
 
     @Override
-    protected ViewGroup createChildrenContainer(Context context) {
-        childrenContainer = new LinearLayout(context);
+    protected ViewGroup createChildrenContainer() {
+        childrenContainer = new LinearLayout(getContext());
         LinearLayout.LayoutParams childContainerLayoutParams =
                 new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT);
         childrenContainer.setLayoutParams(childContainerLayoutParams);
         ((LinearLayout) childrenContainer).setOrientation(LinearLayout.VERTICAL);
-        NestedScrollView nestedScrollView = new NestedScrollView(context);
+        NestedScrollView nestedScrollView = new NestedScrollView(getContext());
         NestedScrollView.LayoutParams nestedScrollViewLayoutParams =
                 new NestedScrollView.LayoutParams(LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT);

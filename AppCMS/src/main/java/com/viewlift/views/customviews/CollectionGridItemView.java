@@ -67,9 +67,16 @@ public class CollectionGridItemView extends BaseView {
     }
 
     protected void init() {
-        FrameLayout.LayoutParams layoutParams =
-                new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-                        LayoutParams.WRAP_CONTENT);
+        int width = getGridWidth(getContext(),
+                component.getLayout(),
+                LayoutParams.WRAP_CONTENT);
+        int height = getGridHeight(getContext(),
+                component.getLayout(),
+                LayoutParams.WRAP_CONTENT);
+        int margin = (int) convertDpToPixel(component.getTrayPadding(), getContext());
+        MarginLayoutParams marginLayoutParams = new MarginLayoutParams(width, height);
+        marginLayoutParams.setMargins(margin, margin, margin, margin);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(marginLayoutParams);
         this.setLayoutParams(layoutParams);
         this.childItems = new ArrayList<>();
         if (component.getComponents() != null) {
@@ -93,28 +100,20 @@ public class CollectionGridItemView extends BaseView {
     }
 
     @Override
-    protected ViewGroup createChildrenContainer(Context context) {
-        childrenContainer = new CardView(context);
-        int containerWidth = getViewWidth(context,
-                component.getLayout(),
-                LayoutParams.WRAP_CONTENT);
-        int containerHeight = getViewHeight(context,
-                component.getLayout(),
-                LayoutParams.WRAP_CONTENT);
-
+    protected ViewGroup createChildrenContainer() {
+        childrenContainer = new CardView(getContext());
         CardView.LayoutParams childContainerLayoutParams =
-                new CardView.LayoutParams(containerWidth,
-                        containerHeight);
+                new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT);
         childrenContainer.setLayoutParams(childContainerLayoutParams);
+        childrenContainer.setBackgroundResource(android.R.color.transparent);
         this.addView(childrenContainer);
-        int padding = (int) convertDpToPixel(component.getTrayPadding(), context);
-        this.setPadding(padding, padding, padding, padding);
         return childrenContainer;
     }
 
-    public void addChild(Context context, ItemContainer itemContainer) {
+    public void addChild(ItemContainer itemContainer) {
         if (childrenContainer == null) {
-            createChildrenContainer(context);
+            createChildrenContainer();
         }
         childItems.add(itemContainer);
         childrenContainer.addView(itemContainer.childView);
@@ -142,8 +141,8 @@ public class CollectionGridItemView extends BaseView {
                 if (!TextUtils.isEmpty(data.getGist().getPosterImageUrl())) {
                     Picasso.with(context)
                             .load(data.getGist().getPosterImageUrl())
-                            .resize(super.getViewWidth(context, childComponent.getLayout(), 1),
-                                    super.getViewHeight(context, childComponent.getLayout(), 1))
+                            .resize(getViewWidth(context, childComponent.getLayout(), 1),
+                                    getViewHeight(context, childComponent.getLayout(), 1))
                             .into((ImageView) view);
                 }
             } else if (childComponent.getKey()
@@ -161,62 +160,6 @@ public class CollectionGridItemView extends BaseView {
         }
     }
 
-    @Override
-    protected int getViewWidth(Context context, Layout layout, int defaultWidth) {
-        if (isTablet(context)) {
-            if (isLandscape(context)) {
-                TabletLandscape tabletLandscape = layout.getTabletLandscape();
-                if (tabletLandscape != null &&
-                        tabletLandscape.getGridWidth() != null &&
-                        tabletLandscape.getGridWidth() > 0) {
-                    return (int) convertDpToPixel(tabletLandscape.getGridWidth(), context);
-                }
-            } else {
-                TabletPortrait tabletPortrait = layout.getTabletPortrait();
-                if (tabletPortrait != null &&
-                        tabletPortrait.getGridWidth() != null &&
-                        tabletPortrait.getGridWidth() > 0) {
-                    return (int) convertDpToPixel(tabletPortrait.getGridWidth(), context);
-                }
-            }
-        } else {
-            Mobile mobile = layout.getMobile();
-            if (mobile != null && mobile.getGridWidth() != null && mobile.getGridWidth() > 0) {
-                return (int) convertDpToPixel(mobile.getGridWidth(), context);
-            }
-        }
-        return defaultWidth;
-    }
-
-    @Override
-    protected int getViewHeight(Context context, Layout layout, int defaultHeight) {
-        if (isTablet(context)) {
-            if (isLandscape(context)) {
-                TabletLandscape tabletLandscape = layout.getTabletLandscape();
-                if (tabletLandscape != null &&
-                        tabletLandscape.getGridHeight() != null &&
-                        tabletLandscape.getGridHeight() > 0) {
-                    return (int) convertDpToPixel(tabletLandscape.getGridHeight(), context);
-                }
-            } else {
-                TabletPortrait tabletPortrait = layout.getTabletPortrait();
-                if (tabletPortrait != null &&
-                        tabletPortrait.getGridHeight() != null &&
-                        tabletPortrait.getGridHeight() > 0) {
-                    return (int) convertDpToPixel(tabletPortrait.getGridHeight(), context);
-                }
-            }
-        } else {
-            Mobile mobile = layout.getMobile();
-            if (mobile != null &&
-                    mobile.getGridHeight() != null &&
-                    mobile.getGridHeight() > 0) {
-                return (int) convertDpToPixel(mobile.getGridHeight(), context);
-            }
-        }
-        return defaultHeight;
-    }
-
     private Component matchComponentToView(View view) {
         Component result = null;
         for (ItemContainer itemContainer : childItems) {
@@ -225,5 +168,55 @@ public class CollectionGridItemView extends BaseView {
             }
         }
         return result;
+    }
+
+    protected int getGridWidth(Context context, Layout layout, int defaultWidth) {
+        if (isTablet(context)) {
+            if (isLandscape(context)) {
+                TabletLandscape tabletLandscape = layout.getTabletLandscape();
+                int width = tabletLandscape.getGridWidth();
+                if (width != -1) {
+                    return (int) convertDpToPixel(width, context);
+                }
+            } else {
+                TabletPortrait tabletPortrait = layout.getTabletPortrait();
+                int width = tabletPortrait.getGridWidth();
+                if (width != -1) {
+                    return (int) convertDpToPixel(width, context);
+                }
+            }
+        } else {
+            Mobile mobile = layout.getMobile();
+            int width = mobile.getGridWidth();
+            if (width != -1) {
+                return (int) convertDpToPixel(width, context);
+            }
+        }
+        return defaultWidth;
+    }
+
+    protected int getGridHeight(Context context, Layout layout, int defaultHeight) {
+        if (isTablet(context)) {
+            if (isLandscape(context)) {
+                TabletLandscape tabletLandscape = layout.getTabletLandscape();
+                int height = tabletLandscape.getGridHeight();
+                if (height != -1) {
+                    return (int) convertDpToPixel(height, context);
+                }
+            } else {
+                TabletPortrait tabletPortrait = layout.getTabletPortrait();
+                int height = tabletPortrait.getGridHeight();
+                if (height != -1) {
+                    return (int) convertDpToPixel(height, context);
+                }
+            }
+        } else {
+            Mobile mobile = layout.getMobile();
+            int height = mobile.getGridHeight();
+            if (height != -1) {
+                return (int) convertDpToPixel(height, context);
+            }
+        }
+        return defaultHeight;
     }
 }

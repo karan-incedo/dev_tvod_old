@@ -1,6 +1,7 @@
 package com.viewlift.views.adapters;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +18,8 @@ import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.List;
 import java.util.Map;
+
+import snagfilms.com.air.appcms.R;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -63,8 +66,23 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         bindView(holder.componentView, adapterData.get(position));
+        final Context viewContext = holder.componentView.getContext();
+        holder.componentView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String permalink = adapterData.get(position).getGist().getPermalink();
+                String action = component.getTrayClickAction();
+                if (!appCMSPresenter.launchFilmAction(permalink, action)) {
+                    Log.e(TAG, "Could not launch action: " +
+                            " permalink: " +
+                            permalink +
+                            " action: " +
+                            action);
+                }
+            }
+        });
     }
 
     @Override

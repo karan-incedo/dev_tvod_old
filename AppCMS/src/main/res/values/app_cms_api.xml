@@ -8,6 +8,10 @@
     <!-- AppCMS JSON data input keys -->
     <string name="app_cms_main_version_key">version</string>
     <string name="app_cms_main_old_version_key">old_version</string>
+    <string-array name="app_cms_modules_to_ignore">
+        <item>AC Masthead 01</item>
+        <item>AC Footer 01</item>
+    </string-array>
     <string name="app_cms_main_android_key">Android</string>
     <string name="app_cms_main_api_base_url_key">apiBaseUrl</string>
     <string name="app_cms_main_api_site_key">site</string>

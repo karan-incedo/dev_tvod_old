@@ -1,59 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ <RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/app_cms_navigation_drawer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg">
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_cms_appbarlayout"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="@dimen/appbar_elevation"
+        android:gravity="center_horizontal"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:fitsSystemWindows="true">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/app_cms_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
 
     <LinearLayout
+        android:id="@+id/app_cms_tab_nav_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/app_cms_appbarlayout"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:elevation="4dp"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            android:fitsSystemWindows="true">
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/app_cms_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            </android.support.v7.widget.Toolbar>
-        </android.support.design.widget.AppBarLayout>
-
-        <FrameLayout
-            android:id="@+id/app_cms_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
+        android:layout_height="@dimen/bottom_navbar_height"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimaryDark">
+        <com.viewlift.views.customviews.NavBarItemView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent">
+        </com.viewlift.views.customviews.NavBarItemView>
+        <com.viewlift.views.customviews.NavBarItemView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent">
+        </com.viewlift.views.customviews.NavBarItemView>
+        <com.viewlift.views.customviews.NavBarItemView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent">
+        </com.viewlift.views.customviews.NavBarItemView>
+        <com.viewlift.views.customviews.NavBarItemView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent">
+        </com.viewlift.views.customviews.NavBarItemView>
     </LinearLayout>
 
     <FrameLayout
-        android:id="@+id/app_cms_navigation"
+        android:id="@+id/app_cms_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorPrimary"
-        android:layout_gravity="start">
+        android:layout_below="@id/app_cms_appbarlayout"
+        android:layout_above="@id/app_cms_tab_nav_container"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Item 1"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Item 2"/>
-        </LinearLayout>
-
-    </FrameLayout>
-
-</android.support.v4.widget.DrawerLayout>
+</RelativeLayout>

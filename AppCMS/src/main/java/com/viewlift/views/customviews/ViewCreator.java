@@ -2,6 +2,7 @@ package com.viewlift.views.customviews;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -47,14 +48,16 @@ public class ViewCreator {
                                  AppCMSPageUI appCMSPageUI,
                                  AppCMSPageAPI appCMSPageAPI,
                                  Map<AppCMSUIKeyType, String> jsonValueKeyMap,
-                                 AppCMSPresenter appCMSPresenter) {
+                                 AppCMSPresenter appCMSPresenter,
+                                 List<String> modulesToIgnore) {
         PageView pageView = new PageView(context, appCMSPageUI);
         createPageView(context,
                 appCMSPageUI,
                 appCMSPageAPI,
                 pageView,
                 jsonValueKeyMap,
-                appCMSPresenter);
+                appCMSPresenter,
+                modulesToIgnore);
         return pageView;
     }
 
@@ -74,24 +77,28 @@ public class ViewCreator {
                                   AppCMSPageAPI appCMSPageAPI,
                                   final PageView pageView,
                                   Map<AppCMSUIKeyType, String> jsonValueKeyMap,
-                                  AppCMSPresenter appCMSPresenter) {
+                                  AppCMSPresenter appCMSPresenter,
+                                  List<String> modulesToIgnore) {
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
-        ViewGroup childrenContainer = pageView.getChildrenContainer(context);
+        ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList module : modulesList) {
-            Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI);
-            View childView = createModuleView(context,
-                    module,
-                    moduleAPI,
-                    new OnComponentLoaded() {
-                        @Override
-                        public void onBitmapLoaded(Drawable drawable) {
-                            pageView.setBackground(drawable);
-                        }
-                    },
-                    jsonValueKeyMap,
-                    appCMSPresenter);
-            if (childView != null) {
-                childrenContainer.addView(childView);
+            if (!modulesToIgnore.contains(module.getView())) {
+                Log.d(TAG, "Creating view for: " + module.getView());
+                Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI);
+                View childView = createModuleView(context,
+                        module,
+                        moduleAPI,
+                        new OnComponentLoaded() {
+                            @Override
+                            public void onBitmapLoaded(Drawable drawable) {
+                                pageView.setBackground(drawable);
+                            }
+                        },
+                        jsonValueKeyMap,
+                        appCMSPresenter);
+                if (childView != null) {
+                    childrenContainer.addView(childView);
+                }
             }
         }
     }
@@ -103,7 +110,7 @@ public class ViewCreator {
                                  Map<AppCMSUIKeyType, String> jsonValueKeyMap,
                                  AppCMSPresenter appCMSPresenter) {
         ModuleView moduleView = new ModuleView(context, module);
-        ViewGroup childrenContainer = moduleView.getChildrenContainer(context);
+        ViewGroup childrenContainer = moduleView.getChildrenContainer();
         if (module.getComponents() != null) {
             for (int i = 0; i < module.getComponents().size(); i++) {
                 Component component = module.getComponents().get(i);
@@ -117,9 +124,8 @@ public class ViewCreator {
                 if (componentView != null) {
                     childrenContainer.addView(componentView);
                     moduleView.setComponentHasView(i, true);
-                    Log.d(TAG, "Setting margins for: " + module.getId());
-                    moduleView.setViewMarginsFromComponent(context,
-                            component.getLayout(),
+                    Log.d(TAG, "Setting margins for: " + component.getKey());
+                    moduleView.setViewMarginsFromComponent(component.getLayout(),
                             componentView,
                             moduleView.getLayout(),
                             childrenContainer,
@@ -155,14 +161,13 @@ public class ViewCreator {
                             .childView(componentView)
                             .component(childComponent)
                             .build();
-                collectionGridItemView.addChild(context, itemContainer);
+                collectionGridItemView.addChild(itemContainer);
                 collectionGridItemView.setComponentHasView(i, true);
                 Log.d(TAG, "Setting margins for: "  + childComponent.getType());
-                collectionGridItemView.setViewMarginsFromComponent(context,
-                        childComponent.getLayout(),
+                collectionGridItemView.setViewMarginsFromComponent(childComponent.getLayout(),
                         componentView,
                         collectionGridItemView.getLayout(),
-                        collectionGridItemView.getChildrenContainer(context),
+                        collectionGridItemView.getChildrenContainer(),
                         false);
             } else {
                 collectionGridItemView.setComponentHasView(i, false);
@@ -248,6 +253,12 @@ public class ViewCreator {
             }
             if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                 componentView.setBackgroundColor(Color.parseColor(getColor(component.getBackgroundColor())));
+            }
+            if (component.getFontSize() > 0) {
+                ((TextView) componentView).setTextSize((float) component.getFontSize());
+            }
+            if (!TextUtils.isEmpty(component.getFontFamily())) {
+                ((TextView) componentView).setTypeface(Typeface.create(component.getFontFamily(), Typeface.NORMAL));
             }
         } else if (component.getType()
                 .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_IMAGE_KEY))) {

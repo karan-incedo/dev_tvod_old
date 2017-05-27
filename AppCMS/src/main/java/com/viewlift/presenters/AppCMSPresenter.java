@@ -117,6 +117,10 @@ public class AppCMSPresenter {
         return currentActivity;
     }
 
+    public boolean launchFilmAction(String filmPath, String action) {
+        return false;
+    }
+
     public boolean launchAction(final String action, @Nullable Bundle data) {
         Log.d(TAG, "Attempting to launch page for action: " + action);
 
@@ -126,8 +130,7 @@ public class AppCMSPresenter {
             if (data != null &&
                     action.equals(currentActivity.getString(R.string.app_cms_action_initialize_key))) {
                 String pageId = data.getString(currentActivity.getString(R.string.page_id));
-                boolean userLoggedIn = data.getBoolean(currentActivity.getString(R.string.is_logged_in_key));
-                getAppCMSMain(currentActivity, pageId, userLoggedIn);
+                getAppCMSMain(currentActivity, pageId);
             } else {
                 if (!actionToPageMap.containsKey(action) || actionToPageMap.get(action) == null) {
                     result = false;
@@ -195,14 +198,16 @@ public class AppCMSPresenter {
         AppCMSBinder appCMSBinder = new AppCMSBinder(appCMSPageUI,
                 appCMSPageAPI,
                 navigation,
-                loadFromFile,
                 pageID,
+                loadFromFile,
                 appbarPresent,
                 fullscreen,
+                isUserLoggedIn(activity),
                 jsonValueKeyMap);
         args.putBinder(activity.getString(R.string.app_cms_binder_key), appCMSBinder);
         Intent appCMSIntent = new Intent(activity, AppCMSPageActivity.class);
         appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
+
         activity.startActivity(appCMSIntent);
     }
 
@@ -223,8 +228,7 @@ public class AppCMSPresenter {
     }
 
     private void getAppCMSMain(final Activity activity,
-                               final String siteId,
-                               final boolean userLoggedIn) {
+                               final String siteId) {
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
@@ -277,15 +281,13 @@ public class AppCMSPresenter {
                     Log.d(TAG, "Version: " + version);
                     Log.d(TAG, "OldVersion: " + oldVersion);
                     loadFromFile = false;
-                    getAppCMSAndroid(activity, androidUrl, userLoggedIn);
+                    getAppCMSAndroid(activity, androidUrl);
                 }
             }
         }).execute(params);
     }
 
-    private void getAppCMSAndroid(final Activity activity,
-                                  String url,
-                                  final boolean userLoggedIn) {
+    private void getAppCMSAndroid(final Activity activity, String url) {
         GetAppCMSAndroidUIAsyncTask.Params params =
                 new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                     .url(url)
@@ -302,7 +304,7 @@ public class AppCMSPresenter {
                     launchErrorActivity(activity);
                 } else {
                     navigation = appCMSAndroidUI.getNavigation();
-                    queueMetaPages(appCMSAndroidUI.getMetaPages(), userLoggedIn);
+                    queueMetaPages(appCMSAndroidUI.getMetaPages());
                     final MetaPage firstPage = pagesToProcess.peek();
                     Log.d(TAG, "Processing meta pages queue");
                     processMetaPagesQueue(loadFromFile,
@@ -333,7 +335,7 @@ public class AppCMSPresenter {
         new GetAppCMSPageUIAsyncTask(appCMSPageUICall, onPageReady).execute(params);
     }
 
-    private void queueMetaPages(List<MetaPage> metaPageList, boolean userLoggedIn) {
+    private void queueMetaPages(List<MetaPage> metaPageList) {
         if (pagesToProcess == null) {
             pagesToProcess = new ConcurrentLinkedQueue<>();
         }
@@ -350,7 +352,7 @@ public class AppCMSPresenter {
                         metaPageList.get(pageToQueueIndex).getPageUI() + " " +
                         metaPageList.get(pageToQueueIndex).getPageAPI());
                 metaPageList.remove(pageToQueueIndex);
-                queueMetaPages(metaPageList, userLoggedIn);
+                queueMetaPages(metaPageList);
             } else {
                 for (int i = 0; i < metaPageList.size(); i++) {
                     pagesToProcess.add(metaPageList.get(i));

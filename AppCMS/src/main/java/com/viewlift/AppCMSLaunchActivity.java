@@ -39,7 +39,6 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         boolean isUserLoggedIn = appCMSPresenterComponent.appCMSPresenter().isUserLoggedIn(this);
         Bundle args = new Bundle();
         args.putString(getString(R.string.page_id), getString(R.string.app_cms_app_name));
-        args.putBoolean(getString(R.string.is_logged_in_key), isUserLoggedIn);
         appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(this);
         boolean launchResult = appCMSPresenterComponent
                 .appCMSPresenter()

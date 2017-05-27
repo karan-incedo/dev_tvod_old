@@ -39,6 +39,12 @@ public class RESTUnitTest {
     private AppCMSAPIComponent appCMSAPIComponent;
 
     private static final String BASEURL = "https://appcms.viewlift.com";
+
+    private static final String API_BASEURL = "https://apisnagfilms-dev.viewlift.com";
+    private static final String PAGE_API_PATH = "/content/pages";
+    private static final String SITE_ID = "demo5";
+    private static final String PAGE_ID = "d6c8599a-07ce-4b51-a201-51a93300f221";
+
     private static final String APP_CMS_APP_NAME = "49428a08-4d82-402e-9f86-0623d9a2c918";
     private static final String APP_CMS_MAIN_URL = "%1$s/%2$s/main.json";
     private static final String APP_CMS_ANDROID_URL = "https://appcms.viewlift.com/49428a08-4d82-402e-9f86-0623d9a2c918/android.json";
@@ -120,7 +126,11 @@ public class RESTUnitTest {
     @Test
     public void test_appCMSHomePageAPICall() throws Exception {
         AppCMSPageAPICall appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
-        AppCMSPageAPI appCMSPageAPI = appCMSPageAPICall.call(context, APP_CMS_HOME_PAGE_URL_DATA);
+        AppCMSPageAPI appCMSPageAPI = appCMSPageAPICall.call(context,
+                API_BASEURL,
+                PAGE_API_PATH,
+                SITE_ID,
+                PAGE_ID);
         assertNotNull(appCMSPageAPI);
     }
 }
