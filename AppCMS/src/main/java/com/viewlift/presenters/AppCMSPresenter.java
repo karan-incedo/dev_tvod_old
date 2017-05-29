@@ -117,11 +117,53 @@ public class AppCMSPresenter {
         return currentActivity;
     }
 
-    public boolean launchFilmAction(String filmPath, String action) {
-        return false;
+    public boolean launchVideoAction(String pagePath, final String action) {
+        boolean result = false;
+        if (currentActivity != null) {
+            result = true;
+            final AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
+            boolean appbarPresent = true;
+            boolean fullscreen = false;
+            switch (actionToActionTypeMap.get(action)) {
+                case SPLASH_PAGE:
+                    appbarPresent = false;
+                    fullscreen = false;
+                    break;
+                case VIDEO_PAGE:
+                    appbarPresent = false;
+                    fullscreen = true;
+                    break;
+                case HOME_PAGE:
+                default:
+                    break;
+            }
+            getPageIdContent(apiBaseUrl,
+                    actionToPageAPIUrlMap.get(action),
+                    apiSiteName,
+                    false,
+                    pagePath,
+                    new AppCMSPageAPIAction(appbarPresent, fullscreen) {
+                        @Override
+                        public void call(AppCMSPageAPI appCMSPageAPI) {
+                            Bundle args = getPageActivityBundle(currentActivity,
+                                    appCMSPageUI,
+                                    appCMSPageAPI,
+                                    getPageId(appCMSPageUI),
+                                    loadFromFile,
+                                    appbarPresent,
+                                    fullscreen);
+                            Intent updatePageIntent =
+                                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                    args);
+                            currentActivity.sendBroadcast(updatePageIntent);
+                        }
+                    });
+        }
+        return result;
     }
 
-    public boolean launchAction(final String action, @Nullable Bundle data) {
+    public boolean launchPageAction(final String action, @Nullable Bundle data) {
         Log.d(TAG, "Attempting to launch page for action: " + action);
 
         boolean result = false;
@@ -154,9 +196,10 @@ public class AppCMSPresenter {
                     final AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
                     AppCMSPageAPI currentAppCMSPageAPI = actionToPageAPIMap.get(action);
                     if (currentAppCMSPageAPI == null) {
-                        getContent(apiBaseUrl,
+                        getPageIdContent(apiBaseUrl,
                                 actionToPageAPIUrlMap.get(action),
                                 apiSiteName,
+                                true,
                                 getPageId(appCMSPageUI),
                                 new AppCMSPageAPIAction(appbarPresent, fullscreen) {
                                     @Override
@@ -187,13 +230,13 @@ public class AppCMSPresenter {
         return result;
     }
 
-    private void launchPageActivity(Activity activity,
-                                    AppCMSPageUI appCMSPageUI,
-                                    AppCMSPageAPI appCMSPageAPI,
-                                    String pageID,
-                                    boolean loadFromFile,
-                                    boolean appbarPresent,
-                                    boolean fullscreen) {
+    private Bundle getPageActivityBundle(Activity activity,
+                                         AppCMSPageUI appCMSPageUI,
+                                         AppCMSPageAPI appCMSPageAPI,
+                                         String pageID,
+                                         boolean loadFromFile,
+                                         boolean appbarPresent,
+                                         boolean fullscreen) {
         Bundle args = new Bundle();
         AppCMSBinder appCMSBinder = new AppCMSBinder(appCMSPageUI,
                 appCMSPageAPI,
@@ -205,6 +248,23 @@ public class AppCMSPresenter {
                 isUserLoggedIn(activity),
                 jsonValueKeyMap);
         args.putBinder(activity.getString(R.string.app_cms_binder_key), appCMSBinder);
+        return args;
+    }
+
+    private void launchPageActivity(Activity activity,
+                                    AppCMSPageUI appCMSPageUI,
+                                    AppCMSPageAPI appCMSPageAPI,
+                                    String pageId,
+                                    boolean loadFromFile,
+                                    boolean appbarPresent,
+                                    boolean fullscreen) {
+        Bundle args = getPageActivityBundle(activity,
+                appCMSPageUI,
+                appCMSPageAPI,
+                pageId,
+                loadFromFile,
+                appbarPresent,
+                fullscreen);
         Intent appCMSIntent = new Intent(activity, AppCMSPageActivity.class);
         appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
 
@@ -313,7 +373,7 @@ public class AppCMSPresenter {
                                 public void call() {
                                     Log.d(TAG, "Launching first page: " + firstPage.getPageName());
                                     boolean launchSuccess =
-                                            launchAction(pageNameToActionMap.get(firstPage.getPageName()),
+                                            launchPageAction(pageNameToActionMap.get(firstPage.getPageName()),
                                                     null);
                                     if (!launchSuccess) {
                                         Log.e(TAG, "Failed to launch page: " + firstPage.getPageName());
@@ -392,16 +452,18 @@ public class AppCMSPresenter {
                 loadFromFile);
     }
 
-    public void getContent(String baseUrl,
-                           String endPoint,
-                           String siteId,
-                           String pageId,
-                           Action1<AppCMSPageAPI> readyAction) {
+    public void getPageIdContent(String baseUrl,
+                                 String endPoint,
+                                 String siteId,
+                                 boolean usePageIdQueryParam,
+                                 String pageId,
+                                 Action1<AppCMSPageAPI> readyAction) {
         GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .baseUrl(baseUrl)
                 .endpoint(endPoint)
                 .siteId(siteId)
+                .usePageIdQueryParam(usePageIdQueryParam)
                 .pageId(pageId)
                 .build();
         new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);

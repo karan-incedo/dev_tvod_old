@@ -40,13 +40,26 @@ public class AppCMSPageAPICall {
                               String baseUrl,
                               String endpoint,
                               String siteId,
+                              boolean usePageIdQueryParam,
                               String pageId) throws IOException {
-        String urlWithContent =
-                context.getString(R.string.app_cms_page_api_url,
-                        baseUrl,
-                        endpoint,
-                        siteId,
-                        pageId);
+        String urlWithContent;
+        if (usePageIdQueryParam) {
+            urlWithContent =
+                    context.getString(R.string.app_cms_page_api_url,
+                            baseUrl,
+                            endpoint,
+                            siteId,
+                            context.getString(R.string.app_cms_page_id_query_parameter),
+                            pageId);
+        } else {
+            urlWithContent =
+                    context.getString(R.string.app_cms_page_api_url,
+                            baseUrl,
+                            endpoint,
+                            siteId,
+                            context.getString(R.string.app_cms_page_path_query_parameter),
+                            pageId);
+        }
         String filename = getResourceFilename(pageId);
         return writePageToFile(filename,
                 appCMSPageAPIRest.get(apiKey, urlWithContent).execute().body());

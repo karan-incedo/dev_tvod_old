@@ -56,7 +56,7 @@ public class AppCMSMainUICall {
         try {
             mainInStorage = readMainFromFile(filename);
         } catch (IOException exception) {
-            Log.w(TAG, "Previous version of Main.json file is not in storage");
+            Log.w(TAG, "Previous version of main.json file is not in storage");
         }
 
         boolean useExistingOldVersion = true;

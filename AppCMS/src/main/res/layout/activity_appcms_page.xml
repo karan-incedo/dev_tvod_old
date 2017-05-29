@@ -64,6 +64,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/app_cms_appbarlayout"
-        android:layout_above="@id/app_cms_tab_nav_container"/>
+        android:layout_above="@id/app_cms_tab_nav_container"
+        android:alpha="1"/>
 
 </RelativeLayout>

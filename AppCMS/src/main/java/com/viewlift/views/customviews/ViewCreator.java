@@ -12,9 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -32,8 +30,6 @@ import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
-
-import org.w3c.dom.Text;
 
 import snagfilms.com.air.appcms.R;
 
@@ -228,7 +224,7 @@ public class ViewCreator {
                             " -> " +
                             component.getAction());
                     if (!TextUtils.isEmpty(component.getAction())) {
-                        boolean launchResult = appCMSPresenter.launchAction(component.getAction(),
+                        boolean launchResult = appCMSPresenter.launchPageAction(component.getAction(),
                                 null);
                         if (!launchResult) {
                             Log.e(TAG, "Failed to launch " + component.getAction());

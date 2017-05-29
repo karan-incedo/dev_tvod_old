@@ -22,6 +22,9 @@ public class User {
     @SerializedName("anchor")
     @Expose
     private String anchor;
+    @SerializedName("displayedName")
+    @Expose
+    private String displayedName;
 
     public String getTitle() {
         return title;
@@ -63,4 +66,11 @@ public class User {
         this.anchor = anchor;
     }
 
+    public String getDisplayedName() {
+        return displayedName;
+    }
+
+    public void setDisplayedName(String displayedName) {
+        this.displayedName = displayedName;
+    }
 }

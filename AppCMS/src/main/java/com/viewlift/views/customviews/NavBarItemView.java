@@ -1,19 +1,28 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.io.FileNotFoundException;
+
+import snagfilms.com.air.appcms.R;
 
 /**
  * Created by viewlift on 5/26/17.
  */
 
 public class NavBarItemView extends LinearLayout {
+    private static final String TAG = "NavBarItemView";
     private ImageView navImage;
     private TextView navLabel;
 
@@ -44,28 +53,33 @@ public class NavBarItemView extends LinearLayout {
 
     public void init() {
         setOrientation(VERTICAL);
+        createChildren(getContext());
     }
 
-    public void createChildren(Context context,
-                               int width,
-                               int height,
-                               float weight) {
+    public void createChildren(Context context) {
         navImage = new ImageView(context);
         LinearLayout.LayoutParams navImageLayoutParams =
-                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0);
-        navImageLayoutParams.weight = 2;
+                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
+        navImageLayoutParams.gravity = Gravity.CENTER;
         navImage.setLayoutParams(navImageLayoutParams);
         navLabel = new TextView(context);
         LinearLayout.LayoutParams navLabelLayoutParams =
-                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0);
+                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
+        navLabelLayoutParams.gravity = Gravity.CENTER;
         navLabel.setLayoutParams(navLabelLayoutParams);
-        navLabelLayoutParams.weight = 1;
+        navLabel.setTextColor(ContextCompat.getColor(context, R.color.colorNavBarText));
         addView(navImage);
         addView(navLabel);
     }
 
     public void setImage(String drawableName) {
-        navImage.setBackground(Drawable.createFromPath(drawableName));
+        Resources resources = getResources();
+        int drawableId = resources.getIdentifier(drawableName,
+                "drawable",
+                getContext().getPackageName());
+        navImage.setBackgroundResource(drawableId);
     }
 
     public void setLabel(String label) {

@@ -22,6 +22,9 @@ public class Primary {
     @SerializedName("anchor")
     @Expose
     private String anchor;
+    @SerializedName("displayedPath")
+    @Expose
+    private String displayedPath;
 
     public String getTitle() {
         return title;
@@ -63,4 +66,11 @@ public class Primary {
         this.anchor = anchor;
     }
 
+    public String getDisplayedPath() {
+        return displayedPath;
+    }
+
+    public void setDisplayedPath(String displayedPath) {
+        this.displayedPath = displayedPath;
+    }
 }

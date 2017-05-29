@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
@@ -29,8 +30,10 @@ import com.viewlift.models.data.appcms.ui.android.Primary;
 import com.viewlift.models.data.appcms.ui.android.User;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.customviews.NavBarItemView;
 import com.viewlift.views.fragments.AppCMSPageFragment;
 
+import java.util.List;
 import java.util.Stack;
 
 import snagfilms.com.air.appcms.R;
@@ -41,8 +44,6 @@ import snagfilms.com.air.appcms.R;
 
 public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageFragment.OnPageCreationError {
     private static final String TAG = "AppCMSPageActivity";
-
-    private static final int MAX_BOTTOM_NAV_ITEMS = 3;
 
     private AppCMSPresenter appCMSPresenter;
     private Stack<AppCMSBinder> appCMSBinderStack;
@@ -65,7 +66,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
         Intent intent = getIntent();
         Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
-        handleAppCMSBinder((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)));
+        handleAppCMSBinder((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)),
+                true);
 
         presenterActionReceiver = new BroadcastReceiver() {
             @Override
@@ -94,7 +96,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         finish();
     }
 
-    private void handleAppCMSBinder(AppCMSBinder appCMSBinder) {
+    private void handleAppCMSBinder(AppCMSBinder appCMSBinder, boolean firstFragment) {
         appCMSBinderStack.push(appCMSBinder);
 
         if (!appCMSBinder.isAppbarPresent()) {
@@ -108,16 +110,65 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             getSupportActionBar().setHomeButtonEnabled(false);
         }
 
+        LinearLayout appCMSTabNavContainer =
+                (LinearLayout) findViewById(R.id.app_cms_tab_nav_container);
+        Navigation navigation = appCMSBinder.getNavigation();
+        if (navigation.getPrimary().size() == 0) {
+            appCMSTabNavContainer.setVisibility(View.GONE);
+        } else {
+            int totalNavItemCnt = 0;
+            for (int i = 0;
+                 i < navigation.getPrimary().size() && totalNavItemCnt < appCMSTabNavContainer.getChildCount() - 1;
+                 i++, totalNavItemCnt++) {
+                Primary primary = navigation.getPrimary().get(i);
+                StringBuffer iconName = new StringBuffer();
+                iconName.append(primary.getDisplayedPath().toLowerCase().replaceAll(" ", "_"));
+                iconName.append(primary.getUrl().replace("/", "_"));
+
+                NavBarItemView navBarItemView = (NavBarItemView) appCMSTabNavContainer.getChildAt(i);
+                navBarItemView.setImage(iconName.toString());
+                navBarItemView.setLabel(primary.getTitle());
+            }
+            if (appCMSBinder.isUserLoggedIn()) {
+                for (int i = 0;
+                     i < navigation.getUser().size() && totalNavItemCnt < appCMSTabNavContainer.getChildCount()  - 1;
+                     i++, totalNavItemCnt++) {
+                    User user = navigation.getUser().get(i);
+                    StringBuffer iconName = new StringBuffer();
+                    iconName.append(user.getDisplayedName().toLowerCase().replaceAll(" ", "_"));
+                    iconName.append(user.getUrl().replaceAll("/", "_"));
+
+                    NavBarItemView navBarItemView = (NavBarItemView) appCMSTabNavContainer.getChildAt(i);
+                    navBarItemView.setImage(iconName.toString());
+                    navBarItemView.setLabel(user.getTitle());
+                }
+            }
+            NavBarItemView menuNavBarItemView =
+                    (NavBarItemView) appCMSTabNavContainer.getChildAt(appCMSTabNavContainer.getChildCount() - 1);
+            menuNavBarItemView.setImage(getString(R.string.app_cms_menu_icon_name));
+            menuNavBarItemView.setLabel(getString(R.string.app_cms_menu_label));
+        }
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         Fragment appCMSPageFragment = AppCMSPageFragment.newInstance(this, appCMSBinder);
-        fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment, appCMSBinder.getPageId());
+        if (firstFragment) {
+            fragmentTransaction.replace(R.id.app_cms_fragment,
+                    appCMSPageFragment,
+                    String.valueOf(appCMSBinderStack.size()));
+        } else {
+            fragmentTransaction.replace(R.id.app_cms_fragment,
+                    appCMSPageFragment,
+                    appCMSBinder.getPageId());
+            fragmentTransaction.addToBackStack(String.valueOf(appCMSBinderStack.size()));
+        }
         fragmentTransaction.commit();
     }
 
     private void handlePresenterAction(Intent intent) {
         Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
-        handleAppCMSBinder((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)));
+        handleAppCMSBinder((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)),
+                false);
     }
 
     private void setFinishResult(int resultCode) {
@@ -130,7 +181,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     @Override
     public void onBackPressed() {
+        AppCMSBinder currentAppCMSBinder = appCMSBinderStack.pop();
         super.onBackPressed();
-        appCMSBinderStack.pop();
     }
 }

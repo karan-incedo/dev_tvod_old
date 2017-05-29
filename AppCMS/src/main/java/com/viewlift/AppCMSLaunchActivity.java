@@ -42,7 +42,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(this);
         boolean launchResult = appCMSPresenterComponent
                 .appCMSPresenter()
-                .launchAction(getString(R.string.app_cms_action_initialize_key), args);
+                .launchPageAction(getString(R.string.app_cms_action_initialize_key), args);
         if (!launchResult) {
             Log.e(TAG, "Error launching initialization action");
             appCMSPresenterComponent.appCMSPresenter().launchErrorActivity(this);
