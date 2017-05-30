@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -299,7 +300,7 @@ public class ViewCreator {
             });
         } else if (component.getType()
                 .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_LABEL_KEY))) {
-            componentViewResult.componentView = new TextView(context);
+            componentViewResult.componentView = new AlwaysSelectedTextView(context);
             if (!TextUtils.isEmpty(component.getText())) {
                 ((TextView) componentViewResult.componentView).setText(component.getText().toUpperCase());
             } else if (component.getKey()
@@ -312,7 +313,7 @@ public class ViewCreator {
                 ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(component.getTextColor())));
             }
             if (!TextUtils.isEmpty(component.getBackgroundColor())) {
-                componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(component.getBackgroundColor())));
+                ((TextView) componentViewResult.componentView).setBackgroundColor(Color.parseColor(getColor(component.getBackgroundColor())));
             }
             if (component.getFontSize() > 0) {
                 ((TextView) componentViewResult.componentView).setTextSize((float) component.getFontSize());
@@ -320,6 +321,11 @@ public class ViewCreator {
             if (!TextUtils.isEmpty(component.getFontFamily())) {
                 ((TextView) componentViewResult.componentView).setTypeface(Typeface.create(component.getFontFamily(), Typeface.NORMAL));
             }
+            ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.MARQUEE);
+            ((TextView) componentViewResult.componentView).setHorizontallyScrolling(true);
+            ((TextView) componentViewResult.componentView).setMarqueeRepeatLimit(-1);
+            ((TextView) componentViewResult.componentView).setSingleLine(true);
+            ((TextView) componentViewResult.componentView).setLines(1);
         } else if (component.getType()
                 .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_IMAGE_KEY))) {
             if (!TextUtils.isEmpty(component.getImageName())) {

@@ -17,7 +17,7 @@
         android:fitsSystemWindows="true">
         <android.support.v7.widget.Toolbar
             android:id="@+id/app_cms_toolbar"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content">
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
@@ -34,6 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="center"
+            android:foreground="?android:attr/selectableItemBackground"
             android:background="@android:color/transparent">
         </com.viewlift.views.customviews.NavBarItemView>
         <com.viewlift.views.customviews.NavBarItemView
@@ -41,6 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="center"
+            android:foreground="?android:attr/selectableItemBackground"
             android:background="@android:color/transparent">
         </com.viewlift.views.customviews.NavBarItemView>
         <com.viewlift.views.customviews.NavBarItemView
@@ -48,6 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="center"
+            android:foreground="?android:attr/selectableItemBackground"
             android:background="@android:color/transparent">
         </com.viewlift.views.customviews.NavBarItemView>
         <com.viewlift.views.customviews.NavBarItemView
@@ -55,9 +58,18 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="center"
+            android:foreground="?android:attr/selectableItemBackground"
             android:background="@android:color/transparent">
         </com.viewlift.views.customviews.NavBarItemView>
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/app_cms_page_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/app_cms_appbarlayout"
+        android:layout_above="@id/app_cms_tab_nav_container"/>
 
     <FrameLayout
         android:id="@+id/app_cms_fragment"

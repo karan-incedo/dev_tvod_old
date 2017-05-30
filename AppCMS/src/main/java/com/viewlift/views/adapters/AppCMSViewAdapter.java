@@ -71,7 +71,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             public void onClick(View v) {
                 String permalink = adapterData.get(position).getGist().getPermalink();
                 String action = component.getTrayClickAction();
-                if (!appCMSPresenter.launchVideoAction(permalink, action)) {
+                String title = adapterData.get(position).getGist().getTitle();
+                if (!appCMSPresenter.launchButtonSelectedAction(permalink, action, title)) {
                     Log.e(TAG, "Could not launch action: " +
                             " permalink: " +
                             permalink +

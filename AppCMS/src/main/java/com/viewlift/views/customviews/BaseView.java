@@ -201,14 +201,14 @@ public abstract class BaseView extends FrameLayout {
         view.setLayoutParams(layoutParams);
     }
 
-    public static float convertDpToPixel(float dp, Context context){
+    public static float convertDpToPixel(float dp, Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
         float px = dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         return px;
     }
 
-    public static float convertPixelsToDp(float px, Context context){
+    public static float convertPixelsToDp(float px, Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
         float dp = px / ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
@@ -231,50 +231,54 @@ public abstract class BaseView extends FrameLayout {
     }
 
     protected int getViewWidth(Context context, Layout layout, int defaultWidth) {
-        if (isTablet(context)) {
-            if (isLandscape(context)) {
-                TabletLandscape tabletLandscape = layout.getTabletLandscape();
-                int width = getViewWidth(tabletLandscape);
-                if (width != -1) {
-                    return (int) convertDpToPixel(width, context);
+        if (layout != null) {
+            if (isTablet(context)) {
+                if (isLandscape(context)) {
+                    TabletLandscape tabletLandscape = layout.getTabletLandscape();
+                    int width = getViewWidth(tabletLandscape);
+                    if (width != -1) {
+                        return (int) convertDpToPixel(width, context);
+                    }
+                } else {
+                    TabletPortrait tabletPortrait = layout.getTabletPortrait();
+                    int width = getViewHeight(tabletPortrait);
+                    if (width != -1) {
+                        return (int) convertDpToPixel(width, context);
+                    }
                 }
             } else {
-                TabletPortrait tabletPortrait = layout.getTabletPortrait();
-                int width = getViewHeight(tabletPortrait);
+                Mobile mobile = layout.getMobile();
+                int width = getViewWidth(mobile);
                 if (width != -1) {
                     return (int) convertDpToPixel(width, context);
                 }
-            }
-        } else {
-            Mobile mobile = layout.getMobile();
-            int width = getViewWidth(mobile);
-            if (width != -1) {
-                return (int) convertDpToPixel(width, context);
             }
         }
         return defaultWidth;
     }
 
     protected int getViewHeight(Context context, Layout layout, int defaultHeight) {
-        if (isTablet(context)) {
-            if (isLandscape(context)) {
-                TabletLandscape tabletLandscape = layout.getTabletLandscape();
-                int height = getViewHeight(tabletLandscape);
-                if (height != -1) {
-                    return (int) convertDpToPixel(height, context);
+        if (layout != null) {
+            if (isTablet(context)) {
+                if (isLandscape(context)) {
+                    TabletLandscape tabletLandscape = layout.getTabletLandscape();
+                    int height = getViewHeight(tabletLandscape);
+                    if (height != -1) {
+                        return (int) convertDpToPixel(height, context);
+                    }
+                } else {
+                    TabletPortrait tabletPortrait = layout.getTabletPortrait();
+                    int height = getViewHeight(tabletPortrait);
+                    if (height != -1) {
+                        return (int) convertDpToPixel(height, context);
+                    }
                 }
             } else {
-                TabletPortrait tabletPortrait = layout.getTabletPortrait();
-                int height = getViewHeight(tabletPortrait);
+                Mobile mobile = layout.getMobile();
+                int height = getViewHeight(mobile);
                 if (height != -1) {
                     return (int) convertDpToPixel(height, context);
                 }
-            }
-        } else {
-            Mobile mobile = layout.getMobile();
-            int height = getViewHeight(mobile);
-            if (height != -1) {
-                return (int) convertDpToPixel(height, context);
             }
         }
         return defaultHeight;

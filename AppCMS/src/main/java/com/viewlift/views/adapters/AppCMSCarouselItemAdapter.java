@@ -47,7 +47,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                                      Component component,
                                      Map<AppCMSUIKeyType, String> jsonValueKeyMap,
                                      Module moduleAPI,
-                                     RecyclerView listView,
+                                     final RecyclerView listView,
                                      boolean loop) {
         super(context,
                 viewCreator,

@@ -10,4 +10,6 @@
     <string name="drawer_close">drawer_close</string>
     <string name="page_id">initial_url</string>
     <string name="close_self_key">close_self</string>
+    <string name="app_cms_binder_stack_size_key">app_cms_binder_stack_size</string>
+    <string name="app_cms_binder_stack_element_key">app_cms_binder_stack_%0$s</string>
 </resources>

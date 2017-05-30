@@ -24,6 +24,7 @@ import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
+import com.viewlift.views.activity.AppCMSNavItemsActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
@@ -48,6 +49,7 @@ public class AppCMSPresenter {
     private static final String TAG = "AppCMSPresenter";
 
     public static final String PRESENTER_NAVIGATE_ACTION = "appcms_presenter_navigate_action";
+    public static final String PRESENTER_PAGE_LOADING_ACTION = "appcms_presenter_page_loading_action";
     public static final String PRESENTER_CLOSE_SCREEN_ACTION = "appcms_presenter_close_action";
 
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
@@ -66,6 +68,7 @@ public class AppCMSPresenter {
     private Activity currentActivity;
     private Navigation navigation;
     private boolean loadFromFile;
+    private boolean loadingPage;
     private String apiBaseUrl;
     private String apiSiteName;
     private Queue<MetaPage> pagesToProcess;
@@ -73,6 +76,8 @@ public class AppCMSPresenter {
     private Map<String, AppCMSPageAPI> navigationPageData;
     private Map<String, String> pageIdToPageAPIUrlMap;
     private Map<String, String> actionToPageAPIUrlMap;
+    private Map<String, String> actionToPageNameMap;
+    private Map<String, String> pageIdToPageNameMap;
 
     private static abstract class AppCMSPageAPIAction implements Action1<AppCMSPageAPI> {
         boolean appbarPresent;
@@ -103,10 +108,13 @@ public class AppCMSPresenter {
         this.actionToPageAPIMap = actionToPageAPIMap;
         this.actionToActionTypeMap = actionToActionTypeMap;
 
+        this.loadingPage = false;
         this.navigationPages = new HashMap<>();
         this.navigationPageData = new HashMap<>();
         this.pageIdToPageAPIUrlMap = new HashMap<>();
         this.actionToPageAPIUrlMap = new HashMap<>();
+        this.actionToPageNameMap = new HashMap<>();
+        this.pageIdToPageNameMap = new HashMap();
     }
 
     public void setCurrentActivity(Activity activity) {
@@ -117,9 +125,11 @@ public class AppCMSPresenter {
         return currentActivity;
     }
 
-    public boolean launchVideoAction(String pagePath, final String action) {
-        boolean result = false;
-        if (currentActivity != null) {
+    public boolean launchButtonSelectedAction(String pagePath, final String action, final String filmTitle) {
+        boolean result = loadingPage;
+        if (currentActivity != null && !loadingPage) {
+            loadingPage = true;
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             result = true;
             final AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
             boolean appbarPresent = true;
@@ -130,8 +140,8 @@ public class AppCMSPresenter {
                     fullscreen = false;
                     break;
                 case VIDEO_PAGE:
-                    appbarPresent = false;
-                    fullscreen = true;
+                    appbarPresent = true;
+                    fullscreen = false;
                     break;
                 case HOME_PAGE:
                 default:
@@ -149,6 +159,8 @@ public class AppCMSPresenter {
                                     appCMSPageUI,
                                     appCMSPageAPI,
                                     getPageId(appCMSPageUI),
+                                    filmTitle,
+                                    null,
                                     loadFromFile,
                                     appbarPresent,
                                     fullscreen);
@@ -157,8 +169,72 @@ public class AppCMSPresenter {
                             updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
                                     args);
                             currentActivity.sendBroadcast(updatePageIntent);
+                            loadingPage = false;
                         }
                     });
+        }
+        return result;
+    }
+
+    public boolean launchNavigationPage() {
+        boolean result = false;
+        if (currentActivity != null) {
+            result = true;
+            Intent navigationIntent = new Intent(currentActivity, AppCMSNavItemsActivity.class);
+            Bundle args = getPageActivityBundle(currentActivity,
+                    null,
+                    null,
+                    null,
+                    currentActivity.getString(R.string.default_app_name),
+                    currentActivity.getString(R.string.app_cms_menu_label),
+                    false,
+                    true,
+                    false);
+            navigationIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                    args);
+            currentActivity.startActivity(navigationIntent);
+        }
+        return result;
+    }
+
+    public boolean navigateToPage(final String pageId) {
+        boolean result = false;
+        if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
+            Log.e(TAG, "Navigation WIP!");
+            final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+            AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
+            if (appCMSPageAPI == null) {
+                getPageIdContent(apiBaseUrl,
+                        pageIdToPageAPIUrlMap.get(pageId),
+                        apiSiteName,
+                        true,
+                        getPageId(appCMSPageUI),
+                        new AppCMSPageAPIAction(true, false) {
+                            @Override
+                            public void call(AppCMSPageAPI appCMSPageAPI) {
+                                navigationPageData.put(pageId, appCMSPageAPI);
+                                launchPageActivity(currentActivity,
+                                        appCMSPageUI,
+                                        appCMSPageAPI,
+                                        pageId,
+                                        currentActivity.getString(R.string.default_app_name),
+                                        pageIdToPageNameMap.get(pageId),
+                                        loadFromFile,
+                                        appbarPresent,
+                                        fullscreen);
+                            }
+                        });
+            } else {
+                launchPageActivity(currentActivity,
+                        appCMSPageUI,
+                        appCMSPageAPI,
+                        pageId,
+                        currentActivity.getString(R.string.default_app_name),
+                        pageIdToPageNameMap.get(pageId),
+                        loadFromFile,
+                        true,
+                        false);
+            }
         }
         return result;
     }
@@ -209,6 +285,8 @@ public class AppCMSPresenter {
                                                 appCMSPageUI,
                                                 appCMSPageAPI,
                                                 getPageId(appCMSPageUI),
+                                                currentActivity.getString(R.string.default_app_name),
+                                                actionToPageNameMap.get(action),
                                                 loadFromFile,
                                                 appbarPresent,
                                                 fullscreen);
@@ -219,6 +297,8 @@ public class AppCMSPresenter {
                                 appCMSPageUI,
                                 currentAppCMSPageAPI,
                                 getPageId(appCMSPageUI),
+                                currentActivity.getString(R.string.default_app_name),
+                                actionToPageNameMap.get(action),
                                 loadFromFile,
                                 appbarPresent,
                                 fullscreen);
@@ -234,6 +314,8 @@ public class AppCMSPresenter {
                                          AppCMSPageUI appCMSPageUI,
                                          AppCMSPageAPI appCMSPageAPI,
                                          String pageID,
+                                         String pageName,
+                                         String subpageName,
                                          boolean loadFromFile,
                                          boolean appbarPresent,
                                          boolean fullscreen) {
@@ -242,6 +324,8 @@ public class AppCMSPresenter {
                 appCMSPageAPI,
                 navigation,
                 pageID,
+                pageName,
+                subpageName,
                 loadFromFile,
                 appbarPresent,
                 fullscreen,
@@ -255,6 +339,8 @@ public class AppCMSPresenter {
                                     AppCMSPageUI appCMSPageUI,
                                     AppCMSPageAPI appCMSPageAPI,
                                     String pageId,
+                                    String pageName,
+                                    String subpageName,
                                     boolean loadFromFile,
                                     boolean appbarPresent,
                                     boolean fullscreen) {
@@ -262,6 +348,8 @@ public class AppCMSPresenter {
                 appCMSPageUI,
                 appCMSPageAPI,
                 pageId,
+                pageName,
+                subpageName,
                 loadFromFile,
                 appbarPresent,
                 fullscreen);
@@ -435,9 +523,11 @@ public class AppCMSPresenter {
                     public void call(AppCMSPageUI appCMSPageUI) {
                         navigationPages.put(metaPage.getPageId(), appCMSPageUI);
                         pageIdToPageAPIUrlMap.put(metaPage.getPageId(), metaPage.getPageAPI());
+                        pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
                         String action = pageNameToActionMap.get(metaPage.getPageName());
                         if (action != null && actionToPageMap.containsKey(action)) {
                             actionToPageMap.put(action, appCMSPageUI);
+                            actionToPageNameMap.put(action, metaPage.getPageName());
                             actionToPageAPIUrlMap.put(action, metaPage.getPageAPI());
                             Log.d(TAG, "Action: " + action + " PageAPIURL: " + metaPage.getPageAPI());
                         }

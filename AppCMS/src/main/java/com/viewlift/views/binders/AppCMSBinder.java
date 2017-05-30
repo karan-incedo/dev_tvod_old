@@ -19,6 +19,8 @@ public class AppCMSBinder extends Binder {
     private final AppCMSPageAPI appCMSPageAPI;
     private final Navigation navigation;
     private final String pageId;
+    private final String pageName;
+    private final String subpageName;
     private final boolean loadedFromFile;
     private final boolean appbarPresent;
     private final boolean fullScreen;
@@ -29,6 +31,8 @@ public class AppCMSBinder extends Binder {
                         AppCMSPageAPI appCMSPageAPI,
                         Navigation navigation,
                         String pageId,
+                        String pageName,
+                        String subpageName,
                         boolean loadedFromFile,
                         boolean appbarPresent,
                         boolean fullScreen,
@@ -38,6 +42,8 @@ public class AppCMSBinder extends Binder {
         this.appCMSPageAPI = appCMSPageAPI;
         this.navigation = navigation;
         this.pageId = pageId;
+        this.pageName = pageName;
+        this.subpageName = subpageName;
         this.loadedFromFile = loadedFromFile;
         this.appbarPresent = appbarPresent;
         this.fullScreen = fullScreen;
@@ -59,6 +65,14 @@ public class AppCMSBinder extends Binder {
 
     public String getPageId() {
         return pageId;
+    }
+
+    public String getPageName() {
+        return pageName;
+    }
+
+    public String getSubpageName() {
+        return subpageName;
     }
 
     public boolean getLoadedFromFile() {

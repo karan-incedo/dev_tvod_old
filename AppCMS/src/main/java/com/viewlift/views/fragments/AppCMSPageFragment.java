@@ -1,6 +1,7 @@
 package com.viewlift.views.fragments;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -74,6 +75,9 @@ public class AppCMSPageFragment extends Fragment {
         if (pageView == null) {
             Log.e(TAG, "AppCMS page creation error");
             onPageCreationError.onError();
+        }
+        if (!pageView.isTablet(getContext())) {
+            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
         return pageView;
     }

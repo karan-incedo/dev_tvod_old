@@ -2,6 +2,7 @@ package com.viewlift.models.network.background.tasks;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
@@ -16,6 +17,8 @@ import rx.functions.Action1;
  */
 
 public class GetAppCMSAPIAsyncTask extends AsyncTask<GetAppCMSAPIAsyncTask.Params, Integer, AppCMSPageAPI> {
+    private static final String TAG = "GetAppCMSAPIAsyncTask";
+
     private final AppCMSPageAPICall call;
     private final Action1<AppCMSPageAPI> readyAction;
 
@@ -77,7 +80,7 @@ public class GetAppCMSAPIAsyncTask extends AsyncTask<GetAppCMSAPIAsyncTask.Param
                         params[0].usePageIdQueryParam,
                         params[0].pageId);
             } catch (IOException e) {
-
+                Log.e(TAG, "Error retrieving page API data: " + e.getMessage());
             }
         }
         return null;

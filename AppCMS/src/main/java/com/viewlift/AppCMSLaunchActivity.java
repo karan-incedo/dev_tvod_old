@@ -47,8 +47,8 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
             Log.e(TAG, "Error launching initialization action");
             appCMSPresenterComponent.appCMSPresenter().launchErrorActivity(this);
         }
-
-        registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
+        registerReceiver(handoffReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
     }
 
     @Override

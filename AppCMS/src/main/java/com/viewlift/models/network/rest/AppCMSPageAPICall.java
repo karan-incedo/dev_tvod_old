@@ -2,6 +2,7 @@ package com.viewlift.models.network.rest;
 
 import android.content.Context;
 import android.support.annotation.WorkerThread;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,6 +20,8 @@ import snagfilms.com.air.appcms.R;
  */
 
 public class AppCMSPageAPICall {
+    private static final String TAG = "AppCMSPageAPICall";
+
     private final AppCMSPageAPIRest appCMSPageAPIRest;
     private final String apiKey;
     private final Gson gson;
@@ -60,6 +63,7 @@ public class AppCMSPageAPICall {
                             context.getString(R.string.app_cms_page_path_query_parameter),
                             pageId);
         }
+        Log.d(TAG, "URL: " + urlWithContent);
         String filename = getResourceFilename(pageId);
         return writePageToFile(filename,
                 appCMSPageAPIRest.get(apiKey, urlWithContent).execute().body());
@@ -78,6 +82,12 @@ public class AppCMSPageAPICall {
     private String getResourceFilename(String pageId) {
         final String API_SUFFIX = "_API";
         final String JSON_EXT = ".json";
-        return pageId + API_SUFFIX + JSON_EXT;
+        int startIndex = pageId.lastIndexOf("/");
+        if (startIndex >= 0) {
+            startIndex += 1;
+        } else {
+            startIndex = 0;
+        }
+        return pageId.substring(startIndex) + API_SUFFIX + JSON_EXT;
     }
 }

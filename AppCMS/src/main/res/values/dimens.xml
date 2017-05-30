@@ -10,4 +10,6 @@
     <dimen name="dot_selector_margin_left">8dp</dimen>
     <dimen name="dot_selector_margin_right">8dp</dimen>
     <dimen name="appbar_elevation">4dp</dimen>
+    <dimen name="nav_item_text_size">16sp</dimen>
+    <dimen name="nav_item_margin">8dp</dimen>
 </resources>
