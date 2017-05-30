@@ -76,6 +76,12 @@ public class Component {
     private String progressColor;
     @SerializedName("unprogressColor")
     private String unprogressColor;
+    @SerializedName("selectedColor")
+    @Expose
+    private String selectedColor;
+    @SerializedName("unSelectedColor")
+    @Expose
+    private String unSelectedColor;
 
     public String getText() {
         return text;
@@ -259,5 +265,21 @@ public class Component {
 
     public void setUnprogressColor(String unprogressColor) {
         this.unprogressColor = unprogressColor;
+    }
+
+    public String getSelectedColor() {
+        return selectedColor;
+    }
+
+    public void setSelectedColor(String selectedColor) {
+        this.selectedColor = selectedColor;
+    }
+
+    public String getUnSelectedColor() {
+        return unSelectedColor;
+    }
+
+    public void setUnSelectedColor(String unSelectedColor) {
+        this.unSelectedColor = unSelectedColor;
     }
 }

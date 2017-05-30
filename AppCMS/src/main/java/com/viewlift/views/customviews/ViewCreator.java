@@ -23,12 +23,14 @@ import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
+import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 
 import snagfilms.com.air.appcms.R;
@@ -39,6 +41,11 @@ import snagfilms.com.air.appcms.R;
 
 public class ViewCreator {
     private static final String TAG = "ViewCreator";
+
+    private static class ComponentViewResult {
+        View componentView;
+        OnInternalEvent onInternalEvent;
+    }
 
     public PageView generatePage(Context context,
                                  AppCMSPageUI appCMSPageUI,
@@ -108,15 +115,20 @@ public class ViewCreator {
         ModuleView moduleView = new ModuleView(context, module);
         ViewGroup childrenContainer = moduleView.getChildrenContainer();
         if (module.getComponents() != null) {
+            List<OnInternalEvent> onInternalEvents = new ArrayList<>();
             for (int i = 0; i < module.getComponents().size(); i++) {
                 Component component = module.getComponents().get(i);
-                View componentView = createComponentView(context,
+                ComponentViewResult componentViewResult = createComponentView(context,
                         component,
                         moduleAPI,
                         module.getSettings(),
                         onComponentLoaded,
                         jsonValueKeyMap,
                         appCMSPresenter);
+                if (componentViewResult.onInternalEvent != null) {
+                    onInternalEvents.add(componentViewResult.onInternalEvent);
+                }
+                View componentView = componentViewResult.componentView;
                 if (componentView != null) {
                     childrenContainer.addView(componentView);
                     moduleView.setComponentHasView(i, true);
@@ -128,6 +140,14 @@ public class ViewCreator {
                             module.getLayout().getMobile() == null);
                 } else {
                     moduleView.setComponentHasView(i, false);
+                }
+            }
+
+            for (OnInternalEvent onInternalEvent : onInternalEvents) {
+                for (OnInternalEvent receiverInternalEvent : onInternalEvents) {
+                    if (receiverInternalEvent != onInternalEvent) {
+                        onInternalEvent.addReceiver(receiverInternalEvent);
+                    }
                 }
             }
         }
@@ -142,15 +162,20 @@ public class ViewCreator {
                                                                final OnComponentLoaded onComponentLoaded,
                                                                Map<AppCMSUIKeyType, String> jsonValueKeyMap) {
         CollectionGridItemView collectionGridItemView = new CollectionGridItemView(context, component);
+        List<OnInternalEvent> onInternalEvents = new ArrayList<>();
         for (int i = 0; i < component.getComponents().size(); i++) {
             Component childComponent = component.getComponents().get(i);
-            View componentView = createComponentView(context,
+            ComponentViewResult componentViewResult = createComponentView(context,
                     childComponent,
                     moduleAPI,
                     settings,
                     onComponentLoaded,
                     jsonValueKeyMap,
                     appCMSPresenter);
+            if (componentViewResult.onInternalEvent != null) {
+                onInternalEvents.add(componentViewResult.onInternalEvent);
+            }
+            View componentView = componentViewResult.componentView;
             if (componentView != null) {
                 CollectionGridItemView.ItemContainer itemContainer =
                         new CollectionGridItemView.ItemContainer.Builder()
@@ -169,28 +194,35 @@ public class ViewCreator {
                 collectionGridItemView.setComponentHasView(i, false);
             }
         }
+        for (OnInternalEvent onInternalEvent : onInternalEvents) {
+            for (OnInternalEvent receiverInternalEvent : onInternalEvents) {
+                if (receiverInternalEvent != onInternalEvent) {
+                    onInternalEvent.addReceiver(receiverInternalEvent);
+                }
+            }
+        }
         return collectionGridItemView;
     }
 
-    public View createComponentView(final Context context,
+    public ComponentViewResult createComponentView(final Context context,
                                     final Component component,
                                     final Module moduleAPI,
                                     final Settings settings,
                                     final OnComponentLoaded onComponentLoaded,
                                     Map<AppCMSUIKeyType, String> jsonValueKeyMap,
                                     final AppCMSPresenter appCMSPresenter) {
-        View componentView = null;
+        ComponentViewResult componentViewResult = new ComponentViewResult();
 
         if (component.getType()
                 .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY))) {
-            componentView = new RecyclerView(context);
+            componentViewResult.componentView = new RecyclerView(context);
             if (component.isHorizontalScroll()) {
-                ((RecyclerView) componentView)
+                ((RecyclerView) componentViewResult.componentView)
                         .setLayoutManager(new LinearLayoutManager(context,
                                 LinearLayoutManager.HORIZONTAL,
                                 false));
             } else {
-                ((RecyclerView) componentView)
+                ((RecyclerView) componentViewResult.componentView)
                         .setLayoutManager(new LinearLayoutManager(context,
                                 LinearLayoutManager.VERTICAL,
                                 false));
@@ -202,21 +234,53 @@ public class ViewCreator {
                     component,
                     jsonValueKeyMap,
                     moduleAPI);
-            ((RecyclerView) componentView).setAdapter(appCMSViewAdapter);
+            ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
         } else if (component.getType()
-                .endsWith(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_BUTTON_KEY))) {
-            componentView = new Button(context);
+                .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_CAROUSEL_VIEW_KEY))) {
+            componentViewResult.componentView = new RecyclerView(context);
+            ((RecyclerView) componentViewResult.componentView)
+                    .setLayoutManager(new LinearLayoutManager(context,
+                            LinearLayoutManager.HORIZONTAL,
+                            false));
+            boolean loop = false;
+            if (settings.getLoop() != null) {
+                loop = settings.getLoop();
+            }
+            AppCMSCarouselItemAdapter appCMSCarouselItemAdapter = new AppCMSCarouselItemAdapter(context,
+                    this,
+                    appCMSPresenter,
+                    settings,
+                    component,
+                    jsonValueKeyMap,
+                    moduleAPI,
+                    (RecyclerView) componentViewResult.componentView,
+                    loop);
+            ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSCarouselItemAdapter);
+            componentViewResult.onInternalEvent = appCMSCarouselItemAdapter;
+        } else if (component.getType()
+                .equals(AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY)) {
+            int selectedColor =
+                    component.getSelectedColor() != null ? Color.parseColor(getColor(component.getSelectedColor())) : 0;
+            int deselectedColor =
+                    component.getUnSelectedColor() != null ? Color.parseColor(getColor(component.getUnSelectedColor())) : 0;;
+            componentViewResult.componentView = new DotSelectorView(context,
+                    selectedColor,
+                    deselectedColor);
+            componentViewResult.onInternalEvent = (DotSelectorView) componentViewResult.componentView;
+        } else if (component.getType()
+                .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_BUTTON_KEY))) {
+            componentViewResult.componentView = new Button(context);
             if (!TextUtils.isEmpty(component.getText())) {
-                ((Button) componentView).setText(component.getText());
+                ((Button) componentViewResult.componentView).setText(component.getText());
             }
             if (!TextUtils.isEmpty(component.getTextColor())) {
                 Log.d(TAG, "Button text color: " + component.getTextColor());
-                ((Button) componentView).setTextColor(Color.parseColor(getColor(component.getTextColor())));
+                ((Button) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(component.getTextColor())));
             }
             if (!TextUtils.isEmpty(component.getBackgroundColor())) {
-                componentView.setBackgroundColor(Color.parseColor(getColor(component.getBackgroundColor())));
+                componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(component.getBackgroundColor())));
             }
-            componentView.setOnClickListener(new View.OnClickListener() {
+            componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG, "Button click event: " +
@@ -235,26 +299,26 @@ public class ViewCreator {
             });
         } else if (component.getType()
                 .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_LABEL_KEY))) {
-            componentView = new TextView(context);
+            componentViewResult.componentView = new TextView(context);
             if (!TextUtils.isEmpty(component.getText())) {
-                ((TextView) componentView).setText(component.getText().toUpperCase());
+                ((TextView) componentViewResult.componentView).setText(component.getText().toUpperCase());
             } else if (component.getKey()
                     .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY))) {
                 if (settings != null & !TextUtils.isEmpty(settings.getTitle())) {
-                    ((TextView) componentView).setText(settings.getTitle().toUpperCase());
+                    ((TextView) componentViewResult.componentView).setText(settings.getTitle().toUpperCase());
                 }
             }
             if (!TextUtils.isEmpty(component.getTextColor())) {
-                ((TextView) componentView).setTextColor(Color.parseColor(getColor(component.getTextColor())));
+                ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(component.getTextColor())));
             }
             if (!TextUtils.isEmpty(component.getBackgroundColor())) {
-                componentView.setBackgroundColor(Color.parseColor(getColor(component.getBackgroundColor())));
+                componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(component.getBackgroundColor())));
             }
             if (component.getFontSize() > 0) {
-                ((TextView) componentView).setTextSize((float) component.getFontSize());
+                ((TextView) componentViewResult.componentView).setTextSize((float) component.getFontSize());
             }
             if (!TextUtils.isEmpty(component.getFontFamily())) {
-                ((TextView) componentView).setTypeface(Typeface.create(component.getFontFamily(), Typeface.NORMAL));
+                ((TextView) componentViewResult.componentView).setTypeface(Typeface.create(component.getFontFamily(), Typeface.NORMAL));
             }
         } else if (component.getType()
                 .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_IMAGE_KEY))) {
@@ -264,16 +328,16 @@ public class ViewCreator {
                             !component.getKey().equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY))) {
                         onComponentLoaded.onBitmapLoaded(context.getDrawable(R.drawable.bg));
                     } else {
-                        componentView = new ImageView(context);
+                        componentViewResult.componentView = new ImageView(context);
                     }
                 } else if (component.getImageName().equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_LOGO_KEY))) {
-                    componentView = new ImageView(context);
-                    ((ImageView) componentView).setImageDrawable(context.getDrawable(R.drawable.logo));
+                    componentViewResult.componentView = new ImageView(context);
+                    ((ImageView) componentViewResult.componentView).setImageDrawable(context.getDrawable(R.drawable.logo));
                 } else {
-                    componentView = new ImageView(context);
+                    componentViewResult.componentView = new ImageView(context);
                     Picasso.with(context)
                             .load(component.getImageName())
-                            .into((ImageView) componentView);
+                            .into((ImageView) componentViewResult.componentView);
                 }
             } else {
                 onComponentLoaded.onBitmapLoaded(context.getResources()
@@ -282,16 +346,16 @@ public class ViewCreator {
             }
         } else if (component.getType()
                 .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY))) {
-            componentView = new ProgressBar(context,
+            componentViewResult.componentView = new ProgressBar(context,
                     null,
                     R.style.Widget_AppCompat_ProgressBar_Horizontal);
             if (!TextUtils.isEmpty(component.getProgressColor())) {
                 int color = Color.parseColor(getColor(component.getProgressColor()));
-                ((ProgressBar) componentView).setProgressDrawable(new ColorDrawable(color));
+                ((ProgressBar) componentViewResult.componentView).setProgressDrawable(new ColorDrawable(color));
             }
         }
 
-        return componentView;
+        return componentViewResult;
     }
 
     private String getColor(String color) {

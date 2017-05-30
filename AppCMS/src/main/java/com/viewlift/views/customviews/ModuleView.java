@@ -1,15 +1,16 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
-import android.text.TextUtils;
-import android.util.Log;
 import android.widget.FrameLayout;
-
-import com.google.gson.JsonElement;
 
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import rx.functions.Action1;
 
 /**
  * Created by viewlift on 5/17/17.
@@ -17,6 +18,8 @@ import com.viewlift.models.data.appcms.ui.page.ModuleList;
 
 public class ModuleView extends BaseView {
     private static final String TAG = "ModuleView";
+
+    private List<Action1<Integer>> actionReceivers;
 
     private final ModuleList module;
 
@@ -36,6 +39,7 @@ public class ModuleView extends BaseView {
         if (module.getComponents() != null) {
             initializeComponentHasViewList(module.getComponents().size());
         }
+        actionReceivers = new ArrayList<>();
     }
 
     @Override

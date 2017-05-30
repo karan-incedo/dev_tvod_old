@@ -85,6 +85,10 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_page_collection_grid_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY,
                 context.getString(R.string.app_cms_page_progress_view_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_CAROUSEL_VIEW_KEY,
+                context.getString(R.string.app_cms_page_carousel_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY,
+                context.getString(R.string.app_cms_page_page_control));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_IMAGE_KEY,
                 context.getString(R.string.app_cms_page_image_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_BG_KEY,

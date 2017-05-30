@@ -32,7 +32,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private ViewCreator viewCreator;
     private Module moduleAPI;
     private Map<AppCMSUIKeyType, String> jsonValueKeyMap;
-    private List<ContentDatum> adapterData;
+    protected List<ContentDatum> adapterData;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
