@@ -2,6 +2,7 @@ package com.viewlift.views.fragments;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -29,6 +30,9 @@ public class AppCMSPageFragment extends Fragment {
 
     private AppCMSViewComponent appCMSViewComponent;
     private OnPageCreationError onPageCreationError;
+    private AppCMSPresenter appCMSPresenter;
+    private AppCMSBinder appCMSBinder;
+    private PageView pageView;
 
     public interface OnPageCreationError {
         void onError();
@@ -46,9 +50,9 @@ public class AppCMSPageFragment extends Fragment {
     public void onAttach(Context context) {
         if (context instanceof OnPageCreationError){
             onPageCreationError = (OnPageCreationError) context;
-            AppCMSBinder appCMSBinder =
+            appCMSBinder =
                     ((AppCMSBinder) getArguments().getBinder(context.getString(R.string.fragment_page_bundle_key)));
-            AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
+            appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                     .getAppCMSPresenterComponent()
                     .appCMSPresenter();
             appCMSViewComponent = DaggerAppCMSViewComponent
@@ -71,14 +75,38 @@ public class AppCMSPageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        PageView pageView = appCMSViewComponent.appCMSPageView();
+        pageView = appCMSViewComponent.appCMSPageView();
         if (pageView == null) {
             Log.e(TAG, "AppCMS page creation error");
             onPageCreationError.onError();
         }
-        if (!pageView.isTablet(getContext())) {
+        if (!pageView.isTablet(getContext()) && !appCMSBinder.isFullScreenEnabled()) {
             getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
         return pageView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (pageView.isTablet(getContext()) || appCMSBinder.isFullScreenEnabled()) {
+            handleOrientation(getActivity().getResources().getConfiguration().orientation);
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        handleOrientation(newConfig.orientation);
+    }
+
+    private void handleOrientation(int orientation) {
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            appCMSPresenter.onOrientationChange(true);
+        } else {
+            appCMSPresenter.onOrientationChange(false);
+        }
     }
 }

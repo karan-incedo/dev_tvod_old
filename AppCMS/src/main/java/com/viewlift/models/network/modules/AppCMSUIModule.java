@@ -15,15 +15,15 @@ import com.viewlift.models.network.rest.AppCMSPageUIRest;
 import com.viewlift.presenters.AppCMSActionType;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import snagfilms.com.air.appcms.R;
@@ -156,9 +156,15 @@ public class AppCMSUIModule {
     @Provides
     @Singleton
     public Retrofit providesRetrofit(Gson gson) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .build();
         return new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .baseUrl(baseUrl)
+                .client(client)
                 .build();
     }
 

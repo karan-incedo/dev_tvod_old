@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.google.gson.JsonElement;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,8 @@ import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
+
+import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
@@ -78,13 +81,14 @@ public class AppCMSPresenter {
     private Map<String, String> actionToPageAPIUrlMap;
     private Map<String, String> actionToPageNameMap;
     private Map<String, String> pageIdToPageNameMap;
+    private List<Action1<Boolean>> onOrientationChangeHandlers;
 
     private static abstract class AppCMSPageAPIAction implements Action1<AppCMSPageAPI> {
         boolean appbarPresent;
-        boolean fullscreen;
-        public AppCMSPageAPIAction(boolean appbarPresent, boolean fullscreen) {
+        boolean fullscreenEnabled;
+        public AppCMSPageAPIAction(boolean appbarPresent, boolean fullscreenEnabled) {
             this.appbarPresent = appbarPresent;
-            this.fullscreen = fullscreen;
+            this.fullscreenEnabled = fullscreenEnabled;
         }
     }
 
@@ -115,6 +119,7 @@ public class AppCMSPresenter {
         this.actionToPageAPIUrlMap = new HashMap<>();
         this.actionToPageNameMap = new HashMap<>();
         this.pageIdToPageNameMap = new HashMap();
+        this.onOrientationChangeHandlers = new ArrayList<>();
     }
 
     public void setCurrentActivity(Activity activity) {
@@ -133,15 +138,15 @@ public class AppCMSPresenter {
             result = true;
             final AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
             boolean appbarPresent = true;
-            boolean fullscreen = false;
+            boolean fullscreenEnabled = false;
             switch (actionToActionTypeMap.get(action)) {
                 case SPLASH_PAGE:
                     appbarPresent = false;
-                    fullscreen = false;
+                    fullscreenEnabled = false;
                     break;
                 case VIDEO_PAGE:
                     appbarPresent = true;
-                    fullscreen = false;
+                    fullscreenEnabled = true;
                     break;
                 case HOME_PAGE:
                 default:
@@ -152,7 +157,7 @@ public class AppCMSPresenter {
                     apiSiteName,
                     false,
                     pagePath,
-                    new AppCMSPageAPIAction(appbarPresent, fullscreen) {
+                    new AppCMSPageAPIAction(appbarPresent, fullscreenEnabled) {
                         @Override
                         public void call(AppCMSPageAPI appCMSPageAPI) {
                             Bundle args = getPageActivityBundle(currentActivity,
@@ -163,7 +168,7 @@ public class AppCMSPresenter {
                                     null,
                                     loadFromFile,
                                     appbarPresent,
-                                    fullscreen);
+                                    fullscreenEnabled);
                             Intent updatePageIntent =
                                     new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
                             updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
@@ -197,10 +202,23 @@ public class AppCMSPresenter {
         return result;
     }
 
+    public void resetOnOrientationChangeHandlers() {
+        onOrientationChangeHandlers.clear();
+    }
+
+    public void addOnOrientationChangeHandler(Action1<Boolean> onOrientationChangeHandler) {
+        onOrientationChangeHandlers.add(onOrientationChangeHandler);
+    }
+
+    public void onOrientationChange(boolean landscape) {
+        for (Action1<Boolean> onOrientationChangeHandler : onOrientationChangeHandlers) {
+            Observable.just(landscape).subscribe(onOrientationChangeHandler);
+        }
+    }
+
     public boolean navigateToPage(final String pageId) {
         boolean result = false;
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
-            Log.e(TAG, "Navigation WIP!");
             final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
             AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
             if (appCMSPageAPI == null) {
@@ -221,7 +239,7 @@ public class AppCMSPresenter {
                                         pageIdToPageNameMap.get(pageId),
                                         loadFromFile,
                                         appbarPresent,
-                                        fullscreen);
+                                        fullscreenEnabled);
                             }
                         });
             } else {
@@ -254,15 +272,15 @@ public class AppCMSPresenter {
                     result = false;
                 } else {
                     boolean appbarPresent = true;
-                    boolean fullscreen = false;
+                    boolean fullscreenEnabled = false;
                     switch (actionToActionTypeMap.get(action)) {
                         case SPLASH_PAGE:
                             appbarPresent = false;
-                            fullscreen = false;
+                            fullscreenEnabled = false;
                             break;
                         case VIDEO_PAGE:
                             appbarPresent = false;
-                            fullscreen = true;
+                            fullscreenEnabled = true;
                             break;
                         case HOME_PAGE:
                         default:
@@ -277,7 +295,7 @@ public class AppCMSPresenter {
                                 apiSiteName,
                                 true,
                                 getPageId(appCMSPageUI),
-                                new AppCMSPageAPIAction(appbarPresent, fullscreen) {
+                                new AppCMSPageAPIAction(appbarPresent, fullscreenEnabled) {
                                     @Override
                                     public void call(AppCMSPageAPI appCMSPageAPI) {
                                         actionToPageAPIMap.put(action, appCMSPageAPI);
@@ -289,7 +307,7 @@ public class AppCMSPresenter {
                                                 actionToPageNameMap.get(action),
                                                 loadFromFile,
                                                 appbarPresent,
-                                                fullscreen);
+                                                fullscreenEnabled);
                                     }
                                 });
                     } else {
@@ -301,62 +319,13 @@ public class AppCMSPresenter {
                                 actionToPageNameMap.get(action),
                                 loadFromFile,
                                 appbarPresent,
-                                fullscreen);
+                                fullscreenEnabled);
                     }
                 }
             }
         }
 
         return result;
-    }
-
-    private Bundle getPageActivityBundle(Activity activity,
-                                         AppCMSPageUI appCMSPageUI,
-                                         AppCMSPageAPI appCMSPageAPI,
-                                         String pageID,
-                                         String pageName,
-                                         String subpageName,
-                                         boolean loadFromFile,
-                                         boolean appbarPresent,
-                                         boolean fullscreen) {
-        Bundle args = new Bundle();
-        AppCMSBinder appCMSBinder = new AppCMSBinder(appCMSPageUI,
-                appCMSPageAPI,
-                navigation,
-                pageID,
-                pageName,
-                subpageName,
-                loadFromFile,
-                appbarPresent,
-                fullscreen,
-                isUserLoggedIn(activity),
-                jsonValueKeyMap);
-        args.putBinder(activity.getString(R.string.app_cms_binder_key), appCMSBinder);
-        return args;
-    }
-
-    private void launchPageActivity(Activity activity,
-                                    AppCMSPageUI appCMSPageUI,
-                                    AppCMSPageAPI appCMSPageAPI,
-                                    String pageId,
-                                    String pageName,
-                                    String subpageName,
-                                    boolean loadFromFile,
-                                    boolean appbarPresent,
-                                    boolean fullscreen) {
-        Bundle args = getPageActivityBundle(activity,
-                appCMSPageUI,
-                appCMSPageAPI,
-                pageId,
-                pageName,
-                subpageName,
-                loadFromFile,
-                appbarPresent,
-                fullscreen);
-        Intent appCMSIntent = new Intent(activity, AppCMSPageActivity.class);
-        appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
-
-        activity.startActivity(appCMSIntent);
     }
 
     public boolean sendCloseOthersAction() {
@@ -373,6 +342,82 @@ public class AppCMSPresenter {
     public void launchErrorActivity(Activity activity) {
         Intent errorIntent = new Intent(activity, AppCMSErrorActivity.class);
         activity.startActivity(errorIntent);
+    }
+
+    public void getPageIdContent(String baseUrl,
+                                 String endPoint,
+                                 String siteId,
+                                 boolean usePageIdQueryParam,
+                                 String pageId,
+                                 Action1<AppCMSPageAPI> readyAction) {
+        GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
+                .context(currentActivity)
+                .baseUrl(baseUrl)
+                .endpoint(endPoint)
+                .siteId(siteId)
+                .usePageIdQueryParam(usePageIdQueryParam)
+                .pageId(pageId)
+                .build();
+        new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
+    }
+
+    public boolean isUserLoggedIn(Context context) {
+        SharedPreferences sharedPrefs = context.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
+        return sharedPrefs.getString(USER_ID_SHARED_PREF_NAME, null) != null;
+    }
+
+    public boolean setLoggedInUser(Context context, String userId) {
+        SharedPreferences sharedPrefs = context.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
+        return sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, userId).commit();
+    }
+
+    private Bundle getPageActivityBundle(Activity activity,
+                                         AppCMSPageUI appCMSPageUI,
+                                         AppCMSPageAPI appCMSPageAPI,
+                                         String pageID,
+                                         String pageName,
+                                         String subpageName,
+                                         boolean loadFromFile,
+                                         boolean appbarPresent,
+                                         boolean fullscreenEnabled) {
+        Bundle args = new Bundle();
+        AppCMSBinder appCMSBinder = new AppCMSBinder(appCMSPageUI,
+                appCMSPageAPI,
+                navigation,
+                pageID,
+                pageName,
+                subpageName,
+                loadFromFile,
+                appbarPresent,
+                fullscreenEnabled,
+                isUserLoggedIn(activity),
+                jsonValueKeyMap);
+        args.putBinder(activity.getString(R.string.app_cms_binder_key), appCMSBinder);
+        return args;
+    }
+
+    private void launchPageActivity(Activity activity,
+                                    AppCMSPageUI appCMSPageUI,
+                                    AppCMSPageAPI appCMSPageAPI,
+                                    String pageId,
+                                    String pageName,
+                                    String subpageName,
+                                    boolean loadFromFile,
+                                    boolean appbarPresent,
+                                    boolean fullscreenEnabled) {
+        Bundle args = getPageActivityBundle(activity,
+                appCMSPageUI,
+                appCMSPageAPI,
+                pageId,
+                pageName,
+                subpageName,
+                loadFromFile,
+                appbarPresent,
+                fullscreenEnabled);
+        Intent appCMSIntent = new Intent(activity, AppCMSPageActivity.class);
+        appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
+
+        activity.startActivity(appCMSIntent);
     }
 
     private void getAppCMSMain(final Activity activity,
@@ -540,33 +585,6 @@ public class AppCMSPresenter {
                     }
                 },
                 loadFromFile);
-    }
-
-    public void getPageIdContent(String baseUrl,
-                                 String endPoint,
-                                 String siteId,
-                                 boolean usePageIdQueryParam,
-                                 String pageId,
-                                 Action1<AppCMSPageAPI> readyAction) {
-        GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
-                .context(currentActivity)
-                .baseUrl(baseUrl)
-                .endpoint(endPoint)
-                .siteId(siteId)
-                .usePageIdQueryParam(usePageIdQueryParam)
-                .pageId(pageId)
-                .build();
-        new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
-    }
-
-    public boolean isUserLoggedIn(Context context) {
-        SharedPreferences sharedPrefs = context.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
-        return sharedPrefs.getString(USER_ID_SHARED_PREF_NAME, null) != null;
-    }
-
-    public boolean setLoggedInUser(Context context, String userId) {
-        SharedPreferences sharedPrefs = context.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
-        return sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, userId).commit();
     }
 
     private int getSoftwallPage(List<MetaPage> metaPageList) {

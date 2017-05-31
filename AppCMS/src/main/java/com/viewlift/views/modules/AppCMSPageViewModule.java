@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
-import com.viewlift.models.network.modules.AppCMSAPIModule;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.Arrays;

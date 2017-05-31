@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -27,7 +28,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.NavBarItemView;
 import com.viewlift.views.fragments.AppCMSPageFragment;
 
-import java.util.List;
+import java.util.EmptyStackException;
 import java.util.Stack;
 
 import snagfilms.com.air.appcms.R;
@@ -45,6 +46,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     private ProgressBar appCMSPageLoading;
     private FrameLayout appCMSFragment;
+    private AppBarLayout appBarLayout;
+    private LinearLayout appCMSTabNavContainer;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -105,16 +108,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     }
 
     @Override
-    public void onBackPressed() {
-        Log.d(TAG, "onBackPressed() " + appCMSBinderStack.size());
-        AppCMSBinder currentAppCMSBinder = appCMSBinderStack.pop();
-        if (appCMSBinderStack.size() > 0) {
-            handleToolbar(appCMSBinderStack.peek());
-        }
-        super.onBackPressed();
-    }
-
-    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Log.d(TAG, "Saving instance state");
@@ -157,7 +150,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 fragmentTransaction.replace(R.id.app_cms_fragment,
                         fragment,
                         backstackEntryName);
-//                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 fragmentTransaction.commit();
             } else {
                 Log.e(TAG, "Instance state fragment " + backstackEntryName + " not found!");
@@ -171,18 +163,51 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     }
 
     @Override
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed() " + appCMSBinderStack.size());
+        try {
+            if (appCMSBinderStack.pop() != null && appCMSBinderStack.size() > 0) {
+                handleOrientation(getResources().getConfiguration().orientation,
+                        appCMSBinderStack.peek());
+
+            }
+        } catch (EmptyStackException e) {
+            Log.e(TAG, "Invalid AppCMS binder stack state!  " + e.getMessage());
+        }
+        super.onBackPressed();
+    }
+
+    @Override
     public void onError() {
         setFinishResult(RESULT_CANCELED);
         finish();
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        handleOrientation(newConfig.orientation, appCMSBinderStack.peek());
+    }
+
+    public void pageLoading(boolean pageLoading) {
+        if (pageLoading) {
+            appCMSPageLoading.setVisibility(View.VISIBLE);
+            appCMSPageLoading.getParent().bringChildToFront(appCMSPageLoading);
+            appCMSFragment.setAlpha(0.5f);
+            appCMSFragment.setEnabled(false);
+        } else {
+            appCMSPageLoading.setVisibility(View.INVISIBLE);
+            appCMSFragment.setAlpha(1.0f);
+            appCMSFragment.setEnabled(true);
+        }
+    }
+
     private void handleAppCMSBinder(final AppCMSBinder appCMSBinder, boolean firstFragment) {
         pageLoading(false);
 
-        handleToolbar(appCMSBinder);
+        appBarLayout = (AppBarLayout) findViewById(R.id.app_cms_appbarlayout);
 
-        LinearLayout appCMSTabNavContainer =
-                (LinearLayout) findViewById(R.id.app_cms_tab_nav_container);
+        appCMSTabNavContainer = (LinearLayout) findViewById(R.id.app_cms_tab_nav_container);
         Navigation navigation = appCMSBinder.getNavigation();
         if (navigation.getPrimary().size() == 0) {
             appCMSTabNavContainer.setVisibility(View.GONE);
@@ -250,6 +275,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                     Log.d(TAG, "Binder stack size; " + appCMSBinderStack.size());
                 }
             });
+
+            handleOrientation(getResources().getConfiguration().orientation, appCMSBinder);
         }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -269,9 +296,25 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         fragmentTransaction.commit();
     }
 
-    private void handleToolbar(AppCMSBinder appCMSBinder) {
-        if (!appCMSBinder.isAppbarPresent()) {
-            AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_cms_appbarlayout);
+    private void handleOrientation(int orientation, AppCMSBinder appCMSBinder) {
+        if (appCMSBinder.isFullScreenEnabled() &&
+                orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            handleToolbar(false,
+                    appCMSBinder.getPageName(),
+                    appCMSBinder.getSubpageName());
+            appCMSTabNavContainer.setVisibility(View.GONE);
+            hideSystemUI(getWindow().getDecorView());
+        } else {
+            handleToolbar(appCMSBinder.isAppbarPresent(),
+                    appCMSBinder.getPageName(),
+                    appCMSBinder.getSubpageName());
+            appCMSTabNavContainer.setVisibility(View.VISIBLE);
+            showSystemUI(getWindow().getDecorView());
+        }
+    }
+
+    private void handleToolbar(boolean appbarPresent, String pageName, String subpageName) {
+        if (!appbarPresent) {
             appBarLayout.setVisibility(View.GONE);
         } else {
             Toolbar toolbar = (Toolbar) findViewById(R.id.app_cms_toolbar);
@@ -279,8 +322,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             getSupportActionBar().setDisplayShowHomeEnabled(false);
             getSupportActionBar().setHomeButtonEnabled(false);
-            getSupportActionBar().setTitle(appCMSBinder.getPageName());
-            getSupportActionBar().setSubtitle(appCMSBinder.getSubpageName());
+            getSupportActionBar().setTitle(pageName);
+            getSupportActionBar().setSubtitle(subpageName);
+            appBarLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -300,16 +344,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         setResult(resultCode, resultIntent);
     }
 
-    public void pageLoading(boolean pageLoading) {
-        if (pageLoading) {
-            appCMSPageLoading.setVisibility(View.VISIBLE);
-            appCMSPageLoading.getParent().bringChildToFront(appCMSPageLoading);
-            appCMSFragment.setAlpha(0.5f);
-            appCMSFragment.setEnabled(false);
-        } else {
-            appCMSPageLoading.setVisibility(View.INVISIBLE);
-            appCMSFragment.setAlpha(1.0f);
-            appCMSFragment.setEnabled(true);
-        }
+    private void hideSystemUI(View decorView) {
+        decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
+    }
+
+    private void showSystemUI(View decorView) {
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
     }
 }

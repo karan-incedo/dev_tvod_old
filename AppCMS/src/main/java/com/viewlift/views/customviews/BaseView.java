@@ -3,21 +3,19 @@ package com.viewlift.views.customviews;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.support.v4.widget.NestedScrollView;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Mobile;
 import com.viewlift.models.data.appcms.ui.page.TabletLandscape;
 import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
+
+import rx.functions.Action1;
 
 /**
  * Created by viewlift on 5/17/17.
@@ -28,9 +26,12 @@ public abstract class BaseView extends FrameLayout {
 
     protected ViewGroup childrenContainer;
     protected boolean[] componentHasViewList;
+    protected boolean hideOnFullscreenLandscape;
+    protected Action1<Boolean> onOrientationChangeHandler;
 
     public BaseView(Context context) {
         super(context);
+        hideOnFullscreenLandscape = false;
     }
 
     protected abstract void init();
@@ -46,25 +47,26 @@ public abstract class BaseView extends FrameLayout {
         return childrenContainer;
     }
 
-    protected void initializeComponentHasViewList(int size) {
-        componentHasViewList = new boolean[size];
+    public Action1<Boolean> getOrientationChangeHandler() {
+        if (onOrientationChangeHandler == null) {
+            onOrientationChangeHandler = new Action1<Boolean>() {
+                @Override
+                public void call(Boolean isLandscape) {
+                    if (hideOnFullscreenLandscape && isLandscape) {
+                        setVisibility(GONE);
+                    } else if (!isLandscape) {
+                        setVisibility(VISIBLE);
+                    }
+                }
+            };
+        }
+        return onOrientationChangeHandler;
     }
 
     public void setComponentHasView(int index, boolean hasView) {
         if (componentHasViewList != null) {
             componentHasViewList[index] = hasView;
         }
-    }
-
-    protected ViewGroup createChildrenContainer() {
-        childrenContainer = new FrameLayout(getContext());
-        int viewWidth = getViewWidth(getContext(), getLayout(), LayoutParams.MATCH_PARENT);
-        int viewHeight = getViewHeight(getContext(), getLayout(), LayoutParams.MATCH_PARENT);
-        FrameLayout.LayoutParams childContainerLayoutParams =
-                new FrameLayout.LayoutParams(viewWidth, viewHeight);
-        childrenContainer.setLayoutParams(childContainerLayoutParams);
-        this.addView(childrenContainer);
-        return childrenContainer;
     }
 
     public void setViewMarginsFromComponent(Layout layout,
@@ -228,6 +230,29 @@ public abstract class BaseView extends FrameLayout {
     public boolean isLandscape(Context context) {
         int layoutDirection = context.getResources().getConfiguration().getLayoutDirection();
         return layoutDirection == Configuration.ORIENTATION_LANDSCAPE;
+    }
+
+    public boolean shouldHideOnFullScreenLandscape() {
+        return hideOnFullscreenLandscape;
+    }
+
+    public void setHideOnFullscreenLandscape(boolean hideOnFullscreenLandscape) {
+        this.hideOnFullscreenLandscape = hideOnFullscreenLandscape;
+    }
+
+    protected void initializeComponentHasViewList(int size) {
+        componentHasViewList = new boolean[size];
+    }
+
+    protected ViewGroup createChildrenContainer() {
+        childrenContainer = new FrameLayout(getContext());
+        int viewWidth = getViewWidth(getContext(), getLayout(), LayoutParams.MATCH_PARENT);
+        int viewHeight = getViewHeight(getContext(), getLayout(), LayoutParams.MATCH_PARENT);
+        FrameLayout.LayoutParams childContainerLayoutParams =
+                new FrameLayout.LayoutParams(viewWidth, viewHeight);
+        childrenContainer.setLayoutParams(childContainerLayoutParams);
+        this.addView(childrenContainer);
+        return childrenContainer;
     }
 
     protected int getViewWidth(Context context, Layout layout, int defaultWidth) {

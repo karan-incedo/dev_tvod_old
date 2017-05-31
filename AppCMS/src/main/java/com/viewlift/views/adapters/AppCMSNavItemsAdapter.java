@@ -1,7 +1,6 @@
 package com.viewlift.views.adapters;
 
 import android.content.res.Resources;
-import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;

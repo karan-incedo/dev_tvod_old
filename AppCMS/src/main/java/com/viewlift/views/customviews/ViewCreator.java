@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -46,6 +45,7 @@ public class ViewCreator {
     private static class ComponentViewResult {
         View componentView;
         OnInternalEvent onInternalEvent;
+        boolean hideOnFullscreenLandscape;
     }
 
     public PageView generatePage(Context context,
@@ -115,6 +115,7 @@ public class ViewCreator {
                                  AppCMSPresenter appCMSPresenter) {
         ModuleView moduleView = new ModuleView(context, module);
         ViewGroup childrenContainer = moduleView.getChildrenContainer();
+        boolean hideOnFullscreenLandscape = true;
         if (module.getComponents() != null) {
             List<OnInternalEvent> onInternalEvents = new ArrayList<>();
             for (int i = 0; i < module.getComponents().size(); i++) {
@@ -126,6 +127,7 @@ public class ViewCreator {
                         onComponentLoaded,
                         jsonValueKeyMap,
                         appCMSPresenter);
+                hideOnFullscreenLandscape &= componentViewResult.hideOnFullscreenLandscape;
                 if (componentViewResult.onInternalEvent != null) {
                     onInternalEvents.add(componentViewResult.onInternalEvent);
                 }
@@ -152,6 +154,8 @@ public class ViewCreator {
                 }
             }
         }
+        moduleView.setHideOnFullscreenLandscape(hideOnFullscreenLandscape);
+        appCMSPresenter.addOnOrientationChangeHandler(moduleView.getOrientationChangeHandler());
         return moduleView;
     }
 
@@ -164,6 +168,7 @@ public class ViewCreator {
                                                                Map<AppCMSUIKeyType, String> jsonValueKeyMap) {
         CollectionGridItemView collectionGridItemView = new CollectionGridItemView(context, component);
         List<OnInternalEvent> onInternalEvents = new ArrayList<>();
+        boolean hideOnFullScreenLandscape = true;
         for (int i = 0; i < component.getComponents().size(); i++) {
             Component childComponent = component.getComponents().get(i);
             ComponentViewResult componentViewResult = createComponentView(context,
@@ -173,6 +178,7 @@ public class ViewCreator {
                     onComponentLoaded,
                     jsonValueKeyMap,
                     appCMSPresenter);
+            hideOnFullScreenLandscape &= componentViewResult.hideOnFullscreenLandscape;
             if (componentViewResult.onInternalEvent != null) {
                 onInternalEvents.add(componentViewResult.onInternalEvent);
             }
@@ -202,6 +208,7 @@ public class ViewCreator {
                 }
             }
         }
+        collectionGridItemView.setHideOnFullscreenLandscape(hideOnFullScreenLandscape);
         return collectionGridItemView;
     }
 
@@ -236,6 +243,7 @@ public class ViewCreator {
                     jsonValueKeyMap,
                     moduleAPI);
             ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
+            componentViewResult.hideOnFullscreenLandscape = true;
         } else if (component.getType()
                 .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_CAROUSEL_VIEW_KEY))) {
             componentViewResult.componentView = new RecyclerView(context);
@@ -258,6 +266,7 @@ public class ViewCreator {
                     loop);
             ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSCarouselItemAdapter);
             componentViewResult.onInternalEvent = appCMSCarouselItemAdapter;
+            componentViewResult.hideOnFullscreenLandscape = true;
         } else if (component.getType()
                 .equals(AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY)) {
             int selectedColor =
@@ -268,6 +277,7 @@ public class ViewCreator {
                     selectedColor,
                     deselectedColor);
             componentViewResult.onInternalEvent = (DotSelectorView) componentViewResult.componentView;
+            componentViewResult.hideOnFullscreenLandscape = true;
         } else if (component.getType()
                 .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_BUTTON_KEY))) {
             componentViewResult.componentView = new Button(context);
@@ -298,6 +308,7 @@ public class ViewCreator {
                     }
                 }
             });
+            componentViewResult.hideOnFullscreenLandscape = true;
         } else if (component.getType()
                 .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_LABEL_KEY))) {
             componentViewResult.componentView = new AlwaysSelectedTextView(context);
@@ -326,6 +337,7 @@ public class ViewCreator {
             ((TextView) componentViewResult.componentView).setMarqueeRepeatLimit(-1);
             ((TextView) componentViewResult.componentView).setSingleLine(true);
             ((TextView) componentViewResult.componentView).setLines(1);
+            componentViewResult.hideOnFullscreenLandscape = true;
         } else if (component.getType()
                 .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_IMAGE_KEY))) {
             if (!TextUtils.isEmpty(component.getImageName())) {
@@ -350,6 +362,7 @@ public class ViewCreator {
                         .getDrawable(android.R.drawable.screen_background_dark_transparent,
                                 context.getTheme()));
             }
+            componentViewResult.hideOnFullscreenLandscape = true;
         } else if (component.getType()
                 .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY))) {
             componentViewResult.componentView = new ProgressBar(context,
@@ -359,6 +372,7 @@ public class ViewCreator {
                 int color = Color.parseColor(getColor(component.getProgressColor()));
                 ((ProgressBar) componentViewResult.componentView).setProgressDrawable(new ColorDrawable(color));
             }
+            componentViewResult.hideOnFullscreenLandscape = true;
         }
 
         return componentViewResult;

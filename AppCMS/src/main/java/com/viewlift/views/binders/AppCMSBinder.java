@@ -23,7 +23,7 @@ public class AppCMSBinder extends Binder {
     private final String subpageName;
     private final boolean loadedFromFile;
     private final boolean appbarPresent;
-    private final boolean fullScreen;
+    private final boolean fullScreenEnabled;
     private final boolean userLoggedIn;
     private final Map<AppCMSUIKeyType, String> jsonValueKeyMap;
 
@@ -35,7 +35,7 @@ public class AppCMSBinder extends Binder {
                         String subpageName,
                         boolean loadedFromFile,
                         boolean appbarPresent,
-                        boolean fullScreen,
+                        boolean fullScreenEnabled,
                         boolean userLoggedIn,
                         Map<AppCMSUIKeyType, String> jsonValueKeyMap) {
         this.appCMSPageUI = appCMSPageUI;
@@ -46,7 +46,7 @@ public class AppCMSBinder extends Binder {
         this.subpageName = subpageName;
         this.loadedFromFile = loadedFromFile;
         this.appbarPresent = appbarPresent;
-        this.fullScreen = fullScreen;
+        this.fullScreenEnabled = fullScreenEnabled;
         this.userLoggedIn = userLoggedIn;
         this.jsonValueKeyMap = jsonValueKeyMap;
     }
@@ -87,8 +87,8 @@ public class AppCMSBinder extends Binder {
         return appbarPresent;
     }
 
-    public boolean isFullScreen() {
-        return fullScreen;
+    public boolean isFullScreenEnabled() {
+        return fullScreenEnabled;
     }
 
     public boolean isUserLoggedIn() {
