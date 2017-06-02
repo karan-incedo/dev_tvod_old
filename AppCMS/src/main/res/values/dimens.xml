@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="error_parsing_layout_data_textsize">20sp</dimen>
-    <dimen name="bottom_navbar_height">55dp</dimen>
+
     <dimen name="dot_selector_listview_height">16dp</dimen>
     <dimen name="dot_selector_height">8dp</dimen>
     <dimen name="dot_selector_width">8dp</dimen>
-    <dimen name="dot_selector_item_height">10dp</dimen>
-    <dimen name="dot_selector_item_width">10dp</dimen>
-    <dimen name="dot_selector_margin_left">8dp</dimen>
-    <dimen name="dot_selector_margin_right">8dp</dimen>
+    <dimen name="dot_selector_item_height">12dp</dimen>
+    <dimen name="dot_selector_item_width">12dp</dimen>
+    <dimen name="dot_selector_margin_left">0dp</dimen>
+    <dimen name="dot_selector_margin_right">0dp</dimen>
+
     <dimen name="appbar_elevation">4dp</dimen>
+
+    <dimen name="bottom_navbar_height">55dp</dimen>
     <dimen name="nav_item_text_size">16sp</dimen>
     <dimen name="nav_item_margin">8dp</dimen>
 </resources>

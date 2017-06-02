@@ -15,6 +15,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.ViewCreator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +34,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private Module moduleAPI;
     private Map<AppCMSUIKeyType, String> jsonValueKeyMap;
     protected List<ContentDatum> adapterData;
+    protected CollectionGridItemView.OnClickHandler onClickHandler;
+    protected int defaultWidth;
+    protected int defaultHeight;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -40,14 +44,22 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                              Settings settings,
                              Component component,
                              Map<AppCMSUIKeyType, String> jsonValueKeyMap,
-                             Module moduleAPI) {
+                             Module moduleAPI,
+                             int defaultWidth,
+                             int defaultHeight) {
         this.viewCreator = viewCreator;
         this.appCMSPresenter = appCMSPresenter;
         this.context = context;
         this.component = component;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.moduleAPI = moduleAPI;
-        this.adapterData = moduleAPI != null ? moduleAPI.getContentData() : null;
+        if (moduleAPI != null && moduleAPI.getContentData() != null) {
+            this.adapterData = moduleAPI.getContentData();
+        } else {
+            this.adapterData = new ArrayList<>();
+        }
+        this.defaultWidth = defaultWidth;
+        this.defaultHeight = defaultHeight;
     }
 
     @Override
@@ -58,34 +70,22 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         moduleAPI,
                         settings,
                         ViewCreator.NOOP_ON_COMPONENT_LOADED,
-                        jsonValueKeyMap);
+                        jsonValueKeyMap,
+                        defaultWidth,
+                        defaultHeight);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        bindView(holder.componentView, adapterData.get(position));
-        final Context viewContext = holder.componentView.getContext();
-        holder.componentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String permalink = adapterData.get(position).getGist().getPermalink();
-                String action = component.getTrayClickAction();
-                String title = adapterData.get(position).getGist().getTitle();
-                if (!appCMSPresenter.launchButtonSelectedAction(permalink, action, title)) {
-                    Log.e(TAG, "Could not launch action: " +
-                            " permalink: " +
-                            permalink +
-                            " action: " +
-                            action);
-                }
-            }
-        });
+        if (0 <= position && position < adapterData.size()) {
+            bindView(holder.componentView, adapterData.get(position));
+        }
     }
 
     @Override
     public int getItemCount() {
-        return (adapterData == null ? 0 : adapterData.size());
+        return adapterData.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -98,9 +98,49 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     }
 
     private void bindView(CollectionGridItemView itemView,
-                          ContentDatum data) throws IllegalArgumentException {
+                          final ContentDatum data) throws IllegalArgumentException {
+        if (onClickHandler == null) {
+            onClickHandler = new CollectionGridItemView.OnClickHandler() {
+                @Override
+                public void click(Component childComponent, ContentDatum data) {
+                    String permalink = data.getGist().getPermalink();
+                    String action = childComponent.getKey();
+                    String title = data.getGist().getTitle();
+                    Log.d(TAG, "Launching " + permalink + ":" + action);
+                    if (!appCMSPresenter.launchButtonSelectedAction(permalink, action, title)) {
+                        Log.e(TAG, "Could not launch action: " +
+                                " permalink: " +
+                                permalink +
+                                " action: " +
+                                action);
+                    }
+                }
+            };
+        }
+
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String permalink = data.getGist().getPermalink();
+                String action = jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_PLAY_KEY);
+                String title = data.getGist().getTitle();
+                Log.d(TAG, "Launching " + permalink + ":" + action);
+                if (!appCMSPresenter.launchButtonSelectedAction(permalink, action, title)) {
+                    Log.e(TAG, "Could not launch action: " +
+                            " permalink: " +
+                            permalink +
+                            " action: " +
+                            action);
+                }
+            }
+        });
+
         for (int i = 0; i < itemView.getNumberOfChildren(); i++) {
-            itemView.bindChild(context, itemView.getChild(i), data, jsonValueKeyMap);
+            itemView.bindChild(context,
+                    itemView.getChild(i),
+                    data,
+                    jsonValueKeyMap,
+                    onClickHandler);
         }
     }
 }

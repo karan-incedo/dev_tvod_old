@@ -1,6 +1,7 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.FrameLayout;
 
 import com.viewlift.models.data.appcms.ui.page.Component;

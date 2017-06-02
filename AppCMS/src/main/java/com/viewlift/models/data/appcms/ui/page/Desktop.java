@@ -8,57 +8,57 @@ public class Desktop {
 
     @SerializedName("height")
     @Expose
-    private Integer height;
+    private Float height;
     @SerializedName("yAxis")
     @Expose
-    private Integer yAxis;
+    private Float yAxis;
     @SerializedName("rightMargin")
     @Expose
-    private Integer rightMargin;
+    private Float rightMargin;
     @SerializedName("leftMargin")
     @Expose
-    private Integer leftMargin;
+    private Float leftMargin;
     @SerializedName("xAxis")
     @Expose
-    private Integer xAxis;
+    private Float xAxis;
 
-    public Integer getHeight() {
+    public Float getHeight() {
         return height;
     }
 
-    public void setHeight(Integer height) {
+    public void setHeight(Float height) {
         this.height = height;
     }
 
-    public Integer getYAxis() {
+    public Float getYAxis() {
         return yAxis;
     }
 
-    public void setYAxis(Integer yAxis) {
+    public void setYAxis(Float yAxis) {
         this.yAxis = yAxis;
     }
 
-    public Integer getRightMargin() {
+    public Float getRightMargin() {
         return rightMargin;
     }
 
-    public void setRightMargin(Integer rightMargin) {
+    public void setRightMargin(Float rightMargin) {
         this.rightMargin = rightMargin;
     }
 
-    public Integer getLeftMargin() {
+    public Float getLeftMargin() {
         return leftMargin;
     }
 
-    public void setLeftMargin(Integer leftMargin) {
+    public void setLeftMargin(Float leftMargin) {
         this.leftMargin = leftMargin;
     }
 
-    public Integer getXAxis() {
+    public Float getXAxis() {
         return xAxis;
     }
 
-    public void setXAxis(Integer xAxis) {
+    public void setXAxis(Float xAxis) {
         this.xAxis = xAxis;
     }
 

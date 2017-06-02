@@ -39,6 +39,9 @@ public class Gist {
     @SerializedName("contentType")
     @Expose
     private String contentType;
+    @SerializedName("videoImageUrl")
+    @Expose
+    private String videoImageUrl;
 
     public String getId() {
         return id;
@@ -126,5 +129,13 @@ public class Gist {
 
     public void setPosterImageUrl(String posterImageUrl) {
         this.posterImageUrl = posterImageUrl;
+    }
+
+    public String getVideoImageUrl() {
+        return videoImageUrl;
+    }
+
+    public void setVideoImageUrl(String videoImageUrl) {
+        this.videoImageUrl = videoImageUrl;
     }
 }

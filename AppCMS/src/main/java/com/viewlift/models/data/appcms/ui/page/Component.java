@@ -82,6 +82,18 @@ public class Component {
     @SerializedName("unSelectedColor")
     @Expose
     private String unSelectedColor;
+    @SerializedName("isVisibleForPhone")
+    @Expose
+    private boolean isVisibleForPhone;
+    @SerializedName("isVisibleForTablet")
+    @Expose
+    private boolean isVisibleForTablet;
+    @SerializedName("styles")
+    @Expose
+    private Styles styles;
+    @SerializedName("fontWeight")
+    @Expose
+    private String fontWeight;
 
     public String getText() {
         return text;
@@ -281,5 +293,37 @@ public class Component {
 
     public void setUnSelectedColor(String unSelectedColor) {
         this.unSelectedColor = unSelectedColor;
+    }
+
+    public boolean isVisibleForPhone() {
+        return isVisibleForPhone;
+    }
+
+    public void setVisibleForPhone(boolean visibleForPhone) {
+        isVisibleForPhone = visibleForPhone;
+    }
+
+    public boolean isVisibleForTablet() {
+        return isVisibleForTablet;
+    }
+
+    public void setVisibleForTablet(boolean visibleForTablet) {
+        isVisibleForTablet = visibleForTablet;
+    }
+
+    public Styles getStyles() {
+        return styles;
+    }
+
+    public void setStyles(Styles styles) {
+        this.styles = styles;
+    }
+
+    public String getFontWeight() {
+        return fontWeight;
+    }
+
+    public void setFontWeight(String fontWeight) {
+        this.fontWeight = fontWeight;
     }
 }

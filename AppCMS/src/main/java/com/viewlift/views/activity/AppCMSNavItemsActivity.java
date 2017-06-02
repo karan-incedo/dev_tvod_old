@@ -52,7 +52,6 @@ public class AppCMSNavItemsActivity extends AppCompatActivity {
         };
         registerReceiver(handoffReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     @Override

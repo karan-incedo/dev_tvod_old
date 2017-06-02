@@ -5,7 +5,9 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -27,6 +29,7 @@ import java.util.Map;
 public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     implements OnInternalEvent {
 
+    private static String TAG = "CarouselItemAdapter";
     private static long UPDATE_CAROUSEL_TO = 5000L;
 
     private final RecyclerView listView;
@@ -52,7 +55,9 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                 settings,
                 component,
                 jsonValueKeyMap,
-                moduleAPI);
+                moduleAPI,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
         this.listView = listView;
         this.loop = loop;
         this.updatedVisibleIndex = 0;
@@ -99,6 +104,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                 updatingCarousel = false;
             }
         });
+        Log.d(TAG, "Created a carousel with " + adapterData.size() + " elements");
     }
 
     @Override

@@ -32,7 +32,9 @@ public class AppCMSNavItemsFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         AppCMSBinder appCMSBinder =
                 ((AppCMSBinder) getArguments().getBinder(getContext().getString(R.string.fragment_page_bundle_key)));
         View view = inflater.inflate(R.layout.fragment_menu_nav, container, false);
@@ -44,6 +46,7 @@ public class AppCMSNavItemsFragment extends Fragment {
                 appCMSBinder.isUserLoggedIn(),
                 appCMSPresenter);
         navItemsList.setAdapter(appCMSNavItemsAdapter);
+        appCMSPresenter.restrictPortraitOnly();
         return view;
     }
 }

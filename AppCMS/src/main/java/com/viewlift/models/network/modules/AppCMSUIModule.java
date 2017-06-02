@@ -99,16 +99,28 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_page_info_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_PLAY_KEY,
                 context.getString(R.string.app_cms_page_play_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY,
+                context.getString(R.string.app_cms_page_play_image_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY,
                 context.getString(R.string.app_cms_page_thumbnail_image_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY,
                 context.getString(R.string.app_cms_page_thumbnail_title_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_API_THUMBNAIL_URL,
                 context.getString(R.string.app_cms_page_api_thumbnail_url_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY,
+                context.getString(R.string.app_cms_page_text_alignment_center_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY,
+                context.getString(R.string.app_cms_page_carousel_title_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY,
+                context.getString(R.string.app_cms_page_carousel_info_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_API_TITLE,
                 context.getString(R.string.app_cms_page_api_title_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY,
                 context.getString(R.string.app_cms_page_tray_title_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_TEXT_BOLD_KEY,
+                context.getString(R.string.app_cms_page_font_bold_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_TEXT_SEMIBOLD_KEY,
+                context.getString(R.string.app_cms_page_font_semibold_key));
     }
 
     private void createPageNameToActionMap(Context context) {

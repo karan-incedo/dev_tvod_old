@@ -8,19 +8,19 @@ public class Mobile {
 
     @SerializedName("width")
     @Expose
-    private Integer width;
+    private Float width;
     @SerializedName("height")
     @Expose
-    private Integer height;
+    private Float height;
     @SerializedName("yAxis")
     @Expose
-    private Integer yAxis;
+    private Float yAxis;
     @SerializedName("rightMargin")
     @Expose
-    private Integer rightMargin;
+    private Float rightMargin;
     @SerializedName("leftMargin")
     @Expose
-    private Integer leftMargin;
+    private Float leftMargin;
     @SerializedName("topMargin")
     @Expose
     private Float topMargin;
@@ -29,55 +29,79 @@ public class Mobile {
     private Float bottomMargin;
     @SerializedName("xAxis")
     @Expose
-    private Integer xAxis;
+    private Float xAxis;
     @SerializedName("gridWidth")
     @Expose
-    private Integer gridWidth;
+    private Float gridWidth;
     @SerializedName("gridHeight")
     @Expose
-    private Integer gridHeight;
+    private Float gridHeight;
+    @SerializedName("fontSize")
+    @Expose
+    private int fontSize;
+    @SerializedName("marginBottom")
+    @Expose
+    private Float marginBottom;
+    @SerializedName("marginTop")
+    @Expose
+    private Float marginTop;
+    @SerializedName("marginLeft")
+    @Expose
+    private Float marginLeft;
+    @SerializedName("marginRight")
+    @Expose
+    private Float marginRight;
 
-    public Integer getWidth() {
+    public Float getWidth() {
         return width;
     }
 
-    public void setWidth(Integer width) {
+    public void setWidth(Float width) {
         this.width = width;
     }
 
-    public Integer getHeight() {
+    public Float getHeight() {
         return height;
     }
 
-    public void setHeight(Integer height) {
+    public void setHeight(Float height) {
         this.height = height;
     }
 
-    public Integer getYAxis() {
+    public Float getYAxis() {
         return yAxis;
     }
 
-    public void setYAxis(Integer yAxis) {
+    public void setYAxis(Float yAxis) {
         this.yAxis = yAxis;
     }
 
-    public Integer getRightMargin() {
+    public Float getRightMargin() {
+        if (marginRight != null) {
+            return marginRight;
+        }
         return rightMargin;
     }
 
-    public void setRightMargin(Integer rightMargin) {
+    public void setRightMargin(Float rightMargin) {
         this.rightMargin = rightMargin;
     }
 
-    public Integer getLeftMargin() {
+    public Float getLeftMargin() {
+        if (marginLeft != null) {
+            return marginLeft;
+        }
         return leftMargin;
     }
 
-    public void setLeftMargin(Integer leftMargin) {
+    public void setLeftMargin(Float leftMargin) {
         this.leftMargin = leftMargin;
     }
 
     public Float getTopMargin() {
+        if (marginTop != null) {
+            return marginTop;
+        }
         return topMargin;
     }
 
@@ -86,6 +110,9 @@ public class Mobile {
     }
 
     public Float getBottomMargin() {
+        if (marginBottom != null) {
+            return marginBottom;
+        }
         return bottomMargin;
     }
 
@@ -93,43 +120,83 @@ public class Mobile {
         this.bottomMargin = bottomMargin;
     }
 
-    public Integer getXAxis() {
+    public Float getXAxis() {
         return xAxis;
     }
 
-    public void setXAxis(Integer xAxis) {
+    public void setXAxis(Float xAxis) {
         this.xAxis = xAxis;
     }
 
-    public Integer getyAxis() {
+    public Float getyAxis() {
         return yAxis;
     }
 
-    public void setyAxis(Integer yAxis) {
+    public void setyAxis(Float yAxis) {
         this.yAxis = yAxis;
     }
 
-    public Integer getxAxis() {
+    public Float getxAxis() {
         return xAxis;
     }
 
-    public void setxAxis(Integer xAxis) {
+    public void setxAxis(Float xAxis) {
         this.xAxis = xAxis;
     }
 
-    public Integer getGridWidth() {
+    public Float getGridWidth() {
         return gridWidth;
     }
 
-    public void setGridWidth(Integer gridWidth) {
+    public void setGridWidth(Float gridWidth) {
         this.gridWidth = gridWidth;
     }
 
-    public Integer getGridHeight() {
+    public Float getGridHeight() {
         return gridHeight;
     }
 
-    public void setGridHeight(Integer gridHeight) {
+    public void setGridHeight(Float gridHeight) {
         this.gridHeight = gridHeight;
+    }
+
+    public int getFontSize() {
+        return fontSize;
+    }
+
+    public void setFontSize(int fontSize) {
+        this.fontSize = fontSize;
+    }
+
+    public Float getMarginBottom() {
+        return marginBottom;
+    }
+
+    public void setMarginBottom(Float marginBottom) {
+        this.marginBottom = marginBottom;
+    }
+
+    public Float getMarginTop() {
+        return marginTop;
+    }
+
+    public void setMarginTop(Float marginTop) {
+        this.marginTop = marginTop;
+    }
+
+    public Float getMarginLeft() {
+        return marginLeft;
+    }
+
+    public void setMarginLeft(Float marginLeft) {
+        this.marginLeft = marginLeft;
+    }
+
+    public Float getMarginRight() {
+        return marginRight;
+    }
+
+    public void setMarginRight(Float marginRight) {
+        this.marginRight = marginRight;
     }
 }

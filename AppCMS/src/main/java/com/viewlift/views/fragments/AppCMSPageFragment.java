@@ -81,9 +81,12 @@ public class AppCMSPageFragment extends Fragment {
             onPageCreationError.onError();
         }
         if (!pageView.isTablet(getContext()) && !appCMSBinder.isFullScreenEnabled()) {
-            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            appCMSPresenter.restrictPortraitOnly();
         } else {
-            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            appCMSPresenter.unrestrictPortraitOnly();
+        }
+        if (container != null) {
+            container.removeAllViews();
         }
         return pageView;
     }

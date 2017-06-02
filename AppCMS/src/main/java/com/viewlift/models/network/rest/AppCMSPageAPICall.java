@@ -53,7 +53,8 @@ public class AppCMSPageAPICall {
                             endpoint,
                             siteId,
                             context.getString(R.string.app_cms_page_id_query_parameter),
-                            pageId);
+                            pageId,
+                            String.valueOf(Math.random()));
         } else {
             urlWithContent =
                     context.getString(R.string.app_cms_page_api_url,
@@ -61,7 +62,8 @@ public class AppCMSPageAPICall {
                             endpoint,
                             siteId,
                             context.getString(R.string.app_cms_page_path_query_parameter),
-                            pageId);
+                            pageId,
+                            String.valueOf(Math.random()));
         }
         Log.d(TAG, "URL: " + urlWithContent);
         String filename = getResourceFilename(pageId);

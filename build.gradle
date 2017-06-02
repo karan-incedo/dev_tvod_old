@@ -31,6 +31,7 @@ allprojects {
         rxandroidVersion = "1.2.0"
         rxjavaVersion = "1.1.4"
         jsr250_apiVersion = "1.0"
+        exoplayerVersion = "r2.4.1"
     }
 }
 

@@ -15,10 +15,10 @@ public class Module {
     private String name;
     @SerializedName("ad")
     @Expose
-    private Object ad;
+    private String ad;
     @SerializedName("description")
     @Expose
-    private Object description;
+    private String description;
     @SerializedName("settings")
     @Expose
     private Settings settings;
@@ -36,13 +36,13 @@ public class Module {
     private String contentType;
     @SerializedName("title")
     @Expose
-    private Object title;
+    private String title;
     @SerializedName("metadataMap")
     @Expose
     private Object metadataMap;
     @SerializedName("viewType")
     @Expose
-    private Object viewType;
+    private String viewType;
     @SerializedName("menuLinks")
     @Expose
     private Object menuLinks;
@@ -72,19 +72,19 @@ public class Module {
         this.name = name;
     }
 
-    public Object getAd() {
+    public String getAd() {
         return ad;
     }
 
-    public void setAd(Object ad) {
+    public void setAd(String ad) {
         this.ad = ad;
     }
 
-    public Object getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription(Object description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
@@ -128,11 +128,11 @@ public class Module {
         this.contentType = contentType;
     }
 
-    public Object getTitle() {
+    public String getTitle() {
         return title;
     }
 
-    public void setTitle(Object title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
@@ -144,11 +144,11 @@ public class Module {
         this.metadataMap = metadataMap;
     }
 
-    public Object getViewType() {
+    public String getViewType() {
         return viewType;
     }
 
-    public void setViewType(Object viewType) {
+    public void setViewType(String viewType) {
         this.viewType = viewType;
     }
 

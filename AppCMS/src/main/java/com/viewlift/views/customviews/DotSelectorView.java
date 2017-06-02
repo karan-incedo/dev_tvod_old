@@ -10,6 +10,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.viewlift.models.data.appcms.ui.page.Component;
+import com.viewlift.models.data.appcms.ui.page.Layout;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,31 +22,29 @@ import snagfilms.com.air.appcms.R;
  * Created by viewlift on 5/26/17.
  */
 
-public class DotSelectorView extends FrameLayout implements OnInternalEvent {
+public class DotSelectorView extends BaseView implements OnInternalEvent {
+    private Component component;
     private final int selectedColor;
     private final int deselectedColor;
-    private LinearLayout childrenContainer;
     private int selectedViewIndex;
     private List<View> childViews;
     private List<OnInternalEvent> internalEventReceivers;
 
     public DotSelectorView(Context context,
+                           Component component,
                            int selectedColor,
                            int deselectedColor) {
         super(context);
+        this.component = component;
         this.selectedColor = selectedColor;
         this.deselectedColor = deselectedColor;
         this.selectedViewIndex = 0;
-        init(context);
+        init();
     }
 
-    private void init(Context context) {
-        childViews = new ArrayList<>();
-        RelativeLayout carouselView = new RelativeLayout(context);
-        LayoutParams carouselLayoutParams =
-                new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT);
-        carouselView.setLayoutParams(carouselLayoutParams);
+    @Override
+    protected void init() {
+        Context context = getContext();
         childrenContainer = new LinearLayout(context);
         int width = RelativeLayout.LayoutParams.WRAP_CONTENT;
         int height = RelativeLayout.LayoutParams.MATCH_PARENT;
@@ -52,11 +53,20 @@ public class DotSelectorView extends FrameLayout implements OnInternalEvent {
         childrenLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         childrenLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
         childrenContainer.setLayoutParams(childrenLayoutParams);
-        childrenContainer.setOrientation(LinearLayout.HORIZONTAL);
-        childrenContainer.setGravity(Gravity.CENTER_HORIZONTAL);
-        internalEventReceivers = new ArrayList<>();
+        ((LinearLayout) childrenContainer).setOrientation(LinearLayout.HORIZONTAL);
+
+        RelativeLayout carouselView = new RelativeLayout(context);
+        LayoutParams carouselLayoutParams =
+                new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT);
+        carouselView.setLayoutParams(carouselLayoutParams);
+
         carouselView.addView(childrenContainer);
+
         addView(carouselView);
+
+        childViews = new ArrayList<>();
+        internalEventReceivers = new ArrayList<>();
     }
 
     public void addDots(int size) {
@@ -102,8 +112,13 @@ public class DotSelectorView extends FrameLayout implements OnInternalEvent {
         ImageView dotImageView = new ImageView(context);
         dotImageView.setBackgroundResource(R.drawable.tab_indicator_default);
         ((GradientDrawable) dotImageView.getBackground()).setColor(deselectedColor);
-        int imageWidth = (int) context.getResources().getDimension(R.dimen.dot_selector_width);
-        int imageHeight = (int) context.getResources().getDimension(R.dimen.dot_selector_height);
+
+        int imageWidth = getViewWidth(context,
+                component.getLayout(),
+                (int) context.getResources().getDimension(R.dimen.dot_selector_width));
+        int imageHeight = getViewHeight(context,
+                component.getLayout(),
+                (int) context.getResources().getDimension(R.dimen.dot_selector_height));
         LayoutParams dotSelectorLayoutParams =
                 new LayoutParams(imageWidth, imageHeight);
         dotSelectorLayoutParams.gravity = Gravity.CENTER;
@@ -113,18 +128,14 @@ public class DotSelectorView extends FrameLayout implements OnInternalEvent {
 
     private FrameLayout createDotView(Context context) {
         FrameLayout dotSelectorView = new FrameLayout(context);
-        int viewWidth =
-                (int) context.getResources().getDimension(R.dimen.dot_selector_item_width);
-        int viewHeight =
-                (int) context.getResources().getDimension(R.dimen.dot_selector_item_height);
-        MarginLayoutParams marginLayoutParams =
-                new MarginLayoutParams(viewWidth, viewHeight);
-        marginLayoutParams.leftMargin =
-                (int) context.getResources().getDimension(R.dimen.dot_selector_margin_left);
-        marginLayoutParams.rightMargin =
-                (int) context.getResources().getDimension(R.dimen.dot_selector_margin_right);
+        int viewWidth = getViewWidth(context,
+                component.getLayout(),
+                (int) context.getResources().getDimension(R.dimen.dot_selector_item_width));
+        int viewHeight = getViewHeight(context,
+                component.getLayout(),
+                (int) context.getResources().getDimension(R.dimen.dot_selector_item_height));
         LayoutParams viewLayoutParams =
-                new LayoutParams(marginLayoutParams);
+                new LayoutParams(viewWidth, viewHeight);
         dotSelectorView.setLayoutParams(viewLayoutParams);
         dotSelectorView.setBackgroundColor(context.getResources().getColor(android.R.color.transparent));
         return dotSelectorView;
@@ -150,5 +161,15 @@ public class DotSelectorView extends FrameLayout implements OnInternalEvent {
             deselect(selectedViewIndex);
             select(index);
         }
+    }
+
+    @Override
+    protected Component getChildComponent(int index) {
+        return null;
+    }
+
+    @Override
+    protected Layout getLayout() {
+        return component.getLayout();
     }
 }

@@ -11,8 +11,10 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -283,16 +285,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         Fragment appCMSPageFragment = AppCMSPageFragment.newInstance(this, appCMSBinder);
         if (firstFragment) {
-            fragmentTransaction.replace(R.id.app_cms_fragment,
-                    appCMSPageFragment,
-                    String.valueOf(appCMSBinderStack.size()));
+            fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment, "0");
         } else {
-            fragmentTransaction.replace(R.id.app_cms_fragment,
-                    appCMSPageFragment,
-                    String.valueOf(appCMSBinderStack.size()));
-            fragmentTransaction.addToBackStack(String.valueOf(appCMSBinderStack.size()));
+            fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment);
+            if (fragmentManager.getBackStackEntryCount() == 0) {
+                fragmentTransaction.addToBackStack("0");
+            }
         }
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         fragmentTransaction.commit();
     }
 
@@ -318,11 +317,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             appBarLayout.setVisibility(View.GONE);
         } else {
             Toolbar toolbar = (Toolbar) findViewById(R.id.app_cms_toolbar);
+            StringBuffer titleSb = new StringBuffer();
+            titleSb.append("<font color='#" +
+                    Integer.toHexString(ContextCompat.getColor(this, R.color.colorAccent)) +
+                    "'>");
+            titleSb.append(pageName);
+            titleSb.append("</font>");
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             getSupportActionBar().setDisplayShowHomeEnabled(false);
             getSupportActionBar().setHomeButtonEnabled(false);
-            getSupportActionBar().setTitle(pageName);
+            getSupportActionBar().setTitle(Html.fromHtml(titleSb.toString()));
             getSupportActionBar().setSubtitle(subpageName);
             appBarLayout.setVisibility(View.VISIBLE);
         }
@@ -332,6 +337,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
         AppCMSBinder appCMSBinder =
                 (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
+        if (appCMSBinderStack.size() > 1) {
+            appCMSBinderStack.pop();
+        }
         appCMSBinderStack.push(appCMSBinder);
         handleAppCMSBinder(appCMSBinder, false);
     }

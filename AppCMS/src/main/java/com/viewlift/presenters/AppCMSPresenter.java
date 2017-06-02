@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -38,6 +39,7 @@ import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
+import com.viewlift.views.customviews.LifecycleStatus;
 
 import rx.Observable;
 import rx.functions.Action0;
@@ -82,6 +84,7 @@ public class AppCMSPresenter {
     private Map<String, String> actionToPageNameMap;
     private Map<String, String> pageIdToPageNameMap;
     private List<Action1<Boolean>> onOrientationChangeHandlers;
+    private List<Action1<LifecycleStatus>> onLifecycleChangeHandlers;
 
     private static abstract class AppCMSPageAPIAction implements Action1<AppCMSPageAPI> {
         boolean appbarPresent;
@@ -120,6 +123,7 @@ public class AppCMSPresenter {
         this.actionToPageNameMap = new HashMap<>();
         this.pageIdToPageNameMap = new HashMap();
         this.onOrientationChangeHandlers = new ArrayList<>();
+        this.onLifecycleChangeHandlers = new ArrayList<>();
     }
 
     public void setCurrentActivity(Activity activity) {
@@ -131,52 +135,57 @@ public class AppCMSPresenter {
     }
 
     public boolean launchButtonSelectedAction(String pagePath, final String action, final String filmTitle) {
-        boolean result = loadingPage;
+        boolean result = false;
         if (currentActivity != null && !loadingPage) {
-            loadingPage = true;
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-            result = true;
-            final AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
-            boolean appbarPresent = true;
-            boolean fullscreenEnabled = false;
-            switch (actionToActionTypeMap.get(action)) {
-                case SPLASH_PAGE:
-                    appbarPresent = false;
-                    fullscreenEnabled = false;
-                    break;
-                case VIDEO_PAGE:
-                    appbarPresent = true;
-                    fullscreenEnabled = true;
-                    break;
-                case HOME_PAGE:
-                default:
-                    break;
+            AppCMSActionType actionType = actionToActionTypeMap.get(action);
+            if (actionType == null) {
+                Log.e(TAG, "Action " + action + " not found!");
+                return false;
             }
-            getPageIdContent(apiBaseUrl,
-                    actionToPageAPIUrlMap.get(action),
-                    apiSiteName,
-                    false,
-                    pagePath,
-                    new AppCMSPageAPIAction(appbarPresent, fullscreenEnabled) {
-                        @Override
-                        public void call(AppCMSPageAPI appCMSPageAPI) {
-                            Bundle args = getPageActivityBundle(currentActivity,
-                                    appCMSPageUI,
-                                    appCMSPageAPI,
-                                    getPageId(appCMSPageUI),
-                                    filmTitle,
-                                    null,
-                                    loadFromFile,
-                                    appbarPresent,
-                                    fullscreenEnabled);
-                            Intent updatePageIntent =
-                                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                    args);
-                            currentActivity.sendBroadcast(updatePageIntent);
-                            loadingPage = false;
-                        }
-                    });
+//            result = true;
+//            final AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
+//            boolean appbarPresent = true;
+//            boolean fullscreenEnabled = false;
+//            loadingPage = true;
+//            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+//            switch (actionType) {
+//                case SPLASH_PAGE:
+//                    appbarPresent = false;
+//                    fullscreenEnabled = false;
+//                    break;
+//                case VIDEO_PAGE:
+//                    appbarPresent = true;
+//                    fullscreenEnabled = true;
+//                    break;
+//                case HOME_PAGE:
+//                default:
+//                    break;
+//            }
+//            getPageIdContent(apiBaseUrl,
+//                    actionToPageAPIUrlMap.get(action),
+//                    apiSiteName,
+//                    false,
+//                    pagePath,
+//                    new AppCMSPageAPIAction(appbarPresent, fullscreenEnabled) {
+//                        @Override
+//                        public void call(AppCMSPageAPI appCMSPageAPI) {
+//                            Bundle args = getPageActivityBundle(currentActivity,
+//                                    appCMSPageUI,
+//                                    appCMSPageAPI,
+//                                    getPageId(appCMSPageUI),
+//                                    filmTitle,
+//                                    null,
+//                                    loadFromFile,
+//                                    appbarPresent,
+//                                    fullscreenEnabled);
+//                            Intent updatePageIntent =
+//                                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+//                            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+//                                    args);
+//                            currentActivity.sendBroadcast(updatePageIntent);
+//                            loadingPage = false;
+//                        }
+//                    });
         }
         return result;
     }
@@ -213,6 +222,28 @@ public class AppCMSPresenter {
     public void onOrientationChange(boolean landscape) {
         for (Action1<Boolean> onOrientationChangeHandler : onOrientationChangeHandlers) {
             Observable.just(landscape).subscribe(onOrientationChangeHandler);
+        }
+    }
+
+    public void addOnLifecycleChangeHandler(Action1<LifecycleStatus> onLifecycleChangeHandler) {
+        onLifecycleChangeHandlers.add(onLifecycleChangeHandler);
+    }
+
+    public void onLifecycleChange(LifecycleStatus lifecycleStatus) {
+        for (Action1<LifecycleStatus> onLifecycleChangeHandler : onLifecycleChangeHandlers) {
+            Observable.just(lifecycleStatus).subscribe(onLifecycleChangeHandler);
+        }
+    }
+
+    public void restrictPortraitOnly() {
+        if (currentActivity != null) {
+            currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+    }
+
+    public void unrestrictPortraitOnly() {
+        if (currentActivity != null) {
+            currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
     }
 
@@ -270,6 +301,7 @@ public class AppCMSPresenter {
             } else {
                 if (!actionToPageMap.containsKey(action) || actionToPageMap.get(action) == null) {
                     result = false;
+                    Log.e(TAG, "Action " + action + " not found!");
                 } else {
                     boolean appbarPresent = true;
                     boolean fullscreenEnabled = false;
@@ -510,6 +542,7 @@ public class AppCMSPresenter {
                                                     null);
                                     if (!launchSuccess) {
                                         Log.e(TAG, "Failed to launch page: " + firstPage.getPageName());
+                                        launchErrorActivity(currentActivity);
                                     }
                                 }
                             });

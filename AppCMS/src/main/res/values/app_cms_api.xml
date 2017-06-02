@@ -3,7 +3,7 @@
     <!-- Primary app values -->
     <string name="app_cms_api_baseurl">https://appcms.viewlift.com/</string>
     <string name="app_cms_main_url">%1$s/%2$s/main.json</string>
-    <string name="app_cms_app_name">a358d9c8-27e5-45fe-9a21-a7f889932605</string>
+    <string name="app_cms_app_name">61f217cd-6cc1-49be-9345-7866a96b4205</string>
 
     <!-- AppCMS JSON data input keys -->
     <string name="app_cms_main_version_key">version</string>
@@ -27,9 +27,15 @@
     <string name="app_cms_page_logo_key">logo</string>
     <string name="app_cms_page_info_key">info</string>
     <string name="app_cms_page_play_key">play</string>
+    <string name="app_cms_page_play_image_key">playImage</string>
     <string name="app_cms_page_tray_title_key">trayTitle</string>
     <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
     <string name="app_cms_page_thumbnail_title_key">thumbnailTitle</string>
+    <string name="app_cms_page_text_alignment_center_key">center</string>
+    <string name="app_cms_page_carousel_title_key">carouselTitle</string>
+    <string name="app_cms_page_carousel_info_key">carouselInfo</string>
+    <string name="app_cms_page_font_bold_key">Bold</string>
+    <string name="app_cms_page_font_semibold_key">Semibold</string>
     <string name="app_cms_page_api_thumbnail_url_key">thumbnail</string>
     <string name="app_cms_page_api_title_key">title</string>
 
@@ -42,10 +48,10 @@
     <string name="app_cms_action_initialize_key">Initalize</string>
     <string name="app_cms_action_splashpage_key">Splash Screen</string>
     <string name="app_cms_action_homepage_key">Home Page</string>
-    <string name="app_cms_action_videopage_key">lectureDetailPage</string>
+    <string name="app_cms_action_videopage_key">play</string>
 
     <!-- AppCMS Data values -->
-    <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true</string>
+    <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true&amp;a=%6$s</string>
     <string name="app_cms_page_id_query_parameter">pageId=</string>
     <string name="app_cms_page_path_query_parameter">path=</string>
     <string name="app_cms_api_key">XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F</string>
@@ -53,4 +59,8 @@
     <!-- AppCMS Navigation menu -->
     <string name="app_cms_menu_icon_name">menu_</string>
     <string name="app_cms_menu_label">Menu</string>
+
+    <!-- AppCMS VideoPlayer values -->
+    <string name="app_cms_user_agent">AppCMS Android</string>
+    <string name="app_cms_default_video_ext">m</string>
 </resources>

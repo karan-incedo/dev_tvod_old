@@ -50,6 +50,7 @@ dependencies {
     compile "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofit2Version"
     compile "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
     compile "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
+    compile "com.google.android.exoplayer:exoplayer:$rootProject.ext.exoplayerVersion"
     provided "javax.annotation:jsr250-api:$rootProject.ext.jsr250_apiVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
 }
