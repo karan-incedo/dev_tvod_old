@@ -3,6 +3,7 @@ package com.viewlift.models.network.rest;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.Url;
 
 /**
@@ -11,5 +12,6 @@ import retrofit2.http.Url;
 
 public interface AppCMSPageUIRest {
     @GET
+    @Headers("Cache-Control: no-cache, no-store")
     Call<AppCMSPageUI> get(@Url String url);
 }

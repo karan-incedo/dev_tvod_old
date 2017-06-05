@@ -37,6 +37,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     protected CollectionGridItemView.OnClickHandler onClickHandler;
     protected int defaultWidth;
     protected int defaultHeight;
+    protected boolean useMarginsAsPercentages;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -60,19 +61,21 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
         this.defaultWidth = defaultWidth;
         this.defaultHeight = defaultHeight;
+        this.useMarginsAsPercentages = true;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         CollectionGridItemView view = viewCreator.createCollectionGridItemView(context,
-                        component,
-                        appCMSPresenter,
-                        moduleAPI,
-                        settings,
-                        ViewCreator.NOOP_ON_COMPONENT_LOADED,
-                        jsonValueKeyMap,
-                        defaultWidth,
-                        defaultHeight);
+                component,
+                appCMSPresenter,
+                moduleAPI,
+                settings,
+                ViewCreator.NOOP_ON_COMPONENT_LOADED,
+                jsonValueKeyMap,
+                defaultWidth,
+                defaultHeight,
+                useMarginsAsPercentages);
         return new ViewHolder(view);
     }
 

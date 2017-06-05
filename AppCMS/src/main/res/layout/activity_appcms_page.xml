@@ -2,25 +2,33 @@
  <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/app_cms_parent_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="?attr/colorPrimaryDark">
+    android:layout_height="match_parent">
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_cms_appbarlayout"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimaryDark"
         android:elevation="@dimen/appbar_elevation"
-        android:gravity="center_horizontal"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:fitsSystemWindows="true">
         <android.support.v7.widget.Toolbar
             android:id="@+id/app_cms_toolbar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:titleTextColor="@color/colorAccent"
-            app:subtitleTextColor="@color/colorAccent">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAlignment="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="SnagFilms"/>
+            <android.support.v7.widget.ActionMenuView
+                android:id="@+id/app_cms_action_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical|end"/>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 

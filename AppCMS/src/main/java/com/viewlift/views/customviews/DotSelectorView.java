@@ -113,10 +113,10 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
         dotImageView.setBackgroundResource(R.drawable.tab_indicator_default);
         ((GradientDrawable) dotImageView.getBackground()).setColor(deselectedColor);
 
-        int imageWidth = getViewWidth(context,
+        int imageWidth = (int) getViewWidth(context,
                 component.getLayout(),
                 (int) context.getResources().getDimension(R.dimen.dot_selector_width));
-        int imageHeight = getViewHeight(context,
+        int imageHeight = (int) getViewHeight(context,
                 component.getLayout(),
                 (int) context.getResources().getDimension(R.dimen.dot_selector_height));
         LayoutParams dotSelectorLayoutParams =
@@ -128,10 +128,10 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
 
     private FrameLayout createDotView(Context context) {
         FrameLayout dotSelectorView = new FrameLayout(context);
-        int viewWidth = getViewWidth(context,
+        int viewWidth = (int) getViewWidth(context,
                 component.getLayout(),
                 (int) context.getResources().getDimension(R.dimen.dot_selector_item_width));
-        int viewHeight = getViewHeight(context,
+        int viewHeight = (int) getViewHeight(context,
                 component.getLayout(),
                 (int) context.getResources().getDimension(R.dimen.dot_selector_item_height));
         LayoutParams viewLayoutParams =

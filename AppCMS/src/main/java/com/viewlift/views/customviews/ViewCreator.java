@@ -1,6 +1,5 @@
 package com.viewlift.views.customviews;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -9,7 +8,6 @@ import android.graphics.drawable.Drawable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -49,6 +47,7 @@ public class ViewCreator {
         OnInternalEvent onInternalEvent;
         boolean hideOnFullscreenLandscape;
         Action1<LifecycleStatus> onLifecycleChangeHandler;
+        boolean useMarginsAsPercentagesOverride;
     }
 
     public PageView generatePage(Context context,
@@ -57,6 +56,9 @@ public class ViewCreator {
                                  Map<AppCMSUIKeyType, String> jsonValueKeyMap,
                                  AppCMSPresenter appCMSPresenter,
                                  List<String> modulesToIgnore) {
+        if (appCMSPageAPI == null) {
+            return null;
+        }
         PageView pageView = new PageView(context, appCMSPageUI);
         createPageView(context,
                 appCMSPageUI,
@@ -149,7 +151,8 @@ public class ViewCreator {
                             moduleView.getLayout(),
                             childrenContainer,
                             false,
-                            jsonValueKeyMap);
+                            jsonValueKeyMap,
+                            componentViewResult.useMarginsAsPercentagesOverride);
                 } else {
                     moduleView.setComponentHasView(i, false);
                 }
@@ -183,7 +186,8 @@ public class ViewCreator {
                                                                final OnComponentLoaded onComponentLoaded,
                                                                Map<AppCMSUIKeyType, String> jsonValueKeyMap,
                                                                int defaultWidth,
-                                                               int defaultHeight) {
+                                                               int defaultHeight,
+                                                               boolean useMarginsAsPercentages) {
         CollectionGridItemView collectionGridItemView = new CollectionGridItemView(context,
                 component,
                 defaultWidth,
@@ -221,7 +225,8 @@ public class ViewCreator {
                         collectionGridItemView.getLayout(),
                         collectionGridItemView.getChildrenContainer(),
                         false,
-                        jsonValueKeyMap);
+                        jsonValueKeyMap,
+                        useMarginsAsPercentages);
             } else {
                 collectionGridItemView.setComponentHasView(i, false);
             }
@@ -246,7 +251,7 @@ public class ViewCreator {
                                     final AppCMSPresenter appCMSPresenter,
                                     boolean gridElement) {
         ComponentViewResult componentViewResult = new ComponentViewResult();
-
+        componentViewResult.useMarginsAsPercentagesOverride = true;
         if (component.getType()
                 .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY))) {
             componentViewResult.componentView = new RecyclerView(context);
@@ -306,6 +311,7 @@ public class ViewCreator {
             ((DotSelectorView) componentViewResult.componentView).addDots(numDots);
             componentViewResult.onInternalEvent = (DotSelectorView) componentViewResult.componentView;
             componentViewResult.hideOnFullscreenLandscape = true;
+            componentViewResult.useMarginsAsPercentagesOverride = false;
         } else if (component.getType()
                 .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_BUTTON_KEY))) {
             componentViewResult.componentView = new Button(context);
@@ -337,11 +343,13 @@ public class ViewCreator {
                 .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_LABEL_KEY))) {
             componentViewResult.componentView = new AlwaysSelectedTextView(context);
             if (!gridElement) {
-                if (!TextUtils.isEmpty(component.getText())) {
-                    ((TextView) componentViewResult.componentView).setText(component.getText().toUpperCase());
-                } else if (!moduleAPI.getSettings().getHideTitle() &&
-                        !TextUtils.isEmpty(moduleAPI.getTitle())) {
-                    ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle().toUpperCase());
+                if (component.getKey().equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY))) {
+                    if (!TextUtils.isEmpty(component.getText())) {
+                        ((TextView) componentViewResult.componentView).setText(component.getText().toUpperCase());
+                    } else if (!moduleAPI.getSettings().getHideTitle() &&
+                            !TextUtils.isEmpty(moduleAPI.getTitle())) {
+                        ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle().toUpperCase());
+                    }
                 }
             }
             if (!TextUtils.isEmpty(component.getTextColor())) {
@@ -365,14 +373,11 @@ public class ViewCreator {
                     ((TextView) componentViewResult.componentView).setTypeface(Typeface.create(component.getFontFamily(), Typeface.NORMAL));
                 }
             }
-            if (gridElement) {
-                ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.MARQUEE);
-                ((TextView) componentViewResult.componentView).setHorizontallyScrolling(true);
-                ((TextView) componentViewResult.componentView).setMarqueeRepeatLimit(-1);
-                ((TextView) componentViewResult.componentView).setSingleLine(true);
-                ((TextView) componentViewResult.componentView).setLines(1);
-            }
-            Log.d(TAG, "Label Title: " + ((TextView) componentViewResult.componentView).getText());
+            ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.MARQUEE);
+            ((TextView) componentViewResult.componentView).setHorizontallyScrolling(true);
+            ((TextView) componentViewResult.componentView).setMarqueeRepeatLimit(-1);
+            ((TextView) componentViewResult.componentView).setSingleLine(true);
+            ((TextView) componentViewResult.componentView).setLines(1);
             componentViewResult.hideOnFullscreenLandscape = true;
         } else if (component.getType()
                 .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_IMAGE_KEY))) {
@@ -407,6 +412,13 @@ public class ViewCreator {
             if (!TextUtils.isEmpty(component.getProgressColor())) {
                 int color = Color.parseColor(getColor(component.getProgressColor()));
                 ((ProgressBar) componentViewResult.componentView).setProgressDrawable(new ColorDrawable(color));
+            }
+            componentViewResult.hideOnFullscreenLandscape = true;
+        } else if (component.getType()
+                .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_SEPARATOR_VIEW_KEY))) {
+            componentViewResult.componentView = new View(context);
+            if (!TextUtils.isEmpty(component.getBackgroundColor())) {
+                componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(component.getBackgroundColor())));
             }
             componentViewResult.hideOnFullscreenLandscape = true;
         }

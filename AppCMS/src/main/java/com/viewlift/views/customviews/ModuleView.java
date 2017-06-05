@@ -32,8 +32,9 @@ public class ModuleView extends BaseView {
 
     @Override
     protected void init() {
-        int width = getViewWidth(getContext(), module.getLayout(), LayoutParams.MATCH_PARENT);
-        int height = getViewHeight(getContext(), module.getLayout(), LayoutParams.WRAP_CONTENT);
+        int width = (int) getViewWidth(getContext(), module.getLayout(), LayoutParams.MATCH_PARENT);
+        int height = (int) getViewHeight(getContext(), module.getLayout(), LayoutParams.WRAP_CONTENT);
+        Log.d(TAG, "Module Key: " + module.getView() + " Width: " + width + " Height; " + height);
         FrameLayout.LayoutParams layoutParams =
                 new FrameLayout.LayoutParams(width, height);
         this.setLayoutParams(layoutParams);

@@ -104,7 +104,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                 updatingCarousel = false;
             }
         });
-        Log.d(TAG, "Created a carousel with " + adapterData.size() + " elements");
+        this.useMarginsAsPercentages = false;
     }
 
     @Override

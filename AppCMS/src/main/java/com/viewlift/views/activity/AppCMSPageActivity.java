@@ -5,26 +5,29 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.Primary;
 import com.viewlift.models.data.appcms.ui.android.User;
+import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.NavBarItemView;
@@ -46,15 +49,21 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     private Stack<AppCMSBinder> appCMSBinderStack;
     private BroadcastReceiver presenterActionReceiver;
 
+    private RelativeLayout appCMSParentView;
     private ProgressBar appCMSPageLoading;
     private FrameLayout appCMSFragment;
     private AppBarLayout appBarLayout;
     private LinearLayout appCMSTabNavContainer;
+    private ActionMenuView appCMSActionMenu;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_appcms_page);
+
+        appCMSParentView = (RelativeLayout) findViewById(R.id.app_cms_parent_view);
+
+        appCMSActionMenu = (ActionMenuView) findViewById(R.id.app_cms_action_menu);
 
         appCMSPageLoading = (ProgressBar) findViewById(R.id.app_cms_page_loading);
         appCMSFragment = (FrameLayout) findViewById(R.id.app_cms_fragment);
@@ -89,7 +98,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 }
             }
         };
-        Log.d(TAG, "onCreate() Binder stack size: " + appCMSBinderStack.size());
     }
 
     @Override
@@ -99,34 +107,28 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 new IntentFilter(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION));
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-        Log.d(TAG, "onResume() Binder stack size: " + appCMSBinderStack.size());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         unregisterReceiver(presenterActionReceiver);
-        Log.d(TAG, "onPause() Binder stack size: " + appCMSBinderStack.size());
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d(TAG, "Saving instance state");
         int backstackCnt = getSupportFragmentManager().getBackStackEntryCount();
         for (int i = 0; i < backstackCnt; i++) {
             String backstackEntryName =
                     getSupportFragmentManager().getBackStackEntryAt(i).getName();
-            Log.d(TAG, "Instance state backstack entry: " + backstackEntryName);
             Fragment fragment = getSupportFragmentManager().findFragmentByTag(backstackEntryName);
             if (fragment != null) {
-                Log.d(TAG, "Instance state saving fragment " + backstackEntryName);
                 getSupportFragmentManager().putFragment(outState, backstackEntryName, fragment);
             }
         }
         int appCMSBinderStackSize = appCMSBinderStack.size();
         outState.putInt(getString(R.string.app_cms_binder_stack_size_key), appCMSBinderStackSize);
-        Log.d(TAG, "Instance state saving " + appCMSBinderStackSize + " binder elements");
         for (int i = appCMSBinderStackSize - 1; i >= 0; i--) {
             outState.putBinder(getString(R.string.app_cms_binder_stack_element_key, i), appCMSBinderStack.get(i));
         }
@@ -135,19 +137,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        Log.d(TAG, "Restoring instance state");
         int backstackCnt = getSupportFragmentManager().getBackStackEntryCount();
-        Log.d(TAG, "Instance state backstack count: " + backstackCnt);
         for (int i = 0; i < backstackCnt; i++) {
             String backstackEntryName =
                     getSupportFragmentManager().getBackStackEntryAt(i).getName();
-            Log.d(TAG, "Instance state backstack entry " +
-                    i +
-                    ": " +
-                    backstackEntryName);
             Fragment fragment = getSupportFragmentManager().getFragment(savedInstanceState, backstackEntryName);
             if (fragment != null) {
-                Log.d(TAG, "Instance state fragment with tag " + fragment.getTag());
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.app_cms_fragment,
                         fragment,
@@ -158,7 +153,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             }
         }
         int appCMSBinderStackSize = savedInstanceState.getInt(getString(R.string.app_cms_binder_stack_size_key));
-        Log.d(TAG, "Instance state restoring " + appCMSBinderStackSize + " binder elements");
         for (int i = 0; i < appCMSBinderStackSize; i++) {
             appCMSBinderStack.push((AppCMSBinder) savedInstanceState.getBinder(getString(R.string.app_cms_binder_stack_element_key, i)));
         }
@@ -166,7 +160,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     @Override
     public void onBackPressed() {
-        Log.d(TAG, "onBackPressed() " + appCMSBinderStack.size());
         try {
             if (appCMSBinderStack.pop() != null && appCMSBinderStack.size() > 0) {
                 handleOrientation(getResources().getConfiguration().orientation,
@@ -191,6 +184,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         handleOrientation(newConfig.orientation, appCMSBinderStack.peek());
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_top_main, appCMSActionMenu.getMenu());
+        return true;
+    }
+
     public void pageLoading(boolean pageLoading) {
         if (pageLoading) {
             appCMSPageLoading.setVisibility(View.VISIBLE);
@@ -206,6 +205,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     private void handleAppCMSBinder(final AppCMSBinder appCMSBinder, boolean firstFragment) {
         pageLoading(false);
+
+        appCMSParentView.setBackgroundColor(Color.parseColor(appCMSBinder.getAppCMSMain()
+                .getBrand()
+                .getGeneral()
+                .getBackgroundColor()));
 
         appBarLayout = (AppBarLayout) findViewById(R.id.app_cms_appbarlayout);
 
@@ -264,6 +268,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                     });
                 }
             }
+
             NavBarItemView menuNavBarItemView =
                     (NavBarItemView) appCMSTabNavContainer.getChildAt(appCMSTabNavContainer.getChildCount() - 1);
             menuNavBarItemView.setImage(getString(R.string.app_cms_menu_icon_name));
@@ -274,7 +279,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                     if (!appCMSPresenter.launchNavigationPage()) {
                         Log.e(TAG, "Could not launch navigation page!");
                     }
-                    Log.d(TAG, "Binder stack size; " + appCMSBinderStack.size());
                 }
             });
 
@@ -300,34 +304,37 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 orientation == Configuration.ORIENTATION_LANDSCAPE) {
             handleToolbar(false,
                     appCMSBinder.getPageName(),
-                    appCMSBinder.getSubpageName());
+                    appCMSBinder.getSubpageName(),
+                    appCMSBinder.getAppCMSMain());
             appCMSTabNavContainer.setVisibility(View.GONE);
             hideSystemUI(getWindow().getDecorView());
         } else {
             handleToolbar(appCMSBinder.isAppbarPresent(),
                     appCMSBinder.getPageName(),
-                    appCMSBinder.getSubpageName());
+                    appCMSBinder.getSubpageName(),
+                    appCMSBinder.getAppCMSMain());
             appCMSTabNavContainer.setVisibility(View.VISIBLE);
             showSystemUI(getWindow().getDecorView());
         }
     }
 
-    private void handleToolbar(boolean appbarPresent, String pageName, String subpageName) {
+    private void handleToolbar(boolean appbarPresent,
+                               String pageName,
+                               String subpageName,
+                               AppCMSMain appCMSMain) {
         if (!appbarPresent) {
             appBarLayout.setVisibility(View.GONE);
         } else {
             Toolbar toolbar = (Toolbar) findViewById(R.id.app_cms_toolbar);
-            StringBuffer titleSb = new StringBuffer();
-            titleSb.append("<font color='#" +
-                    Integer.toHexString(ContextCompat.getColor(this, R.color.colorAccent)) +
-                    "'>");
-            titleSb.append(pageName);
-            titleSb.append("</font>");
+            toolbar.setTitleTextColor(Color.parseColor(appCMSMain
+                    .getBrand()
+                    .getGeneral()
+                    .getTextColor()));
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             getSupportActionBar().setDisplayShowHomeEnabled(false);
             getSupportActionBar().setHomeButtonEnabled(false);
-            getSupportActionBar().setTitle(Html.fromHtml(titleSb.toString()));
+            getSupportActionBar().setTitle(pageName);
             getSupportActionBar().setSubtitle(subpageName);
             appBarLayout.setVisibility(View.VISIBLE);
         }

@@ -51,6 +51,9 @@ public class Mobile {
     @SerializedName("marginRight")
     @Expose
     private Float marginRight;
+    @SerializedName("trayPadding")
+    @Expose
+    private Float trayPadding;
 
     public Float getWidth() {
         return width;
@@ -198,5 +201,13 @@ public class Mobile {
 
     public void setMarginRight(Float marginRight) {
         this.marginRight = marginRight;
+    }
+
+    public Float getTrayPadding() {
+        return trayPadding;
+    }
+
+    public void setTrayPadding(Float trayPadding) {
+        this.trayPadding = trayPadding;
     }
 }

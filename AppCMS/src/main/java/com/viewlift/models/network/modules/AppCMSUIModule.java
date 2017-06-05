@@ -63,16 +63,6 @@ public class AppCMSUIModule {
     }
 
     private void createJsonValueKeyMap(Context context) {
-        this.jsonValueKeyMap.put(AppCMSUIKeyType.MAIN_VERSION_KEY,
-                context.getString(R.string.app_cms_main_version_key));
-        this.jsonValueKeyMap.put(AppCMSUIKeyType.MAIN_OLD_VERSION_KEY,
-                context.getString(R.string.app_cms_main_old_version_key));
-        this.jsonValueKeyMap.put(AppCMSUIKeyType.MAIN_ANDROID_KEY,
-                context.getString(R.string.app_cms_main_android_key));
-        this.jsonValueKeyMap.put(AppCMSUIKeyType.MAIN_API_BASE_URL,
-                context.getString(R.string.app_cms_main_api_base_url_key));
-        this.jsonValueKeyMap.put(AppCMSUIKeyType.MAIN_SITE_ID,
-                context.getString(R.string.app_cms_main_api_site_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY,
                 context.getString(R.string.app_cms_pagename_splashscreen_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY,
@@ -87,8 +77,12 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_page_progress_view_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_CAROUSEL_VIEW_KEY,
                 context.getString(R.string.app_cms_page_carousel_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY,
+                context.getString(R.string.app_cms_page_carousel_image_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY,
-                context.getString(R.string.app_cms_page_page_control));
+                context.getString(R.string.app_cms_page_page_control_key));
+        this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_SEPARATOR_VIEW_KEY,
+                context.getString(R.string.app_cms_page_seperator_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_IMAGE_KEY,
                 context.getString(R.string.app_cms_page_image_key));
         this.jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_BG_KEY,
@@ -203,9 +197,7 @@ public class AppCMSUIModule {
     public AppCMSMainUICall providesAppCMSMainUICall(AppCMSMainUIRest appCMSMainUIRest, Gson gson) {
         return new AppCMSMainUICall(appCMSMainUIRest,
                 gson,
-                storageDirectory,
-                jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_VERSION_KEY),
-                jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_OLD_VERSION_KEY));
+                storageDirectory);
     }
 
     @Provides

@@ -26,6 +26,7 @@ import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
+import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.views.activity.AppCMSNavItemsActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -74,8 +75,7 @@ public class AppCMSPresenter {
     private Navigation navigation;
     private boolean loadFromFile;
     private boolean loadingPage;
-    private String apiBaseUrl;
-    private String apiSiteName;
+    private AppCMSMain appCMSMain;
     private Queue<MetaPage> pagesToProcess;
     private Map<String, AppCMSPageUI> navigationPages;
     private Map<String, AppCMSPageAPI> navigationPageData;
@@ -142,50 +142,50 @@ public class AppCMSPresenter {
                 Log.e(TAG, "Action " + action + " not found!");
                 return false;
             }
-//            result = true;
-//            final AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
-//            boolean appbarPresent = true;
-//            boolean fullscreenEnabled = false;
-//            loadingPage = true;
-//            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-//            switch (actionType) {
-//                case SPLASH_PAGE:
-//                    appbarPresent = false;
-//                    fullscreenEnabled = false;
-//                    break;
-//                case VIDEO_PAGE:
-//                    appbarPresent = true;
-//                    fullscreenEnabled = true;
-//                    break;
-//                case HOME_PAGE:
-//                default:
-//                    break;
-//            }
-//            getPageIdContent(apiBaseUrl,
-//                    actionToPageAPIUrlMap.get(action),
-//                    apiSiteName,
-//                    false,
-//                    pagePath,
-//                    new AppCMSPageAPIAction(appbarPresent, fullscreenEnabled) {
-//                        @Override
-//                        public void call(AppCMSPageAPI appCMSPageAPI) {
-//                            Bundle args = getPageActivityBundle(currentActivity,
-//                                    appCMSPageUI,
-//                                    appCMSPageAPI,
-//                                    getPageId(appCMSPageUI),
-//                                    filmTitle,
-//                                    null,
-//                                    loadFromFile,
-//                                    appbarPresent,
-//                                    fullscreenEnabled);
-//                            Intent updatePageIntent =
-//                                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-//                            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-//                                    args);
-//                            currentActivity.sendBroadcast(updatePageIntent);
-//                            loadingPage = false;
-//                        }
-//                    });
+            result = true;
+            final AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
+            boolean appbarPresent = true;
+            boolean fullscreenEnabled = false;
+            loadingPage = true;
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+            switch (actionType) {
+                case SPLASH_PAGE:
+                    appbarPresent = false;
+                    fullscreenEnabled = false;
+                    break;
+                case VIDEO_PAGE:
+                    appbarPresent = true;
+                    fullscreenEnabled = true;
+                    break;
+                case HOME_PAGE:
+                default:
+                    break;
+            }
+            getPageIdContent(appCMSMain.getApiBaseUrl(),
+                    actionToPageAPIUrlMap.get(action),
+                    appCMSMain.getSite(),
+                    false,
+                    pagePath,
+                    new AppCMSPageAPIAction(appbarPresent, fullscreenEnabled) {
+                        @Override
+                        public void call(AppCMSPageAPI appCMSPageAPI) {
+                            Bundle args = getPageActivityBundle(currentActivity,
+                                    appCMSPageUI,
+                                    appCMSPageAPI,
+                                    getPageId(appCMSPageUI),
+                                    filmTitle,
+                                    null,
+                                    loadFromFile,
+                                    appbarPresent,
+                                    fullscreenEnabled);
+                            Intent updatePageIntent =
+                                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                    args);
+                            currentActivity.sendBroadcast(updatePageIntent);
+                            loadingPage = false;
+                        }
+                    });
         }
         return result;
     }
@@ -253,9 +253,9 @@ public class AppCMSPresenter {
             final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
             AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
             if (appCMSPageAPI == null) {
-                getPageIdContent(apiBaseUrl,
+                getPageIdContent(appCMSMain.getApiBaseUrl(),
                         pageIdToPageAPIUrlMap.get(pageId),
-                        apiSiteName,
+                        appCMSMain.getSite(),
                         true,
                         getPageId(appCMSPageUI),
                         new AppCMSPageAPIAction(true, false) {
@@ -322,9 +322,9 @@ public class AppCMSPresenter {
                     final AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
                     AppCMSPageAPI currentAppCMSPageAPI = actionToPageAPIMap.get(action);
                     if (currentAppCMSPageAPI == null) {
-                        getPageIdContent(apiBaseUrl,
+                        getPageIdContent(appCMSMain.getApiBaseUrl(),
                                 actionToPageAPIUrlMap.get(action),
-                                apiSiteName,
+                                appCMSMain.getSite(),
                                 true,
                                 getPageId(appCMSPageUI),
                                 new AppCMSPageAPIAction(appbarPresent, fullscreenEnabled) {
@@ -413,7 +413,8 @@ public class AppCMSPresenter {
                                          boolean appbarPresent,
                                          boolean fullscreenEnabled) {
         Bundle args = new Bundle();
-        AppCMSBinder appCMSBinder = new AppCMSBinder(appCMSPageUI,
+        AppCMSBinder appCMSBinder = new AppCMSBinder(appCMSMain,
+                appCMSPageUI,
                 appCMSPageAPI,
                 navigation,
                 pageID,
@@ -458,67 +459,47 @@ public class AppCMSPresenter {
                 .context(currentActivity)
                 .siteId(siteId)
                 .build();
-        new GetAppCMSMainUIAsyncTask(appCMSMainUICall, new Action1<JsonElement>() {
+        new GetAppCMSMainUIAsyncTask(appCMSMainUICall, new Action1<AppCMSMain>() {
             @Override
-            public void call(JsonElement main) {
+            public void call(AppCMSMain main) {
                 if (main == null) {
                     Log.e(TAG, "Error retrieving main.json");
                     launchErrorActivity(activity);
                 } else if (TextUtils.isEmpty(main
-                        .getAsJsonObject()
-                        .get(jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_ANDROID_KEY))
-                        .getAsString())) {
+                        .getAndroid())) {
                     Log.e(TAG, "AppCMS key for main not found");
                     launchErrorActivity(activity);
                 } else if (TextUtils.isEmpty(main
-                        .getAsJsonObject()
-                        .get(jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_API_BASE_URL))
-                        .getAsString())) {
+                        .getApiBaseUrl())) {
                     Log.e(TAG, "AppCMS key for API Base URL not found");
                     launchErrorActivity(activity);
-                } else if (TextUtils.isEmpty(main
-                        .getAsJsonObject()
-                        .get(jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_SITE_ID))
-                        .getAsString())) {
+                } else if (TextUtils.isEmpty(main.getSite())) {
                     Log.e(TAG, "AppCMS key for API Site ID not found");
                     launchErrorActivity(activity);
                 } else {
+                    appCMSMain = main;
                     String androidUrl = main
-                            .getAsJsonObject()
-                            .get(jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_ANDROID_KEY))
-                            .getAsString();
+                            .getAndroid();
                     String version = main
-                            .getAsJsonObject()
-                            .get(jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_VERSION_KEY))
-                            .getAsString();
+                            .getVersion();
                     String oldVersion = main
-                            .getAsJsonObject()
-                            .get(jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_OLD_VERSION_KEY))
-                            .getAsString();
-                    apiBaseUrl = main
-                            .getAsJsonObject()
-                            .get(jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_API_BASE_URL))
-                            .getAsString();
-                    apiSiteName = main
-                            .getAsJsonObject()
-                            .get(jsonValueKeyMap.get(AppCMSUIKeyType.MAIN_SITE_ID))
-                            .getAsString();
+                            .getOldVersion();
                     Log.d(TAG, "Version: " + version);
                     Log.d(TAG, "OldVersion: " + oldVersion);
                     loadFromFile = false;
-                    getAppCMSAndroid(activity, androidUrl);
+                    getAppCMSAndroid(activity, main);
                 }
             }
         }).execute(params);
     }
 
-    private void getAppCMSAndroid(final Activity activity, String url) {
+    private void getAppCMSAndroid(final Activity activity, AppCMSMain main) {
         GetAppCMSAndroidUIAsyncTask.Params params =
                 new GetAppCMSAndroidUIAsyncTask.Params.Builder()
-                    .url(url)
+                    .url(main.getAndroid())
                     .loadFromFile(loadFromFile)
                     .build();
-        Log.d(TAG, "Params: " + url + " " + loadFromFile);
+        Log.d(TAG, "Params: " + main.getAndroid() + " " + loadFromFile);
         new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, new Action1<AppCMSAndroidUI>() {
             @Override
             public void call(final AppCMSAndroidUI appCMSAndroidUI) {

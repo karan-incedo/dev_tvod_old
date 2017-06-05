@@ -56,8 +56,8 @@ public class VideoPlayerView extends BaseView {
 
     @Override
     protected void init() {
-        int width = getViewWidth(getContext(), component.getLayout(), LayoutParams.MATCH_PARENT);
-        int height = getViewHeight(getContext(), component.getLayout(), LayoutParams.WRAP_CONTENT);
+        int width = (int) getViewWidth(getContext(), component.getLayout(), LayoutParams.MATCH_PARENT);
+        int height = (int) getViewHeight(getContext(), component.getLayout(), LayoutParams.WRAP_CONTENT);
         FrameLayout.LayoutParams layoutParams =
                 new FrameLayout.LayoutParams(width, height);
         setLayoutParams(layoutParams);
@@ -97,8 +97,8 @@ public class VideoPlayerView extends BaseView {
     @Override
     protected ViewGroup createChildrenContainer() {
         childrenContainer = new SimpleExoPlayerView(getContext());
-        int viewWidth = getViewWidth(getContext(), getLayout(), LayoutParams.MATCH_PARENT);
-        int viewHeight = getViewHeight(getContext(), getLayout(), LayoutParams.MATCH_PARENT);
+        int viewWidth = (int) getViewWidth(getContext(), getLayout(), LayoutParams.MATCH_PARENT);
+        int viewHeight = (int) getViewHeight(getContext(), getLayout(), LayoutParams.MATCH_PARENT);
         FrameLayout.LayoutParams childContainerLayoutParams =
                 new FrameLayout.LayoutParams(viewWidth, viewHeight);
         childrenContainer.setLayoutParams(childContainerLayoutParams);

@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.gson.JsonElement;
+import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 
 import java.io.IOException;
@@ -16,11 +17,11 @@ import rx.functions.Action1;
  * Created by viewlift on 5/9/17.
  */
 
-public class GetAppCMSMainUIAsyncTask extends AsyncTask<GetAppCMSMainUIAsyncTask.Params, Integer, JsonElement> {
+public class GetAppCMSMainUIAsyncTask extends AsyncTask<GetAppCMSMainUIAsyncTask.Params, Integer, AppCMSMain> {
     private static final String TAG = "";
 
     private final AppCMSMainUICall call;
-    private final Action1<JsonElement> readyAction;
+    private final Action1<AppCMSMain> readyAction;
 
     public static class Params {
         Context context;
@@ -46,13 +47,13 @@ public class GetAppCMSMainUIAsyncTask extends AsyncTask<GetAppCMSMainUIAsyncTask
     }
 
     public GetAppCMSMainUIAsyncTask(AppCMSMainUICall call,
-                                    Action1<JsonElement> readyAction) {
+                                    Action1<AppCMSMain> readyAction) {
         this.call = call;
         this.readyAction = readyAction;
     }
 
     @Override
-    protected JsonElement doInBackground(GetAppCMSMainUIAsyncTask.Params... params) {
+    protected AppCMSMain doInBackground(GetAppCMSMainUIAsyncTask.Params... params) {
         if (params.length > 0) {
             try {
                 return call.call(params[0].context, params[0].siteId);
@@ -64,7 +65,7 @@ public class GetAppCMSMainUIAsyncTask extends AsyncTask<GetAppCMSMainUIAsyncTask
     }
 
     @Override
-    protected void onPostExecute(JsonElement result) {
+    protected void onPostExecute(AppCMSMain result) {
         Observable.just(result).subscribe(readyAction);
     }
 }

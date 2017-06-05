@@ -3,6 +3,7 @@ package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.viewlift.models.data.appcms.ui.android.Primary;
 
 public class Gist {
 
@@ -42,6 +43,9 @@ public class Gist {
     @SerializedName("videoImageUrl")
     @Expose
     private String videoImageUrl;
+    @SerializedName("primaryCategory")
+    @Expose
+    private PrimaryCategory primaryCategory;
 
     public String getId() {
         return id;
@@ -137,5 +141,13 @@ public class Gist {
 
     public void setVideoImageUrl(String videoImageUrl) {
         this.videoImageUrl = videoImageUrl;
+    }
+
+    public PrimaryCategory getPrimaryCategory() {
+        return primaryCategory;
+    }
+
+    public void setPrimaryCategory(PrimaryCategory primaryCategory) {
+        this.primaryCategory = primaryCategory;
     }
 }

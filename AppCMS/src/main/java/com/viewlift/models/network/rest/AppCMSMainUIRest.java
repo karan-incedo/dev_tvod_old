@@ -1,9 +1,10 @@
 package com.viewlift.models.network.rest;
 
-import com.google.gson.JsonElement;
+import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.Url;
 
 /**
@@ -12,5 +13,6 @@ import retrofit2.http.Url;
 
 public interface AppCMSMainUIRest {
     @GET
-    Call<JsonElement> get(@Url String url);
+    @Headers("Cache-Control: no-cache, no-store")
+    Call<AppCMSMain> get(@Url String url);
 }

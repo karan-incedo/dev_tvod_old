@@ -12,6 +12,7 @@ import java.io.File;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
+import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.components.AppCMSAPIComponent;
 import com.viewlift.models.network.components.AppCMSUIComponent;
@@ -62,12 +63,6 @@ public class RESTUnitTest {
 
     @Before
     public void initialize() {
-        when(context.getString(R.string.app_cms_main_version_key))
-                .thenReturn(APP_CMS_MAIN_VERSION_KEY);
-        when(context.getString(R.string.app_cms_main_old_version_key))
-                .thenReturn(APP_CMS_MAIN_OLD_VERSION_KEY);
-        when(context.getString(R.string.app_cms_main_android_key))
-                .thenReturn(APP_CMS_MAIN_ANDROID_KEY);
         when(context.getPackageName()).thenReturn("myPackage");
         when(context.getString(R.string.app_cms_api_baseurl))
                 .thenReturn("https://appcms.viewlift.com/");
@@ -79,9 +74,6 @@ public class RESTUnitTest {
                 .thenReturn(String.format(APP_CMS_MAIN_URL,
                         BASEURL,
                         APP_CMS_APP_NAME));
-        when(context.getString(R.string.app_cms_page_api_url,
-                APP_CMS_HOME_PAGE_URL_DATA))
-                .thenReturn(APP_CMS_HOME_PAGE_URL_DATA + "&includeContent=true");
 
         appCMSUIComponent = DaggerAppCMSUIComponent
                 .builder()
@@ -98,9 +90,9 @@ public class RESTUnitTest {
     @Test
     public void test_appCMSMainCall() throws Exception {
         AppCMSMainUICall appCMSMainUICall = appCMSUIComponent.appCMSMainCall();
-        JsonElement main = appCMSMainUICall.call(context, APP_CMS_APP_NAME);
+        AppCMSMain main = appCMSMainUICall.call(context, APP_CMS_APP_NAME);
         assertNotNull(main);
-        assertTrue(!TextUtils.isEmpty(main.getAsJsonObject().get(APP_CMS_MAIN_ANDROID_KEY).getAsString()));
+        assertTrue(!TextUtils.isEmpty(main.getAndroid()));
     }
 
     @Test

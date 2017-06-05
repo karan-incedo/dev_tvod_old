@@ -47,7 +47,9 @@ public class AppCMSPageUICall {
             appCMSPageUI = appCMSPageUIRest.get(url).execute().body();
             appCMSPageUI = writePageToFile(filename, appCMSPageUI);
         } catch (JsonSyntaxException e) {
-            Log.w(TAG, "Error trying to parse input JSON " + url + " " + e.toString());
+            Log.w(TAG, "Error trying to parse input JSON " + url + ": " + e.toString());
+        } catch (Exception e) {
+            Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
         }
         return appCMSPageUI;
     }

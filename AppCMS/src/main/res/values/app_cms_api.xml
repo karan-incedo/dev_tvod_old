@@ -6,15 +6,10 @@
     <string name="app_cms_app_name">61f217cd-6cc1-49be-9345-7866a96b4205</string>
 
     <!-- AppCMS JSON data input keys -->
-    <string name="app_cms_main_version_key">version</string>
-    <string name="app_cms_main_old_version_key">old_version</string>
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>
         <item>AC Footer 01</item>
     </string-array>
-    <string name="app_cms_main_android_key">Android</string>
-    <string name="app_cms_main_api_base_url_key">apiBaseUrl</string>
-    <string name="app_cms_main_api_site_key">site</string>
     <string name="app_cms_android_navigation_key">navigation</string>
     <string name="app_cms_page_button_key">button</string>
     <string name="app_cms_page_image_key">image</string>
@@ -22,7 +17,8 @@
     <string name="app_cms_page_collection_grid_key">collectionGrid</string>
     <string name="app_cms_page_progress_view_key">progressView</string>
     <string name="app_cms_page_carousel_key">carousel</string>
-    <string name="app_cms_page_page_control">pageControl</string>
+    <string name="app_cms_page_page_control_key">pageControl</string>
+    <string name="app_cms_page_seperator_key">separatorView</string>
     <string name="app_cms_page_bg_key">bg</string>
     <string name="app_cms_page_logo_key">logo</string>
     <string name="app_cms_page_info_key">info</string>
@@ -34,6 +30,7 @@
     <string name="app_cms_page_text_alignment_center_key">center</string>
     <string name="app_cms_page_carousel_title_key">carouselTitle</string>
     <string name="app_cms_page_carousel_info_key">carouselInfo</string>
+    <string name="app_cms_page_carousel_image_key">carouselImage</string>
     <string name="app_cms_page_font_bold_key">Bold</string>
     <string name="app_cms_page_font_semibold_key">Semibold</string>
     <string name="app_cms_page_api_thumbnail_url_key">thumbnail</string>
@@ -58,7 +55,7 @@
 
     <!-- AppCMS Navigation menu -->
     <string name="app_cms_menu_icon_name">menu_</string>
-    <string name="app_cms_menu_label">Menu</string>
+    <string name="app_cms_menu_label">More</string>
 
     <!-- AppCMS VideoPlayer values -->
     <string name="app_cms_user_agent">AppCMS Android</string>

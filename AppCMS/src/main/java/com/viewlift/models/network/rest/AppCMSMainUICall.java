@@ -5,7 +5,7 @@ import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
+import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,73 +29,68 @@ public class AppCMSMainUICall {
     private final AppCMSMainUIRest appCMSMainUIRest;
     private final Gson gson;
     private final File storageDirectory;
-    private final String mainVersionKey;
-    private final String mainOldVersionKey;
 
     @Inject
     public AppCMSMainUICall(AppCMSMainUIRest appCMSMainUIRest,
                             Gson gson,
-                            File storageDirectory,
-                            String mainVersionKey,
-                            String mainOldVersionKey) {
+                            File storageDirectory) {
         this.appCMSMainUIRest = appCMSMainUIRest;
         this.gson = gson;
         this.storageDirectory = storageDirectory;
-        this.mainVersionKey = mainVersionKey;
-        this.mainOldVersionKey = mainOldVersionKey;
     }
 
     @WorkerThread
-    public JsonElement call(Context context, String siteId) throws IOException {
+    public AppCMSMain call(Context context, String siteId) throws IOException {
         String appCMSMainUrl = context.getString(R.string.app_cms_main_url,
                 context.getString(R.string.app_cms_api_baseurl),
                 siteId);
-        JsonElement main = appCMSMainUIRest.get(appCMSMainUrl).execute().body();
-        JsonElement mainInStorage = null;
-        String filename = getResourceFilename(appCMSMainUrl);
+        AppCMSMain main = null;
         try {
-            mainInStorage = readMainFromFile(filename);
-        } catch (IOException exception) {
-            Log.w(TAG, "Previous version of main.json file is not in storage");
-        }
-
-        boolean useExistingOldVersion = true;
-
-        if (mainInStorage != null) {
+            main = appCMSMainUIRest.get(appCMSMainUrl).execute().body();
+            AppCMSMain mainInStorage = null;
+            String filename = getResourceFilename(appCMSMainUrl);
             try {
-                main.getAsJsonObject().add(mainOldVersionKey,
-                        mainInStorage.getAsJsonObject().get(mainVersionKey));
-                useExistingOldVersion = false;
-            } catch (IllegalStateException e) {
-                Log.w(TAG, "Previous file is invalid: " + e.toString());
+                mainInStorage = readMainFromFile(filename);
+            } catch (IOException exception) {
+                Log.w(TAG, "Previous version of main.json file is not in storage");
             }
+
+            boolean useExistingOldVersion = true;
+
+            if (mainInStorage != null) {
+                main.setOldVersion(mainInStorage.getOldVersion());
+                useExistingOldVersion = false;
+            }
+
+            if (useExistingOldVersion) {
+                main.setOldVersion(main.getVersion());
+            }
+
+            main = writeMainToFile(filename, main);
+        } catch (Exception e) {
+            Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
         }
 
-        if (useExistingOldVersion) {
-            main.getAsJsonObject().add(mainOldVersionKey,
-                    main.getAsJsonObject().get(mainVersionKey));
-        }
-
-        return writeMainToFile(filename, main);
+        return main;
     }
 
-    private JsonElement writeMainToFile(String outputFilename, JsonElement main) throws IOException {
+    private AppCMSMain writeMainToFile(String outputFilename, AppCMSMain main) throws IOException {
         OutputStream outputStream = new FileOutputStream(
                 new File(storageDirectory.toString() + outputFilename));
-        String output = main.toString();
+        String output = gson.toJson(main, AppCMSMain.class);
         outputStream.write(output.getBytes());
         outputStream.close();
         return main;
     }
 
-    private JsonElement readMainFromFile(String inputFilename) throws IOException {
+    private AppCMSMain readMainFromFile(String inputFilename) throws IOException {
         InputStream inputStream = new FileInputStream(storageDirectory.toString() + inputFilename);
         Scanner scanner = new Scanner(inputStream);
         StringBuffer sb = new StringBuffer();
         while (scanner.hasNextLine()) {
             sb.append(scanner.nextLine());
         }
-        JsonElement main = gson.toJsonTree(sb.toString());
+        AppCMSMain main = gson.fromJson(sb.toString(), AppCMSMain.class);
         scanner.close();
         inputStream.close();
         return main;

@@ -4,6 +4,7 @@ import android.os.Binder;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
+import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 
 import java.util.Map;
@@ -15,6 +16,7 @@ import com.viewlift.models.data.appcms.ui.android.Navigation;
  */
 
 public class AppCMSBinder extends Binder {
+    private final AppCMSMain appCMSMain;
     private final AppCMSPageUI appCMSPageUI;
     private final AppCMSPageAPI appCMSPageAPI;
     private final Navigation navigation;
@@ -27,7 +29,8 @@ public class AppCMSBinder extends Binder {
     private final boolean userLoggedIn;
     private final Map<AppCMSUIKeyType, String> jsonValueKeyMap;
 
-    public AppCMSBinder(AppCMSPageUI appCMSPageUI,
+    public AppCMSBinder(AppCMSMain appCMSMain,
+                        AppCMSPageUI appCMSPageUI,
                         AppCMSPageAPI appCMSPageAPI,
                         Navigation navigation,
                         String pageId,
@@ -38,6 +41,7 @@ public class AppCMSBinder extends Binder {
                         boolean fullScreenEnabled,
                         boolean userLoggedIn,
                         Map<AppCMSUIKeyType, String> jsonValueKeyMap) {
+        this.appCMSMain = appCMSMain;
         this.appCMSPageUI = appCMSPageUI;
         this.appCMSPageAPI = appCMSPageAPI;
         this.navigation = navigation;
@@ -49,6 +53,10 @@ public class AppCMSBinder extends Binder {
         this.fullScreenEnabled = fullScreenEnabled;
         this.userLoggedIn = userLoggedIn;
         this.jsonValueKeyMap = jsonValueKeyMap;
+    }
+
+    public AppCMSMain getAppCMSMain() {
+        return appCMSMain;
     }
 
     public AppCMSPageUI getAppCMSPageUI() {

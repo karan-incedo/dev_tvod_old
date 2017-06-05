@@ -78,21 +78,31 @@ public class CollectionGridItemView extends BaseView {
     }
 
     protected void init() {
-        int width = getGridWidth(getContext(),
+        int width = (int) getGridWidth(getContext(),
                 component.getLayout(),
-                getViewWidth(getContext(),
+                (int) getViewWidth(getContext(),
                         component.getLayout(),
                         defaultWidth));
-        int height = getGridHeight(getContext(),
+        int height = (int) getGridHeight(getContext(),
                 component.getLayout(),
-                getViewHeight(getContext(),
+                (int) getViewHeight(getContext(),
                         component.getLayout(),
                         defaultHeight));
+
+        Log.d(TAG, "Grid Key: " + component.getKey() + " Width: " + width + " Height; " + height);
+
         FrameLayout.LayoutParams layoutParams;
         if (component.getStyles() != null) {
             int margin = (int) convertDpToPixel(component.getStyles().getPadding(), getContext());
             MarginLayoutParams marginLayoutParams = new MarginLayoutParams(width, height);
-            marginLayoutParams.setMargins(0, 0, margin, 0);
+            marginLayoutParams.setMargins(0, margin, margin, 0);
+            layoutParams = new FrameLayout.LayoutParams(marginLayoutParams);
+        } else if (getTrayPadding(getContext(), component.getLayout()) != -1.0f) {
+            int margin =
+                    (int) convertDpToPixel(getTrayPadding(getContext(), component.getLayout()),
+                            getContext());
+            MarginLayoutParams marginLayoutParams = new MarginLayoutParams(width, height);
+            marginLayoutParams.setMargins(0, margin, margin, 0);
             layoutParams = new FrameLayout.LayoutParams(marginLayoutParams);
         } else {
             layoutParams = new FrameLayout.LayoutParams(width, height);
@@ -159,30 +169,44 @@ public class CollectionGridItemView extends BaseView {
         if (childComponent != null) {
             boolean bringToFront = true;
             if (view instanceof ImageView) {
-                int childViewWidth = getViewWidth(getContext(),
-                        childComponent.getLayout(),
-                        0);
-                int childViewHeight = getViewHeight(getContext(),
-                        childComponent.getLayout(),
-                        getViewHeight(getContext(),
-                                component.getLayout(),
-                                0));
-
-                if (childViewHeight > childViewWidth &&
-                        childViewHeight != 0 &&
-                        childViewWidth != 0 &&
-                        !TextUtils.isEmpty(data.getGist().getPosterImageUrl())) {
-                    Picasso.with(context)
-                            .load(data.getGist().getPosterImageUrl())
-                            .resize(childViewWidth, childViewHeight)
-                            .into((ImageView) view);
-                } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
-                    Picasso.with(context)
-                            .load(data.getGist().getVideoImageUrl())
-                            .resize(childViewWidth, childViewHeight)
-                            .into((ImageView) view);
+                if (childComponent.getKey()
+                        .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY)) ||
+                        childComponent.getKey()
+                                .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY))) {
+                    int childViewWidth = (int) getViewWidth(getContext(),
+                            childComponent.getLayout(),
+                            0);
+                    int childViewHeight = (int) getViewHeight(getContext(),
+                            childComponent.getLayout(),
+                            getViewHeight(getContext(), component.getLayout(), 0));
+                    Log.d(TAG, "Image width: " + childViewWidth + " height: " + childViewHeight);
+                    if (childViewHeight > childViewWidth &&
+                            childViewHeight > 0 &&
+                            childViewWidth > 0 &&
+                            !TextUtils.isEmpty(data.getGist().getPosterImageUrl())) {
+                        Picasso.with(context)
+                                .load(data.getGist().getPosterImageUrl())
+                                .resize(childViewWidth, childViewHeight)
+                                .centerCrop()
+                                .onlyScaleDown()
+                                .into((ImageView) view);
+                    } else if (childViewHeight > 0 &&
+                            childViewWidth > 0 &&
+                            !TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
+                        Picasso.with(context)
+                                .load(data.getGist().getVideoImageUrl())
+                                .resize(childViewWidth, childViewHeight)
+                                .centerCrop()
+                                .onlyScaleDown()
+                                .into((ImageView) view);
+                    } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
+                        Picasso.with(context)
+                                .load(data.getGist().getVideoImageUrl())
+                                .resize(childViewWidth, childViewHeight)
+                                .into((ImageView) view);
+                    }
+                    bringToFront = false;
                 }
-                bringToFront = false;
             } else if (view instanceof Button) {
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -198,12 +222,16 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setText(data.getGist().getTitle());
                     } else if (childComponent.getKey()
                             .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY))) {
-                        int runtime = data.getGist().getRuntime();
+                        int runtime = (int) (data.getGist().getRuntime() / 60);
                         String year = data.getGist().getYear();
-                        // TODO: Get genre
-                        String genre = null;
-                        boolean appendFirstSep = runtime > 0 && !TextUtils.isEmpty(year);
-                        boolean appendSecondSep = false;
+                        String primaryCategory =
+                                data.getGist().getPrimaryCategory() != null ?
+                                        data.getGist().getPrimaryCategory().getTitle() :
+                                        null;
+                        boolean appendFirstSep = runtime > 0 &&
+                                (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
+                        boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year)) &&
+                                !TextUtils.isEmpty(primaryCategory);
                         StringBuffer infoText = new StringBuffer();
                         if (runtime > 0) {
                             infoText.append(runtime + "MINS");
@@ -217,11 +245,12 @@ public class CollectionGridItemView extends BaseView {
                         if (appendSecondSep) {
                             infoText.append(" | ");
                         }
-                        if (!TextUtils.isEmpty(genre)) {
-                            infoText.append(genre);
+                        if (!TextUtils.isEmpty(primaryCategory)) {
+                            infoText.append(primaryCategory);
                         }
                         ((TextView) view).setText(infoText.toString());
-                    } else if (!TextUtils.isEmpty(data.getGist().getTitle())) {
+                    } else if (childComponent.getKey()
+                            .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY))) {
                         ((TextView) view).setText(data.getGist().getTitle());
                     }
                 }
@@ -243,53 +272,73 @@ public class CollectionGridItemView extends BaseView {
         return result;
     }
 
-    protected int getGridWidth(Context context, Layout layout, int defaultWidth) {
+    protected float getGridWidth(Context context, Layout layout, int defaultWidth) {
         if (isTablet(context)) {
             if (isLandscape(context)) {
                 TabletLandscape tabletLandscape = layout.getTabletLandscape();
-                int width = tabletLandscape.getGridWidth() != null ? tabletLandscape.getGridWidth().intValue() : -1;
-                if (width != -1) {
-                    return (int) convertDpToPixel(width, context);
+                float width = tabletLandscape.getGridWidth() != null ? tabletLandscape.getGridWidth() : -1.0f;
+                if (width != -1.0f) {
+                    return convertDpToPixel(width, context);
                 }
             } else {
                 TabletPortrait tabletPortrait = layout.getTabletPortrait();
-                int width = tabletPortrait.getGridWidth() != null ? tabletPortrait.getGridWidth().intValue() : -1;
-                if (width != -1) {
-                    return (int) convertDpToPixel(width, context);
+                float width = tabletPortrait.getGridWidth() != null ? tabletPortrait.getGridWidth() : -1.0f;
+                if (width != -1.0f) {
+                    return convertDpToPixel(width, context);
                 }
             }
         } else {
             Mobile mobile = layout.getMobile();
-            int width = mobile.getGridWidth() != null ? mobile.getGridWidth().intValue() : -1;
-            if (width != -1) {
-                return (int) convertDpToPixel(width, context);
+            float width = mobile.getGridWidth() != null ? mobile.getGridWidth() : -1.0f;
+            if (width != -1.0f) {
+                return convertDpToPixel(width, context);
             }
         }
         return defaultWidth;
     }
 
-    protected int getGridHeight(Context context, Layout layout, int defaultHeight) {
+    protected float getGridHeight(Context context, Layout layout, int defaultHeight) {
         if (isTablet(context)) {
             if (isLandscape(context)) {
                 TabletLandscape tabletLandscape = layout.getTabletLandscape();
-                int height = tabletLandscape.getGridHeight() != null ? (int) ((float) tabletLandscape.getGridHeight()) : -1;
-                if (height != -1) {
-                    return (int) convertDpToPixel(height, context);
+                float height = tabletLandscape.getGridHeight() != null ? tabletLandscape.getGridHeight() : -1.0f;
+                if (height != -1.0f) {
+                    return convertDpToPixel(height, context);
                 }
             } else {
                 TabletPortrait tabletPortrait = layout.getTabletPortrait();
-                int height = tabletPortrait.getGridHeight() != null ? (int) ((float) tabletPortrait.getGridHeight()) : -1;
+                float height = tabletPortrait.getGridHeight() != null ? tabletPortrait.getGridHeight() : -1.0f;
                 if (height != -1) {
-                    return (int) convertDpToPixel(height, context);
+                    return convertDpToPixel(height, context);
                 }
             }
         } else {
             Mobile mobile = layout.getMobile();
-            int height = mobile.getGridHeight() != null ? mobile.getGridHeight().intValue() : -1;
-            if (height != -1) {
-                return (int) convertDpToPixel(height, context);
+            float height = mobile.getGridHeight() != null ? mobile.getGridHeight().intValue() : -1;
+            if (height != -1.0f) {
+                return convertDpToPixel(height, context);
             }
         }
         return defaultHeight;
+    }
+
+    private float getTrayPadding(Context context, Layout layout) {
+        if (isTablet(context)) {
+            if (isLandscape(context)) {
+                if (layout.getTabletLandscape().getTrayPadding() != null) {
+                    return layout.getTabletLandscape().getTrayPadding();
+                }
+            } else {
+                if (layout.getTabletPortrait().getTrayPadding() != null) {
+                    return layout.getTabletPortrait().getTrayPadding();
+                }
+            }
+        } else {
+            if (layout.getMobile().getTrayPadding() != null) {
+                return layout.getMobile().getTrayPadding();
+            }
+        }
+
+        return -1.0f;
     }
 }

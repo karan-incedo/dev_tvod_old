@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import javax.inject.Inject;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import snagfilms.com.air.appcms.R;
 
@@ -67,8 +68,16 @@ public class AppCMSPageAPICall {
         }
         Log.d(TAG, "URL: " + urlWithContent);
         String filename = getResourceFilename(pageId);
-        return writePageToFile(filename,
-                appCMSPageAPIRest.get(apiKey, urlWithContent).execute().body());
+        AppCMSPageAPI appCMSPageAPI = null;
+        try {
+            appCMSPageAPI = appCMSPageAPIRest.get(apiKey, urlWithContent).execute().body();
+            appCMSPageAPI = writePageToFile(filename, appCMSPageAPI);
+        } catch (JsonSyntaxException e) {
+            Log.w(TAG, "Error trying to parse input JSON " + urlWithContent + ": " + e.toString());
+        } catch (Exception e) {
+            Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
+        }
+        return appCMSPageAPI;
     }
 
     private AppCMSPageAPI writePageToFile(String outputFilename,
