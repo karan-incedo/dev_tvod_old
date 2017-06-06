@@ -10,13 +10,12 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.gson.JsonElement;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.inject.Inject;
@@ -41,6 +40,7 @@ import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.customviews.LifecycleStatus;
+import com.viewlift.views.customviews.OnInternalEvent;
 
 import rx.Observable;
 import rx.functions.Action0;
@@ -85,6 +85,8 @@ public class AppCMSPresenter {
     private Map<String, String> pageIdToPageNameMap;
     private List<Action1<Boolean>> onOrientationChangeHandlers;
     private List<Action1<LifecycleStatus>> onLifecycleChangeHandlers;
+    private Map<String, List<OnInternalEvent>> onActionInternalEvents;
+    private Stack<String> currentActions;
 
     private static abstract class AppCMSPageAPIAction implements Action1<AppCMSPageAPI> {
         boolean appbarPresent;
@@ -124,6 +126,8 @@ public class AppCMSPresenter {
         this.pageIdToPageNameMap = new HashMap();
         this.onOrientationChangeHandlers = new ArrayList<>();
         this.onLifecycleChangeHandlers = new ArrayList<>();
+        this.onActionInternalEvents = new HashMap<>();
+        this.currentActions = new Stack<>();
     }
 
     public void setCurrentActivity(Activity activity) {
@@ -142,6 +146,12 @@ public class AppCMSPresenter {
                 Log.e(TAG, "Action " + action + " not found!");
                 return false;
             }
+            if (isActionUp(action)) {
+                Log.d(TAG, "Action has already started");
+                return true;
+            }
+            cancelInternalEvents();
+            pushActionInternalEvents(action);
             result = true;
             final AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
             boolean appbarPresent = true;
@@ -173,8 +183,8 @@ public class AppCMSPresenter {
                                     appCMSPageUI,
                                     appCMSPageAPI,
                                     getPageId(appCMSPageUI),
+                                    currentActivity.getString(R.string.default_app_name),
                                     filmTitle,
-                                    null,
                                     loadFromFile,
                                     appbarPresent,
                                     fullscreenEnabled);
@@ -303,6 +313,18 @@ public class AppCMSPresenter {
                     result = false;
                     Log.e(TAG, "Action " + action + " not found!");
                 } else {
+                    AppCMSActionType actionType = actionToActionTypeMap.get(action);
+                    if (actionType == null) {
+                        Log.e(TAG, "Action " + action + " not found!");
+                        return false;
+                    }
+                    if (isActionUp(action)) {
+                        Log.d(TAG, "Action has already started");
+                        return true;
+                    }
+                    cancelInternalEvents();
+                    pushActionInternalEvents(action);
+
                     boolean appbarPresent = true;
                     boolean fullscreenEnabled = false;
                     switch (actionToActionTypeMap.get(action)) {
@@ -401,6 +423,69 @@ public class AppCMSPresenter {
     public boolean setLoggedInUser(Context context, String userId) {
         SharedPreferences sharedPrefs = context.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
         return sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, userId).commit();
+    }
+
+    public void addInternalEvent(OnInternalEvent onInternalEvent) {
+        if (!TextUtils.isEmpty(currentActions.peek()) &&
+                onActionInternalEvents.get(currentActions.peek()) != null) {
+            onActionInternalEvents.get(currentActions.peek()).add(onInternalEvent);
+        }
+    }
+
+    public List<OnInternalEvent> getOnInternalEvents() {
+        if (!TextUtils.isEmpty(currentActions.peek()) &&
+                onActionInternalEvents.get(currentActions.peek()) != null) {
+            return onActionInternalEvents.get(currentActions.peek());
+        }
+        return null;
+    }
+
+    public void restartInternalEvents() {
+        List<OnInternalEvent> onInternalEvents = onActionInternalEvents.get(currentActions.peek());
+        if (onInternalEvents != null) {
+            for (OnInternalEvent onInternalEvent : onInternalEvents) {
+                onInternalEvent.cancel(false);
+            }
+        }
+    }
+
+    public void cancelInternalEvents() {
+        if (currentActions.size() > 0) {
+            List<OnInternalEvent> onInternalEvents = onActionInternalEvents.get(currentActions.peek());
+            if (onInternalEvents != null) {
+                for (OnInternalEvent onInternalEvent : onInternalEvents) {
+                    onInternalEvent.cancel(true);
+                }
+            }
+        }
+    }
+
+    public void popActionInternalEvents() {
+        if (currentActions.size() > 0) {
+            currentActions.pop();
+        }
+    }
+
+    private boolean isActionUp(String action) {
+        if (currentActions.size() == 1 && action.equals(currentActions.peek())) {
+            Log.d(TAG, "Action has already started");
+            return true;
+        }
+        return false;
+    }
+
+    private void pushActionInternalEvents(String action) {
+        if (currentActions.size() == 2) {
+            popActionInternalEvents();
+        }
+        if (onActionInternalEvents.get(action) == null) {
+            onActionInternalEvents.put(action, new ArrayList<OnInternalEvent>());
+        }
+        currentActions.push(action);
+    }
+
+    public AppCMSMain getAppCMSMain() {
+        return appCMSMain;
     }
 
     private Bundle getPageActivityBundle(Activity activity,

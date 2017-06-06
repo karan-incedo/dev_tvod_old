@@ -14,8 +14,6 @@ import com.viewlift.models.data.appcms.ui.android.Primary;
 import com.viewlift.models.data.appcms.ui.android.User;
 import com.viewlift.presenters.AppCMSPresenter;
 
-import org.w3c.dom.Text;
-
 import snagfilms.com.air.appcms.R;
 
 /**

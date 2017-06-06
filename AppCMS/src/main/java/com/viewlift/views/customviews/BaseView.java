@@ -235,12 +235,12 @@ public abstract class BaseView extends FrameLayout {
         int gravity = Gravity.NO_GRAVITY;
         if (view instanceof TextView) {
             if (viewWidth < 0) {
-                viewWidth = LayoutParams.WRAP_CONTENT;
+                viewWidth = LayoutParams.MATCH_PARENT;
             }
             if (!TextUtils.isEmpty(childComponent.getTextAlignment()) &&
                     childComponent.getTextAlignment()
                         .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY))) {
-                gravity = Gravity.CENTER_HORIZONTAL;
+                ((TextView) view).setGravity(Gravity.CENTER_HORIZONTAL);
             }
             if (childComponent.getKey()
                     .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY))) {

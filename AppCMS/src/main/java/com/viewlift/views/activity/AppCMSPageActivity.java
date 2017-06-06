@@ -22,6 +22,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
@@ -169,13 +170,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         } catch (EmptyStackException e) {
             Log.e(TAG, "Invalid AppCMS binder stack state!  " + e.getMessage());
         }
+        appCMSPresenter.cancelInternalEvents();
+        appCMSPresenter.popActionInternalEvents();
         super.onBackPressed();
     }
 
     @Override
     public void onError() {
         setFinishResult(RESULT_CANCELED);
-        finish();
     }
 
     @Override
@@ -214,11 +216,26 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         appBarLayout = (AppBarLayout) findViewById(R.id.app_cms_appbarlayout);
 
         appCMSTabNavContainer = (LinearLayout) findViewById(R.id.app_cms_tab_nav_container);
+
         Navigation navigation = appCMSBinder.getNavigation();
         if (navigation.getPrimary().size() == 0) {
             appCMSTabNavContainer.setVisibility(View.GONE);
         } else {
-            int totalNavItemCnt = 0;
+            int totalNavItemCnt = 1;
+
+            NavBarItemView menuNavBarItemView =
+                    (NavBarItemView) appCMSTabNavContainer.getChildAt(0);
+            menuNavBarItemView.setImage(getString(R.string.app_cms_menu_icon_name));
+            menuNavBarItemView.setLabel(getString(R.string.app_cms_menu_label));
+            menuNavBarItemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!appCMSPresenter.launchNavigationPage()) {
+                        Log.e(TAG, "Could not launch navigation page!");
+                    }
+                }
+            });
+
             for (int i = 0;
                  i < navigation.getPrimary().size() && totalNavItemCnt < appCMSTabNavContainer.getChildCount() - 1;
                  i++, totalNavItemCnt++) {
@@ -227,7 +244,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 iconName.append(primary.getDisplayedPath().toLowerCase().replaceAll(" ", "_"));
                 iconName.append(primary.getUrl().replace("/", "_"));
 
-                NavBarItemView navBarItemView = (NavBarItemView) appCMSTabNavContainer.getChildAt(i);
+                NavBarItemView navBarItemView = (NavBarItemView) appCMSTabNavContainer.getChildAt(totalNavItemCnt);
                 navBarItemView.setImage(iconName.toString());
                 navBarItemView.setLabel(primary.getTitle());
                 navBarItemView.setOnClickListener(new View.OnClickListener() {
@@ -251,7 +268,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                     iconName.append(user.getDisplayedName().toLowerCase().replaceAll(" ", "_"));
                     iconName.append(user.getUrl().replaceAll("/", "_"));
 
-                    NavBarItemView navBarItemView = (NavBarItemView) appCMSTabNavContainer.getChildAt(i);
+                    NavBarItemView navBarItemView = (NavBarItemView) appCMSTabNavContainer.getChildAt(totalNavItemCnt);
                     navBarItemView.setImage(iconName.toString());
                     navBarItemView.setLabel(user.getTitle());
 
@@ -268,19 +285,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                     });
                 }
             }
-
-            NavBarItemView menuNavBarItemView =
-                    (NavBarItemView) appCMSTabNavContainer.getChildAt(appCMSTabNavContainer.getChildCount() - 1);
-            menuNavBarItemView.setImage(getString(R.string.app_cms_menu_icon_name));
-            menuNavBarItemView.setLabel(getString(R.string.app_cms_menu_label));
-            menuNavBarItemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (!appCMSPresenter.launchNavigationPage()) {
-                        Log.e(TAG, "Could not launch navigation page!");
-                    }
-                }
-            });
 
             handleOrientation(getResources().getConfiguration().orientation, appCMSBinder);
         }
@@ -326,6 +330,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             appBarLayout.setVisibility(View.GONE);
         } else {
             Toolbar toolbar = (Toolbar) findViewById(R.id.app_cms_toolbar);
+            TextView subtitleText = (TextView) findViewById(R.id.app_cms_toolbar_subtitle);
             toolbar.setTitleTextColor(Color.parseColor(appCMSMain
                     .getBrand()
                     .getGeneral()
@@ -334,8 +339,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             getSupportActionBar().setDisplayShowHomeEnabled(false);
             getSupportActionBar().setHomeButtonEnabled(false);
-            getSupportActionBar().setTitle(pageName);
-            getSupportActionBar().setSubtitle(subpageName);
+            getSupportActionBar().setTitle("");
+            subtitleText.setText(subpageName);
             appBarLayout.setVisibility(View.VISIBLE);
         }
     }

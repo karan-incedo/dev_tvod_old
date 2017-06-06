@@ -29,6 +29,7 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
     private int selectedViewIndex;
     private List<View> childViews;
     private List<OnInternalEvent> internalEventReceivers;
+    private boolean cancelled;
 
     public DotSelectorView(Context context,
                            Component component,
@@ -39,6 +40,7 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
         this.selectedColor = selectedColor;
         this.deselectedColor = deselectedColor;
         this.selectedViewIndex = 0;
+        this.cancelled = false;
         init();
     }
 
@@ -156,11 +158,18 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
 
     @Override
     public void receiveEvent(InternalEvent<?> event) {
-        if (event.getEventData() instanceof Integer && childViews.size() > 0) {
-            int index = (Integer) event.getEventData() % childViews.size();
-            deselect(selectedViewIndex);
-            select(index);
+        if (!cancelled) {
+            if (event.getEventData() instanceof Integer && childViews.size() > 0) {
+                int index = (Integer) event.getEventData() % childViews.size();
+                deselect(selectedViewIndex);
+                select(index);
+            }
         }
+    }
+
+    @Override
+    public void cancel(boolean cancel) {
+        this.cancelled = cancel;
     }
 
     @Override
@@ -172,4 +181,5 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
     protected Layout getLayout() {
         return component.getLayout();
     }
+
 }

@@ -1,7 +1,6 @@
 package com.viewlift.views.fragments;
 
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -98,6 +97,7 @@ public class AppCMSPageFragment extends Fragment {
         if (pageView != null && (pageView.isTablet(getContext()) || appCMSBinder.isFullScreenEnabled())) {
             handleOrientation(getActivity().getResources().getConfiguration().orientation);
         }
+        appCMSPresenter.restartInternalEvents();
     }
 
     @Override

@@ -1,6 +1,13 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.LinearGradient;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Shader;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -12,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -25,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+
+import snagfilms.com.air.appcms.R;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -88,8 +98,6 @@ public class CollectionGridItemView extends BaseView {
                 (int) getViewHeight(getContext(),
                         component.getLayout(),
                         defaultHeight));
-
-        Log.d(TAG, "Grid Key: " + component.getKey() + " Width: " + width + " Height; " + height);
 
         FrameLayout.LayoutParams layoutParams;
         if (component.getStyles() != null) {
@@ -161,7 +169,7 @@ public class CollectionGridItemView extends BaseView {
     }
 
     public void bindChild(Context context,
-                          View view,
+                          final View view,
                           final ContentDatum data,
                           Map<AppCMSUIKeyType, String> jsonValueKeyMap,
                           final OnClickHandler onClickHandler) {
@@ -179,7 +187,6 @@ public class CollectionGridItemView extends BaseView {
                     int childViewHeight = (int) getViewHeight(getContext(),
                             childComponent.getLayout(),
                             getViewHeight(getContext(), component.getLayout(), 0));
-                    Log.d(TAG, "Image width: " + childViewWidth + " height: " + childViewHeight);
                     if (childViewHeight > childViewWidth &&
                             childViewHeight > 0 &&
                             childViewWidth > 0 &&
@@ -196,13 +203,43 @@ public class CollectionGridItemView extends BaseView {
                         Picasso.with(context)
                                 .load(data.getGist().getVideoImageUrl())
                                 .resize(childViewWidth, childViewHeight)
-                                .centerCrop()
-                                .onlyScaleDown()
                                 .into((ImageView) view);
                     } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
+                        int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
                         Picasso.with(context)
                                 .load(data.getGist().getVideoImageUrl())
-                                .resize(childViewWidth, childViewHeight)
+                                .resize(deviceWidth, childViewHeight)
+                                .transform(new Transformation() {
+                                    @Override
+                                    public Bitmap transform(Bitmap source) {
+                                        int width = source.getWidth();
+                                        int height = source.getHeight();
+                                        Bitmap sourceWithGradient =
+                                                Bitmap.createBitmap(width,
+                                                        height,
+                                                        Bitmap.Config.ARGB_8888);
+                                        Canvas canvas = new Canvas(sourceWithGradient);
+                                        canvas.drawBitmap(source, 0, 0, null);
+                                        Paint paint = new Paint();
+                                        LinearGradient shader = new LinearGradient(0,
+                                                0,
+                                                0,
+                                                height,
+                                                0xFFFFFFFF,
+                                                0xFF000000,
+                                                Shader.TileMode.CLAMP);
+                                        paint.setShader(shader);
+                                        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
+                                        canvas.drawRect(0, 0, width, height, paint);
+                                        source.recycle();
+                                        return sourceWithGradient;
+                                    }
+
+                                    @Override
+                                    public String key() {
+                                        return data.getGist().getVideoImageUrl();
+                                    }
+                                })
                                 .into((ImageView) view);
                     }
                     bringToFront = false;

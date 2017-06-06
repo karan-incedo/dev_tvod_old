@@ -2,6 +2,7 @@ package com.viewlift.views.customviews;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -56,7 +57,7 @@ public class ViewCreator {
                                  Map<AppCMSUIKeyType, String> jsonValueKeyMap,
                                  AppCMSPresenter appCMSPresenter,
                                  List<String> modulesToIgnore) {
-        if (appCMSPageAPI == null) {
+        if (appCMSPageUI == null || appCMSPageAPI == null) {
             return null;
         }
         PageView pageView = new PageView(context, appCMSPageUI);
@@ -124,7 +125,7 @@ public class ViewCreator {
                 moduleAPI != null &&
                 moduleAPI.getContentData() != null &&
                 moduleAPI.getContentData().size() > 0) {
-            List<OnInternalEvent> onInternalEvents = new ArrayList<>();
+
             for (int i = 0; i < module.getComponents().size(); i++) {
                 Component component = module.getComponents().get(i);
                 ComponentViewResult componentViewResult = createComponentView(context,
@@ -137,7 +138,7 @@ public class ViewCreator {
                         false);
                 hideOnFullscreenLandscape &= componentViewResult.hideOnFullscreenLandscape;
                 if (componentViewResult.onInternalEvent != null) {
-                    onInternalEvents.add(componentViewResult.onInternalEvent);
+                    appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
                 }
                 if (componentViewResult.onLifecycleChangeHandler != null) {
                     appCMSPresenter.addOnLifecycleChangeHandler(componentViewResult.onLifecycleChangeHandler);
@@ -158,8 +159,8 @@ public class ViewCreator {
                 }
             }
 
-            for (OnInternalEvent onInternalEvent : onInternalEvents) {
-                for (OnInternalEvent receiverInternalEvent : onInternalEvents) {
+            for (OnInternalEvent onInternalEvent : appCMSPresenter.getOnInternalEvents()) {
+                for (OnInternalEvent receiverInternalEvent : appCMSPresenter.getOnInternalEvents()) {
                     if (receiverInternalEvent != onInternalEvent) {
                         onInternalEvent.addReceiver(receiverInternalEvent);
                     }
@@ -337,6 +338,8 @@ public class ViewCreator {
                     component.getKey()
                     .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY))) {
                 componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.play_icon));
+                componentViewResult.componentView.getBackground().setColorFilter(context.getColor(R.color.colorAccent),
+                        PorterDuff.Mode.MULTIPLY);
             }
             componentViewResult.hideOnFullscreenLandscape = true;
         } else if (component.getType()

@@ -8,12 +8,15 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.ViewCreator;
@@ -38,7 +41,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     private final boolean loop;
     private List<OnInternalEvent> internalEventReceivers;
     private int updatedVisibleIndex;
-    private boolean updatingCarousel;
+    private boolean cancelled;
+    private boolean carouselUpdaterRunning;
 
     public AppCMSCarouselItemAdapter(Context context,
                                      ViewCreator viewCreator,
@@ -62,17 +66,15 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
         this.loop = loop;
         this.updatedVisibleIndex = 0;
         this.internalEventReceivers = new ArrayList<>();
-        this.updatingCarousel = false;
+        this.cancelled = false;
 
         this.carouselHandler = new Handler();
         this.carouselUpdater = new Runnable() {
             @Override
             public void run() {
-                if (!updatingCarousel) {
-                    updateCarousel(updatedVisibleIndex + 1);
-                    sendEvent(new InternalEvent<Object>(updatedVisibleIndex));
-                }
+                updateCarousel(updatedVisibleIndex + 1);
                 postUpdateCarousel();
+                carouselUpdaterRunning = false;
             }
         };
 
@@ -80,7 +82,6 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                updatingCarousel = true;
                 int firstVisibleIndex =
                         ((LinearLayoutManager) AppCMSCarouselItemAdapter.this.listView.getLayoutManager()).findFirstVisibleItemPosition();
                 int lastVisibleIndex =
@@ -97,14 +98,40 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                     int lastVisibleWidth = lastVisibleBounds.right - lastVisibleBounds.left;
 
                     int nextVisibleViewIndex = firstViewVisibleWidth > lastVisibleWidth ? firstVisibleIndex : lastVisibleIndex;
-                    AppCMSCarouselItemAdapter.this.listView.smoothScrollToPosition(nextVisibleViewIndex);
-                    updateVisibleIndex(nextVisibleViewIndex);
-                    sendEvent(new InternalEvent<Object>(nextVisibleViewIndex));
+                    updateCarousel(nextVisibleViewIndex);
                 }
-                updatingCarousel = false;
             }
         });
         this.useMarginsAsPercentages = false;
+    }
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        CollectionGridItemView view = viewCreator.createCollectionGridItemView(parent.getContext(),
+                component,
+                appCMSPresenter,
+                moduleAPI,
+                settings,
+                ViewCreator.NOOP_ON_COMPONENT_LOADED,
+                jsonValueKeyMap,
+                defaultWidth,
+                defaultHeight,
+                useMarginsAsPercentages);
+        return new ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, final int position) {
+        if (loop) {
+            for (int i = 0; i < holder.componentView.getNumberOfChildren(); i++) {
+                if (holder.componentView.getChild(i) instanceof TextView) {
+                    ((TextView) holder.componentView.getChild(i)).setText("");
+                } else if (holder.componentView.getChild(i) instanceof ImageView) {
+                    ((ImageView) holder.componentView.getChild(i)).setImageResource(android.R.color.transparent);
+                }
+            }
+        }
+        bindView(holder.componentView, adapterData.get(position % adapterData.size()));
     }
 
     @Override
@@ -135,10 +162,25 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
 
     @Override
     public void receiveEvent(InternalEvent<?> event) {
-        if (event.getEventData() instanceof Integer) {
-            int updatedIndexInItems = (Integer) event.getEventData();
-            int visibleIndexInItems = updatedVisibleIndex % adapterData.size();
-            updateCarousel(updatedVisibleIndex + (updatedIndexInItems - visibleIndexInItems));
+        if (!cancelled) {
+            if (event.getEventData() instanceof Integer) {
+                int updatedIndexInItems = (Integer) event.getEventData();
+                int visibleIndexInItems = updatedVisibleIndex % adapterData.size();
+                updateCarousel(updatedVisibleIndex + (updatedIndexInItems - visibleIndexInItems));
+            }
+        }
+    }
+
+    @Override
+    public void cancel(boolean cancel) {
+        cancelled = cancel;
+        if (!cancelled) {
+            Log.d(TAG, "Starting carousel updater");
+            carouselHandler.removeCallbacks(carouselUpdater);
+            postUpdateCarousel();
+        } else {
+            Log.d(TAG, "Stopping carousel updater");
+            carouselHandler.removeCallbacks(carouselUpdater);
         }
     }
 
@@ -147,7 +189,10 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     }
 
     public void updateCarousel(int index) {
-        AppCMSCarouselItemAdapter.this.listView.smoothScrollToPosition(index);
-        updateVisibleIndex(index);
+        synchronized(listView) {
+            listView.smoothScrollToPosition(index);
+            sendEvent(new InternalEvent<Object>(index));
+            updateVisibleIndex(index);
+        }
     }
 }

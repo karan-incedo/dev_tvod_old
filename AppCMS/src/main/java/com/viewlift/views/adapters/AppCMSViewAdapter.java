@@ -26,13 +26,12 @@ import java.util.Map;
 public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.ViewHolder> {
     private static final String TAG = "AppCMSViewAdapter";
 
-    private Context context;
-    private Component component;
-    private AppCMSPresenter appCMSPresenter;
-    private Settings settings;
-    private ViewCreator viewCreator;
-    private Module moduleAPI;
-    private Map<AppCMSUIKeyType, String> jsonValueKeyMap;
+    protected Component component;
+    protected AppCMSPresenter appCMSPresenter;
+    protected Settings settings;
+    protected ViewCreator viewCreator;
+    protected Module moduleAPI;
+    protected Map<AppCMSUIKeyType, String> jsonValueKeyMap;
     protected List<ContentDatum> adapterData;
     protected CollectionGridItemView.OnClickHandler onClickHandler;
     protected int defaultWidth;
@@ -50,7 +49,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                              int defaultHeight) {
         this.viewCreator = viewCreator;
         this.appCMSPresenter = appCMSPresenter;
-        this.context = context;
         this.component = component;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.moduleAPI = moduleAPI;
@@ -66,7 +64,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        CollectionGridItemView view = viewCreator.createCollectionGridItemView(context,
+        CollectionGridItemView view = viewCreator.createCollectionGridItemView(parent.getContext(),
                 component,
                 appCMSPresenter,
                 moduleAPI,
@@ -100,7 +98,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
     }
 
-    private void bindView(CollectionGridItemView itemView,
+    protected void bindView(CollectionGridItemView itemView,
                           final ContentDatum data) throws IllegalArgumentException {
         if (onClickHandler == null) {
             onClickHandler = new CollectionGridItemView.OnClickHandler() {
@@ -139,7 +137,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         });
 
         for (int i = 0; i < itemView.getNumberOfChildren(); i++) {
-            itemView.bindChild(context,
+            itemView.bindChild(itemView.getContext(),
                     itemView.getChild(i),
                     data,
                     jsonValueKeyMap,
