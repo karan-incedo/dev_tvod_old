@@ -25,6 +25,7 @@ import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
+import com.viewlift.models.data.appcms.ui.android.Primary;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.views.activity.AppCMSNavItemsActivity;
 import com.viewlift.views.binders.AppCMSBinder;
@@ -57,6 +58,7 @@ public class AppCMSPresenter {
     public static final String PRESENTER_NAVIGATE_ACTION = "appcms_presenter_navigate_action";
     public static final String PRESENTER_PAGE_LOADING_ACTION = "appcms_presenter_page_loading_action";
     public static final String PRESENTER_CLOSE_SCREEN_ACTION = "appcms_presenter_close_action";
+    public static final String PRESENTER_SET_NAVIGATION_ITEM = "appcms_presenter_set_navigation_item";
 
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
@@ -134,10 +136,6 @@ public class AppCMSPresenter {
         this.currentActivity = activity;
     }
 
-    public Activity getCurrentActivity() {
-        return currentActivity;
-    }
-
     public boolean launchButtonSelectedAction(String pagePath, final String action, final String filmTitle) {
         boolean result = false;
         if (currentActivity != null && !loadingPage) {
@@ -145,10 +143,6 @@ public class AppCMSPresenter {
             if (actionType == null) {
                 Log.e(TAG, "Action " + action + " not found!");
                 return false;
-            }
-            if (isActionUp(action)) {
-                Log.d(TAG, "Action has already started");
-                return true;
             }
             cancelInternalEvents();
             pushActionInternalEvents(action);
@@ -204,6 +198,8 @@ public class AppCMSPresenter {
         boolean result = false;
         if (currentActivity != null) {
             result = true;
+            cancelInternalEvents();
+            pushActionInternalEvents(currentActivity.getString(R.string.menu_navigation_key));
             Intent navigationIntent = new Intent(currentActivity, AppCMSNavItemsActivity.class);
             Bundle args = getPageActivityBundle(currentActivity,
                     null,
@@ -214,8 +210,7 @@ public class AppCMSPresenter {
                     false,
                     true,
                     false);
-            navigationIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                    args);
+            navigationIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key), args);
             currentActivity.startActivity(navigationIntent);
         }
         return result;
@@ -257,9 +252,12 @@ public class AppCMSPresenter {
         }
     }
 
-    public boolean navigateToPage(final String pageId) {
+    public boolean navigateToPage(final String pageId, final String pageTitle) {
         boolean result = false;
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
+            cancelInternalEvents();
+            pushActionInternalEvents(pageId);
+            Log.d(TAG, "Launching page: " + pageTitle);
             final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
             AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
             if (appCMSPageAPI == null) {
@@ -276,11 +274,11 @@ public class AppCMSPresenter {
                                         appCMSPageUI,
                                         appCMSPageAPI,
                                         pageId,
-                                        currentActivity.getString(R.string.default_app_name),
+                                        pageTitle,
                                         pageIdToPageNameMap.get(pageId),
                                         loadFromFile,
-                                        appbarPresent,
-                                        fullscreenEnabled);
+                                        true,
+                                        false);
                             }
                         });
             } else {
@@ -288,98 +286,28 @@ public class AppCMSPresenter {
                         appCMSPageUI,
                         appCMSPageAPI,
                         pageId,
-                        currentActivity.getString(R.string.default_app_name),
+                        pageTitle,
                         pageIdToPageNameMap.get(pageId),
                         loadFromFile,
                         true,
                         false);
             }
+            result = true;
         }
         return result;
     }
 
-    public boolean launchPageAction(final String action, @Nullable Bundle data) {
-        Log.d(TAG, "Attempting to launch page for action: " + action);
-
-        boolean result = false;
-        if (currentActivity != null) {
-            result = true;
-            if (data != null &&
-                    action.equals(currentActivity.getString(R.string.app_cms_action_initialize_key))) {
-                String pageId = data.getString(currentActivity.getString(R.string.page_id));
-                getAppCMSMain(currentActivity, pageId);
-            } else {
-                if (!actionToPageMap.containsKey(action) || actionToPageMap.get(action) == null) {
-                    result = false;
-                    Log.e(TAG, "Action " + action + " not found!");
-                } else {
-                    AppCMSActionType actionType = actionToActionTypeMap.get(action);
-                    if (actionType == null) {
-                        Log.e(TAG, "Action " + action + " not found!");
-                        return false;
-                    }
-                    if (isActionUp(action)) {
-                        Log.d(TAG, "Action has already started");
-                        return true;
-                    }
-                    cancelInternalEvents();
-                    pushActionInternalEvents(action);
-
-                    boolean appbarPresent = true;
-                    boolean fullscreenEnabled = false;
-                    switch (actionToActionTypeMap.get(action)) {
-                        case SPLASH_PAGE:
-                            appbarPresent = false;
-                            fullscreenEnabled = false;
-                            break;
-                        case VIDEO_PAGE:
-                            appbarPresent = false;
-                            fullscreenEnabled = true;
-                            break;
-                        case HOME_PAGE:
-                        default:
-                            break;
-                    }
-
-                    final AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
-                    AppCMSPageAPI currentAppCMSPageAPI = actionToPageAPIMap.get(action);
-                    if (currentAppCMSPageAPI == null) {
-                        getPageIdContent(appCMSMain.getApiBaseUrl(),
-                                actionToPageAPIUrlMap.get(action),
-                                appCMSMain.getSite(),
-                                true,
-                                getPageId(appCMSPageUI),
-                                new AppCMSPageAPIAction(appbarPresent, fullscreenEnabled) {
-                                    @Override
-                                    public void call(AppCMSPageAPI appCMSPageAPI) {
-                                        actionToPageAPIMap.put(action, appCMSPageAPI);
-                                        launchPageActivity(currentActivity,
-                                                appCMSPageUI,
-                                                appCMSPageAPI,
-                                                getPageId(appCMSPageUI),
-                                                currentActivity.getString(R.string.default_app_name),
-                                                actionToPageNameMap.get(action),
-                                                loadFromFile,
-                                                appbarPresent,
-                                                fullscreenEnabled);
-                                    }
-                                });
-                    } else {
-                        launchPageActivity(currentActivity,
-                                appCMSPageUI,
-                                currentAppCMSPageAPI,
-                                getPageId(appCMSPageUI),
-                                currentActivity.getString(R.string.default_app_name),
-                                actionToPageNameMap.get(action),
-                                loadFromFile,
-                                appbarPresent,
-                                fullscreenEnabled);
-                    }
-                }
-            }
+    public void navigateAwayFromPage(Activity activity) {
+        Log.d(TAG, "Nav item - Navigating away from page");
+        cancelInternalEvents();
+        popActionInternalEvents();
+        if (currentActions.size() > 0) {
+            Log.d(TAG, "Nav item - Setting navigation item to: " + currentActions.peek());
+            Intent setNavigationItemIntent = new Intent(PRESENTER_SET_NAVIGATION_ITEM);
+            setNavigationItemIntent.putExtra(activity.getString(R.string.navigation_item_key),
+                    currentActions.peek());
+            activity.sendBroadcast(setNavigationItemIntent);
         }
-
-        return result;
     }
 
     public boolean sendCloseOthersAction() {
@@ -466,80 +394,25 @@ public class AppCMSPresenter {
         }
     }
 
-    private boolean isActionUp(String action) {
-        if (currentActions.size() == 1 && action.equals(currentActions.peek())) {
-            Log.d(TAG, "Action has already started");
-            return true;
+    public Primary findHomePageNavItem(Navigation navigation, Map<AppCMSUIKeyType, String> jsonValueKeyMap) {
+        for (Primary primary : navigation.getPrimary()) {
+            if (primary.getTitle().equals(jsonValueKeyMap.get(AppCMSUIKeyType.ANDROID_HOME_NAV_KEY))) {
+                return primary;
+            }
         }
-        return false;
+        return null;
     }
 
-    private void pushActionInternalEvents(String action) {
-        if (currentActions.size() == 2) {
-            popActionInternalEvents();
+    public Primary findMoviesPageNavItem(Navigation navigation, Map<AppCMSUIKeyType, String> jsonValueKeyMap) {
+        for (Primary primary : navigation.getPrimary()) {
+            if (primary.getTitle().equals(jsonValueKeyMap.get(AppCMSUIKeyType.ANDROID_MOVIES_NAV_KEY))) {
+                return primary;
+            }
         }
-        if (onActionInternalEvents.get(action) == null) {
-            onActionInternalEvents.put(action, new ArrayList<OnInternalEvent>());
-        }
-        currentActions.push(action);
+        return null;
     }
 
-    public AppCMSMain getAppCMSMain() {
-        return appCMSMain;
-    }
-
-    private Bundle getPageActivityBundle(Activity activity,
-                                         AppCMSPageUI appCMSPageUI,
-                                         AppCMSPageAPI appCMSPageAPI,
-                                         String pageID,
-                                         String pageName,
-                                         String subpageName,
-                                         boolean loadFromFile,
-                                         boolean appbarPresent,
-                                         boolean fullscreenEnabled) {
-        Bundle args = new Bundle();
-        AppCMSBinder appCMSBinder = new AppCMSBinder(appCMSMain,
-                appCMSPageUI,
-                appCMSPageAPI,
-                navigation,
-                pageID,
-                pageName,
-                subpageName,
-                loadFromFile,
-                appbarPresent,
-                fullscreenEnabled,
-                isUserLoggedIn(activity),
-                jsonValueKeyMap);
-        args.putBinder(activity.getString(R.string.app_cms_binder_key), appCMSBinder);
-        return args;
-    }
-
-    private void launchPageActivity(Activity activity,
-                                    AppCMSPageUI appCMSPageUI,
-                                    AppCMSPageAPI appCMSPageAPI,
-                                    String pageId,
-                                    String pageName,
-                                    String subpageName,
-                                    boolean loadFromFile,
-                                    boolean appbarPresent,
-                                    boolean fullscreenEnabled) {
-        Bundle args = getPageActivityBundle(activity,
-                appCMSPageUI,
-                appCMSPageAPI,
-                pageId,
-                pageName,
-                subpageName,
-                loadFromFile,
-                appbarPresent,
-                fullscreenEnabled);
-        Intent appCMSIntent = new Intent(activity, AppCMSPageActivity.class);
-        appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
-
-        activity.startActivity(appCMSIntent);
-    }
-
-    private void getAppCMSMain(final Activity activity,
-                               final String siteId) {
+    public void getAppCMSMain(final Activity activity, final String siteId) {
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
@@ -578,6 +451,77 @@ public class AppCMSPresenter {
         }).execute(params);
     }
 
+    public AppCMSMain getAppCMSMain() {
+        return appCMSMain;
+    }
+
+    private boolean isActionUp(String action) {
+        if (currentActions.size() == 1 && action.equals(currentActions.peek())) {
+            Log.d(TAG, "Action has already started");
+            return true;
+        }
+        return false;
+    }
+
+    private void pushActionInternalEvents(String action) {
+        if (currentActions.size() == 2) {
+            popActionInternalEvents();
+        }
+        if (onActionInternalEvents.get(action) == null) {
+            onActionInternalEvents.put(action, new ArrayList<OnInternalEvent>());
+        }
+        currentActions.push(action);
+    }
+
+    private Bundle getPageActivityBundle(Activity activity,
+                                         AppCMSPageUI appCMSPageUI,
+                                         AppCMSPageAPI appCMSPageAPI,
+                                         String pageID,
+                                         String pageName,
+                                         String subpageName,
+                                         boolean loadFromFile,
+                                         boolean appbarPresent,
+                                         boolean fullscreenEnabled) {
+        Bundle args = new Bundle();
+        AppCMSBinder appCMSBinder = new AppCMSBinder(appCMSMain,
+                appCMSPageUI,
+                appCMSPageAPI,
+                navigation,
+                pageID,
+                pageName,
+                loadFromFile,
+                appbarPresent,
+                fullscreenEnabled,
+                isUserLoggedIn(activity),
+                jsonValueKeyMap);
+        args.putBinder(activity.getString(R.string.app_cms_binder_key), appCMSBinder);
+        return args;
+    }
+
+    private void launchPageActivity(Activity activity,
+                                    AppCMSPageUI appCMSPageUI,
+                                    AppCMSPageAPI appCMSPageAPI,
+                                    String pageId,
+                                    String pageName,
+                                    String subpageName,
+                                    boolean loadFromFile,
+                                    boolean appbarPresent,
+                                    boolean fullscreenEnabled) {
+        Bundle args = getPageActivityBundle(activity,
+                appCMSPageUI,
+                appCMSPageAPI,
+                pageId,
+                pageName,
+                subpageName,
+                loadFromFile,
+                appbarPresent,
+                fullscreenEnabled);
+        Intent appCMSIntent = new Intent(activity, AppCMSPageActivity.class);
+        appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
+
+        activity.startActivity(appCMSIntent);
+    }
+
     private void getAppCMSAndroid(final Activity activity, AppCMSMain main) {
         GetAppCMSAndroidUIAsyncTask.Params params =
                 new GetAppCMSAndroidUIAsyncTask.Params.Builder()
@@ -603,9 +547,9 @@ public class AppCMSPresenter {
                                 @Override
                                 public void call() {
                                     Log.d(TAG, "Launching first page: " + firstPage.getPageName());
-                                    boolean launchSuccess =
-                                            launchPageAction(pageNameToActionMap.get(firstPage.getPageName()),
-                                                    null);
+                                    Primary homePageNav = findHomePageNavItem(navigation, jsonValueKeyMap);
+                                    boolean launchSuccess = navigateToPage(homePageNav.getPageId(),
+                                            homePageNav.getTitle());
                                     if (!launchSuccess) {
                                         Log.e(TAG, "Failed to launch page: " + firstPage.getPageName());
                                         launchErrorActivity(currentActivity);
@@ -676,8 +620,7 @@ public class AppCMSPresenter {
                             Log.d(TAG, "Action: " + action + " PageAPIURL: " + metaPage.getPageAPI());
                         }
                         if (pagesToProcess.size() > 0) {
-                            processMetaPagesQueue(loadFromFile,
-                                    onPagesFinishedAction);
+                            processMetaPagesQueue(loadFromFile, onPagesFinishedAction);
                         } else {
                             onPagesFinishedAction.call();
                         }

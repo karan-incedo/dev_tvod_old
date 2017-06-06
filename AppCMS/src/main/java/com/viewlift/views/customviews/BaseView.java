@@ -247,6 +247,16 @@ public abstract class BaseView extends FrameLayout {
                 gravity = Gravity.CENTER;
                 tm = 0;
                 lm = 0;
+            } else if (childComponent.getKey()
+                    .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY)) ||
+                    childComponent.getKey()
+                            .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY))) {
+                tm -= viewHeight;
+                viewHeight *= 2;
+            } else if (childComponent.getKey()
+                    .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY))) {
+                tm -= viewHeight/2;
+                viewHeight *= 1.5;
             }
         }
         MarginLayoutParams marginLayoutParams = new MarginLayoutParams(viewWidth, viewHeight);

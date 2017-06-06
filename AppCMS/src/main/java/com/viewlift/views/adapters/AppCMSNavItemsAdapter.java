@@ -27,6 +27,14 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
     private final AppCMSPresenter appCMSPresenter;
     private boolean userLoggedIn;
 
+    private String[] placeholderNavItems = {
+            "App Settings",
+            "Account",
+            "Notifications",
+            "About Us",
+            "Contact Us"
+    };
+
     public AppCMSNavItemsAdapter(Navigation navigation,
                                  boolean userLoggedIn,
                                  AppCMSPresenter appCMSPresenter) {
@@ -52,20 +60,20 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             StringBuffer iconName = new StringBuffer();
             iconName.append(primary.getDisplayedPath().toLowerCase().replaceAll(" ", "_"));
             iconName.append(primary.getUrl().replace("/", "_"));
-            int drawableId = resources.getIdentifier(iconName.toString(),
-                    "drawable",
-                    viewHolder.itemView.getContext().getPackageName());
-            viewHolder.navItemIcon.setBackgroundResource(drawableId);
+//            int drawableId = resources.getIdentifier(iconName.toString(),
+//                    "drawable",
+//                    viewHolder.itemView.getContext().getPackageName());
+//            viewHolder.navItemIcon.setBackgroundResource(drawableId);
             viewHolder.navItemLabel.setText(primary.getTitle());
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (!appCMSPresenter.navigateToPage(primary.getPageId())) {
-                        Log.e(TAG, "Could not navigate to page with Title: " +
-                                primary.getTitle() +
-                                " Id: " +
-                                primary.getPageId());
-                    }
+//                    if (!appCMSPresenter.navigateToPage(primary.getPageId())) {
+//                        Log.e(TAG, "Could not navigate to page with Title: " +
+//                                primary.getTitle() +
+//                                " Id: " +
+//                                primary.getPageId());
+//                    }
                 }
             });
         } else if (userLoggedIn) {
@@ -74,28 +82,34 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             iconName.append(user.getDisplayedName().toLowerCase().replaceAll(" ", "_"));
             iconName.append(user.getUrl().replaceAll("/", "_"));
 
-            int drawableId = resources.getIdentifier(iconName.toString(),
-                    "drawable",
-                    viewHolder.itemView.getContext().getPackageName());
-            viewHolder.navItemIcon.setBackgroundResource(drawableId);
+//            int drawableId = resources.getIdentifier(iconName.toString(),
+//                    "drawable",
+//                    viewHolder.itemView.getContext().getPackageName());
+//            viewHolder.navItemIcon.setBackgroundResource(drawableId);
             viewHolder.navItemLabel.setText(user.getTitle());
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (!appCMSPresenter.navigateToPage(user.getPageId())) {
-                        Log.e(TAG, "Could not navigate to page with Title: " +
-                                user.getTitle() +
-                                " Id: " +
-                                user.getPageId());
-                    }
+//                    if (!appCMSPresenter.navigateToPage(user.getPageId())) {
+//                        Log.e(TAG, "Could not navigate to page with Title: " +
+//                                user.getTitle() +
+//                                " Id: " +
+//                                user.getPageId());
+//                    }
                 }
             });
+        } else {
+            int placholderNavItemsIndex = i - navigation.getPrimary().size();
+            if (userLoggedIn) {
+                placholderNavItemsIndex -= navigation.getUser().size();
+            }
+            viewHolder.navItemLabel.setText(placeholderNavItems[placholderNavItemsIndex]);
         }
     }
 
     @Override
     public int getItemCount() {
-        int count = 0;
+        int count = placeholderNavItems.length;
         if (navigation.getPrimary() != null) {
             count += navigation.getPrimary().size();
         }
@@ -117,7 +131,6 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
         public ViewHolder(View itemView) {
             super(itemView);
             this.itemView = itemView;
-            this.navItemIcon = (ImageView) itemView.findViewById(R.id.nav_item_icon);
             this.navItemLabel = (TextView) itemView.findViewById(R.id.nav_item_label);
         }
     }

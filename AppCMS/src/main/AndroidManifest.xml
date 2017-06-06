@@ -23,7 +23,8 @@
             </intent-filter>
         </activity>
         <activity android:name="com.viewlift.views.activity.AppCMSPageActivity"
-            android:configChanges="orientation|screenSize" />
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTask"/>
         <activity android:name="com.viewlift.views.activity.AppCMSErrorActivity" />
         <activity android:name="com.viewlift.views.activity.AppCMSNavItemsActivity" />
         <activity android:name="com.viewlift.activities.AppCMSLaunchTestActivity"></activity>

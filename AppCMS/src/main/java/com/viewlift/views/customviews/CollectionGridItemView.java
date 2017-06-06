@@ -106,9 +106,9 @@ public class CollectionGridItemView extends BaseView {
             marginLayoutParams.setMargins(0, margin, margin, 0);
             layoutParams = new FrameLayout.LayoutParams(marginLayoutParams);
         } else if (getTrayPadding(getContext(), component.getLayout()) != -1.0f) {
-            int margin =
-                    (int) convertDpToPixel(getTrayPadding(getContext(), component.getLayout()),
-                            getContext());
+            int margin = (int) convertDpToPixel(getTrayPadding(getContext(),
+                    component.getLayout()),
+                    getContext());
             MarginLayoutParams marginLayoutParams = new MarginLayoutParams(width, height);
             marginLayoutParams.setMargins(0, margin, margin, 0);
             layoutParams = new FrameLayout.LayoutParams(marginLayoutParams);
@@ -283,9 +283,10 @@ public class CollectionGridItemView extends BaseView {
                             infoText.append(" | ");
                         }
                         if (!TextUtils.isEmpty(primaryCategory)) {
-                            infoText.append(primaryCategory);
+                            infoText.append(primaryCategory.toUpperCase());
                         }
                         ((TextView) view).setText(infoText.toString());
+                        view.setAlpha(0.6f);
                     } else if (childComponent.getKey()
                             .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY))) {
                         ((TextView) view).setText(data.getGist().getTitle());

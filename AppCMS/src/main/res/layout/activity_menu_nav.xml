@@ -32,13 +32,6 @@
                     android:background="@drawable/logo_icon"
                     android:scaleType="centerInside"
                     android:layout_gravity="center"/>
-                <TextView
-                    android:id="@+id/app_cms_toolbar_subtitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="normal"
-                    android:textSize="12sp"
-                    android:layout_gravity="center"/>
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>

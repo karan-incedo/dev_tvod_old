@@ -36,19 +36,10 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         };
 
         appCMSPresenterComponent = ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
-        boolean isUserLoggedIn = appCMSPresenterComponent.appCMSPresenter().isUserLoggedIn(this);
-        Bundle args = new Bundle();
-        args.putString(getString(R.string.page_id), getString(R.string.app_cms_app_name));
         appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(this);
-        boolean launchResult = appCMSPresenterComponent
-                .appCMSPresenter()
-                .launchPageAction(getString(R.string.app_cms_action_initialize_key), args);
-        if (!launchResult) {
-            Log.e(TAG, "Error launching initialization action");
-            appCMSPresenterComponent.appCMSPresenter().launchErrorActivity(this);
-        }
-        registerReceiver(handoffReceiver,
-                new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
+        appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this, getString(R.string.app_cms_app_name));
+
+        registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
     }
 
     @Override

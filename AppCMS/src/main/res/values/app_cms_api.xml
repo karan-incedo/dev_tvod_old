@@ -3,7 +3,7 @@
     <!-- Primary app values -->
     <string name="app_cms_api_baseurl">https://appcms.viewlift.com/</string>
     <string name="app_cms_main_url">%1$s/%2$s/main.json</string>
-    <string name="app_cms_app_name">4d0057b0-a3ff-4a46-a2cc-9b779050cf85</string>
+    <string name="app_cms_app_name">4d069db9-0d81-4956-8d24-e56e405868f3</string>
 
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
@@ -45,6 +45,8 @@
     <string name="app_cms_action_initialize_key">Initalize</string>
     <string name="app_cms_action_splashpage_key">Splash Screen</string>
     <string name="app_cms_action_homepage_key">Home Page</string>
+    <string name="app_cms_action_homepage_nav">Home</string>
+    <string name="app_cms_action_movies_nav">Movies</string>
     <string name="app_cms_action_videopage_key">play</string>
 
     <!-- AppCMS Data values -->
@@ -60,7 +62,7 @@
     <string name="app_cms_home_label">Home</string>
     <string name="app_cms_movies_icon_name">categories_page_categories</string>
     <string name="app_cms_movies_label">Movies</string>
-    <string name="app_cms_search_icon_name">ic_search_white_24dp</string>
+    <string name="app_cms_search_icon_name">search_</string>
 
     <!-- AppCMS VideoPlayer values -->
     <string name="app_cms_user_agent">AppCMS Android</string>

@@ -42,7 +42,6 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     private List<OnInternalEvent> internalEventReceivers;
     private int updatedVisibleIndex;
     private boolean cancelled;
-    private boolean carouselUpdaterRunning;
 
     public AppCMSCarouselItemAdapter(Context context,
                                      ViewCreator viewCreator,
@@ -72,9 +71,10 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
         this.carouselUpdater = new Runnable() {
             @Override
             public void run() {
-                updateCarousel(updatedVisibleIndex + 1);
-                postUpdateCarousel();
-                carouselUpdaterRunning = false;
+                if (adapterData.size() > 1) {
+                    updateCarousel(updatedVisibleIndex + 1);
+                    postUpdateCarousel();
+                }
             }
         };
 
@@ -98,7 +98,11 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                     int lastVisibleWidth = lastVisibleBounds.right - lastVisibleBounds.left;
 
                     int nextVisibleViewIndex = firstViewVisibleWidth > lastVisibleWidth ? firstVisibleIndex : lastVisibleIndex;
-                    updateCarousel(nextVisibleViewIndex);
+                    synchronized(listView) {
+                        listView.smoothScrollToPosition(nextVisibleViewIndex);
+                        sendEvent(new InternalEvent<Object>(nextVisibleViewIndex));
+                        updateVisibleIndex(nextVisibleViewIndex);
+                    }
                 }
             }
         });

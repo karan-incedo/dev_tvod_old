@@ -16,6 +16,7 @@ import android.view.View;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
+import com.viewlift.AppCMSApplication;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
@@ -30,11 +31,17 @@ public class AppCMSNavItemsActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSNavItemsActivity";
 
     private BroadcastReceiver handoffReceiver;
+    private AppCMSPresenter appCMSPresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_nav);
+
+        appCMSPresenter = ((AppCMSApplication) getApplication())
+                .getAppCMSPresenterComponent()
+                .appCMSPresenter();
+        appCMSPresenter.setCurrentActivity(this);
 
         Intent intent = getIntent();
         Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
@@ -60,6 +67,12 @@ public class AppCMSNavItemsActivity extends AppCompatActivity {
         unregisterReceiver(handoffReceiver);
     }
 
+    @Override
+    public void onBackPressed() {
+        appCMSPresenter.navigateAwayFromPage(this);
+        super.onBackPressed();
+    }
+
     private void handleAppCMSBinder(AppCMSBinder appCMSBinder, boolean firstFragment) {
         handleToolbar(appCMSBinder);
         Fragment appCMSNavigationFragment = AppCMSNavItemsFragment.newInstance(this,
@@ -78,13 +91,11 @@ public class AppCMSNavItemsActivity extends AppCompatActivity {
             appBarLayout.setVisibility(View.GONE);
         } else {
             Toolbar toolbar = (Toolbar) findViewById(R.id.app_cms_toolbar);
-            TextView subtitleText = (TextView) findViewById(R.id.app_cms_toolbar_subtitle);
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             getSupportActionBar().setDisplayShowHomeEnabled(false);
             getSupportActionBar().setHomeButtonEnabled(false);
             getSupportActionBar().setTitle("");
-            subtitleText.setText(appCMSBinder.getSubpageName());
         }
     }
 }

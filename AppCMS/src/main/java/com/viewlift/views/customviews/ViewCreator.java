@@ -6,6 +6,7 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -338,13 +339,16 @@ public class ViewCreator {
                     component.getKey()
                     .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY))) {
                 componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.play_icon));
-                componentViewResult.componentView.getBackground().setColorFilter(context.getColor(R.color.colorAccent),
+                int color = ResourcesCompat.getColor(context.getResources(),
+                        R.color.colorAccent,
+                        context.getTheme());
+                componentViewResult.componentView.getBackground().setColorFilter(color,
                         PorterDuff.Mode.MULTIPLY);
             }
             componentViewResult.hideOnFullscreenLandscape = true;
         } else if (component.getType()
                 .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_LABEL_KEY))) {
-            componentViewResult.componentView = new AlwaysSelectedTextView(context);
+            componentViewResult.componentView = new TextView(context);
             if (!gridElement) {
                 if (component.getKey().equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY))) {
                     if (!TextUtils.isEmpty(component.getText())) {
@@ -376,7 +380,7 @@ public class ViewCreator {
                     ((TextView) componentViewResult.componentView).setTypeface(Typeface.create(component.getFontFamily(), Typeface.NORMAL));
                 }
             }
-            ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.MARQUEE);
+            ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
             ((TextView) componentViewResult.componentView).setHorizontallyScrolling(true);
             ((TextView) componentViewResult.componentView).setMarqueeRepeatLimit(-1);
             ((TextView) componentViewResult.componentView).setSingleLine(true);

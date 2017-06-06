@@ -31,13 +31,6 @@
                     android:background="@drawable/logo_icon"
                     android:scaleType="centerInside"
                     android:layout_gravity="center"/>
-                <TextView
-                    android:id="@+id/app_cms_toolbar_subtitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="normal"
-                    android:textSize="12sp"
-                    android:layout_gravity="center"/>
             </LinearLayout>
             <android.support.v7.widget.ActionMenuView
                 android:id="@+id/app_cms_action_menu"
@@ -58,35 +51,43 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_gravity="center"
+            android:scaleType="fitXY"
+            android:layout_gravity="bottom|center_horizontal"
+            android:clickable="true"
+            android:focusable="true"
             android:foreground="?android:attr/selectableItemBackground"
             android:background="@android:color/transparent">
         </com.viewlift.views.customviews.NavBarItemView>
         <com.viewlift.views.customviews.NavBarItemView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_gravity="center"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:background="@android:color/transparent">
-        </com.viewlift.views.customviews.NavBarItemView>
-        <com.viewlift.views.customviews.NavBarItemView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_gravity="center"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:background="@android:color/transparent">
-        </com.viewlift.views.customviews.NavBarItemView>
-        <ImageButton
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
             android:layout_weight="1"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_search_white_24dp"
-            android:foreground="?android:attr/selectableItemBackground"
+            android:layout_gravity="bottom|center_horizontal"
+            android:clickable="true"
+            android:focusable="true"
             android:background="@android:color/transparent">
-        </ImageButton>
+        </com.viewlift.views.customviews.NavBarItemView>
+        <com.viewlift.views.customviews.NavBarItemView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scaleType="centerInside"
+            android:layout_gravity="bottom|center_horizontal"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="@android:color/transparent">
+        </com.viewlift.views.customviews.NavBarItemView>
+        <com.viewlift.views.customviews.NavBarItemView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scaleType="centerInside"
+            android:layout_gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="@android:color/transparent">
+        </com.viewlift.views.customviews.NavBarItemView>
     </LinearLayout>
 
     <ProgressBar
