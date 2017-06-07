@@ -29,14 +29,14 @@ public class AppCMSPageViewModule {
     private final Context context;
     private final AppCMSPageUI appCMSPageUI;
     private final AppCMSPageAPI appCMSPageAPI;
-    private final Map<AppCMSUIKeyType, String> jsonValueKeyMap;
+    private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final AppCMSPresenter appCMSPresenter;
     private final List<String> modulesToIgnoreList;
 
     public AppCMSPageViewModule(Context context,
                                 AppCMSPageUI appCMSPageUI,
                                 AppCMSPageAPI appCMSPageAPI,
-                                Map<AppCMSUIKeyType, String> jsonValueKeyMap,
+                                Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                 AppCMSPresenter appCMSPresenter) {
         this.context = context;
         this.appCMSPageUI = appCMSPageUI;

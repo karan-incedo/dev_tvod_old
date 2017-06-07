@@ -31,7 +31,7 @@ public class AppCMSPresenterModule {
                                                    AppCMSAndroidUICall appCMSAndroidUICall,
                                                    AppCMSPageUICall appCMSPageUICall,
                                                    AppCMSPageAPICall appCMSPageAPICall,
-                                                   Map<AppCMSUIKeyType, String> jsonValueKeyMap,
+                                                   Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                    Map<String, String> pageNameToActionMap,
                                                    Map<String, AppCMSPageUI> actionToPageMap,
                                                    Map<String, AppCMSPageAPI> actionToPageAPIMap,

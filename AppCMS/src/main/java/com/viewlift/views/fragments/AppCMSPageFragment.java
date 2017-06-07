@@ -28,13 +28,14 @@ public class AppCMSPageFragment extends Fragment {
     private static final String TAG = "AppCMSPageFragment";
 
     private AppCMSViewComponent appCMSViewComponent;
-    private OnPageCreationError onPageCreationError;
+    private OnPageCreation onPageCreation;
     private AppCMSPresenter appCMSPresenter;
     private AppCMSBinder appCMSBinder;
     private PageView pageView;
 
-    public interface OnPageCreationError {
-        void onError();
+    public interface OnPageCreation {
+        void onSuccess(AppCMSBinder appCMSBinder);
+        void onError(AppCMSBinder appCMSBinder);
     }
 
     public static AppCMSPageFragment newInstance(Context context, AppCMSBinder appCMSBinder) {
@@ -47,8 +48,8 @@ public class AppCMSPageFragment extends Fragment {
 
     @Override
     public void onAttach(Context context) {
-        if (context instanceof OnPageCreationError){
-            onPageCreationError = (OnPageCreationError) context;
+        if (context instanceof OnPageCreation){
+            onPageCreation = (OnPageCreation) context;
             appCMSBinder =
                     ((AppCMSBinder) getArguments().getBinder(context.getString(R.string.fragment_page_bundle_key)));
             appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
@@ -64,7 +65,7 @@ public class AppCMSPageFragment extends Fragment {
                     .build();
         } else {
             throw new RuntimeException("Attached context must implement " +
-                OnPageCreationError.class.getCanonicalName());
+                OnPageCreation.class.getCanonicalName());
         }
         super.onAttach(context);
     }
@@ -77,13 +78,14 @@ public class AppCMSPageFragment extends Fragment {
         pageView = appCMSViewComponent.appCMSPageView();
         if (pageView == null) {
             Log.e(TAG, "AppCMS page creation error");
-            onPageCreationError.onError();
+            onPageCreation.onError(appCMSBinder);
         } else {
             if (!pageView.isTablet(getContext()) && !appCMSBinder.isFullScreenEnabled()) {
                 appCMSPresenter.restrictPortraitOnly();
             } else {
                 appCMSPresenter.unrestrictPortraitOnly();
             }
+            onPageCreation.onSuccess(appCMSBinder);
         }
         if (container != null) {
             container.removeAllViews();
@@ -97,7 +99,6 @@ public class AppCMSPageFragment extends Fragment {
         if (pageView != null && (pageView.isTablet(getContext()) || appCMSBinder.isFullScreenEnabled())) {
             handleOrientation(getActivity().getResources().getConfiguration().orientation);
         }
-        appCMSPresenter.restartInternalEvents();
     }
 
     @Override

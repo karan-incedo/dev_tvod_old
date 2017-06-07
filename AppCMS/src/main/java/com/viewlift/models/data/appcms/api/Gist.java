@@ -45,6 +45,9 @@ public class Gist {
     @SerializedName("primaryCategory")
     @Expose
     private PrimaryCategory primaryCategory;
+    @SerializedName("description")
+    @Expose
+    private String description;
 
     public String getId() {
         return id;
@@ -148,5 +151,13 @@ public class Gist {
 
     public void setPrimaryCategory(PrimaryCategory primaryCategory) {
         this.primaryCategory = primaryCategory;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

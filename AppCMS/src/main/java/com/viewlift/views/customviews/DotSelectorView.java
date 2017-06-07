@@ -92,9 +92,6 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
                 sendEvent(new InternalEvent<>(index));
             }
         });
-        if (index == 0) {
-            select(0);
-        }
     }
 
     public void select(int index) {
@@ -181,5 +178,4 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
     protected Layout getLayout() {
         return component.getLayout();
     }
-
 }

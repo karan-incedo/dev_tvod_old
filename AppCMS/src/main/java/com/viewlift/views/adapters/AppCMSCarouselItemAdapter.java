@@ -1,11 +1,11 @@
 package com.viewlift.views.adapters;
 
-import android.content.Context;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -40,20 +40,19 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     private final Runnable carouselUpdater;
     private final boolean loop;
     private List<OnInternalEvent> internalEventReceivers;
-    private int updatedVisibleIndex;
+    private int updatedIndex;
     private boolean cancelled;
+    private RecyclerView.OnScrollListener scrollListener;
 
-    public AppCMSCarouselItemAdapter(Context context,
-                                     ViewCreator viewCreator,
+    public AppCMSCarouselItemAdapter(ViewCreator viewCreator,
                                      AppCMSPresenter appCMSPresenter,
                                      Settings settings,
                                      Component component,
-                                     Map<AppCMSUIKeyType, String> jsonValueKeyMap,
+                                     Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                      Module moduleAPI,
                                      final RecyclerView listView,
                                      boolean loop) {
-        super(context,
-                viewCreator,
+        super(viewCreator,
                 appCMSPresenter,
                 settings,
                 component,
@@ -63,7 +62,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         this.listView = listView;
         this.loop = loop;
-        this.updatedVisibleIndex = 0;
+        this.updatedIndex = 0;
         this.internalEventReceivers = new ArrayList<>();
         this.cancelled = false;
 
@@ -72,40 +71,69 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
             @Override
             public void run() {
                 if (adapterData.size() > 1) {
-                    updateCarousel(updatedVisibleIndex + 1);
+                    Log.d(TAG, "Updating carousel to index: " + (updatedIndex + 1));
+                    updateCarousel(updatedIndex + 1, false);
                     postUpdateCarousel();
                 }
             }
         };
 
-        this.listView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        this.scrollListener = new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                int firstVisibleIndex =
-                        ((LinearLayoutManager) AppCMSCarouselItemAdapter.this.listView.getLayoutManager()).findFirstVisibleItemPosition();
-                int lastVisibleIndex =
-                        ((LinearLayoutManager) AppCMSCarouselItemAdapter.this.listView.getLayoutManager()).findLastVisibleItemPosition();
-                if (firstVisibleIndex != lastVisibleIndex) {
-                    View firstVisibleView = AppCMSCarouselItemAdapter.this.listView.getLayoutManager().findViewByPosition(firstVisibleIndex);
-                    Rect firstVisibleBounds = new Rect();
-                    firstVisibleView.getLocalVisibleRect(firstVisibleBounds);
-                    int firstViewVisibleWidth = firstVisibleBounds.right - firstVisibleBounds.left;
+                synchronized(listView) {
+                    int firstVisibleIndex =
+                            ((LinearLayoutManager) AppCMSCarouselItemAdapter.this.listView.getLayoutManager()).findFirstVisibleItemPosition();
+                    int lastVisibleIndex =
+                            ((LinearLayoutManager) AppCMSCarouselItemAdapter.this.listView.getLayoutManager()).findLastVisibleItemPosition();
+                    if (firstVisibleIndex != lastVisibleIndex) {
+                        View firstVisibleView = AppCMSCarouselItemAdapter.this.listView.getLayoutManager().findViewByPosition(firstVisibleIndex);
+                        Rect firstVisibleBounds = new Rect();
+                        firstVisibleView.getLocalVisibleRect(firstVisibleBounds);
+                        int firstViewVisibleWidth = firstVisibleBounds.right - firstVisibleBounds.left;
 
-                    View lastVisibleView = AppCMSCarouselItemAdapter.this.listView.getLayoutManager().findViewByPosition(lastVisibleIndex);
-                    Rect lastVisibleBounds = new Rect();
-                    lastVisibleView.getLocalVisibleRect(lastVisibleBounds);
-                    int lastVisibleWidth = lastVisibleBounds.right - lastVisibleBounds.left;
+                        View lastVisibleView = AppCMSCarouselItemAdapter.this.listView.getLayoutManager().findViewByPosition(lastVisibleIndex);
+                        Rect lastVisibleBounds = new Rect();
+                        lastVisibleView.getLocalVisibleRect(lastVisibleBounds);
+                        int lastVisibleWidth = lastVisibleBounds.right - lastVisibleBounds.left;
 
-                    int nextVisibleViewIndex = firstViewVisibleWidth > lastVisibleWidth ? firstVisibleIndex : lastVisibleIndex;
-                    synchronized(listView) {
+                        int nextVisibleViewIndex = firstViewVisibleWidth > lastVisibleWidth ? firstVisibleIndex : lastVisibleIndex;
+
                         listView.smoothScrollToPosition(nextVisibleViewIndex);
                         sendEvent(new InternalEvent<Object>(nextVisibleViewIndex));
-                        updateVisibleIndex(nextVisibleViewIndex);
+                        updateIndex(nextVisibleViewIndex);
                     }
                 }
             }
+        };
+
+        this.listView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
+                if (motionEvent.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                    carouselHandler.removeCallbacks(carouselUpdater);
+                    listView.setOnScrollListener(scrollListener);
+                    return true;
+                } else if (motionEvent.getActionMasked() == MotionEvent.ACTION_UP) {
+                    listView.removeOnScrollListener(scrollListener);
+                    postUpdateCarousel();
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public void onTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
+
+            }
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean b) {
+
+            }
         });
+
         this.useMarginsAsPercentages = false;
     }
 
@@ -116,7 +144,6 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                 appCMSPresenter,
                 moduleAPI,
                 settings,
-                ViewCreator.NOOP_ON_COMPONENT_LOADED,
                 jsonValueKeyMap,
                 defaultWidth,
                 defaultHeight,
@@ -128,10 +155,18 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     public void onBindViewHolder(ViewHolder holder, final int position) {
         if (loop) {
             for (int i = 0; i < holder.componentView.getNumberOfChildren(); i++) {
-                if (holder.componentView.getChild(i) instanceof TextView) {
-                    ((TextView) holder.componentView.getChild(i)).setText("");
-                } else if (holder.componentView.getChild(i) instanceof ImageView) {
-                    ((ImageView) holder.componentView.getChild(i)).setImageResource(android.R.color.transparent);
+                Component childComponent =
+                        holder.componentView.matchComponentToView(holder.componentView.getChild(i));
+                if (childComponent != null) {
+                    AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
+                    if (componentType == null) {
+                        componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                    }
+                    if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
+                        ((TextView) holder.componentView.getChild(i)).setText("");
+                    } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
+                        ((ImageView) holder.componentView.getChild(i)).setImageResource(android.R.color.transparent);
+                    }
                 }
             }
         }
@@ -146,9 +181,10 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
         return adapterData.size();
     }
 
-    public void updateVisibleIndex(int index) {
-        if (index != updatedVisibleIndex) {
-            updatedVisibleIndex = index;
+    public void updateIndex(int index) {
+        if (index != updatedIndex) {
+            updatedIndex = index;
+            Log.d(TAG, "Updated visible index: " + updatedIndex);
         }
     }
 
@@ -169,8 +205,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
         if (!cancelled) {
             if (event.getEventData() instanceof Integer) {
                 int updatedIndexInItems = (Integer) event.getEventData();
-                int visibleIndexInItems = updatedVisibleIndex % adapterData.size();
-                updateCarousel(updatedVisibleIndex + (updatedIndexInItems - visibleIndexInItems));
+                int visibleIndexInItems = updatedIndex % adapterData.size();
+                updateCarousel(updatedIndex + (updatedIndexInItems - visibleIndexInItems), true);
             }
         }
     }
@@ -181,6 +217,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
         if (!cancelled) {
             Log.d(TAG, "Starting carousel updater");
             carouselHandler.removeCallbacks(carouselUpdater);
+            sendEvent(new InternalEvent<Object>(updatedIndex));
             postUpdateCarousel();
         } else {
             Log.d(TAG, "Stopping carousel updater");
@@ -192,11 +229,13 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
         carouselHandler.postDelayed(carouselUpdater, UPDATE_CAROUSEL_TO);
     }
 
-    public void updateCarousel(int index) {
+    public void updateCarousel(int index, boolean fromEvent) {
         synchronized(listView) {
             listView.smoothScrollToPosition(index);
-            sendEvent(new InternalEvent<Object>(index));
-            updateVisibleIndex(index);
+            if (!fromEvent) {
+                sendEvent(new InternalEvent<Object>(index));
+            }
+            updateIndex(index);
         }
     }
 }

@@ -81,8 +81,9 @@ public abstract class BaseView extends FrameLayout {
                                             Layout parentLayout,
                                             View parentView,
                                             boolean firstMeasurement,
-                                            Map<AppCMSUIKeyType, String> jsonValueKeyMap,
-                                            boolean useMarginsAsPercentages) {
+                                            Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                            boolean useMarginsAsPercentages,
+                                            boolean useWidthOfScreen) {
         Layout layout = childComponent.getLayout();
 
         if (!shouldShowView(childComponent)) {
@@ -233,43 +234,51 @@ public abstract class BaseView extends FrameLayout {
         }
 
         int gravity = Gravity.NO_GRAVITY;
-        if (view instanceof TextView) {
+        AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
+        if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
+                componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
             if (viewWidth < 0) {
                 viewWidth = LayoutParams.MATCH_PARENT;
             }
-            if (!TextUtils.isEmpty(childComponent.getTextAlignment()) &&
-                    childComponent.getTextAlignment()
-                        .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY))) {
+            if (jsonValueKeyMap.get(childComponent.getTextAlignment()) == AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY) {
                 ((TextView) view).setGravity(Gravity.CENTER_HORIZONTAL);
             }
-            if (childComponent.getKey()
-                    .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY))) {
+            AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
+            if (componentKey == null) {
+                componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+            }
+            if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
                 gravity = Gravity.CENTER;
                 tm = 0;
                 lm = 0;
-            } else if (childComponent.getKey()
-                    .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY)) ||
-                    childComponent.getKey()
-                            .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY))) {
+            } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY ||
+                    jsonValueKeyMap.get(childComponent.getKey()) == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
+
                 tm -= viewHeight;
                 viewHeight *= 2;
-            } else if (childComponent.getKey()
-                    .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY))) {
+            } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
                 tm -= viewHeight/2;
                 viewHeight *= 1.5;
             }
+
+            int fontsize = getFontsize(getContext(), childComponent);
+            if (fontsize > 0) {
+                ((TextView) view).setTextSize((float) fontsize);
+            }
         }
+
+        if (useWidthOfScreen) {
+            viewWidth = getContext().getResources().getDisplayMetrics().widthPixels;
+        }
+
         MarginLayoutParams marginLayoutParams = new MarginLayoutParams(viewWidth, viewHeight);
         marginLayoutParams.setMargins(lm, tm, 0, 0);
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(marginLayoutParams);
         layoutParams.width = viewWidth;
         layoutParams.height = viewHeight;
-        if (view instanceof TextView) {
+        if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
+                componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
             layoutParams.gravity = gravity;
-            int fontsize = getFontsize(getContext(), childComponent);
-            if (fontsize > 0) {
-                ((TextView) view).setTextSize((float) fontsize);
-            }
         }
         Log.d(TAG, "View params key: " +
                 childComponent.getKey() +
@@ -302,7 +311,7 @@ public abstract class BaseView extends FrameLayout {
         return dp;
     }
 
-    public boolean isTablet(Context context) {
+    public static boolean isTablet(Context context) {
         int largeScreenLayout =
                 (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK);
         int xLargeScreenLayout =
@@ -312,7 +321,7 @@ public abstract class BaseView extends FrameLayout {
                 xLargeScreenLayout == Configuration.SCREENLAYOUT_SIZE_XLARGE);
     }
 
-    public boolean isLandscape(Context context) {
+    public static boolean isLandscape(Context context) {
         int layoutDirection = context.getResources().getConfiguration().getLayoutDirection();
         return layoutDirection == Configuration.ORIENTATION_LANDSCAPE;
     }
@@ -344,7 +353,7 @@ public abstract class BaseView extends FrameLayout {
         return childrenContainer;
     }
 
-    protected float getViewWidth(Context context, Layout layout, float defaultWidth) {
+    public static float getViewWidth(Context context, Layout layout, float defaultWidth) {
         if (layout != null) {
             if (isTablet(context)) {
                 if (isLandscape(context)) {
@@ -371,7 +380,7 @@ public abstract class BaseView extends FrameLayout {
         return defaultWidth;
     }
 
-    protected float getViewHeight(Context context, Layout layout, float defaultHeight) {
+    public static float getViewHeight(Context context, Layout layout, float defaultHeight) {
         if (layout != null) {
             if (isTablet(context)) {
                 if (isLandscape(context)) {
@@ -398,7 +407,7 @@ public abstract class BaseView extends FrameLayout {
         return defaultHeight;
     }
 
-    protected float getViewWidth(TabletLandscape tabletLandscape) {
+    protected static float getViewWidth(TabletLandscape tabletLandscape) {
         if (tabletLandscape != null) {
             if (tabletLandscape.getWidth() != null) {
                 return tabletLandscape.getWidth();
@@ -407,7 +416,7 @@ public abstract class BaseView extends FrameLayout {
         return -1.0f;
     }
 
-    protected float getViewHeight(TabletLandscape tabletLandscape) {
+    protected static float getViewHeight(TabletLandscape tabletLandscape) {
         if (tabletLandscape != null) {
             if (tabletLandscape.getHeight() != null) {
                 return tabletLandscape.getHeight();
@@ -416,7 +425,7 @@ public abstract class BaseView extends FrameLayout {
         return -1.0f;
     }
 
-    protected float getViewWidth(TabletPortrait tabletPortrait) {
+    protected static float getViewWidth(TabletPortrait tabletPortrait) {
         if (tabletPortrait != null) {
             if (tabletPortrait.getWidth() != null) {
                 return tabletPortrait.getWidth();
@@ -425,7 +434,7 @@ public abstract class BaseView extends FrameLayout {
         return -1.0f;
     }
 
-    protected float getViewHeight(TabletPortrait tabletPortrait) {
+    protected static float getViewHeight(TabletPortrait tabletPortrait) {
         if (tabletPortrait != null) {
             if (tabletPortrait.getHeight() != null) {
                 return tabletPortrait.getHeight();
@@ -434,7 +443,7 @@ public abstract class BaseView extends FrameLayout {
         return -1.0f;
     }
 
-    protected float getViewWidth(Mobile mobile) {
+    protected static float getViewWidth(Mobile mobile) {
         if (mobile != null) {
             if (mobile.getWidth() != null) {
                 return mobile.getWidth();
@@ -443,7 +452,7 @@ public abstract class BaseView extends FrameLayout {
         return -1.0f;
     }
 
-    protected float getViewHeight(Mobile mobile) {
+    protected static float getViewHeight(Mobile mobile) {
         if (mobile != null) {
             if (mobile.getHeight() != null) {
                 return mobile.getHeight();

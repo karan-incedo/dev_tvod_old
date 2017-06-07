@@ -36,7 +36,7 @@ import snagfilms.com.air.appcms.R;
 public class AppCMSUIModule {
     private final String baseUrl;
     private final File storageDirectory;
-    private final Map<AppCMSUIKeyType, String> jsonValueKeyMap;
+    private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final Map<String, String> pageNameToActionMap;
     private final Map<String, AppCMSPageUI> actionToPageMap;
     private final Map<String, AppCMSPageAPI> actionToPageAPIMap;
@@ -63,62 +63,78 @@ public class AppCMSUIModule {
     }
 
     private void createJsonValueKeyMap(Context context) {
-        jsonValueKeyMap.put(AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY,
-                context.getString(R.string.app_cms_pagename_splashscreen_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY,
-                context.getString(R.string.app_cms_pagename_homepage_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.ANDROID_HOME_NAV_KEY,
-                context.getString(R.string.app_cms_action_homepage_nav));
-        jsonValueKeyMap.put(AppCMSUIKeyType.ANDROID_MOVIES_NAV_KEY,
-                context.getString(R.string.app_cms_action_movies_nav));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_BUTTON_KEY,
-                context.getString(R.string.app_cms_page_button_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_LABEL_KEY,
-                context.getString(R.string.app_cms_page_label_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY,
-                context.getString(R.string.app_cms_page_collection_grid_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY,
-                context.getString(R.string.app_cms_page_progress_view_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_CAROUSEL_VIEW_KEY,
-                context.getString(R.string.app_cms_page_carousel_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY,
-                context.getString(R.string.app_cms_page_carousel_image_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY,
-                context.getString(R.string.app_cms_page_page_control_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_SEPARATOR_VIEW_KEY,
-                context.getString(R.string.app_cms_page_seperator_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_IMAGE_KEY,
-                context.getString(R.string.app_cms_page_image_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_BG_KEY,
-                context.getString(R.string.app_cms_page_bg_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_LOGO_KEY,
-                context.getString(R.string.app_cms_page_logo_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_INFO_KEY,
-                context.getString(R.string.app_cms_page_info_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_PLAY_KEY,
-                context.getString(R.string.app_cms_page_play_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY,
-                context.getString(R.string.app_cms_page_play_image_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY,
-                context.getString(R.string.app_cms_page_thumbnail_image_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY,
-                context.getString(R.string.app_cms_page_thumbnail_title_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_API_THUMBNAIL_URL,
-                context.getString(R.string.app_cms_page_api_thumbnail_url_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY,
-                context.getString(R.string.app_cms_page_text_alignment_center_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY,
-                context.getString(R.string.app_cms_page_carousel_title_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY,
-                context.getString(R.string.app_cms_page_carousel_info_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_API_TITLE,
-                context.getString(R.string.app_cms_page_api_title_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY,
-                context.getString(R.string.app_cms_page_tray_title_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_TEXT_BOLD_KEY,
-                context.getString(R.string.app_cms_page_font_bold_key));
-        jsonValueKeyMap.put(AppCMSUIKeyType.PAGE_TEXT_SEMIBOLD_KEY,
-                context.getString(R.string.app_cms_page_font_semibold_key));
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_splashscreen_key),
+                AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_homepage_key),
+                AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_action_homepage_nav),
+                AppCMSUIKeyType.ANDROID_HOME_NAV_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_action_movies_nav),
+                AppCMSUIKeyType.ANDROID_MOVIES_NAV_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_button_key),
+                AppCMSUIKeyType.PAGE_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_label_key),
+                AppCMSUIKeyType.PAGE_LABEL_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_collection_grid_key),
+                AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_progress_view_key),
+                AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_key),
+                AppCMSUIKeyType.PAGE_CAROUSEL_VIEW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_image_key),
+                AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_page_control_key),
+                AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY);
+        jsonValueKeyMap.put( context.getString(R.string.app_cms_page_seperator_key),
+                AppCMSUIKeyType.PAGE_SEPARATOR_VIEW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_image_key),
+                AppCMSUIKeyType.PAGE_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_bg_key),
+                AppCMSUIKeyType.PAGE_BG_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_logo_key),
+                AppCMSUIKeyType.PAGE_LOGO_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_info_key),
+                AppCMSUIKeyType.PAGE_INFO_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_play_key),
+                AppCMSUIKeyType.PAGE_PLAY_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_play_image_key),
+                AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_image_key),
+                AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_title_key),
+                AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_thumbnail_url_key),
+                AppCMSUIKeyType.PAGE_API_THUMBNAIL_URL);
+        jsonValueKeyMap.put( context.getString(R.string.app_cms_page_text_alignment_center_key),
+                AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_title_key),
+                AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_info_key),
+                AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_image_key),
+                AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_play_button_key),
+                AppCMSUIKeyType.PAGE_VIDEO_PLAY_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_description_key),
+                AppCMSUIKeyType.PAGE_VIDEO_DESCRIPTION_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_title_key),
+                AppCMSUIKeyType.PAGE_VIDEO_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_subtitle_key),
+                AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_share_key),
+                AppCMSUIKeyType.PAGE_VIDEO_SHARE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_close_key),
+                AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_title_key),
+                AppCMSUIKeyType.PAGE_API_TITLE);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_title_key),
+                AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_bold_key),
+                AppCMSUIKeyType.PAGE_TEXT_BOLD_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_semibold_key),
+                AppCMSUIKeyType.PAGE_TEXT_SEMIBOLD_KEY);
+        jsonValueKeyMap.put("", AppCMSUIKeyType.PAGE_EMPTY_KEY);
+        jsonValueKeyMap.put(null, AppCMSUIKeyType.PAGE_NULL_KEY);
     }
 
     private void createPageNameToActionMap(Context context) {
@@ -218,7 +234,7 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public Map<AppCMSUIKeyType, String> providesJsonValueKeyMap() {
+    public Map<String, AppCMSUIKeyType> providesJsonValueKeyMap() {
         return jsonValueKeyMap;
     }
 

@@ -11,7 +11,7 @@
     <string name="page_id">initial_url</string>
     <string name="close_self_key">close_self</string>
     <string name="app_cms_binder_stack_size_key">app_cms_binder_stack_size</string>
-    <string name="app_cms_binder_stack_element_key">app_cms_binder_stack_%0$s</string>
+    <string name="app_cms_binder_stack_element_key">app_cms_binder_stack_%1$d</string>
     <string name="navigation_item_key">navigation_item</string>
     <string name="menu_navigation_key">menu_navigation</string>
 </resources>

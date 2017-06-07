@@ -2,6 +2,7 @@ package com.viewlift.views.adapters;
 
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,8 @@ import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.Primary;
 import com.viewlift.models.data.appcms.ui.android.User;
 import com.viewlift.presenters.AppCMSPresenter;
+
+import org.w3c.dom.Text;
 
 import snagfilms.com.air.appcms.R;
 
@@ -57,45 +60,36 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
         Resources resources = viewHolder.itemView.getContext().getResources();
         if (i < navigation.getPrimary().size()) {
             final Primary primary = navigation.getPrimary().get(i);
-            StringBuffer iconName = new StringBuffer();
-            iconName.append(primary.getDisplayedPath().toLowerCase().replaceAll(" ", "_"));
-            iconName.append(primary.getUrl().replace("/", "_"));
-//            int drawableId = resources.getIdentifier(iconName.toString(),
-//                    "drawable",
-//                    viewHolder.itemView.getContext().getPackageName());
-//            viewHolder.navItemIcon.setBackgroundResource(drawableId);
             viewHolder.navItemLabel.setText(primary.getTitle());
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    if (!appCMSPresenter.navigateToPage(primary.getPageId())) {
-//                        Log.e(TAG, "Could not navigate to page with Title: " +
-//                                primary.getTitle() +
-//                                " Id: " +
-//                                primary.getPageId());
-//                    }
+                    appCMSPresenter.navigateAwayFromPage(appCMSPresenter.getCurrentActivity());
+                    if (!appCMSPresenter.navigateToPage(primary.getPageId(),
+                            primary.getTitle(),
+                            true)) {
+                        Log.e(TAG, "Could not navigate to page with Title: " +
+                                primary.getTitle() +
+                                " Id: " +
+                                primary.getPageId());
+                    }
                 }
             });
         } else if (userLoggedIn) {
             final User user = navigation.getUser().get(i - navigation.getPrimary().size());
-            StringBuffer iconName = new StringBuffer();
-            iconName.append(user.getDisplayedName().toLowerCase().replaceAll(" ", "_"));
-            iconName.append(user.getUrl().replaceAll("/", "_"));
-
-//            int drawableId = resources.getIdentifier(iconName.toString(),
-//                    "drawable",
-//                    viewHolder.itemView.getContext().getPackageName());
-//            viewHolder.navItemIcon.setBackgroundResource(drawableId);
             viewHolder.navItemLabel.setText(user.getTitle());
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    if (!appCMSPresenter.navigateToPage(user.getPageId())) {
-//                        Log.e(TAG, "Could not navigate to page with Title: " +
-//                                user.getTitle() +
-//                                " Id: " +
-//                                user.getPageId());
-//                    }
+                    appCMSPresenter.navigateAwayFromPage(appCMSPresenter.getCurrentActivity());
+                    if (!appCMSPresenter.navigateToPage(user.getPageId(),
+                            user.getTitle(),
+                            true)) {
+                        Log.e(TAG, "Could not navigate to page with Title: " +
+                                user.getTitle() +
+                                " Id: " +
+                                user.getPageId());
+                    }
                 }
             });
         } else {

@@ -10,10 +10,8 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -33,8 +31,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-
-import snagfilms.com.air.appcms.R;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -171,16 +167,17 @@ public class CollectionGridItemView extends BaseView {
     public void bindChild(Context context,
                           final View view,
                           final ContentDatum data,
-                          Map<AppCMSUIKeyType, String> jsonValueKeyMap,
+                          Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                           final OnClickHandler onClickHandler) {
         final Component childComponent = matchComponentToView(view);
         if (childComponent != null) {
             boolean bringToFront = true;
-            if (view instanceof ImageView) {
-                if (childComponent.getKey()
-                        .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY)) ||
-                        childComponent.getKey()
-                                .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY))) {
+            AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
+            AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
+            if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
+                if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
                     int childViewWidth = (int) getViewWidth(getContext(),
                             childComponent.getLayout(),
                             0);
@@ -203,6 +200,8 @@ public class CollectionGridItemView extends BaseView {
                         Picasso.with(context)
                                 .load(data.getGist().getVideoImageUrl())
                                 .resize(childViewWidth, childViewHeight)
+                                .centerCrop()
+                                .onlyScaleDown()
                                 .into((ImageView) view);
                     } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
@@ -244,51 +243,21 @@ public class CollectionGridItemView extends BaseView {
                     }
                     bringToFront = false;
                 }
-            } else if (view instanceof Button) {
+            } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         onClickHandler.click(childComponent, data);
                     }
                 });
-            } else if (view instanceof TextView) {
+            } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
                 if (TextUtils.isEmpty(((TextView) view).getText())) {
-                    if (childComponent.getKey()
-                            .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY)) &&
+                    if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
                             !TextUtils.isEmpty(data.getGist().getTitle())) {
                         ((TextView) view).setText(data.getGist().getTitle());
-                    } else if (childComponent.getKey()
-                            .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY))) {
-                        int runtime = (int) (data.getGist().getRuntime() / 60);
-                        String year = data.getGist().getYear();
-                        String primaryCategory =
-                                data.getGist().getPrimaryCategory() != null ?
-                                        data.getGist().getPrimaryCategory().getTitle() :
-                                        null;
-                        boolean appendFirstSep = runtime > 0 &&
-                                (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
-                        boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year)) &&
-                                !TextUtils.isEmpty(primaryCategory);
-                        StringBuffer infoText = new StringBuffer();
-                        if (runtime > 0) {
-                            infoText.append(runtime + "MINS");
-                        }
-                        if (appendFirstSep) {
-                            infoText.append(" | ");
-                        }
-                        if (!TextUtils.isEmpty(year)) {
-                            infoText.append(year);
-                        }
-                        if (appendSecondSep) {
-                            infoText.append(" | ");
-                        }
-                        if (!TextUtils.isEmpty(primaryCategory)) {
-                            infoText.append(primaryCategory.toUpperCase());
-                        }
-                        ((TextView) view).setText(infoText.toString());
-                        view.setAlpha(0.6f);
-                    } else if (childComponent.getKey()
-                            .equals(jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY))) {
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
+                        ViewCreator.setViewWithSubtitle(data, view);
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
                         ((TextView) view).setText(data.getGist().getTitle());
                     }
                 }
@@ -300,7 +269,7 @@ public class CollectionGridItemView extends BaseView {
         }
     }
 
-    private Component matchComponentToView(View view) {
+    public Component matchComponentToView(View view) {
         Component result = null;
         for (ItemContainer itemContainer : childItems) {
             if (itemContainer.childView == view) {

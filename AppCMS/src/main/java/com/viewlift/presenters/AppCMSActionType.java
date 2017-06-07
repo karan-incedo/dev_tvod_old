@@ -7,5 +7,8 @@ package com.viewlift.presenters;
 public enum AppCMSActionType {
     SPLASH_PAGE,
     HOME_PAGE,
-    VIDEO_PAGE
+    VIDEO_PAGE,
+    PLAY,
+    SHARE,
+    CLOSE
 }

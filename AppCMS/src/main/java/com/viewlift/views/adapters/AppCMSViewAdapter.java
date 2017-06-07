@@ -31,19 +31,19 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     protected Settings settings;
     protected ViewCreator viewCreator;
     protected Module moduleAPI;
-    protected Map<AppCMSUIKeyType, String> jsonValueKeyMap;
+    protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     protected List<ContentDatum> adapterData;
     protected CollectionGridItemView.OnClickHandler onClickHandler;
     protected int defaultWidth;
     protected int defaultHeight;
     protected boolean useMarginsAsPercentages;
+    protected String defaultAction;
 
-    public AppCMSViewAdapter(Context context,
-                             ViewCreator viewCreator,
+    public AppCMSViewAdapter(ViewCreator viewCreator,
                              AppCMSPresenter appCMSPresenter,
                              Settings settings,
                              Component component,
-                             Map<AppCMSUIKeyType, String> jsonValueKeyMap,
+                             Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                              Module moduleAPI,
                              int defaultWidth,
                              int defaultHeight) {
@@ -60,6 +60,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.defaultWidth = defaultWidth;
         this.defaultHeight = defaultHeight;
         this.useMarginsAsPercentages = true;
+        this.defaultAction = getDefaultAction();
     }
 
     @Override
@@ -69,7 +70,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 appCMSPresenter,
                 moduleAPI,
                 settings,
-                ViewCreator.NOOP_ON_COMPONENT_LOADED,
                 jsonValueKeyMap,
                 defaultWidth,
                 defaultHeight,
@@ -123,15 +123,14 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             @Override
             public void onClick(View v) {
                 String permalink = data.getGist().getPermalink();
-                String action = jsonValueKeyMap.get(AppCMSUIKeyType.PAGE_PLAY_KEY);
                 String title = data.getGist().getTitle();
-                Log.d(TAG, "Launching " + permalink + ":" + action);
-                if (!appCMSPresenter.launchButtonSelectedAction(permalink, action, title)) {
+                Log.d(TAG, "Launching " + permalink + ":" + defaultAction);
+                if (!appCMSPresenter.launchButtonSelectedAction(permalink, defaultAction, title)) {
                     Log.e(TAG, "Could not launch action: " +
                             " permalink: " +
                             permalink +
                             " action: " +
-                            action);
+                            defaultAction);
                 }
             }
         });
@@ -143,5 +142,14 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     jsonValueKeyMap,
                     onClickHandler);
         }
+    }
+
+    private String getDefaultAction() {
+        for (String jsonKey : jsonValueKeyMap.keySet()) {
+            if (jsonValueKeyMap.get(jsonKey) == AppCMSUIKeyType.PAGE_PLAY_KEY) {
+                return jsonKey;
+            }
+        }
+        return null;
     }
 }

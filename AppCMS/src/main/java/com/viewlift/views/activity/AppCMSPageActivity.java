@@ -24,7 +24,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.viewlift.AppCMSApplication;
-import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.Primary;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
@@ -41,7 +40,7 @@ import snagfilms.com.air.appcms.R;
  * Created by viewlift on 5/5/17.
  */
 
-public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageFragment.OnPageCreationError {
+public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageFragment.OnPageCreation {
     private static final String TAG = "AppCMSPageActivity";
 
     private AppCMSPresenter appCMSPresenter;
@@ -61,9 +60,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         setContentView(R.layout.activity_appcms_page);
 
         appCMSParentView = (RelativeLayout) findViewById(R.id.app_cms_parent_view);
-
         appCMSActionMenu = (ActionMenuView) findViewById(R.id.app_cms_action_menu);
-
         appCMSPageLoading = (ProgressBar) findViewById(R.id.app_cms_page_loading);
         appCMSFragment = (FrameLayout) findViewById(R.id.app_cms_fragment);
 
@@ -99,6 +96,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                     Log.d(TAG, "Nav item - Received broadcast to select navigation item with page Id: " +
                             intent.getStringExtra(getString(R.string.navigation_item_key)));
                     selectNavItem(intent.getStringExtra(getString(R.string.navigation_item_key)));
+                } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
+                    if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+                        getSupportFragmentManager().popBackStack();
+                    }
                 }
             }
         };
@@ -109,6 +110,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 new IntentFilter(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_SET_NAVIGATION_ITEM));
+        registerReceiver(presenterActionReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
     }
 
     @Override
@@ -156,28 +159,37 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     @Override
     public void onBackPressed() {
-        handleBack();
+        handleBack(true);
         super.onBackPressed();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        appCMSPresenter.restartInternalEvents();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(presenterActionReceiver);
+        while (!appCMSBinderStack.empty()) {
+            appCMSBinderStack.pop();
+        }
+        appCMSPresenter.navigateAwayFromPage(this);
     }
 
     @Override
-    public void onError() {
+    public void onSuccess(AppCMSBinder appCMSBinder) {
+        appCMSPresenter.restartInternalEvents();
+    }
+
+    @Override
+    public void onError(AppCMSBinder appCMSBinder) {
+        Log.e(TAG, "Nav item - Error attempting to launch page: " + appCMSBinder.getPageName() + " - " + appCMSBinder.getPageId());
+        // TODO: Create a pop up dialog with an error message
         setFinishResult(RESULT_CANCELED);
         getSupportFragmentManager().popBackStack();
-        appCMSTabNavContainer.setVisibility(View.VISIBLE);
-        handleBack();
+        handleBack(false);
     }
 
     @Override
@@ -205,13 +217,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         }
     }
 
-    private void handleBack() {
-        if (appCMSBinderStack.size() > 0) {
+    private void handleBack(boolean popBinderStack) {
+        if (popBinderStack && appCMSBinderStack.size() > 0) {
             appCMSBinderStack.pop();
         }
         if (appCMSBinderStack.size() > 0) {
-            handleOrientation(getResources().getConfiguration().orientation,
-                    appCMSBinderStack.peek());
+            handleOrientation(getResources().getConfiguration().orientation, appCMSBinderStack.peek());
+            if (appCMSBinderStack.peek().isNavbarPresent()) {
+                appCMSTabNavContainer.setVisibility(View.VISIBLE);
+            }
             Log.d(TAG, "Resetting previous AppCMS data: " + appCMSBinderStack.peek().getPageName());
 
         }
@@ -219,6 +233,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     }
 
     private void handleAppCMSBinder(final AppCMSBinder appCMSBinder, boolean firstFragment) {
+        Log.d(TAG, "Handling new AppCMSBinder: " + appCMSBinder.getPageName());
+
         pageLoading(false);
 
         appCMSParentView.setBackgroundColor(Color.parseColor(appCMSBinder.getAppCMSMain()
@@ -231,17 +247,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         appCMSTabNavContainer = (LinearLayout) findViewById(R.id.app_cms_tab_nav_container);
 
         final Navigation navigation = appCMSBinder.getNavigation();
-        if (navigation.getPrimary().size() == 0 || appCMSBinder.isFullScreenEnabled()) {
+        if (navigation.getPrimary().size() == 0 || !appCMSBinder.isNavbarPresent()) {
             appCMSTabNavContainer.setVisibility(View.GONE);
         } else {
             createMenuNavItem();
-            createHomeNavItem(appCMSPresenter.findHomePageNavItem(navigation, appCMSBinder.getJsonValueKeyMap()));
-            createMoviesNavItem(appCMSPresenter.findMoviesPageNavItem(navigation, appCMSBinder.getJsonValueKeyMap()));
+            createHomeNavItem(appCMSPresenter.findHomePageNavItem());
+            createMoviesNavItem(appCMSPresenter.findMoviesPageNavItem());
             createSearchNavItem();
             selectNavItem(appCMSBinder.getPageId());
-
-            handleOrientation(getResources().getConfiguration().orientation, appCMSBinder);
         }
+
+        handleOrientation(getResources().getConfiguration().orientation, appCMSBinder);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -258,12 +274,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     }
 
     private void selectNavItemAndLaunchPage(NavBarItemView v, String pageId, String pageTitle) {
-        selectNavItem(v);
-        if (!appCMSPresenter.navigateToPage(pageId, pageTitle)) {
+        if (!appCMSPresenter.navigateToPage(pageId, pageTitle, false)) {
             Log.e(TAG, "Could not navigate to page with Title: " +
                     pageTitle +
                     " Id: " +
                     pageId);
+        } else {
+            selectNavItem(v);
         }
     }
 
@@ -321,7 +338,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     private void setFinishResult(int resultCode) {
         Intent resultIntent = new Intent();
         Bundle args = new Bundle();
-        args.putBinder(getString(R.string.app_cms_binder_key), appCMSBinderStack.pop());
+        args.putBinder(getString(R.string.app_cms_binder_key), appCMSBinderStack.peek());
         resultIntent.putExtra(getString(R.string.app_cms_bundle_key), args);
         setResult(resultCode, resultIntent);
     }
@@ -341,14 +358,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     }
 
     private void createMenuNavItem() {
-        NavBarItemView menuNavBarItemView =
+        final NavBarItemView menuNavBarItemView =
                 (NavBarItemView) appCMSTabNavContainer.getChildAt(0);
         menuNavBarItemView.setImage(getString(R.string.app_cms_menu_icon_name));
         menuNavBarItemView.setLabel(getString(R.string.app_cms_menu_label));
         menuNavBarItemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectNavItem((NavBarItemView) v);
+                selectNavItem(menuNavBarItemView);
                 if (!appCMSPresenter.launchNavigationPage()) {
                     Log.e(TAG, "Could not launch navigation page!");
                 }
@@ -357,30 +374,30 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     }
 
     private void createHomeNavItem(final Primary homePageNav) {
-        NavBarItemView homeNavBarItemView =
+        final NavBarItemView homeNavBarItemView =
                 (NavBarItemView) appCMSTabNavContainer.getChildAt(1);
         homeNavBarItemView.setImage(getIconName(homePageNav));
         homeNavBarItemView.setLabel(homePageNav.getTitle());
         homeNavBarItemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectNavItemAndLaunchPage((NavBarItemView) v,
+                selectNavItemAndLaunchPage(homeNavBarItemView,
                         homePageNav.getPageId(),
-                        homePageNav.getDisplayedPath());
+                        homePageNav.getTitle());
             }
         });
         homeNavBarItemView.setTag(homePageNav.getPageId());
     }
 
     private void createMoviesNavItem(final Primary moviePageNav) {
-        NavBarItemView moviesNavBarItemView =
+        final NavBarItemView moviesNavBarItemView =
                 (NavBarItemView) appCMSTabNavContainer.getChildAt(2);
         moviesNavBarItemView.setImage(getIconName(moviePageNav));
         moviesNavBarItemView.setLabel(moviePageNav.getTitle());
         moviesNavBarItemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectNavItemAndLaunchPage((NavBarItemView) v,
+                selectNavItemAndLaunchPage(moviesNavBarItemView,
                         moviePageNav.getPageId(),
                         moviePageNav.getTitle());
             }
