@@ -60,6 +60,9 @@ public class AppCMSMain {
     @SerializedName("Android")
     @Expose
     private String android;
+    @SerializedName("timestamp")
+    @Expose
+    private Long timestamp;
 
     public String getId() {
         return id;
@@ -211,5 +214,13 @@ public class AppCMSMain {
 
     public void setiOS(String iOS) {
         this.iOS = iOS;
+    }
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
     }
 }

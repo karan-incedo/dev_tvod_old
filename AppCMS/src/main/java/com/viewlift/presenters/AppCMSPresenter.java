@@ -641,10 +641,12 @@ public class AppCMSPresenter {
         activity.startActivity(appCMSIntent);
     }
 
-    private void getAppCMSAndroid(final Activity activity, AppCMSMain main) {
+    private void getAppCMSAndroid(final Activity activity, final AppCMSMain main) {
         GetAppCMSAndroidUIAsyncTask.Params params =
                 new GetAppCMSAndroidUIAsyncTask.Params.Builder()
-                    .url(main.getAndroid())
+                    .url(activity.getString(R.string.app_cms_url_with_appended_timestamp,
+                            main.getAndroid(),
+                            main.getTimestamp()))
                     .loadFromFile(loadFromFile)
                     .build();
         Log.d(TAG, "Params: " + main.getAndroid() + " " + loadFromFile);
@@ -661,7 +663,9 @@ public class AppCMSPresenter {
                     queueMetaPages(appCMSAndroidUI.getMetaPages());
                     final MetaPage firstPage = pagesToProcess.peek();
                     Log.d(TAG, "Processing meta pages queue");
-                    processMetaPagesQueue(loadFromFile,
+                    processMetaPagesQueue(activity,
+                            main,
+                            loadFromFile,
                             new Action0() {
                                 @Override
                                 public void call() {
@@ -717,7 +721,9 @@ public class AppCMSPresenter {
         }
     }
 
-    private void processMetaPagesQueue(final boolean loadFromFile,
+    private void processMetaPagesQueue(final Activity activity,
+                                       final AppCMSMain main,
+                                       final boolean loadFromFile,
                                        final Action0 onPagesFinishedAction) {
         final MetaPage metaPage = pagesToProcess.remove();
         Log.d(TAG, "Processing meta page: " +
@@ -725,7 +731,9 @@ public class AppCMSPresenter {
                 metaPage.getPageId() + " " +
                 metaPage.getPageUI() + " " +
                 metaPage.getPageAPI());
-        getAppCMSPage(metaPage.getPageUI(),
+        getAppCMSPage(activity.getString(R.string.app_cms_url_with_appended_timestamp,
+                metaPage.getPageUI(),
+                main.getTimestamp()),
                 new Action1<AppCMSPageUI>() {
                     @Override
                     public void call(AppCMSPageUI appCMSPageUI) {
@@ -740,7 +748,10 @@ public class AppCMSPresenter {
                             Log.d(TAG, "Action: " + action + " PageAPIURL: " + metaPage.getPageAPI());
                         }
                         if (pagesToProcess.size() > 0) {
-                            processMetaPagesQueue(loadFromFile, onPagesFinishedAction);
+                            processMetaPagesQueue(activity,
+                                    main,
+                                    loadFromFile,
+                                    onPagesFinishedAction);
                         } else {
                             onPagesFinishedAction.call();
                         }

@@ -208,6 +208,7 @@ public class CollectionGridItemView extends BaseView {
                         Picasso.with(context)
                                 .load(data.getGist().getVideoImageUrl())
                                 .resize(deviceWidth, childViewHeight)
+                                .centerCrop()
                                 .transform(new Transformation() {
                                     @Override
                                     public Bitmap transform(Bitmap source) {
@@ -256,7 +257,34 @@ public class CollectionGridItemView extends BaseView {
                             !TextUtils.isEmpty(data.getGist().getTitle())) {
                         ((TextView) view).setText(data.getGist().getTitle());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
-                        ViewCreator.setViewWithSubtitle(data, view);
+                        int runtime = (int) (data.getGist().getRuntime() / 60);
+                        String year = data.getGist().getYear();
+                        String primaryCategory =
+                                data.getGist().getPrimaryCategory() != null ?
+                                        data.getGist().getPrimaryCategory().getTitle() :
+                                        null;
+                        boolean appendFirstSep = runtime > 0 &&
+                                (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
+                        boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year)) &&
+                                !TextUtils.isEmpty(primaryCategory);
+                        StringBuffer infoText = new StringBuffer();
+                        if (runtime > 0) {
+                            infoText.append(runtime + "MINS");
+                        }
+                        if (appendFirstSep) {
+                            infoText.append(" | ");
+                        }
+                        if (!TextUtils.isEmpty(year)) {
+                            infoText.append(year);
+                        }
+                        if (appendSecondSep) {
+                            infoText.append(" | ");
+                        }
+                        if (!TextUtils.isEmpty(primaryCategory)) {
+                            infoText.append(primaryCategory.toUpperCase());
+                        }
+                        ((TextView) view).setText(infoText.toString());
+                        view.setAlpha(0.6f);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
                         ((TextView) view).setText(data.getGist().getTitle());
                     }
@@ -285,20 +313,23 @@ public class CollectionGridItemView extends BaseView {
                 TabletLandscape tabletLandscape = layout.getTabletLandscape();
                 float width = tabletLandscape.getGridWidth() != null ? tabletLandscape.getGridWidth() : -1.0f;
                 if (width != -1.0f) {
-                    return convertDpToPixel(width, context);
+//                    return convertDpToPixel(width, context);
+                    return DEVICE_WIDTH * (width / STANDARD_TABLET_HEIGHT_PX);
                 }
             } else {
                 TabletPortrait tabletPortrait = layout.getTabletPortrait();
                 float width = tabletPortrait.getGridWidth() != null ? tabletPortrait.getGridWidth() : -1.0f;
                 if (width != -1.0f) {
-                    return convertDpToPixel(width, context);
+//                    return convertDpToPixel(width, context);
+                    return DEVICE_WIDTH * (width / STANDARD_TABLET_WIDTH_PX);
                 }
             }
         } else {
             Mobile mobile = layout.getMobile();
             float width = mobile.getGridWidth() != null ? mobile.getGridWidth() : -1.0f;
             if (width != -1.0f) {
-                return convertDpToPixel(width, context);
+//                return convertDpToPixel(width, context);
+                return DEVICE_WIDTH * (width / STANDARD_MOBILE_WIDTH_PX);
             }
         }
         return defaultWidth;
@@ -310,20 +341,20 @@ public class CollectionGridItemView extends BaseView {
                 TabletLandscape tabletLandscape = layout.getTabletLandscape();
                 float height = tabletLandscape.getGridHeight() != null ? tabletLandscape.getGridHeight() : -1.0f;
                 if (height != -1.0f) {
-                    return convertDpToPixel(height, context);
+                    return DEVICE_HEIGHT * (height / STANDARD_TABLET_WIDTH_PX);
                 }
             } else {
                 TabletPortrait tabletPortrait = layout.getTabletPortrait();
                 float height = tabletPortrait.getGridHeight() != null ? tabletPortrait.getGridHeight() : -1.0f;
                 if (height != -1) {
-                    return convertDpToPixel(height, context);
+                    return DEVICE_HEIGHT * (height / STANDARD_TABLET_HEIGHT_PX);
                 }
             }
         } else {
             Mobile mobile = layout.getMobile();
             float height = mobile.getGridHeight() != null ? mobile.getGridHeight().intValue() : -1;
             if (height != -1.0f) {
-                return convertDpToPixel(height, context);
+                return DEVICE_HEIGHT * (height / STANDARD_MOBILE_HEIGHT_PX);
             }
         }
         return defaultHeight;

@@ -11,13 +11,13 @@ public class PosterImage {
     private String id;
     @SerializedName("publishDate")
     @Expose
-    private Integer publishDate;
+    private Long publishDate;
     @SerializedName("updateDate")
     @Expose
-    private Integer updateDate;
+    private Long updateDate;
     @SerializedName("addedDate")
     @Expose
-    private Integer addedDate;
+    private Long addedDate;
     @SerializedName("siteOwner")
     @Expose
     private String siteOwner;
@@ -42,27 +42,27 @@ public class PosterImage {
         this.id = id;
     }
 
-    public Integer getPublishDate() {
+    public Long getPublishDate() {
         return publishDate;
     }
 
-    public void setPublishDate(Integer publishDate) {
+    public void setPublishDate(Long publishDate) {
         this.publishDate = publishDate;
     }
 
-    public Integer getUpdateDate() {
+    public Long getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Integer updateDate) {
+    public void setUpdateDate(Long updateDate) {
         this.updateDate = updateDate;
     }
 
-    public Integer getAddedDate() {
+    public Long getAddedDate() {
         return addedDate;
     }
 
-    public void setAddedDate(Integer addedDate) {
+    public void setAddedDate(Long addedDate) {
         this.addedDate = addedDate;
     }
 

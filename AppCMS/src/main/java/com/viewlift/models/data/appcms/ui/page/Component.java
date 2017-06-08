@@ -94,6 +94,12 @@ public class Component {
     @SerializedName("fontWeight")
     @Expose
     private String fontWeight;
+    @SerializedName("fontFamilyKey")
+    @Expose
+    private String fontFamilyKey;
+    @SerializedName("fontFamilyValue")
+    @Expose
+    private String fontFamilyValue;
 
     public String getText() {
         return text;
@@ -325,5 +331,21 @@ public class Component {
 
     public void setFontWeight(String fontWeight) {
         this.fontWeight = fontWeight;
+    }
+
+    public String getFontFamilyKey() {
+        return fontFamilyKey;
+    }
+
+    public void setFontFamilyKey(String fontFamilyKey) {
+        this.fontFamilyKey = fontFamilyKey;
+    }
+
+    public String getFontFamilyValue() {
+        return fontFamilyValue;
+    }
+
+    public void setFontFamilyValue(String fontFamilyValue) {
+        this.fontFamilyValue = fontFamilyValue;
     }
 }

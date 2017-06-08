@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.Scanner;
 
 import javax.inject.Inject;
@@ -41,9 +42,11 @@ public class AppCMSMainUICall {
 
     @WorkerThread
     public AppCMSMain call(Context context, String siteId) throws IOException {
+        Date now = new Date();
         String appCMSMainUrl = context.getString(R.string.app_cms_main_url,
                 context.getString(R.string.app_cms_api_baseurl),
-                siteId);
+                siteId,
+                now.getTime());
         AppCMSMain main = null;
         try {
             main = appCMSMainUIRest.get(appCMSMainUrl).execute().body();

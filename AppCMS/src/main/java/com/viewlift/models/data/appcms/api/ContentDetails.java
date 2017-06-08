@@ -45,10 +45,10 @@ public class ContentDetails {
     private Object androidPosterImage;
     @SerializedName("startDate")
     @Expose
-    private Object startDate;
+    private Long startDate;
     @SerializedName("endDate")
     @Expose
-    private Object endDate;
+    private Long endDate;
     @SerializedName("closedCaptions")
     @Expose
     private Object closedCaptions;
@@ -155,19 +155,19 @@ public class ContentDetails {
         this.androidPosterImage = androidPosterImage;
     }
 
-    public Object getStartDate() {
+    public Long getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Object startDate) {
+    public void setStartDate(Long startDate) {
         this.startDate = startDate;
     }
 
-    public Object getEndDate() {
+    public Long getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Object endDate) {
+    public void setEndDate(Long endDate) {
         this.endDate = endDate;
     }
 
