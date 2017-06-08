@@ -19,6 +19,7 @@
     <string name="app_cms_page_carousel_key">carousel</string>
     <string name="app_cms_page_page_control_key">pageControl</string>
     <string name="app_cms_page_seperator_key">separatorView</string>
+    <string name="app_cms_page_castview_key">castView</string>
     <string name="app_cms_page_bg_key">bg</string>
     <string name="app_cms_page_logo_key">logo</string>
     <string name="app_cms_page_info_key">info</string>
@@ -33,13 +34,19 @@
     <string name="app_cms_page_carousel_image_key">carouselImage</string>
     <string name="app_cms_page_font_bold_key">Bold</string>
     <string name="app_cms_page_font_semibold_key">Semibold</string>
+    <string name="app_cms_page_font_extrabold_key">ExtraBold</string>
     <string name="app_cms_page_video_image_key">videoImage</string>
     <string name="app_cms_page_video_play_button_key">playButton</string>
     <string name="app_cms_page_video_description_key">videoDescriptionText</string>
     <string name="app_cms_page_video_title_key">videoTitle</string>
     <string name="app_cms_page_video_subtitle_key">videoSubTitle</string>
+    <string name="app_cms_page_video_ageLabel_key">ageLabel</string>
     <string name="app_cms_page_video_share_key">shareButton</string>
     <string name="app_cms_page_video_close_key">closeButton</string>
+    <string name="app_cms_page_video_credits_director_key">Director</string>
+    <string name="app_cms_page_video_credits_directedby_key">Directed by</string>
+    <string name="app_cms_page_video_credits_directors">Directors</string>
+    <string name="app_cms_page_video_credits_starring_key">Starring</string>
     <string name="app_cms_page_api_thumbnail_url_key">thumbnail</string>
     <string name="app_cms_page_api_title_key">title</string>
 
@@ -57,7 +64,7 @@
     <string name="app_cms_action_videopage_key">play</string>
 
     <!-- AppCMS Data values -->
-    <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true&amp;a=%6$s</string>
+    <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true</string>
     <string name="app_cms_page_id_query_parameter">pageId=</string>
     <string name="app_cms_page_path_query_parameter">path=</string>
     <string name="app_cms_api_key">XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F</string>

@@ -583,10 +583,12 @@ public class AppCMSPresenter {
     }
 
     private void setNavItemToCurrentAction(Activity activity) {
-        Intent setNavigationItemIntent = new Intent(PRESENTER_SET_NAVIGATION_ITEM);
-        setNavigationItemIntent.putExtra(activity.getString(R.string.navigation_item_key),
-                currentActions.peek());
-        activity.sendBroadcast(setNavigationItemIntent);
+        if (currentActions.size() > 0) {
+            Intent setNavigationItemIntent = new Intent(PRESENTER_SET_NAVIGATION_ITEM);
+            setNavigationItemIntent.putExtra(activity.getString(R.string.navigation_item_key),
+                    currentActions.peek());
+            activity.sendBroadcast(setNavigationItemIntent);
+        }
     }
 
     private Bundle getPageActivityBundle(Activity activity,

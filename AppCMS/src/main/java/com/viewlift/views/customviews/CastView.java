@@ -11,13 +11,26 @@ import android.widget.TextView;
  */
 
 public class CastView extends LinearLayout {
-    public CastView(Context context) {
+    private final String directorListTitle;
+    private final String directorList;
+    private final String starringListTitle;
+    private final String starringList;
+    public CastView(Context context,
+                    String directorListTitle,
+                    String directorList,
+                    String starringListTitle,
+                    String starringList) {
         super(context);
+        this.directorListTitle = directorListTitle;
+        this.directorList = directorList;
+        this.starringList = starringList;
+        this.starringListTitle = starringListTitle;
         init();
     }
 
     private void init() {
         setOrientation(VERTICAL);
+
         LinearLayout headingColumn = new LinearLayout(getContext());
         headingColumn.setOrientation(VERTICAL);
         LinearLayout.LayoutParams headingColumnLayoutParams =

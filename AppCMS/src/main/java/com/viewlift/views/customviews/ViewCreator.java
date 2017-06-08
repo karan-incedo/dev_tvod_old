@@ -5,7 +5,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -340,7 +340,7 @@ public class ViewCreator {
                         componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.share));
                         break;
                     case PAGE_VIDEO_CLOSE_KEY:
-                        componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.close));
+                        componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.cancel));
                         break;
                     default:
                 }
@@ -363,7 +363,6 @@ public class ViewCreator {
                             if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getDescription())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getDescription());
                             }
-
                             ViewTreeObserver textVto = componentViewResult.componentView.getViewTreeObserver();
                             ViewCreatorLayoutListener viewCreatorLayoutListener =
                                     new ViewCreatorLayoutListener((int) BaseView.getViewHeight(context, component.getLayout(), 0),
@@ -377,6 +376,18 @@ public class ViewCreator {
                         case PAGE_VIDEO_SUBTITLE_KEY:
                             setViewWithSubtitle(moduleAPI.getContentData().get(0), componentViewResult.componentView);
                             break;
+                        case PAGE_VIDEO_AGE_LABEL_KEY:
+                            if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getParentalRating())) {
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getParentalRating());
+                                if (component.getBorderWidth() > 0 && !TextUtils.isEmpty(component.getBorderColor())) {
+                                    GradientDrawable gradientDrawable = new GradientDrawable();
+                                    gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+                                    gradientDrawable.setStroke(component.getBorderWidth(),
+                                            Color.parseColor(getColor(component.getBorderColor())));
+                                    gradientDrawable.setColor(ContextCompat.getColor(context, android.R.color.transparent));
+                                    componentViewResult.componentView.setBackground(gradientDrawable);
+                                }
+                            }
                         default:
                     }
                 } else {
@@ -397,7 +408,8 @@ public class ViewCreator {
                 if (!TextUtils.isEmpty(component.getFontFamily())) {
                     AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
                     if (fontWeight == AppCMSUIKeyType.PAGE_TEXT_BOLD_KEY ||
-                            fontWeight == AppCMSUIKeyType.PAGE_TEXT_SEMIBOLD_KEY) {
+                            fontWeight == AppCMSUIKeyType.PAGE_TEXT_SEMIBOLD_KEY ||
+                            fontWeight == AppCMSUIKeyType.PAGE_TEXT_EXTRABOLD_KEY) {
                         ((TextView) componentViewResult.componentView).setTypeface(Typeface.create(component.getFontFamily(), Typeface.BOLD));
                     } else {
                         ((TextView) componentViewResult.componentView).setTypeface(Typeface.create(component.getFontFamily(), Typeface.NORMAL));
@@ -455,6 +467,9 @@ public class ViewCreator {
                     componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(component.getBackgroundColor())));
                 }
                 componentViewResult.hideOnFullscreenLandscape = true;
+                break;
+            case PAGE_CASTVIEW_VIEW_KEY:
+
                 break;
             default:
         }
