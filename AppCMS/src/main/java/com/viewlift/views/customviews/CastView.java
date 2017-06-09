@@ -1,15 +1,15 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
-import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.view.Gravity;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.GridLayout;
+import android.support.v7.widget.GridLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import snagfilms.com.air.appcms.R;
 
 /**
  * Created by viewlift on 6/7/17.
@@ -25,6 +25,8 @@ public class CastView extends GridLayout {
     private final String starringListTitle;
     private final String starringList;
     private final int textColor;
+    private final float fontsizeKey;
+    private final float fontsizeValue;
 
     public CastView(Context context,
                     String fontFamilyKey,
@@ -35,7 +37,9 @@ public class CastView extends GridLayout {
                     String directorList,
                     String starringListTitle,
                     String starringList,
-                    int textColor) {
+                    int textColor,
+                    float fontsizeKey,
+                    float fontsizeValue) {
         super(context);
         this.fontFamilyKey = fontFamilyKey;
         this.fontFamilyKeyType = fontFamilyKeyType;
@@ -46,6 +50,8 @@ public class CastView extends GridLayout {
         this.starringList = starringList;
         this.starringListTitle = starringListTitle;
         this.textColor = textColor;
+        this.fontsizeKey = fontsizeKey;
+        this.fontsizeValue = fontsizeValue;
         init();
     }
 
@@ -53,49 +59,62 @@ public class CastView extends GridLayout {
         setColumnCount(2);
 
         Typeface keyTypeFace = Typeface.create(fontFamilyKey, fontFamilyKeyType);
-
-        TextView directorListTitleView = new TextView(getContext());
-        directorListTitleView.setText(directorListTitle);
-        directorListTitleView.setTypeface(keyTypeFace);
-        directorListTitleView.setTextColor(textColor);
-        ViewTreeObserver directorListTitleVto = directorListTitleView.getViewTreeObserver();
-        directorListTitleVto.addOnGlobalLayoutListener(new ViewCreatorLayoutListener(directorListTitleView));
-
-        TextView starringListTitleView = new TextView(getContext());
-        starringListTitleView.setText(starringListTitle);
-        starringListTitleView.setTypeface(keyTypeFace);
-        starringListTitleView.setTextColor(textColor);
-        ViewTreeObserver starringListTitleVto = starringListTitleView.getViewTreeObserver();
-        starringListTitleVto.addOnGlobalLayoutListener(new ViewCreatorLayoutListener(starringListTitleView));
-
         Typeface valueTypeFace = Typeface.create(fontFamilyValue, fontFamilyValueType);
 
-        TextView directorListView = new TextView(getContext());
-        directorListView.setText(directorList);
-        directorListView.setTypeface(valueTypeFace);
-        directorListView.setTextColor(textColor);
-        directorListView.setPadding(24, 0, 0, 0);
-        ViewTreeObserver directorListVto = directorListView.getViewTreeObserver();
-        directorListVto.addOnGlobalLayoutListener(new ViewCreatorLayoutListener(directorListView));
+        if (!TextUtils.isEmpty(directorListTitle) && !TextUtils.isEmpty(directorList)) {
+            TextView directorListTitleView = new TextView(getContext());
+            directorListTitleView.setText(directorListTitle);
+            directorListTitleView.setTypeface(keyTypeFace);
+            directorListTitleView.setTextColor(textColor);
+            if (fontsizeKey != -1.0f) {
+                directorListTitleView.setTextSize(fontsizeKey);
+            }
+            ViewTreeObserver directorListTitleVto = directorListTitleView.getViewTreeObserver();
+            directorListTitleVto.addOnGlobalLayoutListener(new ViewCreatorLayoutListener(directorListTitleView));
+            addView(directorListTitleView);
 
-        TextView starringListView = new TextView(getContext());
-        starringListView.setText(starringList);
-        starringListView.setTypeface(valueTypeFace);
-        starringListView.setTextColor(textColor);
-        starringListView.setPadding(24, 0, 0, 0);
-        ViewTreeObserver starringListVto = starringListView.getViewTreeObserver();
-        starringListVto.addOnGlobalLayoutListener(new ViewCreatorLayoutListener(starringListView));
+            TextView directorListView = new TextView(getContext());
+            directorListView.setText(directorList);
+            directorListView.setTypeface(valueTypeFace);
+            directorListView.setTextColor(textColor);
+            directorListView.setPadding((int) getContext().getResources().getDimension(R.dimen.castview_padding),
+                    0,
+                    0,
+                    0);
+            if (fontsizeValue != -1.0f) {
+                directorListView.setTextSize(fontsizeValue);
+            }
+            ViewTreeObserver directorListVto = directorListView.getViewTreeObserver();
+            directorListVto.addOnGlobalLayoutListener(new ViewCreatorLayoutListener(directorListView));
+            addView(directorListView);
+        }
 
-        addView(directorListTitleView);
-        addView(directorListView);
-        addView(starringListTitleView);
-        addView(starringListView);
+        if (!TextUtils.isEmpty(starringListTitle) && !TextUtils.isEmpty(starringList)) {
+            TextView starringListTitleView = new TextView(getContext());
+            starringListTitleView.setText(starringListTitle);
+            starringListTitleView.setTypeface(keyTypeFace);
+            starringListTitleView.setTextColor(textColor);
+            if (fontsizeKey != -1.0f) {
+                starringListTitleView.setTextSize(fontsizeKey);
+            }
+            ViewTreeObserver starringListTitleVto = starringListTitleView.getViewTreeObserver();
+            starringListTitleVto.addOnGlobalLayoutListener(new ViewCreatorLayoutListener(starringListTitleView));
+            addView(starringListTitleView);
 
-        GradientDrawable border = new GradientDrawable();
-        border.setShape(GradientDrawable.RECTANGLE);
-        border.setStroke(1,
-                ContextCompat.getColor(getContext(), android.R.color.white));
-        border.setColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
-        setBackground(border);
+            TextView starringListView = new TextView(getContext());
+            starringListView.setText(starringList);
+            starringListView.setTypeface(valueTypeFace);
+            starringListView.setTextColor(textColor);
+            starringListView.setPadding((int) getContext().getResources().getDimension(R.dimen.castview_padding),
+                    0,
+                    0,
+                    0);
+            if (fontsizeValue != -1.0f) {
+                starringListView.setTextSize(fontsizeValue);
+            }
+            ViewTreeObserver starringListVto = starringListView.getViewTreeObserver();
+            starringListVto.addOnGlobalLayoutListener(new ViewCreatorLayoutListener(starringListView));
+            addView(starringListView);
+        }
     }
 }

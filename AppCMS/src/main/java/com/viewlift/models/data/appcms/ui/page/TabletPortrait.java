@@ -42,6 +42,12 @@ public class TabletPortrait {
     @SerializedName("trayPadding")
     @Expose
     private Float trayPadding;
+    @SerializedName("fontSizeKey")
+    @Expose
+    private Float fontSizeKey;
+    @SerializedName("fontSizeValue")
+    @Expose
+    private Float fontSizeValue;
 
     public Float getWidth() {
         return width;
@@ -153,5 +159,21 @@ public class TabletPortrait {
 
     public void setTrayPadding(Float trayPadding) {
         this.trayPadding = trayPadding;
+    }
+
+    public Float getFontSizeKey() {
+        return fontSizeKey;
+    }
+
+    public void setFontSizeKey(Float fontSizeKey) {
+        this.fontSizeKey = fontSizeKey;
+    }
+
+    public Float getFontSizeValue() {
+        return fontSizeValue;
+    }
+
+    public void setFontSizeValue(Float fontSizeValue) {
+        this.fontSizeValue = fontSizeValue;
     }
 }

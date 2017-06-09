@@ -7,9 +7,11 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -365,7 +367,11 @@ public class ViewCreator {
                         case PAGE_VIDEO_DESCRIPTION_KEY:
                             String videoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
                             if (!TextUtils.isEmpty(videoDescription)) {
-                                ((TextView) componentViewResult.componentView).setText(videoDescription);
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(videoDescription));
+                                } else {
+                                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(videoDescription, Html.FROM_HTML_MODE_COMPACT));
+                                }
                             }
                             ViewTreeObserver textVto = componentViewResult.componentView.getViewTreeObserver();
                             ViewCreatorLayoutListener viewCreatorLayoutListener =
@@ -378,7 +384,9 @@ public class ViewCreator {
                             }
                             break;
                         case PAGE_VIDEO_SUBTITLE_KEY:
-                            setViewWithSubtitle(moduleAPI.getContentData().get(0), componentViewResult.componentView);
+                            setViewWithSubtitle(context,
+                                    moduleAPI.getContentData().get(0),
+                                    componentViewResult.componentView);
                             break;
                         case PAGE_VIDEO_AGE_LABEL_KEY:
                             if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getParentalRating())) {
@@ -488,6 +496,10 @@ public class ViewCreator {
                 componentViewResult.hideOnFullscreenLandscape = true;
                 break;
             case PAGE_CASTVIEW_VIEW_KEY:
+                if (moduleAPI.getContentData().get(0).getCreditBlocks() == null) {
+                    componentViewResult.componentView = null;
+                    return componentViewResult;
+                }
                 String fontFamilyKey = null, fontFamilyKeyTypeParsed = null;
                 if (!TextUtils.isEmpty(component.getFontFamilyKey())) {
                     String[] fontFamilyKeyArr = component.getFontFamilyKey().split("-");
@@ -564,7 +576,19 @@ public class ViewCreator {
                         directorListSb.toString(),
                         starringTitle,
                         starringListSb.toString(),
-                        textColor);
+                        textColor,
+                        BaseView.getFontSizeKey(context, component.getLayout()),
+                        BaseView.getFontSizeValue(context, component.getLayout()));
+                componentViewResult.hideOnFullscreenLandscape = true;
+                break;
+            case PAGE_VIDEO_STARRATING_KEY:
+                int starBorderColor = Color.parseColor(getColor(component.getBorderColor()));
+                int starFillColor = Color.parseColor(getColor(component.getFillColor()));
+                float starRating = moduleAPI.getContentData().get(0).getGist().getAverageStarRating();
+                componentViewResult.componentView = new StarRating(context,
+                        starBorderColor,
+                        starFillColor,
+                        starRating);
                 componentViewResult.hideOnFullscreenLandscape = true;
                 break;
             default:
@@ -572,7 +596,7 @@ public class ViewCreator {
         return componentViewResult;
     }
 
-    public static void setViewWithSubtitle(ContentDatum data, View view) {
+    public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
         int runtime = (data.getGist().getRuntime() / 60);
         String year = data.getGist().getYear();
         String primaryCategory =
@@ -585,7 +609,7 @@ public class ViewCreator {
                 !TextUtils.isEmpty(primaryCategory);
         StringBuffer infoText = new StringBuffer();
         if (runtime > 0) {
-            infoText.append(runtime + "MINS");
+            infoText.append(runtime + context.getString(R.string.mins_abbreviation));
         }
         if (appendFirstSep) {
             infoText.append(" | ");

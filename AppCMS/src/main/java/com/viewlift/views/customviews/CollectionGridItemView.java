@@ -232,6 +232,7 @@ public class CollectionGridItemView extends BaseView {
                                         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
                                         canvas.drawRect(0, 0, width, height, paint);
                                         source.recycle();
+                                        paint = null;
                                         return sourceWithGradient;
                                     }
 
@@ -257,34 +258,7 @@ public class CollectionGridItemView extends BaseView {
                             !TextUtils.isEmpty(data.getGist().getTitle())) {
                         ((TextView) view).setText(data.getGist().getTitle());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
-                        int runtime = (int) (data.getGist().getRuntime() / 60);
-                        String year = data.getGist().getYear();
-                        String primaryCategory =
-                                data.getGist().getPrimaryCategory() != null ?
-                                        data.getGist().getPrimaryCategory().getTitle() :
-                                        null;
-                        boolean appendFirstSep = runtime > 0 &&
-                                (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
-                        boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year)) &&
-                                !TextUtils.isEmpty(primaryCategory);
-                        StringBuffer infoText = new StringBuffer();
-                        if (runtime > 0) {
-                            infoText.append(runtime + "MINS");
-                        }
-                        if (appendFirstSep) {
-                            infoText.append(" | ");
-                        }
-                        if (!TextUtils.isEmpty(year)) {
-                            infoText.append(year);
-                        }
-                        if (appendSecondSep) {
-                            infoText.append(" | ");
-                        }
-                        if (!TextUtils.isEmpty(primaryCategory)) {
-                            infoText.append(primaryCategory.toUpperCase());
-                        }
-                        ((TextView) view).setText(infoText.toString());
-                        view.setAlpha(0.6f);
+                        ViewCreator.setViewWithSubtitle(getContext(), data, view);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
                         ((TextView) view).setText(data.getGist().getTitle());
                     }

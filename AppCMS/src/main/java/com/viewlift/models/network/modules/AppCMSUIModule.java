@@ -133,6 +133,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_SHARE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_close_key),
                 AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_starrating_key),
+                AppCMSUIKeyType.PAGE_VIDEO_STARRATING_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_ageLabel_key),
                 AppCMSUIKeyType.PAGE_VIDEO_AGE_LABEL_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_credits_director_key),

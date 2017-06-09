@@ -26,6 +26,7 @@ import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.Primary;
+import com.viewlift.models.data.appcms.ui.android.User;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.views.activity.AppCMSNavItemsActivity;
 import com.viewlift.views.binders.AppCMSBinder;
@@ -568,7 +569,7 @@ public class AppCMSPresenter {
 
     private void pushActionInternalEvents(String action) {
         Log.d(TAG, "Stack size - pushing internal events: " + currentActions.size());
-        if (currentActions.size() == 2) {
+        if (currentActions.size() > 0 && !isActionAPage(currentActions.peek())) {
             Log.d(TAG, "Stack size - pushing internal events (popping extra): " + currentActions.size());
             popActionInternalEvents();
         }
@@ -580,6 +581,22 @@ public class AppCMSPresenter {
 
     private boolean isActionCurrent(String action) {
         return currentActions.size() > 0 && currentActions.peek().equals(action);
+    }
+
+    private boolean isActionAPage(String action) {
+        for (Primary primary : navigation.getPrimary()) {
+            if (primary.getPageId().equals(action)) {
+                return true;
+            }
+        }
+
+        for (User user : navigation.getUser()) {
+            if (user.getPageId().equals(action)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void setNavItemToCurrentAction(Activity activity) {

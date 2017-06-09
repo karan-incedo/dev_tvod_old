@@ -35,6 +35,9 @@ public class Component {
     @SerializedName("borderColor")
     @Expose
     private String borderColor;
+    @SerializedName("fillColor")
+    @Expose
+    private String fillColor;
     @SerializedName("borderWidth")
     @Expose
     private Integer borderWidth;
@@ -171,6 +174,14 @@ public class Component {
 
     public void setBorderColor(String borderColor) {
         this.borderColor = borderColor;
+    }
+
+    public String getFillColor() {
+        return fillColor;
+    }
+
+    public void setFillColor(String fillColor) {
+        this.fillColor = fillColor;
     }
 
     public Integer getBorderWidth() {
