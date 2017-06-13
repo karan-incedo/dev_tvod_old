@@ -1,5 +1,6 @@
 package com.viewlift.views.activity;
 
+import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,13 +15,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ActionMenuView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.viewlift.AppCMSApplication;
@@ -51,11 +53,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     private BroadcastReceiver presenterActionReceiver;
 
     private RelativeLayout appCMSParentView;
-    private ProgressBar appCMSPageLoading;
     private FrameLayout appCMSFragment;
     private AppBarLayout appBarLayout;
     private LinearLayout appCMSTabNavContainer;
     private ActionMenuView appCMSActionMenu;
+    private RelativeLayout appCMSSearchViewContainer;
+    private ImageButton appCMSSearchBackButton;
+    private SearchView appCMSSearchView;
+    private NavBarItemView pageViewDuringSearch;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,9 +68,25 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         setContentView(R.layout.activity_appcms_page);
 
         appCMSParentView = (RelativeLayout) findViewById(R.id.app_cms_parent_view);
-        appCMSActionMenu = (ActionMenuView) findViewById(R.id.app_cms_action_menu);
-        appCMSPageLoading = (ProgressBar) findViewById(R.id.app_cms_page_loading);
         appCMSFragment = (FrameLayout) findViewById(R.id.app_cms_fragment);
+        appCMSActionMenu = (ActionMenuView) findViewById(R.id.app_cms_action_menu);
+        appCMSSearchViewContainer = (RelativeLayout) findViewById(R.id.app_cms_search_view_container);
+        appCMSSearchBackButton = (ImageButton) findViewById(R.id.app_cms_search_back_button);
+
+        appCMSSearchBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSearchView(false);
+                if (pageViewDuringSearch != null) {
+                    selectNavItem(pageViewDuringSearch);
+                }
+            }
+        });
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        appCMSSearchView = (SearchView) findViewById(R.id.app_cms_search_view);
+        appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        appCMSSearchView.setIconifiedByDefault(false);
 
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
@@ -203,12 +224,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     public void pageLoading(boolean pageLoading) {
         if (pageLoading) {
-            appCMSPageLoading.setVisibility(View.VISIBLE);
-            appCMSPageLoading.getParent().bringChildToFront(appCMSPageLoading);
             appCMSFragment.setAlpha(0.5f);
             appCMSFragment.setEnabled(false);
         } else {
-            appCMSPageLoading.setVisibility(View.INVISIBLE);
             appCMSFragment.setAlpha(1.0f);
             appCMSFragment.setEnabled(true);
         }
@@ -286,6 +304,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             }
         }
         v.select(true);
+    }
+
+    private NavBarItemView getSelectedNavItem() {
+        for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
+            if (((NavBarItemView) appCMSTabNavContainer.getChildAt(i)).isItemSelected()) {
+                return (NavBarItemView) appCMSTabNavContainer.getChildAt(i);
+            }
+        }
+        return null;
     }
 
     private void handleNavbar(AppCMSBinder appCMSBinder) {
@@ -424,7 +451,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         searchNavBarItemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                pageViewDuringSearch = getSelectedNavItem();
                 selectNavItem((NavBarItemView) v);
+                showSearchView(true);
             }
         });
     }
@@ -436,12 +465,24 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         return iconName.toString();
     }
 
-    public void selectNavItem(String pageId) {
+    private void selectNavItem(String pageId) {
         for (int i = 0 ; i < appCMSTabNavContainer.getChildCount(); i++) {
             if (pageId.equals(appCMSTabNavContainer.getChildAt(i).getTag())) {
                 selectNavItem(((NavBarItemView) appCMSTabNavContainer.getChildAt(i)));
                 Log.d(TAG, "Nav item - Selecting tab item with page Id: " + pageId);
             }
+        }
+    }
+
+    private void showSearchView(boolean shouldShowSearchView) {
+        if (shouldShowSearchView) {
+            appCMSSearchViewContainer.setVisibility(View.VISIBLE);
+            appCMSFragment.setAlpha(0.5f);
+            appCMSFragment.setEnabled(false);
+        } else {
+            appCMSSearchViewContainer.setVisibility(View.GONE);
+            appCMSFragment.setAlpha(1.0f);
+            appCMSFragment.setEnabled(true);
         }
     }
 }

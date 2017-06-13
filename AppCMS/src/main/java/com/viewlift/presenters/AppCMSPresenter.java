@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -28,6 +27,7 @@ import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.Primary;
 import com.viewlift.models.data.appcms.ui.android.User;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
+import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.views.activity.AppCMSNavItemsActivity;
 import com.viewlift.views.binders.AppCMSBinder;
@@ -42,8 +42,10 @@ import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
+import com.viewlift.models.network.components.AppCMSSearchUrlComponent;
 import com.viewlift.views.customviews.LifecycleStatus;
 import com.viewlift.views.customviews.OnInternalEvent;
+import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 
 import rx.Observable;
 import rx.functions.Action0;
@@ -92,6 +94,7 @@ public class AppCMSPresenter {
     private List<Action1<LifecycleStatus>> onLifecycleChangeHandlers;
     private Map<String, List<OnInternalEvent>> onActionInternalEvents;
     private Stack<String> currentActions;
+    private AppCMSSearchUrlComponent appCMSSearchUrlComponent;
 
     private static abstract class AppCMSPageAPIAction implements Action1<AppCMSPageAPI> {
         boolean appbarPresent;
@@ -538,6 +541,11 @@ public class AppCMSPresenter {
                     Log.d(TAG, "Version: " + version);
                     Log.d(TAG, "OldVersion: " + oldVersion);
                     loadFromFile = false;
+                    appCMSSearchUrlComponent = DaggerAppCMSSearchUrlComponent.builder()
+                        .appCMSSearchUrlModule(new AppCMSSearchUrlModule(main.getApiBaseUrl(),
+                                main.getSite(),
+                                appCMSSearchCall))
+                        .build();
                     getAppCMSAndroid(activity, main);
                 }
             }
@@ -562,6 +570,14 @@ public class AppCMSPresenter {
         }
 
         return false;
+    }
+
+    public AppCMSSearchCall getAppCMSSearchCall() {
+        return appCMSSearchCall;
+    }
+
+    public AppCMSSearchUrlComponent getAppCMSSearchUrlComponent() {
+        return appCMSSearchUrlComponent;
     }
 
     private boolean isHomePage(String pageId) {

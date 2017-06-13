@@ -1,5 +1,5 @@
 <resources>
-    <string name="default_app_name">Snagfilms</string>
+    <string name="default_app_name">@string/app_name</string>
     <string name="error_loading_page">Error Loading Page</string>
     <string name="fragment_page_bundle_key">fragment_page</string>
     <string name="app_cms_binder_key">app_cms_binder</string>

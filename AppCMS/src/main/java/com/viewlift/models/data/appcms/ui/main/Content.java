@@ -9,16 +9,16 @@ public class Content {
 
     @SerializedName("tags")
     @Expose
-    private List<String> tags = null;
+    private List<Tag> tags = null;
     @SerializedName("categories")
     @Expose
     private List<String> categories = null;
 
-    public List<String> getTags() {
+    public List<Tag> getTags() {
         return tags;
     }
 
-    public void setTags(List<String> tags) {
+    public void setTags(List<Tag> tags) {
         this.tags = tags;
     }
 

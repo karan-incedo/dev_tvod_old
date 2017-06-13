@@ -74,4 +74,9 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             this.searchResultTitle = (TextView) itemView.findViewById(R.id.search_result_title);
         }
     }
+
+    public void setData(List<AppCMSSearchResult> results) {
+        appCMSSearchResults = results;
+        notifyDataSetChanged();
+    }
 }

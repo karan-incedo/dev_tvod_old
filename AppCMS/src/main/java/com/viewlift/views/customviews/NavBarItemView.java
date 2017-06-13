@@ -30,6 +30,7 @@ public class NavBarItemView extends LinearLayout {
     private ImageView navImage;
     private TextView navLabel;
     private String tag;
+    private boolean hasFocus;
 
     public NavBarItemView(Context context) {
         super(context);
@@ -57,11 +58,13 @@ public class NavBarItemView extends LinearLayout {
     }
 
     public void init() {
+        hasFocus = false;
         setOrientation(VERTICAL);
         createChildren(getContext());
     }
 
     public void select(boolean hasFocus) {
+        this.hasFocus = hasFocus;
         int color = ContextCompat.getColor(getContext(), R.color.colorNavBarText);
         if (hasFocus) {
             color = ContextCompat.getColor(getContext(), R.color.colorAccent);
@@ -104,6 +107,10 @@ public class NavBarItemView extends LinearLayout {
 
     public void hideLabel() {
         navLabel.setVisibility(GONE);
+    }
+
+    public boolean isItemSelected() {
+        return hasFocus;
     }
 
     private void applyTintToDrawable(@Nullable Drawable drawable, int color) {
