@@ -32,6 +32,8 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.NavBarItemView;
 import com.viewlift.views.fragments.AppCMSPageFragment;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 import snagfilms.com.air.appcms.R;
@@ -44,7 +46,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     private static final String TAG = "AppCMSPageActivity";
 
     private AppCMSPresenter appCMSPresenter;
-    private Stack<AppCMSBinder> appCMSBinderStack;
+    private Stack<String> appCMSBinderStack;
+    private Map<String, AppCMSBinder> appCMSBinderMap;
     private BroadcastReceiver presenterActionReceiver;
 
     private RelativeLayout appCMSParentView;
@@ -67,29 +70,27 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
-        appCMSPresenter.setCurrentActivity(this);
-        if (!appCMSPresenter.sendCloseOthersAction()) {
-            Log.w(TAG, "Could not close other activities");
-        }
 
         appCMSBinderStack = new Stack<>();
+        appCMSBinderMap = new HashMap<>();
 
         Intent intent = getIntent();
         Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
         AppCMSBinder appCMSBinder =
                 (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
-        handleAppCMSBinder(appCMSBinder, true);
 
         if (savedInstanceState == null) {
-            appCMSBinderStack.push(appCMSBinder);
+            if (appCMSBinderStack.search(appCMSBinder.getPageId()) == -1) {
+                appCMSBinderStack.push(appCMSBinder.getPageId());
+                appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
+            }
         }
 
         presenterActionReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                appCMSPresenter.setCurrentActivity(AppCMSPageActivity.this);
                 if (intent.getAction().equals(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION)) {
-                    handlePresenterAction(intent);
+                    handleLaunchPageAction(intent);
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION)) {
                     pageLoading(true);
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_SET_NAVIGATION_ITEM)) {
@@ -97,8 +98,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                             intent.getStringExtra(getString(R.string.navigation_item_key)));
                     selectNavItem(intent.getStringExtra(getString(R.string.navigation_item_key)));
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
-                    if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
-                        getSupportFragmentManager().popBackStack();
+                    Log.d(TAG, "Received Presenter Close Action: fragment count = " + getSupportFragmentManager().getBackStackEntryCount());
+                    if (appCMSBinderStack.size() > 1) {
+                        try {
+                            getSupportFragmentManager().popBackStack();
+                        } catch (IllegalStateException e) {
+                            Log.e(TAG, "Error popping back stack: " + e.getMessage());
+                        }
+                        handleBack(true, false, true);
                     }
                 }
             }
@@ -112,60 +119,49 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 new IntentFilter(AppCMSPresenter.PRESENTER_SET_NAVIGATION_ITEM));
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
+
+        Log.d(TAG, "onCreate()");
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        int backstackCnt = getSupportFragmentManager().getBackStackEntryCount();
-        for (int i = 0; i < backstackCnt; i++) {
-            String backstackEntryName =
-                    getSupportFragmentManager().getBackStackEntryAt(i).getName();
-            Fragment fragment = getSupportFragmentManager().findFragmentByTag(backstackEntryName);
-            if (fragment != null) {
-                getSupportFragmentManager().putFragment(outState, backstackEntryName, fragment);
-            }
-        }
         int appCMSBinderStackSize = appCMSBinderStack.size();
         outState.putInt(getString(R.string.app_cms_binder_stack_size_key), appCMSBinderStackSize);
         for (int i = appCMSBinderStackSize - 1; i >= 0; i--) {
-            outState.putBinder(getString(R.string.app_cms_binder_stack_element_key, i), appCMSBinderStack.get(i));
+            outState.putBinder(getString(R.string.app_cms_binder_stack_element_key, i), appCMSBinderMap.get(appCMSBinderStack.get(i)));
         }
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        int backstackCnt = getSupportFragmentManager().getBackStackEntryCount();
-        for (int i = 0; i < backstackCnt; i++) {
-            String backstackEntryName =
-                    getSupportFragmentManager().getBackStackEntryAt(i).getName();
-            Fragment fragment = getSupportFragmentManager().getFragment(savedInstanceState, backstackEntryName);
-            if (fragment != null) {
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.app_cms_fragment,
-                        fragment,
-                        backstackEntryName);
-                fragmentTransaction.commit();
-            } else {
-                Log.e(TAG, "Instance state fragment " + backstackEntryName + " not found!");
-            }
-        }
         int appCMSBinderStackSize = savedInstanceState.getInt(getString(R.string.app_cms_binder_stack_size_key));
         for (int i = 0; i < appCMSBinderStackSize; i++) {
-            appCMSBinderStack.push((AppCMSBinder) savedInstanceState.getBinder(getString(R.string.app_cms_binder_stack_element_key, i)));
+            appCMSBinderStack.push(((AppCMSBinder) savedInstanceState.getBinder(getString(R.string.app_cms_binder_stack_element_key, i))).getPageId());
         }
     }
 
     @Override
     public void onBackPressed() {
-        handleBack(true);
+        handleBack(true, appCMSBinderStack.size() == 1, true);
         super.onBackPressed();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d(TAG, "onStart()");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (appCMSBinderStack.size() > 0) {
+            createScreenFromAppCMSBinder(appCMSBinderMap.get(appCMSBinderStack.peek()), true);
+        }
+        appCMSPresenter.sendCloseOthersAction();
+        Log.d(TAG, "onResume()");
     }
 
     @Override
@@ -176,11 +172,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             appCMSBinderStack.pop();
         }
         appCMSPresenter.navigateAwayFromPage(this);
+        Log.d(TAG, "onDestroy()");
     }
 
     @Override
     public void onSuccess(AppCMSBinder appCMSBinder) {
-        appCMSPresenter.restartInternalEvents();
+//        appCMSPresenter.restartInternalEvents();
     }
 
     @Override
@@ -189,13 +186,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         // TODO: Create a pop up dialog with an error message
         setFinishResult(RESULT_CANCELED);
         getSupportFragmentManager().popBackStack();
-        handleBack(false);
+        handleBack(false, false, false);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        handleOrientation(newConfig.orientation, appCMSBinderStack.peek());
+        handleOrientation(newConfig.orientation, appCMSBinderMap.get(appCMSBinderStack.peek()));
     }
 
     @Override
@@ -217,22 +214,31 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         }
     }
 
-    private void handleBack(boolean popBinderStack) {
+    private void handleBack(boolean popBinderStack, boolean closeActionPage, boolean recurse) {
         if (popBinderStack && appCMSBinderStack.size() > 0) {
             appCMSBinderStack.pop();
         }
         if (appCMSBinderStack.size() > 0) {
-            handleOrientation(getResources().getConfiguration().orientation, appCMSBinderStack.peek());
-            if (appCMSBinderStack.peek().isNavbarPresent()) {
+            handleNavbar(appCMSBinderMap.get(appCMSBinderStack.peek()));
+            handleOrientation(getResources().getConfiguration().orientation, appCMSBinderMap.get(appCMSBinderStack.peek()));
+            if (appCMSBinderMap.get(appCMSBinderStack.peek()).isNavbarPresent()) {
                 appCMSTabNavContainer.setVisibility(View.VISIBLE);
             }
-            Log.d(TAG, "Resetting previous AppCMS data: " + appCMSBinderStack.peek().getPageName());
-
+            Log.d(TAG, "Resetting previous AppCMS data: " + appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName());
         }
-        appCMSPresenter.navigateAwayFromPage(this);
+        if (shouldPopStack() || closeActionPage) {
+            getSupportFragmentManager().popBackStack();
+            if (recurse) {
+                handleBack(popBinderStack, closeActionPage && appCMSBinderStack.size() > 0, recurse);
+            }
+        }
     }
 
-    private void handleAppCMSBinder(final AppCMSBinder appCMSBinder, boolean firstFragment) {
+    private boolean shouldPopStack() {
+        return appCMSBinderStack.size() > 0 && !appCMSPresenter.isActionAPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId());
+    }
+
+    private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder, boolean firstFragment) {
         Log.d(TAG, "Handling new AppCMSBinder: " + appCMSBinder.getPageName());
 
         pageLoading(false);
@@ -246,30 +252,19 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
         appCMSTabNavContainer = (LinearLayout) findViewById(R.id.app_cms_tab_nav_container);
 
-        final Navigation navigation = appCMSBinder.getNavigation();
-        if (navigation.getPrimary().size() == 0 || !appCMSBinder.isNavbarPresent()) {
-            appCMSTabNavContainer.setVisibility(View.GONE);
-        } else {
-            createMenuNavItem();
-            createHomeNavItem(appCMSPresenter.findHomePageNavItem());
-            createMoviesNavItem(appCMSPresenter.findMoviesPageNavItem());
-            createSearchNavItem();
-            selectNavItem(appCMSBinder.getPageId());
-        }
+        createMenuNavItem();
+        createHomeNavItem(appCMSPresenter.findHomePageNavItem());
+        createMoviesNavItem(appCMSPresenter.findMoviesPageNavItem());
+        createSearchNavItem();
 
+        handleNavbar(appCMSBinder);
         handleOrientation(getResources().getConfiguration().orientation, appCMSBinder);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         Fragment appCMSPageFragment = AppCMSPageFragment.newInstance(this, appCMSBinder);
-        if (firstFragment) {
-            fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment, "0");
-        } else {
-            fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment);
-            if (fragmentManager.getBackStackEntryCount() == 0) {
-                fragmentTransaction.addToBackStack("0");
-            }
-        }
+        fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment, appCMSBinder.getPageId());
+        fragmentTransaction.addToBackStack(appCMSBinder.getPageId());
         fragmentTransaction.commit();
     }
 
@@ -291,6 +286,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             }
         }
         v.select(true);
+    }
+
+    private void handleNavbar(AppCMSBinder appCMSBinder) {
+        final Navigation navigation = appCMSBinder.getNavigation();
+        if (navigation.getPrimary().size() == 0 || !appCMSBinder.isNavbarPresent()) {
+            appCMSTabNavContainer.setVisibility(View.GONE);
+        } else {
+            appCMSTabNavContainer.setVisibility(View.VISIBLE);
+            selectNavItem(appCMSBinder.getPageId());
+        }
     }
 
     private void handleOrientation(int orientation, AppCMSBinder appCMSBinder) {
@@ -324,21 +329,27 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         }
     }
 
-    private void handlePresenterAction(Intent intent) {
+    private void handleLaunchPageAction(Intent intent) {
         Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
         AppCMSBinder appCMSBinder =
                 (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
-        if (appCMSBinderStack.size() > 1) {
-            appCMSBinderStack.pop();
+        int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
+        if (0 <= distanceFromStackTop) {
+            for (int i = 0; i < distanceFromStackTop - 1; i++) {
+                getSupportFragmentManager().popBackStack();
+                handleBack(true, true, false);
+            }
+        } else {
+            appCMSBinderStack.push(appCMSBinder.getPageId());
+            appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
         }
-        appCMSBinderStack.push(appCMSBinder);
-        handleAppCMSBinder(appCMSBinder, false);
+        createScreenFromAppCMSBinder(appCMSBinder, false);
     }
 
     private void setFinishResult(int resultCode) {
         Intent resultIntent = new Intent();
         Bundle args = new Bundle();
-        args.putBinder(getString(R.string.app_cms_binder_key), appCMSBinderStack.peek());
+        args.putBinder(getString(R.string.app_cms_binder_key), appCMSBinderMap.get(appCMSBinderStack.peek()));
         resultIntent.putExtra(getString(R.string.app_cms_bundle_key), args);
         setResult(resultCode, resultIntent);
     }

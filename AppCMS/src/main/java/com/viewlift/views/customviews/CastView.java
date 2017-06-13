@@ -3,10 +3,9 @@ package com.viewlift.views.customviews;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.TextUtils;
-import android.view.Gravity;
+import android.view.View;
 import android.view.ViewTreeObserver;
-import android.support.v7.widget.GridLayout;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import snagfilms.com.air.appcms.R;
@@ -15,7 +14,7 @@ import snagfilms.com.air.appcms.R;
  * Created by viewlift on 6/7/17.
  */
 
-public class CastView extends GridLayout {
+public class CastView extends RelativeLayout {
     private final String fontFamilyKey;
     private final int fontFamilyKeyType;
     private final String fontFamilyValue;
@@ -56,10 +55,13 @@ public class CastView extends GridLayout {
     }
 
     private void init() {
-        setColumnCount(2);
-
         Typeface keyTypeFace = Typeface.create(fontFamilyKey, fontFamilyKeyType);
         Typeface valueTypeFace = Typeface.create(fontFamilyValue, fontFamilyValueType);
+
+        int directorListTitleViewId = View.generateViewId();
+        int directorListViewId = View.generateViewId();
+        int starringListTitleViewId = View.generateViewId();
+        int starringListViewId = View.generateViewId();
 
         if (!TextUtils.isEmpty(directorListTitle) && !TextUtils.isEmpty(directorList)) {
             TextView directorListTitleView = new TextView(getContext());
@@ -69,8 +71,12 @@ public class CastView extends GridLayout {
             if (fontsizeKey != -1.0f) {
                 directorListTitleView.setTextSize(fontsizeKey);
             }
-            ViewTreeObserver directorListTitleVto = directorListTitleView.getViewTreeObserver();
-            directorListTitleVto.addOnGlobalLayoutListener(new ViewCreatorLayoutListener(directorListTitleView));
+            LayoutParams directorListTitleLayoutParams =
+                    new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            directorListTitleLayoutParams.addRule(ALIGN_PARENT_START);
+            directorListTitleView.setLayoutParams(directorListTitleLayoutParams);
+            directorListTitleView.setSingleLine(true);
+            directorListTitleView.setId(directorListTitleViewId);
             addView(directorListTitleView);
 
             TextView directorListView = new TextView(getContext());
@@ -86,6 +92,12 @@ public class CastView extends GridLayout {
             }
             ViewTreeObserver directorListVto = directorListView.getViewTreeObserver();
             directorListVto.addOnGlobalLayoutListener(new ViewCreatorLayoutListener(directorListView));
+            LayoutParams directorListLayoutParams =
+                    new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            directorListLayoutParams.addRule(ALIGN_PARENT_END);
+            directorListLayoutParams.addRule(END_OF, directorListTitleViewId);
+            directorListView.setLayoutParams(directorListLayoutParams);
+            directorListView.setId(directorListViewId);
             addView(directorListView);
         }
 
@@ -97,8 +109,13 @@ public class CastView extends GridLayout {
             if (fontsizeKey != -1.0f) {
                 starringListTitleView.setTextSize(fontsizeKey);
             }
-            ViewTreeObserver starringListTitleVto = starringListTitleView.getViewTreeObserver();
-            starringListTitleVto.addOnGlobalLayoutListener(new ViewCreatorLayoutListener(starringListTitleView));
+            LayoutParams starringListTitleLayoutParams =
+                    new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            starringListTitleLayoutParams.addRule(ALIGN_PARENT_START);
+            starringListTitleLayoutParams.addRule(BELOW, directorListTitleViewId);
+            starringListTitleView.setLayoutParams(starringListTitleLayoutParams);
+            starringListTitleView.setSingleLine(true);
+            starringListTitleView.setId(starringListTitleViewId);
             addView(starringListTitleView);
 
             TextView starringListView = new TextView(getContext());
@@ -114,6 +131,14 @@ public class CastView extends GridLayout {
             }
             ViewTreeObserver starringListVto = starringListView.getViewTreeObserver();
             starringListVto.addOnGlobalLayoutListener(new ViewCreatorLayoutListener(starringListView));
+            LayoutParams starringListLayoutParams =
+                    new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            starringListLayoutParams.addRule(ALIGN_PARENT_END);
+            starringListLayoutParams.addRule(END_OF, starringListTitleViewId);
+            starringListLayoutParams.addRule(ALIGN_START, directorListViewId);
+            starringListLayoutParams.addRule(BELOW, directorListViewId);
+            starringListView.setLayoutParams(starringListLayoutParams);
+            starringListView.setId(starringListViewId);
             addView(starringListView);
         }
     }

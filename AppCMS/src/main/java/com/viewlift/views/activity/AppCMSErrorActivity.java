@@ -3,9 +3,9 @@ package com.viewlift.views.activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 
 import com.viewlift.views.fragments.AppCMSErrorFragment;
 import snagfilms.com.air.appcms.R;
@@ -14,7 +14,7 @@ import snagfilms.com.air.appcms.R;
  * Created by viewlift on 5/5/17.
  */
 
-public class AppCMSErrorActivity extends FragmentActivity {
+public class AppCMSErrorActivity extends AppCompatActivity {
     private static final String ERROR_TAG = "error_fragment";
 
     @Override

@@ -36,10 +36,14 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         };
 
         appCMSPresenterComponent = ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
-        appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(this);
-        appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this, getString(R.string.app_cms_app_name));
-
         registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this, getString(R.string.app_cms_app_name));
+        Log.d(TAG, "onResume()");
     }
 
     @Override

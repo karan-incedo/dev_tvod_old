@@ -41,12 +41,6 @@ public class AppCMSNavItemsActivity extends AppCompatActivity {
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
-        appCMSPresenter.setCurrentActivity(this);
-
-        Intent intent = getIntent();
-        Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
-        handleAppCMSBinder((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)),
-        true);
 
         handoffReceiver = new BroadcastReceiver() {
             @Override
@@ -59,6 +53,15 @@ public class AppCMSNavItemsActivity extends AppCompatActivity {
         };
         registerReceiver(handoffReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Intent intent = getIntent();
+        Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+        handleAppCMSBinder((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)),
+                true);
     }
 
     @Override

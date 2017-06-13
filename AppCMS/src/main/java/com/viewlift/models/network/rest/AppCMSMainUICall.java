@@ -49,6 +49,7 @@ public class AppCMSMainUICall {
                 now.getTime());
         AppCMSMain main = null;
         try {
+            Log.d(TAG, "Attempting to retireve main.json: " + appCMSMainUrl);
             main = appCMSMainUIRest.get(appCMSMainUrl).execute().body();
             AppCMSMain mainInStorage = null;
             String filename = getResourceFilename(appCMSMainUrl);

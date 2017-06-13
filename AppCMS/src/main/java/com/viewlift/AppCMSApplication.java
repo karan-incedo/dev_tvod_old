@@ -1,6 +1,9 @@
 package com.viewlift;
 
+import android.app.Activity;
 import android.app.Application;
+import android.os.Bundle;
+import android.util.Log;
 
 import com.viewlift.views.components.AppCMSPresenterComponent;
 import com.viewlift.views.modules.AppCMSPresenterModule;
@@ -16,6 +19,8 @@ import snagfilms.com.air.appcms.R;
  */
 
 public class AppCMSApplication extends Application {
+    private static String TAG = "AppCMSApp";
+
     private AppCMSPresenterComponent appCMSPresenterComponent;
 
     @Override
@@ -27,6 +32,42 @@ public class AppCMSApplication extends Application {
                 .appCMSAPIModule(new AppCMSAPIModule(getString(R.string.app_cms_api_key)))
                 .appCMSPresenterModule(new AppCMSPresenterModule())
                 .build();
+        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
+            @Override
+            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+                appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
+            }
+
+            @Override
+            public void onActivityStarted(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityResumed(Activity activity) {
+                appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
+            }
+
+            @Override
+            public void onActivityPaused(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityStopped(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+
+            }
+
+            @Override
+            public void onActivityDestroyed(Activity activity) {
+
+            }
+        });
     }
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {

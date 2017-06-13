@@ -1,6 +1,8 @@
 package com.viewlift.views.modules;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.network.modules.AppCMSSearchModule;
+import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.presenters.AppCMSActionType;
 import com.viewlift.presenters.AppCMSPresenter;
 
@@ -9,7 +11,7 @@ import java.util.Map;
 import javax.inject.Singleton;
 
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
-import com.viewlift.models.network.modules.AppCMSAPIModule;
+import com.viewlift.models.network.modules.AppCMSSearchModule;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
@@ -22,7 +24,7 @@ import dagger.Provides;
 /**
  * Created by viewlift on 5/22/17.
  */
-@Module(includes={AppCMSAPIModule.class})
+@Module(includes={AppCMSSearchModule.class})
 public class AppCMSPresenterModule {
 
     @Provides
@@ -31,6 +33,7 @@ public class AppCMSPresenterModule {
                                                    AppCMSAndroidUICall appCMSAndroidUICall,
                                                    AppCMSPageUICall appCMSPageUICall,
                                                    AppCMSPageAPICall appCMSPageAPICall,
+                                                   AppCMSSearchCall appCMSSearchCall,
                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                    Map<String, String> pageNameToActionMap,
                                                    Map<String, AppCMSPageUI> actionToPageMap,
@@ -40,6 +43,7 @@ public class AppCMSPresenterModule {
                 appCMSAndroidUICall,
                 appCMSPageUICall,
                 appCMSPageAPICall,
+                appCMSSearchCall,
                 jsonValueKeyMap,
                 pageNameToActionMap,
                 actionToPageMap,

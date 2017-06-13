@@ -28,6 +28,7 @@ import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.Primary;
 import com.viewlift.models.data.appcms.ui.android.User;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
+import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.views.activity.AppCMSNavItemsActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -68,6 +69,7 @@ public class AppCMSPresenter {
     private final AppCMSAndroidUICall appCMSAndroidUICall;
     private final AppCMSPageUICall appCMSPageUICall;
     private final AppCMSPageAPICall appCMSPageAPICall;
+    private final AppCMSSearchCall appCMSSearchCall;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final Map<String, String> pageNameToActionMap;
     private final Map<String, AppCMSPageUI> actionToPageMap;
@@ -121,6 +123,7 @@ public class AppCMSPresenter {
                            AppCMSAndroidUICall appCMSAndroidUICall,
                            AppCMSPageUICall appCMSPageUICall,
                            AppCMSPageAPICall appCMSPageAPICall,
+                           AppCMSSearchCall appCMSSearchCall,
                            Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                            Map<String, String> pageNameToActionMap,
                            Map<String, AppCMSPageUI> actionToPageMap,
@@ -130,6 +133,7 @@ public class AppCMSPresenter {
         this.appCMSAndroidUICall = appCMSAndroidUICall;
         this.appCMSPageUICall = appCMSPageUICall;
         this.appCMSPageAPICall = appCMSPageAPICall;
+        this.appCMSSearchCall = appCMSSearchCall;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.pageNameToActionMap = pageNameToActionMap;
         this.actionToPageMap = actionToPageMap;
@@ -230,20 +234,6 @@ public class AppCMSPresenter {
         return result;
     }
 
-    public boolean navigateToHomePage() {
-        Log.d(TAG, "Stack size - navigating to home page: " + currentActions.size());
-        if (currentActions.size() > 0) {
-            while (currentActions.size() > 1) {
-                popActionInternalEvents();
-                cancelInternalEvents();
-                sendCloseOthersAction();
-            }
-            restartInternalEvents();
-            return true;
-        }
-        return false;
-    }
-
     public boolean launchNavigationPage() {
         boolean result = false;
         if (currentActivity != null) {
@@ -307,9 +297,6 @@ public class AppCMSPresenter {
                                   boolean launchActivity) {
         boolean result = false;
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
-            if (isHomePage(pageId) && navigateToHomePage()) {
-                return true;
-            }
             loadingPage = true;
             cancelInternalEvents();
             pushActionInternalEvents(pageId);
@@ -401,7 +388,9 @@ public class AppCMSPresenter {
         Log.d(TAG, "Nav item - Navigating away from page");
         cancelInternalEvents();
         Log.d(TAG, "Stack size - navigating away from page");
-        popActionInternalEvents();
+        if (currentActions.size() > 0 && !isActionAPage(currentActions.peek())) {
+            popActionInternalEvents();
+        }
         sendCloseOthersAction();
         if (currentActions.size() > 0) {
             Log.d(TAG, "Nav item - Setting navigation item to: " + currentActions.peek());
@@ -559,6 +548,22 @@ public class AppCMSPresenter {
         return appCMSMain;
     }
 
+    public boolean isActionAPage(String action) {
+        for (Primary primary : navigation.getPrimary()) {
+            if (primary.getPageId().equals(action)) {
+                return true;
+            }
+        }
+
+        for (User user : navigation.getUser()) {
+            if (user.getPageId().equals(action)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private boolean isHomePage(String pageId) {
         Primary homePageNav = findHomePageNavItem();
         if (homePageNav != null) {
@@ -581,22 +586,6 @@ public class AppCMSPresenter {
 
     private boolean isActionCurrent(String action) {
         return currentActions.size() > 0 && currentActions.peek().equals(action);
-    }
-
-    private boolean isActionAPage(String action) {
-        for (Primary primary : navigation.getPrimary()) {
-            if (primary.getPageId().equals(action)) {
-                return true;
-            }
-        }
-
-        for (User user : navigation.getUser()) {
-            if (user.getPageId().equals(action)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private void setNavItemToCurrentAction(Activity activity) {
