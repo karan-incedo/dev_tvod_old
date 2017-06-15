@@ -60,7 +60,6 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        Log.d(TAG, "Creating Content Provider");
         gson = new Gson();
         client = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
@@ -92,12 +91,11 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                         selectionArgs.length > 0 &&
                         !TextUtils.isEmpty(appCMSSearchUrlData.getBaseUrl()) &&
                         !TextUtils.isEmpty(appCMSSearchUrlData.getSiteName())) {
-                    String baseUrl = appCMSSearchUrlData.getBaseUrl();
-                    String siteName = appCMSSearchUrlData.getSiteName();
                     String url = getContext().getString(R.string.app_cms_search_api_url,
-                            baseUrl,
-                            siteName,
+                            appCMSSearchUrlData.getBaseUrl(),
+                            appCMSSearchUrlData.getSiteName(),
                             selectionArgs[0]);
+                    Log.d(TAG, "Search URL: " + url);
                     try {
                         List<AppCMSSearchResult> searchResultList = appCMSSearchCall.call(url);
                         if (searchResultList != null) {
@@ -110,9 +108,10 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                                 cursor.addRow(rowResult);
                                 Log.d(TAG, searchResultList.get(i).getTitle());
                             }
-                            cursor.close();
+                        } else {
+                            Log.d(TAG, "No search results found");
                         }
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         Log.e(TAG, "Received exception: " + e.getMessage());
                     }
                 } else {

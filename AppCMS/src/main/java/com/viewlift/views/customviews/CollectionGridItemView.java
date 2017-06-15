@@ -10,6 +10,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -246,9 +247,11 @@ public class CollectionGridItemView extends BaseView {
                     bringToFront = false;
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
+                Log.d(TAG, "Page button key");
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        Log.d(TAG, "Clicked on button");
                         onClickHandler.click(childComponent, data);
                     }
                 });

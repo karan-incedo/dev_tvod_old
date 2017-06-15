@@ -14,7 +14,7 @@ import snagfilms.com.air.appcms.R;
  * Created by viewlift on 6/7/17.
  */
 
-public class CastView extends RelativeLayout {
+public class CreditBlocksView extends RelativeLayout {
     private final String fontFamilyKey;
     private final int fontFamilyKeyType;
     private final String fontFamilyValue;
@@ -27,18 +27,18 @@ public class CastView extends RelativeLayout {
     private final float fontsizeKey;
     private final float fontsizeValue;
 
-    public CastView(Context context,
-                    String fontFamilyKey,
-                    int fontFamilyKeyType,
-                    String fontFamilyValue,
-                    int fontFamilyValueType,
-                    String directorListTitle,
-                    String directorList,
-                    String starringListTitle,
-                    String starringList,
-                    int textColor,
-                    float fontsizeKey,
-                    float fontsizeValue) {
+    public CreditBlocksView(Context context,
+                            String fontFamilyKey,
+                            int fontFamilyKeyType,
+                            String fontFamilyValue,
+                            int fontFamilyValueType,
+                            String directorListTitle,
+                            String directorList,
+                            String starringListTitle,
+                            String starringList,
+                            int textColor,
+                            float fontsizeKey,
+                            float fontsizeValue) {
         super(context);
         this.fontFamilyKey = fontFamilyKey;
         this.fontFamilyKeyType = fontFamilyKeyType;

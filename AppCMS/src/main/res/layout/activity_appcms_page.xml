@@ -46,7 +46,7 @@
         android:layout_height="@dimen/bottom_navbar_height"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:background="@color/colorPrimaryDark">
+        android:background="@android:color/transparent">
         <com.viewlift.views.customviews.NavBarItemView
             android:layout_width="0dp"
             android:layout_height="wrap_content"

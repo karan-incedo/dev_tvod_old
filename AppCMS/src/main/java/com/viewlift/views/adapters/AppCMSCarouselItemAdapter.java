@@ -42,6 +42,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     private List<OnInternalEvent> internalEventReceivers;
     private int updatedIndex;
     private boolean cancelled;
+    private boolean started;
     private RecyclerView.OnScrollListener scrollListener;
 
     public AppCMSCarouselItemAdapter(ViewCreator viewCreator,
@@ -62,16 +63,19 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         this.listView = listView;
         this.loop = loop;
-        this.updatedIndex = 0;
+        this.updatedIndex = getDefaultIndex();
         this.internalEventReceivers = new ArrayList<>();
         this.cancelled = false;
+        this.started = false;
+
+        this.listView.getLayoutManager().scrollToPosition(updatedIndex);
 
         this.carouselHandler = new Handler();
         this.carouselUpdater = new Runnable() {
             @Override
             public void run() {
-                if (adapterData.size() > 1) {
-                    Log.d(TAG, "Updating carousel to index: " + (updatedIndex + 1));
+                if (adapterData.size() > 1 && !cancelled) {
+                    Log.d(TAG, "Carousel updating to index: " + (updatedIndex + 1));
                     updateCarousel(updatedIndex + 1, false);
                     postUpdateCarousel();
                 }
@@ -102,7 +106,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
 
                         listView.smoothScrollToPosition(nextVisibleViewIndex);
                         sendEvent(new InternalEvent<Object>(nextVisibleViewIndex));
-                        updateIndex(nextVisibleViewIndex);
+                        Log.d(TAG, "Carousel touch index updated");
+                        setUpdatedIndex(nextVisibleViewIndex);
                     }
                 }
             }
@@ -181,13 +186,6 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
         return adapterData.size();
     }
 
-    public void updateIndex(int index) {
-        if (index != updatedIndex) {
-            updatedIndex = index;
-            Log.d(TAG, "Updated visible index: " + updatedIndex);
-        }
-    }
-
     @Override
     public void addReceiver(OnInternalEvent e) {
         internalEventReceivers.add(e);
@@ -196,6 +194,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     @Override
     public void sendEvent(InternalEvent<?> event) {
         for (OnInternalEvent receiver : internalEventReceivers) {
+            Log.d(TAG, "Carousel sending event: " + event.getEventData());
             receiver.receiveEvent(event);
         }
     }
@@ -204,9 +203,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     public void receiveEvent(InternalEvent<?> event) {
         if (!cancelled) {
             if (event.getEventData() instanceof Integer) {
-                int updatedIndexInItems = (Integer) event.getEventData();
-                int visibleIndexInItems = updatedIndex % adapterData.size();
-                updateCarousel(updatedIndex + (updatedIndexInItems - visibleIndexInItems), true);
+                updateCarousel(calculateUpdateIndex((Integer) event.getEventData()), true);
             }
         }
     }
@@ -214,14 +211,16 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     @Override
     public void cancel(boolean cancel) {
         cancelled = cancel;
-        if (!cancelled) {
-            Log.d(TAG, "Starting carousel updater");
+        if (!cancelled && !started) {
+            Log.d(TAG, "Carousel starting updater");
             carouselHandler.removeCallbacks(carouselUpdater);
             sendEvent(new InternalEvent<Object>(updatedIndex));
             postUpdateCarousel();
-        } else {
-            Log.d(TAG, "Stopping carousel updater");
+            started = true;
+        } else if (cancel) {
+            Log.d(TAG, "Carousel stopping updater");
             carouselHandler.removeCallbacks(carouselUpdater);
+            started = false;
         }
     }
 
@@ -231,11 +230,32 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
 
     public void updateCarousel(int index, boolean fromEvent) {
         synchronized(listView) {
-            listView.smoothScrollToPosition(index);
+            index = calculateUpdateIndex(index);
+            Log.d(TAG, "Carousel scrolling to position: " + index);
+            setUpdatedIndex(index);
+            listView.smoothScrollToPosition(updatedIndex);
             if (!fromEvent) {
                 sendEvent(new InternalEvent<Object>(index));
             }
-            updateIndex(index);
         }
+    }
+
+    private int getDefaultIndex() {
+        return Integer.MAX_VALUE / 2 - ((Integer.MAX_VALUE / 2) % adapterData.size());
+    }
+
+    private void setUpdatedIndex(int index) {
+        Log.d(TAG, "Carousel updating visible index: " + updatedIndex);
+        this.updatedIndex = index;
+        Log.d(TAG, "Carousel updated visible index: " + updatedIndex);
+    }
+
+    private int calculateUpdateIndex(int index) {
+        if (Math.abs(updatedIndex - index) > adapterData.size()) {
+            int updatedIndexInItems = index;
+            int visibleIndexInItems = updatedIndex % adapterData.size();
+            return updatedIndex + (updatedIndexInItems - visibleIndexInItems);
+        }
+        return index;
     }
 }

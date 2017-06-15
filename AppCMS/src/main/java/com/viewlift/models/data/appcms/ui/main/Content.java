@@ -12,7 +12,7 @@ public class Content {
     private List<Tag> tags = null;
     @SerializedName("categories")
     @Expose
-    private List<String> categories = null;
+    private List<Category> categories = null;
 
     public List<Tag> getTags() {
         return tags;
@@ -22,11 +22,11 @@ public class Content {
         this.tags = tags;
     }
 
-    public List<String> getCategories() {
+    public List<Category> getCategories() {
         return categories;
     }
 
-    public void setCategories(List<String> categories) {
+    public void setCategories(List<Category> categories) {
         this.categories = categories;
     }
 

@@ -41,13 +41,11 @@ public abstract class BaseView extends FrameLayout {
 
     protected ViewGroup childrenContainer;
     protected boolean[] componentHasViewList;
-    protected boolean hideOnFullscreenLandscape;
     protected Action1<Boolean> onOrientationChangeHandler;
     protected Action1<LifecycleStatus> onLifecycleChangeHandler;
 
     public BaseView(Context context) {
         super(context);
-        hideOnFullscreenLandscape = false;
         DEVICE_WIDTH = getContext().getResources().getDisplayMetrics().widthPixels;
         DEVICE_HEIGHT = getContext().getResources().getDisplayMetrics().heightPixels;
     }
@@ -70,11 +68,7 @@ public abstract class BaseView extends FrameLayout {
             onOrientationChangeHandler = new Action1<Boolean>() {
                 @Override
                 public void call(Boolean isLandscape) {
-                    if (hideOnFullscreenLandscape && isLandscape) {
-                        setVisibility(GONE);
-                    } else if (!isLandscape) {
-                        setVisibility(VISIBLE);
-                    }
+                    // NO-OP
                 }
             };
         }
@@ -328,30 +322,12 @@ public abstract class BaseView extends FrameLayout {
                     tm -= viewHeight / 2;
                     viewHeight *= 1.5;
                     break;
-                case PAGE_VIDEO_SHARE_KEY:
-                    if (!isTablet(getContext())) {
-                        tm -= viewHeight;
-                        tm += (int) convertDpToPixel(8f, getContext());
-                    }
-                    break;
                 default:
             }
 
             int fontsize = getFontsize(getContext(), childComponent);
             if (fontsize > 0) {
                 ((TextView) view).setTextSize((float) fontsize);
-            }
-        } else if (componentType == AppCMSUIKeyType.PAGE_VIDEO_STARRATING_KEY) {
-            if (isTablet(getContext())) {
-                if (isLandscape(getContext())) {
-
-                } else {
-
-                }
-            } else {
-                int heightTmp = viewWidth;
-                viewWidth = viewHeight;
-                viewHeight = heightTmp;
             }
         }
 
@@ -412,14 +388,6 @@ public abstract class BaseView extends FrameLayout {
     public static boolean isLandscape(Context context) {
         int layoutDirection = context.getResources().getConfiguration().getLayoutDirection();
         return layoutDirection == Configuration.ORIENTATION_LANDSCAPE;
-    }
-
-    public boolean shouldHideOnFullScreenLandscape() {
-        return hideOnFullscreenLandscape;
-    }
-
-    public void setHideOnFullscreenLandscape(boolean hideOnFullscreenLandscape) {
-        this.hideOnFullscreenLandscape = hideOnFullscreenLandscape;
     }
 
     public Action1<LifecycleStatus> getOnLifecycleChangeHandler() {

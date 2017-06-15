@@ -30,6 +30,7 @@ import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.views.activity.AppCMSNavItemsActivity;
+import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
@@ -62,7 +63,7 @@ public class AppCMSPresenter {
     public static final String PRESENTER_NAVIGATE_ACTION = "appcms_presenter_navigate_action";
     public static final String PRESENTER_PAGE_LOADING_ACTION = "appcms_presenter_page_loading_action";
     public static final String PRESENTER_CLOSE_SCREEN_ACTION = "appcms_presenter_close_action";
-    public static final String PRESENTER_SET_NAVIGATION_ITEM = "appcms_presenter_set_navigation_item";
+    public static final String PRESENTER_RESET_NAVIGATION_ITEM = "appcms_presenter_set_navigation_item";
 
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
@@ -162,15 +163,10 @@ public class AppCMSPresenter {
 
     public Activity getCurrentActivity() { return currentActivity; }
 
-    public boolean launchVideoPlayerActivity(String hlsUrl) {
-        if (currentActivity != null && !TextUtils.isEmpty(hlsUrl)) {
-
-            return true;
-        }
-        return false;
-    }
-
-    public boolean launchButtonSelectedAction(String pagePath, String action, String filmTitle) {
+    public boolean launchButtonSelectedAction(String pagePath,
+                                              String action,
+                                              String filmTitle,
+                                              String extraData) {
         boolean result = false;
         if (currentActivity != null && !loadingPage) {
             AppCMSActionType actionType = actionToActionTypeMap.get(action);
@@ -198,41 +194,56 @@ public class AppCMSPresenter {
                     fullscreenEnabled = false;
                     navbarPresent = false;
                     break;
+                case PLAY_VIDEO_PAGE:
+                    appbarPresent = false;
+                    fullscreenEnabled = false;
+                    navbarPresent = false;
                 case HOME_PAGE:
                 default:
                     break;
             }
-            getPageIdContent(appCMSMain.getApiBaseUrl(),
-                    actionToPageAPIUrlMap.get(action),
-                    appCMSMain.getSite(),
-                    false,
-                    pagePath,
-                    new AppCMSPageAPIAction(appbarPresent,
-                            fullscreenEnabled,
-                            navbarPresent,
-                            appCMSPageUI,
-                            getPageId(appCMSPageUI),
-                            filmTitle,
-                            false) {
-                        @Override
-                        public void call(AppCMSPageAPI appCMSPageAPI) {
-                            Bundle args = getPageActivityBundle(currentActivity,
-                                    this.appCMSPageUI,
-                                    appCMSPageAPI,
-                                    this.pageId,
-                                    this.pageTitle,
-                                    loadFromFile,
-                                    this.appbarPresent,
-                                    this.fullscreenEnabled,
-                                    this.navbarPresent);
-                            Intent updatePageIntent =
-                                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                    args);
-                            currentActivity.sendBroadcast(updatePageIntent);
-                            loadingPage = false;
-                        }
-                    });
+            if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE) {
+                Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
+                playVideoIntent.putExtra(currentActivity.getString(R.string.video_fragment_tag_key),
+                    extraData);
+                playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_bg_color_key),
+                        appCMSMain.getBrand()
+                                .getGeneral()
+                                .getBackgroundColor());
+                currentActivity.startActivity(playVideoIntent);
+            } else {
+                getPageIdContent(appCMSMain.getApiBaseUrl(),
+                        actionToPageAPIUrlMap.get(action),
+                        appCMSMain.getSite(),
+                        false,
+                        pagePath,
+                        new AppCMSPageAPIAction(appbarPresent,
+                                fullscreenEnabled,
+                                navbarPresent,
+                                appCMSPageUI,
+                                getPageId(appCMSPageUI),
+                                filmTitle,
+                                false) {
+                            @Override
+                            public void call(AppCMSPageAPI appCMSPageAPI) {
+                                Bundle args = getPageActivityBundle(currentActivity,
+                                        this.appCMSPageUI,
+                                        appCMSPageAPI,
+                                        this.pageId,
+                                        this.pageTitle,
+                                        loadFromFile,
+                                        this.appbarPresent,
+                                        this.fullscreenEnabled,
+                                        this.navbarPresent);
+                                Intent updatePageIntent =
+                                        new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                        args);
+                                currentActivity.sendBroadcast(updatePageIntent);
+                                loadingPage = false;
+                            }
+                        });
+            }
         }
         return result;
     }
@@ -382,6 +393,7 @@ public class AppCMSPresenter {
             }
             result = true;
         } else {
+            Log.d(TAG, "Resetting page navigation to previous tab");
             setNavItemToCurrentAction(currentActivity);
         }
         return result;
@@ -452,6 +464,13 @@ public class AppCMSPresenter {
         }
     }
 
+    public void clearOnInternalEvents() {
+        if (!TextUtils.isEmpty(currentActions.peek()) &&
+                onActionInternalEvents.get(currentActions.peek()) != null) {
+            onActionInternalEvents.get(currentActions.peek()).clear();
+        }
+    }
+
     public List<OnInternalEvent> getOnInternalEvents() {
         if (!TextUtils.isEmpty(currentActions.peek()) &&
                 onActionInternalEvents.get(currentActions.peek()) != null) {
@@ -461,10 +480,12 @@ public class AppCMSPresenter {
     }
 
     public void restartInternalEvents() {
+        Log.d(TAG, "Restarting internal events");
         List<OnInternalEvent> onInternalEvents = onActionInternalEvents.get(currentActions.peek());
         if (onInternalEvents != null) {
             for (OnInternalEvent onInternalEvent : onInternalEvents) {
                 onInternalEvent.cancel(false);
+                Log.d(TAG, "Restarted internal event");
             }
         }
     }
@@ -606,7 +627,7 @@ public class AppCMSPresenter {
 
     private void setNavItemToCurrentAction(Activity activity) {
         if (currentActions.size() > 0) {
-            Intent setNavigationItemIntent = new Intent(PRESENTER_SET_NAVIGATION_ITEM);
+            Intent setNavigationItemIntent = new Intent(PRESENTER_RESET_NAVIGATION_ITEM);
             setNavigationItemIntent.putExtra(activity.getString(R.string.navigation_item_key),
                     currentActions.peek());
             activity.sendBroadcast(setNavigationItemIntent);

@@ -2,6 +2,7 @@ package com.viewlift.views.customviews;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,8 @@ import snagfilms.com.air.appcms.R;
  */
 
 public class DotSelectorView extends BaseView implements OnInternalEvent {
+    private static final String TAG = "DotSelectorView";
+
     private Component component;
     private final int selectedColor;
     private final int deselectedColor;

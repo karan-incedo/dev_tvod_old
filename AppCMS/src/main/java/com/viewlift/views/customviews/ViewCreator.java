@@ -26,7 +26,6 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
-import com.viewlift.models.data.appcms.api.Credit;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.page.Settings;
@@ -56,7 +55,6 @@ public class ViewCreator {
     private static class ComponentViewResult {
         View componentView;
         OnInternalEvent onInternalEvent;
-        boolean hideOnFullscreenLandscape;
         Action1<LifecycleStatus> onLifecycleChangeHandler;
         boolean useMarginsAsPercentagesOverride;
         boolean useWidthOfScreen;
@@ -89,6 +87,7 @@ public class ViewCreator {
                                   Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                   AppCMSPresenter appCMSPresenter,
                                   List<String> modulesToIgnore) {
+        appCMSPresenter.clearOnInternalEvents();
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList module : modulesList) {
@@ -128,7 +127,6 @@ public class ViewCreator {
                         jsonValueKeyMap,
                         appCMSPresenter,
                         false);
-                hideOnFullscreenLandscape &= componentViewResult.hideOnFullscreenLandscape;
                 if (componentViewResult.onInternalEvent != null) {
                     appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
                 }
@@ -165,7 +163,6 @@ public class ViewCreator {
                 moduleAPI.getContentData().size() == 0) {
             moduleView.setVisibility(View.GONE);
         } else {
-            moduleView.setHideOnFullscreenLandscape(hideOnFullscreenLandscape);
             appCMSPresenter.addOnOrientationChangeHandler(moduleView.getOrientationChangeHandler());
         }
 
@@ -196,7 +193,6 @@ public class ViewCreator {
                     jsonValueKeyMap,
                     appCMSPresenter,
                     true);
-            hideOnFullScreenLandscape &= componentViewResult.hideOnFullscreenLandscape;
             if (componentViewResult.onInternalEvent != null) {
                 onInternalEvents.add(componentViewResult.onInternalEvent);
             }
@@ -231,7 +227,6 @@ public class ViewCreator {
                 }
             }
         }
-        collectionGridItemView.setHideOnFullscreenLandscape(hideOnFullScreenLandscape);
         return collectionGridItemView;
     }
 
@@ -269,7 +264,6 @@ public class ViewCreator {
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
                 ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
-                componentViewResult.hideOnFullscreenLandscape = true;
                 break;
             case PAGE_CAROUSEL_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
@@ -293,7 +287,6 @@ public class ViewCreator {
                 ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSCarouselItemAdapter);
                 componentViewResult.onInternalEvent = appCMSCarouselItemAdapter;
                 componentViewResult.useWidthOfScreen = true;
-                componentViewResult.hideOnFullscreenLandscape = true;
                 break;
             case PAGE_PAGE_CONTROL_VIEW_KEY:
                 int selectedColor =
@@ -307,7 +300,6 @@ public class ViewCreator {
                 int numDots = moduleAPI.getContentData() != null ? moduleAPI.getContentData().size() : 0;
                 ((DotSelectorView) componentViewResult.componentView).addDots(numDots);
                 componentViewResult.onInternalEvent = (DotSelectorView) componentViewResult.componentView;
-                componentViewResult.hideOnFullscreenLandscape = true;
                 componentViewResult.useMarginsAsPercentagesOverride = false;
                 break;
             case PAGE_BUTTON_KEY:
@@ -326,17 +318,37 @@ public class ViewCreator {
                 if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                     componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(component.getBackgroundColor())));
                 }
-                componentViewResult.hideOnFullscreenLandscape = true;
+                int tintColor = Color.parseColor(getColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
                 switch (componentKey) {
                     case PAGE_INFO_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.info_icon));
                         break;
                     case PAGE_VIDEO_PLAY_BUTTON_KEY:
-                        componentViewResult.hideOnFullscreenLandscape = false;
+                        final String hlsUrl = moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls();
+                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
+                                        component.getAction(),
+                                        moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                        moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls())) {
+                                    Log.e(TAG, "Could not launch action: " +
+                                            " permalink: " +
+                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
+                                            " action: " +
+                                            component.getAction() +
+                                            " hls URL: " +
+                                            moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
+                                }
+                            }
+                        });
+                        componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.play_icon));
+                        componentViewResult.componentView.getBackground().setTint(tintColor);
+                        componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+                        break;
                     case PAGE_PLAY_KEY:
                     case PAGE_PLAY_IMAGE_KEY:
                         componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.play_icon));
-                        int tintColor = Color.parseColor(getColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
                         componentViewResult.componentView.getBackground().setTint(tintColor);
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                         break;
@@ -350,7 +362,6 @@ public class ViewCreator {
                         break;
                     default:
                 }
-                componentViewResult.hideOnFullscreenLandscape = true;
                 break;
             case PAGE_LABEL_KEY:
                 componentViewResult.componentView = new TextView(context);
@@ -442,7 +453,6 @@ public class ViewCreator {
                         ((TextView) componentViewResult.componentView).setTypeface(Typeface.create(component.getFontFamily(), Typeface.NORMAL));
                     }
                 }
-                componentViewResult.hideOnFullscreenLandscape = true;
                 break;
             case PAGE_IMAGE_KEY:
                 componentViewResult.componentView = new ImageView(context);
@@ -466,7 +476,6 @@ public class ViewCreator {
                                     .into((ImageView) componentViewResult.componentView);
 
                         }
-                        componentViewResult.hideOnFullscreenLandscape = false;
                         componentViewResult.useWidthOfScreen = true;
                         break;
                     default:
@@ -475,7 +484,6 @@ public class ViewCreator {
                                     .load(component.getImageName())
                                     .into((ImageView) componentViewResult.componentView);
                         }
-                        componentViewResult.hideOnFullscreenLandscape = true;
                 }
                 break;
             case PAGE_PROGRESS_VIEW_KEY:
@@ -486,14 +494,12 @@ public class ViewCreator {
                     int color = Color.parseColor(getColor(component.getProgressColor()));
                     ((ProgressBar) componentViewResult.componentView).setProgressDrawable(new ColorDrawable(color));
                 }
-                componentViewResult.hideOnFullscreenLandscape = true;
                 break;
             case PAGE_SEPARATOR_VIEW_KEY:
                 componentViewResult.componentView = new View(context);
                 if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                     componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(component.getBackgroundColor())));
                 }
-                componentViewResult.hideOnFullscreenLandscape = true;
                 break;
             case PAGE_CASTVIEW_VIEW_KEY:
                 if (moduleAPI.getContentData().get(0).getCreditBlocks() == null) {
@@ -567,7 +573,7 @@ public class ViewCreator {
                     }
                 }
 
-                componentViewResult.componentView = new CastView(context,
+                componentViewResult.componentView = new CreditBlocksView(context,
                         fontFamilyKey,
                         fontFamilyKeyType,
                         fontFamilyValue,
@@ -579,7 +585,6 @@ public class ViewCreator {
                         textColor,
                         BaseView.getFontSizeKey(context, component.getLayout()),
                         BaseView.getFontSizeValue(context, component.getLayout()));
-                componentViewResult.hideOnFullscreenLandscape = true;
                 break;
             case PAGE_VIDEO_STARRATING_KEY:
                 int starBorderColor = Color.parseColor(getColor(component.getBorderColor()));
@@ -589,7 +594,6 @@ public class ViewCreator {
                         starBorderColor,
                         starFillColor,
                         starRating);
-                componentViewResult.hideOnFullscreenLandscape = true;
                 break;
             default:
         }

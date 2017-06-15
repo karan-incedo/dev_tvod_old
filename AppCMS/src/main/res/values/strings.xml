@@ -29,4 +29,9 @@
     <string name="age_rating_converted_pg">13+</string>
     <string name="age_rating_converted_fourteen">14+</string>
     <string name="age_rating_converted_default">18+</string>
+    <string name="video_player_hls_url_key">video_player_hls_url</string>
+    <string name="video_fragment_tag_key">video_fragment</string>
+    <string name="app_cms_bg_color_key">app_cms_bg_color</string>
+    <string name="app_cms_on_action_internal_events_key">app_cms_on_action_internal_events</string>
+    <string name="resume_internal_events_key">resume_internal_events</string>
 </resources>

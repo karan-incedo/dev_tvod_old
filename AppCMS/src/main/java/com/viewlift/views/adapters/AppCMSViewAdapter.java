@@ -104,16 +104,20 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             onClickHandler = new CollectionGridItemView.OnClickHandler() {
                 @Override
                 public void click(Component childComponent, ContentDatum data) {
+                    Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                     String permalink = data.getGist().getPermalink();
                     String action = childComponent.getKey();
                     String title = data.getGist().getTitle();
+                    String hlsUrl = getHlsUrl(data);
                     Log.d(TAG, "Launching " + permalink + ":" + action);
-                    if (!appCMSPresenter.launchButtonSelectedAction(permalink, action, title)) {
+                    if (!appCMSPresenter.launchButtonSelectedAction(permalink, action, title, hlsUrl)) {
                         Log.e(TAG, "Could not launch action: " +
                                 " permalink: " +
                                 permalink +
                                 " action: " +
-                                action);
+                                action +
+                                " hlsUrl: " +
+                                hlsUrl);
                     }
                 }
             };
@@ -125,7 +129,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 String permalink = data.getGist().getPermalink();
                 String title = data.getGist().getTitle();
                 Log.d(TAG, "Launching " + permalink + ":" + defaultAction);
-                if (!appCMSPresenter.launchButtonSelectedAction(permalink, defaultAction, title)) {
+                if (!appCMSPresenter.launchButtonSelectedAction(permalink, defaultAction, title, null)) {
                     Log.e(TAG, "Could not launch action: " +
                             " permalink: " +
                             permalink +
@@ -149,6 +153,15 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             if (jsonValueKeyMap.get(jsonKey) == AppCMSUIKeyType.PAGE_PLAY_KEY) {
                 return jsonKey;
             }
+        }
+        return null;
+    }
+
+    private String getHlsUrl(ContentDatum data) {
+        if (data.getStreamingInfo() != null &&
+                data.getStreamingInfo().getVideoAssets() != null &&
+                data.getStreamingInfo().getVideoAssets().getHls() != null) {
+            return data.getStreamingInfo().getVideoAssets().getHls();
         }
         return null;
     }

@@ -43,7 +43,7 @@ public class AppCMSUIModule {
     private final Map<String, AppCMSActionType> actionToActionTypeMap;
 
     public AppCMSUIModule(Context context) {
-        this.baseUrl = context.getString(R.string.app_cms_api_baseurl);
+        this.baseUrl = context.getString(R.string.app_cms_baseurl);
         this.storageDirectory = context.getFilesDir();
 
         this.jsonValueKeyMap = new HashMap<>();
@@ -99,6 +99,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_INFO_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_play_key),
                 AppCMSUIKeyType.PAGE_PLAY_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_action_watchvideo_key),
+                AppCMSUIKeyType.PAGE_WATCH_VIDEO_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_play_image_key),
                 AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_title_key),
@@ -166,12 +168,14 @@ public class AppCMSUIModule {
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_splashpage_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_homepage_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_videopage_key), null);
+        this.actionToPageMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
     }
 
     private void createActionToPageAPIMap(Context context) {
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_splashpage_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_homepage_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_videopage_key), null);
+        this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
     }
 
     private void createActionToActionTypeMap(Context context) {
@@ -181,6 +185,8 @@ public class AppCMSUIModule {
                 AppCMSActionType.HOME_PAGE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_videopage_key),
                 AppCMSActionType.VIDEO_PAGE);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_watchvideo_key),
+                AppCMSActionType.PLAY_VIDEO_PAGE);
     }
 
     @Provides

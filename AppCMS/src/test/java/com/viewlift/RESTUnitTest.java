@@ -3,8 +3,6 @@ package com.viewlift;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.google.gson.JsonElement;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -64,12 +62,12 @@ public class RESTUnitTest {
     @Before
     public void initialize() {
         when(context.getPackageName()).thenReturn("myPackage");
-        when(context.getString(R.string.app_cms_api_baseurl))
+        when(context.getString(R.string.app_cms_baseurl))
                 .thenReturn("https://appcms.viewlift.com/");
         when(context.getFilesDir())
                 .thenReturn(new File(""));
         when(context.getString(R.string.app_cms_main_url,
-                context.getString(R.string.app_cms_api_baseurl),
+                context.getString(R.string.app_cms_baseurl),
                 APP_CMS_APP_NAME))
                 .thenReturn(String.format(APP_CMS_MAIN_URL,
                         BASEURL,

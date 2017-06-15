@@ -65,6 +65,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 @Override
                 public void onClick(View v) {
                     appCMSPresenter.navigateAwayFromPage(appCMSPresenter.getCurrentActivity());
+                    Log.d(TAG, "Navigating to page with Title: " + primary.getTitle());
                     if (!appCMSPresenter.navigateToPage(primary.getPageId(),
                             primary.getTitle(),
                             true)) {

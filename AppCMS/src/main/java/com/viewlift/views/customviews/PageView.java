@@ -5,6 +5,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import javax.inject.Inject;
 
@@ -52,13 +53,14 @@ public class PageView extends BaseView {
                         LayoutParams.MATCH_PARENT);
         childrenContainer.setLayoutParams(childContainerLayoutParams);
         ((LinearLayout) childrenContainer).setOrientation(LinearLayout.VERTICAL);
+
         NestedScrollView nestedScrollView = new NestedScrollView(getContext());
         NestedScrollView.LayoutParams nestedScrollViewLayoutParams =
                 new NestedScrollView.LayoutParams(LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT);
         nestedScrollView.setLayoutParams(nestedScrollViewLayoutParams);
         nestedScrollView.addView(childrenContainer);
-        this.addView(nestedScrollView);
+        addView(nestedScrollView);
         return childrenContainer;
     }
 }

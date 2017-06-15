@@ -44,14 +44,14 @@ public class AppCMSMainUICall {
     public AppCMSMain call(Context context, String siteId) throws IOException {
         Date now = new Date();
         String appCMSMainUrl = context.getString(R.string.app_cms_main_url,
-                context.getString(R.string.app_cms_api_baseurl),
+                context.getString(R.string.app_cms_baseurl),
                 siteId,
                 now.getTime());
         AppCMSMain main = null;
+        AppCMSMain mainInStorage = null;
         try {
             Log.d(TAG, "Attempting to retireve main.json: " + appCMSMainUrl);
             main = appCMSMainUIRest.get(appCMSMainUrl).execute().body();
-            AppCMSMain mainInStorage = null;
             String filename = getResourceFilename(appCMSMainUrl);
             try {
                 mainInStorage = readMainFromFile(filename);
