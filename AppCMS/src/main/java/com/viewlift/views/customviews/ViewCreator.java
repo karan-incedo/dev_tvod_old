@@ -302,6 +302,10 @@ public class ViewCreator {
                 componentViewResult.useMarginsAsPercentagesOverride = false;
                 break;
             case PAGE_BUTTON_KEY:
+                // IGNORE FOR NOW
+                if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_WATCH_NOW_KEY) {
+                    return componentViewResult;
+                }
                 componentViewResult.componentView = new Button(context);
                 if (!gridElement) {
                     if (!TextUtils.isEmpty(component.getText())) {
