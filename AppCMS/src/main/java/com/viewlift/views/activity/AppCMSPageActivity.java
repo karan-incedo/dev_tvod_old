@@ -47,6 +47,11 @@ import snagfilms.com.air.appcms.R;
 public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageFragment.OnPageCreation {
     private static final String TAG = "AppCMSPageActivity";
 
+    private static final int NAV_PAGE_INDEX = 0;
+    private static final int HOME_PAGE_INDEX = 0;
+    private static final int MOVIES_PAGE_INDEX = 1;
+    private static final int SEARCH_INDEX = 3;
+
     private AppCMSPresenter appCMSPresenter;
     private Stack<String> appCMSBinderStack;
     private Map<String, AppCMSBinder> appCMSBinderMap;
@@ -216,9 +221,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(presenterActionReceiver);
-        while (!appCMSBinderStack.empty()) {
-            appCMSBinderStack.pop();
-        }
         appCMSPresenter.navigateAwayFromPage(this);
         Log.d(TAG, "onDestroy()");
     }
@@ -241,12 +243,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        AppCMSBinder appCMSBinder = appCMSBinderStack.size() > 0 ?
+                appCMSBinderMap.get(appCMSBinderStack.peek()) :
+                null;
         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            getSupportFragmentManager().popBackStack();
             Log.d(TAG, "Orientation changed - handling back");
-            handleBack(true, false, false);
+            handleBack(true, true, false);
         }
-        handleOrientation(newConfig.orientation, appCMSBinderMap.get(appCMSBinderStack.peek()));
+        if (appCMSBinder != null) {
+            appCMSBinderStack.push(appCMSBinder.getPageId());
+            appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
+            createScreenFromAppCMSBinder(appCMSBinder);
+        }
     }
 
     @Override
@@ -272,9 +280,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         if (appCMSBinderStack.size() > 0) {
             Log.d(TAG, "Back pressed - handling nav bar");
             handleNavbar(appCMSBinderMap.get(appCMSBinderStack.peek()));
-            if (appCMSBinderMap.get(appCMSBinderStack.peek()).isNavbarPresent()) {
-                appCMSTabNavContainer.setVisibility(View.VISIBLE);
-            }
             Log.d(TAG, "Resetting previous AppCMS data: " + appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName());
         }
         if (shouldPopStack() || closeActionPage) {
@@ -304,7 +309,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
         appCMSTabNavContainer = (LinearLayout) findViewById(R.id.app_cms_tab_nav_container);
 
-        createMenuNavItem();
         createHomeNavItem(appCMSPresenter.findHomePageNavItem());
         createMoviesNavItem(appCMSPresenter.findMoviesPageNavItem());
         createSearchNavItem();
@@ -366,13 +370,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         if (appCMSBinder.isFullScreenEnabled() &&
                 orientation == Configuration.ORIENTATION_LANDSCAPE) {
             handleToolbar(false, appCMSBinder.getAppCMSMain());
-            appCMSTabNavContainer.setVisibility(View.GONE);
             hideSystemUI(getWindow().getDecorView());
         } else {
             handleToolbar(appCMSBinder.isAppbarPresent(), appCMSBinder.getAppCMSMain());
-            appCMSTabNavContainer.setVisibility(View.VISIBLE);
             showSystemUI(getWindow().getDecorView());
         }
+        handleNavbar(appCMSBinder);
         createFragment(appCMSBinder);
     }
 
@@ -400,14 +403,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         Log.d(TAG, "Page existing index: " + distanceFromStackTop);
         if (0 <= distanceFromStackTop) {
             for (int i = 0; i < distanceFromStackTop; i++) {
-                Log.d(TAG, "Popping stack to get to get page item");
+                Log.d(TAG, "Popping stack to get to page item");
                 getSupportFragmentManager().popBackStackImmediate();
                 handleBack(true, true, false);
             }
-        } else {
-            appCMSBinderStack.push(appCMSBinder.getPageId());
-            appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
         }
+        appCMSBinderStack.push(appCMSBinder.getPageId());
+        appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
         createScreenFromAppCMSBinder(appCMSBinder);
     }
 
@@ -438,7 +440,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     private void createMenuNavItem() {
         final NavBarItemView menuNavBarItemView =
-                (NavBarItemView) appCMSTabNavContainer.getChildAt(0);
+                (NavBarItemView) appCMSTabNavContainer.getChildAt(NAV_PAGE_INDEX);
         menuNavBarItemView.setImage(getString(R.string.app_cms_menu_icon_name));
         menuNavBarItemView.setLabel(getString(R.string.app_cms_menu_label));
         menuNavBarItemView.setOnClickListener(new View.OnClickListener() {
@@ -454,7 +456,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     private void createHomeNavItem(final Primary homePageNav) {
         final NavBarItemView homeNavBarItemView =
-                (NavBarItemView) appCMSTabNavContainer.getChildAt(1);
+                (NavBarItemView) appCMSTabNavContainer.getChildAt(HOME_PAGE_INDEX);
         homeNavBarItemView.setImage(getIconName(homePageNav));
         homeNavBarItemView.setLabel(homePageNav.getTitle());
         homeNavBarItemView.setOnClickListener(new View.OnClickListener() {
@@ -470,7 +472,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     private void createMoviesNavItem(final Primary moviePageNav) {
         final NavBarItemView moviesNavBarItemView =
-                (NavBarItemView) appCMSTabNavContainer.getChildAt(2);
+                (NavBarItemView) appCMSTabNavContainer.getChildAt(MOVIES_PAGE_INDEX);
         moviesNavBarItemView.setImage(getIconName(moviePageNav));
         moviesNavBarItemView.setLabel(moviePageNav.getTitle());
         moviesNavBarItemView.setOnClickListener(new View.OnClickListener() {
@@ -486,7 +488,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     private void createSearchNavItem() {
         NavBarItemView searchNavBarItemView =
-                (NavBarItemView) appCMSTabNavContainer.getChildAt(3);
+                (NavBarItemView) appCMSTabNavContainer.getChildAt(SEARCH_INDEX);
         searchNavBarItemView.setImage(getString(R.string.app_cms_search_icon_name));
         searchNavBarItemView.hideLabel();
         searchNavBarItemView.setOnClickListener(new View.OnClickListener() {

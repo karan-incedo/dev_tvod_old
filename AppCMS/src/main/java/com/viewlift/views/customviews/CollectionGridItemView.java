@@ -290,14 +290,12 @@ public class CollectionGridItemView extends BaseView {
                 TabletLandscape tabletLandscape = layout.getTabletLandscape();
                 float width = tabletLandscape.getGridWidth() != null ? tabletLandscape.getGridWidth() : -1.0f;
                 if (width != -1.0f) {
-//                    return convertDpToPixel(width, context);
                     return DEVICE_WIDTH * (width / STANDARD_TABLET_HEIGHT_PX);
                 }
             } else {
                 TabletPortrait tabletPortrait = layout.getTabletPortrait();
                 float width = tabletPortrait.getGridWidth() != null ? tabletPortrait.getGridWidth() : -1.0f;
                 if (width != -1.0f) {
-//                    return convertDpToPixel(width, context);
                     return DEVICE_WIDTH * (width / STANDARD_TABLET_WIDTH_PX);
                 }
             }
@@ -305,7 +303,6 @@ public class CollectionGridItemView extends BaseView {
             Mobile mobile = layout.getMobile();
             float width = mobile.getGridWidth() != null ? mobile.getGridWidth() : -1.0f;
             if (width != -1.0f) {
-//                return convertDpToPixel(width, context);
                 return DEVICE_WIDTH * (width / STANDARD_MOBILE_WIDTH_PX);
             }
         }

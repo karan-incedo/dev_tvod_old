@@ -65,6 +65,8 @@ public class AppCMSPresenter {
     public static final String PRESENTER_CLOSE_SCREEN_ACTION = "appcms_presenter_close_action";
     public static final String PRESENTER_RESET_NAVIGATION_ITEM = "appcms_presenter_set_navigation_item";
 
+    public static final int LAUNCH_PAGE_ACTIVITY = 1000;
+
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
 
@@ -174,34 +176,6 @@ public class AppCMSPresenter {
                 Log.e(TAG, "Action " + action + " not found!");
                 return false;
             }
-            cancelInternalEvents();
-            pushActionInternalEvents(action);
-            result = true;
-            AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
-            boolean appbarPresent = true;
-            boolean fullscreenEnabled = false;
-            boolean navbarPresent = true;
-            loadingPage = true;
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-            switch (actionType) {
-                case SPLASH_PAGE:
-                    appbarPresent = false;
-                    fullscreenEnabled = false;
-                    navbarPresent = true;
-                    break;
-                case VIDEO_PAGE:
-                    appbarPresent = true;
-                    fullscreenEnabled = false;
-                    navbarPresent = false;
-                    break;
-                case PLAY_VIDEO_PAGE:
-                    appbarPresent = false;
-                    fullscreenEnabled = false;
-                    navbarPresent = false;
-                case HOME_PAGE:
-                default:
-                    break;
-            }
             if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE) {
                 Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
                 playVideoIntent.putExtra(currentActivity.getString(R.string.video_fragment_tag_key),
@@ -212,6 +186,34 @@ public class AppCMSPresenter {
                                 .getBackgroundColor());
                 currentActivity.startActivity(playVideoIntent);
             } else {
+                cancelInternalEvents();
+                pushActionInternalEvents(action);
+                result = true;
+                AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
+                boolean appbarPresent = true;
+                boolean fullscreenEnabled = false;
+                boolean navbarPresent = true;
+                loadingPage = true;
+                switch (actionType) {
+                    case SPLASH_PAGE:
+                        appbarPresent = false;
+                        fullscreenEnabled = false;
+                        navbarPresent = true;
+                        break;
+                    case VIDEO_PAGE:
+                        appbarPresent = true;
+                        fullscreenEnabled = false;
+                        navbarPresent = false;
+                        break;
+                    case PLAY_VIDEO_PAGE:
+                        appbarPresent = false;
+                        fullscreenEnabled = false;
+                        navbarPresent = false;
+                    case HOME_PAGE:
+                    default:
+                        break;
+                }
+                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                 getPageIdContent(appCMSMain.getApiBaseUrl(),
                         actionToPageAPIUrlMap.get(action),
                         appCMSMain.getSite(),
@@ -681,7 +683,7 @@ public class AppCMSPresenter {
         Intent appCMSIntent = new Intent(activity, AppCMSPageActivity.class);
         appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
 
-        activity.startActivity(appCMSIntent);
+        activity.startActivityForResult(appCMSIntent, LAUNCH_PAGE_ACTIVITY);
     }
 
     private void getAppCMSAndroid(final Activity activity, final AppCMSMain main) {
