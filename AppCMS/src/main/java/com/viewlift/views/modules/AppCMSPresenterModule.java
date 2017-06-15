@@ -3,6 +3,7 @@ package com.viewlift.views.modules;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.network.modules.AppCMSSearchModule;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
+import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.presenters.AppCMSActionType;
 import com.viewlift.presenters.AppCMSPresenter;
 
@@ -32,7 +33,7 @@ public class AppCMSPresenterModule {
     public AppCMSPresenter providesAppCMSPresenter(AppCMSMainUICall appCMSMainUICall,
                                                    AppCMSAndroidUICall appCMSAndroidUICall,
                                                    AppCMSPageUICall appCMSPageUICall,
-                                                   AppCMSPageAPICall appCMSPageAPICall,
+                                                   AppCMSSiteCall appCMSSiteCall,
                                                    AppCMSSearchCall appCMSSearchCall,
                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                    Map<String, String> pageNameToActionMap,
@@ -42,7 +43,7 @@ public class AppCMSPresenterModule {
         return new AppCMSPresenter(appCMSMainUICall,
                 appCMSAndroidUICall,
                 appCMSPageUICall,
-                appCMSPageAPICall,
+                appCMSSiteCall,
                 appCMSSearchCall,
                 jsonValueKeyMap,
                 pageNameToActionMap,

@@ -238,7 +238,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         // TODO: Create a pop up dialog with an error message
         setFinishResult(RESULT_CANCELED);
         getSupportFragmentManager().popBackStack();
-        handleBack(false, false, false);
+        handleBack(true, false, false);
     }
 
     @Override

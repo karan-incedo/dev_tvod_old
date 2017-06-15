@@ -3,13 +3,19 @@ package com.viewlift.views.customviews;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Rect;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -18,6 +24,8 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Mobile;
 import com.viewlift.models.data.appcms.ui.page.TabletLandscape;
 import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
+import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
+import com.viewlift.views.adapters.AppCMSViewAdapter;
 
 import java.util.Map;
 
@@ -322,6 +330,11 @@ public abstract class BaseView extends FrameLayout {
                     if (!isTablet(getContext())) {
                         tm -= viewHeight / 2;
                         viewHeight *= 1.5;
+                    }
+                    break;
+                case PAGE_WATCH_VIDEO_KEY:
+                    if (isTablet(getContext()) && !isLandscape(getContext())) {
+                        tm -= viewHeight / 2;
                     }
                     break;
                 default:

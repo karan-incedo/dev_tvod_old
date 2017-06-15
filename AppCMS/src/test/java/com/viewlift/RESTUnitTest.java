@@ -77,12 +77,6 @@ public class RESTUnitTest {
                 .builder()
                 .appCMSUIModule(new AppCMSUIModule(context))
                 .build();
-
-        appCMSAPIComponent = DaggerAppCMSAPIComponent
-                .builder()
-                .appCMSUIModule(new AppCMSUIModule(context))
-                .appCMSAPIModule(new AppCMSAPIModule(API_KEY))
-                .build();
     }
 
     @Test

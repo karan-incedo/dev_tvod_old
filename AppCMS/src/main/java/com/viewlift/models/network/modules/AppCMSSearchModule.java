@@ -14,7 +14,7 @@ import retrofit2.Retrofit;
  * Created by viewlift on 6/12/17.
  */
 
-@Module(includes={AppCMSAPIModule.class})
+@Module(includes={AppCMSSiteModule.class})
 public class AppCMSSearchModule {
     @Provides
     @Singleton

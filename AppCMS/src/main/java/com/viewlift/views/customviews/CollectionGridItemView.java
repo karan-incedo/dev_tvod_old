@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -166,10 +167,10 @@ public class CollectionGridItemView extends BaseView {
     }
 
     public void bindChild(Context context,
-                          final View view,
+                          View view,
                           final ContentDatum data,
                           Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                          final OnClickHandler onClickHandler) {
+                          OnClickHandler onClickHandler) {
         final Component childComponent = matchComponentToView(view);
         if (childComponent != null) {
             boolean bringToFront = true;
@@ -262,14 +263,7 @@ public class CollectionGridItemView extends BaseView {
                     bringToFront = false;
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
-                Log.d(TAG, "Page button key");
-                view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.d(TAG, "Clicked on button");
-                        onClickHandler.click(childComponent, data);
-                    }
-                });
+
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
                 if (TextUtils.isEmpty(((TextView) view).getText())) {
                     if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
@@ -287,6 +281,7 @@ public class CollectionGridItemView extends BaseView {
                 view.getParent().bringChildToFront(view);
             }
         }
+
     }
 
     public Component matchComponentToView(View view) {

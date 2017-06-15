@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
@@ -107,7 +108,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 public void click(Component childComponent, ContentDatum data) {
                     Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                     String permalink = data.getGist().getPermalink();
-                    String action = childComponent.getKey();
+                    String action = childComponent.getAction();
                     String title = data.getGist().getTitle();
                     String hlsUrl = getHlsUrl(data);
                     Log.d(TAG, "Launching " + permalink + ":" + action);

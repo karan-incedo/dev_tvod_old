@@ -1,6 +1,7 @@
 package com.viewlift.models.network.background.tasks;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 
@@ -15,6 +16,8 @@ import rx.functions.Action1;
  */
 
 public class GetAppCMSPageUIAsyncTask extends AsyncTask<GetAppCMSPageUIAsyncTask.Params, Integer, AppCMSPageUI> {
+    private static final String TAG = "";
+
     private final AppCMSPageUICall call;
     private final Action1<AppCMSPageUI> readyAction;
 
@@ -51,7 +54,7 @@ public class GetAppCMSPageUIAsyncTask extends AsyncTask<GetAppCMSPageUIAsyncTask
             try {
                 return call.call(params[0].url, params[0].loadFromFile);
             } catch (IOException e) {
-
+                Log.e(TAG, "Could not retrieve Page UI data - " + params[0] + ": " + e.toString());
             }
         }
         return null;

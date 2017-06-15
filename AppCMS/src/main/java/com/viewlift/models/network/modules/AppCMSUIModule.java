@@ -84,7 +84,7 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_image_key),
                 AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_add_to_watchlist_key),
-                AppCMSUIKeyType.PAGE_CAROUSEL_WATCH_NOW_KEY);
+                AppCMSUIKeyType.PAGE_CAROUSEL_ADD_TO_WATCHLIST_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_page_control_key),
                 AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY);
         jsonValueKeyMap.put( context.getString(R.string.app_cms_page_seperator_key),
@@ -101,7 +101,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_INFO_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_play_key),
                 AppCMSUIKeyType.PAGE_PLAY_KEY);
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_action_watchvideo_key),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_watchnow_key),
                 AppCMSUIKeyType.PAGE_WATCH_VIDEO_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_play_image_key),
                 AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY);
@@ -149,6 +149,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTORS_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_credits_starring_key),
                 AppCMSUIKeyType.PAGE_VIDEO_CREDITS_STARRING_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchTrailer_key),
+                AppCMSUIKeyType.PAGE_VIDEO_WATCH_TRAILER_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_title_key),
                 AppCMSUIKeyType.PAGE_API_TITLE);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_thumbnail_url_key),
@@ -189,6 +191,10 @@ public class AppCMSUIModule {
                 AppCMSActionType.VIDEO_PAGE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_watchvideo_key),
                 AppCMSActionType.PLAY_VIDEO_PAGE);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_watchtrailervideo_key),
+                AppCMSActionType.WATCH_TRAILER);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_share_key),
+                AppCMSActionType.SHARE);
     }
 
     @Provides

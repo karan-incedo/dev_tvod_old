@@ -18,7 +18,7 @@ public class ContentDetails {
     private Integer episode;
     @SerializedName("trailers")
     @Expose
-    private List<Object> trailers = null;
+    private List<Trailer> trailers = null;
     @SerializedName("geoRestriction")
     @Expose
     private String geoRestriction;
@@ -83,11 +83,11 @@ public class ContentDetails {
         this.episode = episode;
     }
 
-    public List<Object> getTrailers() {
+    public List<Trailer> getTrailers() {
         return trailers;
     }
 
-    public void setTrailers(List<Object> trailers) {
+    public void setTrailers(List<Trailer> trailers) {
         this.trailers = trailers;
     }
 

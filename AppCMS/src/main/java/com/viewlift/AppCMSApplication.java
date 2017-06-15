@@ -5,6 +5,7 @@ import android.app.Application;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.viewlift.models.network.modules.AppCMSSiteModule;
 import com.viewlift.views.components.AppCMSPresenterComponent;
 import com.viewlift.views.modules.AppCMSPresenterModule;
 import com.viewlift.models.network.modules.AppCMSAPIModule;
@@ -29,7 +30,7 @@ public class AppCMSApplication extends Application {
         appCMSPresenterComponent = DaggerAppCMSPresenterComponent
                 .builder()
                 .appCMSUIModule(new AppCMSUIModule(this))
-                .appCMSAPIModule(new AppCMSAPIModule(getString(R.string.app_cms_api_key)))
+                .appCMSSiteModule(new AppCMSSiteModule())
                 .appCMSPresenterModule(new AppCMSPresenterModule())
                 .build();
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {

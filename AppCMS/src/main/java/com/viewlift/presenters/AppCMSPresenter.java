@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.inject.Inject;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 import com.viewlift.models.data.appcms.ui.android.MetaPage;
@@ -27,8 +28,12 @@ import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.Primary;
 import com.viewlift.models.data.appcms.ui.android.User;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
+import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
+import com.viewlift.models.network.components.DaggerAppCMSAPIComponent;
 import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
+import com.viewlift.models.network.modules.AppCMSAPIModule;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
+import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.views.activity.AppCMSNavItemsActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.binders.AppCMSBinder;
@@ -73,7 +78,7 @@ public class AppCMSPresenter {
     private final AppCMSMainUICall appCMSMainUICall;
     private final AppCMSAndroidUICall appCMSAndroidUICall;
     private final AppCMSPageUICall appCMSPageUICall;
-    private final AppCMSPageAPICall appCMSPageAPICall;
+    private final AppCMSSiteCall appCMSSiteCall;
     private final AppCMSSearchCall appCMSSearchCall;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final Map<String, String> pageNameToActionMap;
@@ -81,6 +86,7 @@ public class AppCMSPresenter {
     private final Map<String, AppCMSPageAPI> actionToPageAPIMap;
     private final Map<String, AppCMSActionType> actionToActionTypeMap;
 
+    private AppCMSPageAPICall appCMSPageAPICall;
     private Activity currentActivity;
     private Navigation navigation;
     private boolean loadFromFile;
@@ -128,7 +134,7 @@ public class AppCMSPresenter {
     public AppCMSPresenter(AppCMSMainUICall appCMSMainUICall,
                            AppCMSAndroidUICall appCMSAndroidUICall,
                            AppCMSPageUICall appCMSPageUICall,
-                           AppCMSPageAPICall appCMSPageAPICall,
+                           AppCMSSiteCall appCMSSiteCall,
                            AppCMSSearchCall appCMSSearchCall,
                            Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                            Map<String, String> pageNameToActionMap,
@@ -138,7 +144,7 @@ public class AppCMSPresenter {
         this.appCMSMainUICall = appCMSMainUICall;
         this.appCMSAndroidUICall = appCMSAndroidUICall;
         this.appCMSPageUICall = appCMSPageUICall;
-        this.appCMSPageAPICall = appCMSPageAPICall;
+        this.appCMSSiteCall = appCMSSiteCall;
         this.appCMSSearchCall = appCMSSearchCall;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.pageNameToActionMap = pageNameToActionMap;
@@ -176,7 +182,8 @@ public class AppCMSPresenter {
                 Log.e(TAG, "Action " + action + " not found!");
                 return false;
             }
-            if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE) {
+            if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
+                    actionType == AppCMSActionType.WATCH_TRAILER) {
                 Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
                 playVideoIntent.putExtra(currentActivity.getString(R.string.video_fragment_tag_key),
                     extraData);
@@ -185,6 +192,13 @@ public class AppCMSPresenter {
                                 .getGeneral()
                                 .getBackgroundColor());
                 currentActivity.startActivity(playVideoIntent);
+            } else if (actionType == AppCMSActionType.SHARE) {
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, extraData);
+                sendIntent.setType("text/plain");
+                currentActivity.startActivity(Intent.createChooser(sendIntent,
+                        currentActivity.getResources().getText(R.string.send_to)));
             } else {
                 cancelInternalEvents();
                 pushActionInternalEvents(action);
@@ -564,12 +578,13 @@ public class AppCMSPresenter {
                     Log.d(TAG, "Version: " + version);
                     Log.d(TAG, "OldVersion: " + oldVersion);
                     loadFromFile = false;
+
                     appCMSSearchUrlComponent = DaggerAppCMSSearchUrlComponent.builder()
                         .appCMSSearchUrlModule(new AppCMSSearchUrlModule(main.getApiBaseUrl(),
                                 main.getSite(),
                                 appCMSSearchCall))
                         .build();
-                    getAppCMSAndroid(activity, main);
+                    getAppCMSSite(activity, main);
                 }
             }
         }).execute(params);
@@ -581,7 +596,8 @@ public class AppCMSPresenter {
 
     public boolean isActionAPage(String action) {
         for (Primary primary : navigation.getPrimary()) {
-            if (primary.getPageId().equals(action)) {
+            if (!TextUtils.isEmpty(primary.getPageId()) &&
+                    primary.getPageId().equals(action)) {
                 return true;
             }
         }
@@ -684,6 +700,29 @@ public class AppCMSPresenter {
         appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
 
         activity.startActivityForResult(appCMSIntent, LAUNCH_PAGE_ACTIVITY);
+    }
+
+    private void getAppCMSSite(final Activity activity,
+                               final AppCMSMain main) {
+        String url = currentActivity.getString(R.string.app_cms_site_api_url,
+                main.getApiBaseUrl(),
+                main.getDomainName());
+        new GetAppCMSSiteAsyncTask(appCMSSiteCall,
+                new Action1<AppCMSSite>() {
+                    @Override
+                    public void call(AppCMSSite appCMSSite) {
+                        if (appCMSSite != null) {
+                            appCMSPageAPICall =
+                                    DaggerAppCMSAPIComponent.builder()
+                                            .appCMSAPIModule(new AppCMSAPIModule(activity,
+                                                    main.getApiBaseUrl(),
+                                                    appCMSSite.getGist().getAppAccess().getAppSecretKey()))
+                                            .build()
+                                            .appCMSPageAPICall();
+                            getAppCMSAndroid(activity, main);
+                        }
+                    }
+                }).execute(url);
     }
 
     private void getAppCMSAndroid(final Activity activity, final AppCMSMain main) {

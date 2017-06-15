@@ -9,6 +9,7 @@ public enum AppCMSActionType {
     HOME_PAGE,
     VIDEO_PAGE,
     PLAY_VIDEO_PAGE,
+    WATCH_TRAILER,
     SHARE,
     CLOSE
 }

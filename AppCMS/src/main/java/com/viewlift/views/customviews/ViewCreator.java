@@ -303,12 +303,12 @@ public class ViewCreator {
                 break;
             case PAGE_BUTTON_KEY:
                 // IGNORE FOR NOW
-                if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_WATCH_NOW_KEY) {
+                if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_ADD_TO_WATCHLIST_KEY) {
                     return componentViewResult;
                 }
                 componentViewResult.componentView = new Button(context);
                 if (!gridElement) {
-                    if (!TextUtils.isEmpty(component.getText())) {
+                    if (!TextUtils.isEmpty(component.getText()) && componentKey != AppCMSUIKeyType.PAGE_PLAY_KEY) {
                         ((TextView) componentViewResult.componentView).setText(component.getText());
                     } else if (!moduleAPI.getSettings().getHideTitle() &&
                             !TextUtils.isEmpty(moduleAPI.getTitle())) {
@@ -329,8 +329,33 @@ public class ViewCreator {
                     case PAGE_INFO_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.info_icon));
                         break;
+                    case PAGE_VIDEO_WATCH_TRAILER_KEY:
+                        if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
+                                moduleAPI.getContentData().get(0).getContentDetails().getTrailers() != null &&
+                                moduleAPI.getContentData().get(0).getContentDetails().getTrailers().size() > 0 &&
+                                moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
+                            componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
+                                            component.getAction(),
+                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                            moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls())) {
+                                        Log.e(TAG, "Could not launch action: " +
+                                                " permalink: " +
+                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
+                                                " action: " +
+                                                component.getAction() +
+                                                " hls URL: " +
+                                                moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
+                                    }
+                                }
+                            });
+                        } else {
+                            componentViewResult.componentView.setEnabled(false);
+                        }
+                        break;
                     case PAGE_VIDEO_PLAY_BUTTON_KEY:
-                        final String hlsUrl = moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls();
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -361,10 +386,29 @@ public class ViewCreator {
                     case PAGE_VIDEO_SHARE_KEY:
                         Drawable shareDrawable = ContextCompat.getDrawable(context, R.drawable.share);
                         componentViewResult.componentView.setBackground(shareDrawable);
+                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                StringBuilder filmUrl = new StringBuilder();
+                                filmUrl.append(appCMSPresenter.getAppCMSMain().getDomainName());
+                                filmUrl.append(moduleAPI.getContentData().get(0).getGist().getPermalink());
+                                if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
+                                        component.getAction(),
+                                        moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                        filmUrl.toString())) {
+                                    Log.e(TAG, "Could not launch action: " +
+                                            " permalink: " +
+                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
+                                            " action: " +
+                                            component.getAction() +
+                                            " film URL: " +
+                                            filmUrl.toString());
+                                }
+                            }
+                        });
                         break;
                     case PAGE_VIDEO_CLOSE_KEY:
-                        Drawable closeDrawable = ContextCompat.getDrawable(context, R.drawable.cancel);
-                        componentViewResult.componentView.setBackground(closeDrawable);
+                        componentViewResult.componentView = null;
                         break;
                     default:
                 }

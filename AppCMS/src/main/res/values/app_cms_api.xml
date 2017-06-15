@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primary app values -->
-    <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
+    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
     <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
-    <string name="app_cms_app_name">d9162bc2-1228-43da-84bf-e0e56421fe79</string>
+    <string name="app_cms_app_name">00000149-86ec-d4f3-a7e9-e6fe760d0000</string>
     <string name="app_cms_url_with_appended_timestamp">%1$s?x=%2$d</string>
+    <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
 
     <!-- AppCMS Search API -->
     <string name="app_cms_search_api_url">%1$s/content/search?site=%2$s&amp;searchTerm=%3$s</string>
@@ -48,6 +49,9 @@
     <string name="app_cms_page_video_ageLabel_key">ageLabel</string>
     <string name="app_cms_page_video_share_key">shareButton</string>
     <string name="app_cms_page_video_close_key">closeButton</string>
+    <string name="app_cms_page_video_watchnow_key">watchNow</string>
+    <string name="app_cms_page_watchTrailer_key">watchTrailer</string>
+    <string name="app_cms_page_share_key">shareButton</string>
     <string name="app_cms_page_video_starrating_key">starRating</string>
     <string name="app_cms_page_video_credits_director_key">Director</string>
     <string name="app_cms_page_video_credits_directedby_key">Directed by</string>
@@ -69,6 +73,8 @@
     <string name="app_cms_action_movies_nav">Movies</string>
     <string name="app_cms_action_videopage_key">play</string>
     <string name="app_cms_action_watchvideo_key">watchVideo</string>
+    <string name="app_cms_action_watchtrailervideo_key">watchTrailer</string>
+    <string name="app_cms_action_share_key">share</string>
 
     <!-- AppCMS Data values -->
     <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true</string>

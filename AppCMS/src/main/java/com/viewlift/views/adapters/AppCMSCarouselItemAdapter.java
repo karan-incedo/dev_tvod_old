@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -86,28 +87,24 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                synchronized(listView) {
-                    int firstVisibleIndex =
-                            ((LinearLayoutManager) AppCMSCarouselItemAdapter.this.listView.getLayoutManager()).findFirstVisibleItemPosition();
-                    int lastVisibleIndex =
-                            ((LinearLayoutManager) AppCMSCarouselItemAdapter.this.listView.getLayoutManager()).findLastVisibleItemPosition();
-                    if (firstVisibleIndex != lastVisibleIndex) {
-                        View firstVisibleView = AppCMSCarouselItemAdapter.this.listView.getLayoutManager().findViewByPosition(firstVisibleIndex);
-                        Rect firstVisibleBounds = new Rect();
-                        firstVisibleView.getLocalVisibleRect(firstVisibleBounds);
-                        int firstViewVisibleWidth = firstVisibleBounds.right - firstVisibleBounds.left;
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    synchronized (listView) {
+                        int firstVisibleIndex =
+                                ((LinearLayoutManager) AppCMSCarouselItemAdapter.this.listView.getLayoutManager()).findFirstVisibleItemPosition();
+                        int lastVisibleIndex =
+                                ((LinearLayoutManager) AppCMSCarouselItemAdapter.this.listView.getLayoutManager()).findLastVisibleItemPosition();
+                        if (firstVisibleIndex != lastVisibleIndex) {
+                            listView.removeOnScrollListener(this);
+                            int nextVisibleViewIndex = lastVisibleIndex;
+                            if (updatedIndex != firstVisibleIndex) {
+                                nextVisibleViewIndex = firstVisibleIndex;
+                            }
 
-                        View lastVisibleView = AppCMSCarouselItemAdapter.this.listView.getLayoutManager().findViewByPosition(lastVisibleIndex);
-                        Rect lastVisibleBounds = new Rect();
-                        lastVisibleView.getLocalVisibleRect(lastVisibleBounds);
-                        int lastVisibleWidth = lastVisibleBounds.right - lastVisibleBounds.left;
-
-                        int nextVisibleViewIndex = firstViewVisibleWidth > lastVisibleWidth ? firstVisibleIndex : lastVisibleIndex;
-
-                        listView.smoothScrollToPosition(nextVisibleViewIndex);
-                        sendEvent(new InternalEvent<Object>(nextVisibleViewIndex));
-                        Log.d(TAG, "Carousel touch index updated");
-                        setUpdatedIndex(nextVisibleViewIndex);
+                            listView.smoothScrollToPosition(nextVisibleViewIndex);
+                            sendEvent(new InternalEvent<Object>(nextVisibleViewIndex));
+                            Log.d(TAG, "Carousel touch index updated");
+                            setUpdatedIndex(nextVisibleViewIndex);
+                        }
                     }
                 }
             }
@@ -116,6 +113,38 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
         this.listView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
             @Override
             public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
+                int[] parentLocation = new int[2];
+                recyclerView.getLocationOnScreen(parentLocation);
+                int firstVisibleIndex =
+                        ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+                int lastVisibleIndex =
+                        ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+                for (int i = firstVisibleIndex; i <= lastVisibleIndex; i++) {
+                    View childView = recyclerView.getLayoutManager().findViewByPosition(firstVisibleIndex);
+                    if (childView instanceof CollectionGridItemView) {
+                        CollectionGridItemView collectionGridItemView = (CollectionGridItemView) childView;
+                        ViewGroup childContainer = collectionGridItemView.getChildrenContainer();
+                        for (int j = 0; j < childContainer.getChildCount(); j++) {
+                            View gridItemChildView = childContainer.getChildAt(j);
+                            if (gridItemChildView instanceof Button) {
+                                int[] childLocation = new int[2];
+                                gridItemChildView.getLocationOnScreen(childLocation);
+                                int childWidth = gridItemChildView.getWidth();
+                                int childHeight = gridItemChildView.getHeight();
+                                int eventX = (int) motionEvent.getX() + parentLocation[0];
+                                int eventY = (int) motionEvent.getY() + parentLocation[1];
+                                if (childLocation[0] <= eventX && eventX <= childLocation[0] + childWidth) {
+                                    if (childLocation[1] <= eventY && eventY <= childLocation[1] + childHeight) {
+                                        onClickHandler.click(collectionGridItemView.matchComponentToView(gridItemChildView),
+                                                adapterData.get(i % adapterData.size()));
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 if (motionEvent.getActionMasked() == MotionEvent.ACTION_DOWN) {
                     carouselHandler.removeCallbacks(carouselUpdater);
                     listView.setOnScrollListener(scrollListener);

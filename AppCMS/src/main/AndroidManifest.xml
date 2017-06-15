@@ -31,7 +31,8 @@
         <activity android:name="com.viewlift.views.activity.AppCMSErrorActivity" />
         <activity android:name="com.viewlift.views.activity.AppCMSNavItemsActivity" />
         <activity android:name="com.viewlift.views.activity.AppCMSPlayVideoActivity"
-            android:configChanges="orientation|screenSize" />
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTask" />
         <activity android:name="com.viewlift.views.activity.AppCMSSearchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />

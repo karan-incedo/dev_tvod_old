@@ -36,4 +36,5 @@
     <string name="app_cms_bg_color_key">app_cms_bg_color</string>
     <string name="app_cms_on_action_internal_events_key">app_cms_on_action_internal_events</string>
     <string name="resume_internal_events_key">resume_internal_events</string>
+    <string name="send_to">Share Video</string>
 </resources>

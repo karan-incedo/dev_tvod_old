@@ -17,7 +17,7 @@ import rx.functions.Action1;
  */
 
 public class GetAppCMSMainUIAsyncTask extends AsyncTask<GetAppCMSMainUIAsyncTask.Params, Integer, AppCMSMain> {
-    private static final String TAG = "";
+    private static final String TAG = "GetAppCMSMainAsyncTask";
 
     private final AppCMSMainUICall call;
     private final Action1<AppCMSMain> readyAction;
