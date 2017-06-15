@@ -100,14 +100,14 @@ public class CollectionGridItemView extends BaseView {
         if (component.getStyles() != null) {
             int margin = (int) convertDpToPixel(component.getStyles().getPadding(), getContext());
             MarginLayoutParams marginLayoutParams = new MarginLayoutParams(width, height);
-            marginLayoutParams.setMargins(0, margin, margin, 0);
+            marginLayoutParams.setMargins(0, 0, margin, 0);
             layoutParams = new FrameLayout.LayoutParams(marginLayoutParams);
         } else if (getTrayPadding(getContext(), component.getLayout()) != -1.0f) {
             int margin = (int) convertDpToPixel(getTrayPadding(getContext(),
                     component.getLayout()),
                     getContext());
             MarginLayoutParams marginLayoutParams = new MarginLayoutParams(width, height);
-            marginLayoutParams.setMargins(0, margin, margin, 0);
+            marginLayoutParams.setMargins(0, 0, margin, 0);
             layoutParams = new FrameLayout.LayoutParams(marginLayoutParams);
         } else {
             layoutParams = new FrameLayout.LayoutParams(width, height);
@@ -189,21 +189,36 @@ public class CollectionGridItemView extends BaseView {
                             childViewHeight > 0 &&
                             childViewWidth > 0 &&
                             !TextUtils.isEmpty(data.getGist().getPosterImageUrl())) {
-                        Picasso.with(context)
-                                .load(data.getGist().getPosterImageUrl())
-                                .resize(childViewWidth, childViewHeight)
-                                .centerCrop()
-                                .onlyScaleDown()
-                                .into((ImageView) view);
+                        if (isLandscape(getContext())) {
+                            Picasso.with(context)
+                                    .load(data.getGist().getPosterImageUrl())
+                                    .resize(childViewWidth, childViewHeight)
+                                    .centerCrop()
+                                    .onlyScaleDown()
+                                    .into((ImageView) view);
+                        } else {
+                            Picasso.with(context)
+                                    .load(data.getGist().getPosterImageUrl())
+                                    .resize(childViewWidth, childViewHeight)
+                                    .centerCrop()
+                                    .onlyScaleDown()
+                                    .into((ImageView) view);
+                        }
                     } else if (childViewHeight > 0 &&
                             childViewWidth > 0 &&
                             !TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
-                        Picasso.with(context)
-                                .load(data.getGist().getVideoImageUrl())
-                                .resize(childViewWidth, childViewHeight)
-                                .centerCrop()
-                                .onlyScaleDown()
-                                .into((ImageView) view);
+                        if (isLandscape(getContext())) {
+                            Picasso.with(context)
+                                    .load(data.getGist().getVideoImageUrl())
+                                    .into((ImageView) view);
+                        } else {
+                            Picasso.with(context)
+                                    .load(data.getGist().getVideoImageUrl())
+                                    .resize(childViewWidth, childViewHeight)
+                                    .centerCrop()
+                                    .onlyScaleDown()
+                                    .into((ImageView) view);
+                        }
                     } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
                         Picasso.with(context)

@@ -152,7 +152,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                 jsonValueKeyMap,
                 defaultWidth,
                 defaultHeight,
-                useMarginsAsPercentages);
+                useMarginsAsPercentages,
+                false);
         return new ViewHolder(view);
     }
 

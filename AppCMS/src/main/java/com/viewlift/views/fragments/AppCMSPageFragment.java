@@ -49,20 +49,24 @@ public class AppCMSPageFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         if (context instanceof OnPageCreation){
-            onPageCreation = (OnPageCreation) context;
-            appCMSBinder =
-                    ((AppCMSBinder) getArguments().getBinder(context.getString(R.string.fragment_page_bundle_key)));
-            appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
-                    .getAppCMSPresenterComponent()
-                    .appCMSPresenter();
-            appCMSViewComponent = DaggerAppCMSViewComponent
-                    .builder()
-                    .appCMSPageViewModule(new AppCMSPageViewModule(context,
-                            appCMSBinder.getAppCMSPageUI(),
-                            appCMSBinder.getAppCMSPageAPI(),
-                            appCMSBinder.getJsonValueKeyMap(),
-                            appCMSPresenter))
-                    .build();
+            try {
+                onPageCreation = (OnPageCreation) context;
+                appCMSBinder =
+                        ((AppCMSBinder) getArguments().getBinder(context.getString(R.string.fragment_page_bundle_key)));
+                appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
+                        .getAppCMSPresenterComponent()
+                        .appCMSPresenter();
+                appCMSViewComponent = DaggerAppCMSViewComponent
+                        .builder()
+                        .appCMSPageViewModule(new AppCMSPageViewModule(context,
+                                appCMSBinder.getAppCMSPageUI(),
+                                appCMSBinder.getAppCMSPageAPI(),
+                                appCMSBinder.getJsonValueKeyMap(),
+                                appCMSPresenter))
+                        .build();
+            } catch (ClassCastException e) {
+                Log.e(TAG, "Could not attach fragment: " + e.toString());
+            }
         } else {
             throw new RuntimeException("Attached context must implement " +
                 OnPageCreation.class.getCanonicalName());

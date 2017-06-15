@@ -73,7 +73,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 jsonValueKeyMap,
                 defaultWidth,
                 defaultHeight,
-                useMarginsAsPercentages);
+                useMarginsAsPercentages,
+                true);
         return new ViewHolder(view);
     }
 

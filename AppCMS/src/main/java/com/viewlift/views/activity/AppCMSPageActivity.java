@@ -190,6 +190,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     public void onBackPressed() {
         super.onBackPressed();
         Log.d(TAG, "Back pressed - Binder stack size: " + appCMSBinderStack.size());
+        pageLoading(false);
         handleBack(true, appCMSBinderStack.size() < 2, true);
         if (appCMSBinderStack.size() > 0 && appCMSBinderMap.get(appCMSBinderStack.peek()) != null) {
             AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
@@ -283,7 +284,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             Log.d(TAG, "Resetting previous AppCMS data: " + appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName());
         }
         if (shouldPopStack() || closeActionPage) {
-            getSupportFragmentManager().popBackStack();
+            try {
+                getSupportFragmentManager().popBackStack();
+            } catch (IllegalStateException e) {
+                Log.e(TAG, "Failed to pop Fragment from back stack");
+            }
             if (recurse) {
                 Log.d(TAG, "Handling back - recursive op");
                 handleBack(popBinderStack, closeActionPage && appCMSBinderStack.size() > 0, recurse);
@@ -319,12 +324,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     }
 
     private void createFragment(AppCMSBinder appCMSBinder) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        Fragment appCMSPageFragment = AppCMSPageFragment.newInstance(this, appCMSBinder);
-        fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment, appCMSBinder.getPageId());
-        fragmentTransaction.addToBackStack(appCMSBinder.getPageId());
-        fragmentTransaction.commit();
+        try {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            Fragment appCMSPageFragment = AppCMSPageFragment.newInstance(this, appCMSBinder);
+            fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment, appCMSBinder.getPageId());
+            fragmentTransaction.addToBackStack(appCMSBinder.getPageId());
+            fragmentTransaction.commit();
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "Failed to pop Fragment from back stack");
+        }
     }
 
     private void selectNavItemAndLaunchPage(NavBarItemView v, String pageId, String pageTitle) {

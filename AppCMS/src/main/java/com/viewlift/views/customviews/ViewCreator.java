@@ -112,7 +112,6 @@ public class ViewCreator {
                                  AppCMSPresenter appCMSPresenter) {
         ModuleView moduleView = new ModuleView(context, module);
         ViewGroup childrenContainer = moduleView.getChildrenContainer();
-        boolean hideOnFullscreenLandscape = true;
         if (module.getComponents() != null &&
                 moduleAPI != null &&
                 moduleAPI.getContentData() != null &&
@@ -177,13 +176,13 @@ public class ViewCreator {
                                                                Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                                int defaultWidth,
                                                                int defaultHeight,
-                                                               boolean useMarginsAsPercentages) {
+                                                               boolean useMarginsAsPercentages,
+                                                               boolean gridElement) {
         CollectionGridItemView collectionGridItemView = new CollectionGridItemView(context,
                 component,
                 defaultWidth,
                 defaultHeight);
         List<OnInternalEvent> onInternalEvents = new ArrayList<>();
-        boolean hideOnFullScreenLandscape = true;
         for (int i = 0; i < component.getComponents().size(); i++) {
             Component childComponent = component.getComponents().get(i);
             ComponentViewResult componentViewResult = createComponentView(context,
@@ -192,7 +191,7 @@ public class ViewCreator {
                     settings,
                     jsonValueKeyMap,
                     appCMSPresenter,
-                    true);
+                    gridElement);
             if (componentViewResult.onInternalEvent != null) {
                 onInternalEvents.add(componentViewResult.onInternalEvent);
             }
@@ -290,9 +289,9 @@ public class ViewCreator {
                 break;
             case PAGE_PAGE_CONTROL_VIEW_KEY:
                 int selectedColor =
-                        component.getSelectedColor() != null ? Color.parseColor(getColor(component.getSelectedColor())) : 0;
+                        component.getSelectedColor() != null ? Color.parseColor(getColor(context, component.getSelectedColor())) : 0;
                 int deselectedColor =
-                        component.getUnSelectedColor() != null ? Color.parseColor(getColor(component.getUnSelectedColor())) : 0;
+                        component.getUnSelectedColor() != null ? Color.parseColor(getColor(context, component.getUnSelectedColor())) : 0;
                 componentViewResult.componentView = new DotSelectorView(context,
                         component,
                         selectedColor,
@@ -313,12 +312,15 @@ public class ViewCreator {
                     }
                 }
                 if (!TextUtils.isEmpty(component.getTextColor())) {
-                    ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(component.getTextColor())));
+                    ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context, component.getTextColor())));
                 }
                 if (!TextUtils.isEmpty(component.getBackgroundColor())) {
-                    componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(component.getBackgroundColor())));
+                    componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
+                } else {
+                    applyBorderToComponent(context, componentViewResult.componentView, component);
                 }
-                int tintColor = Color.parseColor(getColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
+                int tintColor = Color.parseColor(getColor(context,
+                        appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
                 switch (componentKey) {
                     case PAGE_INFO_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.info_icon));
@@ -416,14 +418,9 @@ public class ViewCreator {
                                 }
                                 ((TextView) componentViewResult.componentView).setText(convertedRating);
                                 ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
-                                if (component.getBorderWidth() > 0 && !TextUtils.isEmpty(component.getBorderColor())) {
-                                    GradientDrawable ageBorder = new GradientDrawable();
-                                    ageBorder.setShape(GradientDrawable.RECTANGLE);
-                                    ageBorder.setStroke(component.getBorderWidth(),
-                                            Color.parseColor(getColor(component.getBorderColor())));
-                                    ageBorder.setColor(ContextCompat.getColor(context, android.R.color.transparent));
-                                    componentViewResult.componentView.setBackground(ageBorder);
-                                }
+                                applyBorderToComponent(context,
+                                        componentViewResult.componentView,
+                                        component);
                             }
                         default:
                     }
@@ -432,16 +429,16 @@ public class ViewCreator {
                     ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
                 }
                 if (!TextUtils.isEmpty(component.getTextColor())) {
-                    ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(component.getTextColor())));
+                    ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context, component.getTextColor())));
                 } else if (component.getStyles() != null) {
                     if (!TextUtils.isEmpty(component.getStyles().getColor())) {
-                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(component.getStyles().getColor())));
+                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context, component.getStyles().getColor())));
                     } else if (!TextUtils.isEmpty(component.getStyles().getTextColor())) {
-                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(component.getStyles().getTextColor())));
+                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context, component.getStyles().getTextColor())));
                     }
                 }
                 if (!TextUtils.isEmpty(component.getBackgroundColor())) {
-                    componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(component.getBackgroundColor())));
+                    componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
                 }
                 if (!TextUtils.isEmpty(component.getFontFamily())) {
                     AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
@@ -458,25 +455,30 @@ public class ViewCreator {
                 componentViewResult.componentView = new ImageView(context);
                 switch (componentKey) {
                     case PAGE_VIDEO_IMAGE_KEY:
-                        int viewWidth = context.getResources().getDisplayMetrics().widthPixels;
+                        int viewWidth = BaseView.isLandscape(context) ?
+                                ViewGroup.LayoutParams.WRAP_CONTENT :
+                                context.getResources().getDisplayMetrics().widthPixels;
                         int viewHeight = (int) BaseView.getViewHeight(context,
                                 component.getLayout(),
-                                context.getResources().getDisplayMetrics().heightPixels);
-                        if (viewHeight > viewWidth) {
+                                ViewGroup.LayoutParams.WRAP_CONTENT);
+                        if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
                             Picasso.with(context)
                                     .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
+                                    .resize(viewWidth, viewHeight)
+                                    .centerCrop()
+                                    .into((ImageView) componentViewResult.componentView);
+                        } else if (viewWidth > 0){
+                            Picasso.with(context)
+                                    .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                     .resize(viewWidth, viewHeight)
                                     .centerCrop()
                                     .into((ImageView) componentViewResult.componentView);
                         } else {
                             Picasso.with(context)
                                     .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                    .resize(viewWidth, viewHeight)
-                                    .centerCrop()
                                     .into((ImageView) componentViewResult.componentView);
-
                         }
-                        componentViewResult.useWidthOfScreen = true;
+                        componentViewResult.useWidthOfScreen = !BaseView.isLandscape(context);
                         break;
                     default:
                         if (!TextUtils.isEmpty(component.getImageName())) {
@@ -491,14 +493,15 @@ public class ViewCreator {
                         null,
                         R.style.Widget_AppCompat_ProgressBar_Horizontal);
                 if (!TextUtils.isEmpty(component.getProgressColor())) {
-                    int color = Color.parseColor(getColor(component.getProgressColor()));
+                    int color = Color.parseColor(getColor(context, component.getProgressColor()));
                     ((ProgressBar) componentViewResult.componentView).setProgressDrawable(new ColorDrawable(color));
                 }
                 break;
             case PAGE_SEPARATOR_VIEW_KEY:
                 componentViewResult.componentView = new View(context);
                 if (!TextUtils.isEmpty(component.getBackgroundColor())) {
-                    componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(component.getBackgroundColor())));
+                    componentViewResult.componentView.
+                            setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
                 }
                 break;
             case PAGE_CASTVIEW_VIEW_KEY:
@@ -538,7 +541,7 @@ public class ViewCreator {
                     fontFamilyValueType = Typeface.BOLD;
                 }
 
-                int textColor = Color.parseColor(getColor(component.getTextColor()));
+                int textColor = Color.parseColor(getColor(context, component.getTextColor()));
 
                 String directorTitle = null;
                 StringBuffer directorListSb = new StringBuffer();
@@ -587,8 +590,8 @@ public class ViewCreator {
                         BaseView.getFontSizeValue(context, component.getLayout()));
                 break;
             case PAGE_VIDEO_STARRATING_KEY:
-                int starBorderColor = Color.parseColor(getColor(component.getBorderColor()));
-                int starFillColor = Color.parseColor(getColor(component.getFillColor()));
+                int starBorderColor = Color.parseColor(getColor(context, component.getBorderColor()));
+                int starFillColor = Color.parseColor(getColor(context, component.getFillColor()));
                 float starRating = moduleAPI.getContentData().get(0).getGist().getAverageStarRating();
                 componentViewResult.componentView = new StarRating(context,
                         starBorderColor,
@@ -616,13 +619,13 @@ public class ViewCreator {
             infoText.append(runtime + context.getString(R.string.mins_abbreviation));
         }
         if (appendFirstSep) {
-            infoText.append(" | ");
+            infoText.append(context.getString(R.string.text_separator));
         }
         if (!TextUtils.isEmpty(year)) {
             infoText.append(year);
         }
         if (appendSecondSep) {
-            infoText.append(" | ");
+            infoText.append(context.getString(R.string.text_separator));
         }
         if (!TextUtils.isEmpty(primaryCategory)) {
             infoText.append(primaryCategory.toUpperCase());
@@ -631,9 +634,9 @@ public class ViewCreator {
         view.setAlpha(0.6f);
     }
 
-    private String getColor(String color) {
-        if (color.indexOf("#") != 0) {
-            return "#" + color;
+    private String getColor(Context context, String color) {
+        if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
+            return context.getString(R.string.color_hash_prefix) + color;
         }
         return color;
     }
@@ -649,5 +652,18 @@ public class ViewCreator {
             }
         }
         return null;
+    }
+
+    private void applyBorderToComponent(Context context, View view, Component component) {
+        if (component.getBorderWidth() != null && component.getBorderColor() != null) {
+            if (component.getBorderWidth() > 0 && !TextUtils.isEmpty(component.getBorderColor())) {
+                GradientDrawable ageBorder = new GradientDrawable();
+                ageBorder.setShape(GradientDrawable.RECTANGLE);
+                ageBorder.setStroke(component.getBorderWidth(),
+                        Color.parseColor(getColor(context, component.getBorderColor())));
+                ageBorder.setColor(ContextCompat.getColor(context, android.R.color.transparent));
+                view.setBackground(ageBorder);
+            }
+        }
     }
 }

@@ -16,6 +16,8 @@
     <string name="menu_navigation_key">menu_navigation</string>
     <string name="ellipse_char">&#8230;</string>
     <string name="mins_abbreviation">MINS</string>
+    <string name="text_separator">&#160;|&#160;</string>
+    <string name="color_hash_prefix">#</string>
 
     <!-- Age rating values -->
     <string name="age_rating_y">Y</string>

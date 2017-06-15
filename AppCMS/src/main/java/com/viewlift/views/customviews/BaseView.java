@@ -115,21 +115,21 @@ public abstract class BaseView extends FrameLayout {
                 TabletLandscape tabletLandscape = layout.getTabletLandscape();
                 if (tabletLandscape != null) {
                     if (getViewWidth(tabletLandscape) != -1) {
-                        viewWidth = Math.round(DEVICE_WIDTH * (getViewWidth(tabletLandscape) / STANDARD_TABLET_WIDTH_PX));
+                        viewWidth = Math.round(DEVICE_WIDTH * (getViewWidth(tabletLandscape) / STANDARD_TABLET_HEIGHT_PX));
                         if (tabletLandscape.getXAxis() != null) {
-                            float scaledX = DEVICE_WIDTH * (tabletLandscape.getXAxis() / STANDARD_TABLET_WIDTH_PX);
+                            float scaledX = DEVICE_WIDTH * (tabletLandscape.getXAxis() / STANDARD_TABLET_HEIGHT_PX);
                             lm = Math.round(scaledX);
                         }
                     }
                     if (getViewHeight(tabletLandscape) != -1) {
                         viewHeight = (int) convertDpToPixel(getViewHeight(tabletLandscape), getContext());
                         if (tabletLandscape.getYAxis() != null) {
-                            float scaledY = DEVICE_HEIGHT * (tabletLandscape.getYAxis() / STANDARD_TABLET_HEIGHT_PX);
+                            float scaledY = DEVICE_HEIGHT * (tabletLandscape.getYAxis() / STANDARD_TABLET_WIDTH_PX);
                             tm = Math.round(scaledY);
                         }
                     }
                     if (getViewWidth(tabletLandscape) == -1 && tabletLandscape.getXAxis() != null) {
-                        float scaledX = DEVICE_WIDTH * (tabletLandscape.getXAxis() / STANDARD_TABLET_WIDTH_PX);
+                        float scaledX = DEVICE_WIDTH * (tabletLandscape.getXAxis() / STANDARD_TABLET_HEIGHT_PX);
                         lm = Math.round(scaledX);
                     } else if (tabletLandscape.getLeftMargin() != null) {
                         lm = Math.round(convertDpToPixel(tabletLandscape.getLeftMargin(), getContext()));
@@ -319,8 +319,10 @@ public abstract class BaseView extends FrameLayout {
                     viewHeight *= 2;
                     break;
                 case PAGE_THUMBNAIL_TITLE_KEY:
-                    tm -= viewHeight / 2;
-                    viewHeight *= 1.5;
+                    if (!isTablet(getContext())) {
+                        tm -= viewHeight / 2;
+                        viewHeight *= 1.5;
+                    }
                     break;
                 default:
             }
@@ -328,6 +330,17 @@ public abstract class BaseView extends FrameLayout {
             int fontsize = getFontsize(getContext(), childComponent);
             if (fontsize > 0) {
                 ((TextView) view).setTextSize((float) fontsize);
+            }
+        } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
+            AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
+            if (componentKey == null) {
+                componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+            }
+            switch (componentKey) {
+                case PAGE_THUMBNAIL_IMAGE_KEY:
+                    gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+                    break;
+                default:
             }
         }
 
@@ -341,7 +354,8 @@ public abstract class BaseView extends FrameLayout {
         layoutParams.width = viewWidth;
         layoutParams.height = viewHeight;
         if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
-                componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
+                componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY ||
+                componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
             layoutParams.gravity = gravity;
         }
         Log.d(TAG, "View params key: " +
@@ -386,8 +400,7 @@ public abstract class BaseView extends FrameLayout {
     }
 
     public static boolean isLandscape(Context context) {
-        int layoutDirection = context.getResources().getConfiguration().getLayoutDirection();
-        return layoutDirection == Configuration.ORIENTATION_LANDSCAPE;
+        return context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 
     public Action1<LifecycleStatus> getOnLifecycleChangeHandler() {
