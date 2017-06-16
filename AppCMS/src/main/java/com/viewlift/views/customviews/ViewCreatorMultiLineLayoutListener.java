@@ -23,15 +23,18 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
     private final AppCMSPresenter appCMSPresenter;
     private final String fullText;
     private final String title;
+    private final boolean forceMaxLines;
 
     public ViewCreatorMultiLineLayoutListener(TextView textView,
                                               String fullText,
                                               AppCMSPresenter appCMSPresenter,
-                                              String title) {
+                                              String title,
+                                              boolean forceMaxLines) {
         this.textView = textView;
         this.fullText = fullText;
         this.appCMSPresenter = appCMSPresenter;
         this.title = title;
+        this.forceMaxLines = forceMaxLines;
     }
 
     @Override
@@ -55,8 +58,12 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
                     spannableTextWithMore.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             textView.setText(spannableTextWithMore);
+            textView.setMovementMethod(LinkMovementMethod.getInstance());
         }
-        textView.setMovementMethod(LinkMovementMethod.getInstance());
+        if (forceMaxLines) {
+            textView.setMaxLines(linesCompletelyVisible);
+            textView.setEllipsize(TextUtils.TruncateAt.END);
+        }
         textView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
     }
 }

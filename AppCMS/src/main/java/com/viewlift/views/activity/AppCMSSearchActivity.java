@@ -1,8 +1,10 @@
 package com.viewlift.views.activity;
 
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -46,6 +48,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
 
     private SearchView appCMSSearchView;
     private AppCMSSearchItemAdapter appCMSSearchItemAdapter;
+    private BroadcastReceiver handoffReceiver;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,7 +57,8 @@ public class AppCMSSearchActivity extends AppCompatActivity {
 
         RecyclerView appCMSSearchResultsView = (RecyclerView) findViewById(R.id.app_cms_search_results);
         appCMSSearchItemAdapter =
-                new AppCMSSearchItemAdapter(((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter(),
+                new AppCMSSearchItemAdapter(this,
+                        ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter(),
                         null);
         appCMSSearchResultsView.setAdapter(appCMSSearchItemAdapter);
         appCMSSearchResultsView.requestFocus();
@@ -65,6 +69,18 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                 .getGeneral()
                 .getBackgroundColor()));
 
+        handoffReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getBooleanExtra(getString(R.string.close_self_key), true)) {
+                    Log.d(TAG, "Closing activity");
+                    finish();
+                }
+            }
+        };
+        registerReceiver(handoffReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
+
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         appCMSSearchView = (SearchView) findViewById(R.id.app_cms_searchbar);
         appCMSSearchView.setQueryHint(getString(R.string.search_films));
@@ -72,6 +88,12 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         appCMSSearchView.setIconifiedByDefault(true);
 
         handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(handoffReceiver);
     }
 
     @Override
@@ -94,9 +116,9 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                 Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String searchTerm = null;
             if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-                searchTerm = intent.getStringExtra(SearchManager.QUERY);
-            } else {
                 searchTerm = intent.getDataString();
+            } else {
+                searchTerm = intent.getStringExtra(SearchManager.QUERY);
             }
             if (!TextUtils.isEmpty(searchTerm)) {
                 searchTerm = searchTerm.replace(" ", "_");

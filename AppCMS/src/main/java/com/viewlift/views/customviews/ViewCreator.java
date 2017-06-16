@@ -440,7 +440,8 @@ public class ViewCreator {
                                     new ViewCreatorMultiLineLayoutListener(((TextView) componentViewResult.componentView),
                                             videoDescription,
                                             appCMSPresenter,
-                                            moduleAPI.getContentData().get(0).getGist().getTitle());
+                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                            false);
                             textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
                             break;
                         case PAGE_VIDEO_TITLE_KEY:

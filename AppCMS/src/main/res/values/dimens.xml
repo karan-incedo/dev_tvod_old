@@ -20,4 +20,5 @@
     <dimen name="nav_item_padding">8dp</dimen>
     <dimen name="castview_padding">24dp</dimen>
     <dimen name="searchbar_elevation">36dp</dimen>
+    <dimen name="search_item_padding_default">8dp</dimen>
 </resources>

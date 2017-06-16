@@ -12,6 +12,9 @@ public class Thumbnail {
     @SerializedName("id")
     @Expose
     private String id;
+    @SerializedName("url")
+    @Expose
+    private String url;
 
     public String getObjectKey() {
         return objectKey;
@@ -29,4 +32,11 @@ public class Thumbnail {
         this.id = id;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }

@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -269,6 +270,8 @@ public class CollectionGridItemView extends BaseView {
                     if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
                             !TextUtils.isEmpty(data.getGist().getTitle())) {
                         ((TextView) view).setText(data.getGist().getTitle());
+                        ((TextView) view).setMaxLines(1);
+                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
                         ViewCreator.setViewWithSubtitle(getContext(), data, view);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {

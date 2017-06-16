@@ -94,7 +94,8 @@ public class CreditBlocksView extends RelativeLayout {
             directorListVto.addOnGlobalLayoutListener(new ViewCreatorMultiLineLayoutListener(directorListView,
                     directorList,
                     null,
-                    null));
+                    null,
+                    true));
             LayoutParams directorListLayoutParams =
                     new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             directorListLayoutParams.addRule(ALIGN_PARENT_END);
@@ -136,7 +137,8 @@ public class CreditBlocksView extends RelativeLayout {
             starringListVto.addOnGlobalLayoutListener(new ViewCreatorMultiLineLayoutListener(starringListView,
                     starringList,
                     null,
-                    null));
+                    null,
+                    true));
             LayoutParams starringListLayoutParams =
                     new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             starringListLayoutParams.addRule(ALIGN_PARENT_END);
