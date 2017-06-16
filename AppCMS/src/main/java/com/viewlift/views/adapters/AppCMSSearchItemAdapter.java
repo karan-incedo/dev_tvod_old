@@ -34,7 +34,6 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.search_result_item,
                 viewGroup,
                 false);
-
         return new ViewHolder(view);
     }
 

@@ -353,6 +353,7 @@ public class ViewCreator {
                             });
                         } else {
                             componentViewResult.componentView.setEnabled(false);
+                            ((TextView) componentViewResult.componentView).setTextColor(ContextCompat.getColor(context, android.R.color.darker_gray));
                         }
                         break;
                     case PAGE_VIDEO_PLAY_BUTTON_KEY:
@@ -435,14 +436,23 @@ public class ViewCreator {
                                 }
                             }
                             ViewTreeObserver textVto = componentViewResult.componentView.getViewTreeObserver();
-                            ViewCreatorLayoutListener viewCreatorLayoutListener =
-                                    new ViewCreatorLayoutListener(((TextView) componentViewResult.componentView));
+                            ViewCreatorMultiLineLayoutListener viewCreatorLayoutListener =
+                                    new ViewCreatorMultiLineLayoutListener(((TextView) componentViewResult.componentView),
+                                            videoDescription,
+                                            appCMSPresenter,
+                                            moduleAPI.getContentData().get(0).getGist().getTitle());
                             textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
                             break;
                         case PAGE_VIDEO_TITLE_KEY:
                             if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
                             }
+                            ViewTreeObserver titleTextVto = componentViewResult.componentView.getViewTreeObserver();
+                            ViewCreatorTitleLayoutListener viewCreatorTitleLayoutListener =
+                                    new ViewCreatorTitleLayoutListener((TextView) componentViewResult.componentView);
+                            titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
+                            ((TextView) componentViewResult.componentView).setSingleLine(true);
+                            ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
                             break;
                         case PAGE_VIDEO_SUBTITLE_KEY:
                             setViewWithSubtitle(context,

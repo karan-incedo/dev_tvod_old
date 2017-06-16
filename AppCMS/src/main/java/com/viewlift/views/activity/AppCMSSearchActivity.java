@@ -1,16 +1,22 @@
 package com.viewlift.views.activity;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.LinearLayout;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
+import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.network.modules.AppCMSSearchUrlData;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -38,6 +44,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
     @Inject
     AppCMSSearchCall appCMSSearchCall;
 
+    private SearchView appCMSSearchView;
     private AppCMSSearchItemAdapter appCMSSearchItemAdapter;
 
     @Override
@@ -46,8 +53,23 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         RecyclerView appCMSSearchResultsView = (RecyclerView) findViewById(R.id.app_cms_search_results);
-        appCMSSearchItemAdapter = new AppCMSSearchItemAdapter(((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter(), null);
+        appCMSSearchItemAdapter =
+                new AppCMSSearchItemAdapter(((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter(),
+                        null);
         appCMSSearchResultsView.setAdapter(appCMSSearchItemAdapter);
+        appCMSSearchResultsView.requestFocus();
+
+        AppCMSMain appCMSMain =
+                ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().getAppCMSMain();
+        appCMSSearchResultsView.setBackgroundColor(Color.parseColor(appCMSMain.getBrand()
+                .getGeneral()
+                .getBackgroundColor()));
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        appCMSSearchView = (SearchView) findViewById(R.id.app_cms_searchbar);
+        appCMSSearchView.setQueryHint(getString(R.string.search_films));
+        appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        appCMSSearchView.setIconifiedByDefault(true);
 
         handleIntent(getIntent());
     }
@@ -70,8 +92,14 @@ public class AppCMSSearchActivity extends AppCompatActivity {
 
         if (Intent.ACTION_VIEW.equals(intent.getAction()) ||
                 Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String searchTerm = intent.getDataString().replace(" ", "_");
+            String searchTerm = null;
+            if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+                searchTerm = intent.getStringExtra(SearchManager.QUERY);
+            } else {
+                searchTerm = intent.getDataString();
+            }
             if (!TextUtils.isEmpty(searchTerm)) {
+                searchTerm = searchTerm.replace(" ", "_");
                 final String url = getString(R.string.app_cms_search_api_url,
                         appCMSSearchUrlData.getBaseUrl(),
                         appCMSSearchUrlData.getSiteName(),

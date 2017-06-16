@@ -48,6 +48,9 @@ public class TabletLandscape {
     @SerializedName("fontSizeValue")
     @Expose
     private Float fontSizeValue;
+    @SerializedName("maximumWidth")
+    @Expose
+    private Float maximumWidth;
 
     public Float getYAxis() {
         return yAxis;
@@ -175,5 +178,13 @@ public class TabletLandscape {
 
     public void setFontSizeValue(Float fontSizeValue) {
         this.fontSizeValue = fontSizeValue;
+    }
+
+    public Float getMaximumWidth() {
+        return maximumWidth;
+    }
+
+    public void setMaximumWidth(Float maximumWidth) {
+        this.maximumWidth = maximumWidth;
     }
 }

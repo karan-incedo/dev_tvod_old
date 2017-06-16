@@ -91,7 +91,10 @@ public class CreditBlocksView extends RelativeLayout {
                 directorListView.setTextSize(fontsizeValue);
             }
             ViewTreeObserver directorListVto = directorListView.getViewTreeObserver();
-            directorListVto.addOnGlobalLayoutListener(new ViewCreatorLayoutListener(directorListView));
+            directorListVto.addOnGlobalLayoutListener(new ViewCreatorMultiLineLayoutListener(directorListView,
+                    directorList,
+                    null,
+                    null));
             LayoutParams directorListLayoutParams =
                     new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             directorListLayoutParams.addRule(ALIGN_PARENT_END);
@@ -130,7 +133,10 @@ public class CreditBlocksView extends RelativeLayout {
                 starringListView.setTextSize(fontsizeValue);
             }
             ViewTreeObserver starringListVto = starringListView.getViewTreeObserver();
-            starringListVto.addOnGlobalLayoutListener(new ViewCreatorLayoutListener(starringListView));
+            starringListVto.addOnGlobalLayoutListener(new ViewCreatorMultiLineLayoutListener(starringListView,
+                    starringList,
+                    null,
+                    null));
             LayoutParams starringListLayoutParams =
                     new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             starringListLayoutParams.addRule(ALIGN_PARENT_END);

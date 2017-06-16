@@ -48,6 +48,9 @@ public class TabletPortrait {
     @SerializedName("fontSizeValue")
     @Expose
     private Float fontSizeValue;
+    @SerializedName("maximumWidth")
+    @Expose
+    private Float maximumWidth;
 
     public Float getWidth() {
         return width;
@@ -175,5 +178,13 @@ public class TabletPortrait {
 
     public void setFontSizeValue(Float fontSizeValue) {
         this.fontSizeValue = fontSizeValue;
+    }
+
+    public Float getMaximumWidth() {
+        return maximumWidth;
+    }
+
+    public void setMaximumWidth(Float maximumWidth) {
+        this.maximumWidth = maximumWidth;
     }
 }

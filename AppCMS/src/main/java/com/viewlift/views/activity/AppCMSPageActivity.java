@@ -20,6 +20,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -91,8 +92,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         appCMSSearchView = (SearchView) findViewById(R.id.app_cms_search_view);
+        appCMSSearchView.setQueryHint(getString(R.string.search_films));
         appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        appCMSSearchView.setIconifiedByDefault(false);
+        appCMSSearchView.setIconifiedByDefault(true);
 
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
@@ -209,7 +211,20 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             appCMSPresenter.restartInternalEvents();
             Log.d(TAG, "onResume() - Resuming internal events");
         }
+        showSearchView(false);
+        if (pageViewDuringSearch != null) {
+            selectNavItem(pageViewDuringSearch);
+        }
         Log.d(TAG, "onResume()");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        showSearchView(false);
+        if (pageViewDuringSearch != null) {
+            selectNavItem(pageViewDuringSearch);
+        }
     }
 
     @Override
@@ -532,10 +547,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     private void showSearchView(boolean shouldShowSearchView) {
         if (shouldShowSearchView) {
             appCMSSearchViewContainer.setVisibility(View.VISIBLE);
+            appCMSSearchView.setFocusable(true);
+            appCMSSearchView.requestFocus();
+            appCMSSearchView.setIconified(false);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
             appCMSFragment.setAlpha(0.5f);
             appCMSFragment.setEnabled(false);
         } else {
             appCMSSearchViewContainer.setVisibility(View.GONE);
+            appCMSSearchView.setIconified(true);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(appCMSSearchView.getWindowToken(),0);
             appCMSFragment.setAlpha(1.0f);
             appCMSFragment.setEnabled(true);
         }

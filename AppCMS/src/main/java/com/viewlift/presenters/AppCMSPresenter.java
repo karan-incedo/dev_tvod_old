@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -617,6 +618,13 @@ public class AppCMSPresenter {
 
     public AppCMSSearchUrlComponent getAppCMSSearchUrlComponent() {
         return appCMSSearchUrlComponent;
+    }
+
+    public void showMoreDialog(String title, String fullText) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
+        builder.setTitle(title).setMessage(fullText);
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private boolean isHomePage(String pageId) {
