@@ -4,11 +4,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.FrameLayout;
 
@@ -32,15 +35,17 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_player_page);
+        FrameLayout appCMSPlayVideoPageContainer =
+                (FrameLayout) findViewById(R.id.app_cms_play_video_page_container);
 
         Intent intent = getIntent();
         String hlsUrl = intent.getStringExtra(getString(R.string.video_player_hls_url_key));
         String adsUrl = intent.getStringExtra(getString(R.string.video_player_ads_url_key));
-        int bgColor = intent.getIntExtra(getString(R.string.app_cms_bg_color_key),
-                getResources().getColor(R.color.colorPrimaryDark));
-        FrameLayout appCMSPlayVideoPageContainer =
-                (FrameLayout) findViewById(R.id.app_cms_play_video_page_container);
-        appCMSPlayVideoPageContainer.setBackgroundColor(bgColor);
+        String bgColor = intent.getStringExtra(getString(R.string.app_cms_bg_color_key));
+
+        if (!TextUtils.isEmpty(bgColor)) {
+            appCMSPlayVideoPageContainer.setBackgroundColor(Color.parseColor(bgColor));
+        }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -79,6 +84,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
     @Override
     public void closePlayer() {
-        ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction();
+        finish();
     }
 }

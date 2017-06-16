@@ -56,14 +56,7 @@ public class AppCMSPageFragment extends Fragment {
                 appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                         .getAppCMSPresenterComponent()
                         .appCMSPresenter();
-                appCMSViewComponent = DaggerAppCMSViewComponent
-                        .builder()
-                        .appCMSPageViewModule(new AppCMSPageViewModule(context,
-                                appCMSBinder.getAppCMSPageUI(),
-                                appCMSBinder.getAppCMSPageAPI(),
-                                appCMSBinder.getJsonValueKeyMap(),
-                                appCMSPresenter))
-                        .build();
+                appCMSViewComponent = buildAppCMSViewComponent();
             } catch (ClassCastException e) {
                 Log.e(TAG, "Could not attach fragment: " + e.toString());
             }
@@ -79,7 +72,16 @@ public class AppCMSPageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        pageView = appCMSViewComponent.appCMSPageView();
+        if (appCMSViewComponent == null && appCMSBinder != null) {
+            appCMSViewComponent = buildAppCMSViewComponent();
+        }
+
+        if (appCMSViewComponent != null) {
+            pageView = appCMSViewComponent.appCMSPageView();
+        } else {
+            pageView = null;
+        }
+
         if (pageView == null) {
             Log.e(TAG, "AppCMS page creation error");
             onPageCreation.onError(appCMSBinder);
@@ -98,12 +100,33 @@ public class AppCMSPageFragment extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            try {
+                appCMSBinder = (AppCMSBinder)
+                        savedInstanceState.getBinder(getString(R.string.app_cms_binder_key));
+            } catch (ClassCastException e) {
+                Log.e(TAG, "Could not attach fragment: " + e.toString());
+            }
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         if (pageView != null && (pageView.isTablet(getContext()) || appCMSBinder.isFullScreenEnabled())) {
             handleOrientation(getActivity().getResources().getConfiguration().orientation);
         }
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBinder(getString(R.string.app_cms_binder_key), appCMSBinder);
+    }
+
+
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -117,5 +140,15 @@ public class AppCMSPageFragment extends Fragment {
         } else {
             appCMSPresenter.onOrientationChange(false);
         }
+    }
+
+    public AppCMSViewComponent buildAppCMSViewComponent() {
+        return DaggerAppCMSViewComponent.builder()
+                .appCMSPageViewModule(new AppCMSPageViewModule(getContext(),
+                        appCMSBinder.getAppCMSPageUI(),
+                        appCMSBinder.getAppCMSPageAPI(),
+                        appCMSBinder.getJsonValueKeyMap(),
+                        appCMSPresenter))
+                .build();
     }
 }

@@ -108,9 +108,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION)) {
                     Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
-                    AppCMSBinder appCMSBinder =
-                            (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
-                    handleLaunchPageAction(appCMSBinder);
+                    try {
+                        AppCMSBinder appCMSBinder =
+                                (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
+                        handleLaunchPageAction(appCMSBinder);
+                    } catch (ClassCastException e) {
+                        Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
+                    }
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION)) {
                     pageLoading(true);
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM)) {
@@ -143,9 +147,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         resumeInternalEvents = false;
 
         Bundle args = getIntent().getBundleExtra(getString(R.string.app_cms_bundle_key));
-        AppCMSBinder appCMSBinder =
-                (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
-        handleLaunchPageAction(appCMSBinder);
+        try {
+            AppCMSBinder appCMSBinder =
+                    (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
+            handleLaunchPageAction(appCMSBinder);
+        } catch (ClassCastException e) {
+            Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
+        }
 
         Log.d(TAG, "onCreate()");
     }
@@ -178,11 +186,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         appCMSBinderStack.clear();
         appCMSBinderMap.clear();
         for (int i = 0; i < appCMSBinderStackSize; i++) {
-            AppCMSBinder appCMSBinder =
-                    ((AppCMSBinder) savedInstanceState.getBinder(getString(R.string.app_cms_binder_stack_element_key, i)));
-            String pageId = appCMSBinder.getPageId();
-            appCMSBinderStack.push(pageId);
-            appCMSBinderMap.put(pageId, appCMSBinder);
+            try {
+                AppCMSBinder appCMSBinder =
+                        ((AppCMSBinder) savedInstanceState.getBinder(getString(R.string.app_cms_binder_stack_element_key, i)));
+                String pageId = appCMSBinder.getPageId();
+                appCMSBinderStack.push(pageId);
+                appCMSBinderMap.put(pageId, appCMSBinder);
+            } catch (ClassCastException e) {
+                Log.e(TAG, "Could not attach fragment: " + e.toString());
+            }
         }
         resumeInternalEvents = savedInstanceState.getBoolean(getString(R.string.resume_internal_events_key));
         Log.d(TAG, "Restoring instance state");
@@ -249,8 +261,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     @Override
     public void onError(AppCMSBinder appCMSBinder) {
-        Log.e(TAG, "Nav item - Error attempting to launch page: " + appCMSBinder.getPageName() + " - " + appCMSBinder.getPageId());
-        // TODO: Create a pop up dialog with an error message
+        if (appCMSBinder != null) {
+            Log.e(TAG, "Nav item - Error attempting to launch page: " + appCMSBinder.getPageName() + " - " + appCMSBinder.getPageId());
+        }
         setFinishResult(RESULT_CANCELED);
         getSupportFragmentManager().popBackStack();
         handleBack(true, false, false);

@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import snagfilms.com.air.appcms.R;
+
 /**
  * Created by viewlift on 5/5/17.
  */
@@ -40,7 +42,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     protected boolean useMarginsAsPercentages;
     protected String defaultAction;
 
-    public AppCMSViewAdapter(ViewCreator viewCreator,
+    public AppCMSViewAdapter(Context context,
+                             ViewCreator viewCreator,
                              AppCMSPresenter appCMSPresenter,
                              Settings settings,
                              Component component,
@@ -61,7 +64,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.defaultWidth = defaultWidth;
         this.defaultHeight = defaultHeight;
         this.useMarginsAsPercentages = true;
-        this.defaultAction = getDefaultAction();
+        this.defaultAction = getDefaultAction(context);
     }
 
     @Override
@@ -101,17 +104,17 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     }
 
     protected void bindView(CollectionGridItemView itemView,
-                          final ContentDatum data) throws IllegalArgumentException {
+                            final ContentDatum data) throws IllegalArgumentException {
         if (onClickHandler == null) {
             onClickHandler = new CollectionGridItemView.OnClickHandler() {
                 @Override
                 public void click(Component childComponent, ContentDatum data) {
                     Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                     String permalink = data.getGist().getPermalink();
-                    String action = childComponent.getAction();
+                    String action = defaultAction;
                     String title = data.getGist().getTitle();
                     String hlsUrl = getHlsUrl(data);
-                    Log.d(TAG, "Launching " + permalink + ":" + action);
+                    Log.d(TAG, "Launching " + permalink + ": " + action);
                     if (!appCMSPresenter.launchButtonSelectedAction(permalink, action, title, hlsUrl)) {
                         Log.e(TAG, "Could not launch action: " +
                                 " permalink: " +
@@ -150,13 +153,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
     }
 
-    private String getDefaultAction() {
-        for (String jsonKey : jsonValueKeyMap.keySet()) {
-            if (jsonValueKeyMap.get(jsonKey) == AppCMSUIKeyType.PAGE_PLAY_KEY) {
-                return jsonKey;
-            }
-        }
-        return null;
+    private String getDefaultAction(Context context) {
+        return context.getString(R.string.app_cms_action_videopage_key);
     }
 
     private String getHlsUrl(ContentDatum data) {

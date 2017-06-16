@@ -31,6 +31,7 @@ import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.search.VideoAsset;
+import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -259,7 +260,8 @@ public class ViewCreator {
                         .setLayoutManager(new LinearLayoutManager(context,
                                 LinearLayoutManager.HORIZONTAL,
                                 false));
-                AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(this,
+                AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
+                        this,
                         appCMSPresenter,
                         settings,
                         component,
@@ -280,7 +282,8 @@ public class ViewCreator {
                     loop = settings.getLoop();
                 }
                 AppCMSCarouselItemAdapter appCMSCarouselItemAdapter =
-                        new AppCMSCarouselItemAdapter(this,
+                        new AppCMSCarouselItemAdapter(context,
+                                this,
                                 appCMSPresenter,
                                 settings,
                                 component,
@@ -338,6 +341,7 @@ public class ViewCreator {
                         if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers() != null &&
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers().size() > 0 &&
+                                moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
                             componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -365,24 +369,36 @@ public class ViewCreator {
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                VideoAssets videoAssets = moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets();
-                                String videoUrl = videoAssets.getHls();
-                                if (TextUtils.isEmpty(videoUrl)) {
-                                    for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
-                                        videoUrl = videoAssets.getMpeg().get(i).getUrl();
+                                if (moduleAPI.getContentData() != null &&
+                                        moduleAPI.getContentData().size() > 0 &&
+                                        moduleAPI.getContentData().get(0) != null &&
+                                        moduleAPI.getContentData().get(0).getStreamingInfo() != null &&
+                                        moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets() != null) {
+                                    VideoAssets videoAssets = moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets();
+                                    String videoUrl = videoAssets.getHls();
+                                    if (TextUtils.isEmpty(videoUrl)) {
+                                        for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
+                                            videoUrl = videoAssets.getMpeg().get(i).getUrl();
+                                        }
                                     }
-                                }
-                                if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
-                                        component.getAction(),
-                                        moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                        videoUrl)) {
-                                    Log.e(TAG, "Could not launch action: " +
-                                            " permalink: " +
-                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                            " action: " +
-                                            component.getAction() +
-                                            " hls URL: " +
-                                            moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
+                                    if (moduleAPI.getContentData() != null &&
+                                            moduleAPI.getContentData().size() > 0 &&
+                                            moduleAPI.getContentData().get(0) != null &&
+                                            moduleAPI.getContentData().get(0).getGist() != null &&
+                                            moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
+                                        if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
+                                                component.getAction(),
+                                                moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                                videoUrl)) {
+                                            Log.e(TAG, "Could not launch action: " +
+                                                    " permalink: " +
+                                                    moduleAPI.getContentData().get(0).getGist().getPermalink() +
+                                                    " action: " +
+                                                    component.getAction() +
+                                                    " hls URL: " +
+                                                    moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
+                                        }
+                                    }
                                 }
                             }
                         });
@@ -402,20 +418,29 @@ public class ViewCreator {
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                StringBuilder filmUrl = new StringBuilder();
-                                filmUrl.append(appCMSPresenter.getAppCMSMain().getDomainName());
-                                filmUrl.append(moduleAPI.getContentData().get(0).getGist().getPermalink());
-                                if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
-                                        component.getAction(),
-                                        moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                        filmUrl.toString())) {
-                                    Log.e(TAG, "Could not launch action: " +
-                                            " permalink: " +
-                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                            " action: " +
-                                            component.getAction() +
-                                            " film URL: " +
-                                            filmUrl.toString());
+                                AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+                                if (appCMSMain != null &&
+                                        moduleAPI.getContentData() != null &&
+                                        moduleAPI.getContentData().size() > 0 &&
+                                        moduleAPI.getContentData().get(0) != null &&
+                                        moduleAPI.getContentData().get(0).getGist() != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getTitle() != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
+                                    StringBuilder filmUrl = new StringBuilder();
+                                    filmUrl.append(appCMSMain.getDomainName());
+                                    filmUrl.append(moduleAPI.getContentData().get(0).getGist().getPermalink());
+                                    if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
+                                            component.getAction(),
+                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                            filmUrl.toString())) {
+                                        Log.e(TAG, "Could not launch action: " +
+                                                " permalink: " +
+                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
+                                                " action: " +
+                                                component.getAction() +
+                                                " film URL: " +
+                                                filmUrl.toString());
+                                    }
                                 }
                             }
                         });
@@ -627,10 +652,12 @@ public class ViewCreator {
                         if (!TextUtils.isEmpty(creditBlock.getTitle())) {
                             directorTitle = creditBlock.getTitle().toUpperCase();
                         }
-                        for (int i = 0; i < creditBlock.getCredits().size(); i++) {
-                            directorListSb.append(creditBlock.getCredits().get(i).getTitle());
-                            if (i < creditBlock.getCredits().size() - 1) {
-                                directorListSb.append(", ");
+                        if (creditBlock != null && creditBlock.getCredits() != null) {
+                            for (int i = 0; i < creditBlock.getCredits().size(); i++) {
+                                directorListSb.append(creditBlock.getCredits().get(i).getTitle());
+                                if (i < creditBlock.getCredits().size() - 1) {
+                                    directorListSb.append(", ");
+                                }
                             }
                         }
                     } else if (creditBlockType != null &&
@@ -638,10 +665,12 @@ public class ViewCreator {
                         if (!TextUtils.isEmpty(creditBlock.getTitle())) {
                             starringTitle = creditBlock.getTitle().toUpperCase();
                         }
-                        for (int i = 0; i < creditBlock.getCredits().size(); i++) {
-                            starringListSb.append(creditBlock.getCredits().get(i).getTitle());
-                            if (i < creditBlock.getCredits().size() - 1) {
-                                starringListSb.append(", ");
+                        if (creditBlock != null && creditBlock.getCredits() != null) {
+                            for (int i = 0; i < creditBlock.getCredits().size(); i++) {
+                                starringListSb.append(creditBlock.getCredits().get(i).getTitle());
+                                if (i < creditBlock.getCredits().size() - 1) {
+                                    starringListSb.append(", ");
+                                }
                             }
                         }
                     }

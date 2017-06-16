@@ -1,5 +1,6 @@
 package com.viewlift.views.adapters;
 
+import android.content.Context;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
@@ -46,7 +47,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     private boolean started;
     private RecyclerView.OnScrollListener scrollListener;
 
-    public AppCMSCarouselItemAdapter(ViewCreator viewCreator,
+    public AppCMSCarouselItemAdapter(Context context,
+                                     ViewCreator viewCreator,
                                      AppCMSPresenter appCMSPresenter,
                                      Settings settings,
                                      Component component,
@@ -54,7 +56,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                                      Module moduleAPI,
                                      final RecyclerView listView,
                                      boolean loop) {
-        super(viewCreator,
+        super(context,
+                viewCreator,
                 appCMSPresenter,
                 settings,
                 component,

@@ -89,6 +89,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             @Override
             public void onClick(View v) {
                 if (onClosePlayerEvent != null) {
+                    videoPlayerView.releasePlayer();
                     onClosePlayerEvent.closePlayer();
                 }
             }
@@ -106,6 +107,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     Log.d(TAG, "Video ended");
                     adsLoader.contentComplete();
                     if (onClosePlayerEvent != null) {
+                        videoPlayerView.releasePlayer();
                         onClosePlayerEvent.closePlayer();
                     }
                 }

@@ -447,6 +447,7 @@ public class AppCMSPresenter {
     }
 
     public boolean sendCloseOthersAction() {
+        Log.d(TAG, "Sending close others action");
         boolean result = false;
         if (currentActivity != null) {
             Intent closeOthersIntent = new Intent(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION);
@@ -512,12 +513,14 @@ public class AppCMSPresenter {
     }
 
     public void restartInternalEvents() {
-        Log.d(TAG, "Restarting internal events");
-        List<OnInternalEvent> onInternalEvents = onActionInternalEvents.get(currentActions.peek());
-        if (onInternalEvents != null) {
-            for (OnInternalEvent onInternalEvent : onInternalEvents) {
-                onInternalEvent.cancel(false);
-                Log.d(TAG, "Restarted internal event");
+        if (currentActions.size() > 0) {
+            Log.d(TAG, "Restarting internal events");
+            List<OnInternalEvent> onInternalEvents = onActionInternalEvents.get(currentActions.peek());
+            if (onInternalEvents != null) {
+                for (OnInternalEvent onInternalEvent : onInternalEvents) {
+                    onInternalEvent.cancel(false);
+                    Log.d(TAG, "Restarted internal event");
+                }
             }
         }
     }
