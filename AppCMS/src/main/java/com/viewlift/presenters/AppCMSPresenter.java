@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -186,8 +187,19 @@ public class AppCMSPresenter {
             if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
                     actionType == AppCMSActionType.WATCH_TRAILER) {
                 Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
-                playVideoIntent.putExtra(currentActivity.getString(R.string.video_fragment_tag_key),
+                playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_hls_url_key),
                     extraData);
+                StringBuffer adsSiteUrl = new StringBuffer();
+                adsSiteUrl.append("https://");
+                adsSiteUrl.append(appCMSMain.getDomainName());
+                adsSiteUrl.append("/");
+                adsSiteUrl.append(pagePath);
+                Date now = new Date();
+                playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_ads_url_key),
+                        currentActivity.getString(R.string.app_cms_ads_api_url,
+                                adsSiteUrl.toString(),
+                                now.getTime(),
+                                appCMSMain.getSite()));
                 playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_bg_color_key),
                         appCMSMain.getBrand()
                                 .getGeneral()

@@ -1,14 +1,19 @@
 package com.viewlift.views.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 
 import snagfilms.com.air.appcms.R;
@@ -17,14 +22,20 @@ import snagfilms.com.air.appcms.R;
  * Created by viewlift on 6/14/17.
  */
 
-public class AppCMSPlayVideoActivity extends AppCompatActivity {
+public class AppCMSPlayVideoActivity extends AppCompatActivity implements
+        AppCMSPlayVideoFragment.OnClosePlayerEvent {
+    private static final String TAG = "VideoPlayerActivity";
+
+    private BroadcastReceiver handoffReceiver;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_player_page);
 
         Intent intent = getIntent();
-        String hlsUrl = intent.getStringExtra(getString(R.string.video_fragment_tag_key));
+        String hlsUrl = intent.getStringExtra(getString(R.string.video_player_hls_url_key));
+        String adsUrl = intent.getStringExtra(getString(R.string.video_player_ads_url_key));
         int bgColor = intent.getIntExtra(getString(R.string.app_cms_bg_color_key),
                 getResources().getColor(R.color.colorPrimaryDark));
         FrameLayout appCMSPlayVideoPageContainer =
@@ -34,17 +45,40 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         AppCMSPlayVideoFragment appCMSPlayVideoFragment =
-                AppCMSPlayVideoFragment.newInstance(this, hlsUrl);
+                AppCMSPlayVideoFragment.newInstance(this, hlsUrl, adsUrl);
         fragmentTransaction.add(R.id.app_cms_play_video_page_container,
                 appCMSPlayVideoFragment,
                 getString(R.string.video_fragment_tag_key));
         fragmentTransaction.addToBackStack(getString(R.string.video_fragment_tag_key));
         fragmentTransaction.commit();
+
+        handoffReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getBooleanExtra(getString(R.string.close_self_key), true)) {
+                    Log.d(TAG, "Closing activity");
+                    finish();
+                }
+            }
+        };
+
+        registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(handoffReceiver);
+    }
+
+    @Override
+    public void closePlayer() {
+        ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction();
     }
 }

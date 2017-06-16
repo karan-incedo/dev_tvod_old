@@ -11,16 +11,18 @@ android {
         minSdkVersion 22
         targetSdkVersion 25
         versionCode 1
-        versionName "0.95"
+        versionName "0.98"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         debug {
+            multiDexEnabled true
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
         release {
+            multiDexEnabled true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             resValue "string", "app_name", "${customApplicationId}"
@@ -33,6 +35,16 @@ android {
     }
     lintOptions {
         disable 'InvalidPackage'
+    }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'third_party/java_src/error_prone/project/annotations/Google_internal.gwt.xml'
+        exclude 'error_prone/Annotations.gwt.xml'
+        exclude 'third_party/java_src/error_prone/project/annotations/Annotations.gwt.xml'
     }
 }
 
@@ -63,6 +75,8 @@ dependencies {
     compile "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
     compile "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
     compile "com.google.android.exoplayer:exoplayer:$rootProject.ext.exoplayerVersion"
+    compile "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
+    compile "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
     provided "javax.annotation:jsr250-api:$rootProject.ext.jsr250_apiVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
 }

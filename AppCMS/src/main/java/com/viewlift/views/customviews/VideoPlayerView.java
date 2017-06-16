@@ -10,11 +10,16 @@ import android.util.Log;
 import android.widget.FrameLayout;
 
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
@@ -23,6 +28,7 @@ import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -32,18 +38,35 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.Util;
 
+import rx.Observable;
+import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
 
 /**
  * Created by viewlift on 5/31/17.
  */
 
-public class VideoPlayerView extends FrameLayout {
+public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListener {
     private static final String TAG = "VideoPlayerFragment";
+
+    public class PlayerState {
+        boolean playWhenReady;
+        int playbackState;
+
+        public boolean isPlayWhenReady() {
+            return playWhenReady;
+        }
+
+        public int getPlaybackState() {
+            return playbackState;
+        }
+    }
 
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
 
     private Uri uri;
+    private Action1<PlayerState> onPlayerStateChanged;
+    private PlayerState playerState;
     private SimpleExoPlayer player;
     private SimpleExoPlayerView playerView;
     private int resumeWindow;
@@ -67,6 +90,10 @@ public class VideoPlayerView extends FrameLayout {
         init(context, attrs, defStyleAttr);
     }
 
+    public void setOnPlayerStateChanged(Action1<PlayerState> onPlayerStateChanged) {
+        this.onPlayerStateChanged = onPlayerStateChanged;
+    }
+
     public void setUri(Uri uri) {
         this.uri = uri;
         try {
@@ -76,14 +103,41 @@ public class VideoPlayerView extends FrameLayout {
         }
     }
 
+    public void startPlayer() {
+        if (player != null) {
+            player.setPlayWhenReady(true);
+        }
+    }
+
+    public void pausePlayer() {
+        if (player != null) {
+            player.setPlayWhenReady(false);
+        }
+    }
+
     public void stopPlayer() {
         if (player != null) {
             player.stop();
         }
     }
 
+    public long getDuration() {
+        if (player != null) {
+            return player.getDuration();
+        }
+        return -1L;
+    }
+
+    public long getCurrentPosition() {
+        if (player != null) {
+            return player.getCurrentPosition();
+        }
+        return -1L;
+    }
+
     private void init(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         initializePlayer(context, attrs, defStyleAttr);
+        playerState = new PlayerState();
     }
 
     private void initializePlayer(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
@@ -99,6 +153,7 @@ public class VideoPlayerView extends FrameLayout {
                 new DefaultTrackSelector(videoTrackSelectionFactory);
         player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
         player.setPlayWhenReady(true);
+        player.addListener(this);
         playerView.setPlayer(player);
         addView(playerView);
     }
@@ -147,5 +202,44 @@ public class VideoPlayerView extends FrameLayout {
 
     private HttpDataSource.Factory buildHttpDataSourceFactory(DefaultBandwidthMeter bandwidthMeter) {
         return new DefaultHttpDataSourceFactory(userAgent, bandwidthMeter);
+    }
+
+    @Override
+    public void onTimelineChanged(Timeline timeline, Object o) {
+
+    }
+
+    @Override
+    public void onTracksChanged(TrackGroupArray trackGroupArray, TrackSelectionArray trackSelectionArray) {
+
+    }
+
+    @Override
+    public void onLoadingChanged(boolean b) {
+
+    }
+
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        playerState.playWhenReady = playWhenReady;
+        playerState.playbackState = playbackState;
+        if (onPlayerStateChanged != null) {
+            Observable.just(playerState).subscribe(onPlayerStateChanged);
+        }
+    }
+
+    @Override
+    public void onPlayerError(ExoPlaybackException e) {
+
+    }
+
+    @Override
+    public void onPositionDiscontinuity() {
+
+    }
+
+    @Override
+    public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+
     }
 }

@@ -10,6 +10,9 @@
     <!-- AppCMS Search API -->
     <string name="app_cms_search_api_url">%1$s/content/search?site=%2$s&amp;searchTerm=%3$s</string>
 
+    <!-- AppCMS Ads API -->
+    <string name="app_cms_ads_api_url">http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&amp;iu=/225734590/SF_Video/Mapp_Android&amp;impl=s&amp;gdfp_req=1&amp;env=vp&amp;output=xml_vast2&amp;unviewed_position_start=1&amp;url=%1$s&amp;ad_rule=0&amp;correlator=%2$d&amp;cust_params=APPID=%3$s</string>
+
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>
@@ -93,5 +96,5 @@
 
     <!-- AppCMS VideoPlayer values -->
     <string name="app_cms_user_agent">AppCMS Android</string>
-    <string name="app_cms_default_video_ext">m3u8</string>
+    <string name="app_cms_default_video_ext">mp4</string>
 </resources>

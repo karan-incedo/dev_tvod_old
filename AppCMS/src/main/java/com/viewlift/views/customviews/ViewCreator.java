@@ -28,6 +28,9 @@ import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.models.data.appcms.api.StreamingInfo;
+import com.viewlift.models.data.appcms.api.VideoAssets;
+import com.viewlift.models.data.appcms.search.VideoAsset;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -41,6 +44,8 @@ import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
+
+import org.w3c.dom.Text;
 
 import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
@@ -360,10 +365,17 @@ public class ViewCreator {
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                VideoAssets videoAssets = moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets();
+                                String videoUrl = videoAssets.getHls();
+                                if (TextUtils.isEmpty(videoUrl)) {
+                                    for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
+                                        videoUrl = videoAssets.getMpeg().get(i).getUrl();
+                                    }
+                                }
                                 if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                         component.getAction(),
                                         moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                        moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls())) {
+                                        videoUrl)) {
                                     Log.e(TAG, "Could not launch action: " +
                                             " permalink: " +
                                             moduleAPI.getContentData().get(0).getGist().getPermalink() +
