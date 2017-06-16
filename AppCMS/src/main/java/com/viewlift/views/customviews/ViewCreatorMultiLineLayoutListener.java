@@ -50,7 +50,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
             ClickableSpan clickableSpan = new ClickableSpan() {
                 @Override
                 public void onClick(View widget) {
-                    appCMSPresenter.showMoreDialog(title, fullText);
+                    appCMSPresenter.showMoreDialog(title, fullText, textView.getCurrentTextColor());
                 }
             };
             spannableTextWithMore.setSpan(clickableSpan,

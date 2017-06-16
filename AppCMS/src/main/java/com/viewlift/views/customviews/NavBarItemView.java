@@ -75,9 +75,21 @@ public class NavBarItemView extends LinearLayout {
 
     public void createChildren(Context context) {
         navImage = new ImageView(context);
+
+        int navImageWidth =
+                (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_image_width), getContext());
+        int navImageHeight =
+                (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_image_height), getContext());
+
+        if (BaseView.isTablet(getContext())) {
+            navImageWidth =
+                    (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_large_width), getContext());
+            navImageHeight =
+                    (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_large_height), getContext());
+        }
+
         LinearLayout.LayoutParams navImageLayoutParams =
-                new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_image_width), getContext()),
-                        (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_image_height), getContext()));
+                new LinearLayout.LayoutParams(navImageWidth, navImageHeight);
         navImageLayoutParams.gravity = Gravity.CENTER;
         navImage.setLayoutParams(navImageLayoutParams);
 

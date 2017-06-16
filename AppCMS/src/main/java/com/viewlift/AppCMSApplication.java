@@ -8,10 +8,12 @@ import android.util.Log;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
 import com.viewlift.views.components.AppCMSPresenterComponent;
 import com.viewlift.views.modules.AppCMSPresenterModule;
-import com.viewlift.models.network.modules.AppCMSAPIModule;
 import com.viewlift.models.network.modules.AppCMSUIModule;
 
 import com.viewlift.views.components.DaggerAppCMSPresenterComponent;
+
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 
 import snagfilms.com.air.appcms.R;
 
@@ -69,6 +71,8 @@ public class AppCMSApplication extends Application {
 
             }
         });
+
+        Fabric.with(this, new Crashlytics());
     }
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {

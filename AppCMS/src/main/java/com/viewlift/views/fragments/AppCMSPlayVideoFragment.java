@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
 import com.google.ads.interactivemedia.v3.api.AdErrorEvent;
@@ -37,6 +38,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     private String hlsUrl;
     private String adsUrl;
+    private Button videoPlayerViewDoneButton;
     private VideoPlayerView videoPlayerView;
 
     private ImaSdkFactory sdkFactory;
@@ -82,6 +84,15 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_video_player, container, false);
+        videoPlayerViewDoneButton = (Button) rootView.findViewById(R.id.app_cms_video_player_done_button);
+        videoPlayerViewDoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onClosePlayerEvent != null) {
+                    onClosePlayerEvent.closePlayer();
+                }
+            }
+        });
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
         if (!TextUtils.isEmpty(hlsUrl)) {
             videoPlayerView.setUri(Uri.parse(hlsUrl));
@@ -97,6 +108,16 @@ public class AppCMSPlayVideoFragment extends Fragment
                     if (onClosePlayerEvent != null) {
                         onClosePlayerEvent.closePlayer();
                     }
+                }
+            }
+        });
+        videoPlayerView.setOnPlayerControlsStateChanged(new Action1<Integer>() {
+            @Override
+            public void call(Integer visiblity) {
+                if (visiblity == View.GONE) {
+                    videoPlayerViewDoneButton.setVisibility(View.GONE);
+                } else if (visiblity == View.VISIBLE) {
+                    videoPlayerViewDoneButton.setVisibility(View.VISIBLE);
                 }
             }
         });

@@ -30,6 +30,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
@@ -66,6 +67,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
 
     private Uri uri;
     private Action1<PlayerState> onPlayerStateChanged;
+    private Action1<Integer> onPlayerControlsStateChanged;
     private PlayerState playerState;
     private SimpleExoPlayer player;
     private SimpleExoPlayerView playerView;
@@ -94,6 +96,10 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         this.onPlayerStateChanged = onPlayerStateChanged;
     }
 
+    public void setOnPlayerControlsStateChanged(Action1<Integer> onPlayerControlsStateChanged) {
+        this.onPlayerControlsStateChanged = onPlayerControlsStateChanged;
+    }
+
     public void setUri(Uri uri) {
         this.uri = uri;
         try {
@@ -118,6 +124,12 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     public void stopPlayer() {
         if (player != null) {
             player.stop();
+        }
+    }
+
+    public void releasePlayer() {
+        if (player != null) {
+            player.release();
         }
     }
 
@@ -155,6 +167,14 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         player.setPlayWhenReady(true);
         player.addListener(this);
         playerView.setPlayer(player);
+        playerView.setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
+            @Override
+            public void onVisibilityChange(int visiblity) {
+                if (onPlayerControlsStateChanged != null) {
+                    onPlayerControlsStateChanged.call(visiblity);
+                }
+            }
+        });
         addView(playerView);
     }
 

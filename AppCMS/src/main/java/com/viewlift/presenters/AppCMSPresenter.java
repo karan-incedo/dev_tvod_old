@@ -5,7 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
@@ -632,9 +635,10 @@ public class AppCMSPresenter {
         return appCMSSearchUrlComponent;
     }
 
-    public void showMoreDialog(String title, String fullText) {
+    public void showMoreDialog(String title, String fullText, int textColor) {
         AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
-        builder.setTitle(title).setMessage(fullText);
+        builder.setTitle(currentActivity.getString(R.string.text_with_color, textColor, title))
+                .setMessage(fullText);
         AlertDialog dialog = builder.create();
         dialog.show();
     }

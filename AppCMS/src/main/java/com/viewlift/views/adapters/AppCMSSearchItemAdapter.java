@@ -113,6 +113,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             Picasso.with(viewHolder.view.getContext())
                     .load(appCMSSearchResults.get(adapterPosition).getPosterImage().getUrl())
                     .resize(imageWidth, imageHeight)
+                    .centerCrop()
                     .into(viewHolder.filmThumbnail);
         }
     }
