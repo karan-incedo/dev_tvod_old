@@ -130,6 +130,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                             Log.e(TAG, "Error popping back stack: " + e.getMessage());
                         }
                         handleBack(true, false, true);
+                        handleLaunchPageAction(appCMSBinderMap.get(appCMSBinderStack.peek()));
                     }
                 }
             }
@@ -264,9 +265,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         if (appCMSBinder != null) {
             Log.e(TAG, "Nav item - Error attempting to launch page: " + appCMSBinder.getPageName() + " - " + appCMSBinder.getPageId());
         }
-        setFinishResult(RESULT_CANCELED);
         getSupportFragmentManager().popBackStack();
         handleBack(true, false, false);
+        handleLaunchPageAction(appCMSBinder);
     }
 
     @Override

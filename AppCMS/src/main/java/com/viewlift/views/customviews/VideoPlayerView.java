@@ -109,9 +109,22 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         }
     }
 
+    public boolean shouldPlayWhenReady() {
+        if (player != null) {
+            return player.getPlayWhenReady();
+        }
+        return false;
+    }
+
     public void startPlayer() {
         if (player != null) {
             player.setPlayWhenReady(true);
+        }
+    }
+
+    public void resumePlayer() {
+        if (player != null) {
+            player.setPlayWhenReady(player.getPlayWhenReady());
         }
     }
 

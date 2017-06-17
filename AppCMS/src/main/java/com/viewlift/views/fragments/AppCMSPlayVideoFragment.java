@@ -46,6 +46,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private AdsManager adsManager;
     private boolean isAdDisplayed;
     private OnClosePlayerEvent onClosePlayerEvent;
+    private boolean playerVideoPlayingOnPause;
 
     public interface OnClosePlayerEvent {
         void closePlayer();
@@ -78,6 +79,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             hlsUrl = args.getString(getContext().getString(R.string.video_player_hls_url_key));
             adsUrl = args.getString(getContext().getString(R.string.video_player_ads_url_key));
         }
+        playerVideoPlayingOnPause = false;
+        setRetainInstance(true);
     }
 
     @Nullable
@@ -149,7 +152,13 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (adsManager != null && isAdDisplayed) {
             adsManager.resume();
         } else {
-            videoPlayerView.startPlayer();
+            if (playerVideoPlayingOnPause) {
+                videoPlayerView.startPlayer();
+                Log.d(TAG, "Starting playback");
+            } else {
+                videoPlayerView.resumePlayer();
+                Log.d(TAG, "Resuming playback");
+            }
         }
         super.onResume();
     }
@@ -159,6 +168,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (adsManager != null && isAdDisplayed) {
             adsManager.pause();
         } else {
+            playerVideoPlayingOnPause = videoPlayerView.shouldPlayWhenReady();
             videoPlayerView.pausePlayer();
         }
         super.onPause();
@@ -167,7 +177,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         Log.e(TAG, "Ad Error: " + adErrorEvent.getError().getMessage());
-        videoPlayerView.startPlayer();
+        videoPlayerView.resumePlayer();
     }
 
     @Override

@@ -19,21 +19,27 @@ import snagfilms.com.air.appcms.R;
  */
 
 public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
+    private static final int EXTRA_TRUNC_CHARS = 10;
+    private static final int CLICKABLE_CHAR_COUNT = 4;
+
     private final TextView textView;
     private final AppCMSPresenter appCMSPresenter;
-    private final String fullText;
     private final String title;
+    private final String fullText;
+    private final int textColor;
     private final boolean forceMaxLines;
 
     public ViewCreatorMultiLineLayoutListener(TextView textView,
-                                              String fullText,
-                                              AppCMSPresenter appCMSPresenter,
                                               String title,
+                                              String fullText,
+                                              int textColor,
+                                              AppCMSPresenter appCMSPresenter,
                                               boolean forceMaxLines) {
         this.textView = textView;
-        this.fullText = fullText;
-        this.appCMSPresenter = appCMSPresenter;
         this.title = title;
+        this.fullText = fullText;
+        this.textColor = textColor;
+        this.appCMSPresenter = appCMSPresenter;
         this.forceMaxLines = forceMaxLines;
     }
 
@@ -43,18 +49,18 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
         if (linesCompletelyVisible < textView.getLineCount() &&
                 textView.getLayout() != null &&
                 appCMSPresenter != null) {
-            int lineEnd = textView.getLayout().getLineEnd(linesCompletelyVisible - 1) - 7;
+            int lineEnd = textView.getLayout().getLineEnd(linesCompletelyVisible - 1) - EXTRA_TRUNC_CHARS;
             SpannableString spannableTextWithMore =
                     new SpannableString(textView.getContext().getString(R.string.string_with_ellipse_and_more,
                             textView.getText().subSequence(0, lineEnd)));
             ClickableSpan clickableSpan = new ClickableSpan() {
                 @Override
                 public void onClick(View widget) {
-                    appCMSPresenter.showMoreDialog(title, fullText, textView.getCurrentTextColor());
+                    appCMSPresenter.showMoreDialog(title, fullText, textColor);
                 }
             };
             spannableTextWithMore.setSpan(clickableSpan,
-                    spannableTextWithMore.length() - 4,
+                    spannableTextWithMore.length() - CLICKABLE_CHAR_COUNT,
                     spannableTextWithMore.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             textView.setText(spannableTextWithMore);

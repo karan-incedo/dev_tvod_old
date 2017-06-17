@@ -412,6 +412,23 @@ public class ViewCreator {
                         componentViewResult.componentView.getBackground().setTint(tintColor);
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                         break;
+                    case PAGE_VIDEO_CLOSE_KEY:
+                        Drawable closeDrawable = ContextCompat.getDrawable(context, R.drawable.cancel);
+                        componentViewResult.componentView.setBackground(closeDrawable);
+                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (!appCMSPresenter.launchButtonSelectedAction(null,
+                                        component.getAction(),
+                                        null,
+                                        null)) {
+                                    Log.e(TAG, "Could not launch action: " +
+                                            " action: " +
+                                            component.getAction());
+                                }
+                            }
+                        });
+                        break;
                     case PAGE_VIDEO_SHARE_KEY:
                         Drawable shareDrawable = ContextCompat.getDrawable(context, R.drawable.share);
                         componentViewResult.componentView.setBackground(shareDrawable);
@@ -445,14 +462,23 @@ public class ViewCreator {
                             }
                         });
                         break;
-                    case PAGE_VIDEO_CLOSE_KEY:
-                        componentViewResult.componentView = null;
-                        break;
                     default:
                 }
                 break;
             case PAGE_LABEL_KEY:
                 componentViewResult.componentView = new TextView(context);
+                int textColor = ContextCompat.getColor(context, R.color.colorAccent);
+                if (!TextUtils.isEmpty(component.getTextColor())) {
+                    textColor = Color.parseColor(getColor(context, component.getTextColor()));
+                } else if (component.getStyles() != null) {
+                    if (!TextUtils.isEmpty(component.getStyles().getColor())) {
+                        textColor = Color.parseColor(getColor(context, component.getStyles().getColor()));
+                    } else if (!TextUtils.isEmpty(component.getStyles().getTextColor())) {
+                        textColor =
+                                Color.parseColor(getColor(context, component.getStyles().getTextColor()));
+                    }
+                }
+                ((TextView) componentViewResult.componentView).setTextColor(textColor);
                 if (!gridElement) {
                     switch (componentKey) {
                         case PAGE_TRAY_TITLE_KEY:
@@ -475,9 +501,10 @@ public class ViewCreator {
                             ViewTreeObserver textVto = componentViewResult.componentView.getViewTreeObserver();
                             ViewCreatorMultiLineLayoutListener viewCreatorLayoutListener =
                                     new ViewCreatorMultiLineLayoutListener(((TextView) componentViewResult.componentView),
-                                            videoDescription,
-                                            appCMSPresenter,
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                            videoDescription,
+                                            textColor,
+                                            appCMSPresenter,
                                             false);
                             textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
                             break;
@@ -524,15 +551,7 @@ public class ViewCreator {
                     ((TextView) componentViewResult.componentView).setSingleLine(true);
                     ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
                 }
-                if (!TextUtils.isEmpty(component.getTextColor())) {
-                    ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context, component.getTextColor())));
-                } else if (component.getStyles() != null) {
-                    if (!TextUtils.isEmpty(component.getStyles().getColor())) {
-                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context, component.getStyles().getColor())));
-                    } else if (!TextUtils.isEmpty(component.getStyles().getTextColor())) {
-                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context, component.getStyles().getTextColor())));
-                    }
-                }
+
                 if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                     componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
                 }
@@ -637,8 +656,7 @@ public class ViewCreator {
                     fontFamilyValueType = Typeface.BOLD;
                 }
 
-                int textColor = Color.parseColor(getColor(context, component.getTextColor()));
-
+                textColor = Color.parseColor(getColor(context, component.getTextColor()));
                 String directorTitle = null;
                 StringBuffer directorListSb = new StringBuffer();
                 String starringTitle = null;

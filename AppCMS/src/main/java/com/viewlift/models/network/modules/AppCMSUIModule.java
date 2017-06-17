@@ -195,6 +195,8 @@ public class AppCMSUIModule {
                 AppCMSActionType.WATCH_TRAILER);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_share_key),
                 AppCMSActionType.SHARE);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_close_key),
+                AppCMSActionType.CLOSE);
     }
 
     @Provides

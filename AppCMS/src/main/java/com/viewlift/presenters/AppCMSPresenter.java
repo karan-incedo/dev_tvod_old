@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -215,6 +216,8 @@ public class AppCMSPresenter {
                 sendIntent.setType("text/plain");
                 currentActivity.startActivity(Intent.createChooser(sendIntent,
                         currentActivity.getResources().getText(R.string.send_to)));
+            } else if (actionType == AppCMSActionType.CLOSE) {
+                sendCloseOthersAction();
             } else {
                 cancelInternalEvents();
                 pushActionInternalEvents(action);
@@ -640,9 +643,19 @@ public class AppCMSPresenter {
 
     public void showMoreDialog(String title, String fullText, int textColor) {
         AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
-        builder.setTitle(currentActivity.getString(R.string.text_with_color, textColor, title))
-                .setMessage(fullText);
+        builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
+                    Integer.toHexString(textColor).substring(2),
+                    title)))
+                .setMessage(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
+                    Integer.toHexString(textColor).substring(2),
+                    fullText)));
         AlertDialog dialog = builder.create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor(getAppCMSMain()
+                    .getBrand()
+                    .getGeneral()
+                    .getBackgroundColor())));
+        }
         dialog.show();
     }
 
