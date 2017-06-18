@@ -64,11 +64,11 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    appCMSPresenter.navigateAwayFromPage(appCMSPresenter.getCurrentActivity());
                     Log.d(TAG, "Navigating to page with Title: " + primary.getTitle());
                     if (!appCMSPresenter.navigateToPage(primary.getPageId(),
                             primary.getTitle(),
-                            true)) {
+                            true,
+                            false)) {
                         Log.e(TAG, "Could not navigate to page with Title: " +
                                 primary.getTitle() +
                                 " Id: " +
@@ -82,10 +82,10 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    appCMSPresenter.navigateAwayFromPage(appCMSPresenter.getCurrentActivity());
                     if (!appCMSPresenter.navigateToPage(user.getPageId(),
                             user.getTitle(),
-                            true)) {
+                            true,
+                            false)) {
                         Log.e(TAG, "Could not navigate to page with Title: " +
                                 user.getTitle() +
                                 " Id: " +

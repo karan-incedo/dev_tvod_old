@@ -115,7 +115,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     String title = data.getGist().getTitle();
                     String hlsUrl = getHlsUrl(data);
                     Log.d(TAG, "Launching " + permalink + ": " + action);
-                    if (!appCMSPresenter.launchButtonSelectedAction(permalink, action, title, hlsUrl)) {
+                    if (!appCMSPresenter.launchButtonSelectedAction(permalink, action, title, hlsUrl, false)) {
                         Log.e(TAG, "Could not launch action: " +
                                 " permalink: " +
                                 permalink +
@@ -134,7 +134,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 String permalink = data.getGist().getPermalink();
                 String title = data.getGist().getTitle();
                 Log.d(TAG, "Launching " + permalink + ":" + defaultAction);
-                if (!appCMSPresenter.launchButtonSelectedAction(permalink, defaultAction, title, null)) {
+                if (!appCMSPresenter.launchButtonSelectedAction(permalink, defaultAction, title, null, false)) {
                     Log.e(TAG, "Could not launch action: " +
                             " permalink: " +
                             permalink +

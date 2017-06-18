@@ -72,8 +72,8 @@ public class AppCMSNavItemsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        appCMSPresenter.navigateAwayFromPage(this);
         super.onBackPressed();
+        finish();
     }
 
     private void handleAppCMSBinder(AppCMSBinder appCMSBinder, boolean firstFragment) {

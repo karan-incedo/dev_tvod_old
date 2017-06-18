@@ -9,6 +9,7 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
+import android.net.Network;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
@@ -187,7 +188,8 @@ public class AppCMSPresenter {
     public boolean launchButtonSelectedAction(String pagePath,
                                               String action,
                                               String filmTitle,
-                                              String extraData) {
+                                              String extraData,
+                                              boolean closeLauncherAfterLoad) {
         boolean result = false;
         Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
         if (currentActivity != null && !loadingPage) {
@@ -195,6 +197,9 @@ public class AppCMSPresenter {
             if (actionType == null) {
                 Log.e(TAG, "Action " + action + " not found!");
                 return false;
+            }
+            if (closeLauncherAfterLoad) {
+                sendCloseOthersAction();
             }
             result = true;
             if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
@@ -283,7 +288,8 @@ public class AppCMSPresenter {
                                             loadFromFile,
                                             this.appbarPresent,
                                             this.fullscreenEnabled,
-                                            this.navbarPresent);
+                                            this.navbarPresent,
+                                            false);
                                     Intent updatePageIntent =
                                             new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
                                     updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
@@ -314,6 +320,7 @@ public class AppCMSPresenter {
                     currentActivity.getString(R.string.app_cms_menu_label),
                     false,
                     true,
+                    false,
                     false,
                     false);
             navigationIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key), args);
@@ -360,7 +367,8 @@ public class AppCMSPresenter {
 
     public boolean navigateToPage(String pageId,
                                   String pageTitle,
-                                  boolean launchActivity) {
+                                  boolean launchActivity,
+                                  final boolean closeOthers) {
         boolean result = false;
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
             loadingPage = true;
@@ -396,7 +404,8 @@ public class AppCMSPresenter {
                                                 loadFromFile,
                                                 this.appbarPresent,
                                                 this.fullscreenEnabled,
-                                                this.navbarPresent);
+                                                this.navbarPresent,
+                                                closeOthers);
                                     } else {
                                         Bundle args = getPageActivityBundle(currentActivity,
                                                 this.appCMSPageUI,
@@ -406,7 +415,8 @@ public class AppCMSPresenter {
                                                 loadFromFile,
                                                 this.appbarPresent,
                                                 this.fullscreenEnabled,
-                                                this.navbarPresent);
+                                                this.navbarPresent,
+                                                closeOthers);
                                         Intent updatePageIntent =
                                                 new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
                                         updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
@@ -432,7 +442,8 @@ public class AppCMSPresenter {
                             loadFromFile,
                             true,
                             false,
-                            true);
+                            true,
+                            closeOthers);
                 } else {
                     Bundle args = getPageActivityBundle(currentActivity,
                             appCMSPageUI,
@@ -442,7 +453,8 @@ public class AppCMSPresenter {
                             loadFromFile,
                             true,
                             false,
-                            true);
+                            true,
+                            closeOthers);
                     Intent updatePageIntent =
                             new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
                     updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
@@ -730,10 +742,14 @@ public class AppCMSPresenter {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) currentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return (connectivityManager.getActiveNetwork() == null);
+            Network activeNetwork = connectivityManager.getActiveNetwork();
+            if (activeNetwork != null) {
+                NetworkInfo activeNetworkInfo = connectivityManager.getNetworkInfo(activeNetwork);
+                return activeNetworkInfo.isConnectedOrConnecting();
+            }
         } else {
             for (NetworkInfo networkInfo : connectivityManager.getAllNetworkInfo()) {
-                if (networkInfo.isConnected()) {
+                if (networkInfo.isConnectedOrConnecting()) {
                     return true;
                 }
             }
@@ -783,7 +799,8 @@ public class AppCMSPresenter {
                                          boolean loadFromFile,
                                          boolean appbarPresent,
                                          boolean fullscreenEnabled,
-                                         boolean navbarPresent) {
+                                         boolean navbarPresent,
+                                         boolean sendCloseOthersAction) {
         Bundle args = new Bundle();
         AppCMSBinder appCMSBinder = new AppCMSBinder(appCMSMain,
                 appCMSPageUI,
@@ -796,6 +813,7 @@ public class AppCMSPresenter {
                 fullscreenEnabled,
                 navbarPresent,
                 isUserLoggedIn(activity),
+                sendCloseOthersAction,
                 jsonValueKeyMap);
         args.putBinder(activity.getString(R.string.app_cms_binder_key), appCMSBinder);
         return args;
@@ -809,7 +827,8 @@ public class AppCMSPresenter {
                                     boolean loadFromFile,
                                     boolean appbarPresent,
                                     boolean fullscreenEnabled,
-                                    boolean navbarPresent) {
+                                    boolean navbarPresent,
+                                    boolean sendCloseOthersAction) {
         Bundle args = getPageActivityBundle(activity,
                 appCMSPageUI,
                 appCMSPageAPI,
@@ -818,7 +837,8 @@ public class AppCMSPresenter {
                 loadFromFile,
                 appbarPresent,
                 fullscreenEnabled,
-                navbarPresent);
+                navbarPresent,
+                sendCloseOthersAction);
         Intent appCMSIntent = new Intent(activity, AppCMSPageActivity.class);
         appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
 
@@ -880,6 +900,7 @@ public class AppCMSPresenter {
                                     Primary homePageNav = findHomePageNavItem();
                                     boolean launchSuccess = navigateToPage(homePageNav.getPageId(),
                                             homePageNav.getTitle(),
+                                            true,
                                             true);
                                     if (!launchSuccess) {
                                         Log.e(TAG, "Failed to launch page: " + firstPage.getPageName());

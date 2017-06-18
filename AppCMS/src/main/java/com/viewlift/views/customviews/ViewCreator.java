@@ -349,7 +349,8 @@ public class ViewCreator {
                                     if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                             component.getAction(),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                            moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls())) {
+                                            moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls(),
+                                            false)) {
                                         Log.e(TAG, "Could not launch action: " +
                                                 " permalink: " +
                                                 moduleAPI.getContentData().get(0).getGist().getPermalink() +
@@ -389,7 +390,8 @@ public class ViewCreator {
                                         if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                                 component.getAction(),
                                                 moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                                videoUrl)) {
+                                                videoUrl,
+                                                false)) {
                                             Log.e(TAG, "Could not launch action: " +
                                                     " permalink: " +
                                                     moduleAPI.getContentData().get(0).getGist().getPermalink() +
@@ -421,7 +423,8 @@ public class ViewCreator {
                                 if (!appCMSPresenter.launchButtonSelectedAction(null,
                                         component.getAction(),
                                         null,
-                                        null)) {
+                                        null,
+                                        false)) {
                                     Log.e(TAG, "Could not launch action: " +
                                             " action: " +
                                             component.getAction());
@@ -449,7 +452,8 @@ public class ViewCreator {
                                     if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                             component.getAction(),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                            filmUrl.toString())) {
+                                            filmUrl.toString(),
+                                            false)) {
                                         Log.e(TAG, "Could not launch action: " +
                                                 " permalink: " +
                                                 moduleAPI.getContentData().get(0).getGist().getPermalink() +

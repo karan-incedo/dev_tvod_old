@@ -27,6 +27,7 @@ public class AppCMSBinder extends Binder {
     private final boolean fullScreenEnabled;
     private final boolean navbarPresent;
     private final boolean userLoggedIn;
+    private final boolean sendCloseOthersAction;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
 
     public AppCMSBinder(AppCMSMain appCMSMain,
@@ -40,6 +41,7 @@ public class AppCMSBinder extends Binder {
                         boolean fullScreenEnabled,
                         boolean navbarPresent,
                         boolean userLoggedIn,
+                        boolean sendCloseOthersAction,
                         Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
         this.appCMSMain = appCMSMain;
         this.appCMSPageUI = appCMSPageUI;
@@ -52,6 +54,7 @@ public class AppCMSBinder extends Binder {
         this.fullScreenEnabled = fullScreenEnabled;
         this.navbarPresent = navbarPresent;
         this.userLoggedIn = userLoggedIn;
+        this.sendCloseOthersAction = sendCloseOthersAction;
         this.jsonValueKeyMap = jsonValueKeyMap;
     }
 
@@ -99,11 +102,15 @@ public class AppCMSBinder extends Binder {
         return userLoggedIn;
     }
 
-    public Map<String, AppCMSUIKeyType> getJsonValueKeyMap() {
-        return jsonValueKeyMap;
-    }
-
     public boolean isNavbarPresent() {
         return navbarPresent;
+    }
+
+    public boolean shouldSendCloseOthersAction() {
+        return sendCloseOthersAction;
+    }
+
+    public Map<String, AppCMSUIKeyType> getJsonValueKeyMap() {
+        return jsonValueKeyMap;
     }
 }

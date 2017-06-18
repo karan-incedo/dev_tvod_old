@@ -58,6 +58,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     private Stack<String> appCMSBinderStack;
     private Map<String, AppCMSBinder> appCMSBinderMap;
     private BroadcastReceiver presenterActionReceiver;
+    private BroadcastReceiver presenterCloseActionReceiver;
 
     private RelativeLayout appCMSParentView;
     private FrameLayout appCMSFragment;
@@ -104,6 +105,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         appCMSBinderStack = new Stack<>();
         appCMSBinderMap = new HashMap<>();
 
+        Bundle args = getIntent().getBundleExtra(getString(R.string.app_cms_bundle_key));
+        try {
+            AppCMSBinder appCMSBinder =
+                    (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
+            handleLaunchPageAction(appCMSBinder);
+        } catch (ClassCastException e) {
+            Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
+        }
+
         presenterActionReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -120,23 +130,28 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                     pageLoading(true);
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION)) {
                     pageLoading(false);
-                } else {
-                    if (intent.getAction().equals(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM)) {
-                        Log.d(TAG, "Nav item - Received broadcast to select navigation item with page Id: " +
-                                intent.getStringExtra(getString(R.string.navigation_item_key)));
-                        selectNavItem(intent.getStringExtra(getString(R.string.navigation_item_key)));
-                    } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
-                        Log.d(TAG, "Received Presenter Close Action: fragment count = " + getSupportFragmentManager().getBackStackEntryCount());
-                        if (appCMSBinderStack.size() > 1) {
-                            try {
-                                getSupportFragmentManager().popBackStack();
-                            } catch (IllegalStateException e) {
-                                Log.e(TAG, "Error popping back stack: " + e.getMessage());
-                            }
-                            handleBack(true, false, true);
-                            if (appCMSBinderStack.size() > 0) {
-                                handleLaunchPageAction(appCMSBinderMap.get(appCMSBinderStack.peek()));
-                            }
+                } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM)) {
+                    Log.d(TAG, "Nav item - Received broadcast to select navigation item with page Id: " +
+                            intent.getStringExtra(getString(R.string.navigation_item_key)));
+                    selectNavItem(intent.getStringExtra(getString(R.string.navigation_item_key)));
+                }
+            }
+        };
+
+        presenterCloseActionReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
+                    Log.d(TAG, "Received Presenter Close Action: fragment count = " + getSupportFragmentManager().getBackStackEntryCount());
+                    if (appCMSBinderStack.size() > 1) {
+                        try {
+                            getSupportFragmentManager().popBackStack();
+                        } catch (IllegalStateException e) {
+                            Log.e(TAG, "Error popping back stack: " + e.getMessage());
+                        }
+                        handleBack(true, false, true);
+                        if (appCMSBinderStack.size() > 0) {
+                            handleLaunchPageAction(appCMSBinderMap.get(appCMSBinderStack.peek()));
                         }
                     }
                 }
@@ -151,19 +166,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 new IntentFilter(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM));
-        registerReceiver(presenterActionReceiver,
-                new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
 
         resumeInternalEvents = false;
-
-        Bundle args = getIntent().getBundleExtra(getString(R.string.app_cms_bundle_key));
-        try {
-            AppCMSBinder appCMSBinder =
-                    (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
-            handleLaunchPageAction(appCMSBinder);
-        } catch (ClassCastException e) {
-            Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
-        }
 
         Log.d(TAG, "onCreate()");
     }
@@ -236,7 +240,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         showSearchView(false);
         if (pageViewDuringSearch != null) {
             selectNavItem(pageViewDuringSearch);
+        } else {
+            if (appCMSBinderStack != null) {
+                selectNavItem(appCMSBinderStack.peek());
+            }
         }
+        registerReceiver(presenterCloseActionReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
         Log.d(TAG, "onResume()");
     }
 
@@ -247,6 +257,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         if (pageViewDuringSearch != null) {
             selectNavItem(pageViewDuringSearch);
         }
+        unregisterReceiver(presenterCloseActionReceiver);
     }
 
     @Override
@@ -381,7 +392,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     }
 
     private void selectNavItemAndLaunchPage(NavBarItemView v, String pageId, String pageTitle) {
-        if (!appCMSPresenter.navigateToPage(pageId, pageTitle, false)) {
+        if (!appCMSPresenter.navigateToPage(pageId, pageTitle, false, false)) {
             Log.e(TAG, "Could not navigate to page with Title: " +
                     pageTitle +
                     " Id: " +
@@ -457,7 +468,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         if (0 <= distanceFromStackTop) {
             for (int i = 0; i < distanceFromStackTop; i++) {
                 Log.d(TAG, "Popping stack to get to page item");
-                getSupportFragmentManager().popBackStackImmediate();
+                try {
+                    getSupportFragmentManager().popBackStackImmediate();
+                } catch (IllegalStateException e) {
+                    Log.e(TAG, "Error popping back stack: " + e.getMessage());
+                }
                 handleBack(true, true, false);
             }
         }
