@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -31,6 +30,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     private static final String TAG = "VideoPlayerActivity";
 
     private BroadcastReceiver handoffReceiver;
+    private AppCMSPresenter appCMSPresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,6 +70,13 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
         registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
 
+        appCMSPresenter =
+                ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         getWindow().getDecorView()
                 .setSystemUiVisibility(
                         View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -78,6 +85,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                                 | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        if (!appCMSPresenter.isNetworkConnected()) {
+            appCMSPresenter.showErrorDialog();
+            finish();
+        }
     }
 
     @Override

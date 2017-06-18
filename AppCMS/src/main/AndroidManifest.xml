@@ -38,7 +38,8 @@
         <activity android:name="com.viewlift.views.activity.AppCMSNavItemsActivity" />
         <activity android:name="com.viewlift.views.activity.AppCMSPlayVideoActivity"
             android:configChanges="orientation|screenSize"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask"
+            android:keepScreenOn="true"/>
         <activity android:name="com.viewlift.views.activity.AppCMSSearchActivity"
             android:launchMode="singleTask">
             <intent-filter>

@@ -45,14 +45,4 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         super.onDestroy();
         unregisterReceiver(handoffReceiver);
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == AppCMSPresenter.LAUNCH_PAGE_ACTIVITY) {
-            if (resultCode == RESULT_OK) {
-                finish();
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
 }

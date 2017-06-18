@@ -100,6 +100,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
         if (!TextUtils.isEmpty(hlsUrl)) {
             videoPlayerView.setUri(Uri.parse(hlsUrl));
+            Log.i(TAG, "Playing video: " + hlsUrl);
         }
         videoPlayerView.setOnPlayerStateChanged(new Action1<VideoPlayerView.PlayerState>() {
             @Override
@@ -205,6 +206,13 @@ public class AppCMSPlayVideoFragment extends Fragment
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        videoPlayerView.stopPlayer();
+        videoPlayerView.releasePlayer();
     }
 
     private void requestAds(String adTagUrl) {

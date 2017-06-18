@@ -79,7 +79,6 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
             @Override
             public void run() {
                 if (adapterData.size() > 1 && !cancelled) {
-                    Log.d(TAG, "Carousel updating to index: " + (updatedIndex + 1));
                     updateCarousel(updatedIndex + 1, false);
                     postUpdateCarousel();
                 }
@@ -105,7 +104,6 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
 
                             listView.smoothScrollToPosition(nextVisibleViewIndex);
                             sendEvent(new InternalEvent<Object>(nextVisibleViewIndex));
-                            Log.d(TAG, "Carousel touch index updated");
                             setUpdatedIndex(nextVisibleViewIndex);
                         }
                     }
@@ -245,13 +243,11 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     public void cancel(boolean cancel) {
         cancelled = cancel;
         if (!cancelled && !started) {
-            Log.d(TAG, "Carousel starting updater");
             carouselHandler.removeCallbacks(carouselUpdater);
             sendEvent(new InternalEvent<Object>(updatedIndex));
             postUpdateCarousel();
             started = true;
         } else if (cancel) {
-            Log.d(TAG, "Carousel stopping updater");
             carouselHandler.removeCallbacks(carouselUpdater);
             started = false;
         }
@@ -264,7 +260,6 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     public void updateCarousel(int index, boolean fromEvent) {
         synchronized(listView) {
             index = calculateUpdateIndex(index);
-            Log.d(TAG, "Carousel scrolling to position: " + index);
             setUpdatedIndex(index);
             listView.smoothScrollToPosition(updatedIndex);
             if (!fromEvent) {
@@ -278,9 +273,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     }
 
     private void setUpdatedIndex(int index) {
-        Log.d(TAG, "Carousel updating visible index: " + updatedIndex);
         this.updatedIndex = index;
-        Log.d(TAG, "Carousel updated visible index: " + updatedIndex);
     }
 
     private int calculateUpdateIndex(int index) {

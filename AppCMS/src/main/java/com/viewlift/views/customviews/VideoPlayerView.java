@@ -103,7 +103,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     public void setUri(Uri uri) {
         this.uri = uri;
         try {
-            player.prepare(buildMediaSource(uri, getContext().getString(R.string.app_cms_default_video_ext)));
+            player.prepare(buildMediaSource(uri, null));
         } catch (IllegalStateException e) {
             Log.e(TAG, "Unsupported video format for URI: " + uri.toString());
         }

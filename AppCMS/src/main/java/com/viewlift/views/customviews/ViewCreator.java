@@ -395,8 +395,8 @@ public class ViewCreator {
                                                     moduleAPI.getContentData().get(0).getGist().getPermalink() +
                                                     " action: " +
                                                     component.getAction() +
-                                                    " hls URL: " +
-                                                    moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
+                                                    " video URL: " +
+                                                    videoUrl);
                                         }
                                     }
                                 }

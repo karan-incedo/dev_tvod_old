@@ -82,10 +82,7 @@ public class AppCMSPageFragment extends Fragment {
             pageView = null;
         }
 
-        if (pageView == null) {
-            Log.e(TAG, "AppCMS page creation error");
-            onPageCreation.onError(appCMSBinder);
-        } else {
+        if (pageView != null) {
             if (!pageView.isTablet(getContext()) && !appCMSBinder.isFullScreenEnabled()) {
                 appCMSPresenter.restrictPortraitOnly();
             } else {
@@ -115,8 +112,12 @@ public class AppCMSPageFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (pageView != null && (pageView.isTablet(getContext()) || appCMSBinder.isFullScreenEnabled())) {
+        if (PageView.isTablet(getContext()) || appCMSBinder.isFullScreenEnabled()) {
             handleOrientation(getActivity().getResources().getConfiguration().orientation);
+        }
+        if (pageView == null) {
+            Log.e(TAG, "AppCMS page creation error");
+            onPageCreation.onError(appCMSBinder);
         }
     }
 

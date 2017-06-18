@@ -97,5 +97,5 @@
 
     <!-- AppCMS VideoPlayer values -->
     <string name="app_cms_user_agent">AppCMS Android</string>
-    <string name="app_cms_default_video_ext">mp4</string>
+    <string name="app_cms_default_video_ext">m3u8</string>
 </resources>
