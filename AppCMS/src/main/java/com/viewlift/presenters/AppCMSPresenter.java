@@ -189,6 +189,7 @@ public class AppCMSPresenter {
                                               String filmTitle,
                                               String extraData) {
         boolean result = false;
+        Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
         if (currentActivity != null && !loadingPage) {
             AppCMSActionType actionType = actionToActionTypeMap.get(action);
             if (actionType == null) {
@@ -225,7 +226,7 @@ public class AppCMSPresenter {
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_TEXT, extraData);
-                sendIntent.setType("text/plain");
+                sendIntent.setType(currentActivity.getString(R.string.text_plain_mime_type));
                 currentActivity.startActivity(Intent.createChooser(sendIntent,
                         currentActivity.getResources().getText(R.string.send_to)));
             } else if (actionType == AppCMSActionType.CLOSE) {
@@ -749,7 +750,7 @@ public class AppCMSPresenter {
         return false;
     }
 
-    private void pushActionInternalEvents(String action) {
+    public void pushActionInternalEvents(String action) {
         Log.d(TAG, "Stack size - pushing internal events: " + currentActions.size());
         if (currentActions.size() > 0 && !isActionAPage(currentActions.peek())) {
             Log.d(TAG, "Stack size - pushing internal events (popping extra): " + currentActions.size());

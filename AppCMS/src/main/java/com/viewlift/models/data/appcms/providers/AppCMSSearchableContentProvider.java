@@ -102,9 +102,11 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                             Log.d(TAG, "Search results received (" + searchResultList.size() + "): ");
                             cursor = new MatrixCursor(SUGGESTION_COLUMN_NAMES, searchResultList.size());
                             for (int i = 0; i < searchResultList.size(); i++) {
+                                Uri permalinkUri = Uri.parse(searchResultList.get(i).getPermalink());
+                                String filmUri = permalinkUri.getLastPathSegment();
                                 Object[] rowResult = { i,
                                     searchResultList.get(i).getTitle(),
-                                    searchResultList.get(i).getTitle() };
+                                        filmUri.toString() };
                                 cursor.addRow(rowResult);
                                 Log.d(TAG, searchResultList.get(i).getTitle());
                             }

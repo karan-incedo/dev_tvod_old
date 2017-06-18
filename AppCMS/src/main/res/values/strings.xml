@@ -21,19 +21,6 @@
     <string name="string_with_ellipse">%1$s&#8230;</string>
     <string name="string_with_ellipse_and_more">%1$s&#8230;MORE</string>
     <string name="text_with_color"><![CDATA[<font color=\'#%1$s\'>%2$s</font>]]></string>
-
-    <!-- Age rating values -->
-    <string name="age_rating_y">Y</string>
-    <string name="age_rating_y7">Y7</string>
-    <string name="age_rating_g">G</string>
-    <string name="age_rating_pg">PG</string>
-    <string name="age_rating_fourteen">14</string>
-    <string name="age_rating_converted_y">2+</string>
-    <string name="age_rating_converted_y7">7+</string>
-    <string name="age_rating_converted_g">0+</string>
-    <string name="age_rating_converted_pg">13+</string>
-    <string name="age_rating_converted_fourteen">14+</string>
-    <string name="age_rating_converted_default">18+</string>
     <string name="video_player_hls_url_key">video_player_hls_url</string>
     <string name="video_player_ads_url_key">video_player_ads_url</string>
     <string name="video_fragment_tag_key">video_fragment</string>
@@ -49,4 +36,19 @@
     <string name="app_cms_data_error_title">Could Not Access Data</string>
     <string name="app_cms_data_error_message">Data is currently unavailable.  Please try again later.</string>
     <string name="app_cms_close_alert_dialog_button_text">CLOSE</string>
+    <string name="text_plain_mime_type">text/plain</string>
+
+    <!-- Age rating values -->
+    <string name="age_rating_y">Y</string>
+    <string name="age_rating_y7">Y7</string>
+    <string name="age_rating_g">G</string>
+    <string name="age_rating_pg">PG</string>
+    <string name="age_rating_fourteen">14</string>
+    <string name="age_rating_converted_y">2+</string>
+    <string name="age_rating_converted_y7">7+</string>
+    <string name="age_rating_converted_g">0+</string>
+    <string name="age_rating_converted_pg">13+</string>
+    <string name="age_rating_converted_fourteen">14+</string>
+    <string name="age_rating_converted_default">18+</string>
+    <string name="no_results">No results</string>
 </resources>

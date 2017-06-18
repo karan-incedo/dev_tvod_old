@@ -225,7 +225,6 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     @Override
     public void sendEvent(InternalEvent<?> event) {
         for (OnInternalEvent receiver : internalEventReceivers) {
-            Log.d(TAG, "Carousel sending event: " + event.getEventData());
             receiver.receiveEvent(event);
         }
     }

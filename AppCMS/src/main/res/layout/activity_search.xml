@@ -11,14 +11,24 @@
 
     </android.support.v7.widget.SearchView>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/app_cms_search_results"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:background="@android:color/white"
-        app:layoutManager="LinearLayoutManager">
-
-    </android.support.v7.widget.RecyclerView>
+        android:layout_height="match_parent">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/app_cms_search_results"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            app:layoutManager="LinearLayoutManager">
+        </android.support.v7.widget.RecyclerView>
+        <TextView
+            android:id="@+id/no_results_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/no_results"
+            android:textSize="@dimen/app_cms_no_search_results_textsize"
+            android:textAlignment="center"
+            android:visibility="gone"/>
+    </FrameLayout>
 
 </LinearLayout>

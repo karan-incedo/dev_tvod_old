@@ -14,7 +14,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.LinearLayout;
+import android.view.View;
+import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
@@ -47,6 +48,8 @@ public class AppCMSSearchActivity extends AppCompatActivity {
     AppCMSSearchCall appCMSSearchCall;
 
     private SearchView appCMSSearchView;
+    private TextView noResultsTextview;
+
     private AppCMSSearchItemAdapter appCMSSearchItemAdapter;
     private BroadcastReceiver handoffReceiver;
 
@@ -87,6 +90,14 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         appCMSSearchView.setIconifiedByDefault(true);
 
+        AppCMSPresenter appCMSPresenter =
+                ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
+        noResultsTextview = (TextView) findViewById(R.id.no_results_textview);
+        noResultsTextview.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                .getBrand()
+                .getGeneral()
+                .getTextColor()));
+
         handleIntent(getIntent());
     }
 
@@ -112,6 +123,9 @@ public class AppCMSSearchActivity extends AppCompatActivity {
             }
         }
 
+        appCMSPresenter.cancelInternalEvents();
+        appCMSPresenter.pushActionInternalEvents(getString(R.string.app_cms_action_search_key));
+
         if (Intent.ACTION_VIEW.equals(intent.getAction()) ||
                 Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String searchTerm = null;
@@ -121,15 +135,16 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                 searchTerm = intent.getStringExtra(SearchManager.QUERY);
             }
             if (!TextUtils.isEmpty(searchTerm)) {
-                searchTerm = searchTerm.replace(" ", "_");
                 final String url = getString(R.string.app_cms_search_api_url,
                         appCMSSearchUrlData.getBaseUrl(),
                         appCMSSearchUrlData.getSiteName(),
                         searchTerm);
+                Log.d(TAG, "Search URL: " + url);
                 new SearchAsyncTask(new Action1<List<AppCMSSearchResult>>() {
                     @Override
                     public void call(List<AppCMSSearchResult> data) {
                         appCMSSearchItemAdapter.setData(data);
+                        updateNoResultsDisplay(data);
                     }
                 }, appCMSSearchCall).execute(url);
             }
@@ -161,6 +176,14 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<AppCMSSearchResult> result) {
             Observable.just(result).subscribe(dataReadySubscriber);
+        }
+    }
+
+    private void updateNoResultsDisplay(List<AppCMSSearchResult> data) {
+        if (data == null || data.size() == 0) {
+            noResultsTextview.setVisibility(View.VISIBLE);
+        } else {
+            noResultsTextview.setVisibility(View.GONE);
         }
     }
 }
