@@ -90,13 +90,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         appCMSSearchView.setIconifiedByDefault(true);
 
-        AppCMSPresenter appCMSPresenter =
-                ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
         noResultsTextview = (TextView) findViewById(R.id.no_results_textview);
-        noResultsTextview.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                .getBrand()
-                .getGeneral()
-                .getTextColor()));
 
         handleIntent(getIntent());
     }
@@ -114,7 +108,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
     }
 
     private void handleIntent(Intent intent) {
-        AppCMSPresenter appCMSPresenter =
+        final AppCMSPresenter appCMSPresenter =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
         if (appCMSSearchUrlData == null || appCMSSearchCall == null) {
             appCMSPresenter.getAppCMSSearchUrlComponent().inject(this);
@@ -135,6 +129,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                 searchTerm = intent.getStringExtra(SearchManager.QUERY);
             }
             if (!TextUtils.isEmpty(searchTerm)) {
+                appCMSSearchView.setQuery(searchTerm, false);
                 final String url = getString(R.string.app_cms_search_api_url,
                         appCMSSearchUrlData.getBaseUrl(),
                         appCMSSearchUrlData.getSiteName(),
@@ -144,7 +139,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                     @Override
                     public void call(List<AppCMSSearchResult> data) {
                         appCMSSearchItemAdapter.setData(data);
-                        updateNoResultsDisplay(data);
+                        updateNoResultsDisplay(appCMSPresenter, data);
                     }
                 }, appCMSSearchCall).execute(url);
             }
@@ -179,9 +174,14 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         }
     }
 
-    private void updateNoResultsDisplay(List<AppCMSSearchResult> data) {
+    private void updateNoResultsDisplay(AppCMSPresenter appCMSPresenter,
+                                        List<AppCMSSearchResult> data) {
         if (data == null || data.size() == 0) {
-            noResultsTextview.setVisibility(View.VISIBLE);
+            noResultsTextview.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                    .getBrand()
+                    .getGeneral()
+                    .getTextColor()));
+
         } else {
             noResultsTextview.setVisibility(View.GONE);
         }
