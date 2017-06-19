@@ -81,6 +81,8 @@ public class AppCMSPresenter {
     public static final String PRESENTER_CLOSE_SCREEN_ACTION = "appcms_presenter_close_action";
     public static final String PRESENTER_RESET_NAVIGATION_ITEM = "appcms_presenter_set_navigation_item";
 
+    public static final int PRESENTER_NAVIGATION_REQUEST = 1000;
+
     public static final int LAUNCH_PAGE_ACTIVITY = 1000;
 
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
@@ -288,8 +290,7 @@ public class AppCMSPresenter {
                                             loadFromFile,
                                             this.appbarPresent,
                                             this.fullscreenEnabled,
-                                            this.navbarPresent,
-                                            false);
+                                            this.navbarPresent);
                                     Intent updatePageIntent =
                                             new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
                                     updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
@@ -321,10 +322,9 @@ public class AppCMSPresenter {
                     false,
                     true,
                     false,
-                    false,
                     false);
             navigationIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key), args);
-            currentActivity.startActivity(navigationIntent);
+            currentActivity.startActivityForResult(navigationIntent, PRESENTER_NAVIGATION_REQUEST);
         }
         return result;
     }
@@ -404,8 +404,7 @@ public class AppCMSPresenter {
                                                 loadFromFile,
                                                 this.appbarPresent,
                                                 this.fullscreenEnabled,
-                                                this.navbarPresent,
-                                                closeOthers);
+                                                this.navbarPresent);
                                     } else {
                                         Bundle args = getPageActivityBundle(currentActivity,
                                                 this.appCMSPageUI,
@@ -415,8 +414,7 @@ public class AppCMSPresenter {
                                                 loadFromFile,
                                                 this.appbarPresent,
                                                 this.fullscreenEnabled,
-                                                this.navbarPresent,
-                                                closeOthers);
+                                                this.navbarPresent);
                                         Intent updatePageIntent =
                                                 new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
                                         updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
@@ -442,8 +440,7 @@ public class AppCMSPresenter {
                             loadFromFile,
                             true,
                             false,
-                            true,
-                            closeOthers);
+                            true);
                 } else {
                     Bundle args = getPageActivityBundle(currentActivity,
                             appCMSPageUI,
@@ -453,8 +450,7 @@ public class AppCMSPresenter {
                             loadFromFile,
                             true,
                             false,
-                            true,
-                            closeOthers);
+                            true);
                     Intent updatePageIntent =
                             new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
                     updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
@@ -799,8 +795,7 @@ public class AppCMSPresenter {
                                          boolean loadFromFile,
                                          boolean appbarPresent,
                                          boolean fullscreenEnabled,
-                                         boolean navbarPresent,
-                                         boolean sendCloseOthersAction) {
+                                         boolean navbarPresent) {
         Bundle args = new Bundle();
         AppCMSBinder appCMSBinder = new AppCMSBinder(appCMSMain,
                 appCMSPageUI,
@@ -813,7 +808,6 @@ public class AppCMSPresenter {
                 fullscreenEnabled,
                 navbarPresent,
                 isUserLoggedIn(activity),
-                sendCloseOthersAction,
                 jsonValueKeyMap);
         args.putBinder(activity.getString(R.string.app_cms_binder_key), appCMSBinder);
         return args;
@@ -827,8 +821,7 @@ public class AppCMSPresenter {
                                     boolean loadFromFile,
                                     boolean appbarPresent,
                                     boolean fullscreenEnabled,
-                                    boolean navbarPresent,
-                                    boolean sendCloseOthersAction) {
+                                    boolean navbarPresent) {
         Bundle args = getPageActivityBundle(activity,
                 appCMSPageUI,
                 appCMSPageAPI,
@@ -837,8 +830,7 @@ public class AppCMSPresenter {
                 loadFromFile,
                 appbarPresent,
                 fullscreenEnabled,
-                navbarPresent,
-                sendCloseOthersAction);
+                navbarPresent);
         Intent appCMSIntent = new Intent(activity, AppCMSPageActivity.class);
         appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
 

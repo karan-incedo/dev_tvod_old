@@ -242,6 +242,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             selectNavItem(pageViewDuringSearch);
         } else {
             if (appCMSBinderStack != null) {
+                Log.d(TAG, "Activity resumed - resetting nav item");
                 selectNavItem(appCMSBinderStack.peek());
             }
         }
@@ -270,7 +271,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(presenterActionReceiver);
-        appCMSPresenter.navigateAwayFromPage(this);
+        appCMSPresenter.sendCloseOthersAction();
         Log.d(TAG, "onDestroy()");
     }
 
