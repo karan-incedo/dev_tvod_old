@@ -91,7 +91,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         appCMSSearchView = (SearchView) findViewById(R.id.app_cms_searchbar);
         appCMSSearchView.setQueryHint(getString(R.string.search_films));
         appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        appCMSSearchView.setIconifiedByDefault(true);
+        appCMSSearchView.setIconifiedByDefault(false);
 
         noResultsTextview = (TextView) findViewById(R.id.no_results_textview);
 
