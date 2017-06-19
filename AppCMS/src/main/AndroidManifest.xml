@@ -22,35 +22,57 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-        <activity android:name="com.viewlift.AppCMSLaunchActivity" android:launchMode="singleTop">
+
+        <activity
+            android:name="com.viewlift.AppCMSLaunchActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="http"
+                    android:host="@string/app_cms_app_host_name"
+                    android:pathPrefix="/films/title" />
+                <data
+                    android:scheme="https"
+                    android:host="@string/app_cms_app_host_name"
+                    android:pathPrefix="/films/title" />
+            </intent-filter>
         </activity>
-        <activity android:name="com.viewlift.views.activity.AppCMSPageActivity"
+        <activity
+            android:name="com.viewlift.views.activity.AppCMSPageActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTask">
-            <meta-data android:name="android.app.default_searchable"
-                android:value="com.viewlift.views.activity.AppCMSSearchActivity"/>
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value="com.viewlift.views.activity.AppCMSSearchActivity" />
         </activity>
         <activity android:name="com.viewlift.views.activity.AppCMSErrorActivity" />
         <activity android:name="com.viewlift.views.activity.AppCMSNavItemsActivity" />
-        <activity android:name="com.viewlift.views.activity.AppCMSPlayVideoActivity"
+        <activity
+            android:name="com.viewlift.views.activity.AppCMSPlayVideoActivity"
             android:configChanges="orientation|screenSize"
-            android:launchMode="singleTask"/>
-        <activity android:name="com.viewlift.views.activity.AppCMSSearchActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name="com.viewlift.views.activity.AppCMSSearchActivity"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
-            <meta-data android:name="android.app.searchable"
-                android:resource="@xml/searchable"/>
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
+
         <provider
             android:authorities="@string/app_cms_search_provider"
-            android:name="com.viewlift.models.data.appcms.providers.AppCMSSearchableContentProvider"/>
+            android:name="com.viewlift.models.data.appcms.providers.AppCMSSearchableContentProvider" />
     </application>
 
 </manifest>

@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 
 def final packageName = 'air.com.snagfilms'
 def final customApplicationId = 'SnagFilms'
+def final hostName = "www.snagfilms.com"
 
 buildscript {
     repositories {
@@ -40,6 +41,7 @@ android {
             multiDexEnabled true
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
+            resValue "string", "app_cms_app_host_name", "${hostName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
         release {
@@ -48,6 +50,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
+            resValue "string", "app_cms_app_host_name", "${hostName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
     }

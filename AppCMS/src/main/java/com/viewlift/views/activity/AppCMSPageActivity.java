@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -36,6 +37,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.NavBarItemView;
 import com.viewlift.views.fragments.AppCMSPageFragment;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -279,6 +281,22 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     public void onSuccess(AppCMSBinder appCMSBinder) {
         appCMSPresenter.restartInternalEvents();
         resumeInternalEvents = true;
+        if (appCMSBinder.getSearchQuery() != null) {
+            Uri searchQuery = appCMSBinder.getSearchQuery();
+            appCMSBinder.clearSearchQuery();
+            String title = searchQuery.getLastPathSegment();
+            String action = getString(R.string.app_cms_action_videopage_key);
+            StringBuffer pagePath = new StringBuffer();
+            for (String pathSegment : searchQuery.getPathSegments()) {
+                pagePath.append(File.separatorChar);
+                pagePath.append(pathSegment);
+            }
+            appCMSPresenter.launchButtonSelectedAction(pagePath.toString(),
+                    action,
+                    title,
+                    null,
+                    false);
+        }
     }
 
     @Override
@@ -393,7 +411,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     }
 
     private void selectNavItemAndLaunchPage(NavBarItemView v, String pageId, String pageTitle) {
-        if (!appCMSPresenter.navigateToPage(pageId, pageTitle, false, false)) {
+        if (!appCMSPresenter.navigateToPage(pageId, pageTitle, false, null)) {
             Log.e(TAG, "Could not navigate to page with Title: " +
                     pageTitle +
                     " Id: " +

@@ -1,5 +1,6 @@
 package com.viewlift.views.binders;
 
+import android.net.Uri;
 import android.os.Binder;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -28,6 +29,7 @@ public class AppCMSBinder extends Binder {
     private final boolean navbarPresent;
     private final boolean userLoggedIn;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
+    private Uri searchQuery;
 
     public AppCMSBinder(AppCMSMain appCMSMain,
                         AppCMSPageUI appCMSPageUI,
@@ -40,7 +42,8 @@ public class AppCMSBinder extends Binder {
                         boolean fullScreenEnabled,
                         boolean navbarPresent,
                         boolean userLoggedIn,
-                        Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
+                        Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                        Uri searchQuery) {
         this.appCMSMain = appCMSMain;
         this.appCMSPageUI = appCMSPageUI;
         this.appCMSPageAPI = appCMSPageAPI;
@@ -53,6 +56,7 @@ public class AppCMSBinder extends Binder {
         this.navbarPresent = navbarPresent;
         this.userLoggedIn = userLoggedIn;
         this.jsonValueKeyMap = jsonValueKeyMap;
+        this.searchQuery = searchQuery;
     }
 
     public AppCMSMain getAppCMSMain() {
@@ -105,5 +109,13 @@ public class AppCMSBinder extends Binder {
 
     public Map<String, AppCMSUIKeyType> getJsonValueKeyMap() {
         return jsonValueKeyMap;
+    }
+
+    public Uri getSearchQuery() {
+        return searchQuery;
+    }
+
+    public void clearSearchQuery() {
+        searchQuery = null;
     }
 }

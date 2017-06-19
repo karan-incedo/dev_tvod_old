@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,13 +19,15 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
 
     private AppCMSPresenterComponent appCMSPresenterComponent;
-
     private BroadcastReceiver handoffReceiver;
+    private Uri searchQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
+
+        handleIntent(getIntent());
 
         handoffReceiver = new BroadcastReceiver() {
             @Override
@@ -37,7 +41,9 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
 
         appCMSPresenterComponent = ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
         registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
-        appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this, getString(R.string.app_cms_app_name));
+        appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
+                getString(R.string.app_cms_app_name),
+                searchQuery);
     }
 
     @Override
@@ -54,6 +60,23 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        handleIntent(intent);
+    }
+
+    public void handleIntent(Intent intent) {
+        if (intent != null) {
+            String action = intent.getAction();
+            final Uri data = intent.getData();
+            Log.i(TAG, "Received intent action: " + action);
+            if (data != null) {
+                Log.i(TAG, "Received intent data: " + data.toString());
+                searchQuery = data;
+            }
         }
     }
 }

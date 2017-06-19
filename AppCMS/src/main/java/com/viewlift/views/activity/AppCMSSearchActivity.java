@@ -61,13 +61,16 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         RecyclerView appCMSSearchResultsView = (RecyclerView) findViewById(R.id.app_cms_search_results);
         appCMSSearchItemAdapter =
                 new AppCMSSearchItemAdapter(this,
-                        ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter(),
+                        ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent()
+                                .appCMSPresenter(),
                         null);
         appCMSSearchResultsView.setAdapter(appCMSSearchItemAdapter);
         appCMSSearchResultsView.requestFocus();
 
         AppCMSMain appCMSMain =
-                ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().getAppCMSMain();
+                ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent()
+                        .appCMSPresenter()
+                        .getAppCMSMain();
         appCMSSearchResultsView.setBackgroundColor(Color.parseColor(appCMSMain.getBrand()
                 .getGeneral()
                 .getBackgroundColor()));

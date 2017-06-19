@@ -90,11 +90,14 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             @Override
             public void onClick(View v) {
                 String permalink = appCMSSearchResults.get(adapterPosition).getPermalink();
-                String closeAction = viewHolder.view.getContext().getString(R.string.app_cms_action_close_key);
                 String action = viewHolder.view.getContext().getString(R.string.app_cms_action_videopage_key);
                 String title = appCMSSearchResults.get(adapterPosition).getTitle();
                 Log.d(TAG, "Launching " + permalink + ":" + action);
-                if (!appCMSPresenter.launchButtonSelectedAction(permalink, action, title, null, true)) {
+                if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                        action,
+                        title,
+                        null,
+                        true)) {
                     Log.e(TAG, "Could not launch action: " +
                             " permalink: " +
                             permalink +
