@@ -126,13 +126,18 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         if (Intent.ACTION_VIEW.equals(intent.getAction()) ||
                 Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String searchTerm = null;
+            String queryTerm = null;
+
             if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-                searchTerm = intent.getDataString();
+                String[] searchHintResult = intent.getDataString().split(",");
+                queryTerm = searchHintResult[0];
+                searchTerm = searchHintResult[1];
             } else {
-                searchTerm = intent.getStringExtra(SearchManager.QUERY);
+                queryTerm = intent.getStringExtra(SearchManager.QUERY);
+                searchTerm = queryTerm;
             }
             if (!TextUtils.isEmpty(searchTerm)) {
-                appCMSSearchView.setQuery(searchTerm, false);
+                appCMSSearchView.setQuery(queryTerm, false);
                 final String url = getString(R.string.app_cms_search_api_url,
                         appCMSSearchUrlData.getBaseUrl(),
                         appCMSSearchUrlData.getSiteName(),

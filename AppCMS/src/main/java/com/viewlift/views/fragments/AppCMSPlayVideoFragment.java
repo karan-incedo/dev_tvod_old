@@ -216,6 +216,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private void requestAds(String adTagUrl) {
+        Log.d(TAG, "Requesting ads: " + adTagUrl);
         AdDisplayContainer adDisplayContainer = sdkFactory.createAdDisplayContainer();
         adDisplayContainer.setAdContainer(videoPlayerView);
 
