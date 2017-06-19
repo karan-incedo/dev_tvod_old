@@ -267,9 +267,10 @@ public class ViewCreator {
                         component,
                         jsonValueKeyMap,
                         moduleAPI,
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
                 ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
+                componentViewResult.useWidthOfScreen = true;
                 break;
             case PAGE_CAROUSEL_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
