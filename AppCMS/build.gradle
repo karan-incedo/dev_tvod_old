@@ -20,7 +20,6 @@ buildscript {
 }
 
 apply plugin: 'io.fabric'
-
 repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
@@ -32,8 +31,8 @@ android {
         applicationId packageName
         minSdkVersion 23
         targetSdkVersion 25
-        versionCode 3042028
-        versionName "0.99.5"
+        versionCode 3042029
+        versionName "0.99.9"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
