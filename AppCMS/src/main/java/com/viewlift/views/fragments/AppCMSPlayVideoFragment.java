@@ -1,6 +1,7 @@
 package com.viewlift.views.fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
 import com.google.ads.interactivemedia.v3.api.AdErrorEvent;
@@ -36,9 +39,13 @@ public class AppCMSPlayVideoFragment extends Fragment
         implements AdErrorEvent.AdErrorListener, AdEvent.AdEventListener{
     private static final String TAG = "PlayVideoFragment";
 
+    private String fontColor;
+    private String title;
     private String hlsUrl;
     private String adsUrl;
+    private LinearLayout videoPlayerInfoContainer;
     private Button videoPlayerViewDoneButton;
+    private TextView videoPlayerTitleView;
     private VideoPlayerView videoPlayerView;
 
     private ImaSdkFactory sdkFactory;
@@ -46,17 +53,20 @@ public class AppCMSPlayVideoFragment extends Fragment
     private AdsManager adsManager;
     private boolean isAdDisplayed;
     private OnClosePlayerEvent onClosePlayerEvent;
-    private boolean playerVideoPlayingOnPause;
 
     public interface OnClosePlayerEvent {
         void closePlayer();
     }
 
     public static AppCMSPlayVideoFragment newInstance(Context context,
+                                                      String fontColor,
+                                                      String title,
                                                       String hlsUrl,
                                                       String adsUrl) {
         AppCMSPlayVideoFragment appCMSPlayVideoFragment = new AppCMSPlayVideoFragment();
         Bundle args = new Bundle();
+        args.putString(context.getString(R.string.video_player_font_color_key), fontColor);
+        args.putString(context.getString(R.string.video_player_title_key), title);
         args.putString(context.getString(R.string.video_player_hls_url_key), hlsUrl);
         args.putString(context.getString(R.string.video_player_ads_url_key), adsUrl);
         appCMSPlayVideoFragment.setArguments(args);
@@ -76,10 +86,11 @@ public class AppCMSPlayVideoFragment extends Fragment
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         if (args != null) {
+            fontColor = args.getString(getString(R.string.video_player_font_color_key));
+            title = args.getString(getString(R.string.video_player_title_key));
             hlsUrl = args.getString(getContext().getString(R.string.video_player_hls_url_key));
             adsUrl = args.getString(getContext().getString(R.string.video_player_ads_url_key));
         }
-        playerVideoPlayingOnPause = false;
         setRetainInstance(true);
     }
 
@@ -87,6 +98,15 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_video_player, container, false);
+
+        videoPlayerInfoContainer =
+                (LinearLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
+
+        videoPlayerTitleView = (TextView) rootView.findViewById(R.id.app_cms_video_player_title_view);
+        videoPlayerTitleView.setText(title);
+        videoPlayerTitleView.setTextColor(Color.parseColor(fontColor));
+        videoPlayerTitleView.setSelected(true);
+
         videoPlayerViewDoneButton = (Button) rootView.findViewById(R.id.app_cms_video_player_done_button);
         videoPlayerViewDoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,6 +117,10 @@ public class AppCMSPlayVideoFragment extends Fragment
                 }
             }
         });
+        videoPlayerViewDoneButton.setTextColor(Color.parseColor(fontColor));
+
+        videoPlayerInfoContainer.bringToFront();
+
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
         if (!TextUtils.isEmpty(hlsUrl)) {
             videoPlayerView.setUri(Uri.parse(hlsUrl));
@@ -121,9 +145,9 @@ public class AppCMSPlayVideoFragment extends Fragment
             @Override
             public void call(Integer visiblity) {
                 if (visiblity == View.GONE) {
-                    videoPlayerViewDoneButton.setVisibility(View.GONE);
+                    videoPlayerInfoContainer.setVisibility(View.GONE);
                 } else if (visiblity == View.VISIBLE) {
-                    videoPlayerViewDoneButton.setVisibility(View.VISIBLE);
+                    videoPlayerInfoContainer.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -153,13 +177,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (adsManager != null && isAdDisplayed) {
             adsManager.resume();
         } else {
-            if (playerVideoPlayingOnPause) {
-                videoPlayerView.startPlayer();
-                Log.d(TAG, "Starting playback");
-            } else {
-                videoPlayerView.resumePlayer();
-                Log.d(TAG, "Resuming playback");
-            }
+            videoPlayerView.resumePlayer();
+            Log.d(TAG, "Resuming playback");
         }
         super.onResume();
     }
@@ -169,7 +188,6 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (adsManager != null && isAdDisplayed) {
             adsManager.pause();
         } else {
-            playerVideoPlayingOnPause = videoPlayerView.shouldPlayWhenReady();
             videoPlayerView.pausePlayer();
         }
         super.onPause();

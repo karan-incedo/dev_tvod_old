@@ -212,6 +212,10 @@ public class AppCMSPresenter {
                     showErrorDialog();
                 } else {
                     Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
+                    playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_font_color_key),
+                            appCMSMain.getBrand().getGeneral().getTextColor());
+                    playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_title_key),
+                            filmTitle);
                     playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_hls_url_key),
                             extraData);
                     StringBuffer adsSiteUrl = new StringBuffer();
@@ -289,7 +293,7 @@ public class AppCMSPresenter {
                                             this.appCMSPageUI,
                                             appCMSPageAPI,
                                             this.pageId,
-                                            this.pageTitle,
+                                            appCMSPageAPI.getTitle(),
                                             loadFromFile,
                                             this.appbarPresent,
                                             this.fullscreenEnabled,

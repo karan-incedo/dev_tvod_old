@@ -24,4 +24,5 @@
     <dimen name="searchbar_elevation">36dp</dimen>
     <dimen name="search_item_padding_default">8dp</dimen>
     <dimen name="app_cms_no_search_results_textsize">24sp</dimen>
+    <dimen name="app_cms_video_player_title_view_text_size">24sp</dimen>
 </resources>

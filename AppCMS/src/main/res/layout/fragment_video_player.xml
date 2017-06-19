@@ -3,15 +3,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/app_cms_video_player_done_button"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/app_cms_video_player_info_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/done"
-        android:textColor="@color/colorAccent"
-        android:background="@android:color/transparent"
+        android:orientation="horizontal"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentTop="true">
+        <Button
+            android:id="@+id/app_cms_video_player_done_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/done"
+            android:textColor="@color/colorAccent"
+            android:background="@android:color/transparent"/>
+
+        <TextView
+            android:id="@+id/app_cms_video_player_title_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:textSize="@dimen/app_cms_video_player_title_view_text_size"
+            android:gravity="center_vertical"
+            android:textAlignment="gravity"
+            android:textColor="@color/colorAccent"
+            android:background="@android:color/transparent"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"/>
+    </LinearLayout>
 
     <com.viewlift.views.customviews.VideoPlayerView
         android:id="@+id/app_cms_video_player_container"
