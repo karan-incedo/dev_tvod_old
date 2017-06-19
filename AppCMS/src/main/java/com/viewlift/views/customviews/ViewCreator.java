@@ -362,8 +362,7 @@ public class ViewCreator {
                                 }
                             });
                         } else {
-                            componentViewResult.componentView.setEnabled(false);
-                            ((TextView) componentViewResult.componentView).setTextColor(ContextCompat.getColor(context, android.R.color.darker_gray));
+                            componentViewResult.componentView = null;
                         }
                         break;
                     case PAGE_VIDEO_PLAY_BUTTON_KEY:
