@@ -8,6 +8,8 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
+import android.graphics.drawable.ColorDrawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -86,7 +88,8 @@ public class CollectionGridItemView extends BaseView {
         init();
     }
 
-    protected void init() {
+    @Override
+    public void init() {
         int width = (int) getGridWidth(getContext(),
                 component.getLayout(),
                 (int) getViewWidth(getContext(),
@@ -183,10 +186,10 @@ public class CollectionGridItemView extends BaseView {
                         componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
                     int childViewWidth = (int) getViewWidth(getContext(),
                             childComponent.getLayout(),
-                            0);
+                            ViewGroup.LayoutParams.MATCH_PARENT);
                     int childViewHeight = (int) getViewHeight(getContext(),
                             childComponent.getLayout(),
-                            getViewHeight(getContext(), component.getLayout(), 0));
+                            getViewHeight(getContext(), component.getLayout(), ViewGroup.LayoutParams.WRAP_CONTENT));
                     if (childViewHeight > childViewWidth &&
                             childViewHeight > 0 &&
                             childViewWidth > 0 &&
@@ -281,8 +284,9 @@ public class CollectionGridItemView extends BaseView {
             }
 
             if (shouldShowView(childComponent) && bringToFront) {
-                view.getParent().bringChildToFront(view);
+                view.bringToFront();
             }
+            view.forceLayout();
         }
     }
 

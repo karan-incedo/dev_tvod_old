@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -267,6 +268,20 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
         }
     }
 
+    public void resetData(RecyclerView listView) {
+        listView.setAdapter(null);
+        List<ContentDatum> adapterDataTmp = new ArrayList<>(adapterData);
+        adapterData = null;
+        notifyDataSetChanged();
+        adapterData = adapterDataTmp;
+        notifyDataSetChanged();
+        listView.setAdapter(this);
+        updatedIndex = getDefaultIndex();
+        sendEvent(new InternalEvent<Object>(updatedIndex));
+        listView.scrollToPosition(updatedIndex);
+        listView.invalidate();
+    }
+
     private int getDefaultIndex() {
         return Integer.MAX_VALUE / 2 - ((Integer.MAX_VALUE / 2) % adapterData.size());
     }
@@ -277,9 +292,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
 
     private int calculateUpdateIndex(int index) {
         if (Math.abs(updatedIndex - index) > adapterData.size()) {
-            int updatedIndexInItems = index;
             int visibleIndexInItems = updatedIndex % adapterData.size();
-            return updatedIndex + (updatedIndexInItems - visibleIndexInItems);
+            return updatedIndex + (index - visibleIndexInItems);
         }
         return index;
     }

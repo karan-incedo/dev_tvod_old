@@ -48,7 +48,7 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
     }
 
     @Override
-    protected void init() {
+    public void init() {
         Context context = getContext();
         childrenContainer = new LinearLayout(context);
         int width = RelativeLayout.LayoutParams.WRAP_CONTENT;

@@ -29,6 +29,37 @@ import snagfilms.com.air.appcms.R;
 public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.ViewHolder> {
     private static final String TAG = "AppCMSViewAdapter";
 
+    public static class ListWithAdapter {
+        RecyclerView listView;
+        RecyclerView.Adapter adapter;
+
+        public RecyclerView getListView() {
+            return listView;
+        }
+
+        public RecyclerView.Adapter getAdapter() {
+            return adapter;
+        }
+
+        public static class Builder {
+            private ListWithAdapter listWithAdapter;
+            public Builder() {
+                listWithAdapter = new ListWithAdapter();
+            }
+            public Builder listview(RecyclerView listView) {
+                listWithAdapter.listView = listView;
+                return this;
+            }
+            public Builder adapter(RecyclerView.Adapter adapter) {
+                listWithAdapter.adapter = adapter;
+                return this;
+            }
+            public ListWithAdapter build() {
+                return listWithAdapter;
+            }
+        }
+    }
+
     protected Component component;
     protected AppCMSPresenter appCMSPresenter;
     protected Settings settings;

@@ -534,8 +534,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             @Override
             public void onClick(View v) {
                 selectNavItem(menuNavBarItemView);
-                if (!appCMSPresenter.launchNavigationPage()) {
-                    Log.e(TAG, "Could not launch navigation page!");
+                if (appCMSBinderStack.size() > 0) {
+                    AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                    if (!appCMSPresenter.launchNavigationPage(appCMSBinder.getPageId(), appCMSBinder.getPageName())) {
+                        Log.e(TAG, "Could not launch navigation page!");
+                    }
                 }
             }
         });

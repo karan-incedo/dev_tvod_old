@@ -2,7 +2,9 @@ package com.viewlift.views.customviews;
 
 import android.content.Context;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -12,6 +14,11 @@ import javax.inject.Inject;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
+import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
+import com.viewlift.views.adapters.AppCMSViewAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by viewlift on 5/4/17.
@@ -19,6 +26,7 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 
 public class PageView extends BaseView {
     private final AppCMSPageUI appCMSPageUI;
+    private List<AppCMSViewAdapter.ListWithAdapter> adapterList;
 
     @Inject
     public PageView(Context context, AppCMSPageUI appCMSPageUI) {
@@ -28,11 +36,24 @@ public class PageView extends BaseView {
     }
 
     @Override
-    protected void init() {
+    public void init() {
         FrameLayout.LayoutParams layoutParams =
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.MATCH_PARENT);
-        this.setLayoutParams(layoutParams);
+        setLayoutParams(layoutParams);
+        adapterList = new ArrayList<>();
+    }
+
+    public void addListWithAdapter(AppCMSViewAdapter.ListWithAdapter listWithAdapter) {
+        adapterList.add(listWithAdapter);
+    }
+
+    public void notifyAdaptersOfUpdate() {
+        for (AppCMSViewAdapter.ListWithAdapter listWithAdapter : adapterList) {
+            if (listWithAdapter.getAdapter() instanceof AppCMSCarouselItemAdapter) {
+                ((AppCMSCarouselItemAdapter) listWithAdapter.getAdapter()).resetData(listWithAdapter.getListView());
+            }
+        }
     }
 
     @Override

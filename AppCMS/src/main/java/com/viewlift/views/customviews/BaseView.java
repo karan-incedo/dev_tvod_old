@@ -58,7 +58,7 @@ public abstract class BaseView extends FrameLayout {
         DEVICE_HEIGHT = getContext().getResources().getDisplayMetrics().heightPixels;
     }
 
-    protected abstract void init();
+    public abstract void init();
 
     protected abstract Component getChildComponent(int index);
 

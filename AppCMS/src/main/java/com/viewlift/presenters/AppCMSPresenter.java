@@ -119,7 +119,6 @@ public class AppCMSPresenter {
     private Map<String, List<OnInternalEvent>> onActionInternalEvents;
     private Stack<String> currentActions;
     private AppCMSSearchUrlComponent appCMSSearchUrlComponent;
-    private AppCMSPageAPI lastLoadedPageAPI;
 
     private static abstract class AppCMSPageAPIAction implements Action1<AppCMSPageAPI> {
         boolean appbarPresent;
@@ -289,7 +288,6 @@ public class AppCMSPresenter {
                             @Override
                             public void call(AppCMSPageAPI appCMSPageAPI) {
                                 if (appCMSPageAPI != null) {
-                                    lastLoadedPageAPI = appCMSPageAPI;
                                     cancelInternalEvents();
                                     pushActionInternalEvents(this.action + BaseView.isLandscape(currentActivity));
                                     Bundle args = getPageActivityBundle(currentActivity,
@@ -318,7 +316,7 @@ public class AppCMSPresenter {
         return result;
     }
 
-    public boolean launchNavigationPage() {
+    public boolean launchNavigationPage(String previousPageId, String previousPageName) {
         boolean result = false;
         if (currentActivity != null) {
             result = true;
@@ -328,8 +326,8 @@ public class AppCMSPresenter {
             Bundle args = getPageActivityBundle(currentActivity,
                     null,
                     null,
-                    null,
-                    currentActivity.getString(R.string.app_cms_menu_label),
+                    previousPageId,
+                    previousPageName,
                     false,
                     true,
                     false,
@@ -406,7 +404,6 @@ public class AppCMSPresenter {
                             @Override
                             public void call(AppCMSPageAPI appCMSPageAPI) {
                                 if (appCMSPageAPI != null) {
-                                    lastLoadedPageAPI = appCMSPageAPI;
                                     cancelInternalEvents();
                                     pushActionInternalEvents(this.pageId + BaseView.isLandscape(currentActivity));
                                     navigationPageData.put(this.pageId, appCMSPageAPI);
@@ -446,7 +443,6 @@ public class AppCMSPresenter {
                             }
                         });
             } else {
-                lastLoadedPageAPI = appCMSPageAPI;
                 cancelInternalEvents();
                 pushActionInternalEvents(pageId + BaseView.isLandscape(currentActivity));
                 if (launchActivity) {
@@ -760,18 +756,6 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public AppCMSPageAPI getLastLoadedPageAPI() {
-        return lastLoadedPageAPI;
-    }
-
-    private boolean isHomePage(String pageId) {
-        Primary homePageNav = findHomePageNavItem();
-        if (homePageNav != null) {
-            return homePageNav.getPageId().equals(pageId);
-        }
-        return false;
-    }
-
     public void pushActionInternalEvents(String action) {
         Log.d(TAG, "Stack size - pushing internal events: " + currentActions.size());
         if (currentActions.size() > 0 && !isActionAPage(currentActions.peek())) {
@@ -835,7 +819,6 @@ public class AppCMSPresenter {
                                     boolean fullscreenEnabled,
                                     boolean navbarPresent,
                                     Uri searchQuery) {
-        lastLoadedPageAPI = appCMSPageAPI;
         Bundle args = getPageActivityBundle(activity,
                 appCMSPageUI,
                 appCMSPageAPI,

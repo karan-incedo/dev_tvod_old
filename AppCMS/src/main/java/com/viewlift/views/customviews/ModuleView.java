@@ -20,8 +20,6 @@ import rx.functions.Action1;
 public class ModuleView extends BaseView {
     private static final String TAG = "ModuleView";
 
-    private List<Action1<Integer>> actionReceivers;
-
     private final ModuleList module;
 
     public ModuleView(Context context, ModuleList module) {
@@ -31,7 +29,7 @@ public class ModuleView extends BaseView {
     }
 
     @Override
-    protected void init() {
+    public void init() {
         int width = (int) getViewWidth(getContext(), module.getLayout(), LayoutParams.MATCH_PARENT);
         int height = (int) getViewHeight(getContext(), module.getLayout(), LayoutParams.WRAP_CONTENT);
         Log.d(TAG, "Module Key: " + module.getView() + " Width: " + width + " Height; " + height);
@@ -41,7 +39,6 @@ public class ModuleView extends BaseView {
         if (module.getComponents() != null) {
             initializeComponentHasViewList(module.getComponents().size());
         }
-        actionReceivers = new ArrayList<>();
     }
 
     @Override

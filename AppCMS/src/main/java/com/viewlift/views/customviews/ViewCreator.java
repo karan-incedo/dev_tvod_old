@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -64,15 +65,6 @@ public class ViewCreator {
         return pageViewLruCache;
     }
 
-    private static LruCache<String, ModuleView> moduleViewLruCache;
-    private static int MODULE_LRU_CACHE_SIZE = 50;
-    private static LruCache<String, ModuleView> getModuleViewLruCache() {
-        if (moduleViewLruCache == null) {
-            moduleViewLruCache = new LruCache<>(MODULE_LRU_CACHE_SIZE);
-        }
-        return moduleViewLruCache;
-    }
-
     private static class ComponentViewResult {
         View componentView;
         OnInternalEvent onInternalEvent;
@@ -109,6 +101,8 @@ public class ViewCreator {
                     jsonValueKeyMap,
                     appCMSPresenter,
                     modulesToIgnore);
+        } else {
+            pageView.notifyAdaptersOfUpdate();
         }
         return pageView;
     }
@@ -129,6 +123,7 @@ public class ViewCreator {
                 View childView = createModuleView(context,
                         module,
                         moduleAPI,
+                        pageView,
                         jsonValueKeyMap,
                         appCMSPresenter);
                 if (childView != null) {
@@ -141,17 +136,12 @@ public class ViewCreator {
     public View createModuleView(final Context context,
                                  final ModuleList module,
                                  final Module moduleAPI,
+                                 PageView pageView,
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                  AppCMSPresenter appCMSPresenter) {
-        ModuleView moduleView = getModuleViewLruCache().get(moduleAPI.getId() + BaseView.isLandscape(context));
-        if (moduleView == null) {
-            moduleView = new ModuleView(context, module);
-            getModuleViewLruCache().put(moduleAPI.getId() + BaseView.isLandscape(context), moduleView);
-        }
-        moduleView.getChildrenContainer().removeAllViews();
+        ModuleView moduleView = new ModuleView(context, module);
         ViewGroup childrenContainer = moduleView.getChildrenContainer();
         if (module.getComponents() != null &&
-                moduleAPI != null &&
                 moduleAPI.getContentData() != null &&
                 moduleAPI.getContentData().size() > 0) {
 
@@ -160,6 +150,7 @@ public class ViewCreator {
                 ComponentViewResult componentViewResult = createComponentView(context,
                         component,
                         moduleAPI,
+                        pageView,
                         module.getSettings(),
                         jsonValueKeyMap,
                         appCMSPresenter,
@@ -195,9 +186,7 @@ public class ViewCreator {
                 }
             }
         }
-        if (moduleAPI == null ||
-                moduleAPI.getContentData() == null ||
-                moduleAPI.getContentData().size() == 0) {
+        if (moduleAPI.getContentData() == null || moduleAPI.getContentData().size() == 0) {
             moduleView.setVisibility(View.GONE);
         } else {
             appCMSPresenter.addOnOrientationChangeHandler(moduleView.getOrientationChangeHandler());
@@ -226,6 +215,7 @@ public class ViewCreator {
             ComponentViewResult componentViewResult = createComponentView(context,
                     childComponent,
                     moduleAPI,
+                    null,
                     settings,
                     jsonValueKeyMap,
                     appCMSPresenter,
@@ -268,12 +258,13 @@ public class ViewCreator {
     }
 
     public ComponentViewResult createComponentView(final Context context,
-                                    final Component component,
-                                    final Module moduleAPI,
-                                    final Settings settings,
-                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                                    final AppCMSPresenter appCMSPresenter,
-                                    boolean gridElement) {
+                                                   final Component component,
+                                                   final Module moduleAPI,
+                                                   @Nullable PageView pageView,
+                                                   final Settings settings,
+                                                   Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                                   final AppCMSPresenter appCMSPresenter,
+                                                   boolean gridElement) {
 
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
@@ -325,8 +316,13 @@ public class ViewCreator {
                                 (RecyclerView) componentViewResult.componentView,
                                 loop);
                 ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSCarouselItemAdapter);
+                if (pageView != null) {
+                    pageView.addListWithAdapter(new AppCMSViewAdapter.ListWithAdapter.Builder()
+                            .adapter(appCMSCarouselItemAdapter)
+                            .listview((RecyclerView) componentViewResult.componentView)
+                            .build());
+                }
                 componentViewResult.onInternalEvent = appCMSCarouselItemAdapter;
-                componentViewResult.useWidthOfScreen = true;
                 break;
             case PAGE_PAGE_CONTROL_VIEW_KEY:
                 int selectedColor =

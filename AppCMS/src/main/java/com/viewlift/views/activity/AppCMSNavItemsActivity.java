@@ -35,6 +35,7 @@ public class AppCMSNavItemsActivity extends AppCompatActivity implements AppCMSN
 
     private BroadcastReceiver handoffReceiver;
     private AppCMSPresenter appCMSPresenter;
+    private AppCMSBinder appCMSBinder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,8 +64,7 @@ public class AppCMSNavItemsActivity extends AppCompatActivity implements AppCMSN
         super.onResume();
         Intent intent = getIntent();
         Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
-        handleAppCMSBinder((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)),
-                true);
+        handleAppCMSBinder((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)));
     }
 
     @Override
@@ -76,17 +76,15 @@ public class AppCMSNavItemsActivity extends AppCompatActivity implements AppCMSN
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        AppCMSPageAPI appCMSPageAPI = appCMSPresenter.getLastLoadedPageAPI();
-        if (appCMSPageAPI != null) {
-            appCMSPresenter.navigateToPage(appCMSPageAPI.getId(),
-                    appCMSPageAPI.getTitle(),
-                    false,
-                    null);
-        }
+        appCMSPresenter.navigateToPage(appCMSBinder.getPageId(),
+                appCMSBinder.getPageName(),
+                false,
+                null);
         finish();
     }
 
-    private void handleAppCMSBinder(AppCMSBinder appCMSBinder, boolean firstFragment) {
+    private void handleAppCMSBinder(AppCMSBinder appCMSBinder) {
+        this.appCMSBinder = appCMSBinder;
         handleToolbar(appCMSBinder);
         Fragment appCMSNavigationFragment = AppCMSNavItemsFragment.newInstance(this,
                 appCMSBinder);
