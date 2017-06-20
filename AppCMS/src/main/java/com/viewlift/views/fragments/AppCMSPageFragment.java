@@ -129,7 +129,6 @@ public class AppCMSPageFragment extends Fragment {
         super.onDestroy();
         appCMSBinder = null;
         pageView = null;
-
     }
 
     @Override

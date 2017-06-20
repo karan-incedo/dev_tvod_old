@@ -76,6 +76,12 @@ public class ViewCreator {
 
     ComponentViewResult componentViewResult;
 
+    public void removeLruCacheItem(Context context, String pageId) {
+        if (getPageViewLruCache().get(pageId + BaseView.isLandscape(context)) != null) {
+            getPageViewLruCache().remove(pageId + BaseView.isLandscape(context));
+        }
+    }
+
     public PageView generatePage(Context context,
                                  AppCMSPageUI appCMSPageUI,
                                  AppCMSPageAPI appCMSPageAPI,
@@ -87,7 +93,7 @@ public class ViewCreator {
         }
         PageView pageView = getPageViewLruCache().get(appCMSPageAPI.getId() + BaseView.isLandscape(context));
         boolean newView = false;
-        if (pageView == null) {
+        if (pageView == null || pageView.getContext() != context) {
             pageView = new PageView(context, appCMSPageUI);
             getPageViewLruCache().put(appCMSPageAPI.getId() + BaseView.isLandscape(context), pageView);
             newView = true;

@@ -190,23 +190,6 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        if (loop) {
-            for (int i = 0; i < holder.componentView.getNumberOfChildren(); i++) {
-                Component childComponent =
-                        holder.componentView.matchComponentToView(holder.componentView.getChild(i));
-                if (childComponent != null) {
-                    AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
-                    if (componentType == null) {
-                        componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
-                    }
-                    if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
-                        ((TextView) holder.componentView.getChild(i)).setText("");
-                    } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
-                        ((ImageView) holder.componentView.getChild(i)).setImageResource(android.R.color.transparent);
-                    }
-                }
-            }
-        }
         bindView(holder.componentView, adapterData.get(position % adapterData.size()));
     }
 
@@ -270,15 +253,11 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
 
     public void resetData(RecyclerView listView) {
         listView.setAdapter(null);
-        List<ContentDatum> adapterDataTmp = new ArrayList<>(adapterData);
-        adapterData = null;
-        notifyDataSetChanged();
-        adapterData = adapterDataTmp;
-        notifyDataSetChanged();
         listView.setAdapter(this);
         updatedIndex = getDefaultIndex();
         sendEvent(new InternalEvent<Object>(updatedIndex));
         listView.scrollToPosition(updatedIndex);
+        notifyDataSetChanged();
         listView.invalidate();
     }
 
