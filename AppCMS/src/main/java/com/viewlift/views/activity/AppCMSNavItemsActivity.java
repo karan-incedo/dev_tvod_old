@@ -74,6 +74,9 @@ public class AppCMSNavItemsActivity extends AppCompatActivity implements AppCMSN
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        appCMSPresenter.cancelInternalEvents();
+        appCMSPresenter.popActionInternalEvents();
+        appCMSPresenter.restartInternalEvents();
         finish();
     }
 

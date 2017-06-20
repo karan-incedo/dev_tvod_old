@@ -13,6 +13,7 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSNavItemsAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
+import com.viewlift.views.customviews.BaseView;
 
 import snagfilms.com.air.appcms.R;
 
@@ -57,7 +58,9 @@ public class AppCMSNavItemsFragment extends Fragment {
                 appCMSBinder.isUserLoggedIn(),
                 appCMSPresenter);
         navItemsList.setAdapter(appCMSNavItemsAdapter);
-        appCMSPresenter.restrictPortraitOnly();
+        if (!BaseView.isTablet(getContext())) {
+            appCMSPresenter.restrictPortraitOnly();
+        }
         return view;
     }
 }

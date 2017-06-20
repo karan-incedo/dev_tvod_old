@@ -73,6 +73,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     private boolean resumeInternalEvents;
     private boolean isActive;
     private AppCMSBinder updatedAppCMSBinder;
+    private Configuration previousConfiguration;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -114,11 +115,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
         Bundle args = getIntent().getBundleExtra(getString(R.string.app_cms_bundle_key));
         try {
-            AppCMSBinder appCMSBinder =
+            updatedAppCMSBinder =
                     (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
-            appCMSBinderStack.push(appCMSBinder.getPageId());
-            appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
-            handleLaunchPageAction(appCMSBinder);
+            appCMSBinderStack.push(updatedAppCMSBinder.getPageId());
+            appCMSBinderMap.put(updatedAppCMSBinder.getPageId(), updatedAppCMSBinder);
         } catch (ClassCastException e) {
             Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
         }
@@ -133,7 +133,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                                 (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
                         if (isActive) {
                             handleLaunchPageAction(updatedAppCMSBinder);
-                            updatedAppCMSBinder = null;
                         }
                     } catch (ClassCastException e) {
                         Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
@@ -182,15 +181,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
         Log.d(TAG, "onCreate()");
     }
-
-//    @Override
-//    protected void onNewIntent(Intent intent) {
-//        super.onNewIntent(intent);
-//        Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
-//        AppCMSBinder appCMSBinder =
-//                (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
-//        handleLaunchPageAction(appCMSBinder);
-//    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -258,9 +248,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             }
         }
 
-        if (updatedAppCMSBinder != null) {
+        if (!isActive) {
             handleLaunchPageAction(updatedAppCMSBinder);
-            updatedAppCMSBinder = null;
         }
 
         isActive = true;
