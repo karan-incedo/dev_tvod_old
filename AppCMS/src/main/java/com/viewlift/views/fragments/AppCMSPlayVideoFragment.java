@@ -234,9 +234,9 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         videoPlayerView.stopPlayer();
         videoPlayerView.releasePlayer();
+        super.onDestroyView();
     }
 
     private void requestAds(String adTagUrl) {

@@ -104,8 +104,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         unregisterReceiver(handoffReceiver);
+        super.onDestroy();
     }
 
     @Override

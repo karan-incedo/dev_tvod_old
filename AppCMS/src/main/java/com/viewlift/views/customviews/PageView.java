@@ -50,8 +50,8 @@ public class PageView extends BaseView {
 
     public void notifyAdaptersOfUpdate() {
         for (AppCMSViewAdapter.ListWithAdapter listWithAdapter : adapterList) {
-            if (listWithAdapter.getAdapter() instanceof AppCMSCarouselItemAdapter) {
-                ((AppCMSCarouselItemAdapter) listWithAdapter.getAdapter()).resetData(listWithAdapter.getListView());
+            if (listWithAdapter.getAdapter() instanceof AppCMSViewAdapter) {
+                ((AppCMSViewAdapter) listWithAdapter.getAdapter()).resetData(listWithAdapter.getListView());
             }
         }
     }

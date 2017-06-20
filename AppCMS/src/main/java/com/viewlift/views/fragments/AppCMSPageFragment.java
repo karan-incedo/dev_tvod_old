@@ -121,6 +121,8 @@ public class AppCMSPageFragment extends Fragment {
         if (pageView == null) {
             Log.e(TAG, "AppCMS page creation error");
             onPageCreation.onError(appCMSBinder);
+        } else {
+            pageView.notifyAdaptersOfUpdate();
         }
     }
 

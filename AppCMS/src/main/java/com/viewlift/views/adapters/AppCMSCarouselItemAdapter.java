@@ -274,18 +274,12 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
         }
     }
 
+    @Override
     public void resetData(RecyclerView listView) {
-        listView.setAdapter(null);
-        List<ContentDatum> adapterDataTmp = new ArrayList<>(adapterData);
-        adapterData = null;
-        notifyDataSetChanged();
-        adapterData = adapterDataTmp;
-        notifyDataSetChanged();
-        listView.setAdapter(this);
+        super.resetData(listView);
         updatedIndex = getDefaultIndex();
         sendEvent(new InternalEvent<Object>(updatedIndex));
         listView.scrollToPosition(updatedIndex);
-        listView.invalidate();
     }
 
     private int getDefaultIndex() {

@@ -63,7 +63,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     private boolean resumeInternalEvents;
     private boolean isActive;
     private AppCMSBinder updatedAppCMSBinder;
-    private Configuration previousConfiguration;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -127,11 +126,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                     Log.d(TAG, "Received Presenter Close Action: fragment count = " + getSupportFragmentManager().getBackStackEntryCount());
                     if (appCMSBinderStack.size() > 1) {
                         try {
-                            getSupportFragmentManager().popBackStack();
+                            getSupportFragmentManager().popBackStackImmediate();
                         } catch (IllegalStateException e) {
                             Log.e(TAG, "Error popping back stack: " + e.getMessage());
                         }
                         handleBack(true, false, true);
+                        if (appCMSBinderStack.size() > 0) {
+                            AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                            handleBack(true, appCMSBinderStack.size() < 2, false);
+                            handleLaunchPageAction(appCMSBinder);
+                        }
                         isActive = true;
                     }
                 }

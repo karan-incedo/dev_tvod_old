@@ -15,6 +15,7 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.CollectionGridItemView;
+import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.ArrayList;
@@ -141,6 +142,17 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             super(itemView);
             this.componentView = (CollectionGridItemView) itemView;
         }
+    }
+
+    public void resetData(RecyclerView listView) {
+        listView.setAdapter(null);
+        List<ContentDatum> adapterDataTmp = new ArrayList<>(adapterData);
+        adapterData = null;
+        notifyDataSetChanged();
+        adapterData = adapterDataTmp;
+        notifyDataSetChanged();
+        listView.setAdapter(this);
+        listView.invalidate();
     }
 
     protected void bindView(CollectionGridItemView itemView,

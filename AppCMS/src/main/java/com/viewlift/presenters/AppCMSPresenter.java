@@ -573,21 +573,24 @@ public class AppCMSPresenter {
     }
 
     public void addInternalEvent(OnInternalEvent onInternalEvent) {
-        if (!TextUtils.isEmpty(currentActions.peek()) &&
+        if (currentActions.size() > 0 &&
+                !TextUtils.isEmpty(currentActions.peek()) &&
                 onActionInternalEvents.get(currentActions.peek()) != null) {
             onActionInternalEvents.get(currentActions.peek()).add(onInternalEvent);
         }
     }
 
     public void clearOnInternalEvents() {
-        if (!TextUtils.isEmpty(currentActions.peek()) &&
+        if (currentActions.size() > 0 &&
+                !TextUtils.isEmpty(currentActions.peek()) &&
                 onActionInternalEvents.get(currentActions.peek()) != null) {
             onActionInternalEvents.get(currentActions.peek()).clear();
         }
     }
 
     public List<OnInternalEvent> getOnInternalEvents() {
-        if (!TextUtils.isEmpty(currentActions.peek()) &&
+        if (currentActions.size() > 0 &&
+                !TextUtils.isEmpty(currentActions.peek()) &&
                 onActionInternalEvents.get(currentActions.peek()) != null) {
             return onActionInternalEvents.get(currentActions.peek());
         }
@@ -798,10 +801,6 @@ public class AppCMSPresenter {
             onActionInternalEvents.put(action, new ArrayList<OnInternalEvent>());
         }
         currentActions.push(action);
-    }
-
-    private boolean isActionCurrent(String action) {
-        return currentActions.size() > 0 && currentActions.peek().equals(action);
     }
 
     private void setNavItemToCurrentAction(Activity activity) {

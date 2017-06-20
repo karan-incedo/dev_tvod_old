@@ -310,6 +310,12 @@ public class ViewCreator {
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
                 ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
+                if (pageView != null) {
+                    pageView.addListWithAdapter(new AppCMSViewAdapter.ListWithAdapter.Builder()
+                            .adapter(appCMSViewAdapter)
+                            .listview((RecyclerView) componentViewResult.componentView)
+                            .build());
+                }
                 componentViewResult.useWidthOfScreen = true;
                 break;
             case PAGE_CAROUSEL_VIEW_KEY:
