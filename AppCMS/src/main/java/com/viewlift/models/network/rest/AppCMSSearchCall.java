@@ -1,6 +1,7 @@
 package com.viewlift.models.network.rest;
 
 import android.support.annotation.WorkerThread;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
@@ -15,6 +16,8 @@ import javax.inject.Inject;
  */
 
 public class AppCMSSearchCall {
+    private static final String TAG = "AppCMSSearchCall";
+
     private final AppCMSSearchRest appCMSSearchRest;
     private final Gson gson;
 
@@ -26,6 +29,11 @@ public class AppCMSSearchCall {
 
     @WorkerThread
     public List<AppCMSSearchResult> call(String url) throws IOException {
-        return appCMSSearchRest.get(url).execute().body();
+        try {
+            return appCMSSearchRest.get(url).execute().body();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to execute search query " + url + ": " + e.toString());
+        }
+        return null;
     }
 }

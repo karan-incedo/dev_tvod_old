@@ -1,6 +1,7 @@
 package com.viewlift.presenters;
 
 import android.app.Activity;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -45,8 +47,8 @@ import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
 import com.viewlift.models.network.modules.AppCMSAPIModule;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
-import com.viewlift.views.activity.AppCMSNavItemsActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
+import com.viewlift.views.activity.AppCMSSearchActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
@@ -64,6 +66,8 @@ import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.LifecycleStatus;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
+import com.viewlift.views.fragments.AppCMSNavItemsFragment;
+import com.viewlift.views.fragments.AppCMSSearchFragment;
 
 import rx.Observable;
 import rx.functions.Action0;
@@ -320,21 +324,49 @@ public class AppCMSPresenter {
         boolean result = false;
         if (currentActivity != null) {
             result = true;
-            cancelInternalEvents();
-            pushActionInternalEvents(currentActivity.getString(R.string.menu_navigation_key));
-            Intent navigationIntent = new Intent(currentActivity, AppCMSNavItemsActivity.class);
-            Bundle args = getPageActivityBundle(currentActivity,
-                    null,
-                    null,
-                    previousPageId,
-                    previousPageName,
-                    false,
-                    true,
-                    false,
-                    false,
-                    null);
-            navigationIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key), args);
-            currentActivity.startActivity(navigationIntent);
+            AppCMSNavItemsFragment appCMSNavItemsFragment =
+                    AppCMSNavItemsFragment.newInstance(currentActivity,
+                            getAppCMSBinder(currentActivity,
+                                    null,
+                                    null,
+                                    previousPageId,
+                                    previousPageName,
+                                    false,
+                                    true,
+                                    false,
+                                    false,
+                                    null),
+                            Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor()),
+                            Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()));
+
+            appCMSNavItemsFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
+                    currentActivity.getString(R.string.app_cms_navigation_page_tag));
+        }
+        return result;
+    }
+
+    public boolean launchSearchPage() {
+        boolean result = false;
+        if (currentActivity != null) {
+            result = true;
+            AppCMSSearchFragment appCMSSearchFragment = AppCMSSearchFragment.newInstance(currentActivity,
+                    Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
+                    Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()),
+                    Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor()));
+            appCMSSearchFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
+                    currentActivity.getString(R.string.app_cms_search_page_tag));
+        }
+        return result;
+    }
+
+    public boolean launchSearchResultsPage(String searchQuery) {
+        boolean result = false;
+        if (currentActivity != null) {
+            result = true;
+            Intent searchIntent = new Intent(currentActivity, AppCMSSearchActivity.class);
+            searchIntent.setAction(Intent.ACTION_SEARCH);
+            searchIntent.putExtra(SearchManager.QUERY, searchQuery);
+            currentActivity.startActivity(searchIntent);
         }
         return result;
     }
@@ -792,7 +824,31 @@ public class AppCMSPresenter {
                                          boolean navbarPresent,
                                          Uri searchQuery) {
         Bundle args = new Bundle();
-        AppCMSBinder appCMSBinder = new AppCMSBinder(appCMSMain,
+        AppCMSBinder appCMSBinder = getAppCMSBinder(activity,
+                appCMSPageUI,
+                appCMSPageAPI,
+                pageID,
+                pageName,
+                loadFromFile,
+                appbarPresent,
+                fullscreenEnabled,
+                navbarPresent,
+                searchQuery);
+        args.putBinder(activity.getString(R.string.app_cms_binder_key), appCMSBinder);
+        return args;
+    }
+
+    private AppCMSBinder getAppCMSBinder(Activity activity,
+                                         AppCMSPageUI appCMSPageUI,
+                                         AppCMSPageAPI appCMSPageAPI,
+                                         String pageID,
+                                         String pageName,
+                                         boolean loadFromFile,
+                                         boolean appbarPresent,
+                                         boolean fullscreenEnabled,
+                                         boolean navbarPresent,
+                                         Uri searchQuery) {
+        return new AppCMSBinder(appCMSMain,
                 appCMSPageUI,
                 appCMSPageAPI,
                 navigation,
@@ -805,8 +861,6 @@ public class AppCMSPresenter {
                 isUserLoggedIn(activity),
                 jsonValueKeyMap,
                 searchQuery);
-        args.putBinder(activity.getString(R.string.app_cms_binder_key), appCMSBinder);
-        return args;
     }
 
     private void launchPageActivity(Activity activity,

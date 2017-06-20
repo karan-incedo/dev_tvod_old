@@ -11,6 +11,7 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
+import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.CollectionGridItemView;
@@ -60,6 +61,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
     }
 
+    protected Layout parentLayout;
+    protected boolean useParentSize;
     protected Component component;
     protected AppCMSPresenter appCMSPresenter;
     protected Settings settings;
@@ -77,6 +80,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                              ViewCreator viewCreator,
                              AppCMSPresenter appCMSPresenter,
                              Settings settings,
+                             Layout parentLayout,
+                             boolean useParentSize,
                              Component component,
                              Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                              Module moduleAPI,
@@ -84,6 +89,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                              int defaultHeight) {
         this.viewCreator = viewCreator;
         this.appCMSPresenter = appCMSPresenter;
+        this.parentLayout = parentLayout;
+        this.useParentSize = useParentSize;
         this.component = component;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.moduleAPI = moduleAPI;
@@ -101,6 +108,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         CollectionGridItemView view = viewCreator.createCollectionGridItemView(parent.getContext(),
+                parentLayout,
+                useParentSize,
                 component,
                 appCMSPresenter,
                 moduleAPI,

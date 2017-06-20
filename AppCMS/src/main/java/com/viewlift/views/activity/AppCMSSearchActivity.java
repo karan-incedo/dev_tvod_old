@@ -189,7 +189,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                     .getBrand()
                     .getGeneral()
                     .getTextColor()));
-
+            noResultsTextview.setVisibility(View.VISIBLE);
         } else {
             noResultsTextview.setVisibility(View.GONE);
         }

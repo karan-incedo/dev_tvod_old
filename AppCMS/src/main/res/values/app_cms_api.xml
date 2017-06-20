@@ -44,6 +44,7 @@
     <string name="app_cms_page_font_bold_key">Bold</string>
     <string name="app_cms_page_font_semibold_key">Semibold</string>
     <string name="app_cms_page_font_extrabold_key">ExtraBold</string>
+    <string name="app_cms_page_font_family_key">OpenSans</string>
     <string name="app_cms_page_video_image_key">videoImage</string>
     <string name="app_cms_page_video_play_button_key">playButton</string>
     <string name="app_cms_page_video_description_key">videoDescriptionText</string>
@@ -62,6 +63,9 @@
     <string name="app_cms_page_video_credits_starring_key">Starring</string>
     <string name="app_cms_page_api_thumbnail_url_key">thumbnail</string>
     <string name="app_cms_page_api_title_key">title</string>
+
+    <string name="app_cms_navigation_page_tag">navigation</string>
+    <string name="app_cms_search_page_tag">search</string>
 
     <!-- AppAppCMSPageUIPage names for Actions -->
     <string name="app_cms_pagename_splashscreen_key">Splash Screen</string>

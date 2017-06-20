@@ -44,6 +44,8 @@ import javax.inject.Inject;
 public class CollectionGridItemView extends BaseView {
     private static final String TAG = "CollectionItemView";
 
+    private final Layout parentLayout;
+    private final boolean userParentLayout;
     private final Component component;
     private List<ItemContainer> childItems;
 
@@ -78,10 +80,14 @@ public class CollectionGridItemView extends BaseView {
 
     @Inject
     public CollectionGridItemView(Context context,
+                                  Layout parentLayout,
+                                  boolean useParentLayout,
                                   Component component,
                                   int defaultWidth,
                                   int defaultHeight) {
         super(context);
+        this.parentLayout = parentLayout;
+        this.userParentLayout = useParentLayout;
         this.component = component;
         this.defaultWidth = defaultWidth;
         this.defaultHeight = defaultHeight;
@@ -103,14 +109,13 @@ public class CollectionGridItemView extends BaseView {
 
         FrameLayout.LayoutParams layoutParams;
         if (component.getStyles() != null) {
-            int margin = (int) convertDpToPixel(component.getStyles().getPadding(), getContext());
+            int margin = (int) convertHorizontalValue(getContext(), component.getStyles().getPadding());
             MarginLayoutParams marginLayoutParams = new MarginLayoutParams(width, height);
             marginLayoutParams.setMargins(0, 0, margin, 0);
             layoutParams = new FrameLayout.LayoutParams(marginLayoutParams);
         } else if (getTrayPadding(getContext(), component.getLayout()) != -1.0f) {
-            int margin = (int) convertDpToPixel(getTrayPadding(getContext(),
-                    component.getLayout()),
-                    getContext());
+            int trayPadding = (int) getTrayPadding(getContext(), component.getLayout());
+            int margin = (int) convertHorizontalValue(getContext(), trayPadding);
             MarginLayoutParams marginLayoutParams = new MarginLayoutParams(width, height);
             marginLayoutParams.setMargins(0, 0, margin, 0);
             layoutParams = new FrameLayout.LayoutParams(marginLayoutParams);
@@ -190,6 +195,20 @@ public class CollectionGridItemView extends BaseView {
                     int childViewHeight = (int) getViewHeight(getContext(),
                             childComponent.getLayout(),
                             getViewHeight(getContext(), component.getLayout(), ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                    if (userParentLayout) {
+                        childViewWidth = (int) getGridWidth(getContext(),
+                                parentLayout,
+                                (int) getViewWidth(getContext(),
+                                        parentLayout,
+                                        defaultWidth));
+                        childViewHeight = (int) getGridHeight(getContext(),
+                                parentLayout,
+                                (int) getViewHeight(getContext(),
+                                        parentLayout,
+                                        defaultHeight));
+                    }
+
                     if (childViewHeight > childViewWidth &&
                             childViewHeight > 0 &&
                             childViewWidth > 0 &&

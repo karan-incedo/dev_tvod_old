@@ -11,8 +11,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
@@ -43,7 +45,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private String title;
     private String hlsUrl;
     private String adsUrl;
-    private LinearLayout videoPlayerInfoContainer;
+    private RelativeLayout videoPlayerInfoContainer;
     private Button videoPlayerViewDoneButton;
     private TextView videoPlayerTitleView;
     private VideoPlayerView videoPlayerView;
@@ -100,7 +102,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         View rootView = inflater.inflate(R.layout.fragment_video_player, container, false);
 
         videoPlayerInfoContainer =
-                (LinearLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
+                (RelativeLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
 
         videoPlayerTitleView = (TextView) rootView.findViewById(R.id.app_cms_video_player_title_view);
         videoPlayerTitleView.setText(title);

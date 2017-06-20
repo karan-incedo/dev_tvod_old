@@ -17,6 +17,7 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
+import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.CollectionGridItemView;
@@ -52,6 +53,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                                      ViewCreator viewCreator,
                                      AppCMSPresenter appCMSPresenter,
                                      Settings settings,
+                                     Layout parentLayout,
                                      Component component,
                                      Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                      Module moduleAPI,
@@ -61,6 +63,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                 viewCreator,
                 appCMSPresenter,
                 settings,
+                parentLayout,
+                false,
                 component,
                 jsonValueKeyMap,
                 moduleAPI,
@@ -176,6 +180,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         CollectionGridItemView view = viewCreator.createCollectionGridItemView(parent.getContext(),
+                parentLayout,
+                true,
                 component,
                 appCMSPresenter,
                 moduleAPI,
@@ -190,6 +196,23 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
+        if (loop) {
+            for (int i = 0; i < holder.componentView.getNumberOfChildren(); i++) {
+                Component childComponent =
+                        holder.componentView.matchComponentToView(holder.componentView.getChild(i));
+                if (childComponent != null) {
+                    AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
+                    if (componentType == null) {
+                        componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                    }
+                    if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
+                        ((TextView) holder.componentView.getChild(i)).setText("");
+                    } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
+                        ((ImageView) holder.componentView.getChild(i)).setImageResource(android.R.color.transparent);
+                    }
+                }
+            }
+        }
         bindView(holder.componentView, adapterData.get(position % adapterData.size()));
     }
 
@@ -253,11 +276,15 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
 
     public void resetData(RecyclerView listView) {
         listView.setAdapter(null);
+        List<ContentDatum> adapterDataTmp = new ArrayList<>(adapterData);
+        adapterData = null;
+        notifyDataSetChanged();
+        adapterData = adapterDataTmp;
+        notifyDataSetChanged();
         listView.setAdapter(this);
         updatedIndex = getDefaultIndex();
         sendEvent(new InternalEvent<Object>(updatedIndex));
         listView.scrollToPosition(updatedIndex);
-        notifyDataSetChanged();
         listView.invalidate();
     }
 

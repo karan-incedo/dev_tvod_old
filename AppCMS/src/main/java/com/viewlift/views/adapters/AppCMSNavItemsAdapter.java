@@ -31,6 +31,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
     private final Navigation navigation;
     private final AppCMSPresenter appCMSPresenter;
     private final OnCloseNavAction onCloseNavAction;
+    private final int textColor;
     private boolean userLoggedIn;
 
     public interface OnCloseNavAction {
@@ -40,11 +41,13 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
     public AppCMSNavItemsAdapter(OnCloseNavAction onCloseNavAction,
                                  Navigation navigation,
                                  boolean userLoggedIn,
-                                 AppCMSPresenter appCMSPresenter) {
+                                 AppCMSPresenter appCMSPresenter,
+                                 int textColor) {
         this.onCloseNavAction = onCloseNavAction;
         this.navigation = navigation;
         this.userLoggedIn = userLoggedIn;
         this.appCMSPresenter = appCMSPresenter;
+        this.textColor = textColor;
     }
 
     @Override
@@ -60,7 +63,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
         if (i < navigation.getPrimary().size()) {
             final Primary primary = navigation.getPrimary().get(i);
-            viewHolder.navItemLabel.setText(primary.getTitle());
+            viewHolder.navItemLabel.setText(primary.getTitle().toUpperCase());
+            viewHolder.navItemLabel.setTextColor(textColor);
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -80,7 +84,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             });
         } else if (userLoggedIn) {
             final User user = navigation.getUser().get(i - navigation.getPrimary().size());
-            viewHolder.navItemLabel.setText(user.getTitle());
+            viewHolder.navItemLabel.setText(user.getTitle().toUpperCase());
+            viewHolder.navItemLabel.setTextColor(textColor);
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

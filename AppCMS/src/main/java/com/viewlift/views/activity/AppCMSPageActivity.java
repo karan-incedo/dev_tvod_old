@@ -20,6 +20,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
@@ -65,10 +66,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     private FrameLayout appCMSFragment;
     private AppBarLayout appBarLayout;
     private LinearLayout appCMSTabNavContainer;
-    private ActionMenuView appCMSActionMenu;
-    private RelativeLayout appCMSSearchViewContainer;
-    private ImageButton appCMSSearchBackButton;
-    private SearchView appCMSSearchView;
     private NavBarItemView pageViewDuringSearch;
     private boolean resumeInternalEvents;
     private boolean isActive;
@@ -82,25 +79,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
         appCMSParentView = (RelativeLayout) findViewById(R.id.app_cms_parent_view);
         appCMSFragment = (FrameLayout) findViewById(R.id.app_cms_fragment);
-        appCMSActionMenu = (ActionMenuView) findViewById(R.id.app_cms_action_menu);
-        appCMSSearchViewContainer = (RelativeLayout) findViewById(R.id.app_cms_search_view_container);
-        appCMSSearchBackButton = (ImageButton) findViewById(R.id.app_cms_search_back_button);
 
-        appCMSSearchBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showSearchView(false);
-                if (pageViewDuringSearch != null) {
-                    selectNavItem(pageViewDuringSearch);
-                }
-            }
-        });
-
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        appCMSSearchView = (SearchView) findViewById(R.id.app_cms_search_view);
-        appCMSSearchView.setQueryHint(getString(R.string.search_films));
-        appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        appCMSSearchView.setIconifiedByDefault(true);
+//        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+//        appCMSSearchView = (SearchView) findViewById(R.id.app_cms_search_view);
+//        appCMSSearchView.setQueryHint(getString(R.string.search_films));
+//        appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+//        appCMSSearchView.setIconifiedByDefault(true);
 
         appBarLayout = (AppBarLayout) findViewById(R.id.app_cms_appbarlayout);
 
@@ -239,7 +223,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             appCMSPresenter.restartInternalEvents();
             Log.d(TAG, "onResume() - Resuming internal events");
         }
-        showSearchView(false);
         if (pageViewDuringSearch != null) {
             selectNavItem(pageViewDuringSearch);
         } else {
@@ -261,7 +244,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     @Override
     protected void onPause() {
         super.onPause();
-        showSearchView(false);
         if (pageViewDuringSearch != null) {
             selectNavItem(pageViewDuringSearch);
         }
@@ -335,12 +317,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         if (appCMSBinder != null) {
             handleLaunchPageAction(appCMSBinder);
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_top_main, appCMSActionMenu.getMenu());
-        return true;
     }
 
     public void pageLoading(boolean pageLoading) {
@@ -534,7 +510,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         menuNavBarItemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectNavItem(menuNavBarItemView);
                 if (appCMSBinderStack.size() > 0) {
                     AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
                     if (!appCMSPresenter.launchNavigationPage(appCMSBinder.getPageId(), appCMSBinder.getPageName())) {
@@ -588,8 +563,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             @Override
             public void onClick(View v) {
                 pageViewDuringSearch = getSelectedNavItem();
-                selectNavItem((NavBarItemView) v);
-                showSearchView(true);
+                appCMSPresenter.launchSearchPage();
             }
         });
     }
@@ -610,26 +584,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                         " index: " +
                         i);
             }
-        }
-    }
-
-    private void showSearchView(boolean shouldShowSearchView) {
-        if (shouldShowSearchView) {
-            appCMSSearchViewContainer.setVisibility(View.VISIBLE);
-            appCMSSearchView.setFocusable(true);
-            appCMSSearchView.requestFocus();
-            appCMSSearchView.setIconified(false);
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
-            appCMSFragment.setAlpha(0.5f);
-            appCMSFragment.setEnabled(false);
-        } else {
-            appCMSSearchViewContainer.setVisibility(View.GONE);
-            appCMSSearchView.setIconified(true);
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(appCMSSearchView.getWindowToken(),0);
-            appCMSFragment.setAlpha(1.0f);
-            appCMSFragment.setEnabled(true);
         }
     }
 }

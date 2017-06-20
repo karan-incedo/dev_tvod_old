@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -30,6 +33,7 @@ import com.viewlift.views.adapters.AppCMSViewAdapter;
 import java.util.Map;
 
 import rx.functions.Action1;
+import snagfilms.com.air.appcms.R;
 
 /**
  * Created by viewlift on 5/17/17.
@@ -106,8 +110,8 @@ public abstract class BaseView extends FrameLayout {
 
         int lm = 0, tm = 0, rm = 0, bm = 0;
         int deviceHeight = getContext().getResources().getDisplayMetrics().heightPixels;
-        int viewWidth = LayoutParams.MATCH_PARENT;
-        int viewHeight = LayoutParams.WRAP_CONTENT;
+        int viewWidth = (int) getViewWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
+        int viewHeight = (int) getViewHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
         int parentViewHeight = (int) getViewHeight(getContext(),
                 parentLayout,
                 parentView.getMeasuredHeight());
@@ -119,7 +123,6 @@ public abstract class BaseView extends FrameLayout {
                 TabletLandscape tabletLandscape = layout.getTabletLandscape();
                 if (tabletLandscape != null) {
                     if (getViewWidth(tabletLandscape) != -1) {
-                        viewWidth = Math.round(DEVICE_WIDTH * (getViewWidth(tabletLandscape) / STANDARD_TABLET_HEIGHT_PX));
                         if (tabletLandscape.getXAxis() != null) {
                             float scaledX = DEVICE_WIDTH * (tabletLandscape.getXAxis() / STANDARD_TABLET_HEIGHT_PX);
                             lm = Math.round(scaledX);
@@ -127,7 +130,6 @@ public abstract class BaseView extends FrameLayout {
                     }
 
                     if (getViewHeight(tabletLandscape) != -1) {
-                        viewHeight = (int) convertDpToPixel(getViewHeight(tabletLandscape), getContext());
                         if (tabletLandscape.getYAxis() != null) {
                             float scaledY = DEVICE_HEIGHT * (tabletLandscape.getYAxis() / STANDARD_TABLET_WIDTH_PX);
                             tm = Math.round(scaledY);
@@ -185,7 +187,6 @@ public abstract class BaseView extends FrameLayout {
                 TabletPortrait tabletPortrait = layout.getTabletPortrait();
                 if (tabletPortrait != null) {
                     if (getViewWidth(tabletPortrait) != -1) {
-                        viewWidth = Math.round(DEVICE_WIDTH * (getViewWidth(tabletPortrait) / STANDARD_TABLET_WIDTH_PX));
                         if (tabletPortrait.getXAxis() != null) {
                             float scaledX = DEVICE_WIDTH * (tabletPortrait.getXAxis() / STANDARD_TABLET_WIDTH_PX);
                             lm = Math.round(scaledX);
@@ -193,7 +194,6 @@ public abstract class BaseView extends FrameLayout {
                     }
 
                     if (getViewHeight(tabletPortrait) != -1) {
-                        viewHeight = (int) convertDpToPixel(getViewHeight(tabletPortrait), getContext());
                         if (tabletPortrait.getYAxis() != null) {
                             float scaledY = DEVICE_HEIGHT * (tabletPortrait.getYAxis() / STANDARD_TABLET_HEIGHT_PX);
                             tm = Math.round(scaledY);
@@ -252,7 +252,6 @@ public abstract class BaseView extends FrameLayout {
             Mobile mobile = layout.getMobile();
             if (mobile != null) {
                 if (getViewWidth(mobile) != -1) {
-                    viewWidth = Math.round(DEVICE_WIDTH * (getViewWidth(mobile) / STANDARD_MOBILE_WIDTH_PX));
                     if (mobile.getXAxis() != null) {
                         float scaledX = DEVICE_WIDTH * (mobile.getXAxis() / STANDARD_MOBILE_WIDTH_PX);
                         lm = Math.round(scaledX);
@@ -260,7 +259,6 @@ public abstract class BaseView extends FrameLayout {
                 }
 
                 if (getViewHeight(mobile) != -1) {
-                    viewHeight = (int) convertDpToPixel(getViewHeight(mobile), getContext());
                     if (mobile.getYAxis() != null) {
                         float scaledY = DEVICE_HEIGHT * (mobile.getYAxis() / STANDARD_MOBILE_HEIGHT_PX);
                         tm = Math.round(scaledY);
@@ -324,9 +322,16 @@ public abstract class BaseView extends FrameLayout {
                     lm = 0;
                     break;
                 case PAGE_CAROUSEL_TITLE_KEY:
-                case PAGE_CAROUSEL_INFO_KEY:
-                    tm -= viewHeight;
+                    gravity = Gravity.CENTER_HORIZONTAL;
+                    tm -= viewHeight * 2;
                     viewHeight *= 2;
+                    lm = maxViewWidth / 2 - viewWidth / 2;
+                    break;
+                case PAGE_CAROUSEL_INFO_KEY:
+                    gravity = Gravity.CENTER_HORIZONTAL;
+                    tm -= viewHeight * 3.2;
+                    viewHeight *= 2;
+                    lm = maxViewWidth / 2 - viewWidth / 2;
                     break;
                 case PAGE_THUMBNAIL_TITLE_KEY:
                     if (!isTablet(getContext())) {
@@ -335,14 +340,17 @@ public abstract class BaseView extends FrameLayout {
                     }
                     break;
                 case PAGE_WATCH_VIDEO_KEY:
+                    gravity = Gravity.CENTER_HORIZONTAL;
+                    lm = maxViewWidth / 2;
                     if (isTablet(getContext()) && !isLandscape(getContext())) {
                         tm -= viewHeight / 8;
                     }
                     break;
                 case PAGE_VIDEO_SHARE_KEY:
                     if (isTablet(getContext())) {
-                        tm -= viewHeight / 4;
+                        lm -= viewWidth / 2;
                     }
+                    break;
                 default:
             }
 
@@ -414,6 +422,17 @@ public abstract class BaseView extends FrameLayout {
 
     public Action1<LifecycleStatus> getOnLifecycleChangeHandler() {
         return onLifecycleChangeHandler;
+    }
+
+    public static float convertHorizontalValue(Context context, float value) {
+        if (isTablet(context)) {
+            if (isLandscape(context)) {
+                return DEVICE_WIDTH * (value / STANDARD_TABLET_HEIGHT_PX);
+            } else {
+                return DEVICE_WIDTH * (value / STANDARD_TABLET_WIDTH_PX);
+            }
+        }
+        return DEVICE_WIDTH * (value / STANDARD_MOBILE_WIDTH_PX);
     }
 
     public static float getHorizontalMargin(Context context, Layout layout) {

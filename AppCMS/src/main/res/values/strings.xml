@@ -24,6 +24,7 @@
     <string name="video_player_hls_url_key">video_player_hls_url</string>
     <string name="video_player_ads_url_key">video_player_ads_url</string>
     <string name="video_fragment_tag_key">video_fragment</string>
+    <string name="app_cms_text_color_key">app_cms_text_color</string>
     <string name="app_cms_bg_color_key">app_cms_bg_color</string>
     <string name="app_cms_on_action_internal_events_key">app_cms_on_action_internal_events</string>
     <string name="resume_internal_events_key">resume_internal_events</string>
@@ -53,4 +54,12 @@
     <string name="no_results">No results</string>
     <string name="video_player_title_key">video_player_title</string>
     <string name="video_player_font_color_key">video_player_font_color</string>
+    <string name="opensans_bold_ttf">fonts/OpenSans-Bold.ttf</string>
+    <string name="opensans_semibold_ttf">fonts/OpenSans-Semibold.ttf</string>
+    <string name="opensans_extrabold_ttf">fonts/OpenSans-ExtraBold.ttf</string>
+    <string name="opensans_regular_ttf">fonts/OpenSans-Regular.ttf</string>
+    <string name="search_button_text">GO</string>
+    <string name="bg_color_key">bg_color</string>
+    <string name="button_color_key">button_color</string>
+    <string name="text_color_key">text_color</string>
 </resources>

@@ -33,6 +33,7 @@ import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
+import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -156,6 +157,7 @@ public class ViewCreator {
                 Component component = module.getComponents().get(i);
                 ComponentViewResult componentViewResult = createComponentView(context,
                         component,
+                        module.getLayout(),
                         moduleAPI,
                         pageView,
                         module.getSettings(),
@@ -203,6 +205,8 @@ public class ViewCreator {
     }
 
     public CollectionGridItemView createCollectionGridItemView(final Context context,
+                                                               final Layout parentLayout,
+                                                               final boolean useParentLayout,
                                                                final Component component,
                                                                final AppCMSPresenter appCMSPresenter,
                                                                final Module moduleAPI,
@@ -213,6 +217,8 @@ public class ViewCreator {
                                                                boolean useMarginsAsPercentages,
                                                                boolean gridElement) {
         CollectionGridItemView collectionGridItemView = new CollectionGridItemView(context,
+                parentLayout,
+                useParentLayout,
                 component,
                 defaultWidth,
                 defaultHeight);
@@ -221,6 +227,7 @@ public class ViewCreator {
             Component childComponent = component.getComponents().get(i);
             ComponentViewResult componentViewResult = createComponentView(context,
                     childComponent,
+                    parentLayout,
                     moduleAPI,
                     null,
                     settings,
@@ -266,6 +273,7 @@ public class ViewCreator {
 
     public ComponentViewResult createComponentView(final Context context,
                                                    final Component component,
+                                                   final Layout parentLayout,
                                                    final Module moduleAPI,
                                                    @Nullable PageView pageView,
                                                    final Settings settings,
@@ -294,6 +302,8 @@ public class ViewCreator {
                         this,
                         appCMSPresenter,
                         settings,
+                        parentLayout,
+                        false,
                         component,
                         jsonValueKeyMap,
                         moduleAPI,
@@ -317,6 +327,7 @@ public class ViewCreator {
                                 this,
                                 appCMSPresenter,
                                 settings,
+                                parentLayout,
                                 component,
                                 jsonValueKeyMap,
                                 moduleAPI,
@@ -469,14 +480,6 @@ public class ViewCreator {
                         break;
                     case PAGE_VIDEO_SHARE_KEY:
                         Drawable shareDrawable = ContextCompat.getDrawable(context, R.drawable.share);
-                        if (BaseView.isTablet(context)) {
-                            int drawableWidth = ((BitmapDrawable) shareDrawable).getBitmap().getWidth();
-                            int drawableHeight = ((BitmapDrawable) shareDrawable).getBitmap().getHeight();
-                            float sizeRatio = (float) drawableWidth / (float) drawableHeight;
-                            int adjustedHeight =
-                                    (int) (sizeRatio * BaseView.getViewWidth(context, component.getLayout(), 0));
-                            BaseView.setViewHeight(context, component.getLayout(), adjustedHeight);
-                        }
                         componentViewResult.componentView.setBackground(shareDrawable);
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -603,13 +606,23 @@ public class ViewCreator {
                     componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
                 }
                 if (!TextUtils.isEmpty(component.getFontFamily())) {
-                    AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
-                    if (fontWeight == AppCMSUIKeyType.PAGE_TEXT_BOLD_KEY ||
-                            fontWeight == AppCMSUIKeyType.PAGE_TEXT_SEMIBOLD_KEY ||
-                            fontWeight == AppCMSUIKeyType.PAGE_TEXT_EXTRABOLD_KEY) {
-                        ((TextView) componentViewResult.componentView).setTypeface(Typeface.create(component.getFontFamily(), Typeface.BOLD));
-                    } else {
-                        ((TextView) componentViewResult.componentView).setTypeface(Typeface.create(component.getFontFamily(), Typeface.NORMAL));
+                    if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
+                        AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
+                        Typeface face = null;
+                        switch (fontWeight) {
+                            case PAGE_TEXT_BOLD_KEY:
+                                face = Typeface.createFromAsset(context.getAssets(),context.getString(R.string.opensans_bold_ttf));
+                                break;
+                            case PAGE_TEXT_SEMIBOLD_KEY:
+                                face = Typeface.createFromAsset(context.getAssets(),context.getString(R.string.opensans_semibold_ttf));
+                                break;
+                            case PAGE_TEXT_EXTRABOLD_KEY:
+                                face = Typeface.createFromAsset(context.getAssets(),context.getString(R.string.opensans_extrabold_ttf));
+                                break;
+                            default:
+                                face = Typeface.createFromAsset(context.getAssets(),context.getString(R.string.opensans_regular_ttf));
+                        }
+                        ((TextView) componentViewResult.componentView).setTypeface(face);
                     }
                 }
                 break;

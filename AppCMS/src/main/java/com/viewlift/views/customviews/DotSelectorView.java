@@ -52,10 +52,10 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
         Context context = getContext();
         childrenContainer = new LinearLayout(context);
         int width = RelativeLayout.LayoutParams.WRAP_CONTENT;
-        int height = RelativeLayout.LayoutParams.MATCH_PARENT;
+        int height = RelativeLayout.LayoutParams.WRAP_CONTENT;
         RelativeLayout.LayoutParams childrenLayoutParams =
                 new RelativeLayout.LayoutParams(width, height);
-        childrenLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        childrenLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         childrenLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
         childrenContainer.setLayoutParams(childrenLayoutParams);
         ((LinearLayout) childrenContainer).setOrientation(LinearLayout.HORIZONTAL);
