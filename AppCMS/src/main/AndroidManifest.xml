@@ -52,7 +52,8 @@
                 android:name="android.app.default_searchable"
                 android:value="com.viewlift.views.activity.AppCMSSearchActivity" />
         </activity>
-        <activity android:name="com.viewlift.views.activity.AppCMSErrorActivity" />
+        <activity android:name="com.viewlift.views.activity.AppCMSErrorActivity"
+            android:configChanges="orientation|screenSize"/>
         <activity android:name="com.viewlift.views.activity.AppCMSNavItemsActivity" />
         <activity
             android:name="com.viewlift.views.activity.AppCMSPlayVideoActivity"

@@ -60,6 +60,7 @@ import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.models.network.components.AppCMSSearchUrlComponent;
+import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.LifecycleStatus;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
@@ -118,6 +119,7 @@ public class AppCMSPresenter {
     private Map<String, List<OnInternalEvent>> onActionInternalEvents;
     private Stack<String> currentActions;
     private AppCMSSearchUrlComponent appCMSSearchUrlComponent;
+    private AppCMSPageAPI lastLoadedPageAPI;
 
     private static abstract class AppCMSPageAPIAction implements Action1<AppCMSPageAPI> {
         boolean appbarPresent;
@@ -287,8 +289,9 @@ public class AppCMSPresenter {
                             @Override
                             public void call(AppCMSPageAPI appCMSPageAPI) {
                                 if (appCMSPageAPI != null) {
+                                    lastLoadedPageAPI = appCMSPageAPI;
                                     cancelInternalEvents();
-                                    pushActionInternalEvents(this.action);
+                                    pushActionInternalEvents(this.action + BaseView.isLandscape(currentActivity));
                                     Bundle args = getPageActivityBundle(currentActivity,
                                             this.appCMSPageUI,
                                             appCMSPageAPI,
@@ -333,7 +336,7 @@ public class AppCMSPresenter {
                     false,
                     null);
             navigationIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key), args);
-            currentActivity.startActivityForResult(navigationIntent, PRESENTER_NAVIGATION_REQUEST);
+            currentActivity.startActivity(navigationIntent);
         }
         return result;
     }
@@ -403,8 +406,9 @@ public class AppCMSPresenter {
                             @Override
                             public void call(AppCMSPageAPI appCMSPageAPI) {
                                 if (appCMSPageAPI != null) {
+                                    lastLoadedPageAPI = appCMSPageAPI;
                                     cancelInternalEvents();
-                                    pushActionInternalEvents(this.pageId);
+                                    pushActionInternalEvents(this.pageId + BaseView.isLandscape(currentActivity));
                                     navigationPageData.put(this.pageId, appCMSPageAPI);
                                     if (this.launchActivity) {
                                         launchPageActivity(currentActivity,
@@ -442,8 +446,9 @@ public class AppCMSPresenter {
                             }
                         });
             } else {
+                lastLoadedPageAPI = appCMSPageAPI;
                 cancelInternalEvents();
-                pushActionInternalEvents(pageId);
+                pushActionInternalEvents(pageId + BaseView.isLandscape(currentActivity));
                 if (launchActivity) {
                     launchPageActivity(currentActivity,
                             appCMSPageUI,
@@ -665,13 +670,13 @@ public class AppCMSPresenter {
     public boolean isActionAPage(String action) {
         for (Primary primary : navigation.getPrimary()) {
             if (!TextUtils.isEmpty(primary.getPageId()) &&
-                    primary.getPageId().equals(action)) {
+                    action.contains(primary.getPageId())) {
                 return true;
             }
         }
 
         for (User user : navigation.getUser()) {
-            if (user.getPageId().equals(action)) {
+            if (action.contains(user.getPageId())) {
                 return true;
             }
         }
@@ -755,6 +760,10 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public AppCMSPageAPI getLastLoadedPageAPI() {
+        return lastLoadedPageAPI;
+    }
+
     private boolean isHomePage(String pageId) {
         Primary homePageNav = findHomePageNavItem();
         if (homePageNav != null) {
@@ -826,6 +835,7 @@ public class AppCMSPresenter {
                                     boolean fullscreenEnabled,
                                     boolean navbarPresent,
                                     Uri searchQuery) {
+        lastLoadedPageAPI = appCMSPageAPI;
         Bundle args = getPageActivityBundle(activity,
                 appCMSPageUI,
                 appCMSPageAPI,
@@ -839,7 +849,7 @@ public class AppCMSPresenter {
         Intent appCMSIntent = new Intent(activity, AppCMSPageActivity.class);
         appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
 
-        activity.startActivityForResult(appCMSIntent, LAUNCH_PAGE_ACTIVITY);
+        activity.startActivity(appCMSIntent);
     }
 
     private void getAppCMSSite(final Activity activity,

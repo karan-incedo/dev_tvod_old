@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -17,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSNavItemsAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
@@ -74,9 +76,13 @@ public class AppCMSNavItemsActivity extends AppCompatActivity implements AppCMSN
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        appCMSPresenter.cancelInternalEvents();
-        appCMSPresenter.popActionInternalEvents();
-        appCMSPresenter.restartInternalEvents();
+        AppCMSPageAPI appCMSPageAPI = appCMSPresenter.getLastLoadedPageAPI();
+        if (appCMSPageAPI != null) {
+            appCMSPresenter.navigateToPage(appCMSPageAPI.getId(),
+                    appCMSPageAPI.getTitle(),
+                    false,
+                    null);
+        }
         finish();
     }
 

@@ -53,18 +53,6 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == AppCMSPresenter.PRESENTER_NAVIGATION_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                appCMSPresenterComponent.appCMSPresenter().sendCloseOthersAction();
-                finish();
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
-    @Override
     protected void onNewIntent(Intent intent) {
         handleIntent(intent);
     }

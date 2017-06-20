@@ -226,8 +226,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             handleBack(true, appCMSBinderStack.size() < 2, false);
             handleLaunchPageAction(appCMSBinder);
         } else {
-            setResult(RESULT_OK);
-            finish();
+            isActive = false;
+            finishAffinity();
         }
     }
 
@@ -509,17 +509,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         appCMSBinderStack.push(appCMSBinder.getPageId());
         appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
         createScreenFromAppCMSBinder(appCMSBinder);
-    }
-
-    private void setFinishResult(int resultCode) {
-        Intent resultIntent = new Intent();
-        if (appCMSBinderStack.size() > 0) {
-            Bundle args = new Bundle();
-            args.putBinder(getString(R.string.app_cms_binder_key),
-                    appCMSBinderMap.get(appCMSBinderStack.peek()));
-            resultIntent.putExtra(getString(R.string.app_cms_bundle_key), args);
-        }
-        setResult(resultCode, resultIntent);
     }
 
     private void hideSystemUI(View decorView) {
