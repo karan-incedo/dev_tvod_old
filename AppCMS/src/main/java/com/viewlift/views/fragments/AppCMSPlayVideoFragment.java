@@ -105,8 +105,12 @@ public class AppCMSPlayVideoFragment extends Fragment
                 (RelativeLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
 
         videoPlayerTitleView = (TextView) rootView.findViewById(R.id.app_cms_video_player_title_view);
-        videoPlayerTitleView.setText(title);
-        videoPlayerTitleView.setTextColor(Color.parseColor(fontColor));
+        if (!TextUtils.isEmpty(title)) {
+            videoPlayerTitleView.setText(title);
+        }
+        if (!TextUtils.isEmpty(fontColor)) {
+            videoPlayerTitleView.setTextColor(Color.parseColor(fontColor));
+        }
         videoPlayerTitleView.setSelected(true);
 
         videoPlayerViewDoneButton = (Button) rootView.findViewById(R.id.app_cms_video_player_done_button);
@@ -236,24 +240,26 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private void requestAds(String adTagUrl) {
-        Log.d(TAG, "Requesting ads: " + adTagUrl);
-        AdDisplayContainer adDisplayContainer = sdkFactory.createAdDisplayContainer();
-        adDisplayContainer.setAdContainer(videoPlayerView);
+        if (!TextUtils.isEmpty(adTagUrl)) {
+            Log.d(TAG, "Requesting ads: " + adTagUrl);
+            AdDisplayContainer adDisplayContainer = sdkFactory.createAdDisplayContainer();
+            adDisplayContainer.setAdContainer(videoPlayerView);
 
-        AdsRequest request = sdkFactory.createAdsRequest();
-        request.setAdTagUrl(adTagUrl);
-        request.setAdDisplayContainer(adDisplayContainer);
-        request.setContentProgressProvider(new ContentProgressProvider() {
-            @Override
-            public VideoProgressUpdate getContentProgress() {
-                if (isAdDisplayed || videoPlayerView.getDuration() <= 0) {
-                    return VideoProgressUpdate.VIDEO_TIME_NOT_READY;
+            AdsRequest request = sdkFactory.createAdsRequest();
+            request.setAdTagUrl(adTagUrl);
+            request.setAdDisplayContainer(adDisplayContainer);
+            request.setContentProgressProvider(new ContentProgressProvider() {
+                @Override
+                public VideoProgressUpdate getContentProgress() {
+                    if (isAdDisplayed || videoPlayerView.getDuration() <= 0) {
+                        return VideoProgressUpdate.VIDEO_TIME_NOT_READY;
+                    }
+                    return new VideoProgressUpdate(videoPlayerView.getCurrentPosition(),
+                            videoPlayerView.getDuration());
                 }
-                return new VideoProgressUpdate(videoPlayerView.getCurrentPosition(),
-                        videoPlayerView.getDuration());
-            }
-        });
+            });
 
-        adsLoader.requestAds(request);
+            adsLoader.requestAds(request);
+        }
     }
 }

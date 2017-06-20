@@ -110,6 +110,12 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         handleIntent(intent);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
     private void handleIntent(Intent intent) {
         final AppCMSPresenter appCMSPresenter =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();

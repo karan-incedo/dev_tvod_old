@@ -1,6 +1,7 @@
 package com.viewlift.views.fragments;
 
 import android.app.Dialog;
+import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.media.Image;
 import android.support.v4.app.DialogFragment;
@@ -93,6 +94,19 @@ public class AppCMSSearchFragment extends DialogFragment {
     @Override
     public void onStart() {
         super.onStart();
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            int width = getContext().getResources().getDisplayMetrics().widthPixels;
+            int height = getContext().getResources().getDisplayMetrics().heightPixels;
+            Window window = dialog.getWindow();
+            window.setLayout(width, height);
+            window.setGravity(Gravity.START);
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
         Dialog dialog = getDialog();
         if (dialog != null) {
             int width = getContext().getResources().getDisplayMetrics().widthPixels;

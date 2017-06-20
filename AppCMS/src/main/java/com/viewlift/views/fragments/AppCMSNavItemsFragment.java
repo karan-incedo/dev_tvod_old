@@ -2,6 +2,7 @@ package com.viewlift.views.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -107,6 +108,19 @@ public class AppCMSNavItemsFragment extends DialogFragment {
     public void onPause() {
         super.onPause();
         dismiss();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            int width = getContext().getResources().getDisplayMetrics().widthPixels;
+            int height = getContext().getResources().getDisplayMetrics().heightPixels;
+            Window window = dialog.getWindow();
+            window.setLayout(width, height);
+            window.setGravity(Gravity.START);
+        }
     }
 
     private void setBgColor(int bgColor) {
