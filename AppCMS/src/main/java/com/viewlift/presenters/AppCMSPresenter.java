@@ -213,7 +213,7 @@ public class AppCMSPresenter {
                 } else {
                     Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
                     playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_font_color_key),
-                            Integer.parseInt(appCMSMain.getBrand().getGeneral().getTextColor()));
+                            appCMSMain.getBrand().getGeneral().getTextColor());
                     playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_title_key),
                             filmTitle);
                     playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_hls_url_key),
