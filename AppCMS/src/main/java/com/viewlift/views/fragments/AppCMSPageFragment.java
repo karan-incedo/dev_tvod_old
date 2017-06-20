@@ -83,6 +83,9 @@ public class AppCMSPageFragment extends Fragment {
         }
 
         if (pageView != null) {
+            if (pageView.getParent() != null) {
+                ((ViewGroup) pageView.getParent()).removeAllViews();
+            }
             if (!pageView.isTablet(getContext()) && !appCMSBinder.isFullScreenEnabled()) {
                 appCMSPresenter.restrictPortraitOnly();
             } else {

@@ -284,7 +284,6 @@ public class CollectionGridItemView extends BaseView {
                 view.getParent().bringChildToFront(view);
             }
         }
-
     }
 
     public Component matchComponentToView(View view) {

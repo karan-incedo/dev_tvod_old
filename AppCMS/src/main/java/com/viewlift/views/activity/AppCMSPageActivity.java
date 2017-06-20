@@ -71,6 +71,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     private SearchView appCMSSearchView;
     private NavBarItemView pageViewDuringSearch;
     private boolean resumeInternalEvents;
+    private boolean isActive;
+    private AppCMSBinder updatedAppCMSBinder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -116,7 +118,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                     (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
             appCMSBinderStack.push(appCMSBinder.getPageId());
             appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
-            createScreenFromAppCMSBinder(appCMSBinder);
+            handleLaunchPageAction(appCMSBinder);
         } catch (ClassCastException e) {
             Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
         }
@@ -127,9 +129,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 if (intent.getAction().equals(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION)) {
                     Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
                     try {
-                        AppCMSBinder appCMSBinder =
+                        updatedAppCMSBinder =
                                 (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
-                        handleLaunchPageAction(appCMSBinder);
+                        if (isActive) {
+                            handleLaunchPageAction(updatedAppCMSBinder);
+                            updatedAppCMSBinder = null;
+                        }
                     } catch (ClassCastException e) {
                         Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
                     }
@@ -170,20 +175,22 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 new IntentFilter(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM));
+        registerReceiver(presenterCloseActionReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
 
         resumeInternalEvents = false;
 
         Log.d(TAG, "onCreate()");
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
-        AppCMSBinder appCMSBinder =
-                (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
-        handleLaunchPageAction(appCMSBinder);
-    }
+//    @Override
+//    protected void onNewIntent(Intent intent) {
+//        super.onNewIntent(intent);
+//        Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+//        AppCMSBinder appCMSBinder =
+//                (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
+//        handleLaunchPageAction(appCMSBinder);
+//    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -250,8 +257,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 selectNavItem(appCMSBinderStack.peek());
             }
         }
-        registerReceiver(presenterCloseActionReceiver,
-                new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
+
+        if (updatedAppCMSBinder != null) {
+            handleLaunchPageAction(updatedAppCMSBinder);
+            updatedAppCMSBinder = null;
+        }
+
+        isActive = true;
+
         Log.d(TAG, "onResume()");
     }
 
@@ -262,7 +275,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         if (pageViewDuringSearch != null) {
             selectNavItem(pageViewDuringSearch);
         }
-        unregisterReceiver(presenterCloseActionReceiver);
+
+        isActive = false;
     }
 
     @Override
@@ -275,6 +289,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(presenterActionReceiver);
+        unregisterReceiver(presenterCloseActionReceiver);
         appCMSPresenter.sendCloseOthersAction();
         Log.d(TAG, "onDestroy()");
     }

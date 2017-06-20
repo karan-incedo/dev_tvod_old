@@ -67,7 +67,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     Log.d(TAG, "Navigating to page with Title: " + primary.getTitle());
                     if (!appCMSPresenter.navigateToPage(primary.getPageId(),
                             primary.getTitle(),
-                            true,
+                            false,
                             null)) {
                         Log.e(TAG, "Could not navigate to page with Title: " +
                                 primary.getTitle() +
@@ -86,7 +86,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 public void onClick(View v) {
                     if (!appCMSPresenter.navigateToPage(user.getPageId(),
                             user.getTitle(),
-                            true,
+                            false,
                             null)) {
                         Log.e(TAG, "Could not navigate to page with Title: " +
                                 user.getTitle() +
