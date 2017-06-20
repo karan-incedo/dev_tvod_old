@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.adapters.AppCMSNavItemsAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 
@@ -27,7 +28,7 @@ import snagfilms.com.air.appcms.R;
  * Created by viewlift on 5/30/17.
  */
 
-public class AppCMSNavItemsActivity extends AppCompatActivity {
+public class AppCMSNavItemsActivity extends AppCompatActivity implements AppCMSNavItemsAdapter.OnCloseNavAction {
     private static final String TAG = "AppCMSNavItemsActivity";
 
     private BroadcastReceiver handoffReceiver;
@@ -100,5 +101,10 @@ public class AppCMSNavItemsActivity extends AppCompatActivity {
             getSupportActionBar().setHomeButtonEnabled(false);
             getSupportActionBar().setTitle("");
         }
+    }
+
+    @Override
+    public void closeNavAction() {
+        finish();
     }
 }

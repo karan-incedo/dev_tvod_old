@@ -26,21 +26,22 @@ import snagfilms.com.air.appcms.R;
 public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAdapter.ViewHolder> {
     private static final String TAG = "AppCMSNavItemsAdapter";
 
+    private static final int NUM_NAV_ITEMS = 2;
+
     private final Navigation navigation;
     private final AppCMSPresenter appCMSPresenter;
+    private final OnCloseNavAction onCloseNavAction;
     private boolean userLoggedIn;
 
-    private String[] placeholderNavItems = {
-            "App Settings",
-            "Account",
-            "Notifications",
-            "About Us",
-            "Contact Us"
-    };
+    public interface OnCloseNavAction {
+        void closeNavAction();
+    }
 
-    public AppCMSNavItemsAdapter(Navigation navigation,
+    public AppCMSNavItemsAdapter(OnCloseNavAction onCloseNavAction,
+                                 Navigation navigation,
                                  boolean userLoggedIn,
                                  AppCMSPresenter appCMSPresenter) {
+        this.onCloseNavAction = onCloseNavAction;
         this.navigation = navigation;
         this.userLoggedIn = userLoggedIn;
         this.appCMSPresenter = appCMSPresenter;
@@ -57,7 +58,6 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
-        Resources resources = viewHolder.itemView.getContext().getResources();
         if (i < navigation.getPrimary().size()) {
             final Primary primary = navigation.getPrimary().get(i);
             viewHolder.navItemLabel.setText(primary.getTitle());
@@ -73,6 +73,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                 primary.getTitle() +
                                 " Id: " +
                                 primary.getPageId());
+                    } else if (onCloseNavAction != null ){
+                        onCloseNavAction.closeNavAction();
                     }
                 }
             });
@@ -90,28 +92,17 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                 user.getTitle() +
                                 " Id: " +
                                 user.getPageId());
+                    } else if (onCloseNavAction != null ){
+                        onCloseNavAction.closeNavAction();
                     }
                 }
             });
-        } else {
-            int placholderNavItemsIndex = i - navigation.getPrimary().size();
-            if (userLoggedIn) {
-                placholderNavItemsIndex -= navigation.getUser().size();
-            }
-            viewHolder.navItemLabel.setText(placeholderNavItems[placholderNavItemsIndex]);
         }
     }
 
     @Override
     public int getItemCount() {
-        int count = placeholderNavItems.length;
-        if (navigation.getPrimary() != null) {
-            count += navigation.getPrimary().size();
-        }
-        if (userLoggedIn && navigation.getUser() != null) {
-            count += navigation.getUser().size();
-        }
-        return count;
+        return NUM_NAV_ITEMS;
     }
 
     public void setUserLoggedIn(boolean userLoggedIn) {

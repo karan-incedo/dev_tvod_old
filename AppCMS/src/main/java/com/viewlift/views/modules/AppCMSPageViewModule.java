@@ -32,6 +32,7 @@ public class AppCMSPageViewModule {
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final AppCMSPresenter appCMSPresenter;
     private final List<String> modulesToIgnoreList;
+    private ViewCreator viewCreator;
 
     public AppCMSPageViewModule(Context context,
                                 AppCMSPageUI appCMSPageUI,
@@ -50,7 +51,10 @@ public class AppCMSPageViewModule {
     @Provides
     @Singleton
     public ViewCreator providesViewCreator() {
-        return new ViewCreator();
+        if (viewCreator == null) {
+            viewCreator = new ViewCreator();
+        }
+        return viewCreator;
     }
 
     @Provides

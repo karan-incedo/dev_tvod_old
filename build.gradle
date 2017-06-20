@@ -35,6 +35,7 @@ allprojects {
         googleAdsInteractiveMediaV3 = "3.6.0"
         googlePlayServicesVersion = "10.2.6"
         crashlyticsVersion = "2.6.8@aar"
+        leakcanaryVersion = "1.5.1"
     }
 }
 

@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -52,8 +51,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     private static final String TAG = "AppCMSPageActivity";
 
     private static final int NAV_PAGE_INDEX = 0;
-    private static final int HOME_PAGE_INDEX = 0;
-    private static final int MOVIES_PAGE_INDEX = 1;
+    private static final int HOME_PAGE_INDEX = 1;
+    private static final int MOVIES_PAGE_INDEX = 2;
     private static final int SEARCH_INDEX = 3;
 
     private AppCMSPresenter appCMSPresenter;
@@ -100,6 +99,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         appCMSSearchView.setIconifiedByDefault(true);
 
+        appBarLayout = (AppBarLayout) findViewById(R.id.app_cms_appbarlayout);
+
+        appCMSTabNavContainer = (LinearLayout) findViewById(R.id.app_cms_tab_nav_container);
+
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
@@ -111,7 +114,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         try {
             AppCMSBinder appCMSBinder =
                     (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
-            handleLaunchPageAction(appCMSBinder);
+            appCMSBinderStack.push(appCMSBinder.getPageId());
+            appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
+            createScreenFromAppCMSBinder(appCMSBinder);
         } catch (ClassCastException e) {
             Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
         }
@@ -152,9 +157,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                             Log.e(TAG, "Error popping back stack: " + e.getMessage());
                         }
                         handleBack(true, false, true);
-                        if (appCMSBinderStack.size() > 0) {
-                            handleLaunchPageAction(appCMSBinderMap.get(appCMSBinderStack.peek()));
-                        }
                     }
                 }
             }
@@ -326,9 +328,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             handleBack(true, true, false);
         }
         if (appCMSBinder != null) {
-            appCMSBinderStack.push(appCMSBinder.getPageId());
-            appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
-            createScreenFromAppCMSBinder(appCMSBinder);
+            handleLaunchPageAction(appCMSBinder);
         }
     }
 
@@ -342,9 +342,19 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         if (pageLoading) {
             appCMSFragment.setAlpha(0.5f);
             appCMSFragment.setEnabled(false);
+            appCMSTabNavContainer.setAlpha(0.5f);
+            appCMSTabNavContainer.setEnabled(false);
+            for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
+                appCMSTabNavContainer.getChildAt(i).setEnabled(false);
+            }
         } else {
             appCMSFragment.setAlpha(1.0f);
             appCMSFragment.setEnabled(true);
+            appCMSTabNavContainer.setAlpha(1.0f);
+            appCMSTabNavContainer.setEnabled(true);
+            for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
+                appCMSTabNavContainer.getChildAt(i).setEnabled(true);
+            }
         }
     }
 
@@ -359,7 +369,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         }
         if (shouldPopStack() || closeActionPage) {
             try {
-                getSupportFragmentManager().popBackStack();
+                getSupportFragmentManager().popBackStackImmediate();
             } catch (IllegalStateException e) {
                 Log.e(TAG, "Failed to pop Fragment from back stack");
             }
@@ -384,10 +394,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 .getGeneral()
                 .getBackgroundColor()));
 
-        appBarLayout = (AppBarLayout) findViewById(R.id.app_cms_appbarlayout);
-
-        appCMSTabNavContainer = (LinearLayout) findViewById(R.id.app_cms_tab_nav_container);
-
+        createMenuNavItem();
         createHomeNavItem(appCMSPresenter.findHomePageNavItem());
         createMoviesNavItem(appCMSPresenter.findMoviesPageNavItem());
         createSearchNavItem();
@@ -483,8 +490,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     private void handleLaunchPageAction(AppCMSBinder appCMSBinder) {
         Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
-        Log.d(TAG, "Page existing index: " + distanceFromStackTop);
-        if (0 <= distanceFromStackTop) {
+        Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
+        if (0 < distanceFromStackTop) {
             for (int i = 0; i < distanceFromStackTop; i++) {
                 Log.d(TAG, "Popping stack to get to page item");
                 try {
@@ -492,7 +499,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 } catch (IllegalStateException e) {
                     Log.e(TAG, "Error popping back stack: " + e.getMessage());
                 }
-                handleBack(true, true, false);
+                handleBack(true, false, false);
             }
         }
         appCMSBinderStack.push(appCMSBinder.getPageId());

@@ -42,7 +42,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
     private static final float IMAGE_HEIGHT_MOBILE = 164f;
     private static final float IMAGE_WIDTH_TABLET_LANDSCAPE = 154f;
     private static final float IMAGE_HEIGHT_TABLET_LANDSCAPE = 240f;
-    private static final float IMAGE_WIDTH_TABLET__PORTRAIT = 154f;
+    private static final float IMAGE_WIDTH_TABLET_PORTRAIT = 154f;
     private static final float IMAGE_HEIGHT_TABLET_PORTRAIT = 240f;
     private static final float TEXTSIZE_MOBILE = 11f;
     private static final float TEXTSIZE_TABLET_LANDSCAPE = 14f;
@@ -170,7 +170,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             if (BaseView.isLandscape(context)) {
                 return DEVICE_WIDTH * (IMAGE_WIDTH_TABLET_LANDSCAPE / STANDARD_TABLET_HEIGHT_PX);
             } else {
-                return DEVICE_WIDTH * (IMAGE_WIDTH_TABLET__PORTRAIT / STANDARD_TABLET_WIDTH_PX);
+                return DEVICE_WIDTH * (IMAGE_WIDTH_TABLET_PORTRAIT / STANDARD_TABLET_WIDTH_PX);
             }
         }
         return DEVICE_WIDTH * (IMAGE_WIDTH_MOBILE / STANDARD_MOBILE_WIDTH_PX);
@@ -190,7 +190,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
     private float getImageHeight(Context context) {
         if (BaseView.isTablet(context)) {
             if (BaseView.isLandscape(context)) {
-                return DEVICE_HEIGHT * (IMAGE_HEIGHT_TABLET_LANDSCAPE / STANDARD_MOBILE_WIDTH_PX);
+                return DEVICE_HEIGHT * (IMAGE_HEIGHT_TABLET_LANDSCAPE / STANDARD_TABLET_WIDTH_PX);
             } else {
                 return DEVICE_HEIGHT * (IMAGE_HEIGHT_TABLET_PORTRAIT / STANDARD_TABLET_HEIGHT_PX);
             }
@@ -201,7 +201,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
     private float getTextTopMargin(Context context) {
         if (BaseView.isTablet(context)) {
             if (BaseView.isLandscape(context)) {
-                return DEVICE_HEIGHT * (TEXT_TOPMARGIN_TABLET_LANDSCAPE / STANDARD_MOBILE_WIDTH_PX);
+                return DEVICE_HEIGHT * (TEXT_TOPMARGIN_TABLET_LANDSCAPE / STANDARD_TABLET_WIDTH_PX);
             } else {
                 return DEVICE_HEIGHT * (TEXT_TOPMARGIN_TABLET_PORTRAIT / STANDARD_TABLET_HEIGHT_PX);
             }

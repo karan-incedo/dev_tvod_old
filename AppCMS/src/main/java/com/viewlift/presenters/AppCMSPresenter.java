@@ -213,7 +213,7 @@ public class AppCMSPresenter {
                 } else {
                     Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
                     playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_font_color_key),
-                            appCMSMain.getBrand().getGeneral().getTextColor());
+                            Integer.parseInt(appCMSMain.getBrand().getGeneral().getTextColor()));
                     playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_title_key),
                             filmTitle);
                     playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_hls_url_key),
@@ -245,7 +245,6 @@ public class AppCMSPresenter {
             } else if (actionType == AppCMSActionType.CLOSE) {
                 sendCloseOthersAction();
             } else {
-                AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
                 boolean appbarPresent = true;
                 boolean fullscreenEnabled = false;
                 boolean navbarPresent = true;
@@ -270,6 +269,7 @@ public class AppCMSPresenter {
                         break;
                 }
                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
                 getPageIdContent(appCMSMain.getApiBaseUrl(),
                         actionToPageAPIUrlMap.get(action),
                         appCMSMain.getSite(),
@@ -384,6 +384,7 @@ public class AppCMSPresenter {
             Log.d(TAG, "Launching page: " + pageTitle + " - " + pageId);
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
             AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             if (appCMSPageAPI == null) {
                 getPageIdContent(appCMSMain.getApiBaseUrl(),
                         pageIdToPageAPIUrlMap.get(pageId),

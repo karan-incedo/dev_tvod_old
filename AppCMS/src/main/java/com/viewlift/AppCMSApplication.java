@@ -5,6 +5,7 @@ import android.app.Application;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.squareup.leakcanary.LeakCanary;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
 import com.viewlift.views.components.AppCMSPresenterComponent;
 import com.viewlift.views.modules.AppCMSPresenterModule;
@@ -29,6 +30,12 @@ public class AppCMSApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+        LeakCanary.install(this);
         appCMSPresenterComponent = DaggerAppCMSPresenterComponent
                 .builder()
                 .appCMSUIModule(new AppCMSUIModule(this))

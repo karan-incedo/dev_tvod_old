@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,9 +29,7 @@ import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
-import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.api.VideoAssets;
-import com.viewlift.models.data.appcms.search.VideoAsset;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -46,8 +45,6 @@ import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 
-import org.w3c.dom.Text;
-
 import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
 
@@ -58,6 +55,24 @@ import snagfilms.com.air.appcms.R;
 public class ViewCreator {
     private static final String TAG = "ViewCreator";
 
+    private static LruCache<String, PageView> pageViewLruCache;
+    private static int PAGE_LRU_CACHE_SIZE = 10;
+    private static LruCache<String, PageView> getPageViewLruCache() {
+        if (pageViewLruCache == null) {
+            pageViewLruCache = new LruCache<>(PAGE_LRU_CACHE_SIZE);
+        }
+        return pageViewLruCache;
+    }
+
+    private static LruCache<String, ModuleView> moduleViewLruCache;
+    private static int MODULE_LRU_CACHE_SIZE = 50;
+    private static LruCache<String, ModuleView> getModuleViewLruCache() {
+        if (moduleViewLruCache == null) {
+            moduleViewLruCache = new LruCache<>(MODULE_LRU_CACHE_SIZE);
+        }
+        return moduleViewLruCache;
+    }
+
     private static class ComponentViewResult {
         View componentView;
         OnInternalEvent onInternalEvent;
@@ -65,6 +80,8 @@ public class ViewCreator {
         boolean useMarginsAsPercentagesOverride;
         boolean useWidthOfScreen;
     }
+
+    ComponentViewResult componentViewResult;
 
     public PageView generatePage(Context context,
                                  AppCMSPageUI appCMSPageUI,
@@ -75,21 +92,31 @@ public class ViewCreator {
         if (appCMSPageUI == null || appCMSPageAPI == null) {
             return null;
         }
-        PageView pageView = new PageView(context, appCMSPageUI);
-        createPageView(context,
-                appCMSPageUI,
-                appCMSPageAPI,
-                pageView,
-                jsonValueKeyMap,
-                appCMSPresenter,
-                modulesToIgnore);
+        PageView pageView = getPageViewLruCache().get(appCMSPageAPI.getId() + BaseView.isLandscape(context));
+        boolean newView = false;
+        if (pageView == null) {
+            pageView = new PageView(context, appCMSPageUI);
+            getPageViewLruCache().put(appCMSPageAPI.getId() + BaseView.isLandscape(context), pageView);
+            newView = true;
+        }
+        if (newView || !appCMSPresenter.isActionAPage(appCMSPageAPI.getId())) {
+            pageView.getChildrenContainer().removeAllViews();
+            componentViewResult = new ComponentViewResult();
+            createPageView(context,
+                    appCMSPageUI,
+                    appCMSPageAPI,
+                    pageView,
+                    jsonValueKeyMap,
+                    appCMSPresenter,
+                    modulesToIgnore);
+        }
         return pageView;
     }
 
     protected void createPageView(Context context,
                                   AppCMSPageUI appCMSPageUI,
                                   AppCMSPageAPI appCMSPageAPI,
-                                  final PageView pageView,
+                                  PageView pageView,
                                   Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                   AppCMSPresenter appCMSPresenter,
                                   List<String> modulesToIgnore) {
@@ -116,7 +143,12 @@ public class ViewCreator {
                                  final Module moduleAPI,
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                  AppCMSPresenter appCMSPresenter) {
-        ModuleView moduleView = new ModuleView(context, module);
+        ModuleView moduleView = getModuleViewLruCache().get(moduleAPI.getId() + BaseView.isLandscape(context));
+        if (moduleView == null) {
+            moduleView = new ModuleView(context, module);
+            getModuleViewLruCache().put(moduleAPI.getId() + BaseView.isLandscape(context), moduleView);
+        }
+        moduleView.getChildrenContainer().removeAllViews();
         ViewGroup childrenContainer = moduleView.getChildrenContainer();
         if (module.getComponents() != null &&
                 moduleAPI != null &&
@@ -242,7 +274,7 @@ public class ViewCreator {
                                     Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                     final AppCMSPresenter appCMSPresenter,
                                     boolean gridElement) {
-        ComponentViewResult componentViewResult = new ComponentViewResult();
+
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());

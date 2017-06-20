@@ -122,12 +122,18 @@ public class AppCMSPageFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        appCMSBinder = null;
+        pageView = null;
+
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBinder(getString(R.string.app_cms_binder_key), appCMSBinder);
     }
-
-
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {

@@ -21,6 +21,8 @@ import snagfilms.com.air.appcms.R;
  */
 
 public class AppCMSNavItemsFragment extends Fragment {
+    private AppCMSNavItemsAdapter.OnCloseNavAction onCloseNavAction;
+
     public static AppCMSNavItemsFragment newInstance(Context context,
                                                      AppCMSBinder appCMSBinder) {
         AppCMSNavItemsFragment fragment = new AppCMSNavItemsFragment();
@@ -28,6 +30,14 @@ public class AppCMSNavItemsFragment extends Fragment {
         args.putBinder(context.getString(R.string.fragment_page_bundle_key), appCMSBinder);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        if (context instanceof AppCMSNavItemsAdapter.OnCloseNavAction) {
+            onCloseNavAction = (AppCMSNavItemsAdapter.OnCloseNavAction) context;
+        }
+        super.onAttach(context);
     }
 
     @Nullable
@@ -42,7 +52,8 @@ public class AppCMSNavItemsFragment extends Fragment {
         AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
-        AppCMSNavItemsAdapter appCMSNavItemsAdapter = new AppCMSNavItemsAdapter(appCMSBinder.getNavigation(),
+        AppCMSNavItemsAdapter appCMSNavItemsAdapter = new AppCMSNavItemsAdapter(onCloseNavAction,
+                appCMSBinder.getNavigation(),
                 appCMSBinder.isUserLoggedIn(),
                 appCMSPresenter);
         navItemsList.setAdapter(appCMSNavItemsAdapter);
