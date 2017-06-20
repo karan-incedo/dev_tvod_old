@@ -339,6 +339,10 @@ public abstract class BaseView extends FrameLayout {
                         tm -= viewHeight / 8;
                     }
                     break;
+                case PAGE_VIDEO_SHARE_KEY:
+                    if (isTablet(getContext())) {
+                        tm -= viewHeight / 4;
+                    }
                 default:
             }
 

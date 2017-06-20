@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -462,6 +463,14 @@ public class ViewCreator {
                         break;
                     case PAGE_VIDEO_SHARE_KEY:
                         Drawable shareDrawable = ContextCompat.getDrawable(context, R.drawable.share);
+                        if (BaseView.isTablet(context)) {
+                            int drawableWidth = ((BitmapDrawable) shareDrawable).getBitmap().getWidth();
+                            int drawableHeight = ((BitmapDrawable) shareDrawable).getBitmap().getHeight();
+                            float sizeRatio = (float) drawableWidth / (float) drawableHeight;
+                            int adjustedHeight =
+                                    (int) (sizeRatio * BaseView.getViewWidth(context, component.getLayout(), 0));
+                            BaseView.setViewHeight(context, component.getLayout(), adjustedHeight);
+                        }
                         componentViewResult.componentView.setBackground(shareDrawable);
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
