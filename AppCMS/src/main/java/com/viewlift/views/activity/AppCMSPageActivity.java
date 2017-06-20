@@ -1,6 +1,5 @@
 package com.viewlift.views.activity;
 
-import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,16 +14,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ActionMenuView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -79,12 +72,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
         appCMSParentView = (RelativeLayout) findViewById(R.id.app_cms_parent_view);
         appCMSFragment = (FrameLayout) findViewById(R.id.app_cms_fragment);
-
-//        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-//        appCMSSearchView = (SearchView) findViewById(R.id.app_cms_search_view);
-//        appCMSSearchView.setQueryHint(getString(R.string.search_films));
-//        appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-//        appCMSSearchView.setIconifiedByDefault(true);
 
         appBarLayout = (AppBarLayout) findViewById(R.id.app_cms_appbarlayout);
 
@@ -226,7 +213,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         if (pageViewDuringSearch != null) {
             selectNavItem(pageViewDuringSearch);
         } else {
-            if (appCMSBinderStack != null) {
+            if (appCMSBinderStack != null && appCMSBinderStack.size() > 0) {
                 Log.d(TAG, "Activity resumed - resetting nav item");
                 selectNavItem(appCMSBinderStack.peek());
             }
@@ -362,7 +349,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     }
 
     private boolean shouldPopStack() {
-        return appCMSBinderStack.size() > 0 && !appCMSPresenter.isActionAPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId());
+        return appCMSBinderStack.size() > 0 &&
+                !appCMSPresenter.isActionAPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId());
     }
 
     private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder) {
