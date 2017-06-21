@@ -127,8 +127,17 @@ public class AppCMSPageFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
+        if (appCMSBinder != null && appCMSViewComponent.viewCreator() != null) {
+            appCMSViewComponent.viewCreator().removeLruCacheItem(getContext(), appCMSBinder.getPageId());
+        }
         appCMSBinder = null;
         pageView = null;
     }

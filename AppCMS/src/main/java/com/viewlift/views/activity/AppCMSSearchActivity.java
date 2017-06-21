@@ -15,6 +15,8 @@ import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
@@ -71,9 +73,6 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent()
                         .appCMSPresenter()
                         .getAppCMSMain();
-        appCMSSearchResultsView.setBackgroundColor(Color.parseColor(appCMSMain.getBrand()
-                .getGeneral()
-                .getBackgroundColor()));
 
         handoffReceiver = new BroadcastReceiver() {
             @Override
@@ -93,7 +92,21 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         appCMSSearchView.setIconifiedByDefault(false);
 
+        LinearLayout appCMSSearchResultsContainer =
+                (LinearLayout) findViewById(R.id.app_cms_search_results_container);
+        appCMSSearchResultsContainer.setBackgroundColor(Color.parseColor(appCMSMain.getBrand()
+                .getGeneral()
+                .getBackgroundColor()));
+
         noResultsTextview = (TextView) findViewById(R.id.no_results_textview);
+
+        ImageButton appCMSCloseButton = (ImageButton) findViewById(R.id.app_cms_close_button);
+        appCMSCloseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         handleIntent(getIntent());
     }

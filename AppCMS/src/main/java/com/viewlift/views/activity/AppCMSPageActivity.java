@@ -150,8 +150,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 new IntentFilter(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM));
-        registerReceiver(presenterCloseActionReceiver,
-                new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
 
         resumeInternalEvents = false;
 
@@ -229,6 +227,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
         isActive = true;
 
+        registerReceiver(presenterCloseActionReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
+
         Log.d(TAG, "onResume()");
     }
 
@@ -238,7 +239,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         if (pageViewDuringSearch != null) {
             selectNavItem(pageViewDuringSearch);
         }
-
+        unregisterReceiver(presenterCloseActionReceiver);
         isActive = false;
     }
 
@@ -252,7 +253,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(presenterActionReceiver);
-        unregisterReceiver(presenterCloseActionReceiver);
         appCMSPresenter.sendCloseOthersAction();
         Log.d(TAG, "onDestroy()");
     }
@@ -335,6 +335,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             appCMSBinderStack.pop();
         }
         if (appCMSBinderStack.size() > 0) {
+            updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
             Log.d(TAG, "Back pressed - handling nav bar");
             handleNavbar(appCMSBinderMap.get(appCMSBinderStack.peek()));
             Log.d(TAG, "Resetting previous AppCMS data: " + appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName());
