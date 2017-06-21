@@ -329,7 +329,11 @@ public abstract class BaseView extends FrameLayout {
                     break;
                 case PAGE_CAROUSEL_INFO_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
-                    tm -= viewHeight * 3.2;
+                    if (isTablet(getContext())) {
+                        tm -= viewHeight * 3.2;
+                    } else {
+                        tm -= viewHeight * 2;
+                    }
                     viewHeight *= 2;
                     lm = maxViewWidth / 2 - viewWidth / 2;
                     break;

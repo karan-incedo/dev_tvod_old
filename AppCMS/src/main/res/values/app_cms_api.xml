@@ -67,6 +67,8 @@
     <string name="app_cms_navigation_page_tag">navigation</string>
     <string name="app_cms_search_page_tag">search</string>
 
+    <string name="app_cms_share_string">%1$s Presents %2$s - %3$s</string>
+
     <!-- AppAppCMSPageUIPage names for Actions -->
     <string name="app_cms_pagename_splashscreen_key">Splash Screen</string>
     <string name="app_cms_pagename_homepage_key">Home Page</string>

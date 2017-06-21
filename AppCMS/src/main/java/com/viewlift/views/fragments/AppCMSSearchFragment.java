@@ -94,27 +94,13 @@ public class AppCMSSearchFragment extends DialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            int width = getContext().getResources().getDisplayMetrics().widthPixels;
-            int height = getContext().getResources().getDisplayMetrics().heightPixels;
-            Window window = dialog.getWindow();
-            window.setLayout(width, height);
-            window.setGravity(Gravity.START);
-        }
+        setWindow();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            int width = getContext().getResources().getDisplayMetrics().widthPixels;
-            int height = getContext().getResources().getDisplayMetrics().heightPixels;
-            Window window = dialog.getWindow();
-            window.setLayout(width, height);
-            window.setGravity(Gravity.START);
-        }
+        setWindow();
     }
 
     @Override
@@ -128,6 +114,17 @@ public class AppCMSSearchFragment extends DialogFragment {
         if (dialog != null) {
             Window window = dialog.getWindow();
             window.setBackgroundDrawable(new ColorDrawable(bgColor));
+        }
+    }
+
+    private void setWindow() {
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            int width = ViewGroup.LayoutParams.MATCH_PARENT;
+            int height = ViewGroup.LayoutParams.MATCH_PARENT;
+            Window window = dialog.getWindow();
+            window.setLayout(width, height);
+            window.setGravity(Gravity.START);
         }
     }
 }

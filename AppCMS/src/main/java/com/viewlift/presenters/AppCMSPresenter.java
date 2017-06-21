@@ -243,7 +243,11 @@ public class AppCMSPresenter {
             } else if (actionType == AppCMSActionType.SHARE) {
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, extraData);
+                sendIntent.putExtra(Intent.EXTRA_TEXT,
+                        currentActivity.getString(R.string.app_cms_share_string,
+                                currentActivity.getString(R.string.app_name),
+                                filmTitle,
+                                extraData));
                 sendIntent.setType(currentActivity.getString(R.string.text_plain_mime_type));
                 currentActivity.startActivity(Intent.createChooser(sendIntent,
                         currentActivity.getResources().getText(R.string.send_to)));
