@@ -22,6 +22,7 @@
     <string name="string_with_ellipse_and_more">%1$s&#8230;MORE</string>
     <string name="text_with_color"><![CDATA[<font color=\'#%1$s\'>%2$s</font>]]></string>
     <string name="video_player_hls_url_key">video_player_hls_url</string>
+    <string name="video_layer_film_id_key">film_id</string>
     <string name="video_player_ads_url_key">video_player_ads_url</string>
     <string name="video_fragment_tag_key">video_fragment</string>
     <string name="app_cms_text_color_key">app_cms_text_color</string>
@@ -62,4 +63,5 @@
     <string name="bg_color_key">bg_color</string>
     <string name="button_color_key">button_color</string>
     <string name="text_color_key">text_color</string>
+    <string name="utf8enc">UTF-8</string>
 </resources>

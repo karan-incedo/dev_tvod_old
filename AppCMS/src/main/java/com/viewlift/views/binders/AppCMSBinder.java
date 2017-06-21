@@ -23,6 +23,7 @@ public class AppCMSBinder extends Binder {
     private final Navigation navigation;
     private final String pageId;
     private final String pageName;
+    private final String screenName;
     private final boolean loadedFromFile;
     private final boolean appbarPresent;
     private final boolean fullScreenEnabled;
@@ -37,6 +38,7 @@ public class AppCMSBinder extends Binder {
                         Navigation navigation,
                         String pageId,
                         String pageName,
+                        String screenName,
                         boolean loadedFromFile,
                         boolean appbarPresent,
                         boolean fullScreenEnabled,
@@ -50,6 +52,7 @@ public class AppCMSBinder extends Binder {
         this.navigation = navigation;
         this.pageId = pageId;
         this.pageName = pageName;
+        this.screenName = screenName;
         this.loadedFromFile = loadedFromFile;
         this.appbarPresent = appbarPresent;
         this.fullScreenEnabled = fullScreenEnabled;
@@ -117,5 +120,9 @@ public class AppCMSBinder extends Binder {
 
     public void clearSearchQuery() {
         searchQuery = null;
+    }
+
+    public String getScreenName() {
+        return screenName;
     }
 }

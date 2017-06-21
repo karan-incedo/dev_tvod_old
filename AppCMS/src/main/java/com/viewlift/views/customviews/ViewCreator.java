@@ -397,14 +397,18 @@ public class ViewCreator {
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers() != null &&
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers().size() > 0 &&
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0) != null &&
+                                moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId() != null &&
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
                             componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
+                                    String[] extraData = new String[2];
+                                    extraData[0] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls();
+                                    extraData[1] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId();
                                     if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                             component.getAction(),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                            moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls(),
+                                            extraData,
                                             false)) {
                                         Log.e(TAG, "Could not launch action: " +
                                                 " permalink: " +
@@ -440,11 +444,15 @@ public class ViewCreator {
                                             moduleAPI.getContentData().size() > 0 &&
                                             moduleAPI.getContentData().get(0) != null &&
                                             moduleAPI.getContentData().get(0).getGist() != null &&
+                                            moduleAPI.getContentData().get(0).getGist().getId() != null &&
                                             moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
+                                        String[] extraData = new String[2];
+                                        extraData[0] = videoUrl;
+                                        extraData[1] = moduleAPI.getContentData().get(0).getGist().getId();
                                         if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                                 component.getAction(),
                                                 moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                                videoUrl,
+                                                extraData,
                                                 false)) {
                                             Log.e(TAG, "Could not launch action: " +
                                                     " permalink: " +
@@ -503,10 +511,12 @@ public class ViewCreator {
                                     StringBuilder filmUrl = new StringBuilder();
                                     filmUrl.append(appCMSMain.getDomainName());
                                     filmUrl.append(moduleAPI.getContentData().get(0).getGist().getPermalink());
+                                    String[] extraData = new String[1];
+                                    extraData[0] = filmUrl.toString();
                                     if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                             component.getAction(),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                            filmUrl.toString(),
+                                            extraData,
                                             false)) {
                                         Log.e(TAG, "Could not launch action: " +
                                                 " permalink: " +

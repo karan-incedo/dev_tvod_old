@@ -22,6 +22,13 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.iid.InstanceID;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,8 +37,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import javax.inject.Inject;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
@@ -46,6 +51,7 @@ import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
 import com.viewlift.models.network.components.DaggerAppCMSAPIComponent;
 import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
 import com.viewlift.models.network.modules.AppCMSAPIModule;
+import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
@@ -70,6 +76,11 @@ import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSSearchFragment;
 
+import javax.inject.Inject;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -88,12 +99,10 @@ public class AppCMSPresenter {
     public static final String PRESENTER_CLOSE_SCREEN_ACTION = "appcms_presenter_close_action";
     public static final String PRESENTER_RESET_NAVIGATION_ITEM = "appcms_presenter_set_navigation_item";
 
-    public static final int PRESENTER_NAVIGATION_REQUEST = 1000;
-
-    public static final int LAUNCH_PAGE_ACTIVITY = 1000;
-
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
+
+    private static final long MILLISECONDS_PER_SECONDS = 1000L;
 
     private final AppCMSMainUICall appCMSMainUICall;
     private final AppCMSAndroidUICall appCMSAndroidUICall;
@@ -124,6 +133,42 @@ public class AppCMSPresenter {
     private Map<String, List<OnInternalEvent>> onActionInternalEvents;
     private Stack<String> currentActions;
     private AppCMSSearchUrlComponent appCMSSearchUrlComponent;
+    private BeaconRunnable beaconMessageRunnable;
+    private Runnable beaconMessageThread;
+    private GoogleAnalytics googleAnalytics;
+    private Tracker tracker;
+
+    public enum BeaconEvent {
+        PLAY, RESUME, PING, AD_REQUEST, AD_IMPRESSION
+    }
+
+    private static class BeaconRunnable implements Runnable {
+        final AppCMSBeaconRest appCMSBeaconRest;
+        String url;
+
+        public BeaconRunnable(AppCMSBeaconRest appCMSBeaconRest) {
+            this.appCMSBeaconRest = appCMSBeaconRest;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        @Override
+        public void run() {
+            appCMSBeaconRest.sendBeaconMessage(url).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    Log.d(TAG, "Succeeded to send Beacon message: " + response.code());
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Log.d(TAG, "Failed to send Beacon message: " + t.getMessage());
+                }
+            });
+        }
+    }
 
     private static abstract class AppCMSPageAPIAction implements Action1<AppCMSPageAPI> {
         boolean appbarPresent;
@@ -162,6 +207,7 @@ public class AppCMSPresenter {
                            AppCMSPageUICall appCMSPageUICall,
                            AppCMSSiteCall appCMSSiteCall,
                            AppCMSSearchCall appCMSSearchCall,
+                           AppCMSBeaconRest appCMSBeaconRest,
                            Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                            Map<String, String> pageNameToActionMap,
                            Map<String, AppCMSPageUI> actionToPageMap,
@@ -189,16 +235,22 @@ public class AppCMSPresenter {
         this.onLifecycleChangeHandlers = new ArrayList<>();
         this.onActionInternalEvents = new HashMap<>();
         this.currentActions = new Stack<>();
+        this.beaconMessageRunnable = new BeaconRunnable(appCMSBeaconRest);
+        this.beaconMessageThread = new Thread(this.beaconMessageRunnable);
     }
 
     public void setCurrentActivity(Activity activity) {
+        if (this.googleAnalytics == null) {
+            this.googleAnalytics = GoogleAnalytics.getInstance(activity);
+            this.tracker = this.googleAnalytics.newTracker(R.xml.global_tracker);
+        }
         this.currentActivity = activity;
     }
 
     public boolean launchButtonSelectedAction(String pagePath,
                                               String action,
                                               String filmTitle,
-                                              String extraData,
+                                              String[] extraData,
                                               boolean closeLauncher) {
         boolean result = false;
         Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
@@ -242,22 +294,28 @@ public class AppCMSPresenter {
                     currentActivity.startActivity(playVideoIntent);
                 }
             } else if (actionType == AppCMSActionType.SHARE) {
-                Intent sendIntent = new Intent();
-                sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT,
-                        currentActivity.getString(R.string.app_cms_share_string,
-                                currentActivity.getString(R.string.app_name),
-                                filmTitle,
-                                extraData));
-                sendIntent.setType(currentActivity.getString(R.string.text_plain_mime_type));
-                currentActivity.startActivity(Intent.createChooser(sendIntent,
-                        currentActivity.getResources().getText(R.string.send_to)));
+                if (extraData != null && extraData.length > 0) {
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT,
+                            currentActivity.getString(R.string.app_cms_share_string,
+                                    currentActivity.getString(R.string.app_name),
+                                    filmTitle,
+                                    extraData[0]));
+                    sendIntent.setType(currentActivity.getString(R.string.text_plain_mime_type));
+                    currentActivity.startActivity(Intent.createChooser(sendIntent,
+                            currentActivity.getResources().getText(R.string.send_to)));
+                }
             } else if (actionType == AppCMSActionType.CLOSE) {
                 sendCloseOthersAction();
             } else {
                 boolean appbarPresent = true;
                 boolean fullscreenEnabled = false;
                 boolean navbarPresent = true;
+                final StringBuffer screenName = new StringBuffer();
+                if (!TextUtils.isEmpty(actionToPageNameMap.get(action))) {
+                    screenName.append(actionToPageNameMap.get(action));
+                }
                 loadingPage = true;
                 switch (actionType) {
                     case SPLASH_PAGE:
@@ -269,6 +327,8 @@ public class AppCMSPresenter {
                         appbarPresent = true;
                         fullscreenEnabled = false;
                         navbarPresent = false;
+                        screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
+                        screenName.append(filmTitle);
                         break;
                     case PLAY_VIDEO_PAGE:
                         appbarPresent = false;
@@ -304,6 +364,7 @@ public class AppCMSPresenter {
                                             appCMSPageAPI,
                                             this.pageId,
                                             appCMSPageAPI.getTitle(),
+                                            screenName.toString(),
                                             loadFromFile,
                                             this.appbarPresent,
                                             this.fullscreenEnabled,
@@ -336,6 +397,7 @@ public class AppCMSPresenter {
                                     null,
                                     previousPageId,
                                     previousPageName,
+                                    null,
                                     false,
                                     true,
                                     false,
@@ -419,7 +481,7 @@ public class AppCMSPresenter {
         boolean result = false;
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
             loadingPage = true;
-            Log.d(TAG, "Launching page: " + pageTitle + " - " + pageId);
+            Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
             AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
@@ -450,6 +512,7 @@ public class AppCMSPresenter {
                                                 appCMSPageAPI,
                                                 this.pageId,
                                                 this.pageTitle,
+                                                pageIdToPageNameMap.get(this.pageId),
                                                 loadFromFile,
                                                 this.appbarPresent,
                                                 this.fullscreenEnabled,
@@ -461,6 +524,7 @@ public class AppCMSPresenter {
                                                 appCMSPageAPI,
                                                 this.pageId,
                                                 this.pageTitle,
+                                                pageIdToPageNameMap.get(this.pageId),
                                                 loadFromFile,
                                                 this.appbarPresent,
                                                 this.fullscreenEnabled,
@@ -488,6 +552,7 @@ public class AppCMSPresenter {
                             appCMSPageAPI,
                             pageId,
                             pageTitle,
+                            pageIdToPageNameMap.get(pageId),
                             loadFromFile,
                             true,
                             false,
@@ -499,6 +564,7 @@ public class AppCMSPresenter {
                             appCMSPageAPI,
                             pageId,
                             pageTitle,
+                            pageIdToPageNameMap.get(pageId),
                             loadFromFile,
                             true,
                             false,
@@ -567,9 +633,13 @@ public class AppCMSPresenter {
         new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
     }
 
-    public boolean isUserLoggedIn(Context context) {
+    public String getLoggedInUser(Context context) {
         SharedPreferences sharedPrefs = context.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
-        return sharedPrefs.getString(USER_ID_SHARED_PREF_NAME, null) != null;
+        return sharedPrefs.getString(USER_ID_SHARED_PREF_NAME, null);
+    }
+
+    public boolean isUserLoggedIn(Context context) {
+        return getLoggedInUser(context) != null;
     }
 
     public boolean setLoggedInUser(Context context, String userId) {
@@ -808,6 +878,73 @@ public class AppCMSPresenter {
         currentActions.push(action);
     }
 
+    public void sendBeaconAdImpression(String vid, String screenName, String parentScreenName, long currentPosition) {
+        Log.d(TAG, "Sending Beacon Ad Impression");
+        String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.AD_IMPRESSION);
+        Log.d(TAG, "Beacon Ad Impression: " + url);
+        beaconMessageRunnable.setUrl(url);
+        beaconMessageThread.run();
+    }
+
+    public void sendBeaconAdRequestMessage(String vid, String screenName, String parentScreenName, long currentPosition) {
+        Log.d(TAG, "Sending Beacon Ad Message");
+        String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.AD_REQUEST);
+        Log.d(TAG, "Beacon Ad Request: " + url);
+        beaconMessageRunnable.setUrl(url);
+        beaconMessageThread.run();
+    }
+
+    public void sendBeaconPingMessage(String vid, String screenName, String parentScreenName, long currentPosition) {
+        Log.d(TAG, "Sending Beacon Ping Message");
+        String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.PING);
+        Log.d(TAG, "Beacon Ping: " + url);
+        beaconMessageRunnable.setUrl(url);
+        beaconMessageThread.run();
+    }
+
+    public void sendBeaconPlayMessage(String vid, String screenName, String parentScreenName, long currentPosition) {
+        Log.d(TAG, "Sending Beacon Ad Message");
+        String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.PLAY);
+        Log.d(TAG, "Beacon Play: " + url);
+        beaconMessageRunnable.setUrl(url);
+        beaconMessageThread.run();
+    }
+
+    private String getBeaconUrl(String vid, String screenName, String parentScreenName, long currentPosition, BeaconEvent event) {
+        final String utfEncoding = currentActivity.getString(R.string.utf8enc);
+        String uid = InstanceID.getInstance(currentActivity).getId();
+        int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECONDS);
+        if (isUserLoggedIn(currentActivity)) {
+            uid = getLoggedInUser(currentActivity);
+        }
+        String url = null;
+        try {
+            url = currentActivity.getString(R.string.app_cms_beacon_url,
+                    appCMSMain.getBeacon().getApiBaseUrl(),
+                    URLEncoder.encode(appCMSMain.getBeacon().getSiteName(), utfEncoding),
+                    URLEncoder.encode(appCMSMain.getBeacon().getClientId(), utfEncoding),
+                    URLEncoder.encode(currentActivity.getString(R.string.app_cms_beacon_platform), utfEncoding),
+                    URLEncoder.encode(currentActivity.getString(R.string.app_cms_beacon_dpm_android), utfEncoding),
+                    URLEncoder.encode(vid, utfEncoding),
+                    URLEncoder.encode(screenName, utfEncoding),
+                    URLEncoder.encode(parentScreenName, utfEncoding),
+                    event,
+                    currentPositionSecs,
+                    URLEncoder.encode(uid, utfEncoding));
+        } catch (UnsupportedEncodingException e) {
+            Log.e(TAG, "Error encoding Beacon URL parameters: " + e.toString());
+        }
+        return url;
+    }
+
+    public void sendGaScreen(String screenName) {
+        if (tracker != null) {
+            Log.d(TAG, "Send GA screen tracking event: " + screenName);
+            tracker.setScreenName(screenName);
+            tracker.send(new HitBuilders.ScreenViewBuilder().build());
+        }
+    }
+
     private void setNavItemToCurrentAction(Activity activity) {
         if (currentActions.size() > 0) {
             Intent setNavigationItemIntent = new Intent(PRESENTER_RESET_NAVIGATION_ITEM);
@@ -822,6 +959,7 @@ public class AppCMSPresenter {
                                          AppCMSPageAPI appCMSPageAPI,
                                          String pageID,
                                          String pageName,
+                                         String screenName,
                                          boolean loadFromFile,
                                          boolean appbarPresent,
                                          boolean fullscreenEnabled,
@@ -833,6 +971,7 @@ public class AppCMSPresenter {
                 appCMSPageAPI,
                 pageID,
                 pageName,
+                screenName,
                 loadFromFile,
                 appbarPresent,
                 fullscreenEnabled,
@@ -847,6 +986,7 @@ public class AppCMSPresenter {
                                          AppCMSPageAPI appCMSPageAPI,
                                          String pageID,
                                          String pageName,
+                                         String screenName,
                                          boolean loadFromFile,
                                          boolean appbarPresent,
                                          boolean fullscreenEnabled,
@@ -858,6 +998,7 @@ public class AppCMSPresenter {
                 navigation,
                 pageID,
                 pageName,
+                screenName,
                 loadFromFile,
                 appbarPresent,
                 fullscreenEnabled,
@@ -872,6 +1013,7 @@ public class AppCMSPresenter {
                                     AppCMSPageAPI appCMSPageAPI,
                                     String pageId,
                                     String pageName,
+                                    String screenName,
                                     boolean loadFromFile,
                                     boolean appbarPresent,
                                     boolean fullscreenEnabled,
@@ -882,6 +1024,7 @@ public class AppCMSPresenter {
                 appCMSPageAPI,
                 pageId,
                 pageName,
+                screenName,
                 loadFromFile,
                 appbarPresent,
                 fullscreenEnabled,
@@ -1003,7 +1146,7 @@ public class AppCMSPresenter {
                                        final boolean loadFromFile,
                                        final Action0 onPagesFinishedAction) {
         final MetaPage metaPage = pagesToProcess.remove();
-        Log.d(TAG, "Processing meta page: " +
+        Log.d(TAG, "Processing meta page" +
                 metaPage.getPageName() + ": " +
                 metaPage.getPageId() + " " +
                 metaPage.getPageUI() + " " +
@@ -1022,7 +1165,7 @@ public class AppCMSPresenter {
                             actionToPageMap.put(action, appCMSPageUI);
                             actionToPageNameMap.put(action, metaPage.getPageName());
                             actionToPageAPIUrlMap.put(action, metaPage.getPageAPI());
-                            Log.d(TAG, "Action: " + action + " PageAPIURL: " + metaPage.getPageAPI());
+                            Log.d(TAG, "Action: " + action + "  PageAPI URL: " + metaPage.getPageAPI());
                         }
                         if (pagesToProcess.size() > 0) {
                             processMetaPagesQueue(activity,

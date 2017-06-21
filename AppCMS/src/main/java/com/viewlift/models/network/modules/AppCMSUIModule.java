@@ -8,6 +8,7 @@ import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
+import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSMainUIRest;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
@@ -244,6 +245,12 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSPageUIRest providesAppCMSPageUIRest(Retrofit retrofit) {
         return retrofit.create(AppCMSPageUIRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSBeaconRest providesAppCMSBeaconMessage(Retrofit retrofit) {
+        return retrofit.create(AppCMSBeaconRest.class);
     }
 
     @Provides

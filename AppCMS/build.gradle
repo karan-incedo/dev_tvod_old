@@ -31,8 +31,8 @@ android {
         applicationId packageName
         minSdkVersion 23
         targetSdkVersion 25
-        versionCode 3042037
-        versionName "0.99.986"
+        versionCode 3042038
+        versionName "0.99.99"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -100,6 +100,8 @@ dependencies {
     compile "com.google.android.exoplayer:exoplayer:$rootProject.ext.exoplayerVersion"
     compile "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
     compile "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
+    compile "com.google.android.gms:play-services-analytics:$rootProject.ext.googlePlayServicesVersion"
+    compile "com.google.android.gms:play-services-gcm:$rootProject.ext.googlePlayServicesVersion"
     compile("com.crashlytics.sdk.android:crashlytics:$rootProject.ext.crashlyticsVersion") {
         transitive = true;
     }

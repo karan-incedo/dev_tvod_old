@@ -222,7 +222,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         }
 
         if (!isActive) {
-            handleLaunchPageAction(updatedAppCMSBinder);
+            if (updatedAppCMSBinder != null) {
+                handleLaunchPageAction(updatedAppCMSBinder);
+            }
         }
 
         isActive = true;
@@ -253,7 +255,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(presenterActionReceiver);
-        appCMSPresenter.sendCloseOthersAction();
         Log.d(TAG, "onDestroy()");
     }
 
@@ -463,6 +464,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     private void handleLaunchPageAction(AppCMSBinder appCMSBinder) {
         Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
+        appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
         int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
         Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
         if (0 < distanceFromStackTop) {

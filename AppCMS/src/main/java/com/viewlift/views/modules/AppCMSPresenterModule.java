@@ -2,6 +2,7 @@ package com.viewlift.views.modules;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.network.modules.AppCMSSearchModule;
+import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.presenters.AppCMSActionType;
@@ -35,6 +36,7 @@ public class AppCMSPresenterModule {
                                                    AppCMSPageUICall appCMSPageUICall,
                                                    AppCMSSiteCall appCMSSiteCall,
                                                    AppCMSSearchCall appCMSSearchCall,
+                                                   AppCMSBeaconRest appCMSBeaconRest,
                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                    Map<String, String> pageNameToActionMap,
                                                    Map<String, AppCMSPageUI> actionToPageMap,
@@ -45,6 +47,7 @@ public class AppCMSPresenterModule {
                 appCMSPageUICall,
                 appCMSSiteCall,
                 appCMSSearchCall,
+                appCMSBeaconRest,
                 jsonValueKeyMap,
                 pageNameToActionMap,
                 actionToPageMap,

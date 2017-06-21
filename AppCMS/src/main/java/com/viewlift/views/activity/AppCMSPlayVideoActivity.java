@@ -43,7 +43,9 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         Intent intent = getIntent();
         String title = intent.getStringExtra(getString(R.string.video_player_title_key));
         String fontColor = intent.getStringExtra(getString(R.string.video_player_font_color_key));
-        String hlsUrl = intent.getStringExtra(getString(R.string.video_player_hls_url_key));
+        String[] extraData = intent.getStringArrayExtra(getString(R.string.video_player_hls_url_key));
+        String hlsUrl = extraData[0];
+        String filmId = extraData[1];
         String adsUrl = intent.getStringExtra(getString(R.string.video_player_ads_url_key));
         String bgColor = intent.getStringExtra(getString(R.string.app_cms_bg_color_key));
 
@@ -54,7 +56,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         AppCMSPlayVideoFragment appCMSPlayVideoFragment =
-                AppCMSPlayVideoFragment.newInstance(this, fontColor, title, hlsUrl, adsUrl);
+                AppCMSPlayVideoFragment.newInstance(this, fontColor, title, hlsUrl, filmId, adsUrl);
         fragmentTransaction.add(R.id.app_cms_play_video_page_container,
                 appCMSPlayVideoFragment,
                 getString(R.string.video_fragment_tag_key));

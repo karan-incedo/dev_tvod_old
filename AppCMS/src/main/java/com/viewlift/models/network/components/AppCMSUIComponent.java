@@ -2,6 +2,7 @@ package com.viewlift.models.network.components;
 
 import com.viewlift.models.network.modules.AppCMSUIModule;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
+import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 
@@ -19,4 +20,5 @@ public interface AppCMSUIComponent {
     AppCMSMainUICall appCMSMainCall();
     AppCMSAndroidUICall appCMSAndroidCall();
     AppCMSPageUICall appCMSPageCall();
+    AppCMSBeaconRest appCMSBeaconRest();
 }
