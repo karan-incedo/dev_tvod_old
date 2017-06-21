@@ -15,6 +15,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
@@ -592,7 +593,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public List<OnInternalEvent> getOnInternalEvents() {
+    public @Nullable List<OnInternalEvent> getOnInternalEvents() {
         if (currentActions.size() > 0 &&
                 !TextUtils.isEmpty(currentActions.peek()) &&
                 onActionInternalEvents.get(currentActions.peek()) != null) {

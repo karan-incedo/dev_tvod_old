@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -187,10 +186,13 @@ public class ViewCreator {
                 }
             }
 
-            for (OnInternalEvent onInternalEvent : appCMSPresenter.getOnInternalEvents()) {
-                for (OnInternalEvent receiverInternalEvent : appCMSPresenter.getOnInternalEvents()) {
-                    if (receiverInternalEvent != onInternalEvent) {
-                        onInternalEvent.addReceiver(receiverInternalEvent);
+            List<OnInternalEvent> presenterOnInternalEvents = appCMSPresenter.getOnInternalEvents();
+            if (presenterOnInternalEvents != null) {
+                for (OnInternalEvent onInternalEvent : presenterOnInternalEvents) {
+                    for (OnInternalEvent receiverInternalEvent : presenterOnInternalEvents) {
+                        if (receiverInternalEvent != onInternalEvent) {
+                            onInternalEvent.addReceiver(receiverInternalEvent);
+                        }
                     }
                 }
             }
@@ -614,6 +616,9 @@ public class ViewCreator {
                 if (!TextUtils.isEmpty(component.getFontFamily())) {
                     if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
                         AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
+                        if (fontWeight == null) {
+                            fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                        }
                         Typeface face = null;
                         switch (fontWeight) {
                             case PAGE_TEXT_BOLD_KEY:
