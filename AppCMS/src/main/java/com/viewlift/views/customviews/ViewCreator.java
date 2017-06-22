@@ -547,7 +547,7 @@ public class ViewCreator {
                             if (!TextUtils.isEmpty(moduleAPI.getTitle())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
                             }
-                            componentViewResult.useMarginsAsPercentagesOverride = false;
+                            componentViewResult.useMarginsAsPercentagesOverride = true;
                             break;
                         case PAGE_API_DESCRIPTION:
                             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -555,7 +555,7 @@ public class ViewCreator {
                             } else {
                                 ((TextView) componentViewResult.componentView).setText(Html.fromHtml(moduleAPI.getRawText(), Html.FROM_HTML_MODE_COMPACT));
                             }
-                            componentViewResult.useMarginsAsPercentagesOverride = false;
+                            componentViewResult.useMarginsAsPercentagesOverride = true;
                             break;
                         case PAGE_TRAY_TITLE_KEY:
                             if (!TextUtils.isEmpty(component.getText())) {
