@@ -276,7 +276,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                             parentScreenName,
                             videoPlayerView.getCurrentPosition());
                 }
-                beaconMessageThread.start();
+                if (!beaconMessageThread.isAlive()) {
+                    beaconMessageThread.start();
+                }
                 break;
             case ALL_ADS_COMPLETED:
                 if (adsManager != null) {
@@ -292,6 +294,8 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public void onDestroyView() {
         videoPlayerView.releasePlayer();
+	    sendBeaconPing = false;
+	    onClosePlayerEvent = null;
         super.onDestroyView();
     }
 
