@@ -388,7 +388,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             fragmentTransaction.addToBackStack(appCMSBinder.getPageId());
             fragmentTransaction.commit();
         } catch (IllegalStateException e) {
-            Log.e(TAG, "Failed to pop Fragment from back stack");
+            Log.e(TAG, "Failed to add Fragment to back stack");
         }
     }
 
@@ -404,12 +404,20 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     }
 
     private void selectNavItem(NavBarItemView v) {
+        unselectAllNavItems();
+        v.select(true);
+    }
+
+    private void unselectAllNavItems() {
         for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
             if (appCMSTabNavContainer.getChildAt(i) instanceof NavBarItemView) {
-                ((NavBarItemView) appCMSTabNavContainer.getChildAt(i)).select(false);
+                unselectNavItem((NavBarItemView) appCMSTabNavContainer.getChildAt(i));
             }
         }
-        v.select(true);
+    }
+
+    private void unselectNavItem(NavBarItemView v) {
+        v.select(false);
     }
 
     private NavBarItemView getSelectedNavItem() {
@@ -506,6 +514,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             @Override
             public void onClick(View v) {
                 if (appCMSBinderStack.size() > 0) {
+                    unselectAllNavItems();
                     AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
                     if (!appCMSPresenter.launchNavigationPage(appCMSBinder.getPageId(), appCMSBinder.getPageName())) {
                         Log.e(TAG, "Could not launch navigation page!");

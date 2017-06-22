@@ -112,11 +112,15 @@ public abstract class BaseView extends FrameLayout {
         int deviceHeight = getContext().getResources().getDisplayMetrics().heightPixels;
         int viewWidth = (int) getViewWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
         int viewHeight = (int) getViewHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
+        int parentViewWidth = (int) getViewWidth(getContext(),
+                parentLayout,
+                parentView.getMeasuredWidth());
         int parentViewHeight = (int) getViewHeight(getContext(),
                 parentLayout,
                 parentView.getMeasuredHeight());
         int maxViewWidth = (int) getViewMaximumWidth(getContext(), layout, -1);
         int measuredHeight = firstMeasurement ? deviceHeight : parentViewHeight;
+        int gravity = Gravity.NO_GRAVITY;
 
         if (isTablet(getContext())) {
             if (isLandscape(getContext())) {
@@ -146,12 +150,12 @@ public abstract class BaseView extends FrameLayout {
                         if (lmDiff < 0) {
                             lmDiff = 0;
                         }
-                        if (parentViewHeight > 0) {
-                            lm = parentViewHeight -
+                        if (parentViewWidth > 0) {
+                            lm = parentViewWidth -
                                     (int) (DEVICE_WIDTH * (tabletLandscape.getRightMargin() / STANDARD_TABLET_HEIGHT_PX)) -
                                     lmDiff;
                         } else {
-                            // TODO: Correct for measurements when parent view width is not available
+                            gravity = Gravity.END;
                         }
                     }
                     if (useMarginsAsPercentages) {
@@ -178,7 +182,8 @@ public abstract class BaseView extends FrameLayout {
                                         (int) (DEVICE_HEIGHT * (tabletLandscape.getBottomMargin() / STANDARD_TABLET_WIDTH_PX)) -
                                         tmDiff;
                             } else {
-                                // TODO: Correct for measurements when parent view height is not available
+                                gravity = Gravity.BOTTOM;
+                                bm = (int) (DEVICE_HEIGHT * (tabletLandscape.getBottomMargin() / STANDARD_TABLET_WIDTH_PX));
                             }
                         }
                     }
@@ -211,11 +216,12 @@ public abstract class BaseView extends FrameLayout {
                             lmDiff = 0;
                         }
                         if (parentViewHeight > 0) {
-                            lm = parentViewHeight -
+                            lm = parentViewWidth -
                                     (int) (DEVICE_WIDTH * (tabletPortrait.getRightMargin() / STANDARD_TABLET_WIDTH_PX)) -
                                     lmDiff;
                         } else {
-                            // TODO: Correct for measurements when parent view width is not available
+                            gravity = Gravity.END;
+                            rm = (int) (DEVICE_WIDTH * (tabletPortrait.getRightMargin() / STANDARD_TABLET_WIDTH_PX));
                         }
                     }
                     if (useMarginsAsPercentages) {
@@ -242,7 +248,8 @@ public abstract class BaseView extends FrameLayout {
                                         (int) (DEVICE_HEIGHT * (tabletPortrait.getBottomMargin() / STANDARD_TABLET_HEIGHT_PX)) -
                                         tmDiff;
                             } else {
-                                // TODO: Correct for measurements when parent view height is not available
+                                gravity = Gravity.BOTTOM;
+                                bm = (int) (DEVICE_HEIGHT * (tabletPortrait.getBottomMargin() / STANDARD_TABLET_HEIGHT_PX));
                             }
                         }
                     }
@@ -276,32 +283,46 @@ public abstract class BaseView extends FrameLayout {
                     if (lmDiff < 0) {
                         lmDiff = 0;
                     }
-                    if (parentViewHeight > 0) {
+                    if (parentViewWidth > 0) {
                         float scaledRm = DEVICE_WIDTH * (mobile.getRightMargin() / STANDARD_MOBILE_WIDTH_PX);
-                        lm = parentViewHeight - Math.round(scaledRm) - lmDiff;
+                        lm = parentViewWidth - Math.round(scaledRm) - lmDiff;
                     } else {
-                        // TODO: Correct for measurements when parent view width is not available
+                        gravity = Gravity.END;
+                        rm = (int) (DEVICE_WIDTH * (mobile.getRightMargin() / STANDARD_MOBILE_WIDTH_PX));
                     }
                 }
-                if (mobile.getTopMargin() != null) {
-                    float scaledTm = DEVICE_HEIGHT * (mobile.getTopMargin() / STANDARD_MOBILE_WIDTH_PX);
-                    tm = Math.round(scaledTm);
-                } else if (mobile.getBottomMargin() != null && mobile.getBottomMargin() > 0) {
-                    int tmDiff = viewHeight;
-                    if (tmDiff < 0) {
-                        tmDiff = 0;
+                if (useMarginsAsPercentages) {
+                    if (mobile.getTopMargin() != null) {
+                        tm = Math.round((mobile.getTopMargin() / 100.0f) * measuredHeight);
+                    } else if (mobile.getBottomMargin() != null) {
+                        int marginDiff = viewHeight;
+                        if (marginDiff < 0) {
+                            marginDiff = 0;
+                        }
+                        tm = Math.round(((100.0f - mobile.getBottomMargin()) / 100.0f) * measuredHeight) -
+                                Math.round(convertDpToPixel(marginDiff, getContext()));
                     }
-                    if (parentViewHeight > 0) {
-                        float scaledBm = DEVICE_HEIGHT * (mobile.getBottomMargin() / STANDARD_MOBILE_HEIGHT_PX);
-                        tm = parentViewHeight - Math.round(scaledBm) - tmDiff;
-                    } else {
-                        // TODO: Correct for measurements when parent view height is not available
+                } else {
+                    if (mobile.getTopMargin() != null) {
+                        tm = (int) (DEVICE_HEIGHT * (mobile.getTopMargin() / STANDARD_TABLET_HEIGHT_PX));
+                    } else if (mobile.getBottomMargin() != null && mobile.getBottomMargin() > 0) {
+                        int tmDiff = viewHeight;
+                        if (tmDiff < 0) {
+                            tmDiff = 0;
+                        }
+                        if (parentViewHeight > 0) {
+                            tm = parentViewHeight -
+                                    (int) (DEVICE_HEIGHT * (mobile.getBottomMargin() / STANDARD_TABLET_HEIGHT_PX)) -
+                                    tmDiff;
+                        } else {
+                            gravity = Gravity.BOTTOM;
+                            bm = (int) (DEVICE_HEIGHT * (mobile.getBottomMargin() / STANDARD_TABLET_HEIGHT_PX));
+                        }
                     }
                 }
             }
         }
 
-        int gravity = Gravity.NO_GRAVITY;
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
         if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
                 componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
@@ -355,6 +376,10 @@ public abstract class BaseView extends FrameLayout {
                         lm -= viewWidth / 2;
                     }
                     break;
+                case PAGE_API_TITLE:
+                    ((TextView) view).setGravity(Gravity.CENTER);
+                    viewHeight *= 1.5;
+                    break;
                 default:
             }
 
@@ -366,17 +391,6 @@ public abstract class BaseView extends FrameLayout {
             if (maxViewWidth != -1) {
                 ((TextView) view).setMaxWidth(maxViewWidth);
             }
-        } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
-            AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
-            if (componentKey == null) {
-                componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
-            }
-            switch (componentKey) {
-                case PAGE_THUMBNAIL_IMAGE_KEY:
-                    gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
-                    break;
-                default:
-            }
         }
 
         if (useWidthOfScreen) {
@@ -384,7 +398,7 @@ public abstract class BaseView extends FrameLayout {
         }
 
         MarginLayoutParams marginLayoutParams = new MarginLayoutParams(viewWidth, viewHeight);
-        marginLayoutParams.setMargins(lm, tm, 0, 0);
+        marginLayoutParams.setMargins(lm, tm, rm, bm);
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(marginLayoutParams);
         layoutParams.width = viewWidth;
         layoutParams.height = viewHeight;

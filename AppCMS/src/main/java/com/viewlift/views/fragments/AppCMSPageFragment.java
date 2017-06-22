@@ -67,6 +67,12 @@ public class AppCMSPageFragment extends Fragment {
         super.onAttach(context);
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -115,7 +121,7 @@ public class AppCMSPageFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (PageView.isTablet(getContext()) || appCMSBinder.isFullScreenEnabled()) {
+        if (PageView.isTablet(getContext()) || (appCMSBinder != null && appCMSBinder.isFullScreenEnabled())) {
             handleOrientation(getActivity().getResources().getConfiguration().orientation);
         }
         if (pageView == null) {

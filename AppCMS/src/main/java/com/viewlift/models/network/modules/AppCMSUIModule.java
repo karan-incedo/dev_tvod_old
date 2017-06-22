@@ -126,6 +126,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_TEXT_EXTRABOLD_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_family_key),
                 AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_textview_key),
+                AppCMSUIKeyType.PAGE_TEXTVIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_image_key),
                 AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_play_button_key),
@@ -156,6 +158,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_WATCH_TRAILER_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_title_key),
                 AppCMSUIKeyType.PAGE_API_TITLE);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_description_key),
+                AppCMSUIKeyType.PAGE_API_DESCRIPTION);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_thumbnail_url_key),
                 AppCMSUIKeyType.PAGE_API_THUMBNAIL_URL);
         jsonValueKeyMap.put("", AppCMSUIKeyType.PAGE_EMPTY_KEY);

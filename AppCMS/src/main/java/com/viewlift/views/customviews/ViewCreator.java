@@ -148,10 +148,7 @@ public class ViewCreator {
                                  AppCMSPresenter appCMSPresenter) {
         ModuleView moduleView = new ModuleView(context, module);
         ViewGroup childrenContainer = moduleView.getChildrenContainer();
-        if (module.getComponents() != null &&
-                moduleAPI.getContentData() != null &&
-                moduleAPI.getContentData().size() > 0) {
-
+        if (module.getComponents() != null) {
             for (int i = 0; i < module.getComponents().size(); i++) {
                 Component component = module.getComponents().get(i);
                 ComponentViewResult componentViewResult = createComponentView(context,
@@ -197,11 +194,7 @@ public class ViewCreator {
                 }
             }
         }
-        if (moduleAPI.getContentData() == null || moduleAPI.getContentData().size() == 0) {
-            moduleView.setVisibility(View.GONE);
-        } else {
-            appCMSPresenter.addOnOrientationChangeHandler(moduleView.getOrientationChangeHandler());
-        }
+        appCMSPresenter.addOnOrientationChangeHandler(moduleView.getOrientationChangeHandler());
 
         return moduleView;
     }
@@ -282,7 +275,7 @@ public class ViewCreator {
                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                    final AppCMSPresenter appCMSPresenter,
                                                    boolean gridElement) {
-
+        componentViewResult.componentView = null;
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
@@ -534,6 +527,7 @@ public class ViewCreator {
                 }
                 break;
             case PAGE_LABEL_KEY:
+            case PAGE_TEXTVIEW_KEY:
                 componentViewResult.componentView = new TextView(context);
                 int textColor = ContextCompat.getColor(context, R.color.colorAccent);
                 if (!TextUtils.isEmpty(component.getTextColor())) {
@@ -549,6 +543,20 @@ public class ViewCreator {
                 ((TextView) componentViewResult.componentView).setTextColor(textColor);
                 if (!gridElement) {
                     switch (componentKey) {
+                        case PAGE_API_TITLE:
+                            if (!TextUtils.isEmpty(moduleAPI.getTitle())) {
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
+                            }
+                            componentViewResult.useMarginsAsPercentagesOverride = false;
+                            break;
+                        case PAGE_API_DESCRIPTION:
+                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                                ((TextView) componentViewResult.componentView).setText(Html.fromHtml(moduleAPI.getRawText()));
+                            } else {
+                                ((TextView) componentViewResult.componentView).setText(Html.fromHtml(moduleAPI.getRawText(), Html.FROM_HTML_MODE_COMPACT));
+                            }
+                            componentViewResult.useMarginsAsPercentagesOverride = false;
+                            break;
                         case PAGE_TRAY_TITLE_KEY:
                             if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText().toUpperCase());

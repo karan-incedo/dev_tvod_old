@@ -55,6 +55,9 @@ public class Module {
     @SerializedName("navigation")
     @Expose
     private Object navigation;
+    @SerializedName("rawText")
+    @Expose
+    private String rawText;
 
     public String getId() {
         return id;
@@ -184,4 +187,11 @@ public class Module {
         this.navigation = navigation;
     }
 
+    public String getRawText() {
+        return rawText;
+    }
+
+    public void setRawText(String rawText) {
+        this.rawText = rawText;
+    }
 }

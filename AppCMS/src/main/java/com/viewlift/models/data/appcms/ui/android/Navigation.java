@@ -13,6 +13,9 @@ public class Navigation {
     @SerializedName("user")
     @Expose
     private List<User> user = null;
+    @SerializedName("footer")
+    @Expose
+    private List<Footer> footer = null;
 
     public List<Primary> getPrimary() {
         return primary;
@@ -30,4 +33,11 @@ public class Navigation {
         this.user = user;
     }
 
+    public List<Footer> getFooter() {
+        return footer;
+    }
+
+    public void setFooter(List<Footer> footer) {
+        this.footer = footer;
+    }
 }

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.viewlift.models.data.appcms.ui.android.Footer;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.Primary;
 import com.viewlift.models.data.appcms.ui.android.User;
@@ -25,8 +26,6 @@ import snagfilms.com.air.appcms.R;
 
 public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAdapter.ViewHolder> {
     private static final String TAG = "AppCMSNavItemsAdapter";
-
-    private static final int NUM_NAV_ITEMS = 2;
 
     private final Navigation navigation;
     private final AppCMSPresenter appCMSPresenter;
@@ -61,7 +60,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
-        if (i < navigation.getPrimary().size()) {
+        int indexOffset = 0;
+        if (navigation.getPrimary() != null && i < navigation.getPrimary().size()) {
             final Primary primary = navigation.getPrimary().get(i);
             viewHolder.navItemLabel.setText(primary.getTitle().toUpperCase());
             viewHolder.navItemLabel.setTextColor(textColor);
@@ -82,32 +82,76 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     }
                 }
             });
-        } else if (userLoggedIn) {
-            final User user = navigation.getUser().get(i - navigation.getPrimary().size());
-            viewHolder.navItemLabel.setText(user.getTitle().toUpperCase());
-            viewHolder.navItemLabel.setTextColor(textColor);
-            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (!appCMSPresenter.navigateToPage(user.getPageId(),
-                            user.getTitle(),
-                            false,
-                            null)) {
-                        Log.e(TAG, "Could not navigate to page with Title: " +
-                                user.getTitle() +
-                                " Id: " +
-                                user.getPageId());
-                    } else if (onCloseNavAction != null ){
-                        onCloseNavAction.closeNavAction();
+        } else {
+            if (navigation.getPrimary() != null) {
+                indexOffset += navigation.getPrimary().size();
+            }
+            if (navigation.getFooter() != null && (i - indexOffset) < navigation.getFooter().size()) {
+                final Footer footer = navigation.getFooter().get(i - indexOffset);
+                viewHolder.navItemLabel.setText(footer.getTitle().toUpperCase());
+                viewHolder.navItemLabel.setTextColor(textColor);
+                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!appCMSPresenter.navigateToPage(footer.getPageId(),
+                                footer.getTitle(),
+                                false,
+                                null)) {
+                            Log.e(TAG, "Could not navigate to page with Title: " +
+                                    footer.getTitle() +
+                                    " Id: " +
+                                    footer.getPageId());
+                        } else if (onCloseNavAction != null) {
+                            onCloseNavAction.closeNavAction();
+                        }
                     }
+                });
+            } else if (userLoggedIn && navigation.getUser() != null) {
+                if (navigation.getFooter() != null) {
+                    indexOffset += navigation.getFooter().size();
                 }
-            });
+                final User user = navigation.getUser().get(i - indexOffset);
+                viewHolder.navItemLabel.setText(user.getTitle().toUpperCase());
+                viewHolder.navItemLabel.setTextColor(textColor);
+                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!appCMSPresenter.navigateToPage(user.getPageId(),
+                                user.getTitle(),
+                                false,
+                                null)) {
+                            Log.e(TAG, "Could not navigate to page with Title: " +
+                                    user.getTitle() +
+                                    " Id: " +
+                                    user.getPageId());
+                        } else if (onCloseNavAction != null) {
+                            onCloseNavAction.closeNavAction();
+                        }
+                    }
+                });
+            }
         }
     }
 
     @Override
     public int getItemCount() {
-        return NUM_NAV_ITEMS;
+        int totalItemCount = 0;
+        if (navigation != null) {
+            if (navigation.getPrimary() != null) {
+                totalItemCount += navigation.getPrimary().size();
+            }
+            if (navigation.getFooter() != null) {
+                for (int i = 0; i < navigation.getFooter().size(); i++) {
+                    if (!TextUtils.isEmpty(navigation.getFooter().get(i).getPageId())) {
+                        totalItemCount += 1;
+                    }
+                }
+            }
+            if (userLoggedIn && navigation.getUser() != null) {
+                totalItemCount += navigation.getUser().size();
+            }
+        }
+        return totalItemCount;
     }
 
     public void setUserLoggedIn(boolean userLoggedIn) {
