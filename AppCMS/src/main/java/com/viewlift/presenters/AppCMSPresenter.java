@@ -27,6 +27,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.iid.InstanceID;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -281,9 +282,9 @@ public class AppCMSPresenter {
                     playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_hls_url_key),
                             extraData);
                     StringBuffer adsSiteUrl = new StringBuffer();
-                    adsSiteUrl.append("https://");
+                    adsSiteUrl.append(currentActivity.getString(R.string.https_scheme));
                     adsSiteUrl.append(appCMSMain.getDomainName());
-                    adsSiteUrl.append("/");
+                    adsSiteUrl.append(File.separatorChar);
                     adsSiteUrl.append(pagePath);
                     Date now = new Date();
                     playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_ads_url_key),

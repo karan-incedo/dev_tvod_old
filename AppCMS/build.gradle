@@ -31,8 +31,8 @@ android {
         applicationId packageName
         minSdkVersion 23
         targetSdkVersion 25
-        versionCode 3042039
-        versionName "0.99.99"
+        versionCode 3042040
+        versionName "0.99.991"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     flavorDimensions "green"

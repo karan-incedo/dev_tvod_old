@@ -64,4 +64,5 @@
     <string name="button_color_key">button_color</string>
     <string name="text_color_key">text_color</string>
     <string name="utf8enc">UTF-8</string>
+    <string name="https_scheme">https://</string>
 </resources>
