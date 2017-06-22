@@ -35,9 +35,29 @@ android {
         versionName "0.99.99"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    flavorDimensions "green"
+    productFlavors {
+        mobile {
+            dimension = "green"
+        }
+        tv {
+            dimension = "green"
+        }
+    }
+    sourceSets {
+        mobile {
+            res.srcDirs = ['src/mobile/res']
+            manifest.srcFile 'src/mobile/AndroidManifest.xml'
+        }
+        tv {
+            res.srcDirs = ['src/tv/res']
+            manifest.srcFile 'src/tv/AndroidManifest.xml'
+        }
+    }
     buildTypes {
         debug {
             multiDexEnabled true
+            resValue "string", "package_name", "${packageName}"
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
             resValue "string", "app_cms_app_host_name", "${hostName}"
@@ -47,6 +67,7 @@ android {
             multiDexEnabled true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue "string", "package_name", "${packageName}"
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
             resValue "string", "app_cms_app_host_name", "${hostName}"
@@ -89,6 +110,7 @@ dependencies {
     compile "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
     compile "com.android.support:recyclerview-v7:$rootProject.ext.androidsupportVersion"
     compile "com.android.support:gridlayout-v7:$rootProject.ext.androidsupportVersion"
+    tvCompile "com.android.support:leanback-v17:$rootProject.ext.androidsupportVersion"
     compile "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
     compile "com.squareup.picasso:picasso:$rootProject.ext.picassoVersion"
     compile "com.google.dagger:dagger:$rootProject.ext.daggerVersion"

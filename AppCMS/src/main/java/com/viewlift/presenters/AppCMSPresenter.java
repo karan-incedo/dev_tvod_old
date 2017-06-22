@@ -138,6 +138,10 @@ public class AppCMSPresenter {
     private GoogleAnalytics googleAnalytics;
     private Tracker tracker;
 
+    public enum PlatformType {
+        ANDROID, TV
+    }
+
     public enum BeaconEvent {
         PLAY, RESUME, PING, AD_REQUEST, AD_IMPRESSION
     }
@@ -724,7 +728,10 @@ public class AppCMSPresenter {
         return null;
     }
 
-    public void getAppCMSMain(final Activity activity, final String siteId, final Uri searchQuery) {
+    public void getAppCMSMain(final Activity activity,
+                              final String siteId,
+                              final Uri searchQuery,
+                              final PlatformType platformType) {
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
@@ -763,7 +770,7 @@ public class AppCMSPresenter {
                                 main.getSite(),
                                 appCMSSearchCall))
                         .build();
-                    getAppCMSSite(activity, main, searchQuery);
+                    getAppCMSSite(activity, main, searchQuery, platformType);
                 }
             }
         }).execute(params);
@@ -1038,7 +1045,8 @@ public class AppCMSPresenter {
 
     private void getAppCMSSite(final Activity activity,
                                final AppCMSMain main,
-                               final Uri searchQuery) {
+                               final Uri searchQuery,
+                               final PlatformType platformType) {
         String url = currentActivity.getString(R.string.app_cms_site_api_url,
                 main.getApiBaseUrl(),
                 main.getDomainName());
@@ -1054,7 +1062,14 @@ public class AppCMSPresenter {
                                                     appCMSSite.getGist().getAppAccess().getAppSecretKey()))
                                             .build()
                                             .appCMSPageAPICall();
-                            getAppCMSAndroid(activity, main, searchQuery);
+                            switch (platformType) {
+                                case ANDROID:
+                                    getAppCMSAndroid(activity, main, searchQuery);
+                                    break;
+                                case TV:
+                                    break;
+                                default:
+                            }
                         }
                     }
                 }).execute(url);

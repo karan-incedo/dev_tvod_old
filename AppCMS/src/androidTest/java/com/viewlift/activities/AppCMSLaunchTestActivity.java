@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.support.test.espresso.idling.CountingIdlingResource;
 import android.os.Bundle;
 
-import com.viewlift.AppCMSLaunchActivity;
+import com.viewlift.mobile.AppCMSLaunchActivity;
 
 public class AppCMSLaunchTestActivity extends AppCMSLaunchActivity {
     private CountingIdlingResource launchActivityIdlingResource = new CountingIdlingResource("launchActivityIdlingResource");
