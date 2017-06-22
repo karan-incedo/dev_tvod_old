@@ -12,7 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
@@ -49,7 +49,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private String filmId;
     private String parentScreenName;
     private String adsUrl;
-    private RelativeLayout videoPlayerInfoContainer;
+    private LinearLayout videoPlayerInfoContainer;
     private Button videoPlayerViewDoneButton;
     private TextView videoPlayerTitleView;
     private VideoPlayerView videoPlayerView;
@@ -144,7 +144,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         View rootView = inflater.inflate(R.layout.fragment_video_player, container, false);
 
         videoPlayerInfoContainer =
-                (RelativeLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
+                (LinearLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
 
         videoPlayerTitleView = (TextView) rootView.findViewById(R.id.app_cms_video_player_title_view);
         if (!TextUtils.isEmpty(title)) {
@@ -153,7 +153,6 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (!TextUtils.isEmpty(fontColor)) {
             videoPlayerTitleView.setTextColor(Color.parseColor(fontColor));
         }
-        videoPlayerTitleView.setSelected(true);
 
         videoPlayerViewDoneButton = (Button) rootView.findViewById(R.id.app_cms_video_player_done_button);
         videoPlayerViewDoneButton.setOnClickListener(new View.OnClickListener() {

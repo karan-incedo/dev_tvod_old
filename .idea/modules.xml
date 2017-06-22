@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AndroidAppCMS.iml" filepath="$PROJECT_DIR$/AndroidAppCMS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AndroidAppCMSMaster.iml" filepath="$PROJECT_DIR$/AndroidAppCMSMaster.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AppCMS/AppCMS.iml" filepath="$PROJECT_DIR$/AppCMS/AppCMS.iml" />
       <module fileurl="file://$PROJECT_DIR$/AppCMS/AppCMS.iml" filepath="$PROJECT_DIR$/AppCMS/AppCMS.iml" />
     </modules>
   </component>
