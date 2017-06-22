@@ -222,9 +222,9 @@ public class AppCMSUIModule {
     @Singleton
     public Retrofit providesRetrofit(Gson gson) {
         OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .writeTimeout(5, TimeUnit.SECONDS)
+                .readTimeout(5, TimeUnit.SECONDS)
                 .build();
         return new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create(gson))

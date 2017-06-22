@@ -24,6 +24,7 @@ import android.util.Log;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Logger;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.iid.InstanceID;
 
@@ -940,7 +941,7 @@ public class AppCMSPresenter {
 
     public void sendGaScreen(String screenName) {
         if (tracker != null) {
-            Log.d(TAG, "Send GA screen tracking event: " + screenName);
+            Log.d(TAG, "Sending GA screen tracking event: " + screenName);
             tracker.setScreenName(screenName);
             tracker.send(new HitBuilders.ScreenViewBuilder().build());
         }

@@ -286,7 +286,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             Log.e(TAG, "Nav item - Error attempting to launch page: " + appCMSBinder.getPageName() + " - " + appCMSBinder.getPageId());
         }
         if (appCMSBinderStack.size() > 0 && appCMSBinderStack.peek().equals(appCMSBinder.getPageId())) {
-            getSupportFragmentManager().popBackStackImmediate();
+            try {
+                getSupportFragmentManager().popBackStackImmediate();
+            } catch (IllegalStateException e) {
+                Log.e(TAG, "Error popping back stack: " + e.getMessage());
+            }
             handleBack(true, false, false);
         }
         if (appCMSBinderStack.size() > 0) {

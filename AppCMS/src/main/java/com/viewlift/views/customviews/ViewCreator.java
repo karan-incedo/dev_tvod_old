@@ -14,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.util.LruCache;
 import android.view.Gravity;
@@ -366,7 +367,7 @@ public class ViewCreator {
                 if (!gridElement) {
                     if (!TextUtils.isEmpty(component.getText()) && componentKey != AppCMSUIKeyType.PAGE_PLAY_KEY) {
                         ((TextView) componentViewResult.componentView).setText(component.getText());
-                    } else if (!moduleAPI.getSettings().getHideTitle() &&
+                    } else if (moduleAPI.getSettings() != null && !moduleAPI.getSettings().getHideTitle() &&
                             !TextUtils.isEmpty(moduleAPI.getTitle())) {
                         ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
                     }
@@ -547,7 +548,6 @@ public class ViewCreator {
                             if (!TextUtils.isEmpty(moduleAPI.getTitle())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
                             }
-                            componentViewResult.useMarginsAsPercentagesOverride = true;
                             break;
                         case PAGE_API_DESCRIPTION:
                             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -555,12 +555,12 @@ public class ViewCreator {
                             } else {
                                 ((TextView) componentViewResult.componentView).setText(Html.fromHtml(moduleAPI.getRawText(), Html.FROM_HTML_MODE_COMPACT));
                             }
-                            componentViewResult.useMarginsAsPercentagesOverride = true;
+                            ((TextView) componentViewResult.componentView).setMovementMethod(LinkMovementMethod.getInstance());
                             break;
                         case PAGE_TRAY_TITLE_KEY:
                             if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText().toUpperCase());
-                            } else if (!moduleAPI.getSettings().getHideTitle() &&
+                            } else if (moduleAPI.getSettings() != null && !moduleAPI.getSettings().getHideTitle() &&
                                     !TextUtils.isEmpty(moduleAPI.getTitle())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle().toUpperCase());
                             }

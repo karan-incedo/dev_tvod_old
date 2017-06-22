@@ -295,6 +295,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerView.releasePlayer();
 	    sendBeaconPing = false;
 	    onClosePlayerEvent = null;
+        adsLoader = null;
         super.onDestroyView();
     }
 
