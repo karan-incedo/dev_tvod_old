@@ -31,7 +31,7 @@ android {
         applicationId packageName
         minSdkVersion 23
         targetSdkVersion 25
-        versionCode 3042038
+        versionCode 3042039
         versionName "0.99.99"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
