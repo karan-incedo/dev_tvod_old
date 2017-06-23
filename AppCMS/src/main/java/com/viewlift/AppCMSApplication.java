@@ -5,6 +5,7 @@ import android.app.Application;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.apptentive.android.sdk.Apptentive;
 import com.squareup.leakcanary.LeakCanary;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
 import com.viewlift.views.components.AppCMSPresenterComponent;
@@ -36,12 +37,16 @@ public class AppCMSApplication extends Application {
             return;
         }
         LeakCanary.install(this);
+
+        Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
+
         appCMSPresenterComponent = DaggerAppCMSPresenterComponent
                 .builder()
                 .appCMSUIModule(new AppCMSUIModule(this))
                 .appCMSSiteModule(new AppCMSSiteModule())
                 .appCMSPresenterModule(new AppCMSPresenterModule())
                 .build();
+
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {

@@ -293,8 +293,9 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public void onDestroyView() {
         videoPlayerView.releasePlayer();
-        sendBeaconPing = false;
-        onClosePlayerEvent = null;
+	    sendBeaconPing = false;
+	    onClosePlayerEvent = null;
+        adsLoader = null;
         super.onDestroyView();
     }
 

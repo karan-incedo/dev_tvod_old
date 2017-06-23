@@ -36,6 +36,7 @@ allprojects {
         googlePlayServicesVersion = "10.2.6"
         crashlyticsVersion = "2.6.8@aar"
         leakcanaryVersion = "1.5.1"
+        apptentiveVersion = "3.4.1"
     }
 }
 

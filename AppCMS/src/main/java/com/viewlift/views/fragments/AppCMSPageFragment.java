@@ -161,10 +161,12 @@ public class AppCMSPageFragment extends Fragment {
     }
 
     private void handleOrientation(int orientation) {
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            appCMSPresenter.onOrientationChange(true);
-        } else {
-            appCMSPresenter.onOrientationChange(false);
+        if (appCMSPresenter != null) {
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                appCMSPresenter.onOrientationChange(true);
+            } else {
+                appCMSPresenter.onOrientationChange(false);
+            }
         }
     }
 

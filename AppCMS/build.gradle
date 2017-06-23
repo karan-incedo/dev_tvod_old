@@ -29,10 +29,10 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId packageName
-        minSdkVersion 23
+        minSdkVersion 22
         targetSdkVersion 25
-        versionCode 3042040
-        versionName "0.99.991"
+        versionCode 3042044
+        versionName "1.0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     flavorDimensions "green"
@@ -128,6 +128,7 @@ dependencies {
     compile("com.crashlytics.sdk.android:crashlytics:$rootProject.ext.crashlyticsVersion") {
         transitive = true;
     }
+    compile "com.apptentive:apptentive-android:$rootProject.ext.apptentiveVersion"
     debugCompile "com.squareup.leakcanary:leakcanary-android:$rootProject.ext.leakcanaryVersion"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.ext.leakcanaryVersion"
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.ext.leakcanaryVersion"

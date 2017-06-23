@@ -22,6 +22,7 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.apptentive.android.sdk.Apptentive;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -98,7 +99,8 @@ public class AppCMSPresenter {
     public static final String PRESENTER_PAGE_LOADING_ACTION = "appcms_presenter_page_loading_action";
     public static final String PRESENTER_STOP_PAGE_LOADING_ACTION = "appcms_presenter_stop_page_loading_action";
     public static final String PRESENTER_CLOSE_SCREEN_ACTION = "appcms_presenter_close_action";
-    public static final String PRESENTER_RESET_NAVIGATION_ITEM = "appcms_presenter_set_navigation_item";
+    public static final String PRESENTER_RESET_NAVIGATION_ITEM_ACTION = "appcms_presenter_set_navigation_item_action";
+    public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
 
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
@@ -245,11 +247,14 @@ public class AppCMSPresenter {
     }
 
     public void setCurrentActivity(Activity activity) {
-        if (this.googleAnalytics == null) {
-            this.googleAnalytics = GoogleAnalytics.getInstance(activity);
-            this.tracker = this.googleAnalytics.newTracker(R.xml.global_tracker);
-        }
         this.currentActivity = activity;
+    }
+
+    public void initalizeGA(String trackerId) {
+        if (this.googleAnalytics == null) {
+            this.googleAnalytics = GoogleAnalytics.getInstance(currentActivity);
+            this.tracker = this.googleAnalytics.newTracker(trackerId);
+        }
     }
 
     public boolean launchButtonSelectedAction(String pagePath,
@@ -481,12 +486,14 @@ public class AppCMSPresenter {
 
     public boolean navigateToPage(String pageId,
                                   String pageTitle,
+                                  String url,
                                   boolean launchActivity,
                                   final Uri searchQuery) {
         boolean result = false;
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
             loadingPage = true;
             Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
+            Log.d(TAG, "Search query (optional): " + searchQuery);
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
             AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
@@ -585,6 +592,12 @@ public class AppCMSPresenter {
                 loadingPage = false;
             }
             result = true;
+        } else if (currentActivity != null &&
+                !TextUtils.isEmpty(url) &&
+                url.contains(currentActivity.getString(R.string.app_cms_page_navigation_contact_us_key))) {
+            if (Apptentive.canShowMessageCenter()) {
+                Apptentive.showMessageCenter(currentActivity);
+            }
         } else {
             Log.d(TAG, "Resetting page navigation to previous tab");
             setNavItemToCurrentAction(currentActivity);
@@ -603,6 +616,18 @@ public class AppCMSPresenter {
             closeOthersIntent.putExtra(currentActivity.getString(R.string.close_self_key), true);
             currentActivity.sendBroadcast(closeOthersIntent);
 
+            result = true;
+        }
+        return result;
+    }
+
+    public boolean sendDeepLinkAction(Uri deeplinkUri) {
+        Log.d(TAG, "Sending deeplink action");
+        boolean result = false;
+        if (currentActivity != null) {
+            Intent deeplinkIntent = new Intent(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION);
+            deeplinkIntent.setData(deeplinkUri);
+            currentActivity.sendBroadcast(deeplinkIntent);
             result = true;
         }
         return result;
@@ -824,34 +849,38 @@ public class AppCMSPresenter {
     }
 
     public void showErrorDialog() {
-        int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
-        AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
-        String title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
-        String message = currentActivity.getString(R.string.app_cms_network_connectivity_error_message);
-        if (isNetworkConnected()) {
-            title = currentActivity.getString(R.string.app_cms_data_error_title);
-            message = currentActivity.getString(R.string.app_cms_data_error_message);
-        }
-        builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
+        if (currentActivity != null) {
+            int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
+            AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
+            String title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
+            String message = currentActivity.getString(R.string.app_cms_network_connectivity_error_message);
+            if (isNetworkConnected()) {
+                title = currentActivity.getString(R.string.app_cms_data_error_title);
+                message = currentActivity.getString(R.string.app_cms_data_error_message);
+            }
+            builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
                     Integer.toHexString(textColor).substring(2),
                     title)))
-                .setMessage(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
-                        Integer.toHexString(textColor).substring(2),
-                        message)))
-                .setNegativeButton(R.string.app_cms_close_alert_dialog_button_text,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-        AlertDialog dialog = builder.create();
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor(appCMSMain.getBrand()
-                    .getGeneral()
-                    .getBackgroundColor())));
+                    .setMessage(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
+                            Integer.toHexString(textColor).substring(2),
+                            message)))
+                    .setNegativeButton(R.string.app_cms_close_alert_dialog_button_text,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+            AlertDialog dialog = builder.create();
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor(appCMSMain.getBrand()
+                        .getGeneral()
+                        .getBackgroundColor())));
+                if (dialog.getWindow().isActive()) {
+                    dialog.show();
+                }
+            }
         }
-        dialog.show();
     }
 
     public boolean isNetworkConnected() {
@@ -947,7 +976,7 @@ public class AppCMSPresenter {
 
     public void sendGaScreen(String screenName) {
         if (tracker != null) {
-            Log.d(TAG, "Send GA screen tracking event: " + screenName);
+            Log.d(TAG, "Sending GA screen tracking event: " + screenName);
             tracker.setScreenName(screenName);
             tracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
@@ -955,7 +984,7 @@ public class AppCMSPresenter {
 
     private void setNavItemToCurrentAction(Activity activity) {
         if (currentActions.size() > 0) {
-            Intent setNavigationItemIntent = new Intent(PRESENTER_RESET_NAVIGATION_ITEM);
+            Intent setNavigationItemIntent = new Intent(PRESENTER_RESET_NAVIGATION_ITEM_ACTION);
             setNavigationItemIntent.putExtra(activity.getString(R.string.navigation_item_key),
                     currentActions.peek());
             activity.sendBroadcast(setNavigationItemIntent);
@@ -1094,6 +1123,7 @@ public class AppCMSPresenter {
                     Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
                     launchErrorActivity(activity);
                 } else {
+                    initalizeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
                     navigation = appCMSAndroidUI.getNavigation();
                     queueMetaPages(appCMSAndroidUI.getMetaPages());
                     final MetaPage firstPage = pagesToProcess.peek();
@@ -1108,6 +1138,7 @@ public class AppCMSPresenter {
                                     Primary homePageNav = findHomePageNavItem();
                                     boolean launchSuccess = navigateToPage(homePageNav.getPageId(),
                                             homePageNav.getTitle(),
+                                            homePageNav.getUrl(),
                                             true,
                                             searchQuery);
                                     if (!launchSuccess) {
