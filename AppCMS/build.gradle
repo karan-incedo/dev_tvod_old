@@ -46,6 +46,7 @@ android {
     }
     sourceSets {
         mobile {
+            java.srcDirs = ['src/mobile/java']
             res.srcDirs = ['src/mobile/res']
             manifest.srcFile 'src/mobile/AndroidManifest.xml'
         }
