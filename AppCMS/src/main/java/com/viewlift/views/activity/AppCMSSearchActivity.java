@@ -94,9 +94,13 @@ public class AppCMSSearchActivity extends AppCompatActivity {
 
         LinearLayout appCMSSearchResultsContainer =
                 (LinearLayout) findViewById(R.id.app_cms_search_results_container);
-        appCMSSearchResultsContainer.setBackgroundColor(Color.parseColor(appCMSMain.getBrand()
-                .getGeneral()
-                .getBackgroundColor()));
+        if (appCMSMain.getBrand() != null &&
+                appCMSMain.getBrand().getGeneral() != null &&
+                !TextUtils.isEmpty(appCMSMain.getBrand().getGeneral().getBackgroundColor())) {
+            appCMSSearchResultsContainer.setBackgroundColor(Color.parseColor(appCMSMain.getBrand()
+                    .getGeneral()
+                    .getBackgroundColor()));
+        }
 
         noResultsTextview = (TextView) findViewById(R.id.no_results_textview);
 

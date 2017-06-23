@@ -18,8 +18,6 @@ import snagfilms.com.air.appcms.R;
 public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
 
-    private AppCMSPresenterComponent appCMSPresenterComponent;
-    private BroadcastReceiver handoffReceiver;
     private Uri searchQuery;
 
     @Override
@@ -29,27 +27,24 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
 
         handleIntent(getIntent());
 
-        handoffReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (intent.getBooleanExtra(getString(R.string.close_self_key), true)) {
-                    Log.d(TAG, "Closing activity");
-                    finish();
-                }
-            }
-        };
-
-        appCMSPresenterComponent = ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
-        registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
+        Log.d(TAG, "Launching application from main.json");
+        Log.d(TAG, "Search query (optional): " + searchQuery);
+        AppCMSPresenterComponent appCMSPresenterComponent =
+                ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
         appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
                 getString(R.string.app_cms_app_name),
                 searchQuery);
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(handoffReceiver);
     }
 
     @Override
@@ -65,6 +60,9 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
             if (data != null) {
                 Log.i(TAG, "Received intent data: " + data.toString());
                 searchQuery = data;
+                AppCMSPresenterComponent appCMSPresenterComponent =
+                        ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
+                appCMSPresenterComponent.appCMSPresenter().sendDeepLinkAction(searchQuery);
             }
         }
     }
