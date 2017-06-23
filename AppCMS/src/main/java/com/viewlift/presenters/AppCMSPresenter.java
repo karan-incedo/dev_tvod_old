@@ -22,6 +22,7 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.apptentive.android.sdk.Apptentive;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -242,11 +243,14 @@ public class AppCMSPresenter {
     }
 
     public void setCurrentActivity(Activity activity) {
-        if (this.googleAnalytics == null) {
-            this.googleAnalytics = GoogleAnalytics.getInstance(activity);
-            this.tracker = this.googleAnalytics.newTracker(R.xml.global_tracker);
-        }
         this.currentActivity = activity;
+    }
+
+    public void initalizeGA(String trackerId) {
+        if (this.googleAnalytics == null) {
+            this.googleAnalytics = GoogleAnalytics.getInstance(currentActivity);
+            this.tracker = this.googleAnalytics.newTracker(trackerId);
+        }
     }
 
     public boolean launchButtonSelectedAction(String pagePath,
@@ -478,6 +482,7 @@ public class AppCMSPresenter {
 
     public boolean navigateToPage(String pageId,
                                   String pageTitle,
+                                  String url,
                                   boolean launchActivity,
                                   final Uri searchQuery) {
         boolean result = false;
@@ -583,6 +588,12 @@ public class AppCMSPresenter {
                 loadingPage = false;
             }
             result = true;
+        } else if (currentActivity != null &&
+                !TextUtils.isEmpty(url) &&
+                url.contains(currentActivity.getString(R.string.app_cms_page_navigation_contact_us_key))) {
+            if (Apptentive.canShowMessageCenter()) {
+                Apptentive.showMessageCenter(currentActivity);
+            }
         } else {
             Log.d(TAG, "Resetting page navigation to previous tab");
             setNavItemToCurrentAction(currentActivity);
@@ -1097,6 +1108,7 @@ public class AppCMSPresenter {
                     Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
                     launchErrorActivity(activity);
                 } else {
+                    initalizeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
                     navigation = appCMSAndroidUI.getNavigation();
                     queueMetaPages(appCMSAndroidUI.getMetaPages());
                     final MetaPage firstPage = pagesToProcess.peek();
@@ -1111,6 +1123,7 @@ public class AppCMSPresenter {
                                     Primary homePageNav = findHomePageNavItem();
                                     boolean launchSuccess = navigateToPage(homePageNav.getPageId(),
                                             homePageNav.getTitle(),
+                                            homePageNav.getUrl(),
                                             true,
                                             searchQuery);
                                     if (!launchSuccess) {

@@ -394,7 +394,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     }
 
     private void selectNavItemAndLaunchPage(NavBarItemView v, String pageId, String pageTitle) {
-        if (!appCMSPresenter.navigateToPage(pageId, pageTitle, false, null)) {
+        if (!appCMSPresenter.navigateToPage(pageId, pageTitle, null, false, null)) {
             Log.e(TAG, "Could not navigate to page with Title: " +
                     pageTitle +
                     " Id: " +

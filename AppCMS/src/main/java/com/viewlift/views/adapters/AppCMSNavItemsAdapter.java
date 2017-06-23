@@ -71,6 +71,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     Log.d(TAG, "Navigating to page with Title: " + primary.getTitle());
                     if (!appCMSPresenter.navigateToPage(primary.getPageId(),
                             primary.getTitle(),
+                            primary.getUrl(),
                             false,
                             null)) {
                         Log.e(TAG, "Could not navigate to page with Title: " +
@@ -95,6 +96,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     public void onClick(View v) {
                         if (!appCMSPresenter.navigateToPage(footer.getPageId(),
                                 footer.getTitle(),
+                                footer.getUrl(),
                                 false,
                                 null)) {
                             Log.e(TAG, "Could not navigate to page with Title: " +
@@ -118,6 +120,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     public void onClick(View v) {
                         if (!appCMSPresenter.navigateToPage(user.getPageId(),
                                 user.getTitle(),
+                                user.getUrl(),
                                 false,
                                 null)) {
                             Log.e(TAG, "Could not navigate to page with Title: " +
@@ -142,9 +145,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             }
             if (navigation.getFooter() != null) {
                 for (int i = 0; i < navigation.getFooter().size(); i++) {
-                    if (!TextUtils.isEmpty(navigation.getFooter().get(i).getPageId())) {
-                        totalItemCount += 1;
-                    }
+                    totalItemCount += 1;
                 }
             }
             if (userLoggedIn && navigation.getUser() != null) {

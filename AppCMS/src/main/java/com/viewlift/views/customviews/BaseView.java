@@ -3,22 +3,11 @@ package com.viewlift.views.customviews;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -27,13 +16,10 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Mobile;
 import com.viewlift.models.data.appcms.ui.page.TabletLandscape;
 import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
-import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
-import com.viewlift.views.adapters.AppCMSViewAdapter;
 
 import java.util.Map;
 
 import rx.functions.Action1;
-import snagfilms.com.air.appcms.R;
 
 /**
  * Created by viewlift on 5/17/17.
@@ -332,11 +318,22 @@ public abstract class BaseView extends FrameLayout {
             if (jsonValueKeyMap.get(childComponent.getTextAlignment()) == AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY) {
                 ((TextView) view).setGravity(Gravity.CENTER);
             }
+            if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
+                view.setPadding(0, 0, 0, 0);
+            }
             AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
             if (componentKey == null) {
                 componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }
             switch (componentKey) {
+                case PAGE_TRAY_TITLE_KEY:
+                    if (isTablet(getContext())) {
+                        if (isLandscape(getContext())) {
+                            tm -= viewHeight / 4.0;
+                            viewHeight *= 1.5;
+                        }
+                    }
+                    break;
                 case PAGE_PLAY_IMAGE_KEY:
                     gravity = Gravity.CENTER;
                     tm = 0;
@@ -351,7 +348,11 @@ public abstract class BaseView extends FrameLayout {
                 case PAGE_CAROUSEL_INFO_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
                     if (isTablet(getContext())) {
-                        tm -= viewHeight * 3.2;
+                        if (isLandscape(getContext())) {
+                            tm -= viewHeight * 3.0;
+                        } else {
+                            tm -= viewHeight * 3.2;
+                        }
                     } else {
                         tm -= viewHeight * 2;
                     }
@@ -359,7 +360,12 @@ public abstract class BaseView extends FrameLayout {
                     lm = maxViewWidth / 2 - viewWidth / 2;
                     break;
                 case PAGE_THUMBNAIL_TITLE_KEY:
-                    if (!isTablet(getContext())) {
+                    if (isTablet(getContext())) {
+                        if (isLandscape(getContext())) {
+                            tm -= viewHeight / 3.0;
+                            viewHeight *= 2.0;
+                        }
+                    } else {
                         tm -= viewHeight / 2;
                         viewHeight *= 1.5;
                     }
