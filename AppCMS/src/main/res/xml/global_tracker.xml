@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ga_trackingId" translatable="false">@string/app_cms_ga_key</string>
+    <string name="ga_trackingId" translatable="false">UA-34061070-10</string>
 </resources>
