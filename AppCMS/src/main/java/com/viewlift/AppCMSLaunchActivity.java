@@ -34,6 +34,13 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
                 getString(R.string.app_cms_app_name),
                 searchQuery);
+        Log.d(TAG, "onCreate()");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume()");
     }
 
     @Override

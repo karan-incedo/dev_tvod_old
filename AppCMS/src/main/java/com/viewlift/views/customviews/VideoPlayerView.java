@@ -53,7 +53,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     public class PlayerState {
         boolean playWhenReady;
         int playbackState;
-        
+
         public int getPlaybackState() {
             return playbackState;
         }

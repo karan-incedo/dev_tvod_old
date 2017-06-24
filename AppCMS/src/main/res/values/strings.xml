@@ -1,6 +1,6 @@
 <resources>
     <string name="default_app_name">@string/app_name</string>
-    <string name="error_loading_page"><![CDATA[No network available!<br>Can not retrieve data!]]></string>
+    <string name="error_loading_page"><![CDATA[Could not retrieve data!<br>Please try again later!]]></string>
     <string name="fragment_page_bundle_key">fragment_page</string>
     <string name="app_cms_binder_key">app_cms_binder</string>
     <string name="app_cms_bundle_key">app_cms_bundle</string>
