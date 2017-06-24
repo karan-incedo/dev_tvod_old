@@ -43,6 +43,7 @@ public class AppCMSUIModule {
     private final Map<String, AppCMSPageAPI> actionToPageAPIMap;
     private final Map<String, AppCMSActionType> actionToActionTypeMap;
     private final long defaultConnectionTimeout;
+    private final long unknownHostExceptionTimeout;
 
     public AppCMSUIModule(Context context) {
         this.baseUrl = context.getString(R.string.app_cms_baseurl);
@@ -65,6 +66,9 @@ public class AppCMSUIModule {
 
         this.defaultConnectionTimeout =
                 context.getResources().getInteger(R.integer.app_cms_default_connection_timeout_msec);
+
+        this.unknownHostExceptionTimeout =
+                context.getResources().getInteger(R.integer.app_cms_unknownhostexception_connection_timeout_msec);
     }
 
     private void createJsonValueKeyMap(Context context) {
@@ -271,7 +275,7 @@ public class AppCMSUIModule {
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
-        return new AppCMSMainUICall(defaultConnectionTimeout,
+        return new AppCMSMainUICall(unknownHostExceptionTimeout,
                 client,
                 appCMSMainUIRest,
                 gson,

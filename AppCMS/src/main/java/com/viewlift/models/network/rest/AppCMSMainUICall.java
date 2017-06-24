@@ -13,10 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
@@ -32,7 +29,6 @@ import java.util.concurrent.TimeoutException;
 import javax.inject.Inject;
 
 import okhttp3.OkHttpClient;
-import okhttp3.internal.huc.OkHttpURLConnection;
 import snagfilms.com.air.appcms.R;
 
 /**
@@ -42,19 +38,19 @@ import snagfilms.com.air.appcms.R;
 public class AppCMSMainUICall {
     private static final String TAG = "AppCMSMainUICall";
 
-    private final long defaultConnectionTimeout;
+    private final long connectionTimeout;
     private final OkHttpClient okHttpClient;
     private final AppCMSMainUIRest appCMSMainUIRest;
     private final Gson gson;
     private final File storageDirectory;
 
     @Inject
-    public AppCMSMainUICall(long defaultConnectionTimeout,
+    public AppCMSMainUICall(long connectionTimeout,
                             OkHttpClient okHttpClient,
                             AppCMSMainUIRest appCMSMainUIRest,
                             Gson gson,
                             File storageDirectory) {
-        this.defaultConnectionTimeout = defaultConnectionTimeout;
+        this.connectionTimeout = connectionTimeout;
         this.okHttpClient = okHttpClient;
         this.appCMSMainUIRest = appCMSMainUIRest;
         this.gson = gson;
@@ -78,12 +74,12 @@ public class AppCMSMainUICall {
             Future<List<InetAddress>> future = executor.submit(new Callable<List<InetAddress>>() {
                 @Override
                 public List<InetAddress> call() throws Exception {
-                    return  okHttpClient.dns().lookup(appCMSMainUrl);
+                    return okHttpClient.dns().lookup(new URL(appCMSMainUrl).getHost());
                 }
             });
 
             try {
-                future.get(defaultConnectionTimeout, TimeUnit.MILLISECONDS);
+                future.get(connectionTimeout, TimeUnit.MILLISECONDS);
             } catch (TimeoutException e) {
                 Log.e(TAG, "Connection timed out: " + e.toString());
                 return null;
@@ -91,7 +87,7 @@ public class AppCMSMainUICall {
                 Log.e(TAG, "Connection interrupted: "+ e.toString());
                 return null;
             } catch (ExecutionException e) {
-                Log.e(TAG, "Excecution error: " + e.toString());
+                Log.e(TAG, "Execution error: " + e.toString());
                 return null;
             } finally {
                 future.cancel(true);
