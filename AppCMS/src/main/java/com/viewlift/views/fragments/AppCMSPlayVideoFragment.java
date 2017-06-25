@@ -96,7 +96,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 try {
                     Thread.sleep(beaconMsgTimeoutMsec);
                     if (sendBeaconPing) {
-                        if (appCMSPresenter != null) {
+                        if (appCMSPresenter != null && videoPlayerView != null) {
                             appCMSPresenter.sendBeaconPingMessage(filmId,
                                     hlsUrl,
                                     parentScreenName,

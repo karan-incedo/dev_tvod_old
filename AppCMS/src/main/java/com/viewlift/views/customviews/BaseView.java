@@ -380,6 +380,8 @@ public abstract class BaseView extends FrameLayout {
                 case PAGE_VIDEO_SHARE_KEY:
                     if (isTablet(getContext())) {
                         lm -= viewWidth / 2;
+                        tm -= (int) (viewWidth * 0.25);
+                        viewHeight = (int) (viewWidth * 1.25);
                     }
                     break;
                 case PAGE_API_TITLE:
