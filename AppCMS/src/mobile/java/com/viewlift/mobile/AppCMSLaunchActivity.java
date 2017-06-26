@@ -35,7 +35,6 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                 getString(R.string.app_cms_app_name),
                 searchQuery,
                 AppCMSPresenter.PlatformType.ANDROID);
-                searchQuery);
         Log.d(TAG, "onCreate()");
     }
 
