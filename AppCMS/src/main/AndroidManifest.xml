@@ -12,7 +12,8 @@
         android:label="@string/default_app_name"
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:largeHeap="true">
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="010453f0fe88d0a913753d705ba2c0cf368eb0c9" />
