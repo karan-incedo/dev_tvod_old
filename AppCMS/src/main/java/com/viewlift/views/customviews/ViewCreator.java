@@ -101,6 +101,7 @@ public class ViewCreator {
         }
         if (newView || !appCMSPresenter.isActionAPage(appCMSPageAPI.getId())) {
             pageView.getChildrenContainer().removeAllViews();
+            Runtime.getRuntime().gc();
             componentViewResult = new ComponentViewResult();
             createPageView(context,
                     appCMSPageUI,

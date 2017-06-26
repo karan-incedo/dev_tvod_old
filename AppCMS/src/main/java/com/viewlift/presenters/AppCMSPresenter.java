@@ -328,10 +328,10 @@ public class AppCMSPresenter {
                 }
                 loadingPage = true;
                 switch (actionType) {
-                    case SPLASH_PAGE:
+                    case AUTH_PAGE:
                         appbarPresent = false;
                         fullscreenEnabled = false;
-                        navbarPresent = true;
+                        navbarPresent = false;
                         break;
                     case VIDEO_PAGE:
                         appbarPresent = true;
@@ -1135,10 +1135,9 @@ public class AppCMSPresenter {
                                 @Override
                                 public void call() {
                                     Log.d(TAG, "Launching first page: " + firstPage.getPageName());
-                                    Primary homePageNav = findHomePageNavItem();
-                                    boolean launchSuccess = navigateToPage(homePageNav.getPageId(),
-                                            homePageNav.getTitle(),
-                                            homePageNav.getUrl(),
+                                    boolean launchSuccess = navigateToPage(firstPage.getPageId(),
+                                            firstPage.getPageName(),
+                                            firstPage.getPageUI(),
                                             true,
                                             searchQuery);
                                     if (!launchSuccess) {
@@ -1168,6 +1167,9 @@ public class AppCMSPresenter {
         }
         if (metaPageList.size() > 0) {
             int pageToQueueIndex = -1;
+            if (currentActivity != null && !isUserLoggedIn(currentActivity)) {
+                pageToQueueIndex = getSigninPage(metaPageList);
+            }
             if (pageToQueueIndex < 0) {
                 pageToQueueIndex = getHomePage(metaPageList);
             }
@@ -1181,9 +1183,7 @@ public class AppCMSPresenter {
                 metaPageList.remove(pageToQueueIndex);
                 queueMetaPages(metaPageList);
             } else {
-                for (int i = 0; i < metaPageList.size(); i++) {
-                    pagesToProcess.add(metaPageList.get(i));
-                }
+                pagesToProcess.addAll(metaPageList);
             }
         }
     }
@@ -1227,9 +1227,9 @@ public class AppCMSPresenter {
                 loadFromFile);
     }
 
-    private int getSoftwallPage(List<MetaPage> metaPageList) {
+    private int getSigninPage(List<MetaPage> metaPageList) {
         for (int i = 0; i < metaPageList.size(); i++) {
-            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName()) == AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY) {
+            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName()) == AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY) {
                 return i;
             }
         }

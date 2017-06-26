@@ -73,7 +73,7 @@ public class AppCMSUIModule {
 
     private void createJsonValueKeyMap(Context context) {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_splashscreen_key),
-                AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY);
+                AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_homepage_key),
                 AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_action_homepage_nav),
@@ -176,7 +176,7 @@ public class AppCMSUIModule {
 
     private void createPageNameToActionMap(Context context) {
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_splashscreen_key),
-                context.getString(R.string.app_cms_action_splashpage_key));
+                context.getString(R.string.app_cms_action_authpage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_homepage_key),
                 context.getString(R.string.app_cms_action_homepage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_videopage_key),
@@ -184,22 +184,22 @@ public class AppCMSUIModule {
     }
 
     private void createActionToPageMap(Context context) {
-        this.actionToPageMap.put(context.getString(R.string.app_cms_action_splashpage_key), null);
+        this.actionToPageMap.put(context.getString(R.string.app_cms_action_authpage_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_homepage_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_videopage_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
     }
 
     private void createActionToPageAPIMap(Context context) {
-        this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_splashpage_key), null);
+        this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_authpage_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_homepage_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_videopage_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
     }
 
     private void createActionToActionTypeMap(Context context) {
-        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_splashpage_key),
-                AppCMSActionType.SPLASH_PAGE);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_authpage_key),
+                AppCMSActionType.AUTH_PAGE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_pagename_homepage_key),
                 AppCMSActionType.HOME_PAGE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_videopage_key),
