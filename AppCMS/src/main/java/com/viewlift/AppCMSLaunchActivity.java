@@ -38,12 +38,6 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume()");
-    }
-
-    @Override
     protected void onStop() {
         super.onStop();
         finish();
