@@ -196,7 +196,7 @@ public class ViewCreator {
                 }
             }
         }
-        appCMSPresenter.addOnOrientationChangeHandler(moduleView.getOrientationChangeHandler());
+//        appCMSPresenter.addOnOrientationChangeHandler(moduleView.getOrientationChangeHandler());
 
         return moduleView;
     }
@@ -392,14 +392,16 @@ public class ViewCreator {
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers() != null &&
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers().size() > 0 &&
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0) != null &&
+                                moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink() != null &&
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId() != null &&
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
                             componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    String[] extraData = new String[2];
-                                    extraData[0] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls();
-                                    extraData[1] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId();
+                                    String[] extraData = new String[3];
+                                    extraData[0] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink();
+                                    extraData[1] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls();
+                                    extraData[2] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId();
                                     if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                             component.getAction(),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
@@ -441,9 +443,10 @@ public class ViewCreator {
                                             moduleAPI.getContentData().get(0).getGist() != null &&
                                             moduleAPI.getContentData().get(0).getGist().getId() != null &&
                                             moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
-                                        String[] extraData = new String[2];
-                                        extraData[0] = videoUrl;
-                                        extraData[1] = moduleAPI.getContentData().get(0).getGist().getId();
+                                        String[] extraData = new String[3];
+                                        extraData[0] = moduleAPI.getContentData().get(0).getGist().getPermalink();
+                                        extraData[1] = videoUrl;
+                                        extraData[2] = moduleAPI.getContentData().get(0).getGist().getId();
                                         if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                                 component.getAction(),
                                                 moduleAPI.getContentData().get(0).getGist().getTitle(),

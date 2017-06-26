@@ -41,6 +41,8 @@ import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
+import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
@@ -50,12 +52,15 @@ import com.viewlift.models.data.appcms.ui.android.Primary;
 import com.viewlift.models.data.appcms.ui.android.User;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
+import com.viewlift.models.network.components.AppCMSAPIComponent;
 import com.viewlift.models.network.components.DaggerAppCMSAPIComponent;
 import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
 import com.viewlift.models.network.modules.AppCMSAPIModule;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
+import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.activity.AppCMSSearchActivity;
 import com.viewlift.views.binders.AppCMSBinder;
@@ -119,6 +124,7 @@ public class AppCMSPresenter {
     private final Map<String, AppCMSActionType> actionToActionTypeMap;
 
     private AppCMSPageAPICall appCMSPageAPICall;
+    private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private Activity currentActivity;
     private Navigation navigation;
     private boolean loadFromFile;
@@ -246,18 +252,68 @@ public class AppCMSPresenter {
         this.currentActivity = activity;
     }
 
-    public void initalizeGA(String trackerId) {
+    public void initializeGA(String trackerId) {
         if (this.googleAnalytics == null) {
             this.googleAnalytics = GoogleAnalytics.getInstance(currentActivity);
             this.tracker = this.googleAnalytics.newTracker(trackerId);
         }
     }
 
+    public boolean launchVideoPlayer(final String filmId,
+                                     final String pagePath,
+                                     final String filmTitle) {
+        boolean result = false;
+        if (currentActivity != null &&
+                !loadingPage && appCMSMain != null &&
+                !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
+                !TextUtils.isEmpty(appCMSMain.getSite())) {
+            result = true;
+            final String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
+            String url = currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    filmId,
+                    appCMSMain.getSite());
+            GetAppCMSStreamingInfoAsyncTask.Params params =
+                    new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
+            new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall,
+                    new Action1<AppCMSStreamingInfo>() {
+                        @Override
+                        public void call(AppCMSStreamingInfo appCMSStreamingInfo) {
+                            String[] extraData = new String[3];
+                            if (appCMSStreamingInfo != null &&
+                                    appCMSStreamingInfo.getStreamingInfo() != null) {
+                                StreamingInfo streamingInfo = appCMSStreamingInfo.getStreamingInfo();
+                                extraData[0] = pagePath;
+                                if (streamingInfo.getVideoAssets() != null &&
+                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getHls())) {
+                                    extraData[1] = streamingInfo.getVideoAssets().getHls();
+                                } else if (streamingInfo.getVideoAssets() != null &&
+                                        streamingInfo.getVideoAssets().getMpeg() != null &&
+                                        streamingInfo.getVideoAssets().getMpeg().size() > 0 &&
+                                        streamingInfo.getVideoAssets().getMpeg().get(0) != null &&
+                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getMpeg().get(0).getUrl())){
+                                    extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
+                                }
+                                extraData[2] = filmId;
+                                if (!TextUtils.isEmpty(extraData[1])) {
+                                    launchButtonSelectedAction(pagePath,
+                                            action,
+                                            filmTitle,
+                                            extraData,
+                                            false);
+                                }
+                            }
+                        }
+                    }).execute(params);
+        }
+        return result;
+    }
+
     public boolean launchButtonSelectedAction(String pagePath,
                                               String action,
                                               String filmTitle,
                                               String[] extraData,
-                                              boolean closeLauncher) {
+                                              final boolean closeLauncher) {
         boolean result = false;
         Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
         if (currentActivity != null && !loadingPage) {
@@ -265,9 +321,6 @@ public class AppCMSPresenter {
             if (actionType == null) {
                 Log.e(TAG, "Action " + action + " not found!");
                 return false;
-            }
-            if (closeLauncher) {
-                sendCloseOthersAction();
             }
             result = true;
             if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
@@ -297,6 +350,9 @@ public class AppCMSPresenter {
                             appCMSMain.getBrand()
                                     .getGeneral()
                                     .getBackgroundColor());
+                    if (closeLauncher) {
+                        sendCloseOthersAction();
+                    }
                     currentActivity.startActivity(playVideoIntent);
                 }
             } else if (actionType == AppCMSActionType.SHARE) {
@@ -1062,7 +1118,7 @@ public class AppCMSPresenter {
                 searchQuery);
         Intent appCMSIntent = new Intent(activity, AppCMSPageActivity.class);
         appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
-
+        appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         activity.startActivity(appCMSIntent);
     }
 
@@ -1077,13 +1133,13 @@ public class AppCMSPresenter {
                     @Override
                     public void call(AppCMSSite appCMSSite) {
                         if (appCMSSite != null) {
-                            appCMSPageAPICall =
-                                    DaggerAppCMSAPIComponent.builder()
-                                            .appCMSAPIModule(new AppCMSAPIModule(activity,
-                                                    main.getApiBaseUrl(),
-                                                    appCMSSite.getGist().getAppAccess().getAppSecretKey()))
-                                            .build()
-                                            .appCMSPageAPICall();
+                            AppCMSAPIComponent appCMSAPIComponent = DaggerAppCMSAPIComponent.builder()
+                                    .appCMSAPIModule(new AppCMSAPIModule(activity,
+                                            main.getApiBaseUrl(),
+                                            appCMSSite.getGist().getAppAccess().getAppSecretKey()))
+                                    .build();
+                            appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
+                            appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
                             getAppCMSAndroid(activity, main, searchQuery);
                         }
                     }
@@ -1108,7 +1164,7 @@ public class AppCMSPresenter {
                     Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
                     launchErrorActivity(activity);
                 } else {
-                    initalizeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
+                    initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
                     navigation = appCMSAndroidUI.getNavigation();
                     queueMetaPages(appCMSAndroidUI.getMetaPages());
                     final MetaPage firstPage = pagesToProcess.peek();

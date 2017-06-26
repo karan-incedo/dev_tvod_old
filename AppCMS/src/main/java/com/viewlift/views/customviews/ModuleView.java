@@ -8,11 +8,6 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import rx.functions.Action1;
-
 /**
  * Created by viewlift on 5/17/17.
  */

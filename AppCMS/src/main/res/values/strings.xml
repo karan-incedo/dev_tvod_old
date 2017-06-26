@@ -54,6 +54,7 @@
     <string name="age_rating_converted_default">18+</string>
     <string name="no_results">No results</string>
     <string name="video_player_title_key">video_player_title</string>
+    <string name="video_player_permalink_key">video_player_permalink</string>
     <string name="video_player_font_color_key">video_player_font_color</string>
     <string name="opensans_bold_ttf">fonts/OpenSans-Bold.ttf</string>
     <string name="opensans_semibold_ttf">fonts/OpenSans-Semibold.ttf</string>

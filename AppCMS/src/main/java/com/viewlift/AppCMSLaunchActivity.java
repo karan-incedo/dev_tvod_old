@@ -1,16 +1,11 @@
 package com.viewlift;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.components.AppCMSPresenterComponent;
 
 import snagfilms.com.air.appcms.R;

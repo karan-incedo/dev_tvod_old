@@ -7,6 +7,9 @@
     <string name="app_cms_url_with_appended_timestamp">%1$s?x=%2$d</string>
     <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
 
+    <!-- AppCMS StreamingInfo API -->
+    <string name="app_cms_streaminginfo_api_url">%1$s/content/videos/%2$s?site=%3$s&amp;fields=streamingInfo</string>
+
     <!-- AppCMS Search API -->
     <string name="app_cms_search_api_url">%1$s/content/search?site=%2$s&amp;searchTerm=%3$s</string>
 
@@ -90,7 +93,6 @@
     <string name="app_cms_pagename_videopage_key">Video Page</string>
 
     <!-- AppCMS Action names -->
-    <string name="app_cms_action_initialize_key">Initalize</string>
     <string name="app_cms_action_splashpage_key">Splash Screen</string>
     <string name="app_cms_action_homepage_key">Home Page</string>
     <string name="app_cms_action_homepage_nav">Home</string>
