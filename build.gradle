@@ -2,10 +2,10 @@
 
 buildscript {
     repositories {
-        jcenter()
+        maven { url 'https://maven.google.com' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-alpha1'
+        classpath 'com.android.tools.build:gradle:3.0.0-alpha3'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -15,6 +15,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        maven { url 'https://maven.google.com' }
     }
 
     project.ext {
@@ -27,7 +28,8 @@ allprojects {
         picassoVersion = "2.5.2"
         daggerVersion = "2.9"
         gsonVersion = "2.8.0"
-        retrofit2Version = "2.2.0"
+        retrofit2Version = "2.3.0"
+        okHttp3Version = "3.8.1"
         rxandroidVersion = "1.2.0"
         rxjavaVersion = "1.1.4"
         jsr250_apiVersion = "1.0"

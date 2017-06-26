@@ -187,6 +187,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 String pageId = appCMSBinder.getPageId();
                 appCMSBinderStack.push(pageId);
                 appCMSBinderMap.put(pageId, appCMSBinder);
+                updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
             } catch (ClassCastException e) {
                 Log.e(TAG, "Could not attach fragment: " + e.toString());
             }
@@ -489,6 +490,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         }
         appCMSBinderStack.push(appCMSBinder.getPageId());
         appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
+        updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
         createScreenFromAppCMSBinder(appCMSBinder);
     }
 

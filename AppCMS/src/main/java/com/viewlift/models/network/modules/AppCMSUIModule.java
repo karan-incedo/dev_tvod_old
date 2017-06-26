@@ -42,6 +42,8 @@ public class AppCMSUIModule {
     private final Map<String, AppCMSPageUI> actionToPageMap;
     private final Map<String, AppCMSPageAPI> actionToPageAPIMap;
     private final Map<String, AppCMSActionType> actionToActionTypeMap;
+    private final long defaultConnectionTimeout;
+    private final long unknownHostExceptionTimeout;
 
     public AppCMSUIModule(Context context) {
         this.baseUrl = context.getString(R.string.app_cms_baseurl);
@@ -61,6 +63,12 @@ public class AppCMSUIModule {
 
         this.actionToPageAPIMap = new HashMap<>();
         createActionToPageAPIMap(context);
+
+        this.defaultConnectionTimeout =
+                context.getResources().getInteger(R.integer.app_cms_default_connection_timeout_msec);
+
+        this.unknownHostExceptionTimeout =
+                context.getResources().getInteger(R.integer.app_cms_unknownhostexception_connection_timeout_msec);
     }
 
     private void createJsonValueKeyMap(Context context) {
@@ -220,12 +228,17 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public Retrofit providesRetrofit(Gson gson) {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(5, TimeUnit.SECONDS)
-                .writeTimeout(5, TimeUnit.SECONDS)
-                .readTimeout(5, TimeUnit.SECONDS)
+    public OkHttpClient providesOkHttpClient() {
+        return new OkHttpClient.Builder()
+                .connectTimeout(defaultConnectionTimeout, TimeUnit.MILLISECONDS)
+                .writeTimeout(defaultConnectionTimeout, TimeUnit.MILLISECONDS)
+                .readTimeout(defaultConnectionTimeout, TimeUnit.MILLISECONDS)
                 .build();
+    }
+
+    @Provides
+    @Singleton
+    public Retrofit providesRetrofit(OkHttpClient client, Gson gson) {
         return new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .baseUrl(baseUrl)
@@ -259,8 +272,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSMainUICall providesAppCMSMainUICall(AppCMSMainUIRest appCMSMainUIRest, Gson gson) {
-        return new AppCMSMainUICall(appCMSMainUIRest,
+    public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
+                                                     AppCMSMainUIRest appCMSMainUIRest,
+                                                     Gson gson) {
+        return new AppCMSMainUICall(unknownHostExceptionTimeout,
+                client,
+                appCMSMainUIRest,
                 gson,
                 storageDirectory);
     }

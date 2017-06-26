@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="app_cms_beacon_timeout_msec">30000</integer>
+    <integer name="app_cms_default_connection_timeout_msec">10000</integer>
+    <integer name="app_cms_unknownhostexception_connection_timeout_msec">5000</integer>
 </resources>

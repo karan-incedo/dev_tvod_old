@@ -13,11 +13,22 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.URL;
 import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 
+import okhttp3.OkHttpClient;
 import snagfilms.com.air.appcms.R;
 
 /**
@@ -27,14 +38,20 @@ import snagfilms.com.air.appcms.R;
 public class AppCMSMainUICall {
     private static final String TAG = "AppCMSMainUICall";
 
+    private final long connectionTimeout;
+    private final OkHttpClient okHttpClient;
     private final AppCMSMainUIRest appCMSMainUIRest;
     private final Gson gson;
     private final File storageDirectory;
 
     @Inject
-    public AppCMSMainUICall(AppCMSMainUIRest appCMSMainUIRest,
+    public AppCMSMainUICall(long connectionTimeout,
+                            OkHttpClient okHttpClient,
+                            AppCMSMainUIRest appCMSMainUIRest,
                             Gson gson,
                             File storageDirectory) {
+        this.connectionTimeout = connectionTimeout;
+        this.okHttpClient = okHttpClient;
         this.appCMSMainUIRest = appCMSMainUIRest;
         this.gson = gson;
         this.storageDirectory = storageDirectory;
@@ -43,7 +60,7 @@ public class AppCMSMainUICall {
     @WorkerThread
     public AppCMSMain call(Context context, String siteId) throws IOException {
         Date now = new Date();
-        String appCMSMainUrl = context.getString(R.string.app_cms_main_url,
+        final String appCMSMainUrl = context.getString(R.string.app_cms_main_url,
                 context.getString(R.string.app_cms_baseurl),
                 siteId,
                 now.getTime());
@@ -51,6 +68,31 @@ public class AppCMSMainUICall {
         AppCMSMain mainInStorage = null;
         try {
             Log.d(TAG, "Attempting to retireve main.json: " + appCMSMainUrl);
+
+            String hostName = new URL(appCMSMainUrl).getHost();
+            ExecutorService executor = Executors.newCachedThreadPool();
+            Future<List<InetAddress>> future = executor.submit(new Callable<List<InetAddress>>() {
+                @Override
+                public List<InetAddress> call() throws Exception {
+                    return okHttpClient.dns().lookup(new URL(appCMSMainUrl).getHost());
+                }
+            });
+
+            try {
+                future.get(connectionTimeout, TimeUnit.MILLISECONDS);
+            } catch (TimeoutException e) {
+                Log.e(TAG, "Connection timed out: " + e.toString());
+                return null;
+            } catch (InterruptedException e) {
+                Log.e(TAG, "Connection interrupted: "+ e.toString());
+                return null;
+            } catch (ExecutionException e) {
+                Log.e(TAG, "Execution error: " + e.toString());
+                return null;
+            } finally {
+                future.cancel(true);
+            }
+
             main = appCMSMainUIRest.get(appCMSMainUrl).execute().body();
             String filename = getResourceFilename(appCMSMainUrl);
             try {
