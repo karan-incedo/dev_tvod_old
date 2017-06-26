@@ -5,6 +5,8 @@ import android.content.Context;
 import com.google.gson.Gson;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageAPIRest;
+import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
+import com.viewlift.models.network.rest.AppCMSStreamingInfoRest;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -68,9 +70,21 @@ public class AppCMSAPIModule {
 
     @Provides
     @Singleton
+    public AppCMSStreamingInfoRest providesAppCMSStreamingInfoRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSStreamingInfoRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSPageAPICall providesAppCMSPageAPICall(AppCMSPageAPIRest appCMSPageAPI,
                                                        Gson gson,
                                                        File storageDirectory) {
         return new AppCMSPageAPICall(appCMSPageAPI, apiKey, gson, storageDirectory);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSStreamingInfoCall providesAppCMSStreamingInfoCall(AppCMSStreamingInfoRest appCMSStreamingInfoRest) {
+        return new AppCMSStreamingInfoCall(appCMSStreamingInfoRest);
     }
 }

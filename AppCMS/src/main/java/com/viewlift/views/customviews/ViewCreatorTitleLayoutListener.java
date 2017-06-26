@@ -1,11 +1,8 @@
 package com.viewlift.views.customviews;
 
-import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.util.DisplayMetrics;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
 import android.widget.TextView;
 
 import snagfilms.com.air.appcms.R;

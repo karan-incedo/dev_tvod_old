@@ -3,7 +3,6 @@ package com.viewlift;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.apptentive.android.sdk.Apptentive;
 import com.squareup.leakcanary.LeakCanary;

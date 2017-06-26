@@ -39,7 +39,6 @@ public abstract class BaseView extends FrameLayout {
 
     protected ViewGroup childrenContainer;
     protected boolean[] componentHasViewList;
-    protected Action1<Boolean> onOrientationChangeHandler;
     protected Action1<LifecycleStatus> onLifecycleChangeHandler;
 
     public BaseView(Context context) {
@@ -59,18 +58,6 @@ public abstract class BaseView extends FrameLayout {
             return createChildrenContainer();
         }
         return childrenContainer;
-    }
-
-    public Action1<Boolean> getOrientationChangeHandler() {
-        if (onOrientationChangeHandler == null) {
-            onOrientationChangeHandler = new Action1<Boolean>() {
-                @Override
-                public void call(Boolean isLandscape) {
-                    // NO-OP
-                }
-            };
-        }
-        return onOrientationChangeHandler;
     }
 
     public void setComponentHasView(int index, boolean hasView) {
@@ -374,7 +361,7 @@ public abstract class BaseView extends FrameLayout {
                     gravity = Gravity.CENTER_HORIZONTAL;
                     lm = maxViewWidth / 2;
                     if (isTablet(getContext()) && !isLandscape(getContext())) {
-                        tm -= viewHeight / 8;
+                        tm -= viewHeight / 6;
                     }
                     break;
                 case PAGE_VIDEO_SHARE_KEY:

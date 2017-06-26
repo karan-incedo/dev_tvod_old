@@ -46,6 +46,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private String fontColor;
     private String title;
     private String hlsUrl;
+    private String permaLink;
     private String filmId;
     private String parentScreenName;
     private String adsUrl;
@@ -70,7 +71,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         final long beaconMsgTimeoutMsec;
         final AppCMSPresenter appCMSPresenter;
         final String filmId;
-        final String hlsUrl;
+        final String permaLink;
         final String parentScreenName;
         final VideoPlayerView videoPlayerView;
         boolean runBeaconPing;
@@ -79,13 +80,13 @@ public class AppCMSPlayVideoFragment extends Fragment
         public BeaconAdPingThread(long beaconMsgTimeoutMsec,
                                   AppCMSPresenter appCMSPresenter,
                                   String filmId,
-                                  String hlsUrl,
+                                  String permaLink,
                                   String parentScreenName,
                                   VideoPlayerView videoPlayerView) {
             this.beaconMsgTimeoutMsec = beaconMsgTimeoutMsec;
             this.appCMSPresenter = appCMSPresenter;
             this.filmId = filmId;
-            this.hlsUrl = hlsUrl;
+            this.permaLink = permaLink;
             this.parentScreenName = parentScreenName;
             this.videoPlayerView = videoPlayerView;
         }
@@ -98,7 +99,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     if (sendBeaconPing) {
                         if (appCMSPresenter != null && videoPlayerView != null) {
                             appCMSPresenter.sendBeaconPingMessage(filmId,
-                                    hlsUrl,
+                                    permaLink,
                                     parentScreenName,
                                     videoPlayerView.getCurrentPosition());
                         }
@@ -113,6 +114,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     public static AppCMSPlayVideoFragment newInstance(Context context,
                                                       String fontColor,
                                                       String title,
+                                                      String permaLink,
                                                       String hlsUrl,
                                                       String filmId,
                                                       String adsUrl) {
@@ -120,6 +122,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         Bundle args = new Bundle();
         args.putString(context.getString(R.string.video_player_font_color_key), fontColor);
         args.putString(context.getString(R.string.video_player_title_key), title);
+        args.putString(context.getString(R.string.video_player_permalink_key), permaLink);
         args.putString(context.getString(R.string.video_player_hls_url_key), hlsUrl);
         args.putString(context.getString(R.string.video_layer_film_id_key), filmId);
         args.putString(context.getString(R.string.video_player_ads_url_key), adsUrl);
@@ -142,6 +145,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (args != null) {
             fontColor = args.getString(getString(R.string.video_player_font_color_key));
             title = args.getString(getString(R.string.video_player_title_key));
+            permaLink = args.getString(getString(R.string.video_player_permalink_key));
             hlsUrl = args.getString(getContext().getString(R.string.video_player_hls_url_key));
             filmId = args.getString(getContext().getString(R.string.video_layer_film_id_key));
             adsUrl = args.getString(getContext().getString(R.string.video_player_ads_url_key));
@@ -160,7 +164,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         beaconMessageThread = new BeaconAdPingThread(beaconMsgTimeoutMsec,
                 appCMSPresenter,
                 filmId,
-                hlsUrl,
+                permaLink,
                 parentScreenName,
                 videoPlayerView);
 
@@ -288,7 +292,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 beaconMessageThread.sendBeaconPing = false;
                 if (appCMSPresenter != null) {
                     appCMSPresenter.sendBeaconAdImpression(filmId,
-                            hlsUrl,
+                            permaLink,
                             parentScreenName,
                             videoPlayerView.getCurrentPosition());
                 }
@@ -300,7 +304,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 beaconMessageThread.sendBeaconPing = true;
                 if (appCMSPresenter != null) {
                     appCMSPresenter.sendBeaconPlayMessage(filmId,
-                            hlsUrl,
+                            permaLink,
                             parentScreenName,
                             videoPlayerView.getCurrentPosition());
                 }
@@ -354,7 +358,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
             if (appCMSPresenter != null) {
                 appCMSPresenter.sendBeaconAdRequestMessage(filmId,
-                        hlsUrl,
+                        permaLink,
                         parentScreenName,
                         videoPlayerView.getCurrentPosition());
             }

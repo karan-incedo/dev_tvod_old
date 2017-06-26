@@ -8,15 +8,10 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
-import android.graphics.drawable.ColorDrawable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -75,7 +70,8 @@ public class CollectionGridItemView extends BaseView {
     }
 
     public interface OnClickHandler {
-        public void click(Component childComponent, ContentDatum data);
+        void click(Component childComponent, ContentDatum data);
+        void play(Component childComponent, ContentDatum data);
     }
 
     @Inject

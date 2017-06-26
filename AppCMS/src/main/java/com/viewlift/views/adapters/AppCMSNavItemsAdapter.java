@@ -1,8 +1,6 @@
 package com.viewlift.views.adapters;
 
-import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +13,6 @@ import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.Primary;
 import com.viewlift.models.data.appcms.ui.android.User;
 import com.viewlift.presenters.AppCMSPresenter;
-
-import org.w3c.dom.Text;
 
 import snagfilms.com.air.appcms.R;
 
@@ -78,7 +74,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                 primary.getTitle() +
                                 " Id: " +
                                 primary.getPageId());
-                    } else if (onCloseNavAction != null ){
+                    } else if (onCloseNavAction != null) {
                         onCloseNavAction.closeNavAction();
                     }
                 }
@@ -87,31 +83,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             if (navigation.getPrimary() != null) {
                 indexOffset += navigation.getPrimary().size();
             }
-            if (navigation.getFooter() != null && (i - indexOffset) < navigation.getFooter().size()) {
-                final Footer footer = navigation.getFooter().get(i - indexOffset);
-                viewHolder.navItemLabel.setText(footer.getTitle().toUpperCase());
-                viewHolder.navItemLabel.setTextColor(textColor);
-                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!appCMSPresenter.navigateToPage(footer.getPageId(),
-                                footer.getTitle(),
-                                footer.getUrl(),
-                                false,
-                                null)) {
-                            Log.e(TAG, "Could not navigate to page with Title: " +
-                                    footer.getTitle() +
-                                    " Id: " +
-                                    footer.getPageId());
-                        } else if (onCloseNavAction != null) {
-                            onCloseNavAction.closeNavAction();
-                        }
-                    }
-                });
-            } else if (userLoggedIn && navigation.getUser() != null) {
-                if (navigation.getFooter() != null) {
-                    indexOffset += navigation.getFooter().size();
-                }
+            if (userLoggedIn && navigation.getUser() != null && (i - indexOffset) < navigation.getUser().size()) {
                 final User user = navigation.getUser().get(i - indexOffset);
                 viewHolder.navItemLabel.setText(user.getTitle().toUpperCase());
                 viewHolder.navItemLabel.setTextColor(textColor);
@@ -127,6 +99,31 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     user.getTitle() +
                                     " Id: " +
                                     user.getPageId());
+                        } else if (onCloseNavAction != null) {
+                            onCloseNavAction.closeNavAction();
+                        }
+                    }
+                });
+            }
+            if (navigation.getFooter() != null && (i - indexOffset) < navigation.getFooter().size()) {
+                if (userLoggedIn && navigation.getUser() != null) {
+                    indexOffset += navigation.getUser().size();
+                }
+                final Footer footer = navigation.getFooter().get(i - indexOffset);
+                viewHolder.navItemLabel.setText(footer.getTitle().toUpperCase());
+                viewHolder.navItemLabel.setTextColor(textColor);
+                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!appCMSPresenter.navigateToPage(footer.getPageId(),
+                                footer.getTitle(),
+                                footer.getUrl(),
+                                false,
+                                null)) {
+                            Log.e(TAG, "Could not navigate to page with Title: " +
+                                    footer.getTitle() +
+                                    " Id: " +
+                                    footer.getPageId());
                         } else if (onCloseNavAction != null) {
                             onCloseNavAction.closeNavAction();
                         }

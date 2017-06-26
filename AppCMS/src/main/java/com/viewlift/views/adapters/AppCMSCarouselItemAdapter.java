@@ -1,11 +1,9 @@
 package com.viewlift.views.adapters;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +11,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -47,6 +44,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     private int updatedIndex;
     private boolean cancelled;
     private boolean started;
+    private boolean scrolled;
     private RecyclerView.OnScrollListener scrollListener;
 
     public AppCMSCarouselItemAdapter(Context context,
@@ -54,7 +52,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                                      AppCMSPresenter appCMSPresenter,
                                      Settings settings,
                                      Layout parentLayout,
-                                     Component component,
+                                     final Component component,
                                      Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                      Module moduleAPI,
                                      final RecyclerView listView,
@@ -76,6 +74,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
         this.internalEventReceivers = new ArrayList<>();
         this.cancelled = false;
         this.started = false;
+        this.scrolled = false;
 
         this.listView.getLayoutManager().scrollToPosition(updatedIndex);
 
@@ -112,6 +111,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                             setUpdatedIndex(nextVisibleViewIndex);
                         }
                     }
+                } else if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    scrolled = true;
                 }
             }
         };
@@ -120,7 +121,10 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
             @Override
             public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
                 int[] parentLocation = new int[2];
+                int childIndex = -1;
                 recyclerView.getLocationOnScreen(parentLocation);
+                int eventX = (int) motionEvent.getX() + parentLocation[0];
+                int eventY = (int) motionEvent.getY() + parentLocation[1];
                 int firstVisibleIndex =
                         ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
                 int lastVisibleIndex =
@@ -130,6 +134,15 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                     if (childView instanceof CollectionGridItemView) {
                         CollectionGridItemView collectionGridItemView = (CollectionGridItemView) childView;
                         ViewGroup childContainer = collectionGridItemView.getChildrenContainer();
+                        int[] collectionGridLocation = new int[2];
+                        collectionGridItemView.getLocationOnScreen(collectionGridLocation);
+                        int collectionGridItemWidth = collectionGridItemView.getWidth();
+                        int collectionGridItemHeight = collectionGridItemView.getHeight();
+                        if (collectionGridLocation[0] <= eventX && eventX <= collectionGridLocation[0] + collectionGridItemWidth) {
+                            if (collectionGridLocation[1] <= eventY && eventY <= collectionGridLocation[1] + collectionGridItemHeight) {
+                                childIndex = i;
+                            }
+                        }
                         for (int j = 0; j < childContainer.getChildCount(); j++) {
                             View gridItemChildView = childContainer.getChildAt(j);
                             if (gridItemChildView instanceof Button) {
@@ -137,11 +150,9 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                                 gridItemChildView.getLocationOnScreen(childLocation);
                                 int childWidth = gridItemChildView.getWidth();
                                 int childHeight = gridItemChildView.getHeight();
-                                int eventX = (int) motionEvent.getX() + parentLocation[0];
-                                int eventY = (int) motionEvent.getY() + parentLocation[1];
                                 if (childLocation[0] <= eventX && eventX <= childLocation[0] + childWidth) {
                                     if (childLocation[1] <= eventY && eventY <= childLocation[1] + childHeight) {
-                                        onClickHandler.click(collectionGridItemView.matchComponentToView(gridItemChildView),
+                                        onClickHandler.play(collectionGridItemView.matchComponentToView(gridItemChildView),
                                                 adapterData.get(i % adapterData.size()));
                                         return true;
                                     }
@@ -156,8 +167,14 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                     listView.setOnScrollListener(scrollListener);
                     return true;
                 } else if (motionEvent.getActionMasked() == MotionEvent.ACTION_UP) {
-                    listView.removeOnScrollListener(scrollListener);
-                    postUpdateCarousel();
+                    if (!scrolled && childIndex != -1) {
+                        onClickHandler.click(component,
+                                adapterData.get(childIndex % adapterData.size()));
+                    } else {
+                        listView.removeOnScrollListener(scrollListener);
+                        postUpdateCarousel();
+                    }
+                    scrolled = false;
                     return true;
                 }
                 return false;

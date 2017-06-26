@@ -3,7 +3,6 @@ package com.viewlift.views.fragments;
 import android.app.Dialog;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
-import android.media.Image;
 import android.support.v4.app.DialogFragment;
 import android.app.SearchManager;
 import android.content.Context;

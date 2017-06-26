@@ -1,15 +1,9 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.support.v7.widget.AppCompatTextView;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 
 /**
  * Created by viewlift on 6/22/17.

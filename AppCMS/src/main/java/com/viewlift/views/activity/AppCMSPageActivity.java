@@ -130,7 +130,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                     Log.d(TAG, "Received Presenter Close Action: fragment count = " + getSupportFragmentManager().getBackStackEntryCount());
                     if (appCMSBinderStack.size() > 1) {
                         try {
-                            getSupportFragmentManager().popBackStackImmediate();
+                            getSupportFragmentManager().popBackStack();
                         } catch (IllegalStateException e) {
                             Log.e(TAG, "Error popping back stack: " + e.getMessage());
                         }
@@ -345,7 +345,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         }
         if (shouldPopStack() || closeActionPage) {
             try {
-                getSupportFragmentManager().popBackStackImmediate();
+                getSupportFragmentManager().popBackStack();
             } catch (IllegalStateException e) {
                 Log.e(TAG, "Failed to pop Fragment from back stack");
             }
@@ -481,7 +481,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             for (int i = 0; i < distanceFromStackTop; i++) {
                 Log.d(TAG, "Popping stack to get to page item");
                 try {
-                    getSupportFragmentManager().popBackStackImmediate();
+                    getSupportFragmentManager().popBackStack();
                 } catch (IllegalStateException e) {
                     Log.e(TAG, "Error popping back stack: " + e.getMessage());
                 }

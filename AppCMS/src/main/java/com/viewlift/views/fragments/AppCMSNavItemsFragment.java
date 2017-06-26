@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.presenters.AppCMSPresenter;

@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.TextView;
 
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
@@ -15,8 +15,8 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.CollectionGridItemView;
-import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.ViewCreator;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,6 +126,11 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         if (0 <= position && position < adapterData.size()) {
+            for (int i = 0; i < holder.componentView.getNumberOfChildren(); i++) {
+                if (holder.componentView.getChild(i) instanceof TextView) {
+                    ((TextView) holder.componentView.getChild(i)).setText("");
+                }
+            }
             bindView(holder.componentView, adapterData.get(position));
         }
     }
@@ -166,9 +171,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     String action = defaultAction;
                     String title = data.getGist().getTitle();
                     String hlsUrl = getHlsUrl(data);
-                    String[] extraData = new String[2];
-                    extraData[0] = hlsUrl;
-                    extraData[1] = data.getGist().getId();
+                    String[] extraData = new String[3];
+                    extraData[0] = permalink;
+                    extraData[1] = hlsUrl;
+                    extraData[2] = data.getGist().getId();
                     Log.d(TAG, "Launching " + permalink + ": " + action);
                     if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                             action,
@@ -182,6 +188,23 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 action +
                                 " hlsUrl: " +
                                 hlsUrl);
+                    }
+                }
+
+                @Override
+                public void play(Component childComponent, ContentDatum data) {
+                    Log.d(TAG, "Playing item: " + data.getGist().getTitle());
+                    String filmId = data.getGist().getId();
+                    String permaLink = data.getGist().getPermalink();
+                    String title = data.getGist().getTitle();
+                    if (!appCMSPresenter.launchVideoPlayer(filmId, permaLink, title)) {
+                        Log.e(TAG, "Could not launch play action: " +
+                            " filmId: " +
+                            filmId +
+                            " permaLink: " +
+                            permaLink +
+                            " title: " +
+                            title);
                     }
                 }
             };
