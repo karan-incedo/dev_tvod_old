@@ -1,5 +1,7 @@
 package com.viewlift.views.customviews;
 
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -45,7 +47,19 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
 
     @Override
     public void onGlobalLayout() {
-        int linesCompletelyVisible = (textView.getHeight() - textView.getPaddingTop() - textView.getPaddingBottom()) / textView.getLineHeight();
+        int linesCompletelyVisible = (textView.getHeight() -
+                textView.getPaddingTop() -
+                textView.getPaddingBottom()) /
+                textView.getLineHeight();
+        Rect bounds = new Rect();
+        Paint textPaint = textView.getPaint();
+        textPaint.getTextBounds(textView.getText().toString(),
+                0,
+                textView.getText().length(),
+                bounds);
+        if (bounds.height() < linesCompletelyVisible * textView.getLineHeight()) {
+            linesCompletelyVisible--;
+        }
         if (linesCompletelyVisible < textView.getLineCount() &&
                 textView.getLayout() != null &&
                 appCMSPresenter != null) {

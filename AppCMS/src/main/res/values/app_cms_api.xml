@@ -84,8 +84,12 @@
 
     <string name="app_cms_navigation_page_tag">navigation</string>
     <string name="app_cms_search_page_tag">search</string>
+    <string name="app_cms_video_page_tag">video</string>
+    <string name="app_cms_main_page_tag">main</string>
 
     <string name="app_cms_share_string">%1$s Presents %2$s - %3$s</string>
+
+    <string name="app_cms_closing_page_name">closing_page</string>
 
     <!-- AppAppCMSPageUIPage names for Actions -->
     <string name="app_cms_pagename_splashscreen_key">Splash Screen</string>
@@ -122,4 +126,5 @@
     <!-- AppCMS VideoPlayer values -->
     <string name="app_cms_user_agent">AppCMS Android</string>
     <string name="app_cms_default_video_ext">m3u8</string>
+    <string name="play_ads_key">play_ads</string>
 </resources>

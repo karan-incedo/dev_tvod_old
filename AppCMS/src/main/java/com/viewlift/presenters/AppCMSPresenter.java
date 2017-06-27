@@ -81,7 +81,6 @@ import com.viewlift.views.customviews.LifecycleStatus;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
-import com.viewlift.views.fragments.AppCMSSearchFragment;
 
 import javax.inject.Inject;
 
@@ -146,6 +145,7 @@ public class AppCMSPresenter {
     private Runnable beaconMessageThread;
     private GoogleAnalytics googleAnalytics;
     private Tracker tracker;
+    private AppCMSNavItemsFragment appCMSNavItemsFragment;
 
     public enum BeaconEvent {
         PLAY, RESUME, PING, AD_REQUEST, AD_IMPRESSION
@@ -188,6 +188,7 @@ public class AppCMSPresenter {
         String pageId;
         String pageTitle;
         boolean launchActivity;
+        boolean sendCloseAction;
         Uri searchQuery;
         public AppCMSPageAPIAction(boolean appbarPresent,
                                    boolean fullscreenEnabled,
@@ -197,6 +198,7 @@ public class AppCMSPresenter {
                                    String pageId,
                                    String pageTitle,
                                    boolean launchActivity,
+                                   boolean sendCloseAction,
                                    Uri searchQuery) {
             this.appbarPresent = appbarPresent;
             this.fullscreenEnabled = fullscreenEnabled;
@@ -206,6 +208,7 @@ public class AppCMSPresenter {
             this.pageId = pageId;
             this.pageTitle = pageTitle;
             this.launchActivity = launchActivity;
+            this.sendCloseAction = sendCloseAction;
             this.searchQuery = searchQuery;
         }
     }
@@ -316,7 +319,9 @@ public class AppCMSPresenter {
                                               final boolean closeLauncher) {
         boolean result = false;
         Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
-        if (currentActivity != null && !loadingPage) {
+        if (!isNetworkConnected()) {
+            showErrorDialog();
+        } else if (currentActivity != null && !loadingPage) {
             AppCMSActionType actionType = actionToActionTypeMap.get(action);
             if (actionType == null) {
                 Log.e(TAG, "Action " + action + " not found!");
@@ -325,25 +330,25 @@ public class AppCMSPresenter {
             result = true;
             if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
                     actionType == AppCMSActionType.WATCH_TRAILER) {
-                if (!isNetworkConnected()) {
-                    showErrorDialog();
-                } else {
                     Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
+
+                    if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE) {
+                        playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), true);
+                    } else {
+                        playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), false);
+                    }
+
                     playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_font_color_key),
                             appCMSMain.getBrand().getGeneral().getTextColor());
                     playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_title_key),
                             filmTitle);
                     playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_hls_url_key),
                             extraData);
-                    StringBuffer adsSiteUrl = new StringBuffer();
-                    adsSiteUrl.append(currentActivity.getString(R.string.https_scheme));
-                    adsSiteUrl.append(appCMSMain.getDomainName());
-                    adsSiteUrl.append(File.separatorChar);
-                    adsSiteUrl.append(pagePath);
+
                     Date now = new Date();
                     playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_ads_url_key),
                             currentActivity.getString(R.string.app_cms_ads_api_url,
-                                    adsSiteUrl.toString(),
+                                    getPermalinkCompletePath(pagePath),
                                     now.getTime(),
                                     appCMSMain.getSite()));
                     playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_bg_color_key),
@@ -351,10 +356,9 @@ public class AppCMSPresenter {
                                     .getGeneral()
                                     .getBackgroundColor());
                     if (closeLauncher) {
-                        sendCloseOthersAction();
+                        sendCloseOthersAction(null, true);
                     }
                     currentActivity.startActivity(playVideoIntent);
-                }
             } else if (actionType == AppCMSActionType.SHARE) {
                 if (extraData != null && extraData.length > 0) {
                     Intent sendIntent = new Intent();
@@ -369,7 +373,7 @@ public class AppCMSPresenter {
                             currentActivity.getResources().getText(R.string.send_to)));
                 }
             } else if (actionType == AppCMSActionType.CLOSE) {
-                sendCloseOthersAction();
+                sendCloseOthersAction(null, true);
             } else {
                 boolean appbarPresent = true;
                 boolean fullscreenEnabled = false;
@@ -415,6 +419,7 @@ public class AppCMSPresenter {
                                 getPageId(appCMSPageUI),
                                 filmTitle,
                                 false,
+                                closeLauncher,
                                 null) {
                             @Override
                             public void call(AppCMSPageAPI appCMSPageAPI) {
@@ -431,6 +436,7 @@ public class AppCMSPresenter {
                                             this.appbarPresent,
                                             this.fullscreenEnabled,
                                             this.navbarPresent,
+                                            this.sendCloseAction,
                                             this.searchQuery);
                                     Intent updatePageIntent =
                                             new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
@@ -452,7 +458,7 @@ public class AppCMSPresenter {
         boolean result = false;
         if (currentActivity != null) {
             result = true;
-            AppCMSNavItemsFragment appCMSNavItemsFragment =
+            appCMSNavItemsFragment =
                     AppCMSNavItemsFragment.newInstance(currentActivity,
                             getAppCMSBinder(currentActivity,
                                     null,
@@ -462,6 +468,7 @@ public class AppCMSPresenter {
                                     null,
                                     false,
                                     true,
+                                    false,
                                     false,
                                     false,
                                     null),
@@ -474,11 +481,17 @@ public class AppCMSPresenter {
         return result;
     }
 
+    public void dismissOpenDialogs() {
+        if (appCMSNavItemsFragment != null) {
+            appCMSNavItemsFragment.dismiss();
+        }
+    }
+
     public boolean launchSearchPage() {
         boolean result = false;
         if (currentActivity != null) {
             result = true;
-            AppCMSSearchFragment appCMSSearchFragment = AppCMSSearchFragment.newInstance(currentActivity,
+            com.viewlift.views.fragments.AppCMSSearchFragment appCMSSearchFragment = com.viewlift.views.fragments.AppCMSSearchFragment.newInstance(currentActivity,
                     Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
                     Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()),
                     Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor()));
@@ -498,14 +511,6 @@ public class AppCMSPresenter {
             currentActivity.startActivity(searchIntent);
         }
         return result;
-    }
-
-    public void resetOnOrientationChangeHandlers() {
-        onOrientationChangeHandlers.clear();
-    }
-
-    public void addOnOrientationChangeHandler(Action1<Boolean> onOrientationChangeHandler) {
-        onOrientationChangeHandlers.add(onOrientationChangeHandler);
     }
 
     public void onOrientationChange(boolean landscape) {
@@ -540,6 +545,7 @@ public class AppCMSPresenter {
                                   String pageTitle,
                                   String url,
                                   boolean launchActivity,
+                                  boolean sendCloseAction,
                                   final Uri searchQuery) {
         boolean result = false;
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
@@ -563,6 +569,7 @@ public class AppCMSPresenter {
                                 pageId,
                                 pageTitle,
                                 launchActivity,
+                                sendCloseAction,
                                 searchQuery) {
                             @Override
                             public void call(AppCMSPageAPI appCMSPageAPI) {
@@ -581,6 +588,7 @@ public class AppCMSPresenter {
                                                 this.appbarPresent,
                                                 this.fullscreenEnabled,
                                                 this.navbarPresent,
+                                                this.sendCloseAction,
                                                 this.searchQuery);
                                     } else {
                                         Bundle args = getPageActivityBundle(currentActivity,
@@ -593,6 +601,7 @@ public class AppCMSPresenter {
                                                 this.appbarPresent,
                                                 this.fullscreenEnabled,
                                                 this.navbarPresent,
+                                                false,
                                                 this.searchQuery);
                                         Intent updatePageIntent =
                                                 new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
@@ -621,6 +630,7 @@ public class AppCMSPresenter {
                             true,
                             false,
                             true,
+                            sendCloseAction,
                             searchQuery);
                 } else {
                     Bundle args = getPageActivityBundle(currentActivity,
@@ -633,6 +643,7 @@ public class AppCMSPresenter {
                             true,
                             false,
                             true,
+                            sendCloseAction,
                             searchQuery);
                     Intent updatePageIntent =
                             new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
@@ -657,7 +668,7 @@ public class AppCMSPresenter {
         return result;
     }
 
-    public boolean sendCloseOthersAction() {
+    public boolean sendCloseOthersAction(String pageName, boolean closeSelf) {
         Log.d(TAG, "Sending close others action");
         boolean result = false;
         if (currentActivity != null) {
@@ -665,7 +676,8 @@ public class AppCMSPresenter {
                 currentActions.pop();
             }
             Intent closeOthersIntent = new Intent(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION);
-            closeOthersIntent.putExtra(currentActivity.getString(R.string.close_self_key), true);
+            closeOthersIntent.putExtra(currentActivity.getString(R.string.close_self_key), closeSelf);
+            closeOthersIntent.putExtra(currentActivity.getString(R.string.app_cms_closing_page_name), pageName);
             currentActivity.sendBroadcast(closeOthersIntent);
 
             result = true;
@@ -693,7 +705,7 @@ public class AppCMSPresenter {
     }
 
     public void launchErrorActivity(Activity activity) {
-        sendCloseOthersAction();
+        sendCloseOthersAction(null, true);
         Intent errorIntent = new Intent(activity, AppCMSErrorActivity.class);
         activity.startActivity(errorIntent);
     }
@@ -925,7 +937,7 @@ public class AppCMSPresenter {
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor(appCMSMain.getBrand()
                         .getGeneral()
                         .getBackgroundColor())));
-                if (dialog.getWindow().isActive()) {
+                if (currentActivity.getWindow().isActive()) {
                     dialog.show();
                 }
             }
@@ -996,6 +1008,15 @@ public class AppCMSPresenter {
         beaconMessageThread.run();
     }
 
+    private String getPermalinkCompletePath(String pagePath) {
+        StringBuffer permalinkCompletePath = new StringBuffer();
+        permalinkCompletePath.append(currentActivity.getString(R.string.https_scheme));
+        permalinkCompletePath.append(appCMSMain.getDomainName());
+        permalinkCompletePath.append(File.separatorChar);
+        permalinkCompletePath.append(pagePath);
+        return permalinkCompletePath.toString();
+    }
+
     private String getBeaconUrl(String vid, String screenName, String parentScreenName, long currentPosition, BeaconEvent event) {
         final String utfEncoding = currentActivity.getString(R.string.utf8enc);
         String uid = InstanceID.getInstance(currentActivity).getId();
@@ -1012,7 +1033,7 @@ public class AppCMSPresenter {
                     URLEncoder.encode(currentActivity.getString(R.string.app_cms_beacon_platform), utfEncoding),
                     URLEncoder.encode(currentActivity.getString(R.string.app_cms_beacon_dpm_android), utfEncoding),
                     URLEncoder.encode(vid, utfEncoding),
-                    URLEncoder.encode(screenName, utfEncoding),
+                    URLEncoder.encode(getPermalinkCompletePath(screenName), utfEncoding),
                     URLEncoder.encode(parentScreenName, utfEncoding),
                     event,
                     currentPositionSecs,
@@ -1031,7 +1052,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private void setNavItemToCurrentAction(Activity activity) {
+    public void setNavItemToCurrentAction(Activity activity) {
         if (currentActions.size() > 0) {
             Intent setNavigationItemIntent = new Intent(PRESENTER_RESET_NAVIGATION_ITEM_ACTION);
             setNavigationItemIntent.putExtra(activity.getString(R.string.navigation_item_key),
@@ -1050,6 +1071,7 @@ public class AppCMSPresenter {
                                          boolean appbarPresent,
                                          boolean fullscreenEnabled,
                                          boolean navbarPresent,
+                                         boolean sendCloseAction,
                                          Uri searchQuery) {
         Bundle args = new Bundle();
         AppCMSBinder appCMSBinder = getAppCMSBinder(activity,
@@ -1062,6 +1084,7 @@ public class AppCMSPresenter {
                 appbarPresent,
                 fullscreenEnabled,
                 navbarPresent,
+                sendCloseAction,
                 searchQuery);
         args.putBinder(activity.getString(R.string.app_cms_binder_key), appCMSBinder);
         return args;
@@ -1077,6 +1100,7 @@ public class AppCMSPresenter {
                                          boolean appbarPresent,
                                          boolean fullscreenEnabled,
                                          boolean navbarPresent,
+                                         boolean sendCloseAction,
                                          Uri searchQuery) {
         return new AppCMSBinder(appCMSMain,
                 appCMSPageUI,
@@ -1089,6 +1113,7 @@ public class AppCMSPresenter {
                 appbarPresent,
                 fullscreenEnabled,
                 navbarPresent,
+                sendCloseAction,
                 isUserLoggedIn(activity),
                 jsonValueKeyMap,
                 searchQuery);
@@ -1104,6 +1129,7 @@ public class AppCMSPresenter {
                                     boolean appbarPresent,
                                     boolean fullscreenEnabled,
                                     boolean navbarPresent,
+                                    boolean sendCloseAction,
                                     Uri searchQuery) {
         Bundle args = getPageActivityBundle(activity,
                 appCMSPageUI,
@@ -1115,6 +1141,7 @@ public class AppCMSPresenter {
                 appbarPresent,
                 fullscreenEnabled,
                 navbarPresent,
+                sendCloseAction,
                 searchQuery);
         Intent appCMSIntent = new Intent(activity, AppCMSPageActivity.class);
         appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
@@ -1181,6 +1208,7 @@ public class AppCMSPresenter {
                                             homePageNav.getTitle(),
                                             homePageNav.getUrl(),
                                             true,
+                                            false,
                                             searchQuery);
                                     if (!launchSuccess) {
                                         Log.e(TAG, "Failed to launch page: " + firstPage.getPageName());

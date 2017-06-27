@@ -196,7 +196,6 @@ public class ViewCreator {
                 }
             }
         }
-//        appCMSPresenter.addOnOrientationChangeHandler(moduleView.getOrientationChangeHandler());
 
         return moduleView;
     }
@@ -554,12 +553,14 @@ public class ViewCreator {
                             }
                             break;
                         case PAGE_API_DESCRIPTION:
-                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                                ((TextView) componentViewResult.componentView).setText(Html.fromHtml(moduleAPI.getRawText()));
-                            } else {
-                                ((TextView) componentViewResult.componentView).setText(Html.fromHtml(moduleAPI.getRawText(), Html.FROM_HTML_MODE_COMPACT));
+                            if (!TextUtils.isEmpty(moduleAPI.getRawText())) {
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(moduleAPI.getRawText()));
+                                } else {
+                                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(moduleAPI.getRawText(), Html.FROM_HTML_MODE_COMPACT));
+                                }
+                                ((TextView) componentViewResult.componentView).setMovementMethod(LinkMovementMethod.getInstance());
                             }
-                            ((TextView) componentViewResult.componentView).setMovementMethod(LinkMovementMethod.getInstance());
                             break;
                         case PAGE_TRAY_TITLE_KEY:
                             if (!TextUtils.isEmpty(component.getText())) {

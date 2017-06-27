@@ -49,6 +49,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         String filmId = extraData[2];
         String adsUrl = intent.getStringExtra(getString(R.string.video_player_ads_url_key));
         String bgColor = intent.getStringExtra(getString(R.string.app_cms_bg_color_key));
+        boolean playAds = intent.getBooleanExtra(getString(R.string.play_ads_key), true);
 
         if (!TextUtils.isEmpty(bgColor)) {
             appCMSPlayVideoPageContainer.setBackgroundColor(Color.parseColor(bgColor));
@@ -57,7 +58,14 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         AppCMSPlayVideoFragment appCMSPlayVideoFragment =
-                AppCMSPlayVideoFragment.newInstance(this, fontColor, title, permaLink, hlsUrl, filmId, adsUrl);
+                AppCMSPlayVideoFragment.newInstance(this,
+                        fontColor,
+                        title,
+                        permaLink,
+                        hlsUrl,
+                        filmId,
+                        adsUrl,
+                        playAds);
         fragmentTransaction.add(R.id.app_cms_play_video_page_container,
                 appCMSPlayVideoFragment,
                 getString(R.string.video_fragment_tag_key));
@@ -67,7 +75,9 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         handoffReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.getBooleanExtra(getString(R.string.close_self_key), true)) {
+                String sendingPage = intent.getStringExtra(getString(R.string.app_cms_closing_page_name));
+                if (intent.getBooleanExtra(getString(R.string.close_self_key), true) &&
+                        (sendingPage == null || getString(R.string.app_cms_video_page_tag).equals(sendingPage))) {
                     Log.d(TAG, "Closing activity");
                     finish();
                 }

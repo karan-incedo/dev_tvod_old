@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -62,6 +63,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     private NavBarItemView pageViewDuringSearch;
     private boolean resumeInternalEvents;
     private boolean isActive;
+    private boolean shouldSendCloseOthersAction;
     private AppCMSBinder updatedAppCMSBinder;
 
     @Override
@@ -89,6 +91,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                     (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
             appCMSBinderStack.push(updatedAppCMSBinder.getPageId());
             appCMSBinderMap.put(updatedAppCMSBinder.getPageId(), updatedAppCMSBinder);
+            shouldSendCloseOthersAction = updatedAppCMSBinder.shouldSendCloseAction();
         } catch (ClassCastException e) {
             Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
         }
@@ -103,6 +106,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                                 (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
                         if (isActive) {
                             handleLaunchPageAction(updatedAppCMSBinder);
+                        } else if (updatedAppCMSBinder.shouldSendCloseAction()) {
+                            Intent appCMSIntent = new Intent(AppCMSPageActivity.this, AppCMSPageActivity.class);
+                            appCMSIntent.putExtra(AppCMSPageActivity.this.getString(R.string.app_cms_bundle_key), args);
+                            appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                            AppCMSPageActivity.this.startActivity(appCMSIntent);
+                            shouldSendCloseOthersAction = true;
                         }
                     } catch (ClassCastException e) {
                         Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
@@ -158,6 +167,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 new IntentFilter(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION));
 
         resumeInternalEvents = false;
+
+        shouldSendCloseOthersAction = false;
 
         Log.d(TAG, "onCreate()");
     }
@@ -235,6 +246,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         }
 
         isActive = true;
+
+        if (shouldSendCloseOthersAction && appCMSPresenter != null) {
+            appCMSPresenter.sendCloseOthersAction(null, false);
+            shouldSendCloseOthersAction = false;
+        }
 
         registerReceiver(presenterCloseActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
@@ -391,7 +407,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     }
 
     private void selectNavItemAndLaunchPage(NavBarItemView v, String pageId, String pageTitle) {
-        if (!appCMSPresenter.navigateToPage(pageId, pageTitle, null, false, null)) {
+        if (!appCMSPresenter.navigateToPage(pageId,
+                pageTitle,
+                null,
+                false,
+                true,
+                null)) {
             Log.e(TAG, "Could not navigate to page with Title: " +
                     pageTitle +
                     " Id: " +
@@ -580,7 +601,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     private void selectNavItem(String pageId) {
         for (int i = 0 ; i < appCMSTabNavContainer.getChildCount(); i++) {
-            if (pageId.equals(appCMSTabNavContainer.getChildAt(i).getTag())) {
+            if (appCMSTabNavContainer.getChildAt(i).getTag() != null &&
+                    pageId.contains(appCMSTabNavContainer.getChildAt(i).getTag().toString())) {
                 selectNavItem(((NavBarItemView) appCMSTabNavContainer.getChildAt(i)));
                 Log.d(TAG, "Nav item - Selecting tab item with page Id: " +
                         pageId +

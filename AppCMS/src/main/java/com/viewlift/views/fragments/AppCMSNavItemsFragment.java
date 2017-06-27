@@ -28,8 +28,6 @@ import snagfilms.com.air.appcms.R;
  */
 
 public class AppCMSNavItemsFragment extends DialogFragment {
-    private AppCMSNavItemsAdapter.OnCloseNavAction onCloseNavAction;
-
     public static AppCMSNavItemsFragment newInstance(Context context,
                                                      AppCMSBinder appCMSBinder,
                                                      int textColor,
@@ -48,27 +46,19 @@ public class AppCMSNavItemsFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        onCloseNavAction = new AppCMSNavItemsAdapter.OnCloseNavAction() {
-            @Override
-            public void closeNavAction() {
-                dismiss();
-            }
-        };
-
         Bundle args = getArguments();
 
         int textColor = args.getInt(getContext().getString(R.string.app_cms_text_color_key));
         int bgColor = args.getInt(getContext().getString(R.string.app_cms_bg_color_key));
 
-        AppCMSBinder appCMSBinder =
+        final AppCMSBinder appCMSBinder =
                 ((AppCMSBinder) args.getBinder(getContext().getString(R.string.fragment_page_bundle_key)));
         View view = inflater.inflate(R.layout.fragment_menu_nav, container, false);
         RecyclerView navItemsList = (RecyclerView) view.findViewById(R.id.nav_items_list);
-        AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
+        final AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
-        AppCMSNavItemsAdapter appCMSNavItemsAdapter = new AppCMSNavItemsAdapter(onCloseNavAction,
-                appCMSBinder.getNavigation(),
+        AppCMSNavItemsAdapter appCMSNavItemsAdapter = new AppCMSNavItemsAdapter(appCMSBinder.getNavigation(),
                 appCMSBinder.isUserLoggedIn(),
                 appCMSPresenter,
                 textColor);
@@ -82,6 +72,9 @@ public class AppCMSNavItemsFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 dismiss();
+                if (appCMSPresenter != null) {
+                    appCMSPresenter.setNavItemToCurrentAction(getActivity());
+                }
             }
         });
 
