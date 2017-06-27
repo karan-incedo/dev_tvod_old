@@ -328,17 +328,22 @@ public abstract class BaseView extends FrameLayout {
                     break;
                 case PAGE_CAROUSEL_TITLE_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
-                    tm -= viewHeight * 2;
-                    viewHeight *= 2;
+                    if (isLandscape(getContext()) || !isTablet(getContext())) {
+                        tm -= viewHeight * 2;
+                        viewHeight *= 2;
+                    } else {
+                        tm -= viewHeight * 3;
+                        viewHeight *= 2;
+                    }
                     lm = maxViewWidth / 2 - viewWidth / 2;
                     break;
                 case PAGE_CAROUSEL_INFO_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
                     if (isTablet(getContext())) {
                         if (isLandscape(getContext())) {
-                            tm -= viewHeight * 3.0;
+                            tm -= viewHeight * 3;
                         } else {
-                            tm -= viewHeight * 3.2;
+                            tm -= viewHeight * 5;
                         }
                     } else {
                         tm -= viewHeight * 2;
@@ -361,7 +366,7 @@ public abstract class BaseView extends FrameLayout {
                     gravity = Gravity.CENTER_HORIZONTAL;
                     lm = maxViewWidth / 2;
                     if (isTablet(getContext()) && !isLandscape(getContext())) {
-                        tm -= viewHeight / 6;
+                        tm -= viewHeight / 2;
                     }
                     break;
                 case PAGE_VIDEO_SHARE_KEY:

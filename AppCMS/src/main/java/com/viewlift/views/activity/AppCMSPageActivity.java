@@ -315,17 +315,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     public void pageLoading(boolean pageLoading) {
         if (pageLoading) {
-            appCMSFragment.setAlpha(0.5f);
             appCMSFragment.setEnabled(false);
-            appCMSTabNavContainer.setAlpha(0.5f);
             appCMSTabNavContainer.setEnabled(false);
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 appCMSTabNavContainer.getChildAt(i).setEnabled(false);
             }
         } else {
-            appCMSFragment.setAlpha(1.0f);
             appCMSFragment.setEnabled(true);
-            appCMSTabNavContainer.setAlpha(1.0f);
             appCMSTabNavContainer.setEnabled(true);
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 appCMSTabNavContainer.getChildAt(i).setEnabled(true);
