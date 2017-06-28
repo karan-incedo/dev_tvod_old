@@ -316,7 +316,7 @@ public abstract class BaseView extends FrameLayout {
                 case PAGE_TRAY_TITLE_KEY:
                     if (isTablet(getContext())) {
                         if (isLandscape(getContext())) {
-                            tm -= viewHeight / 8;
+                            tm -= viewHeight / 6;
                             viewHeight *= 1.5;
                         }
                     }
