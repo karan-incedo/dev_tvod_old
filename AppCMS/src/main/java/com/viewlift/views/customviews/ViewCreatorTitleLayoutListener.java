@@ -35,6 +35,11 @@ public class ViewCreatorTitleLayoutListener implements ViewTreeObserver.OnGlobal
             textView.setText(textView.getContext().getString(R.string.string_with_ellipse, textView.getText().subSequence(0, subStringLength - 3)));
         }
 
+        if (bounds.height() < textView.getLineHeight()) {
+            float ratio = ((float) bounds.height() / (1.5f * (float) textView.getLineHeight()));
+            textView.setTextSize(textView.getTextSize() * ratio);
+        }
+
         textView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
     }
 }
