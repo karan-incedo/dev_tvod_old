@@ -77,7 +77,6 @@ import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.models.network.components.AppCMSSearchUrlComponent;
 import com.viewlift.views.customviews.BaseView;
-import com.viewlift.views.customviews.LifecycleStatus;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
@@ -137,7 +136,6 @@ public class AppCMSPresenter {
     private Map<String, String> actionToPageNameMap;
     private Map<String, String> pageIdToPageNameMap;
     private List<Action1<Boolean>> onOrientationChangeHandlers;
-    private List<Action1<LifecycleStatus>> onLifecycleChangeHandlers;
     private Map<String, List<OnInternalEvent>> onActionInternalEvents;
     private Stack<String> currentActions;
     private AppCMSSearchUrlComponent appCMSSearchUrlComponent;
@@ -244,7 +242,6 @@ public class AppCMSPresenter {
         this.actionToPageNameMap = new HashMap<>();
         this.pageIdToPageNameMap = new HashMap();
         this.onOrientationChangeHandlers = new ArrayList<>();
-        this.onLifecycleChangeHandlers = new ArrayList<>();
         this.onActionInternalEvents = new HashMap<>();
         this.currentActions = new Stack<>();
         this.beaconMessageRunnable = new BeaconRunnable(appCMSBeaconRest);
@@ -516,16 +513,6 @@ public class AppCMSPresenter {
     public void onOrientationChange(boolean landscape) {
         for (Action1<Boolean> onOrientationChangeHandler : onOrientationChangeHandlers) {
             Observable.just(landscape).subscribe(onOrientationChangeHandler);
-        }
-    }
-
-    public void addOnLifecycleChangeHandler(Action1<LifecycleStatus> onLifecycleChangeHandler) {
-        onLifecycleChangeHandlers.add(onLifecycleChangeHandler);
-    }
-
-    public void onLifecycleChange(LifecycleStatus lifecycleStatus) {
-        for (Action1<LifecycleStatus> onLifecycleChangeHandler : onLifecycleChangeHandlers) {
-            Observable.just(lifecycleStatus).subscribe(onLifecycleChangeHandler);
         }
     }
 
@@ -882,10 +869,6 @@ public class AppCMSPresenter {
         }
 
         return false;
-    }
-
-    public AppCMSSearchCall getAppCMSSearchCall() {
-        return appCMSSearchCall;
     }
 
     public AppCMSSearchUrlComponent getAppCMSSearchUrlComponent() {

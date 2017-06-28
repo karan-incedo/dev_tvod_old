@@ -34,12 +34,13 @@ public abstract class BaseView extends FrameLayout {
     public static final int STANDARD_TABLET_WIDTH_PX = 768;
     public static final int STANDARD_TABLET_HEIGHT_PX = 1024;
 
+    protected static final float TABLET_LANDSCAPE_HEIGHT_SCALE = 1.06f;
+
     protected static int DEVICE_WIDTH;
     protected static int DEVICE_HEIGHT;
 
     protected ViewGroup childrenContainer;
     protected boolean[] componentHasViewList;
-    protected Action1<LifecycleStatus> onLifecycleChangeHandler;
 
     public BaseView(Context context) {
         super(context);
@@ -366,7 +367,7 @@ public abstract class BaseView extends FrameLayout {
                     gravity = Gravity.CENTER_HORIZONTAL;
                     lm = maxViewWidth / 2;
                     if (isTablet(getContext()) && !isLandscape(getContext())) {
-                        tm -= viewHeight / 10;
+                        tm -= viewHeight / 2;
                     }
                     break;
                 case PAGE_VIDEO_SHARE_KEY:
@@ -725,7 +726,7 @@ public abstract class BaseView extends FrameLayout {
         int viewWidth = (int) getViewWidth(getContext(), getLayout(), (float) LayoutParams.MATCH_PARENT);
         int viewHeight = (int) getViewHeight(getContext(), getLayout(), (float) LayoutParams.MATCH_PARENT);
         if (isLandscape(getContext())) {
-            viewHeight *= 1.06;
+            viewHeight *= TABLET_LANDSCAPE_HEIGHT_SCALE;
         }
         FrameLayout.LayoutParams childContainerLayoutParams =
                 new FrameLayout.LayoutParams(viewWidth, viewHeight);

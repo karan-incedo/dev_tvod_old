@@ -48,7 +48,6 @@ import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 
-import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
 
 /**
@@ -70,7 +69,6 @@ public class ViewCreator {
     private static class ComponentViewResult {
         View componentView;
         OnInternalEvent onInternalEvent;
-        Action1<LifecycleStatus> onLifecycleChangeHandler;
         boolean useMarginsAsPercentagesOverride;
         boolean useWidthOfScreen;
     }
@@ -165,9 +163,6 @@ public class ViewCreator {
                 if (componentViewResult.onInternalEvent != null) {
                     appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
                 }
-                if (componentViewResult.onLifecycleChangeHandler != null) {
-                    appCMSPresenter.addOnLifecycleChangeHandler(componentViewResult.onLifecycleChangeHandler);
-                }
                 View componentView = componentViewResult.componentView;
                 if (componentView != null) {
                     childrenContainer.addView(componentView);
@@ -232,9 +227,6 @@ public class ViewCreator {
                     gridElement);
             if (componentViewResult.onInternalEvent != null) {
                 onInternalEvents.add(componentViewResult.onInternalEvent);
-            }
-            if (componentViewResult.onLifecycleChangeHandler != null) {
-                appCMSPresenter.addOnLifecycleChangeHandler(componentViewResult.onLifecycleChangeHandler);
             }
             View componentView = componentViewResult.componentView;
             if (componentView != null) {

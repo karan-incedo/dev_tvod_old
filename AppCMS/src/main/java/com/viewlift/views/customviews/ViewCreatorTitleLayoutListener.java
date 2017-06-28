@@ -14,7 +14,7 @@ import snagfilms.com.air.appcms.R;
 public class ViewCreatorTitleLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
     private final TextView textView;
 
-    private static final float MAX_WIDTH_RATIO = 8.0f / 10.0f;
+    private static final float MAX_WIDTH_RATIO = 0.8f;
 
     public ViewCreatorTitleLayoutListener(TextView textView) {
         this.textView = textView;

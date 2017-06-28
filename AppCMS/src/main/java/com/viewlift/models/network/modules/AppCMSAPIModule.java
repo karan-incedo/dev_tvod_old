@@ -18,6 +18,7 @@ import dagger.Provides;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import snagfilms.com.air.appcms.R;
 
 /**
  * Created by viewlift on 5/9/17.
@@ -28,11 +29,14 @@ public class AppCMSAPIModule {
     private final String baseUrl;
     private final String apiKey;
     private final File storageDirectory;
+    private final int defaultConnectionTimeout;
 
     public AppCMSAPIModule(Context context, String baseUrl, String apiKey) {
         this.baseUrl = baseUrl;
         this.apiKey = apiKey;
-        this.storageDirectory = context.getFilesDir();;
+        this.storageDirectory = context.getFilesDir();
+        this.defaultConnectionTimeout =
+                context.getResources().getInteger(R.integer.app_cms_default_connection_timeout_msec);
     }
 
     @Provides
@@ -45,9 +49,9 @@ public class AppCMSAPIModule {
     @Singleton
     public Retrofit providesRetrofit(Gson gson) {
         OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(defaultConnectionTimeout, TimeUnit.MILLISECONDS)
+                .writeTimeout(defaultConnectionTimeout, TimeUnit.MILLISECONDS)
+                .readTimeout(defaultConnectionTimeout, TimeUnit.MILLISECONDS)
                 .build();
         return new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create(gson))

@@ -67,7 +67,7 @@ public class AppCMSMainUICall {
         AppCMSMain main = null;
         AppCMSMain mainInStorage = null;
         try {
-            Log.d(TAG, "Attempting to retireve main.json: " + appCMSMainUrl);
+            Log.d(TAG, "Attempting to retrieve main.json: " + appCMSMainUrl);
 
             String hostName = new URL(appCMSMainUrl).getHost();
             ExecutorService executor = Executors.newCachedThreadPool();

@@ -1,7 +1,6 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.FrameLayout;
 
@@ -29,7 +28,7 @@ public class ModuleView extends BaseView {
         int width = (int) getViewWidth(getContext(), module.getLayout(), LayoutParams.MATCH_PARENT);
         int height = (int) getViewHeight(getContext(), module.getLayout(), LayoutParams.WRAP_CONTENT);
         if (BaseView.isLandscape(getContext())) {
-            height *= 1.06;
+            height *= TABLET_LANDSCAPE_HEIGHT_SCALE;
         }
         Log.d(TAG, "Module Key: " + module.getView() + " Width: " + width + " Height; " + height);
         FrameLayout.LayoutParams layoutParams =
