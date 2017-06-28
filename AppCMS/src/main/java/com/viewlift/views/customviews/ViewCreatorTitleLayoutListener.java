@@ -32,12 +32,8 @@ public class ViewCreatorTitleLayoutListener implements ViewTreeObserver.OnGlobal
         if (bounds.width() > maxAllowedWidth) {
             float resizeRatio = maxAllowedWidth / bounds.width();
             int subStringLength = (int) (((float) textView.getText().length()) * resizeRatio);
-            textView.setText(textView.getContext().getString(R.string.string_with_ellipse, textView.getText().subSequence(0, subStringLength - 3)));
-        }
-
-        if (bounds.height() < textView.getLineHeight()) {
-            float ratio = ((float) bounds.height() / (1.5f * (float) textView.getLineHeight()));
-            textView.setTextSize(textView.getTextSize() * ratio);
+            textView.setText(textView.getContext().getString(R.string.string_with_ellipse,
+                    textView.getText().subSequence(0, subStringLength - 3)));
         }
 
         textView.getViewTreeObserver().removeOnGlobalLayoutListener(this);

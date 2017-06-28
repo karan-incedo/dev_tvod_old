@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -48,6 +49,7 @@ import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 
+import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
 
 /**
@@ -228,6 +230,7 @@ public class ViewCreator {
             if (componentViewResult.onInternalEvent != null) {
                 onInternalEvents.add(componentViewResult.onInternalEvent);
             }
+
             View componentView = componentViewResult.componentView;
             if (componentView != null) {
                 CollectionGridItemView.ItemContainer itemContainer =
@@ -355,12 +358,18 @@ public class ViewCreator {
                 if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_ADD_TO_WATCHLIST_KEY) {
                     return componentViewResult;
                 }
-                componentViewResult.componentView = new Button(context);
+                if (componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY) {
+                    componentViewResult.componentView = new Button(context);
+                } else {
+                    componentViewResult.componentView = new ImageButton(context);
+                }
                 if (!gridElement) {
                     if (!TextUtils.isEmpty(component.getText()) && componentKey != AppCMSUIKeyType.PAGE_PLAY_KEY) {
                         ((TextView) componentViewResult.componentView).setText(component.getText());
-                    } else if (moduleAPI.getSettings() != null && !moduleAPI.getSettings().getHideTitle() &&
-                            !TextUtils.isEmpty(moduleAPI.getTitle())) {
+                    } else if (moduleAPI.getSettings() != null &&
+                            !moduleAPI.getSettings().getHideTitle() &&
+                            !TextUtils.isEmpty(moduleAPI.getTitle()) &&
+                            componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY) {
                         ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
                     }
                 }
@@ -466,8 +475,9 @@ public class ViewCreator {
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                         break;
                     case PAGE_VIDEO_CLOSE_KEY:
-                        Drawable closeDrawable = ContextCompat.getDrawable(context, R.drawable.cancel);
-                        componentViewResult.componentView.setBackground(closeDrawable);
+                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.cancel);
+                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {

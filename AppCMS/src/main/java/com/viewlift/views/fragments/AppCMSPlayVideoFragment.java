@@ -56,7 +56,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private TextView videoPlayerTitleView;
     private VideoPlayerView videoPlayerView;
     private OnClosePlayerEvent onClosePlayerEvent;
-    private BeaconAdPingThread beaconMessageThread;
+    private BeaconPingThread beaconMessageThread;
     private long beaconMsgTimeoutMsec;
 
     private ImaSdkFactory sdkFactory;
@@ -68,7 +68,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         void closePlayer();
     }
 
-    private static class BeaconAdPingThread extends Thread {
+    private static class BeaconPingThread extends Thread {
         final long beaconMsgTimeoutMsec;
         final AppCMSPresenter appCMSPresenter;
         final String filmId;
@@ -78,12 +78,12 @@ public class AppCMSPlayVideoFragment extends Fragment
         boolean runBeaconPing;
         boolean sendBeaconPing;
 
-        public BeaconAdPingThread(long beaconMsgTimeoutMsec,
-                                  AppCMSPresenter appCMSPresenter,
-                                  String filmId,
-                                  String permaLink,
-                                  String parentScreenName,
-                                  VideoPlayerView videoPlayerView) {
+        public BeaconPingThread(long beaconMsgTimeoutMsec,
+                                AppCMSPresenter appCMSPresenter,
+                                String filmId,
+                                String permaLink,
+                                String parentScreenName,
+                                VideoPlayerView videoPlayerView) {
             this.beaconMsgTimeoutMsec = beaconMsgTimeoutMsec;
             this.appCMSPresenter = appCMSPresenter;
             this.filmId = filmId;
@@ -106,7 +106,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                         }
                     }
                 } catch (InterruptedException e) {
-                    Log.e(TAG, "BeaconAdPingThread sleep interrupted");
+                    Log.e(TAG, "BeaconPingThread sleep interrupted");
                 }
             }
         }
@@ -164,13 +164,6 @@ public class AppCMSPlayVideoFragment extends Fragment
                 getActivity().getResources().getInteger(R.integer.app_cms_beacon_timeout_msec);
 
         parentScreenName = getContext().getString(R.string.app_cms_beacon_video_player_parent_screen_name);
-
-        beaconMessageThread = new BeaconAdPingThread(beaconMsgTimeoutMsec,
-                appCMSPresenter,
-                filmId,
-                permaLink,
-                parentScreenName,
-                videoPlayerView);
 
         setRetainInstance(true);
     }
@@ -241,6 +234,12 @@ public class AppCMSPlayVideoFragment extends Fragment
                 }
             }
         });
+        beaconMessageThread = new BeaconPingThread(beaconMsgTimeoutMsec,
+                appCMSPresenter,
+                filmId,
+                permaLink,
+                parentScreenName,
+                videoPlayerView);
         return rootView;
     }
 

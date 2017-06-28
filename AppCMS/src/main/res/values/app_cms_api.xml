@@ -87,8 +87,6 @@
     <string name="app_cms_video_page_tag">video</string>
     <string name="app_cms_main_page_tag">main</string>
 
-    <string name="app_cms_share_string">%1$s Presents %2$s - %3$s</string>
-
     <string name="app_cms_closing_page_name">closing_page</string>
 
     <!-- AppAppCMSPageUIPage names for Actions -->

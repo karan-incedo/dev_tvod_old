@@ -71,10 +71,10 @@ public class AppCMSNavItemsFragment extends DialogFragment {
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dismiss();
                 if (appCMSPresenter != null) {
                     appCMSPresenter.setNavItemToCurrentAction(getActivity());
                 }
+                dismiss();
             }
         });
 

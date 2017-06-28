@@ -360,11 +360,7 @@ public class AppCMSPresenter {
                 if (extraData != null && extraData.length > 0) {
                     Intent sendIntent = new Intent();
                     sendIntent.setAction(Intent.ACTION_SEND);
-                    sendIntent.putExtra(Intent.EXTRA_TEXT,
-                            currentActivity.getString(R.string.app_cms_share_string,
-                                    currentActivity.getString(R.string.app_name),
-                                    filmTitle,
-                                    extraData[0]));
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, extraData[0]);
                     sendIntent.setType(currentActivity.getString(R.string.text_plain_mime_type));
                     currentActivity.startActivity(Intent.createChooser(sendIntent,
                             currentActivity.getResources().getText(R.string.send_to)));
@@ -484,10 +480,8 @@ public class AppCMSPresenter {
         }
     }
 
-    public boolean launchSearchPage() {
-        boolean result = false;
+    public void launchSearchPage() {
         if (currentActivity != null) {
-            result = true;
             com.viewlift.views.fragments.AppCMSSearchFragment appCMSSearchFragment = com.viewlift.views.fragments.AppCMSSearchFragment.newInstance(currentActivity,
                     Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
                     Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()),
@@ -495,19 +489,15 @@ public class AppCMSPresenter {
             appCMSSearchFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
                     currentActivity.getString(R.string.app_cms_search_page_tag));
         }
-        return result;
     }
 
-    public boolean launchSearchResultsPage(String searchQuery) {
-        boolean result = false;
+    public void launchSearchResultsPage(String searchQuery) {
         if (currentActivity != null) {
-            result = true;
             Intent searchIntent = new Intent(currentActivity, AppCMSSearchActivity.class);
             searchIntent.setAction(Intent.ACTION_SEARCH);
             searchIntent.putExtra(SearchManager.QUERY, searchQuery);
             currentActivity.startActivity(searchIntent);
         }
-        return result;
     }
 
     public void onOrientationChange(boolean landscape) {
