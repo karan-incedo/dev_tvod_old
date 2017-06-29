@@ -962,33 +962,41 @@ public class AppCMSPresenter {
     public void sendBeaconAdImpression(String vid, String screenName, String parentScreenName, long currentPosition) {
         Log.d(TAG, "Sending Beacon Ad Impression");
         String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.AD_IMPRESSION);
-        Log.d(TAG, "Beacon Ad Impression: " + url);
-        beaconMessageRunnable.setUrl(url);
-        beaconMessageThread.run();
+        if (url != null) {
+            Log.d(TAG, "Beacon Ad Impression: " + url);
+            beaconMessageRunnable.setUrl(url);
+            beaconMessageThread.run();
+        }
     }
 
     public void sendBeaconAdRequestMessage(String vid, String screenName, String parentScreenName, long currentPosition) {
         Log.d(TAG, "Sending Beacon Ad Message");
         String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.AD_REQUEST);
-        Log.d(TAG, "Beacon Ad Request: " + url);
-        beaconMessageRunnable.setUrl(url);
-        beaconMessageThread.run();
+        if (url != null) {
+            Log.d(TAG, "Beacon Ad Request: " + url);
+            beaconMessageRunnable.setUrl(url);
+            beaconMessageThread.run();
+        }
     }
 
     public void sendBeaconPingMessage(String vid, String screenName, String parentScreenName, long currentPosition) {
         Log.d(TAG, "Sending Beacon Ping Message");
         String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.PING);
-        Log.d(TAG, "Beacon Ping: " + url);
-        beaconMessageRunnable.setUrl(url);
-        beaconMessageThread.run();
+        if (url != null) {
+            Log.d(TAG, "Beacon Ping: " + url);
+            beaconMessageRunnable.setUrl(url);
+            beaconMessageThread.run();
+        }
     }
 
     public void sendBeaconPlayMessage(String vid, String screenName, String parentScreenName, long currentPosition) {
         Log.d(TAG, "Sending Beacon Ad Message");
         String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.PLAY);
-        Log.d(TAG, "Beacon Play: " + url);
-        beaconMessageRunnable.setUrl(url);
-        beaconMessageThread.run();
+        if (url != null) {
+            Log.d(TAG, "Beacon Play: " + url);
+            beaconMessageRunnable.setUrl(url);
+            beaconMessageThread.run();
+        }
     }
 
     private String getPermalinkCompletePath(String pagePath) {
@@ -1001,28 +1009,30 @@ public class AppCMSPresenter {
     }
 
     private String getBeaconUrl(String vid, String screenName, String parentScreenName, long currentPosition, BeaconEvent event) {
-        final String utfEncoding = currentActivity.getString(R.string.utf8enc);
-        String uid = InstanceID.getInstance(currentActivity).getId();
-        int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECONDS);
-        if (isUserLoggedIn(currentActivity)) {
-            uid = getLoggedInUser(currentActivity);
-        }
         String url = null;
-        try {
-            url = currentActivity.getString(R.string.app_cms_beacon_url,
-                    appCMSMain.getBeacon().getApiBaseUrl(),
-                    URLEncoder.encode(appCMSMain.getBeacon().getSiteName(), utfEncoding),
-                    URLEncoder.encode(appCMSMain.getBeacon().getClientId(), utfEncoding),
-                    URLEncoder.encode(currentActivity.getString(R.string.app_cms_beacon_platform), utfEncoding),
-                    URLEncoder.encode(currentActivity.getString(R.string.app_cms_beacon_dpm_android), utfEncoding),
-                    URLEncoder.encode(vid, utfEncoding),
-                    URLEncoder.encode(getPermalinkCompletePath(screenName), utfEncoding),
-                    URLEncoder.encode(parentScreenName, utfEncoding),
-                    event,
-                    currentPositionSecs,
-                    URLEncoder.encode(uid, utfEncoding));
-        } catch (UnsupportedEncodingException e) {
-            Log.e(TAG, "Error encoding Beacon URL parameters: " + e.toString());
+        if (currentActivity != null) {
+            final String utfEncoding = currentActivity.getString(R.string.utf8enc);
+            String uid = InstanceID.getInstance(currentActivity).getId();
+            int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECONDS);
+            if (isUserLoggedIn(currentActivity)) {
+                uid = getLoggedInUser(currentActivity);
+            }
+            try {
+                url = currentActivity.getString(R.string.app_cms_beacon_url,
+                        appCMSMain.getBeacon().getApiBaseUrl(),
+                        URLEncoder.encode(appCMSMain.getBeacon().getSiteName(), utfEncoding),
+                        URLEncoder.encode(appCMSMain.getBeacon().getClientId(), utfEncoding),
+                        URLEncoder.encode(currentActivity.getString(R.string.app_cms_beacon_platform), utfEncoding),
+                        URLEncoder.encode(currentActivity.getString(R.string.app_cms_beacon_dpm_android), utfEncoding),
+                        URLEncoder.encode(vid, utfEncoding),
+                        URLEncoder.encode(getPermalinkCompletePath(screenName), utfEncoding),
+                        URLEncoder.encode(parentScreenName, utfEncoding),
+                        event,
+                        currentPositionSecs,
+                        URLEncoder.encode(uid, utfEncoding));
+            } catch (UnsupportedEncodingException e) {
+                Log.e(TAG, "Error encoding Beacon URL parameters: " + e.toString());
+            }
         }
         return url;
     }
