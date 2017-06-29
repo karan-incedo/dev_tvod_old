@@ -12,12 +12,12 @@ import android.view.ViewGroup;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
+import com.viewlift.views.components.DaggerAppCMSViewComponent;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.modules.AppCMSPageViewModule;
-import com.viewlift.views.binders.AppCMSBinder;
 
-import com.viewlift.views.components.DaggerAppCMSViewComponent;
 import snagfilms.com.air.appcms.R;
 
 /**
@@ -35,6 +35,7 @@ public class AppCMSPageFragment extends Fragment {
 
     public interface OnPageCreation {
         void onSuccess(AppCMSBinder appCMSBinder);
+
         void onError(AppCMSBinder appCMSBinder);
     }
 
@@ -48,7 +49,7 @@ public class AppCMSPageFragment extends Fragment {
 
     @Override
     public void onAttach(Context context) {
-        if (context instanceof OnPageCreation){
+        if (context instanceof OnPageCreation) {
             try {
                 onPageCreation = (OnPageCreation) context;
                 appCMSBinder =
@@ -62,7 +63,7 @@ public class AppCMSPageFragment extends Fragment {
             }
         } else {
             throw new RuntimeException("Attached context must implement " +
-                OnPageCreation.class.getCanonicalName());
+                    OnPageCreation.class.getCanonicalName());
         }
         super.onAttach(context);
     }
@@ -124,6 +125,7 @@ public class AppCMSPageFragment extends Fragment {
         if (PageView.isTablet(getContext()) || (appCMSBinder != null && appCMSBinder.isFullScreenEnabled())) {
             handleOrientation(getActivity().getResources().getConfiguration().orientation);
         }
+
         if (pageView == null) {
             Log.e(TAG, "AppCMS page creation error");
             onPageCreation.onError(appCMSBinder);
@@ -144,6 +146,7 @@ public class AppCMSPageFragment extends Fragment {
         if (appCMSBinder != null && appCMSViewComponent.viewCreator() != null) {
             appCMSViewComponent.viewCreator().removeLruCacheItem(getContext(), appCMSBinder.getPageId());
         }
+
         appCMSBinder = null;
         pageView = null;
     }

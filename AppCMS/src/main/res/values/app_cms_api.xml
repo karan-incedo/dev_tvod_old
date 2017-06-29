@@ -111,6 +111,10 @@
     <string name="app_cms_page_path_query_parameter">path=</string>
     <string name="app_cms_api_key">XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F</string>
 
+    <!-- AppCMSWatchList API -->
+    <string name="app_cms_watchlist_api_url">%1$s/user/queues?site=%2$s&amp;userId=%3$s</string>
+    <!--<string name="app_cms_watchlist_api_url">%1$s/user/queues?site=%2$s&amp;userId=%3$s&amp;limit=%4$d</string>-->
+
     <!-- AppCMS Navigation menu -->
     <string name="app_cms_menu_icon_name">menu_</string>
     <string name="app_cms_menu_label">Menu</string>

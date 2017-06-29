@@ -83,13 +83,22 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             if (navigation.getPrimary() != null) {
                 indexOffset += navigation.getPrimary().size();
             }
+
+            //user nav
             if (userLoggedIn && navigation.getUser() != null && (i - indexOffset) < navigation.getUser().size()) {
                 final User user = navigation.getUser().get(i - indexOffset);
+
                 viewHolder.navItemLabel.setText(user.getTitle().toUpperCase());
                 viewHolder.navItemLabel.setTextColor(textColor);
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if (user.getUrl().equals("/user/watchlist")) {
+                            appCMSPresenter.navigateToWatchlistPage(user.getPageId(),
+                                    user.getTitle(), user.getUrl(), true);
+                        }
+
                         if (!appCMSPresenter.navigateToPage(user.getPageId(),
                                 user.getTitle(),
                                 user.getUrl(),
@@ -105,6 +114,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     }
                 });
             }
+
+            //footer
             if (navigation.getFooter() != null && (i - indexOffset) < navigation.getFooter().size()) {
                 if (userLoggedIn && navigation.getUser() != null) {
                     indexOffset += navigation.getUser().size();
@@ -161,6 +172,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
         View itemView;
         ImageView navItemIcon;
         TextView navItemLabel;
+
         public ViewHolder(View itemView) {
             super(itemView);
             this.itemView = itemView;

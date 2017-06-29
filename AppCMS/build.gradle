@@ -128,7 +128,7 @@ dependencies {
     compile "com.google.android.gms:play-services-analytics:$rootProject.ext.googlePlayServicesVersion"
     compile "com.google.android.gms:play-services-gcm:$rootProject.ext.googlePlayServicesVersion"
     compile("com.crashlytics.sdk.android:crashlytics:$rootProject.ext.crashlyticsVersion") {
-        transitive = true;
+        transitive = true
     }
 
     compile "com.jakewharton:butterknife:$rootProject.ext.butterknifeVersion"
@@ -140,4 +140,5 @@ dependencies {
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.ext.leakcanaryVersion"
     provided "javax.annotation:jsr250-api:$rootProject.ext.jsr250_apiVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
+
 }

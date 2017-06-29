@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/AndroidAppCMS.iml" filepath="$PROJECT_DIR$/AndroidAppCMS.iml" />
-      <module fileurl="file://$PROJECT_DIR$/AndroidAppCMSMaster.iml" filepath="$PROJECT_DIR$/AndroidAppCMSMaster.iml" />
+      <module fileurl="file://C:\Users\Viewlift\AndroidStudioProjects\android-appcms\AndroidAppCMS.iml" filepath="C:\Users\Viewlift\AndroidStudioProjects\android-appcms\AndroidAppCMS.iml" />
+      <module fileurl="file://C:\Users\Viewlift\AndroidStudioProjects\android-appcms\AndroidAppCMSMaster.iml" filepath="C:\Users\Viewlift\AndroidStudioProjects\android-appcms\AndroidAppCMSMaster.iml" />
       <module fileurl="file://$PROJECT_DIR$/AppCMS/AppCMS.iml" filepath="$PROJECT_DIR$/AppCMS/AppCMS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android-appcms.iml" filepath="$PROJECT_DIR$/android-appcms.iml" />
     </modules>
   </component>
 </project>
