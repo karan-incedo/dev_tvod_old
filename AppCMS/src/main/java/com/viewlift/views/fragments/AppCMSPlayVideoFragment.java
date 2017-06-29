@@ -263,7 +263,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     @Override
     public void onResume() {
-        if (adsManager != null && isAdDisplayed) {
+        if (shouldRequestAds && adsManager != null && isAdDisplayed) {
             adsManager.resume();
         } else {
             videoPlayerView.resumePlayer();
@@ -274,7 +274,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     @Override
     public void onPause() {
-        if (adsManager != null && isAdDisplayed) {
+        if (shouldRequestAds && adsManager != null && isAdDisplayed) {
             adsManager.pause();
         } else {
             videoPlayerView.pausePlayer();

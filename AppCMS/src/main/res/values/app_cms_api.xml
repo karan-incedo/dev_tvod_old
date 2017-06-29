@@ -41,7 +41,7 @@
     <string name="app_cms_page_progress_view_key">progressView</string>
     <string name="app_cms_page_carousel_key">carousel</string>
     <string name="app_cms_page_page_control_key">pageControl</string>
-    <string name="app_cms_page_seperator_key">separatorView</string>
+    <string name="app_cms_page_separator_key">separatorView</string>
     <string name="app_cms_page_castview_key">castView</string>
     <string name="app_cms_page_bg_key">bg</string>
     <string name="app_cms_page_logo_key">logo</string>
@@ -105,6 +105,7 @@
     <string name="app_cms_action_share_key">share</string>
     <string name="app_cms_action_close_key">close</string>
     <string name="app_cms_action_search_key">search</string>
+    <string name="app_cms_action_qualifier_watchvideo_key">trailer</string>
 
     <!-- AppCMS Data values -->
     <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true</string>

@@ -334,9 +334,12 @@ public class AppCMSPresenter {
             if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
                     actionType == AppCMSActionType.WATCH_TRAILER) {
                     Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
-
                     if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE) {
-                        playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), true);
+                        boolean requestAds = true;
+                        if (pagePath != null && pagePath.contains(currentActivity.getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
+                            requestAds = false;
+                        }
+                        playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), requestAds);
                     } else {
                         playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), false);
                     }
