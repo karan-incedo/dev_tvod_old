@@ -252,6 +252,12 @@ public class AppCMSPresenter {
         this.currentActivity = activity;
     }
 
+    public void unsetCurrentActivity(Activity closedActivity) {
+        if (currentActivity == closedActivity) {
+            currentActivity = null;
+        }
+    }
+
     public void initializeGA(String trackerId) {
         if (this.googleAnalytics == null) {
             this.googleAnalytics = GoogleAnalytics.getInstance(currentActivity);
@@ -911,7 +917,11 @@ public class AppCMSPresenter {
                         .getGeneral()
                         .getBackgroundColor())));
                 if (currentActivity.getWindow().isActive()) {
-                    dialog.show();
+                    try {
+                        dialog.show();
+                    } catch (Exception e) {
+                        Log.e(TAG, "An exception has occurred when attempting to show the error dialog: " + e.toString());
+                    }
                 }
             }
         }

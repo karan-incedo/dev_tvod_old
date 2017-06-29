@@ -81,6 +81,7 @@ public class AppCMSApplication extends Application {
             @Override
             public void onActivityDestroyed(Activity activity) {
                 Log.d(TAG, "Activity being destroyed: " + activity.getLocalClassName());
+                appCMSPresenterComponent.appCMSPresenter().unsetCurrentActivity(activity);
             }
         });
 
