@@ -10,6 +10,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -28,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+
+import snagfilms.com.air.appcms.R;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -207,15 +210,25 @@ public class CollectionGridItemView extends BaseView {
                             childViewWidth > 0 &&
                             !TextUtils.isEmpty(data.getGist().getPosterImageUrl())) {
                         if (isLandscape(getContext())) {
+                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getPosterImageUrl(),
+                                    childViewWidth,
+                                    childViewHeight);
+                            Log.d(TAG, "Loading image: " + imageUrl);
                             Picasso.with(context)
-                                    .load(data.getGist().getPosterImageUrl())
+                                    .load(imageUrl)
                                     .resize(childViewWidth, childViewHeight)
                                     .centerCrop()
                                     .onlyScaleDown()
                                     .into((ImageView) view);
                         } else {
+                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getPosterImageUrl(),
+                                    childViewWidth,
+                                    childViewHeight);
+                            Log.d(TAG, "Loading image: " + imageUrl);
                             Picasso.with(context)
-                                    .load(data.getGist().getPosterImageUrl())
+                                    .load(imageUrl)
                                     .resize(childViewWidth, childViewHeight)
                                     .centerCrop()
                                     .onlyScaleDown()
@@ -229,8 +242,13 @@ public class CollectionGridItemView extends BaseView {
                                     .load(data.getGist().getVideoImageUrl())
                                     .into((ImageView) view);
                         } else {
+                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getVideoImageUrl(),
+                                    childViewWidth,
+                                    childViewHeight);
+                            Log.d(TAG, "Loading image: " + imageUrl);
                             Picasso.with(context)
-                                    .load(data.getGist().getVideoImageUrl())
+                                    .load(imageUrl)
                                     .resize(childViewWidth, childViewHeight)
                                     .centerCrop()
                                     .onlyScaleDown()
@@ -238,8 +256,13 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
+                        final String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                data.getGist().getVideoImageUrl(),
+                                deviceWidth,
+                                childViewHeight);
+                        Log.d(TAG, "Loading image: " + imageUrl);
                         Picasso.with(context)
-                                .load(data.getGist().getVideoImageUrl())
+                                .load(imageUrl)
                                 .resize(deviceWidth, childViewHeight)
                                 .centerCrop()
                                 .transform(new Transformation() {
@@ -271,7 +294,7 @@ public class CollectionGridItemView extends BaseView {
 
                                     @Override
                                     public String key() {
-                                        return data.getGist().getVideoImageUrl();
+                                        return imageUrl;
                                     }
                                 })
                                 .into((ImageView) view);

@@ -126,4 +126,7 @@
     <string name="app_cms_user_agent">AppCMS Android</string>
     <string name="app_cms_default_video_ext">m3u8</string>
     <string name="play_ads_key">play_ads</string>
+
+    <!-- AppCMS Image with Resize Query -->
+    <string name="app_cms_image_with_resize_query">%1$s?impolicy=resize&amp;w=%2$d&amp;h=%3$d</string>
 </resources>

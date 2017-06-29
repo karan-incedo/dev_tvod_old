@@ -210,7 +210,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     if (shouldRequestAds) {
                         requestAds(adsUrl);
                     } else {
-                        videoPlayerView.startPlayer();
+                        videoPlayerView.resumePlayer();
                     }
                 } else if (playerState.getPlaybackState() == ExoPlayer.STATE_ENDED) {
                     Log.d(TAG, "Video ended");
@@ -234,6 +234,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                 }
             }
         });
+        if (!shouldRequestAds) {
+            videoPlayerView.startPlayer();
+        }
         beaconMessageThread = new BeaconPingThread(beaconMsgTimeoutMsec,
                 appCMSPresenter,
                 filmId,
