@@ -210,10 +210,7 @@ public class CollectionGridItemView extends BaseView {
                             childViewWidth > 0 &&
                             !TextUtils.isEmpty(data.getGist().getPosterImageUrl())) {
                         if (isLandscape(getContext())) {
-                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                    data.getGist().getPosterImageUrl(),
-                                    childViewWidth,
-                                    childViewHeight);
+                            String imageUrl = data.getGist().getPosterImageUrl();
                             Log.d(TAG, "Loading image: " + imageUrl);
                             Picasso.with(context)
                                     .load(imageUrl)
@@ -222,10 +219,7 @@ public class CollectionGridItemView extends BaseView {
                                     .onlyScaleDown()
                                     .into((ImageView) view);
                         } else {
-                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                    data.getGist().getPosterImageUrl(),
-                                    childViewWidth,
-                                    childViewHeight);
+                            String imageUrl = data.getGist().getPosterImageUrl();
                             Log.d(TAG, "Loading image: " + imageUrl);
                             Picasso.with(context)
                                     .load(imageUrl)
@@ -242,10 +236,7 @@ public class CollectionGridItemView extends BaseView {
                                     .load(data.getGist().getVideoImageUrl())
                                     .into((ImageView) view);
                         } else {
-                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                    data.getGist().getVideoImageUrl(),
-                                    childViewWidth,
-                                    childViewHeight);
+                            String imageUrl = data.getGist().getVideoImageUrl();
                             Log.d(TAG, "Loading image: " + imageUrl);
                             Picasso.with(context)
                                     .load(imageUrl)
@@ -256,10 +247,7 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
-                        final String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                data.getGist().getVideoImageUrl(),
-                                deviceWidth,
-                                childViewHeight);
+                        final String imageUrl = data.getGist().getVideoImageUrl();
                         Log.d(TAG, "Loading image: " + imageUrl);
                         Picasso.with(context)
                                 .load(imageUrl)
