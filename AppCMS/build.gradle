@@ -141,4 +141,5 @@ dependencies {
     provided "javax.annotation:jsr250-api:$rootProject.ext.jsr250_apiVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
 
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 }

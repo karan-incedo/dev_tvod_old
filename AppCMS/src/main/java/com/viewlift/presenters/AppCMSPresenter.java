@@ -64,6 +64,7 @@ import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.views.activity.AppCMSErrorActivity;
+import com.viewlift.views.activity.AppCMSHistoryActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.activity.AppCMSSearchActivity;
@@ -539,6 +540,24 @@ public class AppCMSPresenter {
         return result;
     }
 
+    public void launchHistoryPage() {
+        //
+    }
+
+    public boolean launchHistoryResultsPage() {
+        boolean result = false;
+
+        if (currentActivity != null) {
+            result = true;
+
+            Intent historyIntent = new Intent(currentActivity, AppCMSHistoryActivity.class);
+            //
+            currentActivity.startActivity(historyIntent);
+        }
+
+        return result;
+    }
+
     public void resetOnOrientationChangeHandlers() {
         onOrientationChangeHandlers.clear();
     }
@@ -575,10 +594,9 @@ public class AppCMSPresenter {
         }
     }
 
-    // TODO: 6/29/2017 Make method return void instead of false - since boolean isn't being used.
     @SuppressWarnings("unused")
-    public boolean navigateToWatchlistPage(String pageId, String pageTitle, String url,
-                                           boolean launchActivity) {
+    public void navigateToWatchlistPage(String pageId, String pageTitle, String url,
+                                        boolean launchActivity) {
 
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
             loadingPage = true;
@@ -650,8 +668,6 @@ public class AppCMSPresenter {
                         });
             }
         }
-
-        return false;
     }
 
     public boolean navigateToPage(String pageId,
