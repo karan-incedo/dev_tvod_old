@@ -798,22 +798,33 @@ public class AppCMSPresenter {
         }
     }
 
-    private void getHistoryPageContent(String apiBaseUrl, String endPoint, String siteiD,
+    private void getHistoryPageContent(final String apiBaseUrl, String endPoint, final String siteiD,
                                        boolean userPageIdQueryParam, String pageId,
                                        final AppCMSHistoryAPIAction history) {
-        try {
-            appCMSHistoryCall.call(currentActivity.getString(R.string.app_cms_history_api_url,
-                    apiBaseUrl, getLoggedInUser(currentActivity), siteiD,
-                    getLoggedInUser(currentActivity)),
-                    new Action1<AppCMSHistoryResult>() {
-                        @Override
-                        public void call(AppCMSHistoryResult appCMSHistoryResult) {
-                            history.call(appCMSHistoryResult);
-                        }
-                    });
-        } catch (IOException e) {
-            Log.e(TAG, "getHistoryPageContent: " + e.toString());
-        }
+
+        String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
+                appCMSMain.getApiBaseUrl(),
+                refreshToken);
+
+        appCMSRefreshIdentityCall.call(url, new Action1<RefreshIdentityResponse>() {
+            @Override
+            public void call(RefreshIdentityResponse refreshIdentityResponse) {
+                try {
+                    appCMSHistoryCall.call(currentActivity.getString(R.string.app_cms_history_api_url,
+                            apiBaseUrl, getLoggedInUser(currentActivity), siteiD,
+                            getLoggedInUser(currentActivity)),
+                            new Action1<AppCMSHistoryResult>() {
+                                @Override
+                                public void call(AppCMSHistoryResult appCMSHistoryResult) {
+                                    history.call(appCMSHistoryResult);
+                                }
+                            });
+                } catch (IOException e) {
+                    Log.e(TAG, "getHistoryPageContent: " + e.toString());
+
+                }
+            }
+        });
     }
 
     public boolean navigateToPage(String pageId,
