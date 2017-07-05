@@ -9,6 +9,11 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import rx.functions.Action1;
+
 /**
  * Created by viewlift on 7/5/17.
  */
@@ -32,5 +37,19 @@ public class AppCMSRefreshIdentityCall {
             Log.e(TAG, "IO error retrieving Refresh Identity Response: " + e.toString());
         }
         return null;
+    }
+
+    public void call(String url, final Action1<RefreshIdentityResponse> readyAction) {
+        appCMSRefreshIdentityRest.get(url).enqueue(new Callback<RefreshIdentityResponse>() {
+            @Override
+            public void onResponse(Call<RefreshIdentityResponse> call, Response<RefreshIdentityResponse> response) {
+                readyAction.call(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<RefreshIdentityResponse> call, Throwable t) {
+                Log.e(TAG, "Error retrieving Refresh Identity Response");
+            }
+        });
     }
 }
