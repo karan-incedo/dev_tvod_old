@@ -80,8 +80,7 @@
     <string name="app_cms_page_signup_component_key">AC SignUp Component</string>
     <string name="app_cms_page_video_image_key">videoImage</string>
     <string name="app_cms_page_video_play_button_key">playButton</string>
-    <string name="app_cms_page_table_view_key">tableView</string>
-    <string name="app_cms_page_video_description_key">videoDescriptionText</string>
+    <string name="app_cms_page_video_description_key">videoDescriptionText</string>dd
     <string name="app_cms_page_video_title_key">videoTitle</string>
     <string name="app_cms_page_video_subtitle_key">videoSubTitle</string>
     <string name="app_cms_page_video_ageLabel_key">ageLabel</string>

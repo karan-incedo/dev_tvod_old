@@ -15,12 +15,12 @@ import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSMainUIRest;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.models.network.rest.AppCMSPageUIRest;
-import com.viewlift.models.network.rest.AppCMSWatchlistCall;
-import com.viewlift.models.network.rest.AppCMSWatchlistRest;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityRest;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignInRest;
+import com.viewlift.models.network.rest.AppCMSWatchlistCall;
+import com.viewlift.models.network.rest.AppCMSWatchlistRest;
 import com.viewlift.presenters.AppCMSActionType;
 
 import java.io.File;
@@ -312,20 +312,8 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSWatchlistCall providesAppCMSWatchlistCall(Retrofit retrofit) {
-        return retrofit.create(AppCMSWatchlistCall.class);
-    }
-
-    @Provides
-    @Singleton
     public AppCMSHistoryRest providesAppCMSHistoryRest(Retrofit retrofit) {
         return retrofit.create(AppCMSHistoryRest.class);
-    }
-
-    @Provides
-    @Singleton
-    public AppCMSHistoryCall providesAppCMSHistoryCall(Retrofit retrofit) {
-        return retrofit.create(AppCMSHistoryCall.class);
     }
 
     @Provides
@@ -384,6 +372,19 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSWatchlistCall providesAppCMSWatchlistCall(AppCMSWatchlistRest appCMSWatchlistRest, Gson gson) {
+        return new AppCMSWatchlistCall(appCMSWatchlistRest, gson);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSHistoryCall providesAppCMSHistoryCall(AppCMSHistoryRest appCMSHistoryRest, Gson gson) {
+        return new AppCMSHistoryCall(appCMSHistoryRest, gson);
+    }
+
+    @Provides
+    @Singleton
+
     public Map<String, AppCMSUIKeyType> providesJsonValueKeyMap() {
         return jsonValueKeyMap;
     }

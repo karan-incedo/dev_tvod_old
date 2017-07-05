@@ -41,30 +41,27 @@ import com.viewlift.models.data.appcms.ui.android.User;
 import com.viewlift.models.data.appcms.ui.authentication.RefreshIdentityResponse;
 import com.viewlift.models.data.appcms.ui.authentication.SignInResponse;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
-import com.viewlift.models.network.background.tasks.GetAppCMSRefreshIdentityAsyncTask;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSRefreshIdentityAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
 import com.viewlift.models.network.background.tasks.PostAppCMSLoginRequestAsyncTask;
 import com.viewlift.models.network.components.AppCMSAPIComponent;
 import com.viewlift.models.network.components.AppCMSSearchUrlComponent;
-import com.viewlift.models.network.components.AppCMSWatchlistUrlComponent;
 import com.viewlift.models.network.components.DaggerAppCMSAPIComponent;
 import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
-import com.viewlift.models.network.components.DaggerAppCMSWatchlistUrlComponent;
 import com.viewlift.models.network.modules.AppCMSAPIModule;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
-import com.viewlift.models.network.modules.AppCMSWatchlistUrlModule;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
-import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
+import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
@@ -158,8 +155,6 @@ public class AppCMSPresenter {
     private Map<String, List<OnInternalEvent>> onActionInternalEvents;
     private Stack<String> currentActions;
     private AppCMSSearchUrlComponent appCMSSearchUrlComponent;
-
-    private AppCMSWatchlistUrlComponent appCMSWatchlistUrlComponent;
 
     private BeaconRunnable beaconMessageRunnable;
     private Runnable beaconMessageThread;
@@ -993,13 +988,7 @@ public class AppCMSPresenter {
                                     appCMSSearchCall))
                             .build();
                     getAppCMSSite(activity, main, platformType);
-
-                    appCMSWatchlistUrlComponent = DaggerAppCMSWatchlistUrlComponent.builder()
-                            .appCMSWatchlistUrlModule(new AppCMSWatchlistUrlModule(main.getApiBaseUrl(),
-                                    main.getSite(), null))
-//                             FIXME: 6/28/2017 add appCMSWatchlistCall to presenter.
-//                                    appCMSWatchlistCall))
-                            .build();}
+                }
             }
         }).execute(params);
     }
@@ -1030,17 +1019,8 @@ public class AppCMSPresenter {
         return appCMSSearchCall;
     }
 
-    public AppCMSWatchlistCall getAppCMSWatchlistCall() {
-//        return appCMSWatchlistCall;
-        return null;
-    }
-
     public AppCMSSearchUrlComponent getAppCMSSearchUrlComponent() {
         return appCMSSearchUrlComponent;
-    }
-
-    public AppCMSWatchlistUrlComponent getAppCMSWatchlistUrlComponent() {
-        return appCMSWatchlistUrlComponent;
     }
 
     public void showMoreDialog(String title, String fullText, int textColor) {
