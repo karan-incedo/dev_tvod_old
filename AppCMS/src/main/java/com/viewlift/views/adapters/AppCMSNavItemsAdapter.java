@@ -69,6 +69,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             primary.getTitle(),
                             primary.getUrl(),
                             false,
+                            true,
                             null)) {
                         Log.e(TAG, "Could not navigate to page with Title: " +
                                 primary.getTitle() +
@@ -102,6 +103,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                 user.getTitle(),
                                 user.getUrl(),
                                 false,
+                                true,
                                 null)) {
                             Log.e(TAG, "Could not navigate to page with Title: " +
                                     user.getTitle() +
@@ -151,6 +153,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                 footer.getTitle(),
                                 footer.getUrl(),
                                 false,
+                                true,
                                 null)) {
                             Log.e(TAG, "Could not navigate to page with Title: " +
                                     footer.getTitle() +

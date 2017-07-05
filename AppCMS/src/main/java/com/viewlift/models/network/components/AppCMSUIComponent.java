@@ -7,6 +7,8 @@ import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
+import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
+import com.viewlift.models.network.rest.AppCMSSignInCall;
 
 import javax.inject.Singleton;
 
@@ -30,4 +32,8 @@ public interface AppCMSUIComponent {
     AppCMSWatchlistCall appCMSWatchlistCall();
 
     AppCMSHistoryCall appCMSHistoryCall();
+
+    AppCMSSignInCall appCMSSignInCall();
+
+    AppCMSRefreshIdentityCall appCMSRefreshIdentityCall();
 }

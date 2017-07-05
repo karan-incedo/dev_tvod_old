@@ -306,7 +306,6 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
         if (adapterData.size() != 0) {
             return Integer.MAX_VALUE / 2 - ((Integer.MAX_VALUE / 2) % adapterData.size());
         }
-
         return 0;
     }
 

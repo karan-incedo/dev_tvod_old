@@ -17,6 +17,10 @@ import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.models.network.rest.AppCMSPageUIRest;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistRest;
+import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
+import com.viewlift.models.network.rest.AppCMSRefreshIdentityRest;
+import com.viewlift.models.network.rest.AppCMSSignInCall;
+import com.viewlift.models.network.rest.AppCMSSignInRest;
 import com.viewlift.presenters.AppCMSActionType;
 
 import java.io.File;
@@ -76,7 +80,7 @@ public class AppCMSUIModule {
     }
 
     private void createJsonValueKeyMap(Context context) {
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_splashscreen_key),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_authenticationscreen_key),
                 AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_homepage_key),
                 AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY);
@@ -104,6 +108,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_seperator_key),
                 AppCMSUIKeyType.PAGE_SEPARATOR_VIEW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_segmented_view),
+                AppCMSUIKeyType.PAGE_SEGMENTED_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_castview_key),
                 AppCMSUIKeyType.PAGE_CASTVIEW_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_image_key),
@@ -142,6 +148,26 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_textview_key),
                 AppCMSUIKeyType.PAGE_TEXTVIEW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_textfield_key),
+                AppCMSUIKeyType.PAGE_TEXTFIELD_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_emailtextfield_key),
+                AppCMSUIKeyType.PAGE_EMAILTEXTFIELD_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_emailtextfield2_key),
+                AppCMSUIKeyType.PAGE_EMAILTEXTFIELD2_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_passwordtextfield_key),
+                AppCMSUIKeyType.PAGE_PASSWORDTEXTFIELD_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_passwordtextfield2_key),
+                AppCMSUIKeyType.PAGE_PASSWORDTEXTFIELD2_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_forgotpassword_key),
+                AppCMSUIKeyType.PAGE_FORGOTPASSWORD_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_mobileinput_key),
+                AppCMSUIKeyType.PAGE_MOBILETEXTFIELD_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_authentication_module),
+                AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_login_component_key),
+                AppCMSUIKeyType.PAGE_LOGIN_COMPONENT_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_signup_component_key),
+                AppCMSUIKeyType.PAGE_SIGNUP_COMPONENT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_image_key),
                 AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_play_button_key),
@@ -181,7 +207,7 @@ public class AppCMSUIModule {
     }
 
     private void createPageNameToActionMap(Context context) {
-        this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_splashscreen_key),
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_authenticationscreen_key),
                 context.getString(R.string.app_cms_action_authpage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_homepage_key),
                 context.getString(R.string.app_cms_action_homepage_key));
@@ -218,6 +244,14 @@ public class AppCMSUIModule {
                 AppCMSActionType.SHARE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_close_key),
                 AppCMSActionType.CLOSE);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_login_key),
+                AppCMSActionType.LOGIN);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_forgotpassword_key),
+                AppCMSActionType.FORGOT_PASSWORD);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_loginfacebook_key),
+                AppCMSActionType.LOGIN_FACEBOOK);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_signup_key),
+                AppCMSActionType.SIGNUP);
     }
 
     @Provides
@@ -302,6 +336,18 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSSignInRest providesAppCMSSignInRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSSignInRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSRefreshIdentityRest providesAppCMSRefreshIdentityRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSRefreshIdentityRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -322,6 +368,18 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSPageUICall providesAppCMSPageUICall(AppCMSPageUIRest appCMSPageUIRest, Gson gson) {
         return new AppCMSPageUICall(appCMSPageUIRest, gson, storageDirectory);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSSignInCall providesAppCMSSignInCall(AppCMSSignInRest appCMSSignInRest, Gson gson) {
+        return new AppCMSSignInCall(appCMSSignInRest, gson);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSRefreshIdentityCall providesAppCMSRefreshIdentityCall(AppCMSRefreshIdentityRest appCMSRefreshIdentityRest) {
+        return new AppCMSRefreshIdentityCall(appCMSRefreshIdentityRest);
     }
 
     @Provides

@@ -7,9 +7,11 @@ import com.viewlift.models.network.modules.AppCMSSearchModule;
 import com.viewlift.models.network.modules.AppCMSWatchlistModule;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
+import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.presenters.AppCMSActionType;
@@ -40,6 +42,8 @@ public class AppCMSPresenterModule {
                                                    AppCMSWatchlistCall appCMSWatchlistCall,
 
                                                    AppCMSBeaconRest appCMSBeaconRest,
+                                                   AppCMSSignInCall appCMSSignInCall,
+                                                   AppCMSRefreshIdentityCall appCMSRefreshIdentityCall,
                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                    Map<String, String> pageNameToActionMap,
                                                    Map<String, AppCMSPageUI> actionToPageMap,
@@ -54,6 +58,8 @@ public class AppCMSPresenterModule {
                 appCMSWatchlistCall,
 
                 appCMSBeaconRest,
+                appCMSSignInCall,
+                appCMSRefreshIdentityCall,
                 jsonValueKeyMap,
                 pageNameToActionMap,
                 actionToPageMap,

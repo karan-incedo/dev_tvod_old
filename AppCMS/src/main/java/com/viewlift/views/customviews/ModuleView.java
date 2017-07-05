@@ -6,18 +6,18 @@ import android.widget.FrameLayout;
 
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
-import com.viewlift.models.data.appcms.ui.page.ModuleList;
+import com.viewlift.models.data.appcms.ui.page.Module;
 
 /**
  * Created by viewlift on 5/17/17.
  */
 
-public class ModuleView extends BaseView {
+public class ModuleView<T extends Module> extends BaseView {
     private static final String TAG = "ModuleView";
 
-    private final ModuleList module;
+    private final T module;
 
-    public ModuleView(Context context, ModuleList module) {
+    public ModuleView(Context context, T module) {
         super(context);
         this.module = module;
         init();

@@ -38,7 +38,10 @@ import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.Primary;
 import com.viewlift.models.data.appcms.ui.android.User;
+import com.viewlift.models.data.appcms.ui.authentication.RefreshIdentityResponse;
+import com.viewlift.models.data.appcms.ui.authentication.SignInResponse;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
+import com.viewlift.models.network.background.tasks.GetAppCMSRefreshIdentityAsyncTask;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
@@ -46,6 +49,7 @@ import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
+import com.viewlift.models.network.background.tasks.PostAppCMSLoginRequestAsyncTask;
 import com.viewlift.models.network.components.AppCMSAPIComponent;
 import com.viewlift.models.network.components.AppCMSSearchUrlComponent;
 import com.viewlift.models.network.components.AppCMSWatchlistUrlComponent;
@@ -57,10 +61,12 @@ import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.models.network.modules.AppCMSWatchlistUrlModule;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
+import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
@@ -72,7 +78,6 @@ import com.viewlift.views.activity.AppCMSSearchActivity;
 import com.viewlift.views.activity.AppCMSWatchlistActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
-import com.viewlift.views.customviews.LifecycleStatus;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.fragments.AppCMSHistoryFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
@@ -118,13 +123,15 @@ public class AppCMSPresenter {
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
 
-    private static final long MILLISECONDS_PER_SECONDS = 1000L;
+    private static final long MILLISECONDS_PER_SECOND = 1000L;
 
     private final AppCMSMainUICall appCMSMainUICall;
     private final AppCMSAndroidUICall appCMSAndroidUICall;
     private final AppCMSPageUICall appCMSPageUICall;
     private final AppCMSSiteCall appCMSSiteCall;
     private final AppCMSSearchCall appCMSSearchCall;
+    private final AppCMSSignInCall appCMSSignInCall;
+    private final AppCMSRefreshIdentityCall appCMSRefreshIdentityCall;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final Map<String, String> pageNameToActionMap;
     private final Map<String, AppCMSPageUI> actionToPageMap;
@@ -148,7 +155,6 @@ public class AppCMSPresenter {
     private Map<String, String> actionToPageNameMap;
     private Map<String, String> pageIdToPageNameMap;
     private List<Action1<Boolean>> onOrientationChangeHandlers;
-    private List<Action1<LifecycleStatus>> onLifecycleChangeHandlers;
     private Map<String, List<OnInternalEvent>> onActionInternalEvents;
     private Stack<String> currentActions;
     private AppCMSSearchUrlComponent appCMSSearchUrlComponent;
@@ -159,6 +165,7 @@ public class AppCMSPresenter {
     private Runnable beaconMessageThread;
     private GoogleAnalytics googleAnalytics;
     private Tracker tracker;
+    private Uri deeplinkSearchQuery;
 
     public enum PlatformType {
         ANDROID, TV
@@ -238,6 +245,8 @@ public class AppCMSPresenter {
                            AppCMSWatchlistCall appCMSWatchlistCall,
 
                            AppCMSBeaconRest appCMSBeaconRest,
+                           AppCMSSignInCall appCMSSignInCall,
+                           AppCMSRefreshIdentityCall appCMSRefreshIdentityCall,
                            Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                            Map<String, String> pageNameToActionMap,
                            Map<String, AppCMSPageUI> actionToPageMap,
@@ -248,6 +257,8 @@ public class AppCMSPresenter {
         this.appCMSPageUICall = appCMSPageUICall;
         this.appCMSSiteCall = appCMSSiteCall;
         this.appCMSSearchCall = appCMSSearchCall;
+        this.appCMSSignInCall = appCMSSignInCall;
+        this.appCMSRefreshIdentityCall = appCMSRefreshIdentityCall;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.pageNameToActionMap = pageNameToActionMap;
         this.actionToPageMap = actionToPageMap;
@@ -264,7 +275,6 @@ public class AppCMSPresenter {
         this.actionToPageNameMap = new HashMap<>();
         this.pageIdToPageNameMap = new HashMap();
         this.onOrientationChangeHandlers = new ArrayList<>();
-        this.onLifecycleChangeHandlers = new ArrayList<>();
         this.onActionInternalEvents = new HashMap<>();
         this.currentActions = new Stack<>();
         this.beaconMessageRunnable = new BeaconRunnable(appCMSBeaconRest);
@@ -393,6 +403,15 @@ public class AppCMSPresenter {
                 }
             } else if (actionType == AppCMSActionType.CLOSE) {
                 sendCloseOthersAction();
+            } else if (actionType == AppCMSActionType.LOGIN) {
+                Log.d(TAG, "Login action selected: " + extraData[0]);
+                login(extraData[0], extraData[1]);
+            } else if (actionType == AppCMSActionType.FORGOT_PASSWORD) {
+                Log.d(TAG, "Forgot password selected: " + extraData[0]);
+            } else if (actionType == AppCMSActionType.LOGIN_FACEBOOK) {
+                Log.d(TAG, "Login Facebook selected");
+            } else if (actionType == AppCMSActionType.SIGNUP) {
+                Log.d(TAG, "Sign-Up selected: " + extraData[0]);
             } else {
                 boolean appbarPresent = true;
                 boolean fullscreenEnabled = false;
@@ -419,6 +438,7 @@ public class AppCMSPresenter {
                         appbarPresent = false;
                         fullscreenEnabled = false;
                         navbarPresent = false;
+                        break;
                     case HOME_PAGE:
                     default:
                         break;
@@ -567,27 +587,9 @@ public class AppCMSPresenter {
         return result;
     }
 
-    public void resetOnOrientationChangeHandlers() {
-        onOrientationChangeHandlers.clear();
-    }
-
-    public void addOnOrientationChangeHandler(Action1<Boolean> onOrientationChangeHandler) {
-        onOrientationChangeHandlers.add(onOrientationChangeHandler);
-    }
-
     public void onOrientationChange(boolean landscape) {
         for (Action1<Boolean> onOrientationChangeHandler : onOrientationChangeHandlers) {
             Observable.just(landscape).subscribe(onOrientationChangeHandler);
-        }
-    }
-
-    public void addOnLifecycleChangeHandler(Action1<LifecycleStatus> onLifecycleChangeHandler) {
-        onLifecycleChangeHandlers.add(onLifecycleChangeHandler);
-    }
-
-    public void onLifecycleChange(LifecycleStatus lifecycleStatus) {
-        for (Action1<LifecycleStatus> onLifecycleChangeHandler : onLifecycleChangeHandlers) {
-            Observable.just(lifecycleStatus).subscribe(onLifecycleChangeHandler);
         }
     }
 
@@ -683,6 +685,7 @@ public class AppCMSPresenter {
                                   String pageTitle,
                                   String url,
                                   boolean launchActivity,
+                                  boolean navbarPresent,
                                   final Uri searchQuery) {
         boolean result = false;
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
@@ -700,7 +703,7 @@ public class AppCMSPresenter {
                         getPageId(appCMSPageUI),
                         new AppCMSPageAPIAction(true,
                                 false,
-                                true,
+                                navbarPresent,
                                 appCMSPageUI,
                                 pageId,
                                 pageId,
@@ -954,6 +957,7 @@ public class AppCMSPresenter {
                               final String siteId,
                               final Uri searchQuery,
                               final PlatformType platformType) {
+        deeplinkSearchQuery = searchQuery;
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
@@ -977,12 +981,8 @@ public class AppCMSPresenter {
                     launchErrorActivity(activity);
                 } else {
                     appCMSMain = main;
-                    String androidUrl = main
-                            .getAndroid();
-                    String version = main
-                            .getVersion();
-                    String oldVersion = main
-                            .getOldVersion();
+                    String version = main.getVersion();
+                    String oldVersion = main.getOldVersion();
                     Log.d(TAG, "Version: " + version);
                     Log.d(TAG, "OldVersion: " + oldVersion);
                     loadFromFile = false;
@@ -992,15 +992,14 @@ public class AppCMSPresenter {
                                     main.getSite(),
                                     appCMSSearchCall))
                             .build();
-                    getAppCMSSite(activity, main, searchQuery, platformType);
+                    getAppCMSSite(activity, main, platformType);
 
                     appCMSWatchlistUrlComponent = DaggerAppCMSWatchlistUrlComponent.builder()
                             .appCMSWatchlistUrlModule(new AppCMSWatchlistUrlModule(main.getApiBaseUrl(),
                                     main.getSite(), null))
 //                             FIXME: 6/28/2017 add appCMSWatchlistCall to presenter.
 //                                    appCMSWatchlistCall))
-                            .build();
-                }
+                            .build();}
             }
         }).execute(params);
     }
@@ -1163,7 +1162,7 @@ public class AppCMSPresenter {
     private String getBeaconUrl(String vid, String screenName, String parentScreenName, long currentPosition, BeaconEvent event) {
         final String utfEncoding = currentActivity.getString(R.string.utf8enc);
         String uid = InstanceID.getInstance(currentActivity).getId();
-        int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECONDS);
+        int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
         if (isUserLoggedIn(currentActivity)) {
             uid = getLoggedInUser(currentActivity);
         }
@@ -1192,6 +1191,62 @@ public class AppCMSPresenter {
             Log.d(TAG, "Sending GA screen tracking event: " + screenName);
             tracker.setScreenName(screenName);
             tracker.send(new HitBuilders.ScreenViewBuilder().build());
+        }
+    }
+
+    public void login(String email, String password) {
+        if (currentActivity != null) {
+            String url = currentActivity.getString(R.string.app_cms_signin_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSMain.getSite());
+            PostAppCMSLoginRequestAsyncTask.Params params = new PostAppCMSLoginRequestAsyncTask.Params
+                    .Builder()
+                    .url(url)
+                    .email(email)
+                    .password(password)
+                    .build();
+            new PostAppCMSLoginRequestAsyncTask(appCMSSignInCall,
+                    new Action1<SignInResponse>() {
+                        @Override
+                        public void call(SignInResponse signInResponse) {
+                            if (signInResponse == null) {
+                                // Show log error
+                                Log.e(TAG, "Email and password are not valid.");
+                            } else {
+                                refreshIdentity(signInResponse.getRefreshToken());
+                            }
+                        }
+                    }).execute(params);
+        }
+    }
+
+    public void refreshIdentity(String refreshToken) {
+        if (currentActivity != null) {
+            String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    refreshToken);
+            GetAppCMSRefreshIdentityAsyncTask.Params params = new GetAppCMSRefreshIdentityAsyncTask.Params
+                    .Builder()
+                    .url(url)
+                    .build();
+            new GetAppCMSRefreshIdentityAsyncTask(appCMSRefreshIdentityCall,
+                    new Action1<RefreshIdentityResponse>() {
+                        @Override
+                        public void call(RefreshIdentityResponse refreshIdentityResponse) {
+                            if (refreshIdentityResponse != null) {
+                                setLoggedInUser(currentActivity, refreshIdentityResponse.getId());
+                                Primary homePageNavItem = findHomePageNavItem();
+                                if (homePageNavItem != null) {
+                                    navigateToPage(homePageNavItem.getPageId(),
+                                            homePageNavItem.getTitle(),
+                                            homePageNavItem.getUrl(),
+                                            false,
+                                            true,
+                                            deeplinkSearchQuery);
+                                }
+                            }
+                        }
+                    }).execute(params);
         }
     }
 
@@ -1288,7 +1343,6 @@ public class AppCMSPresenter {
 
     private void getAppCMSSite(final Activity activity,
                                final AppCMSMain main,
-                               final Uri searchQuery,
                                final PlatformType platformType) {
         String url = currentActivity.getString(R.string.app_cms_site_api_url,
                 main.getApiBaseUrl(),
@@ -1305,10 +1359,10 @@ public class AppCMSPresenter {
                                     .build();
                             appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
                             appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
-                            getAppCMSAndroid(activity, main, searchQuery);
+                            getAppCMSAndroid(activity, main);
                             switch (platformType) {
                                 case ANDROID:
-                                    getAppCMSAndroid(activity, main, searchQuery);
+                                    getAppCMSAndroid(activity, main);
                                     break;
                                 case TV:
                                     break;
@@ -1319,7 +1373,7 @@ public class AppCMSPresenter {
                 }).execute(url);
     }
 
-    private void getAppCMSAndroid(final Activity activity, final AppCMSMain main, final Uri searchQuery) {
+    private void getAppCMSAndroid(final Activity activity, final AppCMSMain main) {
         GetAppCMSAndroidUIAsyncTask.Params params =
                 new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                         .url(activity.getString(R.string.app_cms_url_with_appended_timestamp,
@@ -1340,7 +1394,7 @@ public class AppCMSPresenter {
                     initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
                     navigation = appCMSAndroidUI.getNavigation();
                     queueMetaPages(appCMSAndroidUI.getMetaPages());
-                    final MetaPage firstPage = pagesToProcess.peek();
+                    final MetaPage firstPage = pagesToProcess.poll();
                     Log.d(TAG, "Processing meta pages queue");
                     processMetaPagesQueue(activity,
                             main,
@@ -1348,15 +1402,20 @@ public class AppCMSPresenter {
                             new Action0() {
                                 @Override
                                 public void call() {
-                                    Log.d(TAG, "Launching first page: " + firstPage.getPageName());
-                                    boolean launchSuccess = navigateToPage(firstPage.getPageId(),
-                                            firstPage.getPageName(),
-                                            firstPage.getPageUI(),
-                                            true,
-                                            searchQuery);
-                                    if (!launchSuccess) {
-                                        Log.e(TAG, "Failed to launch page: " + firstPage.getPageName());
-                                        launchErrorActivity(currentActivity);
+                                    if (firstPage != null) {
+                                        Log.d(TAG, "Launching first page: " + firstPage.getPageName());
+                                        boolean navbarPresent =
+                                                (jsonValueKeyMap.get(firstPage.getPageName()) != AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY);
+                                        boolean launchSuccess = navigateToPage(firstPage.getPageId(),
+                                                firstPage.getPageName(),
+                                                firstPage.getPageUI(),
+                                                true,
+                                                navbarPresent,
+                                                deeplinkSearchQuery);
+                                        if (!launchSuccess) {
+                                            Log.e(TAG, "Failed to launch page: " + firstPage.getPageName());
+                                            launchErrorActivity(currentActivity);
+                                        }
                                     }
                                 }
                             });
@@ -1381,10 +1440,10 @@ public class AppCMSPresenter {
         }
         if (metaPageList.size() > 0) {
             int pageToQueueIndex = -1;
-            if (currentActivity != null && !isUserLoggedIn(currentActivity)) {
+            if (!isUserLoggedIn(currentActivity)) {
                 pageToQueueIndex = getSigninPage(metaPageList);
             }
-            if (pageToQueueIndex < 0) {
+            if (pageToQueueIndex == -1) {
                 pageToQueueIndex = getHomePage(metaPageList);
             }
             if (pageToQueueIndex >= 0) {

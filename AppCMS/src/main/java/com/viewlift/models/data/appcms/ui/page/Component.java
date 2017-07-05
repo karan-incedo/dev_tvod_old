@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Component {
+public class Component implements Module {
 
     @SerializedName("text")
     @Expose
@@ -103,6 +103,12 @@ public class Component {
     @SerializedName("fontFamilyValue")
     @Expose
     private String fontFamilyValue;
+    @SerializedName("view")
+    @Expose
+    private String view;
+    @SerializedName("protected")
+    @Expose
+    private boolean viewProtected;
 
     public String getText() {
         return text;
@@ -358,5 +364,21 @@ public class Component {
 
     public void setFontFamilyValue(String fontFamilyValue) {
         this.fontFamilyValue = fontFamilyValue;
+    }
+
+    public String getView() {
+        return view;
+    }
+
+    public void setView(String view) {
+        this.view = view;
+    }
+
+    public boolean isViewProtected() {
+        return viewProtected;
+    }
+
+    public void setViewProtected(boolean viewProtected) {
+        this.viewProtected = viewProtected;
     }
 }
