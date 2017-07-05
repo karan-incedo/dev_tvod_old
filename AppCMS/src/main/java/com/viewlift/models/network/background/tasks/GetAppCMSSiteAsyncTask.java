@@ -21,7 +21,6 @@ public class GetAppCMSSiteAsyncTask extends AsyncTask<String, Integer, AppCMSSit
     private final AppCMSSiteCall call;
     private final Action1<AppCMSSite> readyAction;
 
-
     public GetAppCMSSiteAsyncTask(AppCMSSiteCall call,
                                   Action1<AppCMSSite> readyAction) {
         this.call = call;

@@ -13,7 +13,6 @@ import com.viewlift.presenters.AppCMSPresenter;
 
 import snagfilms.com.air.appcms.R;
 
-
 /**
  * Created by viewlift on 6/7/17.
  */

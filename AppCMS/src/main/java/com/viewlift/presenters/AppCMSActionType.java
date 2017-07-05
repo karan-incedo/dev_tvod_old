@@ -11,5 +11,9 @@ public enum AppCMSActionType {
     PLAY_VIDEO_PAGE,
     WATCH_TRAILER,
     SHARE,
-    CLOSE
+    CLOSE,
+    LOGIN,
+    FORGOT_PASSWORD,
+    LOGIN_FACEBOOK,
+    SIGNUP
 }

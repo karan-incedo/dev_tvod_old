@@ -5,6 +5,8 @@ import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
+import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
+import com.viewlift.models.network.rest.AppCMSSignInCall;
 
 import javax.inject.Singleton;
 
@@ -21,4 +23,6 @@ public interface AppCMSUIComponent {
     AppCMSAndroidUICall appCMSAndroidCall();
     AppCMSPageUICall appCMSPageCall();
     AppCMSBeaconRest appCMSBeaconRest();
+    AppCMSSignInCall appCMSSignInCall();
+    AppCMSRefreshIdentityCall appCMSRefreshIdentityCall();
 }

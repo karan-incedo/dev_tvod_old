@@ -28,6 +28,12 @@
     <!-- AppCMS Google Analytics -->
     <string name="app_cms_template_page_separator">&#160;-&#160;</string>
 
+    <!-- AppCMS SignIn API -->
+    <string name="app_cms_signin_api_url">%1$s/identity/signin?site=%2$s</string>
+
+    <!-- AppCMS Refresh Identity API -->
+    <string name="app_cms_refresh_identity_api_url">%1$s/identity/refresh/%2$s</string>
+
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>
@@ -38,10 +44,12 @@
     <string name="app_cms_page_image_key">image</string>
     <string name="app_cms_page_label_key">label</string>
     <string name="app_cms_page_collection_grid_key">collectionGrid</string>
+    <string name="app_cms_page_table_view_key">tableView</string>
     <string name="app_cms_page_progress_view_key">progressView</string>
     <string name="app_cms_page_carousel_key">carousel</string>
     <string name="app_cms_page_page_control_key">pageControl</string>
     <string name="app_cms_page_seperator_key">separatorView</string>
+    <string name="app_cms_page_segmented_view">AC SegmentedView</string>
     <string name="app_cms_page_castview_key">castView</string>
     <string name="app_cms_page_bg_key">bg</string>
     <string name="app_cms_page_logo_key">logo</string>
@@ -61,6 +69,16 @@
     <string name="app_cms_page_font_extrabold_key">ExtraBold</string>
     <string name="app_cms_page_font_family_key">OpenSans</string>
     <string name="app_cms_page_textview_key">textView</string>
+    <string name="app_cms_page_textfield_key">textfield</string>
+    <string name="app_cms_page_emailtextfield_key">emailTextField</string>
+    <string name="app_cms_page_emailtextfield2_key">email label</string>
+    <string name="app_cms_page_passwordtextfield_key">passwordTextField</string>
+    <string name="app_cms_page_passwordtextfield2_key">password label</string>
+    <string name="app_cms_page_forgotpassword_key">forgot password button</string>
+    <string name="app_cms_page_mobileinput_key">mobile text field</string>
+    <string name="app_cms_page_authentication_module">AC Authentication 01</string>
+    <string name="app_cms_page_login_component_key">AC Login Component</string>
+    <string name="app_cms_page_signup_component_key">AC SignUp Component</string>
     <string name="app_cms_page_video_image_key">videoImage</string>
     <string name="app_cms_page_video_play_button_key">playButton</string>
     <string name="app_cms_page_video_description_key">videoDescriptionText</string>
@@ -88,7 +106,7 @@
     <string name="app_cms_share_string">%1$s Presents %2$s - %3$s</string>
 
     <!-- AppAppCMSPageUIPage names for Actions -->
-    <string name="app_cms_pagename_splashscreen_key">Splash Screen</string>
+    <string name="app_cms_pagename_authenticationscreen_key">Authentication Screen</string>
     <string name="app_cms_pagename_homepage_key">Home Page</string>
     <string name="app_cms_pagename_videopage_key">Video Page</string>
 
@@ -104,6 +122,10 @@
     <string name="app_cms_action_share_key">share</string>
     <string name="app_cms_action_close_key">close</string>
     <string name="app_cms_action_search_key">search</string>
+    <string name="app_cms_action_login_key">login</string>
+    <string name="app_cms_action_forgotpassword_key">forgotPassword</string>
+    <string name="app_cms_action_loginfacebook_key">loginFacebook</string>
+    <string name="app_cms_action_signup_key">signup</string>
 
     <!-- AppCMS Data values -->
     <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true</string>
@@ -123,4 +145,17 @@
     <!-- AppCMS VideoPlayer values -->
     <string name="app_cms_user_agent">AppCMS Android</string>
     <string name="app_cms_default_video_ext">m3u8</string>
+
+    <!-- AppCMS Login values -->
+    <string name="log_in_pager_title">LOG IN</string>
+    <string name="sign_up_pager_title">SIGN UP</string>
+    <string name="login_type_key">login_type</string>
+
+    <!-- Facebook App Id -->
+    <string name="facebook_app_id">227991737252697</string>
+    <string name="fb_login_protocol_scheme">fb227991737252697</string>
+    <string name="app_cms_login_selector_text">LOG IN</string>
+
+    <!-- AppCMS Image with Resize Query -->
+    <string name="app_cms_image_with_resize_query">%1$s?impolicy=resize&amp;w=%2$d&amp;h=%3$d</string>
 </resources>

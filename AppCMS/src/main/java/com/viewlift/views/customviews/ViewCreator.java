@@ -9,12 +9,16 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.util.LruCache;
 import android.view.Gravity;
@@ -69,7 +73,7 @@ public class ViewCreator {
         return pageViewLruCache;
     }
 
-    private static class ComponentViewResult {
+    public static class ComponentViewResult {
         View componentView;
         OnInternalEvent onInternalEvent;
         Action1<LifecycleStatus> onLifecycleChangeHandler;
@@ -118,6 +122,10 @@ public class ViewCreator {
         return pageView;
     }
 
+    public ComponentViewResult getComponentViewResult() {
+        return componentViewResult;
+    }
+
     protected void createPageView(Context context,
                                   AppCMSPageUI appCMSPageUI,
                                   AppCMSPageAPI appCMSPageAPI,
@@ -150,56 +158,61 @@ public class ViewCreator {
                                  PageView pageView,
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                  AppCMSPresenter appCMSPresenter) {
-        ModuleView moduleView = new ModuleView(context, module);
-        ViewGroup childrenContainer = moduleView.getChildrenContainer();
-        if (module.getComponents() != null) {
-            for (int i = 0; i < module.getComponents().size(); i++) {
-                Component component = module.getComponents().get(i);
-                ComponentViewResult componentViewResult = createComponentView(context,
-                        component,
-                        module.getLayout(),
-                        moduleAPI,
-                        pageView,
-                        module.getSettings(),
-                        jsonValueKeyMap,
-                        appCMSPresenter,
-                        false);
-                if (componentViewResult.onInternalEvent != null) {
-                    appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
-                }
-                if (componentViewResult.onLifecycleChangeHandler != null) {
-                    appCMSPresenter.addOnLifecycleChangeHandler(componentViewResult.onLifecycleChangeHandler);
-                }
-                View componentView = componentViewResult.componentView;
-                if (componentView != null) {
-                    childrenContainer.addView(componentView);
-                    moduleView.setComponentHasView(i, true);
-                    moduleView.setViewMarginsFromComponent(component,
-                            componentView,
-                            moduleView.getLayout(),
-                            childrenContainer,
-                            false,
+        ModuleView moduleView = null;
+        if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY) {
+            moduleView = new LoginModule(context,
+                    module,
+                    moduleAPI,
+                    jsonValueKeyMap,
+                    appCMSPresenter,
+                    this);
+        } else {
+            moduleView = new ModuleView<>(context, module);
+            ViewGroup childrenContainer = moduleView.getChildrenContainer();
+            if (module.getComponents() != null) {
+                for (int i = 0; i < module.getComponents().size(); i++) {
+                    Component component = module.getComponents().get(i);
+                    createComponentView(context,
+                            component,
+                            module.getLayout(),
+                            moduleAPI,
+                            pageView,
+                            module.getSettings(),
                             jsonValueKeyMap,
-                            componentViewResult.useMarginsAsPercentagesOverride,
-                            componentViewResult.useWidthOfScreen);
-                } else {
-                    moduleView.setComponentHasView(i, false);
+                            appCMSPresenter,
+                            false);
+                    if (componentViewResult.onInternalEvent != null) {
+                        appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
+                    }
+                    View componentView = componentViewResult.componentView;
+                    if (componentView != null) {
+                        childrenContainer.addView(componentView);
+                        moduleView.setComponentHasView(i, true);
+                        moduleView.setViewMarginsFromComponent(component,
+                                componentView,
+                                moduleView.getLayout(),
+                                childrenContainer,
+                                false,
+                                jsonValueKeyMap,
+                                componentViewResult.useMarginsAsPercentagesOverride,
+                                componentViewResult.useWidthOfScreen);
+                    } else {
+                        moduleView.setComponentHasView(i, false);
+                    }
                 }
-            }
 
-            List<OnInternalEvent> presenterOnInternalEvents = appCMSPresenter.getOnInternalEvents();
-            if (presenterOnInternalEvents != null) {
-                for (OnInternalEvent onInternalEvent : presenterOnInternalEvents) {
-                    for (OnInternalEvent receiverInternalEvent : presenterOnInternalEvents) {
-                        if (receiverInternalEvent != onInternalEvent) {
-                            onInternalEvent.addReceiver(receiverInternalEvent);
+                List<OnInternalEvent> presenterOnInternalEvents = appCMSPresenter.getOnInternalEvents();
+                if (presenterOnInternalEvents != null) {
+                    for (OnInternalEvent onInternalEvent : presenterOnInternalEvents) {
+                        for (OnInternalEvent receiverInternalEvent : presenterOnInternalEvents) {
+                            if (receiverInternalEvent != onInternalEvent) {
+                                onInternalEvent.addReceiver(receiverInternalEvent);
+                            }
                         }
                     }
                 }
             }
         }
-//        appCMSPresenter.addOnOrientationChangeHandler(moduleView.getOrientationChangeHandler());
-
         return moduleView;
     }
 
@@ -224,7 +237,7 @@ public class ViewCreator {
         List<OnInternalEvent> onInternalEvents = new ArrayList<>();
         for (int i = 0; i < component.getComponents().size(); i++) {
             Component childComponent = component.getComponents().get(i);
-            ComponentViewResult componentViewResult = createComponentView(context,
+            createComponentView(context,
                     childComponent,
                     parentLayout,
                     moduleAPI,
@@ -235,9 +248,6 @@ public class ViewCreator {
                     gridElement);
             if (componentViewResult.onInternalEvent != null) {
                 onInternalEvents.add(componentViewResult.onInternalEvent);
-            }
-            if (componentViewResult.onLifecycleChangeHandler != null) {
-                appCMSPresenter.addOnLifecycleChangeHandler(componentViewResult.onLifecycleChangeHandler);
             }
             View componentView = componentViewResult.componentView;
             if (componentView != null) {
@@ -270,15 +280,15 @@ public class ViewCreator {
         return collectionGridItemView;
     }
 
-    public ComponentViewResult createComponentView(final Context context,
-                                                   final Component component,
-                                                   final Layout parentLayout,
-                                                   final Module moduleAPI,
-                                                   @Nullable PageView pageView,
-                                                   final Settings settings,
-                                                   Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                                                   final AppCMSPresenter appCMSPresenter,
-                                                   boolean gridElement) {
+    public void createComponentView(final Context context,
+                                    final Component component,
+                                    final Layout parentLayout,
+                                    final Module moduleAPI,
+                                    @Nullable PageView pageView,
+                                    final Settings settings,
+                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                    final AppCMSPresenter appCMSPresenter,
+                                    boolean gridElement) {
         componentViewResult.componentView = null;
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
@@ -292,6 +302,7 @@ public class ViewCreator {
         }
         switch (componentType) {
             case PAGE_COLLECTIONGRID_KEY:
+            case PAGE_TABLEVIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
                 ((RecyclerView) componentViewResult.componentView)
                         .setLayoutManager(new LinearLayoutManager(context,
@@ -364,7 +375,7 @@ public class ViewCreator {
             case PAGE_BUTTON_KEY:
                 // IGNORE FOR NOW
                 if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_ADD_TO_WATCHLIST_KEY) {
-                    return componentViewResult;
+                    return;
                 }
                 componentViewResult.componentView = new Button(context);
                 if (!gridElement) {
@@ -530,6 +541,9 @@ public class ViewCreator {
                             }
                         });
                         break;
+                    case PAGE_FORGOTPASSWORD_KEY:
+                        componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+                        break;
                     default:
                 }
                 break;
@@ -630,6 +644,9 @@ public class ViewCreator {
                                         component);
                             }
                         default:
+                            if (!TextUtils.isEmpty(component.getText())) {
+                                ((TextView) componentViewResult.componentView).setText(component.getText());
+                            }
                     }
                 } else {
                     ((TextView) componentViewResult.componentView).setSingleLine(true);
@@ -640,27 +657,10 @@ public class ViewCreator {
                     componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
                 }
                 if (!TextUtils.isEmpty(component.getFontFamily())) {
-                    if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
-                        AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
-                        if (fontWeight == null) {
-                            fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
-                        }
-                        Typeface face = null;
-                        switch (fontWeight) {
-                            case PAGE_TEXT_BOLD_KEY:
-                                face = Typeface.createFromAsset(context.getAssets(),context.getString(R.string.opensans_bold_ttf));
-                                break;
-                            case PAGE_TEXT_SEMIBOLD_KEY:
-                                face = Typeface.createFromAsset(context.getAssets(),context.getString(R.string.opensans_semibold_ttf));
-                                break;
-                            case PAGE_TEXT_EXTRABOLD_KEY:
-                                face = Typeface.createFromAsset(context.getAssets(),context.getString(R.string.opensans_extrabold_ttf));
-                                break;
-                            default:
-                                face = Typeface.createFromAsset(context.getAssets(),context.getString(R.string.opensans_regular_ttf));
-                        }
-                        ((TextView) componentViewResult.componentView).setTypeface(face);
-                    }
+                    setTypeFace(context,
+                            jsonValueKeyMap,
+                            component,
+                            (TextView) componentViewResult.componentView);
                 }
                 break;
             case PAGE_IMAGE_KEY:
@@ -710,6 +710,7 @@ public class ViewCreator {
                 }
                 break;
             case PAGE_SEPARATOR_VIEW_KEY:
+            case PAGE_SEGMENTED_VIEW_KEY:
                 componentViewResult.componentView = new View(context);
                 if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                     componentViewResult.componentView.
@@ -719,7 +720,7 @@ public class ViewCreator {
             case PAGE_CASTVIEW_VIEW_KEY:
                 if (moduleAPI.getContentData().get(0).getCreditBlocks() == null) {
                     componentViewResult.componentView = null;
-                    return componentViewResult;
+                    return;
                 }
                 String fontFamilyKey = null, fontFamilyKeyTypeParsed = null;
                 if (!TextUtils.isEmpty(component.getFontFamilyKey())) {
@@ -804,6 +805,46 @@ public class ViewCreator {
                         BaseView.getFontSizeKey(context, component.getLayout()),
                         BaseView.getFontSizeValue(context, component.getLayout()));
                 break;
+            case PAGE_TEXTFIELD_KEY:
+                componentViewResult.componentView = new TextInputLayout(context);
+                TextInputEditText textInputEditText = new TextInputEditText(context);
+                switch (componentKey) {
+                    case PAGE_EMAILTEXTFIELD_KEY:
+                    case PAGE_EMAILTEXTFIELD2_KEY:
+                        textInputEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                        break;
+                    case PAGE_PASSWORDTEXTFIELD_KEY:
+                    case PAGE_PASSWORDTEXTFIELD2_KEY:
+                        textInputEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                        ((TextInputLayout) componentViewResult.componentView).setPasswordVisibilityToggleEnabled(true);
+                        break;
+                    case PAGE_MOBILETEXTFIELD_KEY:
+                        textInputEditText.setInputType(InputType.TYPE_CLASS_PHONE);
+                        break;
+                    default:
+                }
+                if (!TextUtils.isEmpty(component.getText())) {
+                    textInputEditText.setHint(component.getText());
+                }
+                if (!TextUtils.isEmpty(component.getBackgroundColor())) {
+                    textInputEditText.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
+                }
+                if (!TextUtils.isEmpty(component.getTextColor())) {
+                    textInputEditText.setTextColor(Color.parseColor(getColor(context, component.getTextColor())));
+                }
+                setTypeFace(context, jsonValueKeyMap, component, textInputEditText);
+                int loginInputHorizontalMargin = context.getResources().getInteger(R.integer.app_cms_login_input_horizontal_margin);
+                textInputEditText.setPadding(loginInputHorizontalMargin,
+                        0,
+                        loginInputHorizontalMargin,
+                        0);
+                textInputEditText.setTextSize(context.getResources().getInteger(R.integer.app_cms_login_input_textsize));
+                TextInputLayout.LayoutParams textInputEditTextLayoutParams =
+                        new TextInputLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT);
+                textInputEditText.setLayoutParams(textInputEditTextLayoutParams);
+                ((TextInputLayout) componentViewResult.componentView).addView(textInputEditText);
+                break;
             case PAGE_VIDEO_STARRATING_KEY:
                 int starBorderColor = Color.parseColor(getColor(context, component.getBorderColor()));
                 int starFillColor = Color.parseColor(getColor(context, component.getFillColor()));
@@ -815,7 +856,6 @@ public class ViewCreator {
                 break;
             default:
         }
-        return componentViewResult;
     }
 
     public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
@@ -879,6 +919,33 @@ public class ViewCreator {
                 ageBorder.setColor(ContextCompat.getColor(context, android.R.color.transparent));
                 view.setBackground(ageBorder);
             }
+        }
+    }
+
+    private void setTypeFace(Context context,
+                             Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                             Component component,
+                             TextView textView) {
+        if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
+            AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
+            if (fontWeight == null) {
+                fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+            }
+            Typeface face = null;
+            switch (fontWeight) {
+                case PAGE_TEXT_BOLD_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(),context.getString(R.string.opensans_bold_ttf));
+                    break;
+                case PAGE_TEXT_SEMIBOLD_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(),context.getString(R.string.opensans_semibold_ttf));
+                    break;
+                case PAGE_TEXT_EXTRABOLD_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(),context.getString(R.string.opensans_extrabold_ttf));
+                    break;
+                default:
+                    face = Typeface.createFromAsset(context.getAssets(),context.getString(R.string.opensans_regular_ttf));
+            }
+            textView.setTypeface(face);
         }
     }
 }

@@ -3,9 +3,10 @@ package com.viewlift.views.modules;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.network.modules.AppCMSSearchModule;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
+import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
-import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
 import com.viewlift.presenters.AppCMSActionType;
 import com.viewlift.presenters.AppCMSPresenter;
 
@@ -36,6 +37,8 @@ public class AppCMSPresenterModule {
                                                    AppCMSSiteCall appCMSSiteCall,
                                                    AppCMSSearchCall appCMSSearchCall,
                                                    AppCMSBeaconRest appCMSBeaconRest,
+                                                   AppCMSSignInCall appCMSSignInCall,
+                                                   AppCMSRefreshIdentityCall appCMSRefreshIdentityCall,
                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                    Map<String, String> pageNameToActionMap,
                                                    Map<String, AppCMSPageUI> actionToPageMap,
@@ -47,6 +50,8 @@ public class AppCMSPresenterModule {
                 appCMSSiteCall,
                 appCMSSearchCall,
                 appCMSBeaconRest,
+                appCMSSignInCall,
+                appCMSRefreshIdentityCall,
                 jsonValueKeyMap,
                 pageNameToActionMap,
                 actionToPageMap,

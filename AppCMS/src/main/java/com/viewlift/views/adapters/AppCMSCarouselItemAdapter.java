@@ -230,7 +230,9 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                 }
             }
         }
-        bindView(holder.componentView, adapterData.get(position % adapterData.size()));
+        if (adapterData.size() > 0) {
+            bindView(holder.componentView, adapterData.get(position % adapterData.size()));
+        }
     }
 
     @Override
@@ -300,7 +302,10 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     }
 
     private int getDefaultIndex() {
-        return Integer.MAX_VALUE / 2 - ((Integer.MAX_VALUE / 2) % adapterData.size());
+        if (adapterData.size() > 0) {
+            return Integer.MAX_VALUE / 2 - ((Integer.MAX_VALUE / 2) % adapterData.size());
+        }
+        return 0;
     }
 
     private void setUpdatedIndex(int index) {

@@ -701,7 +701,7 @@ public abstract class BaseView extends FrameLayout {
         FrameLayout.LayoutParams childContainerLayoutParams =
                 new FrameLayout.LayoutParams(viewWidth, viewHeight);
         childrenContainer.setLayoutParams(childContainerLayoutParams);
-        this.addView(childrenContainer);
+        addView(childrenContainer);
         return childrenContainer;
     }
 

@@ -67,14 +67,14 @@ public class AppCMSMainUICall {
         AppCMSMain main = null;
         AppCMSMain mainInStorage = null;
         try {
-            Log.d(TAG, "Attempting to retireve main.json: " + appCMSMainUrl);
+            Log.d(TAG, "Attempting to retrieve main.json: " + appCMSMainUrl);
 
-            String hostName = new URL(appCMSMainUrl).getHost();
+            final String hostName = new URL(appCMSMainUrl).getHost();
             ExecutorService executor = Executors.newCachedThreadPool();
             Future<List<InetAddress>> future = executor.submit(new Callable<List<InetAddress>>() {
                 @Override
                 public List<InetAddress> call() throws Exception {
-                    return okHttpClient.dns().lookup(new URL(appCMSMainUrl).getHost());
+                    return okHttpClient.dns().lookup(hostName);
                 }
             });
 
