@@ -31,6 +31,7 @@ import com.google.android.gms.iid.InstanceID;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
+import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
@@ -58,6 +59,7 @@ import com.viewlift.models.network.modules.AppCMSAPIModule;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
@@ -82,6 +84,7 @@ import com.viewlift.views.fragments.AppCMSSearchFragment;
 import com.viewlift.views.fragments.AppCMSWatchlistFragment;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -136,6 +139,7 @@ public class AppCMSPresenter {
     private final Map<String, AppCMSActionType> actionToActionTypeMap;
 
     private final AppCMSWatchlistCall appCMSWatchlistCall;
+    private final AppCMSHistoryCall appCMSHistoryCall;
 
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
@@ -161,6 +165,7 @@ public class AppCMSPresenter {
     private GoogleAnalytics googleAnalytics;
     private Tracker tracker;
     private Uri deeplinkSearchQuery;
+    private String refreshToken;
 
     public enum PlatformType {
         ANDROID, TV
@@ -230,6 +235,38 @@ public class AppCMSPresenter {
         }
     }
 
+    private static abstract class AppCMSHistoryAPIAction implements Action1<AppCMSHistoryResult> {
+        boolean appbarPresent;
+        boolean fullscreenEnabled;
+        boolean navbarPresent;
+        AppCMSPageUI appCMSPageUI;
+        String action;
+        String pageId;
+        String pageTitle;
+        boolean launchActivity;
+        Uri searchQuery;
+
+        public AppCMSHistoryAPIAction(boolean appbarPresent,
+                                      boolean fullscreenEnabled,
+                                      boolean navbarPresent,
+                                      AppCMSPageUI appCMSPageUI,
+                                      String action,
+                                      String pageId,
+                                      String pageTitle,
+                                      boolean launchActivity,
+                                      Uri searchQuery) {
+            this.appbarPresent = appbarPresent;
+            this.fullscreenEnabled = fullscreenEnabled;
+            this.navbarPresent = navbarPresent;
+            this.appCMSPageUI = appCMSPageUI;
+            this.action = action;
+            this.pageId = pageId;
+            this.pageTitle = pageTitle;
+            this.launchActivity = launchActivity;
+            this.searchQuery = searchQuery;
+        }
+    }
+
     @Inject
     public AppCMSPresenter(AppCMSMainUICall appCMSMainUICall,
                            AppCMSAndroidUICall appCMSAndroidUICall,
@@ -238,6 +275,7 @@ public class AppCMSPresenter {
                            AppCMSSearchCall appCMSSearchCall,
 
                            AppCMSWatchlistCall appCMSWatchlistCall,
+                           AppCMSHistoryCall appCMSHistoryCall,
 
                            AppCMSBeaconRest appCMSBeaconRest,
                            AppCMSSignInCall appCMSSignInCall,
@@ -261,6 +299,7 @@ public class AppCMSPresenter {
         this.actionToActionTypeMap = actionToActionTypeMap;
 
         this.appCMSWatchlistCall = appCMSWatchlistCall;
+        this.appCMSHistoryCall = appCMSHistoryCall;
 
         this.loadingPage = false;
         this.navigationPages = new HashMap<>();
@@ -610,12 +649,93 @@ public class AppCMSPresenter {
             AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
 
             if (appCMSPageAPI == null) {
-                getPageIdContent(appCMSMain.getApiBaseUrl(),
+                getWatchlistPageContent(appCMSMain.getApiBaseUrl(),
                         pageIdToPageAPIUrlMap.get(pageId),
                         appCMSMain.getSite(),
                         true,
-                        getPageId(appCMSPageUI),
-                        new AppCMSPageAPIAction(false,
+                        getPageId(appCMSPageUI), null);
+//                        new AppCMSPageAPIAction(false,
+//                                true,
+//                                false,
+//                                appCMSPageUI,
+//                                pageId,
+//                                pageId,
+//                                pageTitle,
+//                                launchActivity, null) {
+//                            @Override
+//                            public void call(AppCMSPageAPI appCMSPageAPI) {
+//                                if (appCMSPageAPI != null) {
+//                                    cancelInternalEvents();
+//                                    pushActionInternalEvents(this.pageId
+//                                            + BaseView.isLandscape(currentActivity));
+//
+//                                    navigationPageData.put(this.pageId, appCMSPageAPI);
+//
+//                                    if (this.launchActivity) {
+//                                        launchPageActivity(currentActivity,
+//                                                this.appCMSPageUI,
+//                                                appCMSPageAPI,
+//                                                this.pageId,
+//                                                this.pageTitle,
+//                                                pageIdToPageNameMap.get(this.pageId),
+//                                                loadFromFile,
+//                                                this.appbarPresent,
+//                                                this.fullscreenEnabled,
+//                                                this.navbarPresent,
+//                                                this.searchQuery);
+//                                    } else {
+//                                        Bundle args = getPageActivityBundle(currentActivity,
+//                                                this.appCMSPageUI,
+//                                                appCMSPageAPI,
+//                                                this.pageId,
+//                                                this.pageTitle,
+//                                                pageIdToPageNameMap.get(this.pageId),
+//                                                loadFromFile,
+//                                                this.appbarPresent,
+//                                                this.fullscreenEnabled,
+//                                                this.navbarPresent,
+//                                                null);
+//                                        Intent watchlistPageIntent =
+//                                                new Intent(AppCMSPresenter
+//                                                        .PRESENTER_NAVIGATE_ACTION);
+//                                        watchlistPageIntent.putExtra("watchlist", args);
+//                                        currentActivity.startActivity(watchlistPageIntent);
+//
+//                                        //
+//
+//                                    }
+//                                } else {
+//                                    sendStopLoadingPageAction();
+//                                    setNavItemToCurrentAction(currentActivity);
+//                                    loadingPage = false;
+//                                }
+//                            }
+//                        });
+            }
+        }
+    }
+
+    private void getWatchlistPageContent(String apiBaseUrl, String endPoint, String siteId,
+                                         boolean userPageIdQueryParam, String pageId,
+                                         AppCMSPageAPIAction watchlist) {
+        //
+    }
+
+    @SuppressWarnings("unused")
+    public void navigateToHistoryPage(String pageId, String pageTitle, String url,
+                                      boolean launchActivity) {
+
+        if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
+            loadingPage = true;
+            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+            final AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
+
+            if (appCMSPageAPI == null) {
+                getHistoryPageContent(appCMSMain.getApiBaseUrl(),
+                        pageIdToPageAPIUrlMap.get(pageId),
+                        appCMSMain.getSite(),
+                        true,
+                        getPageId(appCMSPageUI), new AppCMSHistoryAPIAction(false,
                                 true,
                                 false,
                                 appCMSPageUI,
@@ -624,18 +744,20 @@ public class AppCMSPresenter {
                                 pageTitle,
                                 launchActivity, null) {
                             @Override
-                            public void call(AppCMSPageAPI appCMSPageAPI) {
-                                if (appCMSPageAPI != null) {
+                            public void call(AppCMSHistoryResult appCMSHistoryResult) {
+                                if (appCMSHistoryResult != null) {
                                     cancelInternalEvents();
                                     pushActionInternalEvents(this.pageId
                                             + BaseView.isLandscape(currentActivity));
 
-                                    navigationPageData.put(this.pageId, appCMSPageAPI);
+                                    AppCMSPageAPI pageAPI = appCMSHistoryResult.convertToAppCMSPageAPI();
+
+                                    navigationPageData.put(this.pageId, pageAPI);
 
                                     if (this.launchActivity) {
                                         launchPageActivity(currentActivity,
                                                 this.appCMSPageUI,
-                                                appCMSPageAPI,
+                                                pageAPI,
                                                 this.pageId,
                                                 this.pageTitle,
                                                 pageIdToPageNameMap.get(this.pageId),
@@ -647,7 +769,7 @@ public class AppCMSPresenter {
                                     } else {
                                         Bundle args = getPageActivityBundle(currentActivity,
                                                 this.appCMSPageUI,
-                                                appCMSPageAPI,
+                                                pageAPI,
                                                 this.pageId,
                                                 this.pageTitle,
                                                 pageIdToPageNameMap.get(this.pageId),
@@ -673,6 +795,24 @@ public class AppCMSPresenter {
                             }
                         });
             }
+        }
+    }
+
+    private void getHistoryPageContent(String apiBaseUrl, String endPoint, String siteiD,
+                                       boolean userPageIdQueryParam, String pageId,
+                                       final AppCMSHistoryAPIAction history) {
+        try {
+            appCMSHistoryCall.call(currentActivity.getString(R.string.app_cms_history_api_url,
+                    apiBaseUrl, getLoggedInUser(currentActivity), siteiD,
+                    getLoggedInUser(currentActivity)),
+                    new Action1<AppCMSHistoryResult>() {
+                        @Override
+                        public void call(AppCMSHistoryResult appCMSHistoryResult) {
+                            history.call(appCMSHistoryResult);
+                        }
+                    });
+        } catch (IOException e) {
+            Log.e(TAG, "getHistoryPageContent: " + e.toString());
         }
     }
 
@@ -1193,7 +1333,8 @@ public class AppCMSPresenter {
                                 // Show log error
                                 Log.e(TAG, "Email and password are not valid.");
                             } else {
-                                refreshIdentity(signInResponse.getRefreshToken());
+                                refreshToken = signInResponse.getRefreshToken();
+                                refreshIdentity(refreshToken);
                             }
                         }
                     }).execute(params);

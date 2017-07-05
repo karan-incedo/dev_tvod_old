@@ -128,9 +128,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     private void setUpHistoryInNav() {
                         for (int j = 0; j < navigation.getUser().size(); j++) {
                             if (navigation.getUser().get(j).getTitle().equals("History")) {
-                                appCMSPresenter.navigateToPage(user.getPageId(), user.getTitle(),
-                                        user.getUrl(), true, true,
-                                        null);
+                                appCMSPresenter.navigateToHistoryPage(user.getPageId(), user.getTitle(),
+                                        user.getUrl(), true);
                             }
                         }
                     }

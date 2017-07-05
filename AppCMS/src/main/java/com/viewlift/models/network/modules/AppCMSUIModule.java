@@ -1,5 +1,9 @@
 package com.viewlift.models.network.modules;
 
+/**
+ * Created by viewlift on 5/4/17.
+ */
+
 import android.content.Context;
 
 import com.google.gson.Gson;
@@ -36,10 +40,6 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import snagfilms.com.air.appcms.R;
-
-/**
- * Created by viewlift on 5/4/17.
- */
 
 @Module
 public class AppCMSUIModule {
@@ -164,6 +164,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_MOBILETEXTFIELD_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_authentication_module),
                 AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_module_key),
+                AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_login_component_key),
                 AppCMSUIKeyType.PAGE_LOGIN_COMPONENT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_signup_component_key),

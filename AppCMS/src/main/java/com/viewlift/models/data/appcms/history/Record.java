@@ -6,6 +6,7 @@ package com.viewlift.models.data.appcms.history;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.viewlift.models.data.appcms.api.ContentDatum;
 
 public class Record {
     @SerializedName("contentResponse")
@@ -66,5 +67,16 @@ public class Record {
 
     public void setUpdateDate(long updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public ContentDatum convertToContentDatum() {
+        ContentDatum contentDatum = new ContentDatum();
+        contentDatum.setUserId(this.userID);
+        contentDatum.setShowQueue(this.showQueue);
+        contentDatum.setAddedDate(this.addedDate);
+        contentDatum.setUpdateDate(this.updateDate);
+        contentDatum.setGist(this.contentResponse.getGist());
+        contentDatum.setGrade(this.contentResponse.getGrade());
+        return contentDatum;
     }
 }

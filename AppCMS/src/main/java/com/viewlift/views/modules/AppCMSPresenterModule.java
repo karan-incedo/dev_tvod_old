@@ -6,6 +6,7 @@ import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.modules.AppCMSSearchModule;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
@@ -39,6 +40,7 @@ public class AppCMSPresenterModule {
                                                    AppCMSSearchCall appCMSSearchCall,
 
                                                    AppCMSWatchlistCall appCMSWatchlistCall,
+                                                   AppCMSHistoryCall appCMSHistoryCall,
 
                                                    AppCMSBeaconRest appCMSBeaconRest,
                                                    AppCMSSignInCall appCMSSignInCall,
@@ -55,6 +57,7 @@ public class AppCMSPresenterModule {
                 appCMSSearchCall,
 
                 appCMSWatchlistCall,
+                appCMSHistoryCall,
 
                 appCMSBeaconRest,
                 appCMSSignInCall,

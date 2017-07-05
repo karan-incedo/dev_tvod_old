@@ -78,6 +78,9 @@
     <string name="app_cms_page_authentication_module">AC Authentication 01</string>
     <string name="app_cms_page_login_component_key">AC Login Component</string>
     <string name="app_cms_page_signup_component_key">AC SignUp Component</string>
+
+    <string name="app_cms_page_history_module_key">AC History 01</string>
+
     <string name="app_cms_page_video_image_key">videoImage</string>
     <string name="app_cms_page_video_play_button_key">playButton</string>
     <string name="app_cms_page_video_description_key">videoDescriptionText</string>dd

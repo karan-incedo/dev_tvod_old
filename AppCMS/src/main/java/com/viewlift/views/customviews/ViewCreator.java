@@ -140,7 +140,7 @@ public class ViewCreator {
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList module : modulesList) {
             if (!modulesToIgnore.contains(module.getView())) {
-                Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI);
+                Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
                 View childView = createModuleView(context,
                         module,
                         moduleAPI,
@@ -927,13 +927,18 @@ public class ViewCreator {
         return color;
     }
 
-    private Module matchModuleAPIToModuleUI(ModuleList module, AppCMSPageAPI appCMSPageAPI) {
+    private Module matchModuleAPIToModuleUI(ModuleList module, AppCMSPageAPI appCMSPageAPI,
+                                            Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
         if (appCMSPageAPI != null && appCMSPageAPI.getModules() != null) {
-            if (appCMSPageAPI.getModules() != null) {
-                for (Module moduleAPI : appCMSPageAPI.getModules()) {
-                    if (module.getId().equals(moduleAPI.getId())) {
-                        return moduleAPI;
-                    }
+            if (AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
+                if (appCMSPageAPI.getModules() != null && appCMSPageAPI.getModules().size() > 0) {
+                    return appCMSPageAPI.getModules().get(0);
+                }
+            }
+
+            for (Module moduleAPI : appCMSPageAPI.getModules()) {
+                if (module.getId().equals(moduleAPI.getId())) {
+                    return moduleAPI;
                 }
             }
         }

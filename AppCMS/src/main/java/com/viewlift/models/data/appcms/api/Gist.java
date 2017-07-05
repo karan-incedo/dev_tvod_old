@@ -1,4 +1,3 @@
-
 package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
@@ -9,57 +8,78 @@ public class Gist {
     @SerializedName("id")
     @Expose
     private String id;
+
     @SerializedName("permalink")
     @Expose
     private String permalink;
+
     @SerializedName("title")
     @Expose
     private String title;
+
     @SerializedName("logLine")
     @Expose
     private String logLine;
+
     @SerializedName("description")
     @Expose
     private String description;
+
     @SerializedName("year")
     @Expose
     private String year;
+
     @SerializedName("free")
     @Expose
     private Boolean free;
+
     @SerializedName("publishDate")
     @Expose
     private Long publishDate;
+
     @SerializedName("runtime")
     @Expose
     private Integer runtime;
+
     @SerializedName("posterImageUrl")
     @Expose
     private String posterImageUrl;
+
     @SerializedName("videoImageUrl")
     @Expose
     private String videoImageUrl;
+
     @SerializedName("addedDate")
     @Expose
     private Long addedDate;
+
     @SerializedName("updateDate")
     @Expose
     private Long updateDate;
+
     @SerializedName("primaryCategory")
     @Expose
     private PrimaryCategory primaryCategory;
+
     @SerializedName("watchedTime")
     @Expose
     private Integer watchedTime;
+
     @SerializedName("contentType")
     @Expose
     private String contentType;
+
     @SerializedName("averageGrade")
     @Expose
     private String averageGrade;
+
     @SerializedName("averageStarRating")
     @Expose
     private Float averageStarRating;
+
+    @SerializedName("watchedPercentage")
+    @Expose
+    private Integer watchedPercentage;
 
     public String getId() {
         return id;
@@ -205,4 +225,11 @@ public class Gist {
         this.averageStarRating = averageStarRating;
     }
 
+    public Integer getWatchedPercentage() {
+        return watchedPercentage;
+    }
+
+    public void setWatchedPercentage(Integer watchedPercentage) {
+        this.watchedPercentage = watchedPercentage;
+    }
 }
