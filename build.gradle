@@ -39,7 +39,7 @@ allprojects {
         crashlyticsVersion = "2.6.8@aar"
         leakcanaryVersion = "1.5.1"
         apptentiveVersion = "3.4.1"
-        facebookVersion = "4.24.0"
+        butterknifeVersion = "8.6.0"
     }
 }
 

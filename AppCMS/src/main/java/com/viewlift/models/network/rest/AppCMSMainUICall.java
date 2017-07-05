@@ -84,7 +84,7 @@ public class AppCMSMainUICall {
                 Log.e(TAG, "Connection timed out: " + e.toString());
                 return null;
             } catch (InterruptedException e) {
-                Log.e(TAG, "Connection interrupted: "+ e.toString());
+                Log.e(TAG, "Connection interrupted: " + e.toString());
                 return null;
             } catch (ExecutionException e) {
                 Log.e(TAG, "Execution error: " + e.toString());
@@ -148,7 +148,7 @@ public class AppCMSMainUICall {
         int endIndex = url.indexOf(JSON_EXT) + JSON_EXT.length();
         int startIndex = url.lastIndexOf(PATH_SEP);
         if (0 <= startIndex && startIndex < endIndex) {
-            return url.substring(startIndex+1, endIndex);
+            return url.substring(startIndex + 1, endIndex);
         }
         return url;
     }

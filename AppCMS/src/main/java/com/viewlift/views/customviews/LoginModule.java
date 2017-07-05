@@ -96,7 +96,7 @@ public class LoginModule extends ModuleView {
                             0,
                             0,
                             0);
-                    buttonSelectors[0].setText(R.string.app_cms_login_selector_text);
+                    buttonSelectors[0].setText(R.string.app_cms_log_in_pager_title);
                     buttonSelectors[0].setTextColor(textColor);
                     buttonSelectors[0].setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
                     buttonSelectors[0].setLayoutParams(loginSelectorLayoutParams);
@@ -132,7 +132,7 @@ public class LoginModule extends ModuleView {
                             0,
                             (int) convertDpToPixel(getContext().getResources().getInteger(R.integer.app_cms_login_selector_margin), getContext()),
                             0);
-                    buttonSelectors[1].setText(R.string.app_cms_login_signup_text);
+                    buttonSelectors[1].setText(R.string.app_cms_sign_up_pager_title);
                     buttonSelectors[1].setTextColor(textColor);
                     buttonSelectors[1].setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
                     signupSelectorLayoutParams.gravity = Gravity.END;

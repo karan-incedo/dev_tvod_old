@@ -31,7 +31,7 @@ import java.util.Map;
  */
 
 public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
-    implements OnInternalEvent {
+        implements OnInternalEvent {
 
     private static String TAG = "CarouselItemAdapter";
     private static long UPDATE_CAROUSEL_TO = 5000L;
@@ -230,7 +230,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
                 }
             }
         }
-        if (adapterData.size() > 0) {
+
+        if (adapterData.size() != 0) {
             bindView(holder.componentView, adapterData.get(position % adapterData.size()));
         }
     }
@@ -283,7 +284,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     }
 
     public void updateCarousel(int index, boolean fromEvent) {
-        synchronized(listView) {
+        synchronized (listView) {
             index = calculateUpdateIndex(index);
             setUpdatedIndex(index);
             listView.smoothScrollToPosition(updatedIndex);
@@ -302,7 +303,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
     }
 
     private int getDefaultIndex() {
-        if (adapterData.size() > 0) {
+        if (adapterData.size() != 0) {
             return Integer.MAX_VALUE / 2 - ((Integer.MAX_VALUE / 2) % adapterData.size());
         }
         return 0;

@@ -133,6 +133,10 @@
     <string name="app_cms_page_path_query_parameter">path=</string>
     <string name="app_cms_api_key">XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F</string>
 
+    <!-- AppCMSWatchList API -->
+    <string name="app_cms_watchlist_api_url">%1$s/user/queues?site=%2$s&amp;userId=%3$s</string>
+    <!--<string name="app_cms_watchlist_api_url">%1$s/user/queues?site=%2$s&amp;userId=%3$s&amp;limit=%4$d</string>-->
+
     <!-- AppCMS Navigation menu -->
     <string name="app_cms_menu_icon_name">menu_</string>
     <string name="app_cms_menu_label">Menu</string>
@@ -147,14 +151,9 @@
     <string name="app_cms_default_video_ext">m3u8</string>
 
     <!-- AppCMS Login values -->
-    <string name="log_in_pager_title">LOG IN</string>
-    <string name="sign_up_pager_title">SIGN UP</string>
+    <string name="app_cms_log_in_pager_title">LOG IN</string>
+    <string name="app_cms_sign_up_pager_title">SIGN UP</string>
     <string name="login_type_key">login_type</string>
-
-    <!-- Facebook App Id -->
-    <string name="facebook_app_id">227991737252697</string>
-    <string name="fb_login_protocol_scheme">fb227991737252697</string>
-    <string name="app_cms_login_selector_text">LOG IN</string>
 
     <!-- AppCMS Image with Resize Query -->
     <string name="app_cms_image_with_resize_query">%1$s?impolicy=resize&amp;w=%2$d&amp;h=%3$d</string>

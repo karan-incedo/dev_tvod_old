@@ -27,19 +27,6 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.iid.InstanceID;
-
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Stack;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
@@ -54,39 +41,58 @@ import com.viewlift.models.data.appcms.ui.authentication.RefreshIdentityResponse
 import com.viewlift.models.data.appcms.ui.authentication.SignInResponse;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.network.background.tasks.GetAppCMSRefreshIdentityAsyncTask;
-import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
-import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
-import com.viewlift.models.network.background.tasks.PostAppCMSLoginRequestAsyncTask;
-import com.viewlift.models.network.components.AppCMSAPIComponent;
-import com.viewlift.models.network.components.DaggerAppCMSAPIComponent;
-import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
-import com.viewlift.models.network.modules.AppCMSAPIModule;
-import com.viewlift.models.network.rest.AppCMSBeaconRest;
-import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
-import com.viewlift.models.network.rest.AppCMSSearchCall;
-import com.viewlift.models.network.rest.AppCMSSignInCall;
-import com.viewlift.models.network.rest.AppCMSSiteCall;
-import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
-import com.viewlift.views.activity.AppCMSPlayVideoActivity;
-import com.viewlift.views.activity.AppCMSSearchActivity;
-import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
+import com.viewlift.models.network.background.tasks.PostAppCMSLoginRequestAsyncTask;
+import com.viewlift.models.network.components.AppCMSAPIComponent;
+import com.viewlift.models.network.components.AppCMSSearchUrlComponent;
+import com.viewlift.models.network.components.AppCMSWatchlistUrlComponent;
+import com.viewlift.models.network.components.DaggerAppCMSAPIComponent;
+import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
+import com.viewlift.models.network.components.DaggerAppCMSWatchlistUrlComponent;
+import com.viewlift.models.network.modules.AppCMSAPIModule;
+import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
+import com.viewlift.models.network.modules.AppCMSWatchlistUrlModule;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
+import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
-import com.viewlift.views.activity.AppCMSPageActivity;
+import com.viewlift.models.network.rest.AppCMSSearchCall;
+import com.viewlift.models.network.rest.AppCMSSignInCall;
+import com.viewlift.models.network.rest.AppCMSSiteCall;
+import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
+import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.views.activity.AppCMSErrorActivity;
-import com.viewlift.models.network.components.AppCMSSearchUrlComponent;
+import com.viewlift.views.activity.AppCMSHistoryActivity;
+import com.viewlift.views.activity.AppCMSPageActivity;
+import com.viewlift.views.activity.AppCMSPlayVideoActivity;
+import com.viewlift.views.activity.AppCMSSearchActivity;
+import com.viewlift.views.activity.AppCMSWatchlistActivity;
+import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.OnInternalEvent;
-import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSSearchFragment;
+import com.viewlift.views.fragments.AppCMSWatchlistFragment;
+
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Stack;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.inject.Inject;
 
@@ -130,6 +136,8 @@ public class AppCMSPresenter {
     private final Map<String, AppCMSPageAPI> actionToPageAPIMap;
     private final Map<String, AppCMSActionType> actionToActionTypeMap;
 
+    private final AppCMSWatchlistCall appCMSWatchlistCall;
+
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private Activity currentActivity;
@@ -148,6 +156,9 @@ public class AppCMSPresenter {
     private Map<String, List<OnInternalEvent>> onActionInternalEvents;
     private Stack<String> currentActions;
     private AppCMSSearchUrlComponent appCMSSearchUrlComponent;
+
+    private AppCMSWatchlistUrlComponent appCMSWatchlistUrlComponent;
+
     private BeaconRunnable beaconMessageRunnable;
     private Runnable beaconMessageThread;
     private GoogleAnalytics googleAnalytics;
@@ -200,6 +211,7 @@ public class AppCMSPresenter {
         String pageTitle;
         boolean launchActivity;
         Uri searchQuery;
+
         public AppCMSPageAPIAction(boolean appbarPresent,
                                    boolean fullscreenEnabled,
                                    boolean navbarPresent,
@@ -227,6 +239,9 @@ public class AppCMSPresenter {
                            AppCMSPageUICall appCMSPageUICall,
                            AppCMSSiteCall appCMSSiteCall,
                            AppCMSSearchCall appCMSSearchCall,
+
+                           AppCMSWatchlistCall appCMSWatchlistCall,
+
                            AppCMSBeaconRest appCMSBeaconRest,
                            AppCMSSignInCall appCMSSignInCall,
                            AppCMSRefreshIdentityCall appCMSRefreshIdentityCall,
@@ -247,6 +262,8 @@ public class AppCMSPresenter {
         this.actionToPageMap = actionToPageMap;
         this.actionToPageAPIMap = actionToPageAPIMap;
         this.actionToActionTypeMap = actionToActionTypeMap;
+
+        this.appCMSWatchlistCall = appCMSWatchlistCall;
 
         this.loadingPage = false;
         this.navigationPages = new HashMap<>();
@@ -305,7 +322,7 @@ public class AppCMSPresenter {
                                         streamingInfo.getVideoAssets().getMpeg() != null &&
                                         streamingInfo.getVideoAssets().getMpeg().size() > 0 &&
                                         streamingInfo.getVideoAssets().getMpeg().get(0) != null &&
-                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getMpeg().get(0).getUrl())){
+                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getMpeg().get(0).getUrl())) {
                                     extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
                                 }
                                 extraData[2] = filmId;
@@ -498,10 +515,8 @@ public class AppCMSPresenter {
         return result;
     }
 
-    public boolean launchSearchPage() {
-        boolean result = false;
+    public void launchSearchPage() {
         if (currentActivity != null) {
-            result = true;
             AppCMSSearchFragment appCMSSearchFragment = AppCMSSearchFragment.newInstance(currentActivity,
                     Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
                     Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()),
@@ -509,18 +524,57 @@ public class AppCMSPresenter {
             appCMSSearchFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
                     currentActivity.getString(R.string.app_cms_search_page_tag));
         }
-        return result;
     }
 
-    public boolean launchSearchResultsPage(String searchQuery) {
-        boolean result = false;
+    public void launchSearchResultsPage(String searchQuery) {
         if (currentActivity != null) {
-            result = true;
             Intent searchIntent = new Intent(currentActivity, AppCMSSearchActivity.class);
             searchIntent.setAction(Intent.ACTION_SEARCH);
             searchIntent.putExtra(SearchManager.QUERY, searchQuery);
             currentActivity.startActivity(searchIntent);
         }
+    }
+
+    public void launchWatchlistPage() {
+        boolean result = false;
+
+        AppCMSWatchlistFragment appCMSWatchlistFragment =
+                AppCMSWatchlistFragment.newInstance(currentActivity,
+                        Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
+                        Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()),
+                        Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor()));
+
+    }
+
+    public boolean launchWatchlistResultsPage() {
+        boolean result = false;
+
+        if (currentActivity != null) {
+            result = true;
+
+            Intent watchlistIntent = new Intent(currentActivity, AppCMSWatchlistActivity.class);
+            //
+            currentActivity.startActivity(watchlistIntent);
+        }
+
+        return result;
+    }
+
+    public void launchHistoryPage() {
+        //
+    }
+
+    public boolean launchHistoryResultsPage() {
+        boolean result = false;
+
+        if (currentActivity != null) {
+            result = true;
+
+            Intent historyIntent = new Intent(currentActivity, AppCMSHistoryActivity.class);
+            //
+            currentActivity.startActivity(historyIntent);
+        }
+
         return result;
     }
 
@@ -539,6 +593,82 @@ public class AppCMSPresenter {
     public void unrestrictPortraitOnly() {
         if (currentActivity != null) {
             currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public void navigateToWatchlistPage(String pageId, String pageTitle, String url,
+                                        boolean launchActivity) {
+
+        if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
+            loadingPage = true;
+            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+            AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
+
+            if (appCMSPageAPI == null) {
+                getPageIdContent(appCMSMain.getApiBaseUrl(),
+                        pageIdToPageAPIUrlMap.get(pageId),
+                        appCMSMain.getSite(),
+                        true,
+                        getPageId(appCMSPageUI),
+                        new AppCMSPageAPIAction(false,
+                                true,
+                                false,
+                                appCMSPageUI,
+                                pageId,
+                                pageId,
+                                pageTitle,
+                                launchActivity, null) {
+                            @Override
+                            public void call(AppCMSPageAPI appCMSPageAPI) {
+                                if (appCMSPageAPI != null) {
+                                    cancelInternalEvents();
+                                    pushActionInternalEvents(this.pageId
+                                            + BaseView.isLandscape(currentActivity));
+
+                                    navigationPageData.put(this.pageId, appCMSPageAPI);
+
+                                    if (this.launchActivity) {
+                                        launchPageActivity(currentActivity,
+                                                this.appCMSPageUI,
+                                                appCMSPageAPI,
+                                                this.pageId,
+                                                this.pageTitle,
+                                                pageIdToPageNameMap.get(this.pageId),
+                                                loadFromFile,
+                                                this.appbarPresent,
+                                                this.fullscreenEnabled,
+                                                this.navbarPresent,
+                                                this.searchQuery);
+                                    } else {
+                                        Bundle args = getPageActivityBundle(currentActivity,
+                                                this.appCMSPageUI,
+                                                appCMSPageAPI,
+                                                this.pageId,
+                                                this.pageTitle,
+                                                pageIdToPageNameMap.get(this.pageId),
+                                                loadFromFile,
+                                                this.appbarPresent,
+                                                this.fullscreenEnabled,
+                                                this.navbarPresent,
+                                                null);
+                                        Intent watchlistPageIntent =
+                                                new Intent(AppCMSPresenter
+                                                        .PRESENTER_NAVIGATE_ACTION);
+                                        watchlistPageIntent.putExtra("watchlist", args);
+                                        currentActivity.startActivity(watchlistPageIntent);
+
+                                        //
+
+                                    }
+                                } else {
+                                    sendStopLoadingPageAction();
+                                    setNavItemToCurrentAction(currentActivity);
+                                    loadingPage = false;
+                                }
+                            }
+                        });
+            }
         }
     }
 
@@ -752,7 +882,8 @@ public class AppCMSPresenter {
         }
     }
 
-    public @Nullable List<OnInternalEvent> getOnInternalEvents() {
+    public @Nullable
+    List<OnInternalEvent> getOnInternalEvents() {
         if (currentActions.size() > 0 &&
                 !TextUtils.isEmpty(currentActions.peek()) &&
                 onActionInternalEvents.get(currentActions.peek()) != null) {
@@ -848,13 +979,18 @@ public class AppCMSPresenter {
                     loadFromFile = false;
 
                     appCMSSearchUrlComponent = DaggerAppCMSSearchUrlComponent.builder()
-                        .appCMSSearchUrlModule(new AppCMSSearchUrlModule(main.getApiBaseUrl(),
-                                main.getSite(),
-                                appCMSSearchCall))
-                        .build();
-
+                            .appCMSSearchUrlModule(new AppCMSSearchUrlModule(main.getApiBaseUrl(),
+                                    main.getSite(),
+                                    appCMSSearchCall))
+                            .build();
                     getAppCMSSite(activity, main, platformType);
-                }
+
+                    appCMSWatchlistUrlComponent = DaggerAppCMSWatchlistUrlComponent.builder()
+                            .appCMSWatchlistUrlModule(new AppCMSWatchlistUrlModule(main.getApiBaseUrl(),
+                                    main.getSite(), null))
+                            // FIXME: 6/28/2017 add appCMSWatchlistCall to presenter.
+//                                    appCMSWatchlistCall))
+                            .build();}
             }
         }).execute(params);
     }
@@ -885,18 +1021,27 @@ public class AppCMSPresenter {
         return appCMSSearchCall;
     }
 
+    public AppCMSWatchlistCall getAppCMSWatchlistCall() {
+//        return appCMSWatchlistCall;
+        return null;
+    }
+
     public AppCMSSearchUrlComponent getAppCMSSearchUrlComponent() {
         return appCMSSearchUrlComponent;
+    }
+
+    public AppCMSWatchlistUrlComponent getAppCMSWatchlistUrlComponent() {
+        return appCMSWatchlistUrlComponent;
     }
 
     public void showMoreDialog(String title, String fullText, int textColor) {
         AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
         builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
-                    Integer.toHexString(textColor).substring(2),
-                    title)))
+                Integer.toHexString(textColor).substring(2),
+                title)))
                 .setMessage(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
-                    Integer.toHexString(textColor).substring(2),
-                    fullText)));
+                        Integer.toHexString(textColor).substring(2),
+                        fullText)));
         AlertDialog dialog = builder.create();
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor(appCMSMain.getBrand()
@@ -1222,11 +1367,11 @@ public class AppCMSPresenter {
     private void getAppCMSAndroid(final Activity activity, final AppCMSMain main) {
         GetAppCMSAndroidUIAsyncTask.Params params =
                 new GetAppCMSAndroidUIAsyncTask.Params.Builder()
-                    .url(activity.getString(R.string.app_cms_url_with_appended_timestamp,
-                            main.getAndroid(),
-                            main.getTimestamp()))
-                    .loadFromFile(loadFromFile)
-                    .build();
+                        .url(activity.getString(R.string.app_cms_url_with_appended_timestamp,
+                                main.getAndroid(),
+                                main.getTimestamp()))
+                        .loadFromFile(loadFromFile)
+                        .build();
         Log.d(TAG, "Params: " + main.getAndroid() + " " + loadFromFile);
         new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, new Action1<AppCMSAndroidUI>() {
             @Override

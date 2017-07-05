@@ -55,7 +55,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(final ViewHolder viewHolder, int i) {
         int indexOffset = 0;
         if (navigation.getPrimary() != null && i < navigation.getPrimary().size()) {
             final Primary primary = navigation.getPrimary().get(i);
@@ -84,13 +84,20 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             if (navigation.getPrimary() != null) {
                 indexOffset += navigation.getPrimary().size();
             }
+
+            //user nav
             if (userLoggedIn && navigation.getUser() != null && (i - indexOffset) < navigation.getUser().size()) {
                 final User user = navigation.getUser().get(i - indexOffset);
+
+
                 viewHolder.navItemLabel.setText(user.getTitle().toUpperCase());
                 viewHolder.navItemLabel.setTextColor(textColor);
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        setUpWatchlistInNav();
+
                         if (!appCMSPresenter.navigateToPage(user.getPageId(),
                                 user.getTitle(),
                                 user.getUrl(),
@@ -105,12 +112,25 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             onCloseNavAction.closeNavAction();
                         }
                     }
+
+                    private void setUpWatchlistInNav() {
+                        for (int j = 0; j < navigation.getUser().size(); j++) {
+                            if (navigation.getUser().get(j).getTitle().equals("Watchlist")) {
+                                appCMSPresenter.navigateToWatchlistPage(user.getPageId(),
+                                        user.getTitle(), user.getUrl(), true);
+                            }
+                        }
+                    }
                 });
             }
-            if (navigation.getFooter() != null && (i - indexOffset) < navigation.getFooter().size()) {
-                if (userLoggedIn && navigation.getUser() != null) {
-                    indexOffset += navigation.getUser().size();
-                }
+
+            if (userLoggedIn && navigation.getUser() != null) {
+                indexOffset += navigation.getUser().size();
+            }
+
+            //footer
+            if (navigation.getFooter() != null && 0 <= (i - indexOffset) && (i - indexOffset) < navigation.getFooter().size()) {
+
                 final Footer footer = navigation.getFooter().get(i - indexOffset);
                 viewHolder.navItemLabel.setText(footer.getTitle().toUpperCase());
                 viewHolder.navItemLabel.setTextColor(textColor);
@@ -143,15 +163,18 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             if (navigation.getPrimary() != null) {
                 totalItemCount += navigation.getPrimary().size();
             }
+
             if (navigation.getFooter() != null) {
                 for (int i = 0; i < navigation.getFooter().size(); i++) {
                     totalItemCount += 1;
                 }
             }
+
             if (userLoggedIn && navigation.getUser() != null) {
                 totalItemCount += navigation.getUser().size();
             }
         }
+
         return totalItemCount;
     }
 
@@ -164,6 +187,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
         View itemView;
         ImageView navItemIcon;
         TextView navItemLabel;
+
         public ViewHolder(View itemView) {
             super(itemView);
             this.itemView = itemView;

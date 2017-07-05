@@ -5,17 +5,15 @@ import android.app.Application;
 import android.os.Bundle;
 
 import com.apptentive.android.sdk.Apptentive;
+import com.crashlytics.android.Crashlytics;
 import com.squareup.leakcanary.LeakCanary;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
-import com.viewlift.views.components.AppCMSPresenterComponent;
-import com.viewlift.views.modules.AppCMSPresenterModule;
 import com.viewlift.models.network.modules.AppCMSUIModule;
-
+import com.viewlift.views.components.AppCMSPresenterComponent;
 import com.viewlift.views.components.DaggerAppCMSPresenterComponent;
+import com.viewlift.views.modules.AppCMSPresenterModule;
 
-import com.crashlytics.android.Crashlytics;
 import io.fabric.sdk.android.Fabric;
-
 import snagfilms.com.air.appcms.R;
 
 /**
