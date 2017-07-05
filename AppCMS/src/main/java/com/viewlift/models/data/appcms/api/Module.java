@@ -1,60 +1,76 @@
-
 package com.viewlift.models.data.appcms.api;
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 public class Module {
 
     @SerializedName("id")
     @Expose
     private String id;
+
     @SerializedName("name")
     @Expose
     private String name;
+
     @SerializedName("ad")
     @Expose
     private String ad;
+
     @SerializedName("description")
     @Expose
     private String description;
+
     @SerializedName("settings")
     @Expose
     private Settings settings;
+
     @SerializedName("filters")
     @Expose
     private Filters filters;
+
     @SerializedName("contentData")
     @Expose
     private List<ContentDatum> contentData = null;
+
     @SerializedName("moduleType")
     @Expose
     private String moduleType;
+
     @SerializedName("contentType")
     @Expose
     private String contentType;
+
     @SerializedName("title")
     @Expose
     private String title;
+
     @SerializedName("metadataMap")
     @Expose
     private Object metadataMap;
+
     @SerializedName("viewType")
     @Expose
     private String viewType;
+
     @SerializedName("menuLinks")
     @Expose
     private Object menuLinks;
+
     @SerializedName("supportedDeviceLinks")
     @Expose
     private Object supportedDeviceLinks;
+
     @SerializedName("searchText")
     @Expose
     private Object searchText;
+
     @SerializedName("navigation")
     @Expose
     private Object navigation;
+
     @SerializedName("rawText")
     @Expose
     private String rawText;

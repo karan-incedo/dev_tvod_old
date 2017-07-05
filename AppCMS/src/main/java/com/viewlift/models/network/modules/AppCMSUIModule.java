@@ -9,10 +9,14 @@ import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSHistoryCall;
+import com.viewlift.models.network.rest.AppCMSHistoryRest;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSMainUIRest;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.models.network.rest.AppCMSPageUIRest;
+import com.viewlift.models.network.rest.AppCMSWatchlistCall;
+import com.viewlift.models.network.rest.AppCMSWatchlistRest;
 import com.viewlift.presenters.AppCMSActionType;
 
 import java.io.File;
@@ -86,6 +90,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_LABEL_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_collection_grid_key),
                 AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_table_view_key),
+                AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_progress_view_key),
                 AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_key),
@@ -96,7 +102,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_CAROUSEL_ADD_TO_WATCHLIST_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_page_control_key),
                 AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY);
-        jsonValueKeyMap.put( context.getString(R.string.app_cms_page_seperator_key),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_seperator_key),
                 AppCMSUIKeyType.PAGE_SEPARATOR_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_castview_key),
                 AppCMSUIKeyType.PAGE_CASTVIEW_VIEW_KEY);
@@ -120,7 +126,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_title_key),
                 AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY);
-        jsonValueKeyMap.put( context.getString(R.string.app_cms_page_text_alignment_center_key),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_text_alignment_center_key),
                 AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_title_key),
                 AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY);
@@ -262,6 +268,30 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSPageUIRest providesAppCMSPageUIRest(Retrofit retrofit) {
         return retrofit.create(AppCMSPageUIRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSWatchlistRest providesAppCMSWatchlistRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSWatchlistRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSWatchlistCall providesAppCMSWatchlistCall(Retrofit retrofit) {
+        return retrofit.create(AppCMSWatchlistCall.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSHistoryRest providesAppCMSHistoryRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSHistoryRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSHistoryCall providesAppCMSHistoryCall(Retrofit retrofit) {
+        return retrofit.create(AppCMSHistoryCall.class);
     }
 
     @Provides

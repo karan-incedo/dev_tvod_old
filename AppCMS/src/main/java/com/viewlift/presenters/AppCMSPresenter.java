@@ -15,6 +15,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -73,6 +74,7 @@ import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.LifecycleStatus;
 import com.viewlift.views.customviews.OnInternalEvent;
+import com.viewlift.views.fragments.AppCMSHistoryFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSSearchFragment;
 import com.viewlift.views.fragments.AppCMSWatchlistFragment;
@@ -182,12 +184,12 @@ public class AppCMSPresenter {
         public void run() {
             appCMSBeaconRest.sendBeaconMessage(url).enqueue(new Callback<Void>() {
                 @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
+                public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                     Log.d(TAG, "Succeeded to send Beacon message: " + response.code());
                 }
 
                 @Override
-                public void onFailure(Call<Void> call, Throwable t) {
+                public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                     Log.d(TAG, "Failed to send Beacon message: " + t.getMessage());
                 }
             });
@@ -541,7 +543,14 @@ public class AppCMSPresenter {
     }
 
     public void launchHistoryPage() {
-        //
+        boolean result = false;
+
+        AppCMSHistoryFragment appCMSHistoryFragment =
+                AppCMSHistoryFragment.newInstance(currentActivity,
+                        Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
+                        Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()),
+                        Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor()));
+
     }
 
     public boolean launchHistoryResultsPage() {
@@ -988,7 +997,7 @@ public class AppCMSPresenter {
                     appCMSWatchlistUrlComponent = DaggerAppCMSWatchlistUrlComponent.builder()
                             .appCMSWatchlistUrlModule(new AppCMSWatchlistUrlModule(main.getApiBaseUrl(),
                                     main.getSite(), null))
-                            // FIXME: 6/28/2017 add appCMSWatchlistCall to presenter.
+//                             FIXME: 6/28/2017 add appCMSWatchlistCall to presenter.
 //                                    appCMSWatchlistCall))
                             .build();
                 }

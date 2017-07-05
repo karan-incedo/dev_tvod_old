@@ -62,6 +62,7 @@ public class ViewCreator {
 
     private static LruCache<String, PageView> pageViewLruCache;
     private static int PAGE_LRU_CACHE_SIZE = 10;
+
     private static LruCache<String, PageView> getPageViewLruCache() {
         if (pageViewLruCache == null) {
             pageViewLruCache = new LruCache<>(PAGE_LRU_CACHE_SIZE);
@@ -94,6 +95,7 @@ public class ViewCreator {
         if (appCMSPageUI == null || appCMSPageAPI == null) {
             return null;
         }
+
         PageView pageView = getPageViewLruCache().get(appCMSPageAPI.getId() + BaseView.isLandscape(context));
         boolean newView = false;
         if (pageView == null || pageView.getContext() != context) {
@@ -243,9 +245,9 @@ public class ViewCreator {
             if (componentView != null) {
                 CollectionGridItemView.ItemContainer itemContainer =
                         new CollectionGridItemView.ItemContainer.Builder()
-                            .childView(componentView)
-                            .component(childComponent)
-                            .build();
+                                .childView(componentView)
+                                .component(childComponent)
+                                .build();
                 collectionGridItemView.addChild(itemContainer);
                 collectionGridItemView.setComponentHasView(i, true);
                 collectionGridItemView.setViewMarginsFromComponent(childComponent,
@@ -260,6 +262,7 @@ public class ViewCreator {
                 collectionGridItemView.setComponentHasView(i, false);
             }
         }
+
         for (OnInternalEvent onInternalEvent : onInternalEvents) {
             for (OnInternalEvent receiverInternalEvent : onInternalEvents) {
                 if (receiverInternalEvent != onInternalEvent) {
@@ -286,12 +289,15 @@ public class ViewCreator {
         if (componentType == null) {
             componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
+
         AppCMSUIKeyType componentKey = jsonValueKeyMap.get(component.getKey());
         if (componentKey == null) {
             componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
+
         switch (componentType) {
             case PAGE_COLLECTIONGRID_KEY:
+            case PAGE_TABLE_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
                 ((RecyclerView) componentViewResult.componentView)
                         .setLayoutManager(new LinearLayoutManager(context,
@@ -317,6 +323,7 @@ public class ViewCreator {
                 }
                 componentViewResult.useWidthOfScreen = true;
                 break;
+
             case PAGE_CAROUSEL_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
                 ((RecyclerView) componentViewResult.componentView)
@@ -347,6 +354,7 @@ public class ViewCreator {
                 }
                 componentViewResult.onInternalEvent = appCMSCarouselItemAdapter;
                 break;
+
             case PAGE_PAGE_CONTROL_VIEW_KEY:
                 int selectedColor =
                         component.getSelectedColor() != null ? Color.parseColor(getColor(context, component.getSelectedColor())) : 0;
@@ -361,6 +369,7 @@ public class ViewCreator {
                 componentViewResult.onInternalEvent = (DotSelectorView) componentViewResult.componentView;
                 componentViewResult.useMarginsAsPercentagesOverride = false;
                 break;
+
             case PAGE_BUTTON_KEY:
                 // IGNORE FOR NOW
                 if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_ADD_TO_WATCHLIST_KEY) {
@@ -385,10 +394,12 @@ public class ViewCreator {
                 }
                 int tintColor = Color.parseColor(getColor(context,
                         appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
+
                 switch (componentKey) {
                     case PAGE_INFO_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.info_icon));
                         break;
+
                     case PAGE_VIDEO_WATCH_TRAILER_KEY:
                         if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers() != null &&
@@ -423,6 +434,7 @@ public class ViewCreator {
                             componentViewResult.componentView = null;
                         }
                         break;
+
                     case PAGE_VIDEO_PLAY_BUTTON_KEY:
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -470,12 +482,14 @@ public class ViewCreator {
                         componentViewResult.componentView.getBackground().setTint(tintColor);
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                         break;
+
                     case PAGE_PLAY_KEY:
                     case PAGE_PLAY_IMAGE_KEY:
                         componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.play_icon));
                         componentViewResult.componentView.getBackground().setTint(tintColor);
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                         break;
+
                     case PAGE_VIDEO_CLOSE_KEY:
                         Drawable closeDrawable = ContextCompat.getDrawable(context, R.drawable.cancel);
                         componentViewResult.componentView.setBackground(closeDrawable);
@@ -494,6 +508,7 @@ public class ViewCreator {
                             }
                         });
                         break;
+
                     case PAGE_VIDEO_SHARE_KEY:
                         Drawable shareDrawable = ContextCompat.getDrawable(context, R.drawable.share);
                         componentViewResult.componentView.setBackground(shareDrawable);
@@ -530,9 +545,11 @@ public class ViewCreator {
                             }
                         });
                         break;
+
                     default:
                 }
                 break;
+
             case PAGE_LABEL_KEY:
             case PAGE_TEXTVIEW_KEY:
                 componentViewResult.componentView = new TextView(context);
@@ -555,6 +572,7 @@ public class ViewCreator {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
                             }
                             break;
+
                         case PAGE_API_DESCRIPTION:
                             if (!TextUtils.isEmpty(moduleAPI.getRawText())) {
                                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -565,6 +583,7 @@ public class ViewCreator {
                                 ((TextView) componentViewResult.componentView).setMovementMethod(LinkMovementMethod.getInstance());
                             }
                             break;
+
                         case PAGE_TRAY_TITLE_KEY:
                             if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText().toUpperCase());
@@ -573,6 +592,7 @@ public class ViewCreator {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle().toUpperCase());
                             }
                             break;
+
                         case PAGE_VIDEO_DESCRIPTION_KEY:
                             String videoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
                             if (!TextUtils.isEmpty(videoDescription)) {
@@ -592,6 +612,7 @@ public class ViewCreator {
                                             false);
                             textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
                             break;
+
                         case PAGE_VIDEO_TITLE_KEY:
                             if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
@@ -603,11 +624,13 @@ public class ViewCreator {
                             ((TextView) componentViewResult.componentView).setSingleLine(true);
                             ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
                             break;
+
                         case PAGE_VIDEO_SUBTITLE_KEY:
                             setViewWithSubtitle(context,
                                     moduleAPI.getContentData().get(0),
                                     componentViewResult.componentView);
                             break;
+
                         case PAGE_VIDEO_AGE_LABEL_KEY:
                             if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getParentalRating())) {
                                 String parentalRating = moduleAPI.getContentData().get(0).getParentalRating();
@@ -648,21 +671,25 @@ public class ViewCreator {
                         Typeface face = null;
                         switch (fontWeight) {
                             case PAGE_TEXT_BOLD_KEY:
-                                face = Typeface.createFromAsset(context.getAssets(),context.getString(R.string.opensans_bold_ttf));
+                                face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_bold_ttf));
                                 break;
+
                             case PAGE_TEXT_SEMIBOLD_KEY:
-                                face = Typeface.createFromAsset(context.getAssets(),context.getString(R.string.opensans_semibold_ttf));
+                                face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_semibold_ttf));
                                 break;
+
                             case PAGE_TEXT_EXTRABOLD_KEY:
-                                face = Typeface.createFromAsset(context.getAssets(),context.getString(R.string.opensans_extrabold_ttf));
+                                face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_extrabold_ttf));
                                 break;
+
                             default:
-                                face = Typeface.createFromAsset(context.getAssets(),context.getString(R.string.opensans_regular_ttf));
+                                face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
                         }
                         ((TextView) componentViewResult.componentView).setTypeface(face);
                     }
                 }
                 break;
+
             case PAGE_IMAGE_KEY:
                 componentViewResult.componentView = new ImageView(context);
                 switch (componentKey) {
@@ -679,7 +706,7 @@ public class ViewCreator {
                                     .resize(viewWidth, viewHeight)
                                     .centerCrop()
                                     .into((ImageView) componentViewResult.componentView);
-                        } else if (viewWidth > 0){
+                        } else if (viewWidth > 0) {
                             Picasso.with(context)
                                     .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                     .resize(viewWidth, viewHeight)
@@ -692,6 +719,7 @@ public class ViewCreator {
                         }
                         componentViewResult.useWidthOfScreen = !BaseView.isLandscape(context);
                         break;
+
                     default:
                         if (!TextUtils.isEmpty(component.getImageName())) {
                             Picasso.with(context)
@@ -700,6 +728,7 @@ public class ViewCreator {
                         }
                 }
                 break;
+
             case PAGE_PROGRESS_VIEW_KEY:
                 componentViewResult.componentView = new ProgressBar(context,
                         null,
@@ -709,6 +738,7 @@ public class ViewCreator {
                     ((ProgressBar) componentViewResult.componentView).setProgressDrawable(new ColorDrawable(color));
                 }
                 break;
+
             case PAGE_SEPARATOR_VIEW_KEY:
                 componentViewResult.componentView = new View(context);
                 if (!TextUtils.isEmpty(component.getBackgroundColor())) {
@@ -716,6 +746,7 @@ public class ViewCreator {
                             setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
                 }
                 break;
+
             case PAGE_CASTVIEW_VIEW_KEY:
                 if (moduleAPI.getContentData().get(0).getCreditBlocks() == null) {
                     componentViewResult.componentView = null;
@@ -745,8 +776,10 @@ public class ViewCreator {
                         fontFamilyValueTypeParsed = fontFamilyValueArr[1];
                     }
                 }
+
                 int fontFamilyValueType = Typeface.NORMAL;
                 fontWeight = jsonValueKeyMap.get(fontFamilyValueTypeParsed);
+
                 if (fontWeight == AppCMSUIKeyType.PAGE_TEXT_BOLD_KEY ||
                         fontWeight == AppCMSUIKeyType.PAGE_TEXT_SEMIBOLD_KEY ||
                         fontWeight == AppCMSUIKeyType.PAGE_TEXT_EXTRABOLD_KEY) {
@@ -758,12 +791,13 @@ public class ViewCreator {
                 StringBuffer directorListSb = new StringBuffer();
                 String starringTitle = null;
                 StringBuffer starringListSb = new StringBuffer();
+
                 for (CreditBlock creditBlock : moduleAPI.getContentData().get(0).getCreditBlocks()) {
                     AppCMSUIKeyType creditBlockType = jsonValueKeyMap.get(creditBlock.getTitle());
                     if (creditBlockType != null &&
                             (creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTEDBY_KEY ||
-                            creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTOR_KEY ||
-                            creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTORS_KEY)) {
+                                    creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTOR_KEY ||
+                                    creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTORS_KEY)) {
                         if (!TextUtils.isEmpty(creditBlock.getTitle())) {
                             directorTitle = creditBlock.getTitle().toUpperCase();
                         }
@@ -804,6 +838,7 @@ public class ViewCreator {
                         BaseView.getFontSizeKey(context, component.getLayout()),
                         BaseView.getFontSizeValue(context, component.getLayout()));
                 break;
+
             case PAGE_VIDEO_STARRATING_KEY:
                 int starBorderColor = Color.parseColor(getColor(context, component.getBorderColor()));
                 int starFillColor = Color.parseColor(getColor(context, component.getFillColor()));
@@ -813,6 +848,7 @@ public class ViewCreator {
                         starFillColor,
                         starRating);
                 break;
+
             default:
         }
         return componentViewResult;
