@@ -62,25 +62,13 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG , "appcmsBrowseFragment onCreateView");
         return super.onCreateView(inflater, container, savedInstanceState);
-
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         Log.d(TAG , "appcmsBrowseFragment onActivityCreated");
         createRows();
-/*
-        setHeaderPresenterSelector(new PresenterSelector() {
-            @Override
-            public Presenter getPresenter(Object item) {
-                return new CustomHeaderItemPresenter();
-            }
-        });*/
-
-
-
     }
 
     private void createRows(){

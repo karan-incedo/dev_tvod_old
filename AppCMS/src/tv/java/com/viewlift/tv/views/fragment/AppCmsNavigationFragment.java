@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -28,6 +29,7 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.Primary;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 
 import org.w3c.dom.Text;
@@ -71,7 +73,6 @@ public class AppCmsNavigationFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_navigation, null);
 
         Bundle args = getArguments();
-
         textColor = args.getInt(getResources().getString(R.string.app_cms_text_color_key));
         bgColor = args.getInt(getResources().getString(R.string.app_cms_bg_color_key));
 
@@ -83,14 +84,21 @@ public class AppCmsNavigationFragment extends Fragment {
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.navRecylerView);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        NavigationAdapter navigationAdapter = new NavigationAdapter(getActivity(), textColor, bgColor, appCMSBinder.getNavigation(), appCMSBinder.isUserLoggedIn(), appCMSPresenter);
+        NavigationAdapter navigationAdapter = new NavigationAdapter(getActivity(), textColor, bgColor,
+                                                appCMSBinder.getNavigation(),
+                                                appCMSBinder.isUserLoggedIn(),
+                                                appCMSPresenter);
+
         mRecyclerView.setAdapter(navigationAdapter);
         return view;
     }
 
     public void setFocusable(boolean hasFocus) {
         if (null != mRecyclerView) {
-            mRecyclerView.requestFocus();
+            if(hasFocus)
+              mRecyclerView.requestFocus();
+            else
+                mRecyclerView.clearFocus();
         }
     }
     public void setSelectorColor() {
@@ -98,8 +106,20 @@ public class AppCmsNavigationFragment extends Fragment {
         GradientDrawable topshape = (GradientDrawable) layerDrawable.findDrawableByLayerId(R.id.navigationTopColor);
         GradientDrawable bottomShape = (GradientDrawable) layerDrawable.findDrawableByLayerId(R.id.navigationBottomColor);
         if(bgColor != -1)
-        topshape.setColor(bgColor);
+            topshape.setColor(bgColor);
         bottomShape.setColor(ContextCompat.getColor(getActivity(), R.color.appcms_nav_background));
+    }
+
+    private String mSelectedPageId = null;
+    public void setSelectedPageId(String selectedPageId) {
+        this.mSelectedPageId = selectedPageId;
+        Log.d("" ,"Navigation setSelectedPageId = " + mSelectedPageId );
+    }
+
+    public void notifiDataSetInvlidate() {
+        if(null != mRecyclerView && null != mRecyclerView.getAdapter()){
+            mRecyclerView.getAdapter().notifyDataSetChanged();
+        }
     }
 
     class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.NavItemHolder> {
@@ -110,6 +130,7 @@ public class AppCmsNavigationFragment extends Fragment {
         private Navigation navigation;
         private boolean isuserLoggedIn;
         private AppCMSPresenter appCmsPresenter;
+        private int currentNavPos;
 
         public NavigationAdapter(Context activity,
                                  int textColor,
@@ -141,24 +162,37 @@ public class AppCmsNavigationFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(NavItemHolder holder, int position) {
+        public void onBindViewHolder(NavItemHolder holder, final int position) {
             final Primary primary = (Primary)getItem(position);
             holder.navItemView.setText(primary.getTitle().toString());
             Log.d("NavigationAdapter", primary.getTitle().toString());
 
 
+            if(null != mSelectedPageId){
+                if(primary.getPageId().equalsIgnoreCase(mSelectedPageId)){
+                     holder.navItemlayout.requestFocus();
+                    Log.d("NavigationAd pageId = " , mSelectedPageId + " title = " + primary.getTitle() + " -----true ");
+                }else{
+                    holder.navItemlayout.clearFocus();
+                    Log.d("NavigationAd pageId = " , mSelectedPageId + " title = " + primary.getTitle() + " -----false");
+                }
+            }
+
+
             holder.navItemlayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                  //  navigationVisibilityListener.showNavigation(false);
+
+                    /*notifyItemChanged(currentNavPos);
+                    currentNavPos = position;
+                    notifyItemChanged(currentNavPos);*/
+                    navigationVisibilityListener.showNavigation(false);
                     if (!appCmsPresenter.navigateToTVPage(primary.getPageId(),
                             primary.getTitle(),
                             primary.getUrl(),
                             false,
                             null)) {
-                    } /*else if (onCloseNavAction != null) {
-                        onCloseNavAction.closeNavAction();
-                    }*/
+                    }
                 }
             });
 

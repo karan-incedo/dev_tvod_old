@@ -15,19 +15,17 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.tv.utility.CustomProgressBar;
 import com.viewlift.tv.views.fragment.AppCmsNavigationFragment;
 import com.viewlift.tv.views.fragment.AppCmsTVPageFragment;
 import com.viewlift.views.binders.AppCMSBinder;
-import com.viewlift.views.fragments.AppCMSPageFragment;
+import com.viewlift.views.customviews.NavBarItemView;
 
 import snagfilms.com.air.appcms.R;
-
-import static android.R.attr.animationDuration;
 
 /**
  * Created by nitin.tyagi on 6/27/2017.
@@ -79,14 +77,17 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements AppCmsNavi
                                 (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
                         /*if (isActive)*/ {
                             handleLaunchPageAction(updatedAppCMSBinder);
+
+                            appCMSPresenter.sendStopLoadingPageAction(); //stop the progress bar..
+
                         }
                     } catch (ClassCastException e) {
                         Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
                     }
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION)) {
-                    //pageLoading(true);
+                        pageLoading(true);
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION)) {
-                   // pageLoading(false);
+                       pageLoading(false);
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM_ACTION)) {
                     Log.d(TAG, "Nav item - Received broadcast to select navigation item with page Id: " +
                             intent.getStringExtra(getString(R.string.navigation_item_key)));
@@ -98,11 +99,28 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements AppCmsNavi
                 }
             }
         };
-
-        registerReceiver(presenterActionReceiver,
-                new IntentFilter(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION));
+        registerReceiver(presenterActionReceiver,new IntentFilter(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION));
+        registerReceiver(presenterActionReceiver,new IntentFilter(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+        registerReceiver(presenterActionReceiver,new IntentFilter(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM_ACTION));
 
     }
+
+
+    private void pageLoading(boolean shouldShowProgress){
+        if(shouldShowProgress){
+            CustomProgressBar.getInstance(this).showProgressDialog(this,"Loading...");
+        }else{
+            CustomProgressBar.getInstance(this).dismissProgressDialog();
+        }
+    }
+
+    private void selectNavItem(String pageId) {
+        Log.d(TAG , "Nav Pageid = "+pageId);
+        navigationFragment.setSelectedPageId(pageId);
+    }
+
+
 
     @Override
     protected void onDestroy() {
@@ -111,25 +129,13 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements AppCmsNavi
     }
 
     private void handleLaunchPageAction(AppCMSBinder appCMSBinder) {
-
         Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
         boolean isPoped = getFragmentManager().popBackStackImmediate(appCMSBinder.getPageId() , 0 );
-        /*int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
-        Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
-        if (0 < distanceFromStackTop) {
-            for (int i = 0; i < distanceFromStackTop; i++) {
-                Log.d(TAG, "Popping stack to get to page item");
-                try {
-                    getSupportFragmentManager().popBackStack();
-                } catch (IllegalStateException e) {
-                    Log.e(TAG, "Error popping back stack: " + e.getMessage());
-                }
-                handleBack(true, false, false);
-            }
-        }*/
         if(!isPoped)
             setPageFragment(updatedAppCMSBinder);
+        else
+        selectNavItem(updatedAppCMSBinder.getPageId());
     }
 
 
@@ -141,55 +147,13 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements AppCmsNavi
             }
         }
 
-    private void playExitAnimation() {
-        LinearInterpolator interpolator = new LinearInterpolator();
-
-        ObjectAnimator upperAnim = ObjectAnimator.ofFloat(navHolder, "y", 30, 0);
-        upperAnim.setDuration(animationDuration);
-        upperAnim.setInterpolator(interpolator);
-
-        ObjectAnimator y = ObjectAnimator.ofFloat(homeHolder, "y", 1080 - 30, 30);
-        y.setDuration(animationDuration);
-        y.setInterpolator(interpolator);
-
-
-        ObjectAnimator alpha = ObjectAnimator.ofFloat(homeHolder, "alpha", 1f, 0f);
-        alpha.setInterpolator(interpolator);
-        alpha.setDuration(animationDuration);
-
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.play(upperAnim).with(y).with(alpha);
-        animatorSet.start();
-    }
-
-    private final int animationDuration = 300;
-    private void playEnterAnimation() {
-        LinearInterpolator interpolator = new LinearInterpolator();
-
-        ObjectAnimator upperAnim = ObjectAnimator.ofFloat(navHolder, "y", 0, 30);
-        upperAnim.setDuration(animationDuration);
-        upperAnim.setInterpolator(interpolator);
-
-        ObjectAnimator y = ObjectAnimator.ofFloat(homeHolder, "y", 30, (1080-30));
-        y.setDuration(animationDuration);
-        y.setInterpolator(interpolator);
-
-
-        ObjectAnimator alpha = ObjectAnimator.ofFloat(homeHolder, "alpha", 0f, 1f);
-        alpha.setInterpolator(interpolator);
-        alpha.setDuration(animationDuration);
-
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.play(upperAnim).with(y).with(alpha);
-        animatorSet.start();
-    }
 
     private void setNavigationFragment(AppCmsNavigationFragment navigationFragment){
          getFragmentManager().beginTransaction().add( R.id.navigation_placholder ,navigationFragment , "nav" ).commit();
     }
 
     private void setPageFragment(AppCMSBinder appCMSBinder){
-
+        Log.d(TAG , "setPageFragment Called ****");
         Fragment attached = getFragmentManager().findFragmentById(R.id.home_placeholder);
         if(attached == null || (attached != null && !attached.getTag().equalsIgnoreCase(appCMSBinder.getPageId()))){
             AppCmsTVPageFragment appCMSPageFragment = AppCmsTVPageFragment.newInstance(this , appCMSBinder);
@@ -199,7 +163,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements AppCmsNavi
             fragmentTransaction.addToBackStack(appCMSBinder.getPageId());
             fragmentTransaction.commitAllowingStateLoss();
         }
-
+        selectNavItem(appCMSBinder.getPageId());
     }
 
 
@@ -210,34 +174,22 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements AppCmsNavi
         int action = event.getAction();
 
         if ( (keyCode == KeyEvent.KEYCODE_MENU || keyCode == 85) && action == KeyEvent.ACTION_DOWN) {
-
-           /* if(!isVisible){
-                playEnterAnimation();
-                isVisible = true;
-            }else{
-                playExitAnimation();
-                isVisible = false;
-            }*/
-
             if(navHolder.getVisibility() == View.GONE){
-                navHolder.setVisibility(View.VISIBLE);
-                shadowView.setVisibility(View.VISIBLE);
-                navigationFragment.setFocusable(true);
-                navigationFragment.setSelectorColor();
-
-               // playEnterAnimation();
+                showNavigation(true);
             }else if(navHolder.getVisibility() == View.VISIBLE){
-                navHolder.setVisibility(View.GONE);
-                shadowView.setVisibility(View.GONE);
-                navigationFragment.setFocusable(false);
-                navigationFragment.setSelectorColor();
+               showNavigation(false);
             }
         }
-return super.dispatchKeyEvent(event);
+        return super.dispatchKeyEvent(event);
     }
 
     @Override
     public void showNavigation(boolean shouldShow) {
         navHolder.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+        shadowView.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+        navigationFragment.setFocusable(shouldShow);
+        navigationFragment.setSelectorColor();
+        navigationFragment.notifiDataSetInvlidate();
     }
+
 }
