@@ -92,39 +92,25 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     @Override
                     public void onClick(View v) {
 
-                        setUpWatchlistInNav();
-                        setUpHistoryInNav();
-
-                        if (!appCMSPresenter.navigateToPage(user.getPageId(),
-                                user.getTitle(),
-                                user.getUrl(),
-                                false,
-                                true,
-                                true,
-                                null)) {
-                            Log.e(TAG, "Could not navigate to page with Title: " +
-                                    user.getTitle() +
-                                    " Id: " +
-                                    user.getPageId());
-                        }
-                    }
-
-                    // TODO: 7/5/17 Confirm this method is being called.
-                    private void setUpWatchlistInNav() {
-                        for (int j = 0; j < navigation.getUser().size(); j++) {
-                            if (navigation.getUser().get(j).getTitle().equals("Watchlist")) {
-                                appCMSPresenter.navigateToWatchlistPage(user.getPageId(),
-                                        user.getTitle(), user.getUrl(), true);
-                            }
-                        }
-                    }
-
-                    // TODO: 7/5/17 Confirm this method will be called.
-                    private void setUpHistoryInNav() {
-                        for (int j = 0; j < navigation.getUser().size(); j++) {
-                            if (navigation.getUser().get(j).getTitle().equals("History")) {
-                                appCMSPresenter.navigateToHistoryPage(user.getPageId(), user.getTitle(),
-                                        user.getUrl(), true);
+                        if (user.getTitle().equals("Watchlist")) {
+                            appCMSPresenter.navigateToWatchlistPage(user.getPageId(),
+                                    user.getTitle(), user.getUrl(), true);
+                        } else if (user.getTitle().equals("History")) {
+                            appCMSPresenter.navigateToHistoryPage(user.getPageId(), user.getTitle(),
+                                    user.getUrl(), true);
+                        } else {
+                            if (!appCMSPresenter.navigateToPage(user.getPageId(),
+                                    user.getTitle(),
+                                    user.getUrl(),
+                                    false,
+                                    true,
+                                    true,
+                                    null)) {
+                            } else {
+                                Log.e(TAG, "Could not navigate to page with Title: " +
+                                        user.getTitle() +
+                                        " Id: " +
+                                        user.getPageId());
                             }
                         }
                     }
