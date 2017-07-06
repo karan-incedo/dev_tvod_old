@@ -174,9 +174,14 @@ public class AppCMSPresenter {
     private GoogleAnalytics googleAnalytics;
     private Tracker tracker;
 
+    private String tvHomeScreenPackage = "com.viewlift.tv.views.activity.AppCmsHomeActivity";
+    private String tvErrorScreenPackage = "com.viewlift.tv.views.activity.AppCmsTvErrorActivity";
+
     private Uri deeplinkSearchQuery;
     private String refreshToken;
     private MetaPage loginPage;
+
+    private PlatformType platformType;
 
     public enum PlatformType {
         ANDROID, TV
@@ -877,7 +882,7 @@ public class AppCMSPresenter {
                     deeplinkSearchQuery);
             if (!launchSuccess) {
                 Log.e(TAG, "Failed to launch page: " + loginPage.getPageName());
-                launchErrorActivity(currentActivity);
+                launchErrorActivity(currentActivity, platformType);
             }
         }
     }
@@ -1105,10 +1110,19 @@ public class AppCMSPresenter {
         showErrorDialog();
     }
 
-    public void launchErrorActivity(Activity activity) {
-        sendCloseOthersAction(null, true);
-        Intent errorIntent = new Intent(activity, AppCMSErrorActivity.class);
-        activity.startActivity(errorIntent);
+    public void launchErrorActivity(Activity activity, PlatformType platformType) {
+        if (platformType == PlatformType.ANDROID) {
+            sendCloseOthersAction(null, true);
+            Intent errorIntent = new Intent(activity, AppCMSErrorActivity.class);
+            activity.startActivity(errorIntent);
+        } else if (platformType == PlatformType.TV) {
+            try {
+                Intent errorIntent = new Intent(activity, Class.forName(tvErrorScreenPackage));
+                activity.startActivity(errorIntent);
+            } catch (Exception e) {
+                Log.e(TAG, "Error launching TV Error Activity");
+            }
+        }
     }
 
     public void getPageIdContent(String baseUrl,
@@ -1251,7 +1265,8 @@ public class AppCMSPresenter {
                               final String siteId,
                               final Uri searchQuery,
                               final PlatformType platformType) {
-        deeplinkSearchQuery = searchQuery;
+        this.deeplinkSearchQuery = searchQuery;
+        this.platformType = platformType;
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
@@ -1261,18 +1276,18 @@ public class AppCMSPresenter {
             public void call(AppCMSMain main) {
                 if (main == null) {
                     Log.e(TAG, "Error retrieving main.json");
-                    launchErrorActivity(activity);
+                    launchErrorActivity(activity, platformType);
                 } else if (TextUtils.isEmpty(main
                         .getAndroid())) {
                     Log.e(TAG, "AppCMS key for main not found");
-                    launchErrorActivity(activity);
+                    launchErrorActivity(activity, platformType);
                 } else if (TextUtils.isEmpty(main
                         .getApiBaseUrl())) {
                     Log.e(TAG, "AppCMS key for API Base URL not found");
-                    launchErrorActivity(activity);
+                    launchErrorActivity(activity, platformType);
                 } else if (TextUtils.isEmpty(main.getSite())) {
                     Log.e(TAG, "AppCMS key for API Site ID not found");
-                    launchErrorActivity(activity);
+                    launchErrorActivity(activity, platformType);
                 } else {
                     appCMSMain = main;
                     String version = main.getVersion();
@@ -1679,9 +1694,10 @@ public class AppCMSPresenter {
                                     .build();
                             appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
                             appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
-                            getAppCMSAndroid(activity, main);
+                            clearMaps();
                             switch (platformType) {
                                 case ANDROID:
+                                    getAppCMSAndroid(activity, main);
                                     getAppCMSAndroid(activity, main);
                                     break;
                                 case TV:
@@ -1694,6 +1710,7 @@ public class AppCMSPresenter {
     }
 
     private void getAppCMSAndroid(final Activity activity, final AppCMSMain main) {
+
         GetAppCMSAndroidUIAsyncTask.Params params =
                 new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                         .url(activity.getString(R.string.app_cms_url_with_appended_timestamp,
@@ -1704,12 +1721,12 @@ public class AppCMSPresenter {
         Log.d(TAG, "Params: " + main.getAndroid() + " " + loadFromFile);
         new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, new Action1<AppCMSAndroidUI>() {
             @Override
-            public void call(final AppCMSAndroidUI appCMSAndroidUI) {
+            public void call(AppCMSAndroidUI appCMSAndroidUI) {
                 if (appCMSAndroidUI == null ||
                         appCMSAndroidUI.getMetaPages() == null ||
                         appCMSAndroidUI.getMetaPages().size() < 1) {
                     Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
-                    launchErrorActivity(activity);
+                    launchErrorActivity(activity, platformType);
                 } else {
                     initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
                     navigation = appCMSAndroidUI.getNavigation();
@@ -1735,7 +1752,7 @@ public class AppCMSPresenter {
                                                 deeplinkSearchQuery);
                                         if (!launchSuccess) {
                                             Log.e(TAG, "Failed to launch page: " + firstPage.getPageName());
-                                            launchErrorActivity(currentActivity);
+                                            launchErrorActivity(currentActivity, platformType);
                                         }
                                     }
                                 }
@@ -1844,5 +1861,222 @@ public class AppCMSPresenter {
             }
         }
         return null;
+    }
+
+    private void clearMaps() {
+        navigationPages.clear();
+        navigationPageData.clear();
+        pageIdToPageAPIUrlMap.clear();
+        actionToPageAPIUrlMap.clear();
+        actionToPageNameMap.clear();
+        pageIdToPageNameMap.clear();
+    }
+
+    private void getAppCMSTV(final Activity activity , final AppCMSMain main , final Uri searchQuery){
+        GetAppCMSAndroidUIAsyncTask.Params params =
+                new GetAppCMSAndroidUIAsyncTask.Params.Builder()
+                        .url(activity.getString(R.string.app_cms_url_with_appended_timestamp,
+                                main.getAndroid(),
+                                main.getTimestamp()))
+                        .loadFromFile(loadFromFile)
+                        .build();
+        Log.d(TAG, "Params: " + main.getAndroid() + " " + loadFromFile);
+        new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, new Action1<AppCMSAndroidUI>() {
+            @Override
+            public void call(final AppCMSAndroidUI appCMSAndroidUI) {
+                if (appCMSAndroidUI == null ||
+                        appCMSAndroidUI.getMetaPages() == null ||
+                        appCMSAndroidUI.getMetaPages().size() < 1) {
+                    Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
+                    launchErrorActivity(activity , PlatformType.TV);
+                } else {
+                    navigation = appCMSAndroidUI.getNavigation();
+                    queueMetaPages(appCMSAndroidUI.getMetaPages());
+                    final MetaPage firstPage = pagesToProcess.peek();
+                    Log.d(TAG, "Processing meta pages queue");
+                    processMetaPagesQueue(activity,
+                            main,
+                            loadFromFile,
+                            new Action0() {
+                                @Override
+                                public void call() {
+                                    Log.d(TAG, "Launching first page: " + firstPage.getPageName());
+                                    Primary homePageNav = findHomePageNavItem();
+                                    boolean launchSuccess = navigateToTVPage(homePageNav.getPageId(),
+                                            homePageNav.getTitle(),
+                                            homePageNav.getUrl(),
+                                            true,
+                                            searchQuery);
+                                    if (!launchSuccess) {
+                                        Log.e(TAG, "Failed to launch page: " + firstPage.getPageName());
+                                        launchErrorActivity(currentActivity , PlatformType.TV);
+                                    }
+                                }
+                            });
+                }
+            }
+        }).execute(params);
+    }
+
+
+    public boolean navigateToTVPage(String pageId,
+                                    String pageTitle,
+                                    String url,
+                                    boolean launchActivity,
+                                    Uri searchQuery) {
+        boolean result = false;
+        if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
+            loadingPage = true;
+            Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
+            // Log.d(TAG, "Search query (optional): " + searchQuery);
+            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+            AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
+
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+
+            if (appCMSPageAPI == null) {
+                getPageIdContent(appCMSMain.getApiBaseUrl(),
+                        pageIdToPageAPIUrlMap.get(pageId),
+                        appCMSMain.getSite(),
+                        true,
+                        getPageId(appCMSPageUI),
+                        new AppCMSPageAPIAction(true,
+                                false,
+                                true,
+                                appCMSPageUI,
+                                pageId,
+                                pageId,
+                                pageTitle,
+                                launchActivity,
+                                false,
+                                searchQuery) {
+                            @Override
+                            public void call(AppCMSPageAPI appCMSPageAPI) {
+                                if (appCMSPageAPI != null) {
+                                    cancelInternalEvents();
+                                    pushActionInternalEvents(this.pageId + BaseView.isLandscape(currentActivity));
+                                    navigationPageData.put(this.pageId, appCMSPageAPI);
+                                    if (this.launchActivity) {
+                                        launchTVPageActivity(currentActivity,
+                                                this.appCMSPageUI,
+                                                appCMSPageAPI,
+                                                this.pageId,
+                                                this.pageTitle,
+                                                pageIdToPageNameMap.get(this.pageId),
+                                                loadFromFile,
+                                                this.appbarPresent,
+                                                this.fullscreenEnabled,
+                                                this.navbarPresent,
+                                                this.searchQuery);
+                                    } else {
+                                        Bundle args = getPageActivityBundle(currentActivity,
+                                                this.appCMSPageUI,
+                                                appCMSPageAPI,
+                                                this.pageId,
+                                                this.pageTitle,
+                                                pageIdToPageNameMap.get(this.pageId),
+                                                loadFromFile,
+                                                this.appbarPresent,
+                                                this.fullscreenEnabled,
+                                                this.navbarPresent,
+                                                false,
+                                                this.searchQuery);
+                                        Intent updatePageIntent =
+                                                new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                        updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                                args);
+                                        currentActivity.sendBroadcast(updatePageIntent);
+                                    }
+                                } else {
+                                    sendStopLoadingPageAction();
+                                    setNavItemToCurrentAction(currentActivity);
+                                }
+                                loadingPage = false;
+                            }
+                        });
+            } else {
+                cancelInternalEvents();
+                pushActionInternalEvents(pageId + BaseView.isLandscape(currentActivity));
+                if (launchActivity) {
+                    launchTVPageActivity(currentActivity,
+                            appCMSPageUI,
+                            appCMSPageAPI,
+                            pageId,
+                            pageTitle,
+                            pageIdToPageNameMap.get(pageId),
+                            loadFromFile,
+                            true,
+                            false,
+                            true,
+                            searchQuery);
+                } else {
+                    Bundle args = getPageActivityBundle(currentActivity,
+                            appCMSPageUI,
+                            appCMSPageAPI,
+                            pageId,
+                            pageTitle,
+                            pageIdToPageNameMap.get(pageId),
+                            loadFromFile,
+                            true,
+                            false,
+                            true,
+                            false,
+                            searchQuery);
+                    Intent updatePageIntent =
+                            new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                    updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                            args);
+                    currentActivity.sendBroadcast(updatePageIntent);
+                }
+
+                loadingPage = false;
+            }
+            result = true;
+        } else if (currentActivity != null &&
+                !TextUtils.isEmpty(url) &&
+                url.contains(currentActivity.getString(R.string.app_cms_page_navigation_contact_us_key))) {
+            if (Apptentive.canShowMessageCenter()) {
+                Apptentive.showMessageCenter(currentActivity);
+            }
+        } else {
+            Log.d(TAG, "Resetting page navigation to previous tab");
+            setNavItemToCurrentAction(currentActivity);
+        }
+        return result;
+    }
+
+
+    private void launchTVPageActivity(Activity activity,
+                                      AppCMSPageUI appCMSPageUI,
+                                      AppCMSPageAPI appCMSPageAPI,
+                                      String pageId,
+                                      String pageName,
+                                      String screenName,
+                                      boolean loadFromFile,
+                                      boolean appbarPresent,
+                                      boolean fullscreenEnabled,
+                                      boolean navbarPresent,
+                                      Uri searchQuery) {
+        Bundle args = getPageActivityBundle(activity,
+                appCMSPageUI,
+                appCMSPageAPI,
+                pageId,
+                pageName,
+                screenName,
+                loadFromFile,
+                appbarPresent,
+                fullscreenEnabled,
+                navbarPresent,
+                false,
+                searchQuery);
+
+        try {
+            Intent appCMSIntent = new Intent(activity, Class.forName(tvHomeScreenPackage));
+            appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
+            appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            activity.startActivity(appCMSIntent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }
