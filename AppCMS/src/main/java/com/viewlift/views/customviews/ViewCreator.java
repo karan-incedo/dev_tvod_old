@@ -296,6 +296,9 @@ public class ViewCreator {
         componentViewResult.componentView = null;
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
+        if (moduleAPI == null) {
+            return;
+        }
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
         if (componentType == null) {
             componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
