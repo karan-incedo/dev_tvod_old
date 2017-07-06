@@ -24,7 +24,6 @@ public class AppCMSHistoryResult {
     private Integer limit;
 
     public List<Record> getRecords() {
-
         return records;
     }
 

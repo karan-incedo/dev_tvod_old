@@ -88,7 +88,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     @Override
                     public void onClick(View v) {
 
-                        setUpWatchlistInNav();
+                        //setUpWatchlistInNav();
+
                         setUpHistoryInNav();
 
                         if (!appCMSPresenter.navigateToPage(user.getPageId(),
