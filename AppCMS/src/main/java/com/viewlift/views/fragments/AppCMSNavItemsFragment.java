@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -36,12 +37,14 @@ public class AppCMSNavItemsFragment extends DialogFragment {
     public static AppCMSNavItemsFragment newInstance(Context context,
                                                      AppCMSBinder appCMSBinder,
                                                      int textColor,
-                                                     int bgColor) {
+                                                     int bgColor,
+                                                     int borderColor) {
         AppCMSNavItemsFragment fragment = new AppCMSNavItemsFragment();
         Bundle args = new Bundle();
         args.putBinder(context.getString(R.string.fragment_page_bundle_key), appCMSBinder);
         args.putInt(context.getString(R.string.app_cms_text_color_key), textColor);
         args.putInt(context.getString(R.string.app_cms_bg_color_key), bgColor);
+        args.putInt(context.getString(R.string.app_cms_border_color_key), borderColor);
         fragment.setArguments(args);
         return fragment;
     }
@@ -55,6 +58,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
 
         int textColor = args.getInt(getContext().getString(R.string.app_cms_text_color_key));
         int bgColor = args.getInt(getContext().getString(R.string.app_cms_bg_color_key));
+        int borderColor = args.getInt(getContext().getString(R.string.app_cms_border_color_key));
 
         final AppCMSBinder appCMSBinder =
                 ((AppCMSBinder) args.getBinder(getContext().getString(R.string.fragment_page_bundle_key)));
@@ -91,6 +95,11 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                     dismiss();
                 }
             });
+            GradientDrawable loginBorder = new GradientDrawable();
+            loginBorder.setShape(GradientDrawable.RECTANGLE);
+            loginBorder.setStroke(getContext().getResources().getInteger(R.integer.app_cms_border_stroke_width), borderColor);
+            loginBorder.setColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+            appCMSNavLoginButton.setBackground(loginBorder);
         }
 
         ImageButton closeButton = (ImageButton) view.findViewById(R.id.app_cms_close_button);
@@ -131,7 +140,9 @@ public class AppCMSNavItemsFragment extends DialogFragment {
         Dialog dialog = getDialog();
         if (dialog != null) {
             Window window = dialog.getWindow();
-            window.setBackgroundDrawable(new ColorDrawable(bgColor));
+            if (window != null) {
+                window.setBackgroundDrawable(new ColorDrawable(bgColor));
+            }
         }
     }
 
@@ -141,8 +152,10 @@ public class AppCMSNavItemsFragment extends DialogFragment {
             int width = ViewGroup.LayoutParams.MATCH_PARENT;
             int height = ViewGroup.LayoutParams.MATCH_PARENT;
             Window window = dialog.getWindow();
-            window.setLayout(width, height);
-            window.setGravity(Gravity.START);
+            if (window != null) {
+                window.setLayout(width, height);
+                window.setGravity(Gravity.START);
+            }
         }
     }
 }

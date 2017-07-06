@@ -22,6 +22,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.apptentive.android.sdk.Apptentive;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -39,6 +41,7 @@ import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.Primary;
 import com.viewlift.models.data.appcms.ui.android.User;
+import com.viewlift.models.data.appcms.ui.authentication.FacebookLoginResponse;
 import com.viewlift.models.data.appcms.ui.authentication.ForgotPasswordResponse;
 import com.viewlift.models.data.appcms.ui.authentication.RefreshIdentityResponse;
 import com.viewlift.models.data.appcms.ui.authentication.SignInResponse;
@@ -60,6 +63,7 @@ import com.viewlift.models.network.modules.AppCMSAPIModule;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
@@ -124,6 +128,7 @@ public class AppCMSPresenter {
 
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
+    private static final String REFRESH_TOKEN_SHARED_PREF_NAME = "refresh_token_pref";
 
     private static final long MILLISECONDS_PER_SECOND = 1000L;
 
@@ -135,6 +140,7 @@ public class AppCMSPresenter {
     private final AppCMSSignInCall appCMSSignInCall;
     private final AppCMSRefreshIdentityCall appCMSRefreshIdentityCall;
     private final AppCMSResetPasswordCall appCMSResetPasswordCall;
+    private final AppCMSFacebookLoginCall appCMSFacebookLoginCall;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final Map<String, String> pageNameToActionMap;
     private final Map<String, AppCMSPageUI> actionToPageMap;
@@ -291,6 +297,7 @@ public class AppCMSPresenter {
                            AppCMSSignInCall appCMSSignInCall,
                            AppCMSRefreshIdentityCall appCMSRefreshIdentityCall,
                            AppCMSResetPasswordCall appCMSResetPasswordCall,
+                           AppCMSFacebookLoginCall appCMSFacebookLoginCall,
                            Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                            Map<String, String> pageNameToActionMap,
                            Map<String, AppCMSPageUI> actionToPageMap,
@@ -304,6 +311,7 @@ public class AppCMSPresenter {
         this.appCMSSignInCall = appCMSSignInCall;
         this.appCMSRefreshIdentityCall = appCMSRefreshIdentityCall;
         this.appCMSResetPasswordCall = appCMSResetPasswordCall;
+        this.appCMSFacebookLoginCall = appCMSFacebookLoginCall;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.pageNameToActionMap = pageNameToActionMap;
         this.actionToPageMap = actionToPageMap;
@@ -457,14 +465,18 @@ public class AppCMSPresenter {
                 sendCloseOthersAction(null, true);
             } else if (actionType == AppCMSActionType.LOGIN) {
                 Log.d(TAG, "Login action selected: " + extraData[0]);
+                closeSoftKeyboard();
                 login(extraData[0], extraData[1]);
             } else if (actionType == AppCMSActionType.FORGOT_PASSWORD) {
                 Log.d(TAG, "Forgot password selected: " + extraData[0]);
+                closeSoftKeyboard();
                 launchResetPasswordPage(extraData[0]);
             } else if (actionType == AppCMSActionType.LOGIN_FACEBOOK) {
                 Log.d(TAG, "Login Facebook selected");
+                loginFacebook();
             } else if (actionType == AppCMSActionType.SIGNUP) {
                 Log.d(TAG, "Sign-Up selected: " + extraData[0]);
+                closeSoftKeyboard();
                 signup(extraData[0], extraData[1]);
             } else {
                 boolean appbarPresent = true;
@@ -566,7 +578,8 @@ public class AppCMSPresenter {
                                     false,
                                     null),
                             Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor()),
-                            Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()));
+                            Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
+                            Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()));
 
             appCMSNavItemsFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
                     currentActivity.getString(R.string.app_cms_navigation_page_tag));
@@ -606,6 +619,23 @@ public class AppCMSPresenter {
                     AppCMSResetPasswordFragment.newInstance(currentActivity, email);
             appCMSResetPasswordFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
                     currentActivity.getString(R.string.app_cms_reset_password_page_tag));
+        }
+    }
+
+    public void loginFacebook() {
+        if (currentActivity != null) {
+            String url = currentActivity.getString(R.string.app_cms_facebook_login_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSMain.getSite());
+            appCMSFacebookLoginCall.call(url,
+                    new Action1<FacebookLoginResponse>() {
+                        @Override
+                        public void call(FacebookLoginResponse facebookLoginResponse) {
+                            if (facebookLoginResponse != null) {
+
+                            }
+                        }
+                    });
         }
     }
 
@@ -872,6 +902,17 @@ public class AppCMSPresenter {
         }
     }
 
+    private void closeSoftKeyboard() {
+        if (currentActivity != null) {
+            View view = currentActivity.getCurrentFocus();
+            if (view != null) {
+                InputMethodManager imm =
+                        (InputMethodManager) currentActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+        }
+    }
+
     private void getHistoryPageContent(final String apiBaseUrl, String endPoint, final String siteiD,
                                        boolean userPageIdQueryParam, String pageId,
                                        final AppCMSHistoryAPIAction history) {
@@ -1093,6 +1134,11 @@ public class AppCMSPresenter {
         return sharedPrefs.getString(USER_ID_SHARED_PREF_NAME, null);
     }
 
+    public String getRefreshToken(Context context) {
+        SharedPreferences sharedPrefs = context.getSharedPreferences(REFRESH_TOKEN_SHARED_PREF_NAME, 0);
+        return sharedPrefs.getString(REFRESH_TOKEN_SHARED_PREF_NAME, null);
+    }
+
     public boolean isUserLoggedIn(Context context) {
         return getLoggedInUser(context) != null;
     }
@@ -1100,6 +1146,11 @@ public class AppCMSPresenter {
     public boolean setLoggedInUser(Context context, String userId) {
         SharedPreferences sharedPrefs = context.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
         return sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, userId).commit();
+    }
+
+    public boolean setRefreshToken(Context context, String refreshToken) {
+        SharedPreferences sharedPrefs = context.getSharedPreferences(REFRESH_TOKEN_SHARED_PREF_NAME, 0);
+        return sharedPrefs.edit().putString(REFRESH_TOKEN_SHARED_PREF_NAME, refreshToken).commit();
     }
 
     public void logout() {
@@ -1497,6 +1548,7 @@ public class AppCMSPresenter {
                         public void call(RefreshIdentityResponse refreshIdentityResponse) {
                             if (refreshIdentityResponse != null) {
                                 setLoggedInUser(currentActivity, refreshIdentityResponse.getId());
+                                setRefreshToken(currentActivity, refreshIdentityResponse.getRefreshToken());
                                 Primary homePageNavItem = findHomePageNavItem();
                                 if (homePageNavItem != null) {
                                     navigateToPage(homePageNavItem.getPageId(),

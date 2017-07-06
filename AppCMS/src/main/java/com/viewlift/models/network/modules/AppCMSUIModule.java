@@ -13,6 +13,8 @@ import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
+import com.viewlift.models.network.rest.AppCMSFacebookLoginRest;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSHistoryRest;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
@@ -348,6 +350,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSFacebookLoginRest providesAppCMSFacebookLoginRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSFacebookLoginRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -398,6 +406,12 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSResetPasswordCall providesAppCMSPasswordCall(AppCMSResetPasswordRest appCMSResetPasswordRest) {
         return new AppCMSResetPasswordCall(appCMSResetPasswordRest);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSFacebookLoginCall providesAppCMSFacebookLoginCall(AppCMSFacebookLoginRest appCMSFacebookLoginRest) {
+        return new AppCMSFacebookLoginCall(appCMSFacebookLoginRest);
     }
 
     @Provides

@@ -6,6 +6,8 @@ import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.modules.AppCMSSearchModule;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
+import com.viewlift.models.network.rest.AppCMSFacebookLoginRest;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
@@ -47,6 +49,7 @@ public class AppCMSPresenterModule {
                                                    AppCMSSignInCall appCMSSignInCall,
                                                    AppCMSRefreshIdentityCall appCMSRefreshIdentityCall,
                                                    AppCMSResetPasswordCall appCMSResetPasswordCall,
+                                                   AppCMSFacebookLoginCall appCMSFacebookLoginCall,
                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                    Map<String, String> pageNameToActionMap,
                                                    Map<String, AppCMSPageUI> actionToPageMap,
@@ -65,6 +68,7 @@ public class AppCMSPresenterModule {
                 appCMSSignInCall,
                 appCMSRefreshIdentityCall,
                 appCMSResetPasswordCall,
+                appCMSFacebookLoginCall,
                 jsonValueKeyMap,
                 pageNameToActionMap,
                 actionToPageMap,

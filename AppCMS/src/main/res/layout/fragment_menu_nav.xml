@@ -38,12 +38,14 @@
             android:id="@+id/app_cms_nav_login_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/app_cms_nav_items_container"
+            android:paddingTop="8dp"
             android:orientation="vertical">
             <View
                 android:id="@+id/app_cms_nav_items_separator_view"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"/>
+                android:layout_height="1dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"/>
             <TextView
                 android:id="@+id/app_cms_nav_items_logged_out_message"
                 android:layout_width="match_parent"
@@ -51,13 +53,18 @@
                 android:textAlignment="center"
                 android:alpha="0.6"
                 android:text="@string/app_cms_currently_logged_out_message"
-                android:textSize="@dimen/app_cms_logged_out_message_textsize"/>
+                android:textSize="@dimen/app_cms_logged_out_message_textsize"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"/>
             <Button
                 android:id="@+id/app_cms_nav_login_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:text="@string/app_cms_log_in_pager_title"/>
+                android:text="@string/app_cms_log_in_pager_title"
+                android:textSize="@dimen/nav_item_text_size"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"/>
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

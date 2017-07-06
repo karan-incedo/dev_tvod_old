@@ -405,6 +405,8 @@ public abstract class BaseView extends FrameLayout {
             if (isLandscape(getContext())) {
                 viewHeight *= 1.5;
             }
+        } else if (componentType == AppCMSUIKeyType.PAGE_TEXTFIELD_KEY) {
+            viewHeight *= 1.2;
         }
 
         if (useWidthOfScreen) {
