@@ -1680,9 +1680,10 @@ public class AppCMSPresenter {
                                     .build();
                             appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
                             appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
-                            getAppCMSAndroid(activity, main);
+                            clearMaps();
                             switch (platformType) {
                                 case ANDROID:
+                                    getAppCMSAndroid(activity, main);
                                     getAppCMSAndroid(activity, main);
                                     break;
                                 case TV:
@@ -1695,6 +1696,7 @@ public class AppCMSPresenter {
     }
 
     private void getAppCMSAndroid(final Activity activity, final AppCMSMain main) {
+
         GetAppCMSAndroidUIAsyncTask.Params params =
                 new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                         .url(activity.getString(R.string.app_cms_url_with_appended_timestamp,
@@ -1705,7 +1707,7 @@ public class AppCMSPresenter {
         Log.d(TAG, "Params: " + main.getAndroid() + " " + loadFromFile);
         new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, new Action1<AppCMSAndroidUI>() {
             @Override
-            public void call(final AppCMSAndroidUI appCMSAndroidUI) {
+            public void call(AppCMSAndroidUI appCMSAndroidUI) {
                 if (appCMSAndroidUI == null ||
                         appCMSAndroidUI.getMetaPages() == null ||
                         appCMSAndroidUI.getMetaPages().size() < 1) {
@@ -1845,5 +1847,14 @@ public class AppCMSPresenter {
             }
         }
         return null;
+    }
+
+    private void clearMaps() {
+        navigationPages.clear();
+        navigationPageData.clear();
+        pageIdToPageAPIUrlMap.clear();
+        actionToPageAPIUrlMap.clear();
+        actionToPageNameMap.clear();
+        pageIdToPageNameMap.clear();
     }
 }
