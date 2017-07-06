@@ -21,6 +21,8 @@ import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.models.network.rest.AppCMSPageUIRest;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityRest;
+import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
+import com.viewlift.models.network.rest.AppCMSResetPasswordRest;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignInRest;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
@@ -340,6 +342,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSResetPasswordRest providesAppCMSResetPasswordRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSResetPasswordRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -388,7 +396,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSResetPasswordCall providesAppCMSPasswordCall(AppCMSResetPasswordRest appCMSResetPasswordRest) {
+        return new AppCMSResetPasswordCall(appCMSResetPasswordRest);
+    }
 
+    @Provides
+    @Singleton
     public Map<String, AppCMSUIKeyType> providesJsonValueKeyMap() {
         return jsonValueKeyMap;
     }

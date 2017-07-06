@@ -39,6 +39,7 @@ import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.Primary;
 import com.viewlift.models.data.appcms.ui.android.User;
+import com.viewlift.models.data.appcms.ui.authentication.ForgotPasswordResponse;
 import com.viewlift.models.data.appcms.ui.authentication.RefreshIdentityResponse;
 import com.viewlift.models.data.appcms.ui.authentication.SignInResponse;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
@@ -64,6 +65,7 @@ import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
+import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
@@ -80,7 +82,7 @@ import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.fragments.AppCMSHistoryFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
-import com.viewlift.views.fragments.AppCMSSearchFragment;
+import com.viewlift.views.fragments.AppCMSResetPasswordFragment;
 import com.viewlift.views.fragments.AppCMSWatchlistFragment;
 
 import java.io.File;
@@ -132,6 +134,7 @@ public class AppCMSPresenter {
     private final AppCMSSearchCall appCMSSearchCall;
     private final AppCMSSignInCall appCMSSignInCall;
     private final AppCMSRefreshIdentityCall appCMSRefreshIdentityCall;
+    private final AppCMSResetPasswordCall appCMSResetPasswordCall;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final Map<String, String> pageNameToActionMap;
     private final Map<String, AppCMSPageUI> actionToPageMap;
@@ -287,6 +290,7 @@ public class AppCMSPresenter {
                            AppCMSBeaconRest appCMSBeaconRest,
                            AppCMSSignInCall appCMSSignInCall,
                            AppCMSRefreshIdentityCall appCMSRefreshIdentityCall,
+                           AppCMSResetPasswordCall appCMSResetPasswordCall,
                            Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                            Map<String, String> pageNameToActionMap,
                            Map<String, AppCMSPageUI> actionToPageMap,
@@ -299,6 +303,7 @@ public class AppCMSPresenter {
         this.appCMSSearchCall = appCMSSearchCall;
         this.appCMSSignInCall = appCMSSignInCall;
         this.appCMSRefreshIdentityCall = appCMSRefreshIdentityCall;
+        this.appCMSResetPasswordCall = appCMSResetPasswordCall;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.pageNameToActionMap = pageNameToActionMap;
         this.actionToPageMap = actionToPageMap;
@@ -455,6 +460,7 @@ public class AppCMSPresenter {
                 login(extraData[0], extraData[1]);
             } else if (actionType == AppCMSActionType.FORGOT_PASSWORD) {
                 Log.d(TAG, "Forgot password selected: " + extraData[0]);
+                launchResetPasswordPage(extraData[0]);
             } else if (actionType == AppCMSActionType.LOGIN_FACEBOOK) {
                 Log.d(TAG, "Login Facebook selected");
             } else if (actionType == AppCMSActionType.SIGNUP) {
@@ -591,6 +597,15 @@ public class AppCMSPresenter {
             searchIntent.setAction(Intent.ACTION_SEARCH);
             searchIntent.putExtra(SearchManager.QUERY, searchQuery);
             currentActivity.startActivity(searchIntent);
+        }
+    }
+
+    public void launchResetPasswordPage(String email) {
+        if (currentActivity != null) {
+            AppCMSResetPasswordFragment appCMSResetPasswordFragment =
+                    AppCMSResetPasswordFragment.newInstance(currentActivity, email);
+            appCMSResetPasswordFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
+                    currentActivity.getString(R.string.app_cms_reset_password_page_tag));
         }
     }
 
@@ -834,6 +849,26 @@ public class AppCMSPresenter {
                 Log.e(TAG, "Failed to launch page: " + loginPage.getPageName());
                 launchErrorActivity(currentActivity);
             }
+        }
+    }
+
+    public void resetPassword(final String email) {
+        if (currentActivity != null) {
+            String url = currentActivity.getString(R.string.app_cms_forgot_password_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSMain.getSite());
+            appCMSResetPasswordCall.call(url,
+                    email,
+                    new Action1<ForgotPasswordResponse>() {
+                        @Override
+                        public void call(ForgotPasswordResponse forgotPasswordResponse) {
+                            if (forgotPasswordResponse != null && TextUtils.isEmpty(forgotPasswordResponse.getError())) {
+                                Log.d(TAG, "Successfully reset password for email: " + email);
+                            } else if (forgotPasswordResponse != null) {
+                                Log.e(TAG, "Failed to reset password for email: " + email);
+                            }
+                        }
+                    });
         }
     }
 

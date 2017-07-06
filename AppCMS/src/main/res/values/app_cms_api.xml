@@ -36,6 +36,9 @@
     <!-- AppCMS Refresh Identity API -->
     <string name="app_cms_refresh_identity_api_url">%1$s/identity/refresh/%2$s</string>
 
+    <!-- AppCMS Forgot Password API -->
+    <string name="app_cms_forgot_password_api_url">%1$s/identity/password/forgot?site=%2$s</string>
+
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>
@@ -109,6 +112,7 @@
     <string name="app_cms_search_page_tag">search</string>
     <string name="app_cms_video_page_tag">video</string>
     <string name="app_cms_main_page_tag">main</string>
+    <string name="app_cms_reset_password_page_tag">reset_password</string>
 
     <string name="app_cms_closing_page_name">closing_page</string>
 
@@ -172,4 +176,6 @@
     <string name="app_cms_currently_logged_out_message">CURRENTLY LOGGED OUT</string>
     <string name="app_cms_sign_out_label">SIGN OUT</string>
     <string name="play_ads_key">play_ads</string>
+    <string name="app_cms_password_reset_email_key">app_cms_password_reset_email</string>
+    <string name="reset_password_text">RESET PASSWORD</string>
 </resources>

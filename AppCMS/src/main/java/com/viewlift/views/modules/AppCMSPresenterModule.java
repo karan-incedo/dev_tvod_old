@@ -10,6 +10,7 @@ import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
+import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
@@ -45,6 +46,7 @@ public class AppCMSPresenterModule {
                                                    AppCMSBeaconRest appCMSBeaconRest,
                                                    AppCMSSignInCall appCMSSignInCall,
                                                    AppCMSRefreshIdentityCall appCMSRefreshIdentityCall,
+                                                   AppCMSResetPasswordCall appCMSResetPasswordCall,
                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                    Map<String, String> pageNameToActionMap,
                                                    Map<String, AppCMSPageUI> actionToPageMap,
@@ -62,6 +64,7 @@ public class AppCMSPresenterModule {
                 appCMSBeaconRest,
                 appCMSSignInCall,
                 appCMSRefreshIdentityCall,
+                appCMSResetPasswordCall,
                 jsonValueKeyMap,
                 pageNameToActionMap,
                 actionToPageMap,
