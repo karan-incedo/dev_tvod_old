@@ -10,6 +10,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -22,15 +23,14 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
-import com.viewlift.models.data.appcms.ui.page.Mobile;
-import com.viewlift.models.data.appcms.ui.page.TabletLandscape;
-import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+
+import snagfilms.com.air.appcms.R;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -105,15 +105,15 @@ public class CollectionGridItemView extends BaseView {
 
         FrameLayout.LayoutParams layoutParams;
         if (component.getStyles() != null) {
-            int margin = (int) convertHorizontalValue(getContext(), component.getStyles().getPadding());
+            int marginRight = (int) convertHorizontalValue(getContext(), component.getStyles().getPadding());
             MarginLayoutParams marginLayoutParams = new MarginLayoutParams(width, height);
-            marginLayoutParams.setMargins(0, 0, margin, 0);
+            marginLayoutParams.setMargins(0, 0, marginRight, 0);
             layoutParams = new FrameLayout.LayoutParams(marginLayoutParams);
         } else if (getTrayPadding(getContext(), component.getLayout()) != -1.0f) {
             int trayPadding = (int) getTrayPadding(getContext(), component.getLayout());
-            int margin = (int) convertHorizontalValue(getContext(), trayPadding);
+            int marginRight = (int) convertHorizontalValue(getContext(), trayPadding);
             MarginLayoutParams marginLayoutParams = new MarginLayoutParams(width, height);
-            marginLayoutParams.setMargins(0, 0, margin, 0);
+            marginLayoutParams.setMargins(0, 0, marginRight, 0);
             layoutParams = new FrameLayout.LayoutParams(marginLayoutParams);
         } else {
             layoutParams = new FrameLayout.LayoutParams(width, height);
@@ -148,7 +148,7 @@ public class CollectionGridItemView extends BaseView {
                         ViewGroup.LayoutParams.MATCH_PARENT);
         childrenContainer.setLayoutParams(childContainerLayoutParams);
         childrenContainer.setBackgroundResource(android.R.color.transparent);
-        this.addView(childrenContainer);
+        addView(childrenContainer);
         return childrenContainer;
     }
 
@@ -210,15 +210,25 @@ public class CollectionGridItemView extends BaseView {
                             childViewWidth > 0 &&
                             !TextUtils.isEmpty(data.getGist().getPosterImageUrl())) {
                         if (isLandscape(getContext())) {
+                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getPosterImageUrl(),
+                                    childViewWidth,
+                                    childViewHeight);
+                            Log.d(TAG, "Loading image: " + imageUrl);
                             Picasso.with(context)
-                                    .load(data.getGist().getPosterImageUrl())
+                                    .load(imageUrl)
                                     .resize(childViewWidth, childViewHeight)
                                     .centerCrop()
                                     .onlyScaleDown()
                                     .into((ImageView) view);
                         } else {
+                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getPosterImageUrl(),
+                                    childViewWidth,
+                                    childViewHeight);
+                            Log.d(TAG, "Loading image: " + imageUrl);
                             Picasso.with(context)
-                                    .load(data.getGist().getPosterImageUrl())
+                                    .load(imageUrl)
                                     .resize(childViewWidth, childViewHeight)
                                     .centerCrop()
                                     .onlyScaleDown()
@@ -232,8 +242,13 @@ public class CollectionGridItemView extends BaseView {
                                     .load(data.getGist().getVideoImageUrl())
                                     .into((ImageView) view);
                         } else {
+                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getVideoImageUrl(),
+                                    childViewWidth,
+                                    childViewHeight);
+                            Log.d(TAG, "Loading image: " + imageUrl);
                             Picasso.with(context)
-                                    .load(data.getGist().getVideoImageUrl())
+                                    .load(imageUrl)
                                     .resize(childViewWidth, childViewHeight)
                                     .centerCrop()
                                     .onlyScaleDown()
@@ -241,8 +256,13 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
+                        final String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                data.getGist().getVideoImageUrl(),
+                                deviceWidth,
+                                childViewHeight);
+                        Log.d(TAG, "Loading image: " + imageUrl);
                         Picasso.with(context)
-                                .load(data.getGist().getVideoImageUrl())
+                                .load(imageUrl)
                                 .resize(deviceWidth, childViewHeight)
                                 .centerCrop()
                                 .transform(new Transformation() {
@@ -274,7 +294,7 @@ public class CollectionGridItemView extends BaseView {
 
                                     @Override
                                     public String key() {
-                                        return data.getGist().getVideoImageUrl();
+                                        return imageUrl;
                                     }
                                 })
                                 .into((ImageView) view);
@@ -313,75 +333,5 @@ public class CollectionGridItemView extends BaseView {
             }
         }
         return result;
-    }
-
-    protected float getGridWidth(Context context, Layout layout, int defaultWidth) {
-        if (isTablet(context)) {
-            if (isLandscape(context)) {
-                TabletLandscape tabletLandscape = layout.getTabletLandscape();
-                float width = tabletLandscape.getGridWidth() != null ? tabletLandscape.getGridWidth() : -1.0f;
-                if (width != -1.0f) {
-                    return DEVICE_WIDTH * (width / STANDARD_TABLET_HEIGHT_PX);
-                }
-            } else {
-                TabletPortrait tabletPortrait = layout.getTabletPortrait();
-                float width = tabletPortrait.getGridWidth() != null ? tabletPortrait.getGridWidth() : -1.0f;
-                if (width != -1.0f) {
-                    return DEVICE_WIDTH * (width / STANDARD_TABLET_WIDTH_PX);
-                }
-            }
-        } else {
-            Mobile mobile = layout.getMobile();
-            float width = mobile.getGridWidth() != null ? mobile.getGridWidth() : -1.0f;
-            if (width != -1.0f) {
-                return DEVICE_WIDTH * (width / STANDARD_MOBILE_WIDTH_PX);
-            }
-        }
-        return defaultWidth;
-    }
-
-    protected float getGridHeight(Context context, Layout layout, int defaultHeight) {
-        if (isTablet(context)) {
-            if (isLandscape(context)) {
-                TabletLandscape tabletLandscape = layout.getTabletLandscape();
-                float height = tabletLandscape.getGridHeight() != null ? tabletLandscape.getGridHeight() : -1.0f;
-                if (height != -1.0f) {
-                    return DEVICE_HEIGHT * (height / STANDARD_TABLET_WIDTH_PX);
-                }
-            } else {
-                TabletPortrait tabletPortrait = layout.getTabletPortrait();
-                float height = tabletPortrait.getGridHeight() != null ? tabletPortrait.getGridHeight() : -1.0f;
-                if (height != -1) {
-                    return DEVICE_HEIGHT * (height / STANDARD_TABLET_HEIGHT_PX);
-                }
-            }
-        } else {
-            Mobile mobile = layout.getMobile();
-            float height = mobile.getGridHeight() != null ? mobile.getGridHeight().intValue() : -1;
-            if (height != -1.0f) {
-                return DEVICE_HEIGHT * (height / STANDARD_MOBILE_HEIGHT_PX);
-            }
-        }
-        return defaultHeight;
-    }
-
-    private float getTrayPadding(Context context, Layout layout) {
-        if (isTablet(context)) {
-            if (isLandscape(context)) {
-                if (layout.getTabletLandscape().getTrayPadding() != null) {
-                    return layout.getTabletLandscape().getTrayPadding();
-                }
-            } else {
-                if (layout.getTabletPortrait().getTrayPadding() != null) {
-                    return layout.getTabletPortrait().getTrayPadding();
-                }
-            }
-        } else {
-            if (layout.getMobile().getTrayPadding() != null) {
-                return layout.getMobile().getTrayPadding();
-            }
-        }
-
-        return -1.0f;
     }
 }

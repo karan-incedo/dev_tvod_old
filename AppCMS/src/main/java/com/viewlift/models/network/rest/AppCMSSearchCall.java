@@ -19,12 +19,10 @@ public class AppCMSSearchCall {
     private static final String TAG = "AppCMSSearchCall";
 
     private final AppCMSSearchRest appCMSSearchRest;
-    private final Gson gson;
 
     @Inject
-    public AppCMSSearchCall(AppCMSSearchRest appCMSSearchRest, Gson gson) {
+    public AppCMSSearchCall(AppCMSSearchRest appCMSSearchRest) {
         this.appCMSSearchRest = appCMSSearchRest;
-        this.gson = gson;
     }
 
     @WorkerThread

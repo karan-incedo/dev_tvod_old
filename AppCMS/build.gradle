@@ -26,13 +26,13 @@ repositories {
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId packageName
         minSdkVersion 23
         targetSdkVersion 25
-        versionCode 3042049
-        versionName "1.0.7"
+        versionCode 3042054
+        versionName "1.0.12"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     flavorDimensions "green"

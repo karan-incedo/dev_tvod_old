@@ -27,6 +27,7 @@ public class AppCMSStreamingInfoCall {
     @WorkerThread
     public AppCMSStreamingInfo call(String url) throws IOException {
         try {
+            Log.d(TAG, "Attempting to read Streaming Info JSON: " + url);
             return appCMSStreamingInfoRest.get(url).execute().body();
         } catch (JsonSyntaxException e) {
             Log.e(TAG, "Error parsing input JSON - " + url + ": " + e.toString());

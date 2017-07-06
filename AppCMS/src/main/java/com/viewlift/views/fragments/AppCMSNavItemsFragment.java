@@ -3,17 +3,22 @@ package com.viewlift.views.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -28,8 +33,6 @@ import snagfilms.com.air.appcms.R;
  */
 
 public class AppCMSNavItemsFragment extends DialogFragment {
-    private AppCMSNavItemsAdapter.OnCloseNavAction onCloseNavAction;
-
     public static AppCMSNavItemsFragment newInstance(Context context,
                                                      AppCMSBinder appCMSBinder,
                                                      int textColor,
@@ -48,27 +51,19 @@ public class AppCMSNavItemsFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        onCloseNavAction = new AppCMSNavItemsAdapter.OnCloseNavAction() {
-            @Override
-            public void closeNavAction() {
-                dismiss();
-            }
-        };
-
         Bundle args = getArguments();
 
         int textColor = args.getInt(getContext().getString(R.string.app_cms_text_color_key));
         int bgColor = args.getInt(getContext().getString(R.string.app_cms_bg_color_key));
 
-        AppCMSBinder appCMSBinder =
+        final AppCMSBinder appCMSBinder =
                 ((AppCMSBinder) args.getBinder(getContext().getString(R.string.fragment_page_bundle_key)));
         View view = inflater.inflate(R.layout.fragment_menu_nav, container, false);
         RecyclerView navItemsList = (RecyclerView) view.findViewById(R.id.nav_items_list);
-        AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
+        final AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
-        AppCMSNavItemsAdapter appCMSNavItemsAdapter = new AppCMSNavItemsAdapter(onCloseNavAction,
-                appCMSBinder.getNavigation(),
+        AppCMSNavItemsAdapter appCMSNavItemsAdapter = new AppCMSNavItemsAdapter(appCMSBinder.getNavigation(),
                 appCMSBinder.isUserLoggedIn(),
                 appCMSPresenter,
                 textColor);
@@ -77,10 +72,34 @@ public class AppCMSNavItemsFragment extends DialogFragment {
             appCMSPresenter.restrictPortraitOnly();
         }
 
+        LinearLayout appCMSNavLoginContainer = (LinearLayout) view.findViewById(R.id.app_cms_nav_login_container);
+        if (appCMSPresenter.isUserLoggedIn(getContext())) {
+            appCMSNavLoginContainer.setVisibility(View.GONE);
+        } else {
+            appCMSNavLoginContainer.setVisibility(View.VISIBLE);
+            View appCMSNavItemsSeparatorView = view.findViewById(R.id.app_cms_nav_items_separator_view);
+            appCMSNavItemsSeparatorView.setBackgroundColor(textColor);
+            TextView appCMSNavItemsLoggedOutMessage = (TextView) view.findViewById(R.id.app_cms_nav_items_logged_out_message);
+            appCMSNavItemsLoggedOutMessage.setTextColor(textColor);
+            Button appCMSNavLoginButton = (Button) view.findViewById(R.id.app_cms_nav_login_button);
+            appCMSNavLoginButton.setTextColor(textColor);
+            appCMSNavLoginButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    appCMSPresenter.navigateToLoginPage();
+                    appCMSPresenter.navigateToLoginPage();
+                    dismiss();
+                }
+            });
+        }
+
         ImageButton closeButton = (ImageButton) view.findViewById(R.id.app_cms_close_button);
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (appCMSPresenter != null) {
+                    appCMSPresenter.setNavItemToCurrentAction(getActivity());
+                }
                 dismiss();
             }
         });

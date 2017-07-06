@@ -17,7 +17,6 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.ViewCreator;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

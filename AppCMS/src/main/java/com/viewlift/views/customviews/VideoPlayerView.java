@@ -173,7 +173,6 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         TrackSelector trackSelector =
                 new DefaultTrackSelector(videoTrackSelectionFactory);
         player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
-        player.setPlayWhenReady(true);
         player.addListener(this);
         playerView.setPlayer(player);
         playerView.setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {

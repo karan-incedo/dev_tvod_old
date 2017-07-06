@@ -11,7 +11,6 @@ import android.widget.LinearLayout;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.watchlist.AppCMSWatchlistResult;
-import com.viewlift.models.network.modules.AppCMSWatchlistUrlData;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSWatchlistItemAdapter;
@@ -33,9 +32,6 @@ public class AppCMSWatchlistActivity extends AppCompatActivity {
 
     @BindView(R.id.watchlist_results_recylerview)
     RecyclerView appCMSWatchlistResultsView;
-
-    @Inject
-    AppCMSWatchlistUrlData appCMSWatchlistUrlData;
 
     @Inject
     AppCMSWatchlistCall appCMSWatchlistCall;
@@ -80,24 +76,12 @@ public class AppCMSWatchlistActivity extends AppCompatActivity {
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent()
                         .appCMSPresenter();
 
-        if (appCMSWatchlistUrlData == null || appCMSWatchlistCall == null) {
-            appCMSPresenter.getAppCMSWatchlistUrlComponent().inject(this);
-            if (appCMSWatchlistUrlData == null || appCMSWatchlistCall == null) {
-                return;
-            }
-        }
-
         Log.d(TAG, "handleIntent-getIntent: " + intent);
 
         final String url = getString(R.string.app_cms_watchlist_api_url,
-                appCMSWatchlistUrlData.getBaseUrl(),
-                appCMSWatchlistUrlData.getSiteName(),
+                appCMSPresenter.getAppCMSMain().getApiBaseUrl(),
+                appCMSPresenter.getAppCMSMain().getSite(),
                 null);
-
-                /*
-                appCMSWatchlistUrlData.getBaseUrl(),
-                appCMSWatchlistUrlData.getSiteName()); */
-
         Log.d(TAG, "handleIntent: " + url);
 
         new WatchlistAsyncTask(new Action1<List<AppCMSWatchlistResult>>() {
