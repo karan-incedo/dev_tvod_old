@@ -30,6 +30,9 @@
     <!-- AppCMS SignIn API -->
     <string name="app_cms_signin_api_url">%1$s/identity/signin?site=%2$s</string>
 
+    <!-- AppCMS SignUp API -->
+    <string name="app_cms_signup_api_url">%1$s/identity/signup?site=%2$s</string>
+
     <!-- AppCMS Refresh Identity API -->
     <string name="app_cms_refresh_identity_api_url">%1$s/identity/refresh/%2$s</string>
 
@@ -128,6 +131,7 @@
     <string name="app_cms_action_forgotpassword_key">forgotPassword</string>
     <string name="app_cms_action_loginfacebook_key">loginFacebook</string>
     <string name="app_cms_action_signup_key">signup</string>
+    <string name="app_cms_action_logout_key">logout</string>
 
     <!-- AppCMS Data values -->
     <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true</string>
@@ -161,4 +165,6 @@
 
     <!-- AppCMS Image with Resize Query -->
     <string name="app_cms_image_with_resize_query">%1$s?impolicy=resize&amp;w=%2$d&amp;h=%3$d</string>
+    <string name="app_cms_currently_logged_out_message">CURRENTLY LOGGED OUT</string>
+    <string name="app_cms_sign_out_label">SIGN OUT</string>
 </resources>

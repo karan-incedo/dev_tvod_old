@@ -164,6 +164,24 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                         }
                     }
                 });
+
+                indexOffset += navigation.getFooter().size();
+            }
+
+            if (0 <= (i - indexOffset)) {
+                if (userLoggedIn) {
+                    viewHolder.navItemLabel.setText(R.string.app_cms_sign_out_label);
+                    viewHolder.navItemLabel.setTextColor(textColor);
+                    viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            appCMSPresenter.logout();
+                            if (onCloseNavAction != null) {
+                                onCloseNavAction.closeNavAction();
+                            }
+                        }
+                    });
+                }
             }
         }
     }
@@ -183,7 +201,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             }
 
             if (userLoggedIn && navigation.getUser() != null) {
-                totalItemCount += navigation.getUser().size();
+                totalItemCount += navigation.getUser().size() + 1; // + LogOut item
             }
         }
 

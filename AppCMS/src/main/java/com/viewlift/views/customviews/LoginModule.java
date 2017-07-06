@@ -163,9 +163,9 @@ public class LoginModule extends ModuleView {
                     buttonSelectors[1].setCompoundDrawables(null, null, null, underlineViews[1]);
                 }
             }
+            childContainer.addView(loginModuleSwitcherContainer);
             selectChild(0);
             unselectChild(1);
-            childContainer.addView(loginModuleSwitcherContainer);
         }
     }
 

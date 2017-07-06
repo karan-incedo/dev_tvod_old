@@ -15,5 +15,6 @@ public enum AppCMSActionType {
     LOGIN,
     FORGOT_PASSWORD,
     LOGIN_FACEBOOK,
-    SIGNUP
+    SIGNUP,
+    LOGOUT
 }

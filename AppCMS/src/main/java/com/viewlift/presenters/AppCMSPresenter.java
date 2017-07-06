@@ -166,6 +166,7 @@ public class AppCMSPresenter {
     private Tracker tracker;
     private Uri deeplinkSearchQuery;
     private String refreshToken;
+    private MetaPage loginPage;
 
     public enum PlatformType {
         ANDROID, TV
@@ -446,6 +447,7 @@ public class AppCMSPresenter {
                 Log.d(TAG, "Login Facebook selected");
             } else if (actionType == AppCMSActionType.SIGNUP) {
                 Log.d(TAG, "Sign-Up selected: " + extraData[0]);
+                signup(extraData[0], extraData[1]);
             } else {
                 boolean appbarPresent = true;
                 boolean fullscreenEnabled = false;
@@ -721,7 +723,6 @@ public class AppCMSPresenter {
         //
     }
 
-    @SuppressWarnings("unused")
     public void navigateToHistoryPage(String pageId, String pageTitle, String url,
                                       boolean launchActivity) {
 
@@ -794,6 +795,21 @@ public class AppCMSPresenter {
                                 }
                             }
                         });
+            }
+        }
+    }
+
+    public void navigateToLoginPage() {
+        if (loginPage != null) {
+            boolean launchSuccess = navigateToPage(loginPage.getPageId(),
+                    loginPage.getPageName(),
+                    loginPage.getPageUI(),
+                    false,
+                    false,
+                    deeplinkSearchQuery);
+            if (!launchSuccess) {
+                Log.e(TAG, "Failed to launch page: " + loginPage.getPageName());
+                launchErrorActivity(currentActivity);
             }
         }
     }
@@ -912,7 +928,7 @@ public class AppCMSPresenter {
                             loadFromFile,
                             true,
                             false,
-                            true,
+                            navbarPresent,
                             searchQuery);
                 } else {
                     Bundle args = getPageActivityBundle(currentActivity,
@@ -924,7 +940,7 @@ public class AppCMSPresenter {
                             loadFromFile,
                             true,
                             false,
-                            true,
+                            navbarPresent,
                             searchQuery);
                     Intent updatePageIntent =
                             new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
@@ -1019,6 +1035,22 @@ public class AppCMSPresenter {
     public boolean setLoggedInUser(Context context, String userId) {
         SharedPreferences sharedPrefs = context.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
         return sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, userId).commit();
+    }
+
+    public void logout() {
+        if (currentActivity != null) {
+            SharedPreferences sharedPrefs = currentActivity.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
+            sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, null).apply();
+            Primary homePageNavItem = findHomePageNavItem();
+            if (homePageNavItem != null) {
+                navigateToPage(homePageNavItem.getPageId(),
+                        homePageNavItem.getTitle(),
+                        homePageNavItem.getUrl(),
+                        false,
+                        true,
+                        deeplinkSearchQuery);
+            }
+        }
     }
 
     public void addInternalEvent(OnInternalEvent onInternalEvent) {
@@ -1325,31 +1357,44 @@ public class AppCMSPresenter {
         }
     }
 
+    public void signup(String email, String password) {
+        if (currentActivity != null) {
+            String url = currentActivity.getString(R.string.app_cms_signup_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSMain.getSite());
+            startLoginAsyncTask(url, email, password);
+        }
+    }
+
     public void login(String email, String password) {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                     appCMSMain.getApiBaseUrl(),
                     appCMSMain.getSite());
-            PostAppCMSLoginRequestAsyncTask.Params params = new PostAppCMSLoginRequestAsyncTask.Params
-                    .Builder()
-                    .url(url)
-                    .email(email)
-                    .password(password)
-                    .build();
-            new PostAppCMSLoginRequestAsyncTask(appCMSSignInCall,
-                    new Action1<SignInResponse>() {
-                        @Override
-                        public void call(SignInResponse signInResponse) {
-                            if (signInResponse == null) {
-                                // Show log error
-                                Log.e(TAG, "Email and password are not valid.");
-                            } else {
-                                refreshToken = signInResponse.getRefreshToken();
-                                refreshIdentity(refreshToken);
-                            }
-                        }
-                    }).execute(params);
+            startLoginAsyncTask(url, email, password);
         }
+    }
+
+    private void startLoginAsyncTask(String url, String email, String password) {
+        PostAppCMSLoginRequestAsyncTask.Params params = new PostAppCMSLoginRequestAsyncTask.Params
+                .Builder()
+                .url(url)
+                .email(email)
+                .password(password)
+                .build();
+        new PostAppCMSLoginRequestAsyncTask(appCMSSignInCall,
+                new Action1<SignInResponse>() {
+                    @Override
+                    public void call(SignInResponse signInResponse) {
+                        if (signInResponse == null) {
+                            // Show log error
+                            Log.e(TAG, "Email and password are not valid.");
+                        } else {
+                            refreshToken = signInResponse.getRefreshToken();
+                            refreshIdentity(refreshToken);
+                        }
+                    }
+                }).execute(params);
     }
 
     public void refreshIdentity(String refreshToken) {
@@ -1571,13 +1616,11 @@ public class AppCMSPresenter {
             pagesToProcess = new ConcurrentLinkedQueue<>();
         }
         if (metaPageList.size() > 0) {
-            int pageToQueueIndex = -1;
-            if (!isUserLoggedIn(currentActivity)) {
-                pageToQueueIndex = getSigninPage(metaPageList);
+            int loginPageIndex = getSigninPage(metaPageList);
+            if (loginPageIndex >= 0) {
+                loginPage = metaPageList.get(loginPageIndex);
             }
-            if (pageToQueueIndex == -1) {
-                pageToQueueIndex = getHomePage(metaPageList);
-            }
+            int pageToQueueIndex = getHomePage(metaPageList);
             if (pageToQueueIndex >= 0) {
                 pagesToProcess.add(metaPageList.get(pageToQueueIndex));
                 Log.d(TAG, "Queuing meta page: " +

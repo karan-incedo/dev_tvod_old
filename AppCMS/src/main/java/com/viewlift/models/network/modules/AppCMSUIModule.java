@@ -254,6 +254,8 @@ public class AppCMSUIModule {
                 AppCMSActionType.LOGIN_FACEBOOK);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_signup_key),
                 AppCMSActionType.SIGNUP);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_logout_key),
+                AppCMSActionType.LOGOUT);
     }
 
     @Provides

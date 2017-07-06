@@ -30,4 +30,5 @@
     <dimen name="app_cms_search_bar_width">480dp</dimen>
     <dimen name="app_cms_searchbar_top_margin">300dp</dimen>
     <dimen name="app_cms_searchbar_top_margin_land">200dp</dimen>
+    <dimen name="app_cms_logged_out_message_textsize">10sp</dimen>
 </resources>
