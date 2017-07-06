@@ -105,7 +105,6 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                         }
                     }
 
-                    // TODO: 7/5/17 Confirm this method is being called.
                     private void setUpWatchlistInNav() {
                         for (int j = 0; j < navigation.getUser().size(); j++) {
                             if (navigation.getUser().get(j).getTitle().equals("Watchlist")) {
@@ -115,7 +114,6 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                         }
                     }
 
-                    // TODO: 7/5/17 Confirm this method will be called.
                     private void setUpHistoryInNav() {
                         for (int j = 0; j < navigation.getUser().size(); j++) {
                             if (navigation.getUser().get(j).getTitle().equals("History")) {

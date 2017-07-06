@@ -919,7 +919,7 @@ public class AppCMSPresenter {
 
         String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
                 appCMSMain.getApiBaseUrl(),
-                refreshToken);
+                getRefreshToken(currentActivity));
 
         appCMSRefreshIdentityCall.call(url, new Action1<RefreshIdentityResponse>() {
             @Override
@@ -936,7 +936,6 @@ public class AppCMSPresenter {
                             });
                 } catch (IOException e) {
                     Log.e(TAG, "getHistoryPageContent: " + e.toString());
-
                 }
             }
         });

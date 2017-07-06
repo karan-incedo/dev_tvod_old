@@ -310,10 +310,17 @@ public class ViewCreator {
             case PAGE_COLLECTIONGRID_KEY:
             case PAGE_TABLE_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
-                ((RecyclerView) componentViewResult.componentView)
-                        .setLayoutManager(new LinearLayoutManager(context,
-                                LinearLayoutManager.HORIZONTAL,
-                                false));
+                if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {
+                    ((RecyclerView) componentViewResult.componentView)
+                            .setLayoutManager(new LinearLayoutManager(context,
+                                    LinearLayoutManager.HORIZONTAL,
+                                    false));
+                } else {
+                    ((RecyclerView) componentViewResult.componentView)
+                            .setLayoutManager(new LinearLayoutManager(context,
+                                    LinearLayoutManager.VERTICAL,
+                                    false));
+                }
                 AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
                         this,
                         appCMSPresenter,
