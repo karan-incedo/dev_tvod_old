@@ -36,7 +36,28 @@
     </FrameLayout>
 
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/footer_gradient_image"
+        >
+    </FrameLayout>
+
+    <ImageView
+        android:layout_width="@dimen/footer_logo_width"
+        android:layout_height="@dimen/footer_logo_height"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/footer_logo_padding"
+        android:layout_marginRight="@dimen/footer_logo_padding"
+        android:background="@drawable/snagfilms_app_logo"
+        android:layout_gravity="right"/>
+
+
 </RelativeLayout>
+
+
 
 </LinearLayout>
 

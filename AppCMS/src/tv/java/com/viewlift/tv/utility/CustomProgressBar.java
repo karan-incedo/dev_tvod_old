@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -36,16 +37,20 @@ public class CustomProgressBar {
 
     public void showProgressDialog() {
 
-        if(dialog==null){
-            dialog = new Dialog(context, R.style.ProgressDialog);
-            dialog.setContentView(R.layout.progress_dialog);
-            dialog.getWindow()
-                    .setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-            dialog.setCancelable(false);
-            ImageView image = (ImageView)dialog.findViewById(R.id.spinnerImageView);
-            animDrawable = (AnimationDrawable)image.getDrawable();
-            animDrawable.start();
-            dialog.show();
+        try {
+            if (dialog == null) {
+                dialog = new Dialog(context, R.style.ProgressDialog);
+                dialog.setContentView(R.layout.progress_dialog);
+                dialog.getWindow()
+                        .setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                dialog.setCancelable(false);
+                ImageView image = (ImageView) dialog.findViewById(R.id.spinnerImageView);
+                animDrawable = (AnimationDrawable) image.getDrawable();
+                animDrawable.start();
+                dialog.show();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -57,9 +62,9 @@ public class CustomProgressBar {
      */
     public void showProgressDialog(Activity activity, String message ) {
         if(dialog==null){
-
             dialog = new Dialog(context, R.style.ProgressDialog);
-            View view = activity.getLayoutInflater().inflate(R.layout.progress_dialog, null);
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+            View view = inflater.inflate(R.layout.progress_dialog, null);
             TextView txtViewMessage = (TextView)view.findViewById(R.id.text_loading);
             txtViewMessage.setText(message);
             dialog.setContentView(view);
