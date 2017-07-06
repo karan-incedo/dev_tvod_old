@@ -20,6 +20,9 @@ public class SignInResponse {
     @SerializedName("name")
     @Expose
     private String name;
+    @SerializedName("error")
+    @Expose
+    private String error;
 
     public String getAuthorizationToken() {
         return authorizationToken;
@@ -51,5 +54,13 @@ public class SignInResponse {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 }

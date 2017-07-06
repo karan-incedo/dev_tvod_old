@@ -193,6 +193,10 @@ public class AppCMSPresenter {
         PLAY, RESUME, PING, AD_REQUEST, AD_IMPRESSION
     }
 
+    public enum Error {
+        NETWORK, SIGNIN
+    }
+
     private static class BeaconRunnable implements Runnable {
         final AppCMSBeaconRest appCMSBeaconRest;
         String url;
@@ -415,7 +419,7 @@ public class AppCMSPresenter {
         boolean result = false;
         Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
         if (!isNetworkConnected()) {
-            showErrorDialog();
+            showErrorDialog(Error.NETWORK, null);
         } else if (currentActivity != null && !loadingPage) {
             AppCMSActionType actionType = actionToActionTypeMap.get(action);
             if (actionType == null) {
@@ -1108,7 +1112,7 @@ public class AppCMSPresenter {
         Intent stopLoadingPageIntent =
                 new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
         currentActivity.sendBroadcast(stopLoadingPageIntent);
-        showErrorDialog();
+        showErrorDialog(Error.NETWORK, null);
     }
 
     public void launchErrorActivity(Activity activity, PlatformType platformType) {
@@ -1351,15 +1355,24 @@ public class AppCMSPresenter {
         dialog.show();
     }
 
-    public void showErrorDialog() {
+    public void showErrorDialog(Error error, String optionalMessage) {
         if (currentActivity != null) {
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
-            String title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
-            String message = currentActivity.getString(R.string.app_cms_network_connectivity_error_message);
-            if (isNetworkConnected()) {
-                title = currentActivity.getString(R.string.app_cms_data_error_title);
-                message = currentActivity.getString(R.string.app_cms_data_error_message);
+            String title;
+            String message;
+            switch (error) {
+                case SIGNIN:
+                    title = currentActivity.getString(R.string.app_cms_signin_error_title);
+                    message = optionalMessage;
+                    break;
+                default:
+                    title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
+                    message = currentActivity.getString(R.string.app_cms_network_connectivity_error_message);
+                    if (isNetworkConnected()) {
+                        title = currentActivity.getString(R.string.app_cms_data_error_title);
+                        message = currentActivity.getString(R.string.app_cms_data_error_message);
+                    }
             }
             builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
                     Integer.toHexString(textColor).substring(2),
@@ -1526,6 +1539,12 @@ public class AppCMSPresenter {
         }
     }
 
+    public void callRefreshIdentity() {
+        if (currentActivity != null) {
+            refreshIdentity(getRefreshToken(currentActivity));
+        }
+    }
+
     private void startLoginAsyncTask(String url, String email, String password) {
         PostAppCMSLoginRequestAsyncTask.Params params = new PostAppCMSLoginRequestAsyncTask.Params
                 .Builder()
@@ -1540,6 +1559,7 @@ public class AppCMSPresenter {
                         if (signInResponse == null) {
                             // Show log error
                             Log.e(TAG, "Email and password are not valid.");
+                            showErrorDialog(Error.SIGNIN, currentActivity.getString(R.string.app_cms_error_email_password));
                         } else {
                             refreshToken = signInResponse.getRefreshToken();
                             refreshIdentity(refreshToken);

@@ -104,7 +104,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         if (!appCMSPresenter.isNetworkConnected()) {
-            appCMSPresenter.showErrorDialog();
+            appCMSPresenter.showErrorDialog(AppCMSPresenter.Error.NETWORK, null);
             finish();
         }
     }

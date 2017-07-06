@@ -52,26 +52,31 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
         int indexOffset = 0;
         if (navigation.getPrimary() != null && i < navigation.getPrimary().size()) {
             final Primary primary = navigation.getPrimary().get(i);
-            viewHolder.navItemLabel.setText(primary.getTitle().toUpperCase());
-            viewHolder.navItemLabel.setTextColor(textColor);
-            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d(TAG, "Navigating to page with Title: " + primary.getTitle());
-                    if (!appCMSPresenter.navigateToPage(primary.getPageId(),
-                            primary.getTitle(),
-                            primary.getUrl(),
-                            false,
-                            true,
-                            true,
-                            null)) {
-                        Log.e(TAG, "Could not navigate to page with Title: " +
-                                primary.getTitle() +
-                                " Id: " +
-                                primary.getPageId());
-                    }
+            if (primary.getAccessLevels() != null) {
+                if (userLoggedIn && primary.getAccessLevels().getLoggedIn() ||
+                        primary.getAccessLevels().getLoggedOut()) {
+                    viewHolder.navItemLabel.setText(primary.getTitle().toUpperCase());
+                    viewHolder.navItemLabel.setTextColor(textColor);
+                    viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Log.d(TAG, "Navigating to page with Title: " + primary.getTitle());
+                            if (!appCMSPresenter.navigateToPage(primary.getPageId(),
+                                    primary.getTitle(),
+                                    primary.getUrl(),
+                                    false,
+                                    true,
+                                    true,
+                                    null)) {
+                                Log.e(TAG, "Could not navigate to page with Title: " +
+                                        primary.getTitle() +
+                                        " Id: " +
+                                        primary.getPageId());
+                            }
+                        }
+                    });
                 }
-            });
+            }
         } else {
             if (navigation.getPrimary() != null) {
                 indexOffset += navigation.getPrimary().size();
@@ -80,7 +85,6 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             //user nav
             if (userLoggedIn && navigation.getUser() != null && (i - indexOffset) < navigation.getUser().size()) {
                 final User user = navigation.getUser().get(i - indexOffset);
-
 
                 viewHolder.navItemLabel.setText(user.getTitle().toUpperCase());
                 viewHolder.navItemLabel.setTextColor(textColor);
@@ -135,27 +139,31 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             if (navigation.getFooter() != null && 0 <= (i - indexOffset) && (i - indexOffset) < navigation.getFooter().size()) {
 
                 final Footer footer = navigation.getFooter().get(i - indexOffset);
-                viewHolder.navItemLabel.setText(footer.getTitle().toUpperCase());
-                viewHolder.navItemLabel.setTextColor(textColor);
-                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!appCMSPresenter.navigateToPage(footer.getPageId(),
-                                footer.getTitle(),
-                                footer.getUrl(),
-                                false,
-                                true,
-                                false,
-                                null)) {
-                            Log.e(TAG, "Could not navigate to page with Title: " +
-                                    footer.getTitle() +
-                                    " Id: " +
-                                    footer.getPageId());
-                        }
+                if (footer.getAccessLevels() != null) {
+                    if (userLoggedIn && footer.getAccessLevels().getLoggedIn() ||
+                            footer.getAccessLevels().getLoggedOut()) {
+                        viewHolder.navItemLabel.setText(footer.getTitle().toUpperCase());
+                        viewHolder.navItemLabel.setTextColor(textColor);
+                        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (!appCMSPresenter.navigateToPage(footer.getPageId(),
+                                        footer.getTitle(),
+                                        footer.getUrl(),
+                                        false,
+                                        true,
+                                        false,
+                                        null)) {
+                                    Log.e(TAG, "Could not navigate to page with Title: " +
+                                            footer.getTitle() +
+                                            " Id: " +
+                                            footer.getPageId());
+                                }
+                            }
+                        });
+                        indexOffset += navigation.getFooter().size();
                     }
-                });
-
-                indexOffset += navigation.getFooter().size();
+                }
             }
 
             if (0 <= (i - indexOffset)) {

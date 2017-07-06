@@ -25,6 +25,9 @@ public class User {
     @SerializedName("displayedName")
     @Expose
     private String displayedName;
+    @SerializedName("accessLevels")
+    @Expose
+    private AccessLevels accessLevels;
 
     public String getTitle() {
         return title;
@@ -72,5 +75,13 @@ public class User {
 
     public void setDisplayedName(String displayedName) {
         this.displayedName = displayedName;
+    }
+
+    public AccessLevels getAccessLevels() {
+        return accessLevels;
+    }
+
+    public void setAccessLevels(AccessLevels accessLevels) {
+        this.accessLevels = accessLevels;
     }
 }
