@@ -24,7 +24,7 @@ public class AppCMSSearchModule {
 
     @Provides
     @Singleton
-    public AppCMSSearchCall providesAppCMSSearchCall(AppCMSSearchRest appCMSSearchRest, Gson gson) {
-        return new AppCMSSearchCall(appCMSSearchRest, gson);
+    public AppCMSSearchCall providesAppCMSSearchCall(AppCMSSearchRest appCMSSearchRest) {
+        return new AppCMSSearchCall(appCMSSearchRest);
     }
 }

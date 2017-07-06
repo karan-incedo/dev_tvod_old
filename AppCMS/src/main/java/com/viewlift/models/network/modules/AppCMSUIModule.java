@@ -1,5 +1,9 @@
 package com.viewlift.models.network.modules;
 
+/**
+ * Created by viewlift on 5/4/17.
+ */
+
 import android.content.Context;
 
 import com.google.gson.Gson;
@@ -9,10 +13,18 @@ import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSHistoryCall;
+import com.viewlift.models.network.rest.AppCMSHistoryRest;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSMainUIRest;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.models.network.rest.AppCMSPageUIRest;
+import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
+import com.viewlift.models.network.rest.AppCMSRefreshIdentityRest;
+import com.viewlift.models.network.rest.AppCMSSignInCall;
+import com.viewlift.models.network.rest.AppCMSSignInRest;
+import com.viewlift.models.network.rest.AppCMSWatchlistCall;
+import com.viewlift.models.network.rest.AppCMSWatchlistRest;
 import com.viewlift.presenters.AppCMSActionType;
 
 import java.io.File;
@@ -28,10 +40,6 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import snagfilms.com.air.appcms.R;
-
-/**
- * Created by viewlift on 5/4/17.
- */
 
 @Module
 public class AppCMSUIModule {
@@ -72,7 +80,7 @@ public class AppCMSUIModule {
     }
 
     private void createJsonValueKeyMap(Context context) {
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_splashscreen_key),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_authenticationscreen_key),
                 AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_homepage_key),
                 AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY);
@@ -86,6 +94,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_LABEL_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_collection_grid_key),
                 AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_table_view_key),
+                AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_progress_view_key),
                 AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_key),
@@ -96,8 +106,10 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_CAROUSEL_ADD_TO_WATCHLIST_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_page_control_key),
                 AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY);
-        jsonValueKeyMap.put( context.getString(R.string.app_cms_page_seperator_key),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_seperator_key),
                 AppCMSUIKeyType.PAGE_SEPARATOR_VIEW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_segmented_view),
+                AppCMSUIKeyType.PAGE_SEGMENTED_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_castview_key),
                 AppCMSUIKeyType.PAGE_CASTVIEW_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_image_key),
@@ -120,7 +132,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_title_key),
                 AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY);
-        jsonValueKeyMap.put( context.getString(R.string.app_cms_page_text_alignment_center_key),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_text_alignment_center_key),
                 AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_title_key),
                 AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY);
@@ -136,6 +148,28 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_textview_key),
                 AppCMSUIKeyType.PAGE_TEXTVIEW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_textfield_key),
+                AppCMSUIKeyType.PAGE_TEXTFIELD_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_emailtextfield_key),
+                AppCMSUIKeyType.PAGE_EMAILTEXTFIELD_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_emailtextfield2_key),
+                AppCMSUIKeyType.PAGE_EMAILTEXTFIELD2_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_passwordtextfield_key),
+                AppCMSUIKeyType.PAGE_PASSWORDTEXTFIELD_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_passwordtextfield2_key),
+                AppCMSUIKeyType.PAGE_PASSWORDTEXTFIELD2_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_forgotpassword_key),
+                AppCMSUIKeyType.PAGE_FORGOTPASSWORD_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_mobileinput_key),
+                AppCMSUIKeyType.PAGE_MOBILETEXTFIELD_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_authentication_module),
+                AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_module_key),
+                AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_login_component_key),
+                AppCMSUIKeyType.PAGE_LOGIN_COMPONENT_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_signup_component_key),
+                AppCMSUIKeyType.PAGE_SIGNUP_COMPONENT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_image_key),
                 AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_play_button_key),
@@ -175,7 +209,7 @@ public class AppCMSUIModule {
     }
 
     private void createPageNameToActionMap(Context context) {
-        this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_splashscreen_key),
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_authenticationscreen_key),
                 context.getString(R.string.app_cms_action_authpage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_homepage_key),
                 context.getString(R.string.app_cms_action_homepage_key));
@@ -212,6 +246,16 @@ public class AppCMSUIModule {
                 AppCMSActionType.SHARE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_close_key),
                 AppCMSActionType.CLOSE);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_login_key),
+                AppCMSActionType.LOGIN);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_forgotpassword_key),
+                AppCMSActionType.FORGOT_PASSWORD);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_loginfacebook_key),
+                AppCMSActionType.LOGIN_FACEBOOK);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_signup_key),
+                AppCMSActionType.SIGNUP);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_logout_key),
+                AppCMSActionType.LOGOUT);
     }
 
     @Provides
@@ -266,8 +310,32 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSWatchlistRest providesAppCMSWatchlistRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSWatchlistRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSHistoryRest providesAppCMSHistoryRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSHistoryRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSBeaconRest providesAppCMSBeaconMessage(Retrofit retrofit) {
         return retrofit.create(AppCMSBeaconRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSSignInRest providesAppCMSSignInRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSSignInRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSRefreshIdentityRest providesAppCMSRefreshIdentityRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSRefreshIdentityRest.class);
     }
 
     @Provides
@@ -296,6 +364,31 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSSignInCall providesAppCMSSignInCall(AppCMSSignInRest appCMSSignInRest, Gson gson) {
+        return new AppCMSSignInCall(appCMSSignInRest, gson);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSRefreshIdentityCall providesAppCMSRefreshIdentityCall(AppCMSRefreshIdentityRest appCMSRefreshIdentityRest) {
+        return new AppCMSRefreshIdentityCall(appCMSRefreshIdentityRest);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSWatchlistCall providesAppCMSWatchlistCall(AppCMSWatchlistRest appCMSWatchlistRest, Gson gson) {
+        return new AppCMSWatchlistCall(appCMSWatchlistRest, gson);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSHistoryCall providesAppCMSHistoryCall(AppCMSHistoryRest appCMSHistoryRest, Gson gson) {
+        return new AppCMSHistoryCall(appCMSHistoryRest, gson);
+    }
+
+    @Provides
+    @Singleton
+
     public Map<String, AppCMSUIKeyType> providesJsonValueKeyMap() {
         return jsonValueKeyMap;
     }

@@ -27,6 +27,7 @@ public class AppCMSSiteCall {
     @WorkerThread
     public AppCMSSite call(String url) throws IOException {
         try {
+            Log.d(TAG, "Attempting to retrieve site JSON: " + url);
             return appCMSSiteRest.get(url).execute().body();
         } catch (JsonSyntaxException e) {
             Log.e(TAG, "Error parsing input JSON - " + url + ": " + e.toString());

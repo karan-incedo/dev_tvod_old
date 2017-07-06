@@ -14,7 +14,7 @@ import snagfilms.com.air.appcms.R;
 public class ViewCreatorTitleLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
     private final TextView textView;
 
-    private static final float MAX_WIDTH_RATIO = 8.0f / 10.0f;
+    private static final float MAX_WIDTH_RATIO = 0.8f;
 
     public ViewCreatorTitleLayoutListener(TextView textView) {
         this.textView = textView;
@@ -32,7 +32,8 @@ public class ViewCreatorTitleLayoutListener implements ViewTreeObserver.OnGlobal
         if (bounds.width() > maxAllowedWidth) {
             float resizeRatio = maxAllowedWidth / bounds.width();
             int subStringLength = (int) (((float) textView.getText().length()) * resizeRatio);
-            textView.setText(textView.getContext().getString(R.string.string_with_ellipse, textView.getText().subSequence(0, subStringLength - 3)));
+            textView.setText(textView.getContext().getString(R.string.string_with_ellipse,
+                    textView.getText().subSequence(0, subStringLength - 3)));
         }
 
         textView.getViewTreeObserver().removeOnGlobalLayoutListener(this);

@@ -1,7 +1,7 @@
-
 package com.viewlift.models.data.appcms.api;
 
 import java.util.List;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -10,30 +10,59 @@ public class ContentDatum {
     @SerializedName("gist")
     @Expose
     private Gist gist;
+
+    @SerializedName("grade")
+    @Expose
+    private String grade;
+
+    @SerializedName("userId")
+    @Expose
+    private String userId;
+
+    @SerializedName("showQueue")
+    @Expose
+    private boolean showQueue;
+
+    @SerializedName("addedDate")
+    @Expose
+    private long addedDate;
+
+    @SerializedName("updateDate")
+    @Expose
+    private long updateDate;
+
     @SerializedName("contentDetails")
     @Expose
     private ContentDetails contentDetails;
+
     @SerializedName("streamingInfo")
     @Expose
     private StreamingInfo streamingInfo;
+
     @SerializedName("categories")
     @Expose
     private List<Category> categories = null;
+
     @SerializedName("tags")
     @Expose
     private List<Tag> tags = null;
+
     @SerializedName("external")
     @Expose
     private External external;
+
     @SerializedName("statistics")
     @Expose
     private Statistics statistics;
+
     @SerializedName("channels")
     @Expose
     private List<Object> channels = null;
+
     @SerializedName("creditBlocks")
     @Expose
     private List<CreditBlock> creditBlocks = null;
+
     @SerializedName("parentalRating")
     @Expose
     private String parentalRating;
@@ -44,6 +73,46 @@ public class ContentDatum {
 
     public void setGist(Gist gist) {
         this.gist = gist;
+    }
+
+    public String getGrade() {
+        return grade;
+    }
+
+    public void setGrade(String grade) {
+        this.grade = grade;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public boolean isShowQueue() {
+        return showQueue;
+    }
+
+    public void setShowQueue(boolean showQueue) {
+        this.showQueue = showQueue;
+    }
+
+    public long getAddedDate() {
+        return addedDate;
+    }
+
+    public void setAddedDate(long addedDate) {
+        this.addedDate = addedDate;
+    }
+
+    public long getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(long updateDate) {
+        this.updateDate = updateDate;
     }
 
     public ContentDetails getContentDetails() {
@@ -117,5 +186,4 @@ public class ContentDatum {
     public void setParentalRating(String parentalRating) {
         this.parentalRating = parentalRating;
     }
-
 }

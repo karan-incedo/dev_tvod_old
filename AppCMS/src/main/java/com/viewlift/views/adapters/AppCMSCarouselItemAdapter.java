@@ -30,9 +30,7 @@ import java.util.Map;
  * Created by viewlift on 5/25/17.
  */
 
-public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
-        implements OnInternalEvent {
-
+public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnInternalEvent {
     private static String TAG = "CarouselItemAdapter";
     private static long UPDATE_CAROUSEL_TO = 5000L;
 
@@ -306,7 +304,6 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter
         if (adapterData.size() != 0) {
             return Integer.MAX_VALUE / 2 - ((Integer.MAX_VALUE / 2) % adapterData.size());
         }
-
         return 0;
     }
 

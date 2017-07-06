@@ -1,4 +1,4 @@
-package snagfilms.com.air.appcms;
+package com.viewlift;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +16,12 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     private Map<String, String> testMap;
 
+    public enum ExampleEnum {
+        FIRST,
+        SECOND,
+        THIRD
+    }
+
     @Before
     public void initializeMembers() {
         testMap = new HashMap<>();
@@ -29,5 +35,13 @@ public class ExampleUnitTest {
     @Test
     public void testMap_keyNotFound() throws Exception {
         assertNull(testMap.get("BadKey"));
+    }
+
+    @Test
+    public void testExampleEnum_fromInt() throws Exception {
+        ExampleEnum firstValue = ExampleEnum.FIRST;
+        int i = firstValue.ordinal();
+        ExampleEnum exampleEnum = ExampleEnum.values()[i];
+        assertTrue(exampleEnum == ExampleEnum.FIRST);
     }
 }
