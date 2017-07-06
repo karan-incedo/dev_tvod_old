@@ -1,0 +1,17 @@
+<resources>
+    <string name="title_activity_app_cms_tv_error">AppCmsTvErrorActivity</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="carousel_nodule">AC Carousel 01</string>
+
+    <string-array name="app_cms_tray_modules">
+        <item>@string/carousel_nodule</item>
+        <item>AC ContinueWatching 01</item>
+        <item>AC Tray 01</item>
+    </string-array>
+
+    <string-array name="app_cms_detail_module">
+        <item>AC VideoPlayerWithInfo 01</item>
+    </string-array>
+
+</resources>
