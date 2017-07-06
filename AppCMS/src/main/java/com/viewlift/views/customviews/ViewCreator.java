@@ -300,6 +300,9 @@ public class ViewCreator {
             return;
         }
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
+        if (moduleAPI == null) {
+            return;
+        }
         if (componentType == null) {
             componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
