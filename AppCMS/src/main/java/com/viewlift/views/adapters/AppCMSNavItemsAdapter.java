@@ -25,20 +25,13 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
 
     private final Navigation navigation;
     private final AppCMSPresenter appCMSPresenter;
-    private final OnCloseNavAction onCloseNavAction;
     private final int textColor;
     private boolean userLoggedIn;
 
-    public interface OnCloseNavAction {
-        void closeNavAction();
-    }
-
-    public AppCMSNavItemsAdapter(OnCloseNavAction onCloseNavAction,
-                                 Navigation navigation,
+    public AppCMSNavItemsAdapter(Navigation navigation,
                                  boolean userLoggedIn,
                                  AppCMSPresenter appCMSPresenter,
                                  int textColor) {
-        this.onCloseNavAction = onCloseNavAction;
         this.navigation = navigation;
         this.userLoggedIn = userLoggedIn;
         this.appCMSPresenter = appCMSPresenter;
@@ -70,13 +63,12 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             primary.getUrl(),
                             false,
                             true,
+                            true,
                             null)) {
                         Log.e(TAG, "Could not navigate to page with Title: " +
                                 primary.getTitle() +
                                 " Id: " +
                                 primary.getPageId());
-                    } else if (onCloseNavAction != null) {
-                        onCloseNavAction.closeNavAction();
                     }
                 }
             });
@@ -104,13 +96,12 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                 user.getUrl(),
                                 false,
                                 true,
+                                true,
                                 null)) {
                             Log.e(TAG, "Could not navigate to page with Title: " +
                                     user.getTitle() +
                                     " Id: " +
                                     user.getPageId());
-                        } else if (onCloseNavAction != null) {
-                            onCloseNavAction.closeNavAction();
                         }
                     }
 
@@ -154,13 +145,12 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                 footer.getUrl(),
                                 false,
                                 true,
+                                false,
                                 null)) {
                             Log.e(TAG, "Could not navigate to page with Title: " +
                                     footer.getTitle() +
                                     " Id: " +
                                     footer.getPageId());
-                        } else if (onCloseNavAction != null) {
-                            onCloseNavAction.closeNavAction();
                         }
                     }
                 });
@@ -176,9 +166,6 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                         @Override
                         public void onClick(View v) {
                             appCMSPresenter.logout();
-                            if (onCloseNavAction != null) {
-                                onCloseNavAction.closeNavAction();
-                            }
                         }
                     });
                 }

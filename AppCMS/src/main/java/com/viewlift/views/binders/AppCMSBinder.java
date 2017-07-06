@@ -29,6 +29,7 @@ public class AppCMSBinder extends Binder {
     private final boolean fullScreenEnabled;
     private final boolean navbarPresent;
     private final boolean userLoggedIn;
+    private final boolean sendCloseAction;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private Uri searchQuery;
 
@@ -43,6 +44,7 @@ public class AppCMSBinder extends Binder {
                         boolean appbarPresent,
                         boolean fullScreenEnabled,
                         boolean navbarPresent,
+                        boolean sendCloseAction,
                         boolean userLoggedIn,
                         Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                         Uri searchQuery) {
@@ -57,6 +59,7 @@ public class AppCMSBinder extends Binder {
         this.appbarPresent = appbarPresent;
         this.fullScreenEnabled = fullScreenEnabled;
         this.navbarPresent = navbarPresent;
+        this.sendCloseAction = sendCloseAction;
         this.userLoggedIn = userLoggedIn;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.searchQuery = searchQuery;
@@ -124,5 +127,9 @@ public class AppCMSBinder extends Binder {
 
     public String getScreenName() {
         return screenName;
+    }
+
+    public boolean shouldSendCloseAction() {
+        return sendCloseAction;
     }
 }

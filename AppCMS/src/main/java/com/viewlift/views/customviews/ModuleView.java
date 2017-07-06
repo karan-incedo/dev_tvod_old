@@ -26,7 +26,10 @@ public class ModuleView<T extends Module> extends BaseView {
     @Override
     public void init() {
         int width = (int) getViewWidth(getContext(), module.getLayout(), LayoutParams.MATCH_PARENT);
-        int height = (int) getViewHeight(getContext(), module.getLayout(), LayoutParams.MATCH_PARENT);
+        int height = (int) getViewHeight(getContext(), module.getLayout(), LayoutParams.WRAP_CONTENT);
+        if (BaseView.isLandscape(getContext())) {
+            height *= TABLET_LANDSCAPE_HEIGHT_SCALE;
+        }
         Log.d(TAG, "Module Key: " + module.getView() + " Width: " + width + " Height; " + height);
         FrameLayout.LayoutParams layoutParams =
                 new FrameLayout.LayoutParams(width, height);
@@ -34,6 +37,7 @@ public class ModuleView<T extends Module> extends BaseView {
         if (module.getComponents() != null) {
             initializeComponentHasViewList(module.getComponents().size());
         }
+        setPadding(0, 0, 0, 0);
     }
 
     @Override

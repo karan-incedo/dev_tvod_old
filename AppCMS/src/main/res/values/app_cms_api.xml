@@ -107,8 +107,10 @@
 
     <string name="app_cms_navigation_page_tag">navigation</string>
     <string name="app_cms_search_page_tag">search</string>
+    <string name="app_cms_video_page_tag">video</string>
+    <string name="app_cms_main_page_tag">main</string>
 
-    <string name="app_cms_share_string">%1$s Presents %2$s - %3$s</string>
+    <string name="app_cms_closing_page_name">closing_page</string>
 
     <!-- AppAppCMSPageUIPage names for Actions -->
     <string name="app_cms_pagename_authenticationscreen_key">Authentication Screen</string>
@@ -132,6 +134,7 @@
     <string name="app_cms_action_loginfacebook_key">loginFacebook</string>
     <string name="app_cms_action_signup_key">signup</string>
     <string name="app_cms_action_logout_key">logout</string>
+    <string name="app_cms_action_qualifier_watchvideo_key">trailer</string>
 
     <!-- AppCMS Data values -->
     <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true</string>
@@ -165,6 +168,8 @@
 
     <!-- AppCMS Image with Resize Query -->
     <string name="app_cms_image_with_resize_query">%1$s?impolicy=resize&amp;w=%2$d&amp;h=%3$d</string>
+
     <string name="app_cms_currently_logged_out_message">CURRENTLY LOGGED OUT</string>
     <string name="app_cms_sign_out_label">SIGN OUT</string>
+    <string name="play_ads_key">play_ads</string>
 </resources>

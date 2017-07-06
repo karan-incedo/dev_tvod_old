@@ -68,4 +68,5 @@
     <string name="https_scheme">https://</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="video_player_request_ads_key">video_player_request_ads</string>
 </resources>

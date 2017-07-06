@@ -1,5 +1,7 @@
 package com.viewlift.views.customviews;
 
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -44,28 +46,41 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
 
     @Override
     public void onGlobalLayout() {
-        int linesCompletelyVisible = (textView.getHeight() - textView.getPaddingTop() - textView.getPaddingBottom()) / textView.getLineHeight();
-        if (linesCompletelyVisible < textView.getLineCount() &&
-                textView.getLayout() != null &&
-                appCMSPresenter != null) {
-            int lineEnd = textView.getLayout().getLineEnd(linesCompletelyVisible - 1) - EXTRA_TRUNC_CHARS;
-            SpannableString spannableTextWithMore =
-                    new SpannableString(textView.getContext().getString(R.string.string_with_ellipse_and_more,
-                            textView.getText().subSequence(0, lineEnd)));
-            ClickableSpan clickableSpan = new ClickableSpan() {
-                @Override
-                public void onClick(View widget) {
-                    appCMSPresenter.showMoreDialog(title, fullText, textColor);
-                }
-            };
-            spannableTextWithMore.setSpan(clickableSpan,
-                    spannableTextWithMore.length() - CLICKABLE_CHAR_COUNT,
-                    spannableTextWithMore.length(),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            textView.setText(spannableTextWithMore);
-            textView.setMovementMethod(LinkMovementMethod.getInstance());
-        }
-        if (forceMaxLines) {
+        int linesCompletelyVisible = (textView.getHeight() -
+                textView.getPaddingTop() -
+                textView.getPaddingBottom()) /
+                textView.getLineHeight();
+        if (!forceMaxLines) {
+            Rect bounds = new Rect();
+            Paint textPaint = textView.getPaint();
+            textPaint.getTextBounds(textView.getText().toString(),
+                    0,
+                    textView.getText().length(),
+                    bounds);
+            if (bounds.height() < linesCompletelyVisible * textView.getLineHeight()) {
+                linesCompletelyVisible--;
+            }
+            if (linesCompletelyVisible < textView.getLineCount() &&
+                    textView.getLayout() != null &&
+                    appCMSPresenter != null) {
+                int lineEnd = textView.getLayout().getLineEnd(linesCompletelyVisible - 1) - EXTRA_TRUNC_CHARS;
+                SpannableString spannableTextWithMore =
+                        new SpannableString(textView.getContext().getString(R.string.string_with_ellipse_and_more,
+                                textView.getText().subSequence(0, lineEnd)));
+                ClickableSpan clickableSpan = new ClickableSpan() {
+                    @Override
+                    public void onClick(View widget) {
+                        appCMSPresenter.showMoreDialog(title, fullText, textColor);
+                    }
+                };
+                spannableTextWithMore.setSpan(clickableSpan,
+                        spannableTextWithMore.length() - CLICKABLE_CHAR_COUNT,
+                        spannableTextWithMore.length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                textView.setText(spannableTextWithMore);
+                textView.setMovementMethod(LinkMovementMethod.getInstance());
+            }
+        } else if (forceMaxLines) {
             textView.setMaxLines(linesCompletelyVisible);
             textView.setEllipsize(TextUtils.TruncateAt.END);
         }
