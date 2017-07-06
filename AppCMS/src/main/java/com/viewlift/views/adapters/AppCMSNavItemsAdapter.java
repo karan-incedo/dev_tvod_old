@@ -27,6 +27,9 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
     private final AppCMSPresenter appCMSPresenter;
     private final int textColor;
     private boolean userLoggedIn;
+    private int numPrimaryItems;
+    private int numUserItems;
+    private int numFooterItems;
 
     public AppCMSNavItemsAdapter(Navigation navigation,
                                  boolean userLoggedIn,
@@ -52,110 +55,124 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
         int indexOffset = 0;
         if (navigation.getPrimary() != null && i < navigation.getPrimary().size()) {
             final Primary primary = navigation.getPrimary().get(i);
-            viewHolder.navItemLabel.setText(primary.getTitle().toUpperCase());
-            viewHolder.navItemLabel.setTextColor(textColor);
-            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d(TAG, "Navigating to page with Title: " + primary.getTitle());
-                    if (!appCMSPresenter.navigateToPage(primary.getPageId(),
-                            primary.getTitle(),
-                            primary.getUrl(),
-                            false,
-                            true,
-                            true,
-                            null)) {
-                        Log.e(TAG, "Could not navigate to page with Title: " +
-                                primary.getTitle() +
-                                " Id: " +
-                                primary.getPageId());
-                    }
+            if (primary.getAccessLevels() != null) {
+                if ((userLoggedIn && primary.getAccessLevels().getLoggedIn()) ||
+                        (!userLoggedIn && primary.getAccessLevels().getLoggedOut())) {
+                    viewHolder.navItemLabel.setText(primary.getTitle().toUpperCase());
+                    viewHolder.navItemLabel.setTextColor(textColor);
+                    viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Log.d(TAG, "Navigating to page with Title: " + primary.getTitle());
+                            if (!appCMSPresenter.navigateToPage(primary.getPageId(),
+                                    primary.getTitle(),
+                                    primary.getUrl(),
+                                    false,
+                                    true,
+                                    true,
+                                    null)) {
+                                Log.e(TAG, "Could not navigate to page with Title: " +
+                                        primary.getTitle() +
+                                        " Id: " +
+                                        primary.getPageId());
+                            }
+                        }
+                    });
                 }
-            });
+            }
         } else {
-            if (navigation.getPrimary() != null) {
-                indexOffset += navigation.getPrimary().size();
+            indexOffset += numPrimaryItems;
+
+            if (0 <= (i - indexOffset) &&
+                    navigation.getUser() != null &&
+                    (i - indexOffset) < navigation.getUser().size() &&
+                    navigation.getUser().get(i - indexOffset).getAccessLevels() != null &&
+                    navigation.getUser().get(i - indexOffset).getAccessLevels().getLoggedOut()) {
+                indexOffset--;
             }
 
             //user nav
-            if (userLoggedIn && navigation.getUser() != null && (i - indexOffset) < navigation.getUser().size()) {
+            if (userLoggedIn && navigation.getUser() != null && 0 <= (i - indexOffset) && (i - indexOffset) < navigation.getUser().size()) {
                 final User user = navigation.getUser().get(i - indexOffset);
 
-
-                viewHolder.navItemLabel.setText(user.getTitle().toUpperCase());
-                viewHolder.navItemLabel.setTextColor(textColor);
-                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        //setUpWatchlistInNav();
-
-                        setUpHistoryInNav();
-
-                        if (!appCMSPresenter.navigateToPage(user.getPageId(),
-                                user.getTitle(),
-                                user.getUrl(),
-                                false,
-                                true,
-                                true,
-                                null)) {
-                            Log.e(TAG, "Could not navigate to page with Title: " +
-                                    user.getTitle() +
-                                    " Id: " +
-                                    user.getPageId());
-                        }
-                    }
-
-                    private void setUpWatchlistInNav() {
-                        for (int j = 0; j < navigation.getUser().size(); j++) {
-                            if (navigation.getUser().get(j).getTitle().equals("Watchlist")) {
+                if (user.getAccessLevels() != null && user.getAccessLevels().getLoggedIn()) {
+                    viewHolder.navItemLabel.setText(user.getTitle().toUpperCase());
+                    viewHolder.navItemLabel.setTextColor(textColor);
+                    viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (user.getTitle().equals("Watchlist")) {
                                 appCMSPresenter.navigateToWatchlistPage(user.getPageId(),
                                         user.getTitle(), user.getUrl(), true);
-                            }
-                        }
-                    }
-
-                    private void setUpHistoryInNav() {
-                        for (int j = 0; j < navigation.getUser().size(); j++) {
-                            if (navigation.getUser().get(j).getTitle().equals("History")) {
+                            } else if (user.getTitle().equals("History")) {
                                 appCMSPresenter.navigateToHistoryPage(user.getPageId(), user.getTitle(),
                                         user.getUrl(), true);
+                            } else {
+                                if (!appCMSPresenter.navigateToPage(user.getPageId(),
+                                        user.getTitle(),
+                                        user.getUrl(),
+                                        false,
+                                        true,
+                                        true,
+                                        null)) {
+                                } else {
+                                    Log.e(TAG, "Could not navigate to page with Title: " +
+                                            user.getTitle() +
+                                            " Id: " +
+                                            user.getPageId());
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
             }
 
-            if (userLoggedIn && navigation.getUser() != null) {
-                indexOffset += navigation.getUser().size();
+            indexOffset += numUserItems;
+
+            if (0 <= (i - indexOffset) &&
+                    (i - indexOffset) < navigation.getFooter().size() &&
+                    userLoggedIn &&
+                    navigation.getFooter().get(i - indexOffset).getAccessLevels() != null &&
+                    navigation.getFooter().get(i - indexOffset).getAccessLevels().getLoggedOut()) {
+                indexOffset--;
+            } else if (0 <= (i - indexOffset) &&
+                    (i - indexOffset) < navigation.getFooter().size() &&
+                    !userLoggedIn &&
+                    navigation.getFooter().get(i - indexOffset).getAccessLevels() != null &&
+                    navigation.getFooter().get(i - indexOffset).getAccessLevels().getLoggedIn()) {
+                indexOffset--;
             }
 
             //footer
             if (navigation.getFooter() != null && 0 <= (i - indexOffset) && (i - indexOffset) < navigation.getFooter().size()) {
-
                 final Footer footer = navigation.getFooter().get(i - indexOffset);
-                viewHolder.navItemLabel.setText(footer.getTitle().toUpperCase());
-                viewHolder.navItemLabel.setTextColor(textColor);
-                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!appCMSPresenter.navigateToPage(footer.getPageId(),
-                                footer.getTitle(),
-                                footer.getUrl(),
-                                false,
-                                true,
-                                false,
-                                null)) {
-                            Log.e(TAG, "Could not navigate to page with Title: " +
-                                    footer.getTitle() +
-                                    " Id: " +
-                                    footer.getPageId());
-                        }
+                if (footer.getAccessLevels() != null) {
+                    if ((userLoggedIn && footer.getAccessLevels().getLoggedIn()) ||
+                            (!userLoggedIn && footer.getAccessLevels().getLoggedOut())) {
+                        viewHolder.navItemLabel.setText(footer.getTitle().toUpperCase());
+                        viewHolder.navItemLabel.setTextColor(textColor);
+                        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (!appCMSPresenter.navigateToPage(footer.getPageId(),
+                                        footer.getTitle(),
+                                        footer.getUrl(),
+                                        false,
+                                        true,
+                                        false,
+                                        null)) {
+                                    Log.e(TAG, "Could not navigate to page with Title: " +
+                                            footer.getTitle() +
+                                            " Id: " +
+                                            footer.getPageId());
+                                }
+                            }
+                        });
                     }
-                });
-
-                indexOffset += navigation.getFooter().size();
+                }
             }
+
+            indexOffset += numFooterItems;
 
             if (0 <= (i - indexOffset)) {
                 if (userLoggedIn) {
@@ -175,28 +192,54 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
     @Override
     public int getItemCount() {
         int totalItemCount = 0;
+        numPrimaryItems = 0;
+        numUserItems = 0;
+        numFooterItems = 0;
         if (navigation != null) {
             if (navigation.getPrimary() != null) {
-                totalItemCount += navigation.getPrimary().size();
-            }
-
-            if (navigation.getFooter() != null) {
-                for (int i = 0; i < navigation.getFooter().size(); i++) {
-                    totalItemCount += 1;
+                for (int i = 0; i < navigation.getPrimary().size(); i++) {
+                    Primary primary = navigation.getPrimary().get(i);
+                    if (primary.getAccessLevels() != null) {
+                        if (userLoggedIn && primary.getAccessLevels().getLoggedIn()) {
+                            totalItemCount++;
+                            numPrimaryItems++;
+                        } else if (!userLoggedIn && primary.getAccessLevels().getLoggedOut()) {
+                            totalItemCount++;
+                            numPrimaryItems++;
+                        }
+                    }
                 }
             }
 
             if (userLoggedIn && navigation.getUser() != null) {
-                totalItemCount += navigation.getUser().size() + 1; // + LogOut item
+                for (int i = 0; i < navigation.getUser().size(); i++) {
+                    User user = navigation.getUser().get(i);
+                    if (user.getAccessLevels() != null) {
+                        if (userLoggedIn && user.getAccessLevels().getLoggedIn()) {
+                            totalItemCount++;
+                            numUserItems++;
+                        }
+                    }
+                }
+            }
+
+            if (navigation.getFooter() != null) {
+                for (int i = 0; i < navigation.getFooter().size(); i++) {
+                    Footer footer = navigation.getFooter().get(i);
+                    if (footer.getAccessLevels() != null) {
+                        if (userLoggedIn && footer.getAccessLevels().getLoggedIn()) {
+                            totalItemCount++;
+                            numFooterItems++;
+                        } else if (!userLoggedIn && footer.getAccessLevels().getLoggedOut()) {
+                            totalItemCount++;
+                            numFooterItems++;
+                        }
+                    }
+                }
             }
         }
 
         return totalItemCount;
-    }
-
-    public void setUserLoggedIn(boolean userLoggedIn) {
-        this.userLoggedIn = userLoggedIn;
-        notifyDataSetChanged();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

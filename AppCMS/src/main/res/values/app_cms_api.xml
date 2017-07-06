@@ -182,4 +182,5 @@
     <string name="app_cms_password_reset_email_key">app_cms_password_reset_email</string>
     <string name="reset_password_text">RESET PASSWORD</string>
     <string name="app_cms_border_color_key">app_cms_border_color</string>
+    <string name="app_cms_error_email_password">Email and password are not valid.</string>
 </resources>

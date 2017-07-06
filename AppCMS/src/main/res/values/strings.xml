@@ -35,6 +35,7 @@
     <string name="player_video_playing_on_pause_key">player_video_playing_on_pause</string>
     <string name="app_cms_network_connectivity_error_title">Network Connectivity</string>
     <string name="app_cms_network_connectivity_error_message">Please connect your device to a network and try again.</string>
+    <string name="app_cms_signin_error_title">Sign In</string>
     <string name="app_cms_data_error_title">Could Not Access Data</string>
     <string name="app_cms_data_error_message">Data is currently unavailable.  Please try again later.</string>
     <string name="app_cms_close_alert_dialog_button_text">CLOSE</string>

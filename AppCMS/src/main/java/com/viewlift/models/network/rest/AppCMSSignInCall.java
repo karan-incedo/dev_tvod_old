@@ -5,7 +5,6 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
-import com.viewlift.models.data.appcms.ui.authentication.SignInError;
 import com.viewlift.models.data.appcms.ui.authentication.SignInRequest;
 import com.viewlift.models.data.appcms.ui.authentication.SignInResponse;
 
@@ -46,11 +45,6 @@ public class AppCMSSignInCall {
             loggedInResponseResponse = gson.fromJson(signInResponse, SignInResponse.class);
         } catch (JsonSyntaxException | IOException e) {
             Log.e(TAG, "SignIn error: " + e.toString());
-            try {
-                SignInError signInError = gson.fromJson(signInResponse, SignInError.class);
-            } catch (JsonSyntaxException e1) {
-                Log.e(TAG, "Json Parsing Exception: " + e1.toString());
-            }
         }
 
         return loggedInResponseResponse;

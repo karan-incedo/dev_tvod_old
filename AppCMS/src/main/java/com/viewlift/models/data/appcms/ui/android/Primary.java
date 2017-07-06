@@ -25,6 +25,9 @@ public class Primary {
     @SerializedName("displayedPath")
     @Expose
     private String displayedPath;
+    @SerializedName("accessLevels")
+    @Expose
+    private AccessLevels accessLevels;
 
     public String getTitle() {
         return title;
@@ -72,5 +75,13 @@ public class Primary {
 
     public void setDisplayedPath(String displayedPath) {
         this.displayedPath = displayedPath;
+    }
+
+    public AccessLevels getAccessLevels() {
+        return accessLevels;
+    }
+
+    public void setAccessLevels(AccessLevels accessLevels) {
+        this.accessLevels = accessLevels;
     }
 }
