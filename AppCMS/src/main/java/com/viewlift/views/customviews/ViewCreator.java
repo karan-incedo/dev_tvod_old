@@ -597,6 +597,10 @@ public class ViewCreator {
                         case PAGE_API_TITLE:
                             if (!TextUtils.isEmpty(moduleAPI.getTitle())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
+                                if (component.getNumberOfLines() != 0) {
+                                    ((TextView) componentViewResult.componentView).setMaxLines(component.getNumberOfLines());
+                                }
+                                ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
                             }
                             break;
 
