@@ -53,8 +53,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
         if (navigation.getPrimary() != null && i < navigation.getPrimary().size()) {
             final Primary primary = navigation.getPrimary().get(i);
             if (primary.getAccessLevels() != null) {
-                if (userLoggedIn && primary.getAccessLevels().getLoggedIn() ||
-                        primary.getAccessLevels().getLoggedOut()) {
+                if ((userLoggedIn && primary.getAccessLevels().getLoggedIn()) ||
+                        (!userLoggedIn && primary.getAccessLevels().getLoggedOut())) {
                     viewHolder.navItemLabel.setText(primary.getTitle().toUpperCase());
                     viewHolder.navItemLabel.setTextColor(textColor);
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -140,8 +140,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
 
                 final Footer footer = navigation.getFooter().get(i - indexOffset);
                 if (footer.getAccessLevels() != null) {
-                    if (userLoggedIn && footer.getAccessLevels().getLoggedIn() ||
-                            footer.getAccessLevels().getLoggedOut()) {
+                    if ((userLoggedIn && footer.getAccessLevels().getLoggedIn()) ||
+                            (!userLoggedIn && footer.getAccessLevels().getLoggedOut())) {
                         viewHolder.navItemLabel.setText(footer.getTitle().toUpperCase());
                         viewHolder.navItemLabel.setTextColor(textColor);
                         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
