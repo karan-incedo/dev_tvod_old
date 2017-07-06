@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#000000</color>
-    <color name = "appcms_nav_background">#24292b</color>
-    <color name="appcms_shadow_color">#A6172832</color>
-
-
-<color name="jumbotron_background_color">#172e3c</color>
-
 </resources>

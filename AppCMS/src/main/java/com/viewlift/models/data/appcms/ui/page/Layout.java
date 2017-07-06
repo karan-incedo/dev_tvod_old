@@ -3,7 +3,6 @@ package com.viewlift.models.data.appcms.ui.page;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.viewlift.models.data.appcms.ui.tv.FireTV;
 
 public class Layout {
 
@@ -52,15 +51,4 @@ public class Layout {
         this.tabletLandscape = tabletLandscape;
     }
 
-    @SerializedName("ftv")
-    @Expose
-    private FireTV tv;
-
-    public FireTV getTv() {
-        return tv;
-    }
-
-    public void setTv(FireTV ftv) {
-        this.tv = tv;
-    }
 }
