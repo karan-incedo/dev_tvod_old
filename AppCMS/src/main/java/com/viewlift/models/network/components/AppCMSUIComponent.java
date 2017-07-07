@@ -8,6 +8,7 @@ import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
+import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
@@ -45,4 +46,6 @@ public interface AppCMSUIComponent {
     AppCMSFacebookLoginCall appCMSFacebookLoginCall();
 
     AppCMSUserIdentityCall appCMSUserIdentityCall();
+
+    AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall();
 }
