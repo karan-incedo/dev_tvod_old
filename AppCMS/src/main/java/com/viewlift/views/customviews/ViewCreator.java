@@ -1,5 +1,6 @@
 package com.viewlift.views.customviews;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -26,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -770,6 +772,7 @@ public class ViewCreator {
                     } else {
                         ((ProgressBar) componentViewResult.componentView).setProgress(0);
                     }
+                    BaseView.setViewWidth(context, component.getLayout(), FrameLayout.LayoutParams.MATCH_PARENT);
                 } else {
                     componentViewResult.componentView.setVisibility(View.GONE);
                 }

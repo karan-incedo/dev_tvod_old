@@ -71,8 +71,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     public void onBindViewHolder(ViewHolder holder, int position) {
         final ContentDatum contentDatum = adapterData.get(position);
 
+        StringBuffer imageUrl = new StringBuffer(holder.itemView.getContext().getString(R.string.app_cms_image_with_resize_query,
+                contentDatum.getGist().getVideoImageUrl(),
+                holder.appCMSContinueWatchingVideoImage.getWidth(),
+                holder.appCMSContinueWatchingVideoImage.getHeight()));
         Picasso.with(holder.itemView.getContext())
-                .load(contentDatum.getGist().getVideoImageUrl())
+                .load(imageUrl.toString())
                 .into(holder.appCMSContinueWatchingVideoImage);
 
         holder.appCMSContinueWatchingVideoImage.setOnClickListener(new View.OnClickListener() {
