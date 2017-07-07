@@ -19,6 +19,7 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
         <activity
             android:name="com.viewlift.views.activity.AppCMSPageActivity"
             android:configChanges="orientation|screenSize"
@@ -64,6 +65,8 @@
             android:authorities="@string/app_cms_search_provider" />
 
         <activity android:name="com.viewlift.views.activity.AppCMSHistoryActivity" />
+
+        <service android:name="com.viewlift.models.network.background.services.AppCMSBackgroundService" />
 
     </application>
 
