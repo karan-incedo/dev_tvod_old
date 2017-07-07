@@ -41,7 +41,12 @@ android {
             dimension = "green"
         }
         tv {
+            minSdkVersion 21
+            compileSdkVersion 25
             dimension = "green"
+            aaptOptions {
+                cruncherEnabled = false
+            }
         }
     }
     sourceSets {
@@ -51,6 +56,7 @@ android {
             manifest.srcFile 'src/mobile/AndroidManifest.xml'
         }
         tv {
+            java.srcDirs = ['src/tv/java']
             res.srcDirs = ['src/tv/res']
             manifest.srcFile 'src/tv/AndroidManifest.xml'
         }
@@ -112,7 +118,8 @@ dependencies {
     compile "com.android.support:recyclerview-v7:$rootProject.ext.androidsupportVersion"
     compile "com.android.support:gridlayout-v7:$rootProject.ext.androidsupportVersion"
     tvCompile "com.android.support:leanback-v17:$rootProject.ext.androidsupportVersion"
-    compile "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
+    tvCompile "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
+    tvCompile 'com.github.bumptech.glide:glide:3.4.+'
     compile "com.squareup.picasso:picasso:$rootProject.ext.picassoVersion"
     compile "com.google.dagger:dagger:$rootProject.ext.daggerVersion"
     compile "com.google.code.gson:gson:$rootProject.ext.gsonVersion"

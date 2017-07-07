@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true">
+
+    <FrameLayout
+        android:id="@+id/navigation_placholder"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/appcms_tv_navigation_height"
+        android:background="@color/appcms_nav_background"
+        android:visibility="gone">
+    </FrameLayout>
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_below="@id/navigation_placholder">
+
+    <FrameLayout
+        android:id="@+id/home_placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/home_screen_background">
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/shadow_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/appcms_shadow_color"
+        android:alpha="0.7"
+        android:visibility="gone">
+    </FrameLayout>
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/footer_gradient_image"
+        >
+    </FrameLayout>
+
+
+</RelativeLayout>
+
+    <ImageView
+        android:layout_width="@dimen/footer_logo_width"
+        android:layout_height="@dimen/footer_logo_height"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/footer_logo_padding"
+        android:layout_marginRight="@dimen/footer_logo_padding"
+        android:background="@drawable/snagfilms_app_logo"
+        android:layout_gravity="right"/>
+
+
+</RelativeLayout>
+
