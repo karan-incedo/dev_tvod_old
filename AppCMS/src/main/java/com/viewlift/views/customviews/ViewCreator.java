@@ -467,7 +467,7 @@ public class ViewCreator {
                                                 componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                                                     @Override
                                                     public void onClick(View v) {
-                                                        // FIXME: 7/7/17 add to presenter.
+                                                        // FIXME: 7/7/17 remove from watchlist api.
                                                     }
                                                 });
                                             } else {
@@ -475,7 +475,7 @@ public class ViewCreator {
                                                 componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                                                     @Override
                                                     public void onClick(View v) {
-                                                        // FIXME: 7/7/17 add to presenter.
+                                                        // FIXME: 7/7/17 add to watchlist api.
                                                     }
                                                 });
                                             }

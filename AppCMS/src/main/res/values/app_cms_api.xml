@@ -105,7 +105,7 @@
     <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>
     <string name="app_cms_page_continue_watching_module_key">AC ContinueWatching 01</string>
 
-    <string name="app_cms_page_history_title">Watch History</string>
+    <string name="app_cms_page_history_title">History</string>
     <string name="app_cms_page_watchlist_title">WatchList</string>
 
     <string name="app_cms_page_watchlist_duration_key">duration</string>

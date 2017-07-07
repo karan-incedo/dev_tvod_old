@@ -304,7 +304,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     private void delete(ContentDatum contentDatum) {
-        Log.d(TAG, "Delete item: " + contentDatum.getGist().getTitle());
+        Log.d(TAG, "Deleting item: " + contentDatum.getGist().getTitle());
     }
 
     private void applyBorderToComponent(Context context, View view, Component component) {
