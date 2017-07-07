@@ -7,9 +7,6 @@
     <dimen name="browse_fragment_margin_left">0dp</dimen>
     <dimen name="browse_fragment_margin_top">-140dp</dimen>
 
-  <!--  <dimen name = "jumbotron_weidth">766dp</dimen>
-    <dimen name = "jumbotron_height">270dp</dimen>-->
-
     <dimen name = "jumbotron_weidth">770dp</dimen>
     <dimen name = "jumbotron_height">274dp</dimen>
 
@@ -30,7 +27,5 @@
 
     <dimen name="splash_logo_animation_right_margin">20dp</dimen>
     <dimen name="splash_logo_animation_bottom_margin">20dp</dimen>
-
-
 
 </resources>

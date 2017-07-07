@@ -1180,9 +1180,13 @@ public class AppCMSPresenter {
 
     public void launchErrorActivity(Activity activity, PlatformType platformType) {
         if (platformType == PlatformType.ANDROID) {
-            sendCloseOthersAction(null, true);
-            Intent errorIntent = new Intent(activity, AppCMSErrorActivity.class);
-            activity.startActivity(errorIntent);
+            try {
+                sendCloseOthersAction(null, true);
+                Intent errorIntent = new Intent(activity, AppCMSErrorActivity.class);
+                activity.startActivity(errorIntent);
+            } catch (Exception e) {
+                Log.e(TAG, "Error launching Mobile Error Activity");
+            }
         } else if (platformType == PlatformType.TV) {
             try {
                 Intent errorIntent = new Intent(activity, Class.forName(tvErrorScreenPackage));
