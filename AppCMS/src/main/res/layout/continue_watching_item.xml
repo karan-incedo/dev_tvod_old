@@ -1,74 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:background="@android:color/transparent">
 
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/app_cms_continue_watching_tray_height">
-        <ImageButton
-            android:id="@+id/app_cms_continue_watching_video_image"
-            android:layout_width="@dimen/app_cms_continue_watching_tray_image_width"
-            android:layout_height="@dimen/app_cms_continue_watching_tray_image_height"
-            android:background="@android:color/transparent"/>
-        <ImageButton
-            android:id="@+id/app_cms_continue_watching_play_button"
-            android:layout_width="@dimen/app_cms_continue_watching_play_button_width"
-            android:layout_height="@dimen/app_cms_continue_watching_play_button_height"
-            android:src="@drawable/play_icon"
-            android:layout_gravity="center"
-            android:background="@android:color/transparent"/>
-        <ProgressBar
-            android:id="@+id/app_cms_continue_watching_progressbar"
-            android:layout_width="@dimen/app_cms_continue_watching_tray_image_width"
-            android:layout_height="@dimen/app_cms_continue_watching_progressbar_height"
-            android:layout_gravity="bottom"
-            android:visibility="invisible"/>
-    </FrameLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/app_cms_separator_view_height"/>
 
-    <LinearLayout
-        android:layout_width="@dimen/app_cms_continue_watching_description_width"
-        android:layout_height="@dimen/app_cms_continue_watching_tray_height"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/app_cms_continue_watching_title"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/app_cms_continue_watching_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-    
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/app_cms_continue_watching_tray_height"
-        android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
         <FrameLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="@dimen/app_cms_continue_watching_tray_height">
             <ImageButton
-                android:id="@+id/app_cms_continue_watching_select_to_delete_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/app_cms_continue_watching_video_image"
+                android:layout_width="@dimen/app_cms_continue_watching_tray_image_width"
+                android:layout_height="@dimen/app_cms_continue_watching_tray_image_height"
                 android:background="@android:color/transparent"/>
             <ImageButton
-                android:id="@+id/app_cms_continue_watching_delete_button"
+                android:id="@+id/app_cms_continue_watching_play_button"
+                android:layout_width="@dimen/app_cms_continue_watching_play_button_width"
+                android:layout_height="@dimen/app_cms_continue_watching_play_button_height"
+                android:src="@drawable/play_icon"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"/>
+            <ProgressBar
+                android:id="@+id/app_cms_continue_watching_progressbar"
+                android:layout_width="@dimen/app_cms_continue_watching_tray_image_width"
+                android:layout_height="@dimen/app_cms_continue_watching_progressbar_height"
+                android:layout_gravity="bottom"
+                android:visibility="invisible"/>
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="@dimen/app_cms_continue_watching_description_width"
+            android:layout_height="@dimen/app_cms_continue_watching_tray_height"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/app_cms_continue_watching_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/app_cms_continue_watching_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/app_cms_continue_watching_tray_height"
+            android:orientation="vertical">
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageButton
+                    android:id="@+id/app_cms_continue_watching_select_to_delete_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"/>
+                <ImageButton
+                    android:id="@+id/app_cms_continue_watching_delete_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent" />
+            </FrameLayout>
+            <TextView
+                android:id="@+id/app_cms_continue_watching_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent" />
-        </FrameLayout>
-        <TextView
-            android:id="@+id/app_cms_continue_watching_duration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:alpha="0.6"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/mins_abbreviation"
-            android:alpha="0.6"/>
+                android:alpha="0.6"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/mins_abbreviation"
+                android:alpha="0.6"/>
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>
