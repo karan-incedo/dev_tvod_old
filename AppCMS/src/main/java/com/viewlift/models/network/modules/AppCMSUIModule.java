@@ -31,6 +31,8 @@ import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryRest;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityRest;
+import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
+import com.viewlift.models.network.rest.AppCMSUserVideoStatusRest;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistRest;
 import com.viewlift.presenters.AppCMSActionType;
@@ -112,6 +114,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_add_to_watchlist_key),
                 AppCMSUIKeyType.PAGE_CAROUSEL_ADD_TO_WATCHLIST_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_add_to_watchlist_key),
+                AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_page_control_key),
                 AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_seperator_key),
@@ -385,6 +389,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSUserVideoStatusRest providesAppCMSUserVideoStatusRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSUserVideoStatusRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -453,6 +463,12 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSUpdateWatchHistoryCall providesAppCMSUpdateWatchHistoryCall(AppCMSUpdateWatchHistoryRest appCMSUpdateWatchHistoryRest) {
         return new AppCMSUpdateWatchHistoryCall(appCMSUpdateWatchHistoryRest);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSUserVideoStatusCall providesAppCMSUserVideoStatusCall(AppCMSUserVideoStatusRest appCMSUserVideoStatusRest) {
+        return new AppCMSUserVideoStatusCall(appCMSUserVideoStatusRest);
     }
 
     @Provides

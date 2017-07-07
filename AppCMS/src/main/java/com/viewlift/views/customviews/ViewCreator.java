@@ -451,6 +451,9 @@ public class ViewCreator {
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.info_icon));
                         break;
 
+                    case PAGE_ADD_TO_WATCHLIST_KEY:
+                        break;
+
                     case PAGE_VIDEO_WATCH_TRAILER_KEY:
                         if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers() != null &&
