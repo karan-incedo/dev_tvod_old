@@ -10,6 +10,7 @@ import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
+import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
@@ -48,4 +49,6 @@ public interface AppCMSUIComponent {
     AppCMSUserIdentityCall appCMSUserIdentityCall();
 
     AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall();
+
+    AppCMSUserVideoStatusCall appCMSUserVideoStatusCall();
 }

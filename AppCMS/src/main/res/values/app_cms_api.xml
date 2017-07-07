@@ -48,6 +48,9 @@
     <!-- AppCMS Update Video Watch History API -->
     <string name="app_cms_update_watch_history_api_url">%1$s/content/video/history</string>
 
+    <!-- AppCMS User Video Status API -->
+    <string name="app_cms_video_status_api_url">%1$2/user/info/video/%2$s?site=%3$s</string>
+
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>
@@ -78,6 +81,7 @@
     <string name="app_cms_page_carousel_info_key">carouselInfo</string>
     <string name="app_cms_page_carousel_image_key">carouselImage</string>
     <string name="app_cms_page_carousel_add_to_watchlist_key">addToWatchlist</string>
+    <string name="app_cms_page_add_to_watchlist_key">watchlistButton</string>
     <string name="app_cms_page_font_bold_key">Bold</string>
     <string name="app_cms_page_font_semibold_key">Semibold</string>
     <string name="app_cms_page_font_extrabold_key">ExtraBold</string>
