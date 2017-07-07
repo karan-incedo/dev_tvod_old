@@ -118,7 +118,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
         holder.appCMSContinueWatchingDuration.setText(String.valueOf(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS));
 
-        holder.appCMSContinueWatchingProgressbar.setProgress(contentDatum.getGist().getWatchedPercentage());
+        if (contentDatum.getGist().getWatchedPercentage() != null) {
+            holder.appCMSContinueWatchingProgressbar.setProgress(contentDatum.getGist().getWatchedPercentage());
+        }
     }
 
     @Override
