@@ -8,6 +8,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rx.functions.Action1;
+import rx.Observable;
 
 /**
  * Created by viewlift on 7/6/17.
@@ -27,12 +28,12 @@ public class AppCMSFacebookLoginCall {
         appCMSFacebookLoginRest.login(url).enqueue(new Callback<FacebookLoginResponse>() {
             @Override
             public void onResponse(Call<FacebookLoginResponse> call, Response<FacebookLoginResponse> response) {
-                readyAction.call(response.body());
+                Observable.just(response.body()).subscribe(readyAction);
             }
 
             @Override
             public void onFailure(Call<FacebookLoginResponse> call, Throwable t) {
-
+                Observable.just((FacebookLoginResponse) null).subscribe(readyAction);
             }
         });
     }

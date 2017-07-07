@@ -110,6 +110,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             } else if (user.getTitle().equals("History")) {
                                 appCMSPresenter.navigateToHistoryPage(user.getPageId(), user.getTitle(),
                                         user.getUrl(), true);
+                            } else if (user.getTitle().equals("Settings")) {
+                                appCMSPresenter.navigateToSettingsPage();
                             } else {
                                 if (!appCMSPresenter.navigateToPage(user.getPageId(),
                                         user.getTitle(),

@@ -45,6 +45,7 @@ import com.viewlift.models.data.appcms.ui.authentication.FacebookLoginResponse;
 import com.viewlift.models.data.appcms.ui.authentication.ForgotPasswordResponse;
 import com.viewlift.models.data.appcms.ui.authentication.RefreshIdentityResponse;
 import com.viewlift.models.data.appcms.ui.authentication.SignInResponse;
+import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
@@ -74,6 +75,7 @@ import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
+import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSHistoryActivity;
@@ -87,6 +89,8 @@ import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.fragments.AppCMSHistoryFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSResetPasswordFragment;
+import com.viewlift.views.fragments.AppCMSSearchFragment;
+import com.viewlift.views.fragments.AppCMSSettingsFragment;
 import com.viewlift.views.fragments.AppCMSWatchlistFragment;
 
 import java.io.File;
@@ -129,6 +133,7 @@ public class AppCMSPresenter {
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
     private static final String REFRESH_TOKEN_SHARED_PREF_NAME = "refresh_token_pref";
+    private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
 
     private static final long MILLISECONDS_PER_SECOND = 1000L;
 
@@ -141,6 +146,7 @@ public class AppCMSPresenter {
     private final AppCMSRefreshIdentityCall appCMSRefreshIdentityCall;
     private final AppCMSResetPasswordCall appCMSResetPasswordCall;
     private final AppCMSFacebookLoginCall appCMSFacebookLoginCall;
+    private final AppCMSUserIdentityCall appCMSUserIdentityCall;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final Map<String, String> pageNameToActionMap;
     private final Map<String, AppCMSPageUI> actionToPageMap;
@@ -307,6 +313,7 @@ public class AppCMSPresenter {
                            AppCMSRefreshIdentityCall appCMSRefreshIdentityCall,
                            AppCMSResetPasswordCall appCMSResetPasswordCall,
                            AppCMSFacebookLoginCall appCMSFacebookLoginCall,
+                           AppCMSUserIdentityCall appCMSUserIdentityCall,
                            Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                            Map<String, String> pageNameToActionMap,
                            Map<String, AppCMSPageUI> actionToPageMap,
@@ -326,6 +333,7 @@ public class AppCMSPresenter {
         this.actionToPageMap = actionToPageMap;
         this.actionToPageAPIMap = actionToPageAPIMap;
         this.actionToActionTypeMap = actionToActionTypeMap;
+        this.appCMSUserIdentityCall = appCMSUserIdentityCall;
 
         this.appCMSWatchlistCall = appCMSWatchlistCall;
         this.appCMSHistoryCall = appCMSHistoryCall;
@@ -604,7 +612,7 @@ public class AppCMSPresenter {
 
     public void launchSearchPage() {
         if (currentActivity != null) {
-            com.viewlift.views.fragments.AppCMSSearchFragment appCMSSearchFragment = com.viewlift.views.fragments.AppCMSSearchFragment.newInstance(currentActivity,
+            AppCMSSearchFragment appCMSSearchFragment = AppCMSSearchFragment.newInstance(currentActivity,
                     Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
                     Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()),
                     Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor()));
@@ -891,6 +899,12 @@ public class AppCMSPresenter {
         }
     }
 
+    public void navigateToSettingsPage() {
+        AppCMSSettingsFragment appCMSSettingsFragment = AppCMSSettingsFragment.newInstance(currentActivity);
+        appCMSSettingsFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
+                currentActivity.getString(R.string.app_cms_settings_page_tag));
+    }
+
     public void resetPassword(final String email) {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_forgot_password_api_url,
@@ -906,6 +920,44 @@ public class AppCMSPresenter {
                             } else if (forgotPasswordResponse != null) {
                                 Log.e(TAG, "Failed to reset password for email: " + email);
                             }
+                        }
+                    });
+        }
+    }
+
+    public void getUserData(final Action1<UserIdentity> userIdentityAction) {
+        if (currentActivity != null) {
+            String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSMain.getSite());
+            appCMSUserIdentityCall.callGet(url,
+                    getAuthorizationToken(currentActivity),
+                    new Action1<UserIdentity>() {
+                        @Override
+                        public void call(UserIdentity userIdentity) {
+                            Observable.just(userIdentity).subscribe(userIdentityAction);
+                        }
+                    });
+        }
+    }
+
+    public void updateUserData(String username,
+                               String email,
+                               final Action1<UserIdentity> userIdentityAction) {
+        if (currentActivity != null) {
+            String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSMain.getSite());
+            UserIdentity userIdentity = new UserIdentity();
+            userIdentity.setName(username);
+            userIdentity.setEmail(email);
+            appCMSUserIdentityCall.callPost(url,
+                    getAuthorizationToken(currentActivity),
+                    userIdentity,
+                    new Action1<UserIdentity>() {
+                        @Override
+                        public void call(UserIdentity userIdentity) {
+                            Observable.just(userIdentity).subscribe(userIdentityAction);
                         }
                     });
         }
@@ -964,7 +1016,6 @@ public class AppCMSPresenter {
             Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
             Log.d(TAG, "Search query (optional): " + searchQuery);
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
-            AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             getPageIdContent(appCMSMain.getApiBaseUrl(),
                 pageIdToPageAPIUrlMap.get(pageId),
@@ -1118,6 +1169,11 @@ public class AppCMSPresenter {
         return sharedPrefs.getString(REFRESH_TOKEN_SHARED_PREF_NAME, null);
     }
 
+    public String getAuthorizationToken(Context context) {
+        SharedPreferences sharedPrefs = context.getSharedPreferences(AUTH_TOKEN_SHARED_PREF_NAME, 0);
+        return sharedPrefs.getString(AUTH_TOKEN_SHARED_PREF_NAME, null);
+    }
+
     public boolean isUserLoggedIn(Context context) {
         return getLoggedInUser(context) != null;
     }
@@ -1130,6 +1186,11 @@ public class AppCMSPresenter {
     public boolean setRefreshToken(Context context, String refreshToken) {
         SharedPreferences sharedPrefs = context.getSharedPreferences(REFRESH_TOKEN_SHARED_PREF_NAME, 0);
         return sharedPrefs.edit().putString(REFRESH_TOKEN_SHARED_PREF_NAME, refreshToken).commit();
+    }
+
+    public boolean setAuthorizationToken(Context context, String authToken) {
+        SharedPreferences sharedPrefs = context.getSharedPreferences(AUTH_TOKEN_SHARED_PREF_NAME, 0);
+        return sharedPrefs.edit().putString(AUTH_TOKEN_SHARED_PREF_NAME, authToken).commit();
     }
 
     public void logout() {
@@ -1523,6 +1584,7 @@ public class AppCMSPresenter {
                             showErrorDialog(Error.SIGNIN, currentActivity.getString(R.string.app_cms_error_email_password));
                         } else {
                             refreshToken = signInResponse.getRefreshToken();
+                            setAuthorizationToken(currentActivity, signInResponse.getAuthorizationToken());
                             refreshIdentity(refreshToken);
                         }
                     }

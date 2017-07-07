@@ -42,6 +42,9 @@
     <!-- AppCMS Facebook Login API -->
     <string name="app_cms_facebook_login_api_url">%1$s/identity/authentication/signin/facebook?site=%2$s</string>
 
+    <!-- AppCMS User Identity API -->
+    <string name="app_cms_user_identity_api_url">%1$s/identity/user?site=%2$s</string>
+
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>
@@ -61,7 +64,7 @@
     <string name="app_cms_page_castview_key">castView</string>
     <string name="app_cms_page_bg_key">bg</string>
     <string name="app_cms_page_logo_key">logo</string>
-    <string name="app_cms_page_info_key">info</string>
+    <string name="app_cms_page_info_key">info</string>d
     <string name="app_cms_page_play_key">play</string>
     <string name="app_cms_page_play_image_key">playImage</string>
     <string name="app_cms_page_tray_title_key">trayTitle</string>
@@ -116,6 +119,7 @@
     <string name="app_cms_video_page_tag">video</string>
     <string name="app_cms_main_page_tag">main</string>
     <string name="app_cms_reset_password_page_tag">reset_password</string>
+    <string name="app_cms_settings_page_tag">settings</string>
 
     <string name="app_cms_closing_page_name">closing_page</string>
 
@@ -183,4 +187,11 @@
     <string name="reset_password_text">RESET PASSWORD</string>
     <string name="app_cms_border_color_key">app_cms_border_color</string>
     <string name="app_cms_error_email_password">Email and password are not valid.</string>
+    <string name="app_cms_edit_settings_button_text">EDIT</string>
+    <string name="app_cms_account_name_title_text">Name:</string>
+    <string name="app_cms_account_title_text">ACCOUNT</string>
+    <string name="app_cms_account_email_title_text">Email:</string>
+    <string name="app_cms_settings_page_title_text">Settings</string>
+    <string name="app_cms_update_username_dialog_title">Update Username</string>
+    <string name="app_cms_update_email_dialog_title">Update Email</string>
 </resources>
