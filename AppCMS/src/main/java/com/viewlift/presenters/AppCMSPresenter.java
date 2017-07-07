@@ -1745,6 +1745,7 @@ public class AppCMSPresenter {
                                     getAppCMSAndroid(activity, main);
                                     break;
                                 case TV:
+                                    getAppCMSTV(activity , main , null);
                                     break;
                                 default:
                             }
@@ -2012,6 +2013,9 @@ public class AppCMSPresenter {
                                                 this.fullscreenEnabled,
                                                 this.navbarPresent,
                                                 this.searchQuery);
+
+                                        setNavItemToCurrentAction(currentActivity);
+
                                     } else {
                                         Bundle args = getPageActivityBundle(currentActivity,
                                                 this.appCMSPageUI,
@@ -2030,6 +2034,8 @@ public class AppCMSPresenter {
                                         updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
                                                 args);
                                         currentActivity.sendBroadcast(updatePageIntent);
+
+                                        setNavItemToCurrentAction(currentActivity);
                                     }
                                 } else {
                                     sendStopLoadingPageAction();
@@ -2053,6 +2059,7 @@ public class AppCMSPresenter {
                             false,
                             true,
                             searchQuery);
+                    setNavItemToCurrentAction(currentActivity);
                 } else {
                     Bundle args = getPageActivityBundle(currentActivity,
                             appCMSPageUI,
@@ -2071,6 +2078,7 @@ public class AppCMSPresenter {
                     updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
                             args);
                     currentActivity.sendBroadcast(updatePageIntent);
+                    setNavItemToCurrentAction(currentActivity);
                 }
 
                 loadingPage = false;
@@ -2121,6 +2129,10 @@ public class AppCMSPresenter {
             activity.startActivity(appCMSIntent);
         }catch (Exception e){
             e.printStackTrace();
+        }
+
+        finally {
+            sendStopLoadingPageAction();
         }
     }
 }

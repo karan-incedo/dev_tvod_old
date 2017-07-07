@@ -3,28 +3,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="snagfilms.com.air.appcms">
 
-    <uses-feature android:name="android.software.leanback"
+    <uses-feature
+        android:name="android.software.leanback"
         android:required="false" />
-
-    <uses-feature android:name="android.hardware.touchscreen"
+    <uses-feature
+        android:name="android.hardware.touchscreen"
         android:required="false" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:banner="@drawable/logo"
         android:label="@string/default_app_name"
-        android:banner="@drawable/logo">
-
+        android:icon="@drawable/app_icon_small_front">
         <activity
             android:name="com.viewlift.tv.AppCMSLeanbackActivity"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
-
         </activity>
+        <activity
+            android:name="com.viewlift.tv.views.activity.AppCmsTvErrorActivity"
+            android:label="@string/title_activity_app_cms_tv_error"></activity>
+
+        <activity android:name="com.viewlift.tv.views.activity.AppCmsHomeActivity"
+            android:label="AppCmsHomeActivity"/>
     </application>
 
 </manifest>
