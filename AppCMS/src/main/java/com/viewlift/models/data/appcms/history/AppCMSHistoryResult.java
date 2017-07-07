@@ -39,7 +39,7 @@ public class AppCMSHistoryResult {
         this.limit = limit;
     }
 
-    public AppCMSPageAPI convertToAppCMSPageAPI() {
+    public AppCMSPageAPI convertToAppCMSPageAPI(String Id) {
         AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
         Module module = new Module();
         List<ContentDatum> data = new ArrayList<>();
@@ -49,7 +49,7 @@ public class AppCMSHistoryResult {
         }
 
         module.setContentData(data);
-
+        appCMSPageAPI.setId(Id);
         List<Module> moduleList = new ArrayList<>();
         moduleList.add(module);
         appCMSPageAPI.setModules(moduleList);

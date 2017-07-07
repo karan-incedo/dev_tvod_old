@@ -92,6 +92,14 @@
     <string name="app_cms_page_signup_component_key">AC SignUp Component</string>
 
     <string name="app_cms_page_history_module_key">AC History 01</string>
+    <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>
+
+    <string name="app_cms_page_history_title">Watch History</string>
+    <string name="app_cms_page_watchlist_title">WatchList</string>
+
+    <string name="app_cms_page_watchlist_duration_key">duration</string>
+    <string name="app_cms_page_watchlist_description_key">description</string>
+    <string name="app_cms_page_watchlist_title_key">title</string>
 
     <string name="app_cms_page_video_image_key">videoImage</string>
     <string name="app_cms_page_video_play_button_key">playButton</string>

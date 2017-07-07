@@ -138,10 +138,7 @@ public class ViewCreator {
         for (ModuleList module : modulesList) {
             if (!modulesToIgnore.contains(module.getView())) {
                 Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
-                View childView = createModuleView(context,
-                        module,
-                        moduleAPI,
-                        pageView,
+                View childView = createModuleView(context, module, moduleAPI, pageView,
                         jsonValueKeyMap,
                         appCMSPresenter);
                 if (childView != null) {
@@ -179,10 +176,12 @@ public class ViewCreator {
                             module.getSettings(),
                             jsonValueKeyMap,
                             appCMSPresenter,
-                            false);
+                            false,
+                            module.getView());
                     if (componentViewResult.onInternalEvent != null) {
                         appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
                     }
+
                     View componentView = componentViewResult.componentView;
                     if (componentView != null) {
                         childrenContainer.addView(componentView);
@@ -194,7 +193,8 @@ public class ViewCreator {
                                 false,
                                 jsonValueKeyMap,
                                 componentViewResult.useMarginsAsPercentagesOverride,
-                                componentViewResult.useWidthOfScreen);
+                                componentViewResult.useWidthOfScreen,
+                                module.getView());
                     } else {
                         moduleView.setComponentHasView(i, false);
                     }
@@ -226,7 +226,8 @@ public class ViewCreator {
                                                                int defaultWidth,
                                                                int defaultHeight,
                                                                boolean useMarginsAsPercentages,
-                                                               boolean gridElement) {
+                                                               boolean gridElement,
+                                                               String viewType) {
         CollectionGridItemView collectionGridItemView = new CollectionGridItemView(context,
                 parentLayout,
                 useParentLayout,
@@ -234,6 +235,7 @@ public class ViewCreator {
                 defaultWidth,
                 defaultHeight);
         List<OnInternalEvent> onInternalEvents = new ArrayList<>();
+
         for (int i = 0; i < component.getComponents().size(); i++) {
             Component childComponent = component.getComponents().get(i);
             createComponentView(context,
@@ -244,7 +246,9 @@ public class ViewCreator {
                     settings,
                     jsonValueKeyMap,
                     appCMSPresenter,
-                    gridElement);
+                    gridElement,
+                    viewType);
+
             if (componentViewResult.onInternalEvent != null) {
                 onInternalEvents.add(componentViewResult.onInternalEvent);
             }
@@ -265,7 +269,8 @@ public class ViewCreator {
                         false,
                         jsonValueKeyMap,
                         useMarginsAsPercentages,
-                        componentViewResult.useWidthOfScreen);
+                        componentViewResult.useWidthOfScreen,
+                        viewType);
             } else {
                 collectionGridItemView.setComponentHasView(i, false);
             }
@@ -289,22 +294,27 @@ public class ViewCreator {
                                     final Settings settings,
                                     Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                     final AppCMSPresenter appCMSPresenter,
-                                    boolean gridElement) {
+                                    boolean gridElement,
+                                    String viewType) {
         componentViewResult.componentView = null;
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
+
         if (moduleAPI == null) {
             return;
         }
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
+
         if (moduleAPI == null) {
             return;
         }
+
         if (componentType == null) {
             componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
 
         AppCMSUIKeyType componentKey = jsonValueKeyMap.get(component.getKey());
+
         if (componentKey == null) {
             componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
@@ -312,19 +322,7 @@ public class ViewCreator {
         switch (componentType) {
             case PAGE_TABLE_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
-//<<<<<<< HEAD
-//                if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {
-//                    ((RecyclerView) componentViewResult.componentView)
-//                            .setLayoutManager(new LinearLayoutManager(context,
-//                                    LinearLayoutManager.HORIZONTAL,
-//                                    false));
-//                } else {
-//                    ((RecyclerView) componentViewResult.componentView)
-//                            .setLayoutManager(new LinearLayoutManager(context,
-//                                    LinearLayoutManager.VERTICAL,
-//                                    false));
-//                }
-//=======
+
                 ((RecyclerView) componentViewResult.componentView)
                         .setLayoutManager(new LinearLayoutManager(context,
                                 LinearLayoutManager.VERTICAL,
@@ -344,7 +342,7 @@ public class ViewCreator {
                         .setLayoutManager(new LinearLayoutManager(context,
                                 LinearLayoutManager.HORIZONTAL,
                                 false));
-//>>>>>>> ab505b231ad8514466916772d35463c1cb0608e4
+
                 AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
                         this,
                         appCMSPresenter,
@@ -355,7 +353,8 @@ public class ViewCreator {
                         jsonValueKeyMap,
                         moduleAPI,
                         ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        viewType);
                 ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
 
                 if (pageView != null) {
@@ -413,12 +412,15 @@ public class ViewCreator {
                 componentViewResult.useMarginsAsPercentagesOverride = false;
                 break;
 
+
+//             FIXME: 7/7/17 Will be used for dictating the button order - download/add to watchlist.
             case PAGE_BUTTON_KEY:
                 if (componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY) {
                     componentViewResult.componentView = new Button(context);
                 } else {
                     componentViewResult.componentView = new ImageButton(context);
                 }
+
                 if (!gridElement) {
                     if (!TextUtils.isEmpty(component.getText()) && componentKey != AppCMSUIKeyType.PAGE_PLAY_KEY) {
                         ((TextView) componentViewResult.componentView).setText(component.getText());
@@ -429,14 +431,17 @@ public class ViewCreator {
                         ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
                     }
                 }
+
                 if (!TextUtils.isEmpty(component.getTextColor())) {
                     ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context, component.getTextColor())));
                 }
+
                 if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                     componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
                 } else {
                     applyBorderToComponent(context, componentViewResult.componentView, component);
                 }
+
                 int tintColor = Color.parseColor(getColor(context,
                         appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
 
@@ -623,7 +628,12 @@ public class ViewCreator {
                                     ((TextView) componentViewResult.componentView).setMaxLines(component.getNumberOfLines());
                                 }
                                 ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
                             }
+
                             break;
 
                         case PAGE_API_DESCRIPTION:
@@ -643,6 +653,10 @@ public class ViewCreator {
                             } else if (moduleAPI.getSettings() != null && !moduleAPI.getSettings().getHideTitle() &&
                                     !TextUtils.isEmpty(moduleAPI.getTitle())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle().toUpperCase());
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
                             }
                             break;
 
@@ -936,10 +950,10 @@ public class ViewCreator {
                 data.getGist().getPrimaryCategory() != null ?
                         data.getGist().getPrimaryCategory().getTitle() :
                         null;
-        boolean appendFirstSep = runtime > 0 &&
-                (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
-        boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year)) &&
-                !TextUtils.isEmpty(primaryCategory);
+        boolean appendFirstSep = runtime > 0
+                && (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
+        boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year))
+                && !TextUtils.isEmpty(primaryCategory);
         StringBuffer infoText = new StringBuffer();
         if (runtime > 0) {
             infoText.append(runtime + context.getString(R.string.mins_abbreviation));
@@ -971,6 +985,12 @@ public class ViewCreator {
                                             Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
         if (appCMSPageAPI != null && appCMSPageAPI.getModules() != null) {
             if (AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
+                if (appCMSPageAPI.getModules() != null && appCMSPageAPI.getModules().size() > 0) {
+                    return appCMSPageAPI.getModules().get(0);
+                }
+            }
+
+            if (AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
                 if (appCMSPageAPI.getModules() != null && appCMSPageAPI.getModules().size() > 0) {
                     return appCMSPageAPI.getModules().get(0);
                 }

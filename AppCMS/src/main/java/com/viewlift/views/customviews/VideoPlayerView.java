@@ -50,7 +50,7 @@ import snagfilms.com.air.appcms.R;
 public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListener {
     private static final String TAG = "VideoPlayerFragment";
 
-    public class PlayerState {
+    public static class PlayerState {
         boolean playWhenReady;
         int playbackState;
 
@@ -168,10 +168,12 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
         mediaDataSourceFactory = buildDataSourceFactory(true);
+
         TrackSelection.Factory videoTrackSelectionFactory =
                 new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
         TrackSelector trackSelector =
                 new DefaultTrackSelector(videoTrackSelectionFactory);
+
         player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
         player.addListener(this);
         playerView.setPlayer(player);
@@ -186,6 +188,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         addView(playerView);
     }
 
+    @SuppressWarnings("null")
     private MediaSource buildMediaSource(Uri uri, String overrideExtension) {
         int type = TextUtils.isEmpty(overrideExtension) ? Util.inferContentType(uri) :
                 Util.inferContentType("." + overrideExtension);

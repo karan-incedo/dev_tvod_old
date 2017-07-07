@@ -170,8 +170,21 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_MOBILETEXTFIELD_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_authentication_module),
                 AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_description_key),
+                AppCMSUIKeyType.PAGE_API_DESCRIPTION);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_module_key),
                 AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_module_key),
+                AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_duration_key),
+                AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_description_key),
+                AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_title_key),
+                AppCMSUIKeyType.PAGE_WATCHLIST_TITLE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_login_component_key),
                 AppCMSUIKeyType.PAGE_LOGIN_COMPONENT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_signup_component_key),

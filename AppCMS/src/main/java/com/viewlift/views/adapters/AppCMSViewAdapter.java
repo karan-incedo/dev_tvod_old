@@ -44,17 +44,21 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
         public static class Builder {
             private ListWithAdapter listWithAdapter;
+
             public Builder() {
                 listWithAdapter = new ListWithAdapter();
             }
+
             public Builder listview(RecyclerView listView) {
                 listWithAdapter.listView = listView;
                 return this;
             }
+
             public Builder adapter(RecyclerView.Adapter adapter) {
                 listWithAdapter.adapter = adapter;
                 return this;
             }
+
             public ListWithAdapter build() {
                 return listWithAdapter;
             }
@@ -75,6 +79,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     protected int defaultHeight;
     protected boolean useMarginsAsPercentages;
     protected String defaultAction;
+    protected String viewType;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -86,7 +91,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                              Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                              Module moduleAPI,
                              int defaultWidth,
-                             int defaultHeight) {
+                             int defaultHeight,
+                             String viewType) {
         this.viewCreator = viewCreator;
         this.appCMSPresenter = appCMSPresenter;
         this.parentLayout = parentLayout;
@@ -103,6 +109,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.defaultHeight = defaultHeight;
         this.useMarginsAsPercentages = true;
         this.defaultAction = getDefaultAction(context);
+
+        this.viewType = viewType;
     }
 
     @Override
@@ -118,7 +126,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 defaultWidth,
                 defaultHeight,
                 useMarginsAsPercentages,
-                true);
+                true,
+                this.viewType);
         return new ViewHolder(view);
     }
 
@@ -175,18 +184,14 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     extraData[1] = hlsUrl;
                     extraData[2] = data.getGist().getId();
                     Log.d(TAG, "Launching " + permalink + ": " + action);
+
                     if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                             action,
                             title,
                             extraData,
                             false)) {
-                        Log.e(TAG, "Could not launch action: " +
-                                " permalink: " +
-                                permalink +
-                                " action: " +
-                                action +
-                                " hlsUrl: " +
-                                hlsUrl);
+                        Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
+                                + " action: " + action + " hlsUrl: " + hlsUrl);
                     }
                 }
 
@@ -198,12 +203,12 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     String title = data.getGist().getTitle();
                     if (!appCMSPresenter.launchVideoPlayer(filmId, permaLink, title)) {
                         Log.e(TAG, "Could not launch play action: " +
-                            " filmId: " +
-                            filmId +
-                            " permaLink: " +
-                            permaLink +
-                            " title: " +
-                            title);
+                                " filmId: " +
+                                filmId +
+                                " permaLink: " +
+                                permaLink +
+                                " title: " +
+                                title);
                     }
                 }
             };

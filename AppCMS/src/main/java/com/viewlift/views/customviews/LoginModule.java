@@ -197,7 +197,8 @@ public class LoginModule extends ModuleView {
                         module.getSettings(),
                         jsonValueKeyMap,
                         appCMSPresenter,
-                        false);
+                        false,
+                        "");
                 View componentView = componentViewResult.componentView;
                 if (componentView != null) {
                     subComponentChildContainer.addView(componentView);
@@ -209,7 +210,8 @@ public class LoginModule extends ModuleView {
                             false,
                             jsonValueKeyMap,
                             componentViewResult.useMarginsAsPercentagesOverride,
-                            componentViewResult.useWidthOfScreen);
+                            componentViewResult.useWidthOfScreen,
+                            "");
                     AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
                     if (componentType == null) {
                         componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;

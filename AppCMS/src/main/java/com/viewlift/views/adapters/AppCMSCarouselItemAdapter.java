@@ -65,7 +65,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                 jsonValueKeyMap,
                 moduleAPI,
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                "");
         this.listView = listView;
         this.loop = loop;
         this.updatedIndex = getDefaultIndex();
@@ -207,7 +208,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                 defaultWidth,
                 defaultHeight,
                 useMarginsAsPercentages,
-                false);
+                false,
+                this.viewType);
         return new ViewHolder(view);
     }
 

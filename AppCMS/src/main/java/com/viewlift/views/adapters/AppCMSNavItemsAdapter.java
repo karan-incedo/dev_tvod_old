@@ -107,12 +107,12 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             switch (user.getTitle()) {
                                 case "Watchlist":
                                     appCMSPresenter.navigateToWatchlistPage(user.getPageId(),
-                                            user.getTitle(), user.getUrl(), true);
+                                            user.getTitle(), user.getUrl(), false);
                                     break;
 
                                 case "History":
                                     appCMSPresenter.navigateToHistoryPage(user.getPageId(),
-                                            user.getTitle(), user.getUrl(), true);
+                                            user.getTitle(), user.getUrl(), false);
                                     break;
 
                                 case "Settings":
