@@ -49,7 +49,7 @@
     <string name="app_cms_update_watch_history_api_url">%1$s/content/video/history</string>
 
     <!-- AppCMS User Video Status API -->
-    <string name="app_cms_video_status_api_url">%1$2/user/info/video/%2$s?site=%3$s</string>
+    <string name="app_cms_video_status_api_url">%1$s/user/info/video/%2$s?site=%3$s</string>
 
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
