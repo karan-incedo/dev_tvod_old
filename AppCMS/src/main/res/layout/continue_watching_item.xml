@@ -5,6 +5,7 @@
     android:background="@android:color/transparent">
 
     <View
+        android:id="@+id/app_cms_continue_watching_separator_view"
         android:layout_width="match_parent"
         android:layout_height="@dimen/app_cms_separator_view_height"/>
 
@@ -29,13 +30,6 @@
                 android:layout_gravity="center"
                 android:scaleType="fitCenter"
                 android:background="@android:color/transparent"/>
-            <ProgressBar
-                android:id="@+id/app_cms_continue_watching_progressbar"
-                android:layout_width="@dimen/app_cms_continue_watching_tray_image_width"
-                android:layout_height="@dimen/app_cms_continue_watching_progressbar_height"
-                android:layout_gravity="bottom"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:visibility="invisible"/>
         </FrameLayout>
 
         <LinearLayout
