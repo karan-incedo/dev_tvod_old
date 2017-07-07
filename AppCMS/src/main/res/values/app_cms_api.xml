@@ -57,6 +57,7 @@
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>
         <item>AC Footer 01</item>
+        <item>AC ContinueWatching 01</item>
     </string-array>
     <string name="app_cms_android_navigation_key">navigation</string>
     <string name="app_cms_page_button_key">button</string>
@@ -102,6 +103,7 @@
 
     <string name="app_cms_page_history_module_key">AC History 01</string>
     <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>
+    <string name="app_cms_page_continue_watching_module_key">AC ContinueWatching 01</string>
 
     <string name="app_cms_page_history_title">Watch History</string>
     <string name="app_cms_page_watchlist_title">WatchList</string>
