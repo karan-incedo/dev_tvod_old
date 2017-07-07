@@ -83,12 +83,14 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
         } else {
             indexOffset += numPrimaryItems;
 
-            if (0 <= (i - indexOffset) &&
-                    navigation.getUser() != null &&
-                    (i - indexOffset) < navigation.getUser().size() &&
-                    navigation.getUser().get(i - indexOffset).getAccessLevels() != null &&
-                    navigation.getUser().get(i - indexOffset).getAccessLevels().getLoggedOut()) {
-                indexOffset--;
+            if (userLoggedIn && navigation.getUser() != null) {
+                for (int j = 0; j <= (i - indexOffset) && j < navigation.getUser().size(); j++) {
+                    if (navigation.getUser().get(j).getAccessLevels() != null) {
+                        if (userLoggedIn && !navigation.getUser().get(j).getAccessLevels().getLoggedIn()) {
+                            indexOffset--;
+                        }
+                    }
+                }
             }
 
             //user nav
@@ -128,20 +130,18 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 }
             }
 
-            indexOffset += numUserItems;
+            indexOffset = numPrimaryItems + numUserItems;
 
-            if (0 <= (i - indexOffset) &&
-                    (i - indexOffset) < navigation.getFooter().size() &&
-                    userLoggedIn &&
-                    navigation.getFooter().get(i - indexOffset).getAccessLevels() != null &&
-                    navigation.getFooter().get(i - indexOffset).getAccessLevels().getLoggedOut()) {
-                indexOffset--;
-            } else if (0 <= (i - indexOffset) &&
-                    (i - indexOffset) < navigation.getFooter().size() &&
-                    !userLoggedIn &&
-                    navigation.getFooter().get(i - indexOffset).getAccessLevels() != null &&
-                    navigation.getFooter().get(i - indexOffset).getAccessLevels().getLoggedIn()) {
-                indexOffset--;
+            if (userLoggedIn && navigation.getFooter() != null) {
+                for (int j = 0; j <= (i - indexOffset) && j < navigation.getFooter().size(); j++) {
+                    if (navigation.getFooter().get(j).getAccessLevels() != null) {
+                        if (userLoggedIn && !navigation.getFooter().get(j).getAccessLevels().getLoggedIn()) {
+                            indexOffset--;
+                        } else if (!userLoggedIn && !navigation.getFooter().get(j).getAccessLevels().getLoggedOut()) {
+                            indexOffset--;
+                        }
+                    }
+                }
             }
 
             //footer
@@ -173,19 +173,17 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 }
             }
 
-            indexOffset += numFooterItems;
+            indexOffset = numPrimaryItems + numUserItems + numFooterItems;
 
-            if (0 <= (i - indexOffset)) {
-                if (userLoggedIn) {
-                    viewHolder.navItemLabel.setText(R.string.app_cms_sign_out_label);
-                    viewHolder.navItemLabel.setTextColor(textColor);
-                    viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            appCMSPresenter.logout();
-                        }
-                    });
-                }
+            if (0 <= (i - indexOffset) && userLoggedIn) {
+                viewHolder.navItemLabel.setText(R.string.app_cms_sign_out_label);
+                viewHolder.navItemLabel.setTextColor(textColor);
+                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        appCMSPresenter.logout();
+                    }
+                });
             }
         }
     }
@@ -238,6 +236,10 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     }
                 }
             }
+        }
+
+        if (userLoggedIn) {
+            totalItemCount++;
         }
 
         return totalItemCount;
