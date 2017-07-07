@@ -74,7 +74,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         final ContentDatum contentDatum = adapterData.get(position);
 
         Picasso.with(holder.itemView.getContext())
-                .load(getHlsUrl(contentDatum))
+                .load(contentDatum.getGist().getVideoImageUrl())
                 .into(holder.appCMSContinueWatchingVideoImage);
 
         holder.appCMSContinueWatchingVideoImage.setOnClickListener(new View.OnClickListener() {
@@ -214,22 +214,34 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                     Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getStyles().getTextColor()));
                         }
                     }
-                    viewHolder.appCMSContinueWatchingTitle.setTextColor(textColor);
-                    viewHolder.appCMSContinueWatchingDescription.setTextColor(textColor);
-                    if (!TextUtils.isEmpty(component.getBackgroundColor())) {
-                        viewHolder.appCMSContinueWatchingTitle.setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getBackgroundColor())));
-                        viewHolder.appCMSContinueWatchingDescription.setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getBackgroundColor())));
+                    switch (componentKey) {
+                        case PAGE_API_TITLE:
+                            viewHolder.appCMSContinueWatchingTitle.setTextColor(textColor);
+                            if (!TextUtils.isEmpty(component.getBackgroundColor())) {
+                                viewHolder.appCMSContinueWatchingTitle.setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getBackgroundColor())));
+                            }
+                            if (!TextUtils.isEmpty(component.getFontFamily())) {
+                                setTypeFace(viewHolder.itemView.getContext(),
+                                        jsonValueKeyMap,
+                                        component,
+                                        viewHolder.appCMSContinueWatchingTitle);
+                            }
+                            break;
+                        case PAGE_API_DESCRIPTION:
+                            viewHolder.appCMSContinueWatchingDescription.setTextColor(textColor);
+                            if (!TextUtils.isEmpty(component.getBackgroundColor())) {
+                                viewHolder.appCMSContinueWatchingDescription.setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getBackgroundColor())));
+                            }
+                            if (!TextUtils.isEmpty(component.getFontFamily())) {
+                                setTypeFace(viewHolder.itemView.getContext(),
+                                        jsonValueKeyMap,
+                                        component,
+                                        viewHolder.appCMSContinueWatchingDescription);
+                            }
+                            break;
+                        default:
                     }
-                    if (!TextUtils.isEmpty(component.getFontFamily())) {
-                        setTypeFace(viewHolder.itemView.getContext(),
-                                jsonValueKeyMap,
-                                component,
-                                viewHolder.appCMSContinueWatchingTitle);
-                        setTypeFace(viewHolder.itemView.getContext(),
-                                jsonValueKeyMap,
-                                component,
-                                viewHolder.appCMSContinueWatchingDescription);
-                    }
+
                     break;
                 default:
             }
