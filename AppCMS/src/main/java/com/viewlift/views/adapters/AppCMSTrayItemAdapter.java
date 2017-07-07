@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -171,11 +172,15 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }
 
+            int tintColor = Color.parseColor(getColor(viewHolder.itemView.getContext(),
+                    appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
+
             switch (componentType) {
                 case PAGE_BUTTON_KEY:
                     switch (componentKey) {
                         case PAGE_PLAY_KEY:
                         case PAGE_PLAY_IMAGE_KEY:
+                            viewHolder.appCMSContinueWatchingPlayButton.getBackground().setTint(tintColor);
                             break;
                         default:
                             if (!TextUtils.isEmpty(component.getBackgroundColor())) {
@@ -193,8 +198,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         viewHolder.appCMSContinueWatchingSelectToDeleteButton,
                                         component);
                             }
-                            int tintColor = Color.parseColor(getColor(viewHolder.itemView.getContext(),
-                                    appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
                             viewHolder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
                             viewHolder.appCMSContinueWatchingSelectToDeleteButton.getBackground().setTint(tintColor);
                             viewHolder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
@@ -242,6 +245,19 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                         default:
                     }
 
+                    break;
+                case PAGE_SEPARATOR_VIEW_KEY:
+                case PAGE_SEGMENTED_VIEW_KEY:
+                    if (!TextUtils.isEmpty(component.getBackgroundColor())) {
+                        viewHolder.appCMSContinueWatchingProgressbar
+                                .setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getBackgroundColor())));
+                    }
+                    break;
+                case PAGE_PROGRESS_VIEW_KEY:
+                    if (!TextUtils.isEmpty(component.getProgressColor())) {
+                        int color = Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getProgressColor()));
+                        viewHolder.appCMSContinueWatchingProgressbar.setProgressDrawable(new ColorDrawable(color));
+                    }
                     break;
                 default:
             }
