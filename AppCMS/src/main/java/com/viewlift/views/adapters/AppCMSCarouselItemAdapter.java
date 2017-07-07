@@ -150,8 +150,10 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                                 int childHeight = gridItemChildView.getHeight();
                                 if (childLocation[0] <= eventX && eventX <= childLocation[0] + childWidth) {
                                     if (childLocation[1] <= eventY && eventY <= childLocation[1] + childHeight) {
-                                        onClickHandler.play(collectionGridItemView.matchComponentToView(gridItemChildView),
-                                                adapterData.get(i % adapterData.size()));
+                                        if (adapterData.size() != 0) {
+                                            onClickHandler.play(collectionGridItemView.matchComponentToView(gridItemChildView),
+                                                    adapterData.get(i % adapterData.size()));
+                                        }
                                         return true;
                                     }
                                 }
@@ -312,7 +314,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
     }
 
     private int calculateUpdateIndex(int index) {
-        if (adapterData.size() != 0 && Math.abs(updatedIndex - index) > adapterData.size()) {
+        if (adapterData.size() > 0 && Math.abs(updatedIndex - index) > adapterData.size()) {
             int visibleIndexInItems = updatedIndex % adapterData.size();
             return updatedIndex + (index - visibleIndexInItems);
         }
