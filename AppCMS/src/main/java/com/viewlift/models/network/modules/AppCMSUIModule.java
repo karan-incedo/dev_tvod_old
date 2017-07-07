@@ -27,6 +27,8 @@ import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordRest;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignInRest;
+import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
+import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryRest;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityRest;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
@@ -364,6 +366,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSUpdateWatchHistoryRest providesAppCMSUpdateWatchHistoryRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSUpdateWatchHistoryRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -423,8 +431,15 @@ public class AppCMSUIModule {
     }
 
     @Provides
+    @Singleton
     public AppCMSUserIdentityCall providesAppCMSUserIdentityCall(AppCMSUserIdentityRest appCMSUserIdentityRest) {
         return new AppCMSUserIdentityCall(appCMSUserIdentityRest);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSUpdateWatchHistoryCall providesAppCMSUpdateWatchHistoryCall(AppCMSUpdateWatchHistoryRest appCMSUpdateWatchHistoryRest) {
+        return new AppCMSUpdateWatchHistoryCall(appCMSUpdateWatchHistoryRest);
     }
 
     @Provides
