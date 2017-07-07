@@ -5,6 +5,7 @@ import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import java.util.Map;
 
 import retrofit2.Call;
+import retrofit2.http.GET;
 import retrofit2.http.HeaderMap;
 import retrofit2.http.Url;
 
@@ -13,5 +14,6 @@ import retrofit2.http.Url;
  */
 
 public interface AppCMSUserVideoStatusRest {
+    @GET
     Call<UserVideoStatusResponse> get(@Url String url, @HeaderMap Map<String, String> authHeaders);
 }
