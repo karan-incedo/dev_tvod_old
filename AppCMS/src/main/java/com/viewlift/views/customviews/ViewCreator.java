@@ -767,6 +767,8 @@ public class ViewCreator {
                             moduleAPI.getContentData().get(0).getGist() != null &&
                             moduleAPI.getContentData().get(0).getGist().getWatchedPercentage() != null) {
                         ((ProgressBar) componentViewResult.componentView).setProgress(moduleAPI.getContentData().get(0).getGist().getWatchedPercentage());
+                    } else {
+                        ((ProgressBar) componentViewResult.componentView).setProgress(0);
                     }
                 }
                 break;
