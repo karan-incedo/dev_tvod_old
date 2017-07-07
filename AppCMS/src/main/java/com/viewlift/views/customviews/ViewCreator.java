@@ -330,7 +330,6 @@ public class ViewCreator {
                 AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
                         moduleAPI.getContentData(),
                         component.getComponents(),
-                        true,
                         appCMSPresenter,
                         jsonValueKeyMap);
                 ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
@@ -786,6 +785,15 @@ public class ViewCreator {
                 if (!TextUtils.isEmpty(component.getProgressColor())) {
                     int color = Color.parseColor(getColor(context, component.getProgressColor()));
                     ((ProgressBar) componentViewResult.componentView).setProgressDrawable(new ColorDrawable(color));
+                }
+                if (appCMSPresenter.isUserLoggedIn(context)) {
+                    if (moduleAPI.getContentData() != null &&
+                            moduleAPI.getContentData().size() > 0 &&
+                            moduleAPI.getContentData().get(0) != null &&
+                            moduleAPI.getContentData().get(0).getGist() != null &&
+                            moduleAPI.getContentData().get(0).getGist().getWatchedPercentage() != null) {
+                        ((ProgressBar) componentViewResult.componentView).setProgress(moduleAPI.getContentData().get(0).getGist().getWatchedPercentage());
+                    }
                 }
                 break;
 

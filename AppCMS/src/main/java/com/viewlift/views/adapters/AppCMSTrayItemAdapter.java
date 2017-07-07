@@ -41,7 +41,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     protected List<ContentDatum> adapterData;
     protected List<Component> components;
-    protected boolean continueWatching;
     protected AppCMSPresenter appCMSPresenter;
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     protected String defaultAction;
@@ -49,12 +48,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     public AppCMSTrayItemAdapter(Context context,
                                  List<ContentDatum> adapterData,
                                  List<Component> components,
-                                 boolean continueWatching,
                                  AppCMSPresenter appCMSPresenter,
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
         this.adapterData = adapterData;
         this.components = components;
-        this.continueWatching = continueWatching;
         this.appCMSPresenter = appCMSPresenter;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.defaultAction = getDefaultAction(context);
@@ -85,12 +82,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             }
         });
 
-        if (continueWatching) {
-            holder.appCMSContinueWatchingProgressbar.setVisibility(View.VISIBLE);
-        } else {
-            holder.appCMSContinueWatchingProgressbar.setVisibility(View.GONE);
-        }
-
         holder.appCMSContinueWatchingPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,10 +108,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         });
 
         holder.appCMSContinueWatchingDuration.setText(String.valueOf(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS));
-
-        if (contentDatum.getGist().getWatchedPercentage() != null) {
-            holder.appCMSContinueWatchingProgressbar.setProgress(contentDatum.getGist().getWatchedPercentage());
-        }
     }
 
     @Override
@@ -135,8 +122,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         ImageButton appCMSContinueWatchingVideoImage;
         @BindView(R.id.app_cms_continue_watching_play_button)
         ImageButton appCMSContinueWatchingPlayButton;
-        @BindView(R.id.app_cms_continue_watching_progressbar)
-        ProgressBar appCMSContinueWatchingProgressbar;
         @BindView(R.id.app_cms_continue_watching_title)
         TextView appCMSContinueWatchingTitle;
         @BindView(R.id.app_cms_continue_watching_description)
@@ -147,6 +132,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         ImageButton appCMSContinueWatchingDeleteButton;
         @BindView(R.id.app_cms_continue_watching_duration)
         TextView appCMSContinueWatchingDuration;
+        @BindView(R.id.app_cms_continue_watching_separator_view)
+        View appCMSContinueWatchingSeperatorView;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -253,14 +240,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 case PAGE_SEPARATOR_VIEW_KEY:
                 case PAGE_SEGMENTED_VIEW_KEY:
                     if (!TextUtils.isEmpty(component.getBackgroundColor())) {
-                        viewHolder.appCMSContinueWatchingProgressbar
+                        viewHolder.appCMSContinueWatchingSeperatorView
                                 .setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getBackgroundColor())));
-                    }
-                    break;
-                case PAGE_PROGRESS_VIEW_KEY:
-                    if (!TextUtils.isEmpty(component.getProgressColor())) {
-                        int color = Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getProgressColor()));
-                        viewHolder.appCMSContinueWatchingProgressbar.setProgressDrawable(new ColorDrawable(color));
                     }
                     break;
                 default:
