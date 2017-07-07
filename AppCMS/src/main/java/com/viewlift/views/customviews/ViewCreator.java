@@ -796,6 +796,8 @@ public class ViewCreator {
                     } else {
                         ((ProgressBar) componentViewResult.componentView).setProgress(0);
                     }
+                } else {
+                    componentViewResult.componentView.setVisibility(View.GONE);
                 }
                 break;
 
