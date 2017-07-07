@@ -37,25 +37,22 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.VideoAssets;
+import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
-import com.viewlift.models.data.appcms.ui.page.Layout;
-import com.viewlift.models.data.appcms.ui.page.Settings;
+import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
+import com.viewlift.models.data.appcms.ui.page.Layout;
+import com.viewlift.models.data.appcms.ui.page.ModuleList;
+import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
+import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
+import com.viewlift.views.adapters.AppCMSViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
-import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
-import com.viewlift.models.data.appcms.ui.page.ModuleList;
-import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
-import com.viewlift.views.adapters.AppCMSViewAdapter;
-
-import org.w3c.dom.Text;
-
-import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
 
 /**
@@ -313,20 +310,41 @@ public class ViewCreator {
         }
 
         switch (componentType) {
-            case PAGE_COLLECTIONGRID_KEY:
             case PAGE_TABLE_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
-                if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {
-                    ((RecyclerView) componentViewResult.componentView)
-                            .setLayoutManager(new LinearLayoutManager(context,
-                                    LinearLayoutManager.HORIZONTAL,
-                                    false));
-                } else {
-                    ((RecyclerView) componentViewResult.componentView)
-                            .setLayoutManager(new LinearLayoutManager(context,
-                                    LinearLayoutManager.VERTICAL,
-                                    false));
-                }
+//<<<<<<< HEAD
+//                if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {
+//                    ((RecyclerView) componentViewResult.componentView)
+//                            .setLayoutManager(new LinearLayoutManager(context,
+//                                    LinearLayoutManager.HORIZONTAL,
+//                                    false));
+//                } else {
+//                    ((RecyclerView) componentViewResult.componentView)
+//                            .setLayoutManager(new LinearLayoutManager(context,
+//                                    LinearLayoutManager.VERTICAL,
+//                                    false));
+//                }
+//=======
+                ((RecyclerView) componentViewResult.componentView)
+                        .setLayoutManager(new LinearLayoutManager(context,
+                                LinearLayoutManager.VERTICAL,
+                                false));
+                AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
+                        moduleAPI.getContentData(),
+                        component.getComponents(),
+                        true,
+                        appCMSPresenter,
+                        jsonValueKeyMap);
+                ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
+                break;
+
+            case PAGE_COLLECTIONGRID_KEY:
+                componentViewResult.componentView = new RecyclerView(context);
+                ((RecyclerView) componentViewResult.componentView)
+                        .setLayoutManager(new LinearLayoutManager(context,
+                                LinearLayoutManager.HORIZONTAL,
+                                false));
+//>>>>>>> ab505b231ad8514466916772d35463c1cb0608e4
                 AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
                         this,
                         appCMSPresenter,
@@ -339,6 +357,7 @@ public class ViewCreator {
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
                 ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
+
                 if (pageView != null) {
                     pageView.addListWithAdapter(new AppCMSViewAdapter.ListWithAdapter.Builder()
                             .adapter(appCMSViewAdapter)
@@ -395,10 +414,6 @@ public class ViewCreator {
                 break;
 
             case PAGE_BUTTON_KEY:
-                // IGNORE FOR NOW
-                if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_ADD_TO_WATCHLIST_KEY) {
-                    return;
-                }
                 if (componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY) {
                     componentViewResult.componentView = new Button(context);
                 } else {
