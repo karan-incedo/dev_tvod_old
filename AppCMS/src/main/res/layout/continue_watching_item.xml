@@ -27,12 +27,14 @@
                 android:layout_height="@dimen/app_cms_continue_watching_play_button_height"
                 android:src="@drawable/play_icon"
                 android:layout_gravity="center"
+                android:scaleType="fitCenter"
                 android:background="@android:color/transparent"/>
             <ProgressBar
                 android:id="@+id/app_cms_continue_watching_progressbar"
                 android:layout_width="@dimen/app_cms_continue_watching_tray_image_width"
                 android:layout_height="@dimen/app_cms_continue_watching_progressbar_height"
                 android:layout_gravity="bottom"
+                style="?android:attr/progressBarStyleHorizontal"
                 android:visibility="invisible"/>
         </FrameLayout>
 
@@ -43,11 +45,14 @@
             <TextView
                 android:id="@+id/app_cms_continue_watching_title"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:lines="1"
+                android:ellipsize="end"/>
             <TextView
                 android:id="@+id/app_cms_continue_watching_description"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:ellipsize="end"/>
         </LinearLayout>
 
         <LinearLayout
