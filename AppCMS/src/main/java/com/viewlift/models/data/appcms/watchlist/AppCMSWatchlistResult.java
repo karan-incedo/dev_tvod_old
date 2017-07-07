@@ -57,8 +57,10 @@ public class AppCMSWatchlistResult {
         Module module = new Module();
         List<ContentDatum> data = new ArrayList<>();
 
-        for (Record records : getRecords()) {
-            data.add(records.convertToContentDatum());
+        if (getRecords() != null) {
+            for (Record records : getRecords()) {
+                data.add(records.convertToContentDatum());
+            }
         }
 
         module.setContentData(data);

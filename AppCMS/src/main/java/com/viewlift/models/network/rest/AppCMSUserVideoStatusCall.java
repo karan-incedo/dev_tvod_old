@@ -1,5 +1,7 @@
 package com.viewlift.models.network.rest;
 
+import android.support.annotation.NonNull;
+
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 
 import java.util.HashMap;
@@ -27,18 +29,18 @@ public class AppCMSUserVideoStatusCall {
         this.authHeaders = new HashMap<>();
     }
 
-    public void call(String url,
-                     String authToken,
+    public void call(String url, String authToken,
                      final Action1<UserVideoStatusResponse> readyAction1) {
         authHeaders.put("Authorization", authToken);
         appCMSUserVideoStatusRest.get(url, authHeaders).enqueue(new Callback<UserVideoStatusResponse>() {
             @Override
-            public void onResponse(Call<UserVideoStatusResponse> call, Response<UserVideoStatusResponse> response) {
+            public void onResponse(@NonNull Call<UserVideoStatusResponse> call,
+                                   @NonNull Response<UserVideoStatusResponse> response) {
                 Observable.just(response.body()).subscribe(readyAction1);
             }
 
             @Override
-            public void onFailure(Call<UserVideoStatusResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<UserVideoStatusResponse> call, @NonNull Throwable t) {
                 Observable.just((UserVideoStatusResponse) null).subscribe(readyAction1);
             }
         });

@@ -38,7 +38,7 @@ import snagfilms.com.air.appcms.R;
  */
 
 public class AppCMSPlayVideoFragment extends Fragment
-        implements AdErrorEvent.AdErrorListener, AdEvent.AdEventListener{
+        implements AdErrorEvent.AdErrorListener, AdEvent.AdEventListener {
     private static final String TAG = "PlayVideoFragment";
 
     private AppCMSPresenter appCMSPresenter;
@@ -103,6 +103,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                                     permaLink,
                                     parentScreenName,
                                     videoPlayerView.getCurrentPosition());
+                            appCMSPresenter.updateWatchedTime(filmId,
+                                    videoPlayerView.getCurrentPosition() / 1000);
                         }
                     }
                 } catch (InterruptedException e) {
@@ -345,7 +347,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         beaconMessageThread.sendBeaconPing = false;
         beaconMessageThread.runBeaconPing = false;
         beaconMessageThread = null;
-	    onClosePlayerEvent = null;
+        onClosePlayerEvent = null;
         adsLoader = null;
         super.onDestroyView();
     }

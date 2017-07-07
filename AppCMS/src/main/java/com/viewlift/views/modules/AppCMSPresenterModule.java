@@ -16,7 +16,9 @@ import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
+import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
+import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.presenters.AppCMSActionType;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -52,6 +54,10 @@ public class AppCMSPresenterModule {
                                                    AppCMSResetPasswordCall appCMSResetPasswordCall,
                                                    AppCMSFacebookLoginCall appCMSFacebookLoginCall,
                                                    AppCMSUserIdentityCall appCMSUserIdentityCall,
+
+                                                   AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall,
+                                                   AppCMSUserVideoStatusCall appCMSUserVideoStatusCall,
+
                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                    Map<String, String> pageNameToActionMap,
                                                    Map<String, AppCMSPageUI> actionToPageMap,
@@ -72,6 +78,10 @@ public class AppCMSPresenterModule {
                 appCMSResetPasswordCall,
                 appCMSFacebookLoginCall,
                 appCMSUserIdentityCall,
+
+                appCMSUpdateWatchHistoryCall,
+                appCMSUserVideoStatusCall,
+
                 jsonValueKeyMap,
                 pageNameToActionMap,
                 actionToPageMap,

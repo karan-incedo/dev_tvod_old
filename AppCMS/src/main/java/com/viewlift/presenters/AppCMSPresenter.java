@@ -34,6 +34,8 @@ import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
+import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
+import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
@@ -76,7 +78,9 @@ import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
+import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
+import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
@@ -145,6 +149,9 @@ public class AppCMSPresenter {
     private final AppCMSResetPasswordCall appCMSResetPasswordCall;
     private final AppCMSFacebookLoginCall appCMSFacebookLoginCall;
     private final AppCMSUserIdentityCall appCMSUserIdentityCall;
+
+    private final AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall;
+
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final Map<String, String> pageNameToActionMap;
     private final Map<String, AppCMSPageUI> actionToPageMap;
@@ -153,6 +160,7 @@ public class AppCMSPresenter {
 
     private final AppCMSWatchlistCall appCMSWatchlistCall;
     private final AppCMSHistoryCall appCMSHistoryCall;
+    private final AppCMSUserVideoStatusCall appCMSUserVideoStatusCall;
 
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
@@ -344,6 +352,10 @@ public class AppCMSPresenter {
                            AppCMSResetPasswordCall appCMSResetPasswordCall,
                            AppCMSFacebookLoginCall appCMSFacebookLoginCall,
                            AppCMSUserIdentityCall appCMSUserIdentityCall,
+
+                           AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall,
+                           AppCMSUserVideoStatusCall appCMSUserVideoStatusCall,
+
                            Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                            Map<String, String> pageNameToActionMap,
                            Map<String, AppCMSPageUI> actionToPageMap,
@@ -364,6 +376,9 @@ public class AppCMSPresenter {
         this.actionToPageAPIMap = actionToPageAPIMap;
         this.actionToActionTypeMap = actionToActionTypeMap;
         this.appCMSUserIdentityCall = appCMSUserIdentityCall;
+
+        this.appCMSUpdateWatchHistoryCall = appCMSUpdateWatchHistoryCall;
+        this.appCMSUserVideoStatusCall = appCMSUserVideoStatusCall;
 
         this.appCMSWatchlistCall = appCMSWatchlistCall;
         this.appCMSHistoryCall = appCMSHistoryCall;
@@ -447,6 +462,33 @@ public class AppCMSPresenter {
                     }).execute(params);
         }
         return result;
+    }
+
+    public void updateWatchedTime(String filmId, long watchedTime) {
+        if (getLoggedInUser(currentActivity) != null) {
+            UpdateHistoryRequest updateHistoryRequest = new UpdateHistoryRequest();
+            updateHistoryRequest.setUserId(getLoggedInUser(currentActivity));
+            updateHistoryRequest.setWatchedTime(watchedTime);
+            updateHistoryRequest.setVideoId(filmId);
+            updateHistoryRequest.setSiteOwner(appCMSMain.getSite());
+
+            String url = currentActivity.getString(R.string.app_cms_update_watch_history_api_url,
+                    appCMSMain.getApiBaseUrl());
+
+            appCMSUpdateWatchHistoryCall.call(url, getAuthToken(currentActivity), updateHistoryRequest,
+                    new Action1<String>() {
+                        @Override
+                        public void call(String s) {
+                            //
+                        }
+                    });
+        }
+    }
+
+    public void getUserVideoStatus(String filmId, Action1<UserVideoStatusResponse> responseAction) {
+        String url = currentActivity.getString(R.string.app_cms_video_status_api_url,
+                appCMSMain.getApiBaseUrl(), filmId, appCMSMain.getSite());
+        appCMSUserVideoStatusCall.call(url, getAuthToken(currentActivity), responseAction);
     }
 
     public boolean launchButtonSelectedAction(String pagePath,

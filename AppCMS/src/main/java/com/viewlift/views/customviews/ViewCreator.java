@@ -1,6 +1,5 @@
 package com.viewlift.views.customviews;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -39,6 +38,7 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.VideoAssets;
+import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
 
 /**
@@ -452,6 +453,32 @@ public class ViewCreator {
                         break;
 
                     case PAGE_ADD_TO_WATCHLIST_KEY:
+                        appCMSPresenter.getUserVideoStatus(
+                                moduleAPI.getContentData().get(0).getGist().getId(),
+                                new Action1<UserVideoStatusResponse>() {
+                                    @Override
+                                    public void call(final UserVideoStatusResponse userVideoStatusResponse) {
+                                        if (userVideoStatusResponse != null) {
+                                            if (userVideoStatusResponse.getQueued()) {
+                                                componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.remove_from_watchlist));
+                                                componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        // FIXME: 7/7/17 add to presenter.
+                                                    }
+                                                });
+                                            } else {
+                                                componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.add_to_watchlist));
+                                                componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        // FIXME: 7/7/17 add to presenter.
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    }
+                                });
                         break;
 
                     case PAGE_VIDEO_WATCH_TRAILER_KEY:
@@ -786,12 +813,15 @@ public class ViewCreator {
             case PAGE_PROGRESS_VIEW_KEY:
                 componentViewResult.componentView = new ProgressBar(context,
                         null,
-                        R.style.Widget_AppCompat_ProgressBar_Horizontal);
+                        android.R.attr.progressBarStyleHorizontal);
                 if (!TextUtils.isEmpty(component.getProgressColor())) {
                     int color = Color.parseColor(getColor(context, component.getProgressColor()));
                     ((ProgressBar) componentViewResult.componentView).setProgressDrawable(new ColorDrawable(color));
                 }
                 if (appCMSPresenter.isUserLoggedIn(context)) {
+                    ((ProgressBar) componentViewResult.componentView).setMax(100);
+                    ((ProgressBar) componentViewResult.componentView).setProgress(100);
+                    ((ProgressBar) componentViewResult.componentView).setProgress(0);
                     if (moduleAPI.getContentData() != null &&
                             moduleAPI.getContentData().size() > 0 &&
                             moduleAPI.getContentData().get(0) != null &&
@@ -802,6 +832,7 @@ public class ViewCreator {
                         ((ProgressBar) componentViewResult.componentView).setProgress(0);
                     }
                     BaseView.setViewWidth(context, component.getLayout(), FrameLayout.LayoutParams.MATCH_PARENT);
+                    componentViewResult.componentView.setVisibility(View.GONE);
                 } else {
                     componentViewResult.componentView.setVisibility(View.GONE);
                 }
