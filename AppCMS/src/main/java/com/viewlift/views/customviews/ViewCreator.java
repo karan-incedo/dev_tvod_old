@@ -322,6 +322,10 @@ public class ViewCreator {
             componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
 
+        if (componentKey == AppCMSUIKeyType.PAGE_REMOVEALL_KEY) {
+            return;
+        }
+
         switch (componentType) {
             case PAGE_TABLE_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
