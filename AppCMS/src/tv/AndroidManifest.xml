@@ -15,7 +15,8 @@
 
     <application
         android:banner="@drawable/logo"
-        android:label="@string/default_app_name">
+        android:label="@string/default_app_name"
+        android:icon="@drawable/app_icon_small_front">
         <activity
             android:name="com.viewlift.tv.AppCMSLeanbackActivity"
             android:theme="@style/AppTheme">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="appcms_tv_navigation_height">60dp</dimen>
-    <dimen name="appcms_tv_navigation_textSize">18sp</dimen>
+    <dimen name="appcms_tv_navigation_textSize">16sp</dimen>
     <dimen name="appcms_tv_navigation_item_padding">20dp</dimen>
 
     <dimen name="browse_fragment_margin_left">0dp</dimen>

@@ -46,7 +46,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
 
             LinearLayout headerTitleContainer =  ((LinearLayout)holder.getHeaderViewHolder().view);
             final RowHeaderView headerTitle = (RowHeaderView)headerTitleContainer.findViewById(R.id.row_header);
-            headerTitle.setTextColor(ContextCompat.getColor(mContext , R.color.colorAccent));
+            headerTitle.setTextColor(ContextCompat.getColor(mContext , R.color.heighlight_color));
 
             //ListRowView and its layout Params.
             ListRowView listRowView = (ListRowView)holder.view;

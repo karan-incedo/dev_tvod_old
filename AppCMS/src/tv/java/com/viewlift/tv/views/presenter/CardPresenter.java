@@ -97,7 +97,6 @@ public class CardPresenter extends Presenter {
         int gridImagePadding = (int)mContext.getResources().getDimension(R.dimen.grid_image_padding);
         imageView.setPadding(gridImagePadding,gridImagePadding,gridImagePadding,gridImagePadding);
 
-
         TextView tvTitle = new TextView(cardView.getContext());
         tvTitle.setGravity(Gravity.BOTTOM);
         tvTitle.setLines(1);
@@ -108,7 +107,8 @@ public class CardPresenter extends Presenter {
                 .load(contentData.getGist().getPosterImageUrl())
                 .fitCenter()
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                .error(null)
+                .error(R.drawable.poster_image_placeholder)
+                .placeholder(R.drawable.poster_image_placeholder)
                 .into(imageView);
 
 

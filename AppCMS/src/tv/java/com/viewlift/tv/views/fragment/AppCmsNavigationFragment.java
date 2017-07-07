@@ -182,10 +182,6 @@ public class AppCmsNavigationFragment extends Fragment {
             holder.navItemlayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-                    /*notifyItemChanged(currentNavPos);
-                    currentNavPos = position;
-                    notifyItemChanged(currentNavPos);*/
                     navigationVisibilityListener.showNavigation(false);
                     if (!appCmsPresenter.navigateToTVPage(primary.getPageId(),
                             primary.getTitle(),
@@ -218,9 +214,14 @@ public class AppCmsNavigationFragment extends Fragment {
                 navItemlayout.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                     @Override
                     public void onFocusChange(View view, boolean hasFocus) {
+
+                        String text = navItemView.getText().toString();
                         if (hasFocus) {
+                            navItemView.setText(text);
                             navItemView.setTypeface(Typeface.DEFAULT_BOLD);
+
                         } else {
+                            navItemView.setText(text);
                             navItemView.setTypeface(Typeface.DEFAULT);
                         }
                     }
