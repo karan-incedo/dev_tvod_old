@@ -109,6 +109,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         if (player != null) {
             return player.getPlayWhenReady();
         }
+
         return false;
     }
 
@@ -146,6 +147,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         if (player != null) {
             return player.getDuration();
         }
+
         return -1L;
     }
 
@@ -153,6 +155,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         if (player != null) {
             return player.getCurrentPosition();
         }
+
         return -1L;
     }
 
@@ -179,16 +182,16 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         playerView.setPlayer(player);
         playerView.setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
             @Override
-            public void onVisibilityChange(int visiblity) {
+            public void onVisibilityChange(int visibility) {
                 if (onPlayerControlsStateChanged != null) {
-                    onPlayerControlsStateChanged.call(visiblity);
+                    onPlayerControlsStateChanged.call(visibility);
                 }
             }
         });
+
         addView(playerView);
     }
 
-    @SuppressWarnings("null")
     private MediaSource buildMediaSource(Uri uri, String overrideExtension) {
         int type = TextUtils.isEmpty(overrideExtension) ? Util.inferContentType(uri) :
                 Util.inferContentType("." + overrideExtension);
@@ -254,6 +257,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         playerState.playWhenReady = playWhenReady;
         playerState.playbackState = playbackState;
+
         if (onPlayerStateChanged != null) {
             Observable.just(playerState).subscribe(onPlayerStateChanged);
         }
