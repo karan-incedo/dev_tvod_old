@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -60,9 +61,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = parent.inflate(parent.getContext(),
-                R.layout.continue_watching_item,
-                parent);
+        View view = LayoutInflater
+                .from(parent.getContext())
+                .inflate(R.layout.continue_watching_item, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         applyStyles(viewHolder);
         return viewHolder;
