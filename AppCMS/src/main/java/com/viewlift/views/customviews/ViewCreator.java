@@ -417,6 +417,9 @@ public class ViewCreator {
 
 //             FIXME: 7/7/17 Will be used for dictating the button order - download/add to watchlist.
             case PAGE_BUTTON_KEY:
+                if (componentKey == AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) {
+                    return;
+                }
                 if (componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY) {
                     componentViewResult.componentView = new Button(context);
                 } else {
