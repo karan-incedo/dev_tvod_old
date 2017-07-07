@@ -45,6 +45,7 @@ import com.viewlift.models.data.appcms.ui.authentication.FacebookLoginResponse;
 import com.viewlift.models.data.appcms.ui.authentication.ForgotPasswordResponse;
 import com.viewlift.models.data.appcms.ui.authentication.RefreshIdentityResponse;
 import com.viewlift.models.data.appcms.ui.authentication.SignInResponse;
+import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.watchlist.AppCMSWatchlistResult;
@@ -75,6 +76,7 @@ import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
+import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
@@ -85,6 +87,8 @@ import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSResetPasswordFragment;
+import com.viewlift.views.fragments.AppCMSSearchFragment;
+import com.viewlift.views.fragments.AppCMSSettingsFragment;
 
 import java.io.File;
 import java.io.IOException;
@@ -140,6 +144,7 @@ public class AppCMSPresenter {
     private final AppCMSRefreshIdentityCall appCMSRefreshIdentityCall;
     private final AppCMSResetPasswordCall appCMSResetPasswordCall;
     private final AppCMSFacebookLoginCall appCMSFacebookLoginCall;
+    private final AppCMSUserIdentityCall appCMSUserIdentityCall;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final Map<String, String> pageNameToActionMap;
     private final Map<String, AppCMSPageUI> actionToPageMap;
@@ -338,6 +343,7 @@ public class AppCMSPresenter {
                            AppCMSRefreshIdentityCall appCMSRefreshIdentityCall,
                            AppCMSResetPasswordCall appCMSResetPasswordCall,
                            AppCMSFacebookLoginCall appCMSFacebookLoginCall,
+                           AppCMSUserIdentityCall appCMSUserIdentityCall,
                            Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                            Map<String, String> pageNameToActionMap,
                            Map<String, AppCMSPageUI> actionToPageMap,
@@ -357,6 +363,7 @@ public class AppCMSPresenter {
         this.actionToPageMap = actionToPageMap;
         this.actionToPageAPIMap = actionToPageAPIMap;
         this.actionToActionTypeMap = actionToActionTypeMap;
+        this.appCMSUserIdentityCall = appCMSUserIdentityCall;
 
         this.appCMSWatchlistCall = appCMSWatchlistCall;
         this.appCMSHistoryCall = appCMSHistoryCall;
@@ -640,11 +647,10 @@ public class AppCMSPresenter {
 
     public void launchSearchPage() {
         if (currentActivity != null) {
-            com.viewlift.views.fragments.AppCMSSearchFragment appCMSSearchFragment =
-                    com.viewlift.views.fragments.AppCMSSearchFragment.newInstance(currentActivity,
-                            Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
-                            Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()),
-                            Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor()));
+            AppCMSSearchFragment appCMSSearchFragment = AppCMSSearchFragment.newInstance(currentActivity,
+                    Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
+                    Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()),
+                    Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor()));
             appCMSSearchFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
                     currentActivity.getString(R.string.app_cms_search_page_tag));
         }
@@ -940,6 +946,12 @@ public class AppCMSPresenter {
         }
     }
 
+    public void navigateToSettingsPage() {
+        AppCMSSettingsFragment appCMSSettingsFragment = AppCMSSettingsFragment.newInstance(currentActivity);
+        appCMSSettingsFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
+                currentActivity.getString(R.string.app_cms_settings_page_tag));
+    }
+
     public void resetPassword(final String email) {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_forgot_password_api_url,
@@ -955,6 +967,44 @@ public class AppCMSPresenter {
                             } else if (forgotPasswordResponse != null) {
                                 Log.e(TAG, "Failed to reset password for email: " + email);
                             }
+                        }
+                    });
+        }
+    }
+
+    public void getUserData(final Action1<UserIdentity> userIdentityAction) {
+        if (currentActivity != null) {
+            String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSMain.getSite());
+            appCMSUserIdentityCall.callGet(url,
+                    getAuthToken(currentActivity),
+                    new Action1<UserIdentity>() {
+                        @Override
+                        public void call(UserIdentity userIdentity) {
+                            Observable.just(userIdentity).subscribe(userIdentityAction);
+                        }
+                    });
+        }
+    }
+
+    public void updateUserData(String username,
+                               String email,
+                               final Action1<UserIdentity> userIdentityAction) {
+        if (currentActivity != null) {
+            String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSMain.getSite());
+            UserIdentity userIdentity = new UserIdentity();
+            userIdentity.setName(username);
+            userIdentity.setEmail(email);
+            appCMSUserIdentityCall.callPost(url,
+                    getAuthToken(currentActivity),
+                    userIdentity,
+                    new Action1<UserIdentity>() {
+                        @Override
+                        public void call(UserIdentity userIdentity) {
+                            Observable.just(userIdentity).subscribe(userIdentityAction);
                         }
                     });
         }
@@ -984,7 +1034,6 @@ public class AppCMSPresenter {
             Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
             Log.d(TAG, "Search query (optional): " + searchQuery);
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
-            AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             getPageIdContent(appCMSMain.getApiBaseUrl(),
                     pageIdToPageAPIUrlMap.get(pageId),

@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import rx.Observable;
 import rx.functions.Action1;
 
 /**
@@ -28,12 +29,12 @@ public class AppCMSResetPasswordCall {
         appCMSResetPasswordRest.resetPassword(url, forgotPasswordRequest).enqueue(new Callback<ForgotPasswordResponse>() {
             @Override
             public void onResponse(Call<ForgotPasswordResponse> call, Response<ForgotPasswordResponse> response) {
-                readyAction.call(response.body());
+                Observable.just(response.body()).subscribe(readyAction);
             }
 
             @Override
             public void onFailure(Call<ForgotPasswordResponse> call, Throwable t) {
-
+                Observable.just((ForgotPasswordResponse) null).subscribe(readyAction);
             }
         });
     }
