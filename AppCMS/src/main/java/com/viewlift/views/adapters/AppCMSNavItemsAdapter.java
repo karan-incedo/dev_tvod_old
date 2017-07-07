@@ -92,7 +92,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             }
 
             //user nav
-            if (userLoggedIn && navigation.getUser() != null && 0 <= (i - indexOffset) && (i - indexOffset) < navigation.getUser().size()) {
+            if (userLoggedIn && navigation.getUser() != null && 0 <= (i - indexOffset)
+                    && (i - indexOffset) < navigation.getUser().size()) {
                 final User user = navigation.getUser().get(i - indexOffset);
 
                 if (user.getAccessLevels() != null && user.getAccessLevels().getLoggedIn()) {
@@ -101,26 +102,29 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (user.getTitle().equals("Watchlist")) {
-                                appCMSPresenter.navigateToWatchlistPage(user.getPageId(),
-                                        user.getTitle(), user.getUrl(), true);
-                            } else if (user.getTitle().equals("History")) {
-                                appCMSPresenter.navigateToHistoryPage(user.getPageId(), user.getTitle(),
-                                        user.getUrl(), true);
-                            } else {
-                                if (!appCMSPresenter.navigateToPage(user.getPageId(),
-                                        user.getTitle(),
-                                        user.getUrl(),
-                                        false,
-                                        true,
-                                        true,
-                                        null)) {
-                                } else {
-                                    Log.e(TAG, "Could not navigate to page with Title: " +
-                                            user.getTitle() +
-                                            " Id: " +
-                                            user.getPageId());
-                                }
+                            switch (user.getTitle()) {
+                                case "Watchlist":
+                                    appCMSPresenter.navigateToWatchlistPage(user.getPageId(),
+                                            user.getTitle(), user.getUrl(), true);
+                                    break;
+
+                                case "History":
+                                    appCMSPresenter.navigateToHistoryPage(user.getPageId(),
+                                            user.getTitle(), user.getUrl(), true);
+                                    break;
+
+                                default:
+                                    if (!appCMSPresenter.navigateToPage(user.getPageId(),
+                                            user.getTitle(),
+                                            user.getUrl(),
+                                            false,
+                                            true,
+                                            true,
+                                            null)) {
+                                    } else {
+                                        Log.e(TAG, "Could not navigate to page with Title: "
+                                                + user.getTitle() + " Id: " + user.getPageId());
+                                    }
                             }
                         }
                     });

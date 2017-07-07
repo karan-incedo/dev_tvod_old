@@ -463,7 +463,8 @@ public class AppCMSPresenter {
                 Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
                 if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE) {
                     boolean requestAds = true;
-                    if (pagePath != null && pagePath.contains(currentActivity.getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
+                    if (pagePath != null && pagePath.contains(
+                            currentActivity.getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
                         requestAds = false;
                     }
                     playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), requestAds);
@@ -537,7 +538,8 @@ public class AppCMSPresenter {
                         appbarPresent = true;
                         fullscreenEnabled = false;
                         navbarPresent = false;
-                        screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
+                        screenName.append(currentActivity.getString(
+                                R.string.app_cms_template_page_separator));
                         screenName.append(filmTitle);
                         break;
                     case PLAY_VIDEO_PAGE:
@@ -549,7 +551,8 @@ public class AppCMSPresenter {
                     default:
                         break;
                 }
-                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                currentActivity.sendBroadcast(new Intent(
+                        AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                 AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
                 getPageIdContent(appCMSMain.getApiBaseUrl(),
                         actionToPageAPIUrlMap.get(action),
@@ -570,7 +573,8 @@ public class AppCMSPresenter {
                             public void call(AppCMSPageAPI appCMSPageAPI) {
                                 if (appCMSPageAPI != null) {
                                     cancelInternalEvents();
-                                    pushActionInternalEvents(this.action + BaseView.isLandscape(currentActivity));
+                                    pushActionInternalEvents(this.action
+                                            + BaseView.isLandscape(currentActivity));
                                     Bundle args = getPageActivityBundle(currentActivity,
                                             this.appCMSPageUI,
                                             appCMSPageAPI,
@@ -585,7 +589,8 @@ public class AppCMSPresenter {
                                             this.searchQuery);
                                     Intent updatePageIntent =
                                             new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                    updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                    updatePageIntent.putExtra(
+                                            currentActivity.getString(R.string.app_cms_bundle_key),
                                             args);
                                     currentActivity.sendBroadcast(updatePageIntent);
                                 } else {
@@ -635,10 +640,11 @@ public class AppCMSPresenter {
 
     public void launchSearchPage() {
         if (currentActivity != null) {
-            com.viewlift.views.fragments.AppCMSSearchFragment appCMSSearchFragment = com.viewlift.views.fragments.AppCMSSearchFragment.newInstance(currentActivity,
-                    Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
-                    Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()),
-                    Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor()));
+            com.viewlift.views.fragments.AppCMSSearchFragment appCMSSearchFragment =
+                    com.viewlift.views.fragments.AppCMSSearchFragment.newInstance(currentActivity,
+                            Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
+                            Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()),
+                            Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor()));
             appCMSSearchFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
                     currentActivity.getString(R.string.app_cms_search_page_tag));
         }
@@ -657,7 +663,8 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             AppCMSResetPasswordFragment appCMSResetPasswordFragment =
                     AppCMSResetPasswordFragment.newInstance(currentActivity, email);
-            appCMSResetPasswordFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
+            appCMSResetPasswordFragment.show(((AppCompatActivity) currentActivity)
+                            .getSupportFragmentManager(),
                     currentActivity.getString(R.string.app_cms_reset_password_page_tag));
         }
     }
@@ -726,7 +733,8 @@ public class AppCMSPresenter {
                                     pushActionInternalEvents(this.pageId
                                             + BaseView.isLandscape(currentActivity));
 
-                                    AppCMSPageAPI pageAPI = appCMSWatchlistResult.convertToAppCMSPageAPI();
+                                    AppCMSPageAPI pageAPI =
+                                            appCMSWatchlistResult.convertToAppCMSPageAPI();
 
                                     navigationPageData.put(this.pageId, pageAPI);
 
@@ -776,7 +784,8 @@ public class AppCMSPresenter {
         }
     }
 
-    private void getWatchlistPageContent(final String apiBaseUrl, String endPoint, final String siteId,
+    private void getWatchlistPageContent(final String apiBaseUrl, String endPoint,
+                                         final String siteId,
                                          boolean userPageIdQueryParam, String pageId,
                                          final AppCMSWatchlistAPIAction watchlist) {
         String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
@@ -787,22 +796,11 @@ public class AppCMSPresenter {
             @Override
             public void call(RefreshIdentityResponse refreshIdentityResponse) {
                 try {
-                    appCMSWatchlistCall.call(currentActivity.getString(R.string.app_cms_watchlist_api_url,
-                            apiBaseUrl, //getLoggedInUser(currentActivity,
-                            siteId,
-                            getLoggedInUser(currentActivity)),
-                            getAuthToken(currentActivity),
-                            new Action1<AppCMSWatchlistResult>() {
-                                @Override
-                                public void call(AppCMSWatchlistResult appCMSWatchlistResult) {
-                                    watchlist.call(appCMSWatchlistResult);
-                                }
-                            });
-
-                    appCMSWatchlistCall.call(currentActivity.getString(R.string.app_cms_watchlist_api_url,
-                            apiBaseUrl, //getLoggedInUser(currentActivity,
-                            siteId,
-                            getLoggedInUser(currentActivity)),
+                    appCMSWatchlistCall.call(
+                            currentActivity.getString(R.string.app_cms_watchlist_api_url,
+                                    apiBaseUrl, //getLoggedInUser(currentActivity,
+                                    siteId,
+                                    getLoggedInUser(currentActivity)),
                             getAuthToken(currentActivity),
                             new Action1<AppCMSWatchlistResult>() {
                                 @Override
@@ -845,7 +843,8 @@ public class AppCMSPresenter {
                                     pushActionInternalEvents(this.pageId
                                             + BaseView.isLandscape(currentActivity));
 
-                                    AppCMSPageAPI pageAPI = appCMSHistoryResult.convertToAppCMSPageAPI();
+                                    AppCMSPageAPI pageAPI =
+                                            appCMSHistoryResult.convertToAppCMSPageAPI();
 
                                     navigationPageData.put(this.pageId, pageAPI);
 
@@ -892,8 +891,6 @@ public class AppCMSPresenter {
                                 }
                             }
                         });
-
-
             }
         }
     }
@@ -990,69 +987,70 @@ public class AppCMSPresenter {
             AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             getPageIdContent(appCMSMain.getApiBaseUrl(),
-                pageIdToPageAPIUrlMap.get(pageId),
-                appCMSMain.getSite(),
-                true,
-                getPageId(appCMSPageUI),
-                new AppCMSPageAPIAction(true,
-                        false,
-                        navbarPresent,
-                        appCMSPageUI,
-                        pageId,
-                        pageId,
-                        pageTitle,
-                        launchActivity,
-                        sendCloseAction,
-                        searchQuery) {
-                    @Override
-                    public void call(AppCMSPageAPI appCMSPageAPI) {
-                        if (appCMSPageAPI != null) {
-                            cancelInternalEvents();
-                            pushActionInternalEvents(this.pageId + BaseView.isLandscape(currentActivity));
-                            navigationPageData.put(this.pageId, appCMSPageAPI);
-                            if (this.launchActivity) {
-                                launchPageActivity(currentActivity,
-                                        this.appCMSPageUI,
-                                        appCMSPageAPI,
-                                        this.pageId,
-                                        this.pageTitle,
-                                        pageIdToPageNameMap.get(this.pageId),
-                                        loadFromFile,
-                                        this.appbarPresent,
-                                        this.fullscreenEnabled,
-                                        this.navbarPresent,
-                                        this.sendCloseAction,
-                                        this.searchQuery);
+                    pageIdToPageAPIUrlMap.get(pageId),
+                    appCMSMain.getSite(),
+                    true,
+                    getPageId(appCMSPageUI),
+                    new AppCMSPageAPIAction(true,
+                            false,
+                            navbarPresent,
+                            appCMSPageUI,
+                            pageId,
+                            pageId,
+                            pageTitle,
+                            launchActivity,
+                            sendCloseAction,
+                            searchQuery) {
+                        @Override
+                        public void call(AppCMSPageAPI appCMSPageAPI) {
+                            if (appCMSPageAPI != null) {
+                                cancelInternalEvents();
+                                pushActionInternalEvents(this.pageId + BaseView.isLandscape(currentActivity));
+                                navigationPageData.put(this.pageId, appCMSPageAPI);
+                                if (this.launchActivity) {
+                                    launchPageActivity(currentActivity,
+                                            this.appCMSPageUI,
+                                            appCMSPageAPI,
+                                            this.pageId,
+                                            this.pageTitle,
+                                            pageIdToPageNameMap.get(this.pageId),
+                                            loadFromFile,
+                                            this.appbarPresent,
+                                            this.fullscreenEnabled,
+                                            this.navbarPresent,
+                                            this.sendCloseAction,
+                                            this.searchQuery);
+                                } else {
+                                    Bundle args = getPageActivityBundle(currentActivity,
+                                            this.appCMSPageUI,
+                                            appCMSPageAPI,
+                                            this.pageId,
+                                            this.pageTitle,
+                                            pageIdToPageNameMap.get(this.pageId),
+                                            loadFromFile,
+                                            this.appbarPresent,
+                                            this.fullscreenEnabled,
+                                            this.navbarPresent,
+                                            false,
+                                            this.searchQuery);
+                                    Intent updatePageIntent =
+                                            new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                    updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                            args);
+                                    currentActivity.sendBroadcast(updatePageIntent);
+                                }
                             } else {
-                                Bundle args = getPageActivityBundle(currentActivity,
-                                        this.appCMSPageUI,
-                                        appCMSPageAPI,
-                                        this.pageId,
-                                        this.pageTitle,
-                                        pageIdToPageNameMap.get(this.pageId),
-                                        loadFromFile,
-                                        this.appbarPresent,
-                                        this.fullscreenEnabled,
-                                        this.navbarPresent,
-                                        false,
-                                        this.searchQuery);
-                                Intent updatePageIntent =
-                                        new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                        args);
-                                currentActivity.sendBroadcast(updatePageIntent);
+                                sendStopLoadingPageAction();
+                                setNavItemToCurrentAction(currentActivity);
                             }
-                        } else {
-                            sendStopLoadingPageAction();
-                            setNavItemToCurrentAction(currentActivity);
+                            loadingPage = false;
                         }
-                        loadingPage = false;
-                    }
-                });
+                    });
             result = true;
         } else if (currentActivity != null &&
                 !TextUtils.isEmpty(url) &&
-                url.contains(currentActivity.getString(R.string.app_cms_page_navigation_contact_us_key))) {
+                url.contains(currentActivity.getString(
+                        R.string.app_cms_page_navigation_contact_us_key))) {
             if (Apptentive.canShowMessageCenter()) {
                 Apptentive.showMessageCenter(currentActivity);
             }
@@ -1071,8 +1069,10 @@ public class AppCMSPresenter {
                 currentActions.pop();
             }
             Intent closeOthersIntent = new Intent(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION);
-            closeOthersIntent.putExtra(currentActivity.getString(R.string.close_self_key), closeSelf);
-            closeOthersIntent.putExtra(currentActivity.getString(R.string.app_cms_closing_page_name), pageName);
+            closeOthersIntent.putExtra(currentActivity.getString(R.string.close_self_key),
+                    closeSelf);
+            closeOthersIntent.putExtra(currentActivity.getString(R.string.app_cms_closing_page_name),
+                    pageName);
             currentActivity.sendBroadcast(closeOthersIntent);
 
             result = true;
@@ -1342,9 +1342,8 @@ public class AppCMSPresenter {
                         fullText)));
         AlertDialog dialog = builder.create();
         if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor(appCMSMain.getBrand()
-                    .getGeneral()
-                    .getBackgroundColor())));
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor(
+                    appCMSMain.getBrand().getGeneral().getBackgroundColor())));
         }
         dialog.show();
     }
@@ -1383,14 +1382,16 @@ public class AppCMSPresenter {
                             });
             AlertDialog dialog = builder.create();
             if (dialog.getWindow() != null) {
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor(appCMSMain.getBrand()
-                        .getGeneral()
-                        .getBackgroundColor())));
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
+                        Color.parseColor(appCMSMain.getBrand()
+                                .getGeneral()
+                                .getBackgroundColor())));
                 if (currentActivity.getWindow().isActive()) {
                     try {
                         dialog.show();
                     } catch (Exception e) {
-                        Log.e(TAG, "An exception has occurred when attempting to show the error dialog: " + e.toString());
+                        Log.e(TAG, "An exception has occurred when attempting to show the error dialog: "
+                                + e.toString());
                     }
                 }
             }
@@ -1420,7 +1421,8 @@ public class AppCMSPresenter {
     public void pushActionInternalEvents(String action) {
         Log.d(TAG, "Stack size - pushing internal events: " + currentActions.size());
         if (currentActions.size() > 0 && !isActionAPage(currentActions.peek())) {
-            Log.d(TAG, "Stack size - pushing internal events (popping extra): " + currentActions.size());
+            Log.d(TAG, "Stack size - pushing internal events (popping extra): "
+                    + currentActions.size());
             popActionInternalEvents();
         }
         if (onActionInternalEvents.get(action) == null) {
@@ -1429,9 +1431,11 @@ public class AppCMSPresenter {
         currentActions.push(action);
     }
 
-    public void sendBeaconAdImpression(String vid, String screenName, String parentScreenName, long currentPosition) {
+    public void sendBeaconAdImpression(String vid, String screenName, String parentScreenName,
+                                       long currentPosition) {
         Log.d(TAG, "Sending Beacon Ad Impression");
-        String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.AD_IMPRESSION);
+        String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition,
+                BeaconEvent.AD_IMPRESSION);
         if (url != null) {
             Log.d(TAG, "Beacon Ad Impression: " + url);
             beaconMessageRunnable.setUrl(url);
@@ -1439,9 +1443,11 @@ public class AppCMSPresenter {
         }
     }
 
-    public void sendBeaconAdRequestMessage(String vid, String screenName, String parentScreenName, long currentPosition) {
+    public void sendBeaconAdRequestMessage(String vid, String screenName, String parentScreenName,
+                                           long currentPosition) {
         Log.d(TAG, "Sending Beacon Ad Message");
-        String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.AD_REQUEST);
+        String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition,
+                BeaconEvent.AD_REQUEST);
         if (url != null) {
             Log.d(TAG, "Beacon Ad Request: " + url);
             beaconMessageRunnable.setUrl(url);
@@ -1449,7 +1455,8 @@ public class AppCMSPresenter {
         }
     }
 
-    public void sendBeaconPingMessage(String vid, String screenName, String parentScreenName, long currentPosition) {
+    public void sendBeaconPingMessage(String vid, String screenName, String parentScreenName,
+                                      long currentPosition) {
         Log.d(TAG, "Sending Beacon Ping Message");
         String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.PING);
         if (url != null) {
@@ -1459,7 +1466,8 @@ public class AppCMSPresenter {
         }
     }
 
-    public void sendBeaconPlayMessage(String vid, String screenName, String parentScreenName, long currentPosition) {
+    public void sendBeaconPlayMessage(String vid, String screenName, String parentScreenName,
+                                      long currentPosition) {
         Log.d(TAG, "Sending Beacon Ad Message");
         String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.PLAY);
         if (url != null) {
@@ -1478,7 +1486,8 @@ public class AppCMSPresenter {
         return permalinkCompletePath.toString();
     }
 
-    private String getBeaconUrl(String vid, String screenName, String parentScreenName, long currentPosition, BeaconEvent event) {
+    private String getBeaconUrl(String vid, String screenName, String parentScreenName,
+                                long currentPosition, BeaconEvent event) {
         String url = null;
         if (currentActivity != null) {
             final String utfEncoding = currentActivity.getString(R.string.utf8enc);
@@ -1492,8 +1501,10 @@ public class AppCMSPresenter {
                         appCMSMain.getBeacon().getApiBaseUrl(),
                         URLEncoder.encode(appCMSMain.getBeacon().getSiteName(), utfEncoding),
                         URLEncoder.encode(appCMSMain.getBeacon().getClientId(), utfEncoding),
-                        URLEncoder.encode(currentActivity.getString(R.string.app_cms_beacon_platform), utfEncoding),
-                        URLEncoder.encode(currentActivity.getString(R.string.app_cms_beacon_dpm_android), utfEncoding),
+                        URLEncoder.encode(currentActivity.getString(R.string.app_cms_beacon_platform),
+                                utfEncoding),
+                        URLEncoder.encode(currentActivity.getString(R.string.app_cms_beacon_dpm_android),
+                                utfEncoding),
                         URLEncoder.encode(vid, utfEncoding),
                         URLEncoder.encode(getPermalinkCompletePath(screenName), utfEncoding),
                         URLEncoder.encode(parentScreenName, utfEncoding),
@@ -1553,7 +1564,8 @@ public class AppCMSPresenter {
                         if (signInResponse == null) {
                             // Show log error
                             Log.e(TAG, "Email and password are not valid.");
-                            showErrorDialog(Error.SIGNIN, currentActivity.getString(R.string.app_cms_error_email_password));
+                            showErrorDialog(Error.SIGNIN, currentActivity.getString(
+                                    R.string.app_cms_error_email_password));
                         } else {
                             refreshToken = signInResponse.getRefreshToken();
                             setAuthToken(currentActivity, signInResponse.getAuthorizationToken());
@@ -1568,10 +1580,11 @@ public class AppCMSPresenter {
             String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
                     appCMSMain.getApiBaseUrl(),
                     refreshToken);
-            GetAppCMSRefreshIdentityAsyncTask.Params params = new GetAppCMSRefreshIdentityAsyncTask.Params
-                    .Builder()
-                    .url(url)
-                    .build();
+            GetAppCMSRefreshIdentityAsyncTask.Params params =
+                    new GetAppCMSRefreshIdentityAsyncTask.Params
+                            .Builder()
+                            .url(url)
+                            .build();
             new GetAppCMSRefreshIdentityAsyncTask(appCMSRefreshIdentityCall,
                     new Action1<RefreshIdentityResponse>() {
                         @Override
@@ -1726,7 +1739,6 @@ public class AppCMSPresenter {
     }
 
     private void getAppCMSAndroid(final Activity activity, final AppCMSMain main) {
-
         GetAppCMSAndroidUIAsyncTask.Params params =
                 new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                         .url(activity.getString(R.string.app_cms_url_with_appended_timestamp,
@@ -1756,9 +1768,11 @@ public class AppCMSPresenter {
                                 @Override
                                 public void call() {
                                     if (firstPage != null) {
-                                        Log.d(TAG, "Launching first page: " + firstPage.getPageName());
+                                        Log.d(TAG, "Launching first page: "
+                                                + firstPage.getPageName());
                                         boolean navbarPresent =
-                                                (jsonValueKeyMap.get(firstPage.getPageName()) != AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY);
+                                                (jsonValueKeyMap.get(firstPage.getPageName())
+                                                        != AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY);
                                         boolean launchSuccess = navigateToPage(firstPage.getPageId(),
                                                 firstPage.getPageName(),
                                                 firstPage.getPageUI(),
@@ -1767,7 +1781,8 @@ public class AppCMSPresenter {
                                                 false,
                                                 deeplinkSearchQuery);
                                         if (!launchSuccess) {
-                                            Log.e(TAG, "Failed to launch page: " + firstPage.getPageName());
+                                            Log.e(TAG, "Failed to launch page: "
+                                                    + firstPage.getPageName());
                                             launchErrorActivity(currentActivity, platformType);
                                         }
                                     }
@@ -1837,7 +1852,8 @@ public class AppCMSPresenter {
                             actionToPageMap.put(action, appCMSPageUI);
                             actionToPageNameMap.put(action, metaPage.getPageName());
                             actionToPageAPIUrlMap.put(action, metaPage.getPageAPI());
-                            Log.d(TAG, "Action: " + action + "  PageAPI URL: " + metaPage.getPageAPI());
+                            Log.d(TAG, "Action: " + action + "  PageAPI URL: "
+                                    + metaPage.getPageAPI());
                         }
                         if (pagesToProcess.size() > 0) {
                             processMetaPagesQueue(activity,
@@ -1854,7 +1870,8 @@ public class AppCMSPresenter {
 
     private int getSigninPage(List<MetaPage> metaPageList) {
         for (int i = 0; i < metaPageList.size(); i++) {
-            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName()) == AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY) {
+            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName()) ==
+                    AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY) {
                 return i;
             }
         }
@@ -1863,7 +1880,8 @@ public class AppCMSPresenter {
 
     private int getHomePage(List<MetaPage> metaPageList) {
         for (int i = 0; i < metaPageList.size(); i++) {
-            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName()) == AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY) {
+            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName()) ==
+                    AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY) {
                 return i;
             }
         }
@@ -1924,7 +1942,8 @@ public class AppCMSPresenter {
                                             true,
                                             searchQuery);
                                     if (!launchSuccess) {
-                                        Log.e(TAG, "Failed to launch page: " + firstPage.getPageName());
+                                        Log.e(TAG, "Failed to launch page: "
+                                                + firstPage.getPageName());
                                         launchErrorActivity(currentActivity, PlatformType.TV);
                                     }
                                 }
@@ -1970,7 +1989,8 @@ public class AppCMSPresenter {
                             public void call(AppCMSPageAPI appCMSPageAPI) {
                                 if (appCMSPageAPI != null) {
                                     cancelInternalEvents();
-                                    pushActionInternalEvents(this.pageId + BaseView.isLandscape(currentActivity));
+                                    pushActionInternalEvents(this.pageId
+                                            + BaseView.isLandscape(currentActivity));
                                     navigationPageData.put(this.pageId, appCMSPageAPI);
                                     if (this.launchActivity) {
                                         launchTVPageActivity(currentActivity,
@@ -1999,7 +2019,8 @@ public class AppCMSPresenter {
                                                 this.searchQuery);
                                         Intent updatePageIntent =
                                                 new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                        updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                        updatePageIntent.putExtra(
+                                                currentActivity.getString(R.string.app_cms_bundle_key),
                                                 args);
                                         currentActivity.sendBroadcast(updatePageIntent);
                                     }
