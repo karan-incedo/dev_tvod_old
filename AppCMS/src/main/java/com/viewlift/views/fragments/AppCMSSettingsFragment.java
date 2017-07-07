@@ -226,11 +226,13 @@ public class AppCMSSettingsFragment extends DialogFragment {
     }
 
     private void updateUserIdentity(UserIdentity userIdentity) {
-        if (!TextUtils.isEmpty(userIdentity.getName())) {
-            appCMSAccountNameInfo.setText(userIdentity.getName());
-        }
-        if (!TextUtils.isEmpty(userIdentity.getEmail())) {
-            appCMSAccountEmailInfo.setText(userIdentity.getEmail());
+        if (userIdentity != null) {
+            if (!TextUtils.isEmpty(userIdentity.getName())) {
+                appCMSAccountNameInfo.setText(userIdentity.getName());
+            }
+            if (!TextUtils.isEmpty(userIdentity.getEmail())) {
+                appCMSAccountEmailInfo.setText(userIdentity.getEmail());
+            }
         }
     }
 }
