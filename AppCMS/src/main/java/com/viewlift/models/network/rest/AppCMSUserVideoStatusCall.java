@@ -2,6 +2,7 @@ package com.viewlift.models.network.rest;
 
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -23,6 +24,7 @@ public class AppCMSUserVideoStatusCall {
     @Inject
     public AppCMSUserVideoStatusCall(AppCMSUserVideoStatusRest appCMSUserVideoStatusRest) {
         this.appCMSUserVideoStatusRest = appCMSUserVideoStatusRest;
+        this.authHeaders = new HashMap<>();
     }
 
     public void call(String url,
