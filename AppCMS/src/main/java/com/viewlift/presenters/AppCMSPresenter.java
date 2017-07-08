@@ -1809,7 +1809,7 @@ public class AppCMSPresenter {
                             switch (platformType) {
                                 case ANDROID:
                                     getAppCMSAndroid(activity, main);
-                                    getAppCMSAndroid(activity, main);
+//                                    getAppCMSAndroid(activity, main);
                                     break;
                                 case TV:
                                     getAppCMSTV(activity , main , null);
@@ -1842,7 +1842,7 @@ public class AppCMSPresenter {
                     initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
                     navigation = appCMSAndroidUI.getNavigation();
                     queueMetaPages(appCMSAndroidUI.getMetaPages());
-                    final MetaPage firstPage = pagesToProcess.poll();
+                    final MetaPage firstPage = pagesToProcess.peek();
                     Log.d(TAG, "Processing meta pages queue");
                     processMetaPagesQueue(activity,
                             main,
@@ -1916,11 +1916,13 @@ public class AppCMSPresenter {
                                        final boolean loadFromFile,
                                        final Action0 onPagesFinishedAction) {
         final MetaPage metaPage = pagesToProcess.remove();
-        Log.d(TAG, "Processing meta page" +
+        Log.d(TAG, "Processing meta page " +
                 metaPage.getPageName() + ": " +
                 metaPage.getPageId() + " " +
                 metaPage.getPageUI() + " " +
                 metaPage.getPageAPI());
+        pageIdToPageAPIUrlMap.put(metaPage.getPageId(), metaPage.getPageAPI());
+        pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
         getAppCMSPage(activity.getString(R.string.app_cms_url_with_appended_timestamp,
                 metaPage.getPageUI(),
                 main.getTimestamp()),
@@ -1928,8 +1930,6 @@ public class AppCMSPresenter {
                     @Override
                     public void call(AppCMSPageUI appCMSPageUI) {
                         navigationPages.put(metaPage.getPageId(), appCMSPageUI);
-                        pageIdToPageAPIUrlMap.put(metaPage.getPageId(), metaPage.getPageAPI());
-                        pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
                         String action = pageNameToActionMap.get(metaPage.getPageName());
                         if (action != null && actionToPageMap.containsKey(action)) {
                             actionToPageMap.put(action, appCMSPageUI);
