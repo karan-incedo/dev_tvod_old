@@ -8,7 +8,7 @@
 /captures
 .externalNativeBuild
 .idea/*
-./AppCMS/release/*
-./*.apk
-./*.json
-./AppCMS/*.json
+/AppCMS/release/*
+/*.apk
+/*.json
+/AppCMS/*.json
