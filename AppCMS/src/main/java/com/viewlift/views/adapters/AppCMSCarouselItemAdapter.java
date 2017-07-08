@@ -82,8 +82,10 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
             @Override
             public void run() {
                 if (adapterData.size() > 1 && !cancelled) {
-                    updateCarousel(updatedIndex + 1, false);
-                    postUpdateCarousel();
+                    if (AppCMSCarouselItemAdapter.this.loop || updatedIndex < adapterData.size() - 1) {
+                        updateCarousel(updatedIndex + 1, false);
+                        postUpdateCarousel();
+                    }
                 }
             }
         };
@@ -299,7 +301,11 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
     }
 
     private int getDefaultIndex() {
-        return Integer.MAX_VALUE / 2 - ((Integer.MAX_VALUE / 2) % adapterData.size());
+        if (loop) {
+            return Integer.MAX_VALUE / 2 - ((Integer.MAX_VALUE / 2) % adapterData.size());
+        } else {
+            return 0;
+        }
     }
 
     private void setUpdatedIndex(int index) {
