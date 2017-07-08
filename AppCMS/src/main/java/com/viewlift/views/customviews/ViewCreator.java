@@ -823,11 +823,10 @@ public class ViewCreator {
                         android.R.attr.progressBarStyleHorizontal);
                 if (!TextUtils.isEmpty(component.getProgressColor())) {
                     int color = Color.parseColor(getColor(context, component.getProgressColor()));
-                    ((ProgressBar) componentViewResult.componentView).setProgressDrawable(new ColorDrawable(color));
+                    ((ProgressBar) componentViewResult.componentView).getProgressDrawable().setColorFilter(color, PorterDuff.Mode.SRC_IN);
                 }
                 if (appCMSPresenter.isUserLoggedIn(context)) {
                     ((ProgressBar) componentViewResult.componentView).setMax(100);
-                    ((ProgressBar) componentViewResult.componentView).setProgress(100);
                     ((ProgressBar) componentViewResult.componentView).setProgress(0);
                     if (moduleAPI.getContentData() != null &&
                             moduleAPI.getContentData().size() > 0 &&
@@ -839,7 +838,6 @@ public class ViewCreator {
                         ((ProgressBar) componentViewResult.componentView).setProgress(0);
                     }
                     BaseView.setViewWidth(context, component.getLayout(), FrameLayout.LayoutParams.MATCH_PARENT);
-                    componentViewResult.componentView.setVisibility(View.GONE);
                 } else {
                     componentViewResult.componentView.setVisibility(View.GONE);
                 }
@@ -983,7 +981,11 @@ public class ViewCreator {
                         new TextInputLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                 ViewGroup.LayoutParams.MATCH_PARENT);
                 textInputEditText.setLayoutParams(textInputEditTextLayoutParams);
+
                 ((TextInputLayout) componentViewResult.componentView).addView(textInputEditText);
+
+                ((TextInputLayout) componentViewResult.componentView).setHintEnabled(false);
+
                 break;
             case PAGE_VIDEO_STARRATING_KEY:
                 int starBorderColor = Color.parseColor(getColor(context, component.getBorderColor()));
