@@ -34,6 +34,8 @@ import snagfilms.com.air.appcms.R;
  */
 
 public class AppCMSNavItemsFragment extends DialogFragment {
+    private AppCMSPresenter appCMSPresenter;
+
     public static AppCMSNavItemsFragment newInstance(Context context,
                                                      AppCMSBinder appCMSBinder,
                                                      int textColor,
@@ -64,7 +66,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 ((AppCMSBinder) args.getBinder(getContext().getString(R.string.fragment_page_bundle_key)));
         View view = inflater.inflate(R.layout.fragment_menu_nav, container, false);
         RecyclerView navItemsList = (RecyclerView) view.findViewById(R.id.nav_items_list);
-        final AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
+        appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
         AppCMSNavItemsAdapter appCMSNavItemsAdapter = new AppCMSNavItemsAdapter(appCMSBinder.getNavigation(),
@@ -128,6 +130,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
     public void onPause() {
         super.onPause();
         dismiss();
+        appCMSPresenter.setNavItemToCurrentAction(getActivity());
     }
 
     @Override
