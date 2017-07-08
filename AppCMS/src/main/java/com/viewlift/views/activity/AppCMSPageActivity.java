@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -548,8 +549,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     private void createHomeNavItem(final Primary homePageNav) {
         final NavBarItemView homeNavBarItemView =
                 (NavBarItemView) appCMSTabNavContainer.getChildAt(HOME_PAGE_INDEX);
-        homeNavBarItemView.setImage(getIconName(homePageNav));
-        homeNavBarItemView.setLabel(homePageNav.getTitle());
+        if (!TextUtils.isEmpty(getIconName(homePageNav))) {
+            homeNavBarItemView.setImage(getIconName(homePageNav));
+        }
+        if (!TextUtils.isEmpty(homePageNav.getTitle())) {
+            homeNavBarItemView.setLabel(homePageNav.getTitle());
+        }
         homeNavBarItemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -562,19 +567,25 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     }
 
     private void createMoviesNavItem(final Primary moviePageNav) {
-        final NavBarItemView moviesNavBarItemView =
-                (NavBarItemView) appCMSTabNavContainer.getChildAt(MOVIES_PAGE_INDEX);
-        moviesNavBarItemView.setImage(getIconName(moviePageNav));
-        moviesNavBarItemView.setLabel(moviePageNav.getTitle());
-        moviesNavBarItemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectNavItemAndLaunchPage(moviesNavBarItemView,
-                        moviePageNav.getPageId(),
-                        moviePageNav.getTitle());
+        if (moviePageNav != null) {
+            final NavBarItemView moviesNavBarItemView =
+                    (NavBarItemView) appCMSTabNavContainer.getChildAt(MOVIES_PAGE_INDEX);
+            if (!TextUtils.isEmpty(getIconName(moviePageNav))) {
+                moviesNavBarItemView.setImage(getIconName(moviePageNav));
             }
-        });
-        moviesNavBarItemView.setTag(moviePageNav.getPageId());
+            if (!TextUtils.isEmpty(moviePageNav.getTitle())) {
+                moviesNavBarItemView.setLabel(moviePageNav.getTitle());
+            }
+            moviesNavBarItemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    selectNavItemAndLaunchPage(moviesNavBarItemView,
+                            moviePageNav.getPageId(),
+                            moviePageNav.getTitle());
+                }
+            });
+            moviesNavBarItemView.setTag(moviePageNav.getPageId());
+        }
     }
 
     private void createSearchNavItem() {
@@ -593,8 +604,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     private String getIconName(Primary navItem) {
         StringBuffer iconName = new StringBuffer();
-        iconName.append(navItem.getDisplayedPath().toLowerCase().replaceAll(" ", "_"));
-        iconName.append(navItem.getUrl().replaceAll("/", "_"));
+        if (!TextUtils.isEmpty(navItem.getDisplayedPath())) {
+            iconName.append(navItem.getDisplayedPath().toLowerCase().replaceAll(" ", "_"));
+            iconName.append(navItem.getUrl().replaceAll("/", "_"));
+        }
         return iconName.toString();
     }
 
