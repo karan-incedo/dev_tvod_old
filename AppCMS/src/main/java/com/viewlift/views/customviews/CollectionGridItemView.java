@@ -290,7 +290,9 @@ public class CollectionGridItemView extends BaseView {
                     bringToFront = false;
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
-
+                if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
+                    ((TextView) view).setText("");
+                }
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
                 if (TextUtils.isEmpty(((TextView) view).getText())) {
                     if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
