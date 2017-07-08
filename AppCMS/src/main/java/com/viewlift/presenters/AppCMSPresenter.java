@@ -756,9 +756,9 @@ public class AppCMSPresenter {
     public void launchSearchPage() {
         if (currentActivity != null) {
             AppCMSSearchFragment appCMSSearchFragment = AppCMSSearchFragment.newInstance(currentActivity,
-                    Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
-                    Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()),
-                    Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor()));
+                    Long.parseLong(appCMSMain.getBrand().getGeneral().getBackgroundColor().replace("#", ""), 16),
+                    Long.parseLong(appCMSMain.getBrand().getGeneral().getPageTitleColor().replace("#", ""), 16),
+                    Long.parseLong(appCMSMain.getBrand().getGeneral().getTextColor().replace("#", ""), 16));
             appCMSSearchFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
                     currentActivity.getString(R.string.app_cms_search_page_tag));
         }

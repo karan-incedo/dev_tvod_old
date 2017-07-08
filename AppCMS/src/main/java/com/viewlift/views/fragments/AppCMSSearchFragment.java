@@ -20,6 +20,7 @@ import android.widget.ImageButton;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
+import com.viewlift.views.customviews.ViewCreator;
 
 import snagfilms.com.air.appcms.R;
 
@@ -33,13 +34,13 @@ public class AppCMSSearchFragment extends DialogFragment {
     private AppCMSPresenter appCMSPresenter;
 
     public static AppCMSSearchFragment newInstance(Context context,
-                                                   int bgColor,
-                                                   int buttonColor,
-                                                   int textColor) {
+                                                   long bgColor,
+                                                   long buttonColor,
+                                                   long textColor) {
         Bundle args = new Bundle();
-        args.putInt(context.getString(R.string.bg_color_key), bgColor);
-        args.putInt(context.getString(R.string.button_color_key), buttonColor);
-        args.putInt(context.getString(R.string.text_color_key), textColor);
+        args.putLong(context.getString(R.string.bg_color_key), bgColor);
+        args.putLong(context.getString(R.string.button_color_key), buttonColor);
+        args.putLong(context.getString(R.string.text_color_key), textColor);
         AppCMSSearchFragment appCMSSearchFragment = new AppCMSSearchFragment();
         appCMSSearchFragment.setArguments(args);
         return appCMSSearchFragment;
@@ -51,6 +52,9 @@ public class AppCMSSearchFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
         Bundle args = getArguments();
+        long bgColor = 0xff000000 + args.getLong(getContext().getString(R.string.bg_color_key));
+        long buttonColor = args.getLong(getString(R.string.button_color_key));
+        long textColor = args.getLong(getString(R.string.text_color_key));
 
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
@@ -65,8 +69,9 @@ public class AppCMSSearchFragment extends DialogFragment {
         appCMSSearchView.requestFocus();
 
         appCMSGoButton = (Button) view.findViewById(R.id.app_cms_search_button);
-        appCMSGoButton.setBackgroundColor(args.getInt(getString(R.string.button_color_key)));
-        appCMSGoButton.setTextColor(args.getInt(getString(R.string.text_color_key)));
+        appCMSGoButton.setBackgroundColor(0xff000000 + (int) buttonColor);
+        appCMSGoButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor, buttonColor));
+
         appCMSGoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,7 +87,7 @@ public class AppCMSSearchFragment extends DialogFragment {
             }
         });
 
-        setBgColor(args.getInt(getContext().getString(R.string.bg_color_key)));
+        setBgColor((int) bgColor);
 
         if (!BaseView.isTablet(getContext())) {
             appCMSPresenter.restrictPortraitOnly();
