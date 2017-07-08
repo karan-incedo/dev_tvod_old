@@ -340,14 +340,18 @@ public class ViewCreator {
                 componentViewResult.onInternalEvent = appCMSCarouselItemAdapter;
                 break;
             case PAGE_PAGE_CONTROL_VIEW_KEY:
-                int selectedColor =
-                        component.getSelectedColor() != null ? Color.parseColor(getColor(context, component.getSelectedColor())) : 0;
-                int deselectedColor =
-                        component.getUnSelectedColor() != null ? Color.parseColor(getColor(context, component.getUnSelectedColor())) : 0;
+                long selectedColor = Long.parseLong(appCMSPresenter.getAppCMSMain().getBrand()
+                        .getGeneral()
+                        .getBlockTitleColor().replace("#", ""),
+                        16);
+                long deselectedColor = component.getUnSelectedColor() != null ?
+                        Long.valueOf(component.getUnSelectedColor(), 16) : 0L;
+
+                deselectedColor = adjustColor1(deselectedColor, selectedColor);
                 componentViewResult.componentView = new DotSelectorView(context,
                         component,
-                        selectedColor,
-                        deselectedColor);
+                        0xff000000 + (int) selectedColor,
+                        0xff000000 + (int) deselectedColor);
                 int numDots = moduleAPI.getContentData() != null ? moduleAPI.getContentData().size() : 0;
                 ((DotSelectorView) componentViewResult.componentView).addDots(numDots);
                 componentViewResult.onInternalEvent = (DotSelectorView) componentViewResult.componentView;
@@ -546,7 +550,12 @@ public class ViewCreator {
                                 Color.parseColor(getColor(context, component.getStyles().getTextColor()));
                     }
                 }
-                ((TextView) componentViewResult.componentView).setTextColor(textColor);
+                if (componentKey != AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY) {
+                    ((TextView) componentViewResult.componentView).setTextColor(textColor);
+                } else {
+                    ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context,
+                            appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())));
+                }
                 if (!gridElement) {
                     switch (componentKey) {
                         case PAGE_API_TITLE:
@@ -806,7 +815,10 @@ public class ViewCreator {
             case PAGE_VIDEO_STARRATING_KEY:
                 int starBorderColor = Color.parseColor(getColor(context, component.getBorderColor()));
                 int starFillColor = Color.parseColor(getColor(context, component.getFillColor()));
-                float starRating = moduleAPI.getContentData().get(0).getGist().getAverageStarRating();
+                float starRating = 0.0f;
+                if (moduleAPI.getContentData().get(0).getGist().getAverageStarRating() != null) {
+                    starRating = moduleAPI.getContentData().get(0).getGist().getAverageStarRating();
+                }
                 componentViewResult.componentView = new StarRating(context,
                         starBorderColor,
                         starFillColor,
@@ -846,6 +858,14 @@ public class ViewCreator {
         }
         ((TextView) view).setText(infoText.toString());
         view.setAlpha(0.6f);
+    }
+
+    public static long adjustColor1(long color1, long color2) {
+        double ratio = (double) color1 / (double) color2;
+        if (1.0 <= ratio && ratio <= 1.1) {
+            color1 *= 0.8;
+        }
+        return color1;
     }
 
     private String getColor(Context context, String color) {

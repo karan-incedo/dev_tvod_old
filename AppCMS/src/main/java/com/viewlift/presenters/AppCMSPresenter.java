@@ -80,6 +80,7 @@ import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
+import com.viewlift.views.fragments.AppCMSSearchFragment;
 
 import javax.inject.Inject;
 
@@ -491,10 +492,10 @@ public class AppCMSPresenter {
 
     public void launchSearchPage() {
         if (currentActivity != null) {
-            com.viewlift.views.fragments.AppCMSSearchFragment appCMSSearchFragment = com.viewlift.views.fragments.AppCMSSearchFragment.newInstance(currentActivity,
-                    Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
-                    Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()),
-                    Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor()));
+            AppCMSSearchFragment appCMSSearchFragment = AppCMSSearchFragment.newInstance(currentActivity,
+                    Long.parseLong(appCMSMain.getBrand().getGeneral().getBackgroundColor().replace("#", ""), 16),
+                    Long.parseLong(appCMSMain.getBrand().getGeneral().getPageTitleColor().replace("#", ""), 16),
+                    Long.parseLong(appCMSMain.getBrand().getGeneral().getTextColor().replace("#", ""), 16));
             appCMSSearchFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
                     currentActivity.getString(R.string.app_cms_search_page_tag));
         }
@@ -691,9 +692,13 @@ public class AppCMSPresenter {
     }
 
     public void launchErrorActivity(Activity activity) {
-        sendCloseOthersAction(null, true);
-        Intent errorIntent = new Intent(activity, AppCMSErrorActivity.class);
-        activity.startActivity(errorIntent);
+        try {
+            sendCloseOthersAction(null, true);
+            Intent errorIntent = new Intent(activity, AppCMSErrorActivity.class);
+            activity.startActivity(errorIntent);
+        } catch (Exception e) {
+            Log.e(TAG, "Error launching error activity");
+        }
     }
 
     public void getPageIdContent(String baseUrl,
