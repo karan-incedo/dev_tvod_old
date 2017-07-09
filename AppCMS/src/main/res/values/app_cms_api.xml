@@ -132,6 +132,8 @@
     <string name="app_cms_page_api_title_key">title</string>
     <string name="app_cms_page_api_description_key">description</string>
     <string name="app_cms_page_navigation_contact_us_key">mailto</string>
+    <string name="app_cms_page_video_player_with_info_key">AC VideoPlayerWithInfo 01</string>
+    <string name="app_cms_page_api_video_detail_module_key">VideoDetailModule</string>
 
     <string name="app_cms_navigation_page_tag">navigation</string>
     <string name="app_cms_search_page_tag">search</string>

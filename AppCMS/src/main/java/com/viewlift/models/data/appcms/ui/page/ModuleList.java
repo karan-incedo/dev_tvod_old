@@ -21,7 +21,10 @@ public class ModuleList implements Module {
     private String view;
     @SerializedName("components")
     @Expose
-    private List<Component> components  ;
+    private List<Component> components;
+    @SerializedName("type")
+    @Expose
+    private String type;
 
     public String getId() {
         return id;
@@ -63,4 +66,11 @@ public class ModuleList implements Module {
         this.components = components;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }

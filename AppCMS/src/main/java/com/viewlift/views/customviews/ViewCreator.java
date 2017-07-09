@@ -997,7 +997,10 @@ public class ViewCreator {
             case PAGE_VIDEO_STARRATING_KEY:
                 int starBorderColor = Color.parseColor(getColor(context, component.getBorderColor()));
                 int starFillColor = Color.parseColor(getColor(context, component.getFillColor()));
-                float starRating = moduleAPI.getContentData().get(0).getGist().getAverageStarRating();
+                float starRating = 0.0f;
+                if (moduleAPI.getContentData().get(0).getGist().getAverageStarRating() != null) {
+                    starRating = moduleAPI.getContentData().get(0).getGist().getAverageStarRating();
+                }
                 componentViewResult.componentView = new StarRating(context,
                         starBorderColor,
                         starFillColor,
@@ -1063,6 +1066,11 @@ public class ViewCreator {
 
             for (Module moduleAPI : appCMSPageAPI.getModules()) {
                 if (module.getId().equals(moduleAPI.getId())) {
+                    return moduleAPI;
+                } else if (jsonValueKeyMap.get(module.getType()) != null &&
+                        jsonValueKeyMap.get(moduleAPI.getModuleType()) != null &&
+                        jsonValueKeyMap.get(module.getType()) ==
+                        jsonValueKeyMap.get(moduleAPI.getModuleType())) {
                     return moduleAPI;
                 }
             }
