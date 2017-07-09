@@ -30,6 +30,7 @@ import snagfilms.com.air.appcms.R;
 public class AppCMSSearchFragment extends DialogFragment {
     private SearchView appCMSSearchView;
     private Button appCMSGoButton;
+    private AppCMSPresenter appCMSPresenter;
 
     public static AppCMSSearchFragment newInstance(Context context,
                                                    int bgColor,
@@ -51,7 +52,7 @@ public class AppCMSSearchFragment extends DialogFragment {
 
         Bundle args = getArguments();
 
-        final AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
+        appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
@@ -105,6 +106,7 @@ public class AppCMSSearchFragment extends DialogFragment {
     @Override
     public void onPause() {
         super.onPause();
+        appCMSPresenter.setNavItemToCurrentAction(getActivity());
         dismiss();
     }
 

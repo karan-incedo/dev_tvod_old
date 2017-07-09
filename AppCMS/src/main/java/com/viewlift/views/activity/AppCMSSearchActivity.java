@@ -133,6 +133,9 @@ public class AppCMSSearchActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        final AppCMSPresenter appCMSPresenter =
+                ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
+        appCMSPresenter.setNavItemToCurrentAction(this);
         finish();
     }
 
