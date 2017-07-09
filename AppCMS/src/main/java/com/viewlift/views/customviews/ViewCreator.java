@@ -166,7 +166,7 @@ public class ViewCreator {
                     appCMSPresenter,
                     this);
         } else {
-            moduleView = new ModuleView<>(context, module);
+            moduleView = new ModuleView<>(context, module, true);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
             if (module.getComponents() != null) {
                 for (int i = 0; i < module.getComponents().size(); i++) {

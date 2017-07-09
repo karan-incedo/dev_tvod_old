@@ -5,6 +5,6 @@
     <integer name="app_cms_login_selector_margin">98</integer>
     <integer name="app_cms_login_input_textsize">10</integer>
     <integer name="app_cms_login_input_horizontal_margin">8</integer>
-    <integer name="app_cms_login_underline_padding">32</integer>
+    <integer name="app_cms_login_underline_padding">16</integer>
     <integer name="app_cms_border_stroke_width">4</integer>
 </resources>
