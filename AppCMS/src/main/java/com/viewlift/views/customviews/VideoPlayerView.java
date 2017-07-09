@@ -159,6 +159,12 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         return -1L;
     }
 
+    public void setCurrentPosition(long currentPosition) {
+        if (player != null) {
+            player.seekTo(currentPosition);
+        }
+    }
+
     private void init(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         initializePlayer(context, attrs, defStyleAttr);
         playerState = new PlayerState();

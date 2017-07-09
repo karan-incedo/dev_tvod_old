@@ -32,6 +32,8 @@ import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.iid.InstanceID;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
+import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
 import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
@@ -176,6 +178,7 @@ public class AppCMSPresenter {
     private Map<String, String> actionToPageAPIUrlMap;
     private Map<String, String> actionToPageNameMap;
     private Map<String, String> pageIdToPageNameMap;
+    private Map<AppCMSActionType, MetaPage> actionTypeToMetaPageMap;
     private List<Action1<Boolean>> onOrientationChangeHandlers;
     private Map<String, List<OnInternalEvent>> onActionInternalEvents;
     private Stack<String> currentActions;
@@ -390,6 +393,7 @@ public class AppCMSPresenter {
         this.actionToPageAPIUrlMap = new HashMap<>();
         this.actionToPageNameMap = new HashMap<>();
         this.pageIdToPageNameMap = new HashMap();
+        this.actionTypeToMetaPageMap = new HashMap<>();
         this.onOrientationChangeHandlers = new ArrayList<>();
         this.onActionInternalEvents = new HashMap<>();
         this.currentActions = new Stack<>();
@@ -416,7 +420,8 @@ public class AppCMSPresenter {
 
     public boolean launchVideoPlayer(final String filmId,
                                      final String pagePath,
-                                     final String filmTitle) {
+                                     final String filmTitle,
+                                     final ContentDatum contentDatum) {
         boolean result = false;
         if (currentActivity != null &&
                 !loadingPage && appCMSMain != null &&
@@ -455,6 +460,7 @@ public class AppCMSPresenter {
                                             action,
                                             filmTitle,
                                             extraData,
+                                            contentDatum,
                                             false);
                                 }
                             }
@@ -495,6 +501,7 @@ public class AppCMSPresenter {
                                               String action,
                                               String filmTitle,
                                               String[] extraData,
+                                              ContentDatum contentDatum,
                                               final boolean closeLauncher) {
         boolean result = false;
         Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
@@ -517,6 +524,11 @@ public class AppCMSPresenter {
                         requestAds = false;
                     }
                     playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), requestAds);
+                    if (contentDatum != null &&
+                            contentDatum.getGist() != null &&
+                            contentDatum.getGist().getWatchedTime() != null) {
+                        playVideoIntent.putExtra(currentActivity.getString(R.string.watched_time_key), contentDatum.getGist().getWatchedTime());
+                    }
                 } else {
                     playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), false);
                 }
@@ -857,6 +869,32 @@ public class AppCMSPresenter {
         });
     }
 
+    public void getHistoryData(final Action1<AppCMSHistoryResult> appCMSHistoryResultAction) {
+        if (currentActivity != null) {
+            MetaPage historyMetaPage = actionTypeToMetaPageMap.get(AppCMSActionType.HISTORY_PAGE);
+            AppCMSPageUI appCMSPageUI = navigationPages.get(historyMetaPage.getPageId());
+            getHistoryPageContent(appCMSMain.getApiBaseUrl(),
+                    historyMetaPage.getPageAPI(),
+                    appCMSMain.getSite(),
+                    true,
+                    getPageId(appCMSPageUI),
+                    new AppCMSHistoryAPIAction(true,
+                            false,
+                            true,
+                            appCMSPageUI,
+                            historyMetaPage.getPageId(),
+                            historyMetaPage.getPageId(),
+                            historyMetaPage.getPageName(),
+                            false,
+                            null) {
+                        @Override
+                        public void call(AppCMSHistoryResult appCMSHistoryResult) {
+                            Observable.just(appCMSHistoryResult).subscribe(appCMSHistoryResultAction);
+                        }
+                    });
+        }
+    }
+
     public void navigateToHistoryPage(String pageId, String pageTitle, String url,
                                       boolean launchActivity) {
 
@@ -1081,42 +1119,91 @@ public class AppCMSPresenter {
                             sendCloseAction,
                             searchQuery) {
                         @Override
-                        public void call(AppCMSPageAPI appCMSPageAPI) {
+                        public void call(final AppCMSPageAPI appCMSPageAPI) {
                             if (appCMSPageAPI != null) {
                                 cancelInternalEvents();
                                 pushActionInternalEvents(this.pageId + BaseView.isLandscape(currentActivity));
                                 navigationPageData.put(this.pageId, appCMSPageAPI);
-                                if (this.launchActivity) {
-                                    launchPageActivity(currentActivity,
-                                            this.appCMSPageUI,
-                                            appCMSPageAPI,
-                                            this.pageId,
-                                            this.pageTitle,
-                                            pageIdToPageNameMap.get(this.pageId),
-                                            loadFromFile,
-                                            this.appbarPresent,
-                                            this.fullscreenEnabled,
-                                            this.navbarPresent,
-                                            this.sendCloseAction,
-                                            this.searchQuery);
+                                if (isUserLoggedIn(currentActivity)) {
+                                    final AppCMSPageAPIAction appCMSPageAPIAction = this;
+                                    getHistoryData(new Action1<AppCMSHistoryResult>() {
+                                        @Override
+                                        public void call(AppCMSHistoryResult appCMSHistoryResult) {
+                                            for (Module module : appCMSPageAPI.getModules()) {
+                                                if (jsonValueKeyMap.get(module.getModuleType()) ==
+                                                        AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
+                                                    AppCMSPageAPI pageAPI =
+                                                            appCMSHistoryResult.convertToAppCMSPageAPI(module.getId());
+                                                    module.setContentData(pageAPI.getModules().get(0).getContentData());
+                                                }
+                                            }
+                                            if (appCMSPageAPIAction.launchActivity) {
+                                                launchPageActivity(currentActivity,
+                                                        appCMSPageAPIAction.appCMSPageUI,
+                                                        appCMSPageAPI,
+                                                        appCMSPageAPIAction.pageId,
+                                                        appCMSPageAPIAction.pageTitle,
+                                                        pageIdToPageNameMap.get(appCMSPageAPIAction.pageId),
+                                                        loadFromFile,
+                                                        appCMSPageAPIAction.appbarPresent,
+                                                        appCMSPageAPIAction.fullscreenEnabled,
+                                                        appCMSPageAPIAction.navbarPresent,
+                                                        appCMSPageAPIAction.sendCloseAction,
+                                                        appCMSPageAPIAction.searchQuery);
+                                            } else {
+                                                Bundle args = getPageActivityBundle(currentActivity,
+                                                        appCMSPageAPIAction.appCMSPageUI,
+                                                        appCMSPageAPI,
+                                                        appCMSPageAPIAction.pageId,
+                                                        appCMSPageAPIAction.pageTitle,
+                                                        pageIdToPageNameMap.get(appCMSPageAPIAction.pageId),
+                                                        loadFromFile,
+                                                        appCMSPageAPIAction.appbarPresent,
+                                                        appCMSPageAPIAction.fullscreenEnabled,
+                                                        appCMSPageAPIAction.navbarPresent,
+                                                        false,
+                                                        appCMSPageAPIAction.searchQuery);
+                                                Intent updatePageIntent =
+                                                        new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                                        args);
+                                                currentActivity.sendBroadcast(updatePageIntent);
+                                            }
+                                        }
+                                    });
                                 } else {
-                                    Bundle args = getPageActivityBundle(currentActivity,
-                                            this.appCMSPageUI,
-                                            appCMSPageAPI,
-                                            this.pageId,
-                                            this.pageTitle,
-                                            pageIdToPageNameMap.get(this.pageId),
-                                            loadFromFile,
-                                            this.appbarPresent,
-                                            this.fullscreenEnabled,
-                                            this.navbarPresent,
-                                            false,
-                                            this.searchQuery);
-                                    Intent updatePageIntent =
-                                            new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                    updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                            args);
-                                    currentActivity.sendBroadcast(updatePageIntent);
+                                    if (this.launchActivity) {
+                                        launchPageActivity(currentActivity,
+                                                this.appCMSPageUI,
+                                                appCMSPageAPI,
+                                                this.pageId,
+                                                this.pageTitle,
+                                                pageIdToPageNameMap.get(this.pageId),
+                                                loadFromFile,
+                                                this.appbarPresent,
+                                                this.fullscreenEnabled,
+                                                this.navbarPresent,
+                                                this.sendCloseAction,
+                                                this.searchQuery);
+                                    } else {
+                                        Bundle args = getPageActivityBundle(currentActivity,
+                                                this.appCMSPageUI,
+                                                appCMSPageAPI,
+                                                this.pageId,
+                                                this.pageTitle,
+                                                pageIdToPageNameMap.get(this.pageId),
+                                                loadFromFile,
+                                                this.appbarPresent,
+                                                this.fullscreenEnabled,
+                                                this.navbarPresent,
+                                                false,
+                                                this.searchQuery);
+                                        Intent updatePageIntent =
+                                                new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                        updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                                args);
+                                        currentActivity.sendBroadcast(updatePageIntent);
+                                    }
                                 }
                             } else {
                                 sendStopLoadingPageAction();
@@ -1935,6 +2022,7 @@ public class AppCMSPresenter {
                             actionToPageMap.put(action, appCMSPageUI);
                             actionToPageNameMap.put(action, metaPage.getPageName());
                             actionToPageAPIUrlMap.put(action, metaPage.getPageAPI());
+                            actionTypeToMetaPageMap.put(actionToActionTypeMap.get(action), metaPage);
                             Log.d(TAG, "Action: " + action + "  PageAPI URL: "
                                     + metaPage.getPageAPI());
                         }

@@ -189,6 +189,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                             action,
                             title,
                             extraData,
+                            data,
                             false)) {
                         Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
                                 + " action: " + action + " hlsUrl: " + hlsUrl);
@@ -201,7 +202,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     String filmId = data.getGist().getId();
                     String permaLink = data.getGist().getPermalink();
                     String title = data.getGist().getTitle();
-                    if (!appCMSPresenter.launchVideoPlayer(filmId, permaLink, title)) {
+                    if (!appCMSPresenter.launchVideoPlayer(filmId, permaLink, title, data)) {
                         Log.e(TAG, "Could not launch play action: " +
                                 " filmId: " +
                                 filmId +
@@ -223,6 +224,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                         defaultAction,
                         title,
+                        null,
                         null,
                         false)) {
                     Log.e(TAG, "Could not launch action: " +

@@ -245,6 +245,7 @@ public class LoginModule extends ModuleView {
                                                 component.getAction(),
                                                 null,
                                                 authData,
+                                                null,
                                                 true);
                                     }
                                 }

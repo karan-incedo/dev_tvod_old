@@ -49,6 +49,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         String filmId = extraData[2];
         String adsUrl = intent.getStringExtra(getString(R.string.video_player_ads_url_key));
         String bgColor = intent.getStringExtra(getString(R.string.app_cms_bg_color_key));
+        Integer watchedTime = intent.getIntExtra(getString(R.string.watched_time_key), 0);
         boolean playAds = intent.getBooleanExtra(getString(R.string.play_ads_key), true);
 
         if (!TextUtils.isEmpty(bgColor)) {
@@ -65,7 +66,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                         hlsUrl,
                         filmId,
                         adsUrl,
-                        playAds);
+                        playAds,
+                        watchedTime);
         fragmentTransaction.add(R.id.app_cms_play_video_page_container,
                 appCMSPlayVideoFragment,
                 getString(R.string.video_fragment_tag_key));

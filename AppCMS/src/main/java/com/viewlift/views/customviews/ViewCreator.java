@@ -139,7 +139,10 @@ public class ViewCreator {
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList module : modulesList) {
-            if (!modulesToIgnore.contains(module.getView())) {
+            if (!modulesToIgnore.contains(module.getView()) &&
+                    (appCMSPresenter.isUserLoggedIn(context) ||
+                    (!appCMSPresenter.isUserLoggedIn(context) &&
+                    jsonValueKeyMap.get(module.getView()) != AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY))) {
                 Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
                 View childView = createModuleView(context, module, moduleAPI, pageView,
                         jsonValueKeyMap,
@@ -507,6 +510,7 @@ public class ViewCreator {
                                             component.getAction(),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
                                             extraData,
+                                            null,
                                             false)) {
                                         Log.e(TAG, "Could not launch action: " +
                                                 " permalink: " +
@@ -553,6 +557,7 @@ public class ViewCreator {
                                                 component.getAction(),
                                                 moduleAPI.getContentData().get(0).getGist().getTitle(),
                                                 extraData,
+                                                moduleAPI.getContentData().get(0),
                                                 false)) {
                                             Log.e(TAG, "Could not launch action: " +
                                                     " permalink: " +
@@ -589,6 +594,7 @@ public class ViewCreator {
                                         component.getAction(),
                                         null,
                                         null,
+                                        null,
                                         false)) {
                                     Log.e(TAG, "Could not launch action: " +
                                             " action: " +
@@ -621,6 +627,7 @@ public class ViewCreator {
                                             component.getAction(),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
                                             extraData,
+                                            moduleAPI.getContentData().get(0),
                                             false)) {
                                         Log.e(TAG, "Could not launch action: " +
                                                 " permalink: " +
