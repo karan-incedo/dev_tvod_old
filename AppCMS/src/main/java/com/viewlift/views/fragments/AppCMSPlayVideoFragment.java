@@ -296,7 +296,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
-        Log.e(TAG, "Ad Error: " + adErrorEvent.getError().getMessage());
+        Log.e(TAG, "Ad DialogType: " + adErrorEvent.getError().getMessage());
         videoPlayerView.resumePlayer();
     }
 

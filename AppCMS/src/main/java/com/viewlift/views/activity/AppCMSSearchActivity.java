@@ -199,7 +199,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                 try {
                     return appCMSSearchCall.call(params[0]);
                 } catch (IOException e) {
-                    Log.e(TAG, "I/O Error retrieving search data from URL: " + params[0]);
+                    Log.e(TAG, "I/O DialogType retrieving search data from URL: " + params[0]);
                 }
             }
             return null;

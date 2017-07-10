@@ -140,7 +140,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                         try {
                             getSupportFragmentManager().popBackStack();
                         } catch (IllegalStateException e) {
-                            Log.e(TAG, "Error popping back stack: " + e.getMessage());
+                            Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                         }
                         handleBack(true, false, true);
                         if (appCMSBinderStack.size() > 0) {
@@ -296,13 +296,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     @Override
     public void onError(AppCMSBinder appCMSBinder) {
         if (appCMSBinder != null) {
-            Log.e(TAG, "Nav item - Error attempting to launch page: " + appCMSBinder.getPageName() + " - " + appCMSBinder.getPageId());
+            Log.e(TAG, "Nav item - DialogType attempting to launch page: " + appCMSBinder.getPageName() + " - " + appCMSBinder.getPageId());
         }
         if (appCMSBinderStack.size() > 0 && appCMSBinderStack.peek().equals(appCMSBinder.getPageId())) {
             try {
                 getSupportFragmentManager().popBackStackImmediate();
             } catch (IllegalStateException e) {
-                Log.e(TAG, "Error popping back stack: " + e.getMessage());
+                Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
             }
             handleBack(true, false, false);
         }
@@ -500,7 +500,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 try {
                     getSupportFragmentManager().popBackStack();
                 } catch (IllegalStateException e) {
-                    Log.e(TAG, "Error popping back stack: " + e.getMessage());
+                    Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                 }
                 handleBack(true, false, false);
             }

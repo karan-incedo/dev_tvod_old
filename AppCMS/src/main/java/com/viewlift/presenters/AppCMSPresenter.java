@@ -210,8 +210,8 @@ public class AppCMSPresenter {
         PLAY, RESUME, PING, AD_REQUEST, AD_IMPRESSION
     }
 
-    public enum Error {
-        NETWORK, SIGNIN
+    public enum DialogType {
+        NETWORK, SIGNIN, RESET_PASSWORD
     }
 
     private static class BeaconRunnable implements Runnable {
@@ -508,7 +508,7 @@ public class AppCMSPresenter {
         boolean result = false;
         Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
         if (!isNetworkConnected()) {
-            showErrorDialog(Error.NETWORK, null);
+            showDialog(DialogType.NETWORK, null);
         } else if (currentActivity != null && !loadingPage) {
             final AppCMSActionType actionType = actionToActionTypeMap.get(action);
             if (actionType == null) {
@@ -656,6 +656,7 @@ public class AppCMSPresenter {
                                                                         record.getContentResponse().getGist().getId() != null &&
                                                                         record.getContentResponse().getGist().getId().equals(moduleGist.getId())) {
                                                                     Gist recordGist = record.getContentResponse().getGist();
+                                                                    moduleGist.setWatchedTime(recordGist.getWatchedTime());
                                                                     moduleGist.setWatchedPercentage(recordGist.getWatchedPercentage());
                                                                 }
                                                             }
@@ -1086,8 +1087,12 @@ public class AppCMSPresenter {
                         public void call(ForgotPasswordResponse forgotPasswordResponse) {
                             if (forgotPasswordResponse != null && TextUtils.isEmpty(forgotPasswordResponse.getError())) {
                                 Log.d(TAG, "Successfully reset password for email: " + email);
+                                showDialog(DialogType.RESET_PASSWORD,
+                                        currentActivity.getString(R.string.app_cms_reset_password_success_description,
+                                                email));
                             } else if (forgotPasswordResponse != null) {
                                 Log.e(TAG, "Failed to reset password for email: " + email);
+                                showDialog(DialogType.RESET_PASSWORD, forgotPasswordResponse.getError());
                             }
                         }
                     });
@@ -1316,7 +1321,7 @@ public class AppCMSPresenter {
         Intent stopLoadingPageIntent =
                 new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
         currentActivity.sendBroadcast(stopLoadingPageIntent);
-        showErrorDialog(Error.NETWORK, null);
+        showDialog(DialogType.NETWORK, null);
     }
 
     public void launchErrorActivity(Activity activity, PlatformType platformType) {
@@ -1326,14 +1331,14 @@ public class AppCMSPresenter {
                 Intent errorIntent = new Intent(activity, AppCMSErrorActivity.class);
                 activity.startActivity(errorIntent);
             } catch (Exception e) {
-                Log.e(TAG, "Error launching Mobile Error Activity");
+                Log.e(TAG, "DialogType launching Mobile DialogType Activity");
             }
         } else if (platformType == PlatformType.TV) {
             try {
                 Intent errorIntent = new Intent(activity, Class.forName(tvErrorScreenPackage));
                 activity.startActivity(errorIntent);
             } catch (Exception e) {
-                Log.e(TAG, "Error launching TV Error Activity");
+                Log.e(TAG, "DialogType launching TV DialogType Activity");
             }
         }
     }
@@ -1498,7 +1503,7 @@ public class AppCMSPresenter {
             @Override
             public void call(AppCMSMain main) {
                 if (main == null) {
-                    Log.e(TAG, "Error retrieving main.json");
+                    Log.e(TAG, "DialogType retrieving main.json");
                     launchErrorActivity(activity, platformType);
                 } else if (TextUtils.isEmpty(main
                         .getAndroid())) {
@@ -1571,17 +1576,20 @@ public class AppCMSPresenter {
         dialog.show();
     }
 
-    public void showErrorDialog(Error error, String optionalMessage) {
+    public void showDialog(DialogType dialogType, String optionalMessage) {
         if (currentActivity != null) {
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
             String title;
             String message;
-            switch (error) {
+            switch (dialogType) {
                 case SIGNIN:
                     title = currentActivity.getString(R.string.app_cms_signin_error_title);
                     message = optionalMessage;
                     break;
+                case RESET_PASSWORD:
+                    title = currentActivity.getString(R.string.app_cms_reset_password_title);
+                    message = optionalMessage;
                 default:
                     title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
                     message = currentActivity.getString(R.string.app_cms_network_connectivity_error_message);
@@ -1613,7 +1621,7 @@ public class AppCMSPresenter {
                     try {
                         dialog.show();
                     } catch (Exception e) {
-                        Log.e(TAG, "An exception has occurred when attempting to show the error dialog: "
+                        Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
                                 + e.toString());
                     }
                 }
@@ -1735,7 +1743,7 @@ public class AppCMSPresenter {
                         currentPositionSecs,
                         URLEncoder.encode(uid, utfEncoding));
             } catch (UnsupportedEncodingException e) {
-                Log.e(TAG, "Error encoding Beacon URL parameters: " + e.toString());
+                Log.e(TAG, "DialogType encoding Beacon URL parameters: " + e.toString());
             }
         }
         return url;
@@ -1787,7 +1795,7 @@ public class AppCMSPresenter {
                         if (signInResponse == null) {
                             // Show log error
                             Log.e(TAG, "Email and password are not valid.");
-                            showErrorDialog(Error.SIGNIN, currentActivity.getString(
+                            showDialog(DialogType.SIGNIN, currentActivity.getString(
                                     R.string.app_cms_error_email_password));
                         } else {
                             refreshToken = signInResponse.getRefreshToken();

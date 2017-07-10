@@ -49,7 +49,7 @@ public class AppCMSRefreshIdentityCall {
 
             @Override
             public void onFailure(Call<RefreshIdentityResponse> call, Throwable t) {
-                Log.e(TAG, "Error retrieving Refresh Identity Response");
+                Log.e(TAG, "DialogType retrieving Refresh Identity Response");
                 Observable.just((RefreshIdentityResponse) null).subscribe(readyAction);
             }
         });

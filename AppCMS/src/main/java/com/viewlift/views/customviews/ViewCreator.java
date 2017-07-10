@@ -773,6 +773,7 @@ public class ViewCreator {
                                         componentViewResult.componentView,
                                         component);
                             }
+                            break;
                         default:
                             if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText());
