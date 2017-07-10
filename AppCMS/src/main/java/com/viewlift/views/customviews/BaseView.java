@@ -387,7 +387,13 @@ public abstract class BaseView extends FrameLayout {
                     break;
 
                 case PAGE_API_TITLE:
-                    viewHeight *= 1.5;
+                    viewHeight *= 1.1;
+                    break;
+
+                case PAGE_ADD_TO_WATCHLIST_KEY:
+                    if (isTablet(getContext())) {
+                        lm -= viewWidth * 1.2;
+                    }
                     break;
 
                 default:

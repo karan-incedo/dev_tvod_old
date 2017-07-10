@@ -1590,6 +1590,7 @@ public class AppCMSPresenter {
                 case RESET_PASSWORD:
                     title = currentActivity.getString(R.string.app_cms_reset_password_title);
                     message = optionalMessage;
+                    break;
                 default:
                     title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
                     message = currentActivity.getString(R.string.app_cms_network_connectivity_error_message);

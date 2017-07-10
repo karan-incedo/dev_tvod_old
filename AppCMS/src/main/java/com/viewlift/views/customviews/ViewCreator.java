@@ -82,6 +82,45 @@ public class ViewCreator {
         boolean useWidthOfScreen;
     }
 
+    public static class UpdateImageIconAction implements Action1<UserVideoStatusResponse> {
+        public final ImageButton imageButton;
+
+        public UpdateImageIconAction(ImageButton imageButton) {
+            this.imageButton = imageButton;
+        }
+
+        @Override
+        public void call(UserVideoStatusResponse userVideoStatusResponse) {
+            if (userVideoStatusResponse != null) {
+                if (userVideoStatusResponse.getQueued()) {
+                    imageButton.setImageResource(R.drawable.remove_from_watchlist);
+                    imageButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // FIXME: 7/7/17 remove from watchlist api.
+                        }
+                    });
+                } else {
+                    imageButton.setImageResource(R.drawable.add_to_watchlist);
+                    imageButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // FIXME: 7/7/17 add to watchlist api.
+                        }
+                    });
+                }
+            } else {
+                imageButton.setImageResource(R.drawable.add_to_watchlist);
+                imageButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // FIXME: 7/7/17 add to watchlist api.
+                    }
+                });
+            }
+        }
+    }
+
     ComponentViewResult componentViewResult;
 
     public void removeLruCacheItem(Context context, String pageId) {
@@ -311,10 +350,6 @@ public class ViewCreator {
         }
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
 
-        if (moduleAPI == null) {
-            return;
-        }
-
         if (componentType == null) {
             componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
@@ -323,10 +358,6 @@ public class ViewCreator {
 
         if (componentKey == null) {
             componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
-        }
-
-        if (componentKey == AppCMSUIKeyType.PAGE_REMOVEALL_KEY) {
-            return;
         }
 
         switch (componentType) {
@@ -429,9 +460,12 @@ public class ViewCreator {
 //             FIXME: 7/7/17 Will be used for dictating the button order - download/add to watchlist.
             case PAGE_BUTTON_KEY:
                 if (componentKey == AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) {
-                    return;
+                    if (!appCMSPresenter.isUserLoggedIn(context)) {
+                        return;
+                    }
                 }
-                if (componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY) {
+                if (componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY &&
+                        componentKey != AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) {
                     componentViewResult.componentView = new Button(context);
                 } else {
                     componentViewResult.componentView = new ImageButton(context);
@@ -467,32 +501,10 @@ public class ViewCreator {
                         break;
 
                     case PAGE_ADD_TO_WATCHLIST_KEY:
+                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         appCMSPresenter.getUserVideoStatus(
                                 moduleAPI.getContentData().get(0).getGist().getId(),
-                                new Action1<UserVideoStatusResponse>() {
-                                    @Override
-                                    public void call(final UserVideoStatusResponse userVideoStatusResponse) {
-                                        if (userVideoStatusResponse != null) {
-                                            if (userVideoStatusResponse.getQueued()) {
-                                                componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.remove_from_watchlist));
-                                                componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        // FIXME: 7/7/17 remove from watchlist api.
-                                                    }
-                                                });
-                                            } else {
-                                                componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.add_to_watchlist));
-                                                componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        // FIXME: 7/7/17 add to watchlist api.
-                                                    }
-                                                });
-                                            }
-                                        }
-                                    }
-                                });
+                                new UpdateImageIconAction((ImageButton) componentViewResult.componentView));
                         break;
 
                     case PAGE_VIDEO_WATCH_TRAILER_KEY:
@@ -854,7 +866,6 @@ public class ViewCreator {
                     } else {
                         ((ProgressBar) componentViewResult.componentView).setProgress(0);
                     }
-                    BaseView.setViewWidth(context, component.getLayout(), FrameLayout.LayoutParams.MATCH_PARENT);
                 } else {
                     componentViewResult.componentView.setVisibility(View.GONE);
                 }
