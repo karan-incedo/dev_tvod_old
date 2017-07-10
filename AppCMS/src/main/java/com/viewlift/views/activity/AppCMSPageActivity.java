@@ -23,7 +23,7 @@ import android.widget.RelativeLayout;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
-import com.viewlift.models.data.appcms.ui.android.Primary;
+import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -450,7 +450,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     private void handleNavbar(AppCMSBinder appCMSBinder) {
         final Navigation navigation = appCMSBinder.getNavigation();
-        if (navigation.getPrimary().size() == 0 || !appCMSBinder.isNavbarPresent()) {
+        if (navigation.getNavigationPrimary().size() == 0 || !appCMSBinder.isNavbarPresent()) {
             appCMSTabNavContainer.setVisibility(View.GONE);
         } else {
             appCMSTabNavContainer.setVisibility(View.VISIBLE);
@@ -546,7 +546,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         });
     }
 
-    private void createHomeNavItem(final Primary homePageNav) {
+    private void createHomeNavItem(final NavigationPrimary homePageNav) {
         final NavBarItemView homeNavBarItemView =
                 (NavBarItemView) appCMSTabNavContainer.getChildAt(HOME_PAGE_INDEX);
         homeNavBarItemView.setImage(getIconName(homePageNav));
@@ -562,7 +562,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         homeNavBarItemView.setTag(homePageNav.getPageId());
     }
 
-    private void createMoviesNavItem(final Primary moviePageNav) {
+    private void createMoviesNavItem(final NavigationPrimary moviePageNav) {
         final NavBarItemView moviesNavBarItemView =
                 (NavBarItemView) appCMSTabNavContainer.getChildAt(MOVIES_PAGE_INDEX);
         moviesNavBarItemView.setImage(getIconName(moviePageNav));
@@ -592,7 +592,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         });
     }
 
-    private String getIconName(Primary navItem) {
+    private String getIconName(NavigationPrimary navItem) {
         StringBuffer iconName = new StringBuffer();
         iconName.append(navItem.getDisplayedPath().toLowerCase().replaceAll(" ", "_"));
         iconName.append(navItem.getUrl().replaceAll("/", "_"));

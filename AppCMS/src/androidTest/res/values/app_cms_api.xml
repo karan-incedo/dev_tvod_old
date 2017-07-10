@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary app values -->
+    <NavigationPrimarymary app values -->
     <string name="app_cms_api_baseurl">https://appcms.viewlift.com/</string>
     <string name="app_cms_main_url">%1$s/%2$s/main.json</string>
     <string name="app_cms_app_name">0f11bfb4-bf6c-4702-9883-1d24c4a5ba60</string>

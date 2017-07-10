@@ -45,8 +45,8 @@ import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
-import com.viewlift.models.data.appcms.ui.android.Primary;
-import com.viewlift.models.data.appcms.ui.android.User;
+import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
+import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.FacebookLoginResponse;
 import com.viewlift.models.data.appcms.ui.authentication.ForgotPasswordResponse;
 import com.viewlift.models.data.appcms.ui.authentication.RefreshIdentityResponse;
@@ -1398,7 +1398,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             SharedPreferences sharedPrefs = currentActivity.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
             sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, null).apply();
-            Primary homePageNavItem = findHomePageNavItem();
+            NavigationPrimary homePageNavItem = findHomePageNavItem();
             if (homePageNavItem != null) {
                 navigateToPage(homePageNavItem.getPageId(),
                         homePageNavItem.getTitle(),
@@ -1469,21 +1469,21 @@ public class AppCMSPresenter {
         }
     }
 
-    public Primary findHomePageNavItem() {
-        for (Primary primary : navigation.getPrimary()) {
-            AppCMSUIKeyType navTitle = jsonValueKeyMap.get(primary.getTitle());
+    public NavigationPrimary findHomePageNavItem() {
+        for (NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()) {
+            AppCMSUIKeyType navTitle = jsonValueKeyMap.get(navigationPrimary.getTitle());
             if (navTitle == AppCMSUIKeyType.ANDROID_HOME_NAV_KEY) {
-                return primary;
+                return navigationPrimary;
             }
         }
         return null;
     }
 
-    public Primary findMoviesPageNavItem() {
-        for (Primary primary : navigation.getPrimary()) {
-            AppCMSUIKeyType navTitle = jsonValueKeyMap.get(primary.getTitle());
+    public NavigationPrimary findMoviesPageNavItem() {
+        for (NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()) {
+            AppCMSUIKeyType navTitle = jsonValueKeyMap.get(navigationPrimary.getTitle());
             if (navTitle == AppCMSUIKeyType.ANDROID_MOVIES_NAV_KEY) {
-                return primary;
+                return navigationPrimary;
             }
         }
         return null;
@@ -1540,15 +1540,15 @@ public class AppCMSPresenter {
     }
 
     public boolean isActionAPage(String action) {
-        for (Primary primary : navigation.getPrimary()) {
-            if (!TextUtils.isEmpty(primary.getPageId()) && action.contains(primary.getPageId())) {
+        for (NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()) {
+            if (!TextUtils.isEmpty(navigationPrimary.getPageId()) && action.contains(navigationPrimary.getPageId())) {
                 return true;
             }
         }
 
-        for (User user : navigation.getUser()) {
-            if (!TextUtils.isEmpty(user.getPageId()) &&
-                    action.contains(user.getPageId())) {
+        for (NavigationUser navigationUser : navigation.getNavigationUser()) {
+            if (!TextUtils.isEmpty(navigationUser.getPageId()) &&
+                    action.contains(navigationUser.getPageId())) {
                 return true;
             }
         }
@@ -1824,7 +1824,7 @@ public class AppCMSPresenter {
                             if (refreshIdentityResponse != null) {
                                 setLoggedInUser(currentActivity, refreshIdentityResponse.getId());
                                 setRefreshToken(currentActivity, refreshIdentityResponse.getRefreshToken());
-                                Primary homePageNavItem = findHomePageNavItem();
+                                NavigationPrimary homePageNavItem = findHomePageNavItem();
                                 if (homePageNavItem != null) {
                                     navigateToPage(homePageNavItem.getPageId(),
                                             homePageNavItem.getTitle(),
@@ -2169,7 +2169,7 @@ public class AppCMSPresenter {
                                 @Override
                                 public void call() {
                                     Log.d(TAG, "Launching first page: " + firstPage.getPageName());
-                                    Primary homePageNav = findHomePageNavItem();
+                                    NavigationPrimary homePageNav = findHomePageNavItem();
                                     boolean launchSuccess = navigateToTVPage(homePageNav.getPageId(),
                                             homePageNav.getTitle(),
                                             homePageNav.getUrl(),

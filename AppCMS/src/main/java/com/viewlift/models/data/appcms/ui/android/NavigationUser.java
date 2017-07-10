@@ -5,7 +5,7 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Primary {
+public class NavigationUser {
 
     @SerializedName("title")
     @Expose
@@ -22,9 +22,9 @@ public class Primary {
     @SerializedName("anchor")
     @Expose
     private String anchor;
-    @SerializedName("displayedPath")
+    @SerializedName("displayedName")
     @Expose
-    private String displayedPath;
+    private String displayedName;
     @SerializedName("accessLevels")
     @Expose
     private AccessLevels accessLevels;
@@ -69,12 +69,12 @@ public class Primary {
         this.anchor = anchor;
     }
 
-    public String getDisplayedPath() {
-        return displayedPath;
+    public String getDisplayedName() {
+        return displayedName;
     }
 
-    public void setDisplayedPath(String displayedPath) {
-        this.displayedPath = displayedPath;
+    public void setDisplayedName(String displayedName) {
+        this.displayedName = displayedName;
     }
 
     public AccessLevels getAccessLevels() {

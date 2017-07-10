@@ -9,35 +9,35 @@ public class Navigation {
 
     @SerializedName("primary")
     @Expose
-    private List<Primary> primary = null;
+    private List<NavigationPrimary> navigationPrimary = null;
     @SerializedName("user")
     @Expose
-    private List<User> user = null;
+    private List<NavigationUser> navigationUser = null;
     @SerializedName("footer")
     @Expose
-    private List<Footer> footer = null;
+    private List<NavigationFooter> navigationFooter = null;
 
-    public List<Primary> getPrimary() {
-        return primary;
+    public List<NavigationPrimary> getNavigationPrimary() {
+        return navigationPrimary;
     }
 
-    public void setPrimary(List<Primary> primary) {
-        this.primary = primary;
+    public void setNavigationPrimary(List<NavigationPrimary> navigationPrimary) {
+        this.navigationPrimary = navigationPrimary;
     }
 
-    public List<User> getUser() {
-        return user;
+    public List<NavigationUser> getNavigationUser() {
+        return navigationUser;
     }
 
-    public void setUser(List<User> user) {
-        this.user = user;
+    public void setNavigationUser(List<NavigationUser> navigationUser) {
+        this.navigationUser = navigationUser;
     }
 
-    public List<Footer> getFooter() {
-        return footer;
+    public List<NavigationFooter> getNavigationFooter() {
+        return navigationFooter;
     }
 
-    public void setFooter(List<Footer> footer) {
-        this.footer = footer;
+    public void setNavigationFooter(List<NavigationFooter> navigationFooter) {
+        this.navigationFooter = navigationFooter;
     }
 }
