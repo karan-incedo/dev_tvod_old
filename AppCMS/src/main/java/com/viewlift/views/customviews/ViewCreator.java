@@ -163,13 +163,14 @@ public class ViewCreator {
         boolean newView = false;
         if (pageView == null || pageView.getContext() != context) {
             pageView = new PageView(context, appCMSPageUI);
-            pageView.setUserLoggedOut(appCMSPresenter.isUserLoggedIn(context));
+            pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn(context));
             getPageViewLruCache().put(appCMSPageAPI.getId() + BaseView.isLandscape(context), pageView);
             newView = true;
         }
         if (newView ||
                 !appCMSPresenter.isActionAPage(appCMSPageAPI.getId()) ||
-                appCMSPresenter.isUserLoggedIn(context) != pageView.isUserLoggedOut()) {
+                appCMSPresenter.isUserLoggedIn(context) != pageView.isUserLoggedIn()) {
+            pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn(context));
             pageView.getChildrenContainer().removeAllViews();
             Runtime.getRuntime().gc();
             componentViewResult = new ComponentViewResult();

@@ -23,7 +23,7 @@ import java.util.List;
 public class PageView extends BaseView {
     private final AppCMSPageUI appCMSPageUI;
     private List<AppCMSViewAdapter.ListWithAdapter> adapterList;
-    private boolean userLoggedOut;
+    private boolean userLoggedIn;
 
     @Inject
     public PageView(Context context, AppCMSPageUI appCMSPageUI) {
@@ -82,11 +82,11 @@ public class PageView extends BaseView {
         return childrenContainer;
     }
 
-    public boolean isUserLoggedOut() {
-        return userLoggedOut;
+    public boolean isUserLoggedIn() {
+        return userLoggedIn;
     }
 
-    public void setUserLoggedOut(boolean userLoggedOut) {
-        this.userLoggedOut = userLoggedOut;
+    public void setUserLoggedIn(boolean userLoggedIn) {
+        this.userLoggedIn = userLoggedIn;
     }
 }
