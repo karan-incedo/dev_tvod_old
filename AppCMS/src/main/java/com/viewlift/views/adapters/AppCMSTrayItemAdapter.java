@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -14,27 +13,31 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
+import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.customviews.InternalEvent;
+import com.viewlift.views.customviews.OnInternalEvent;
 
 import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
 
 /**
  * Created by viewlift on 7/7/17.
  */
 
-public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAdapter.ViewHolder> {
+public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAdapter.ViewHolder>
+        implements OnInternalEvent {
     private static final String TAG = "AppCMSTrayAdapter";
 
     private static final int SECONDS_PER_MINS = 60;
@@ -44,17 +47,20 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     protected AppCMSPresenter appCMSPresenter;
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     protected String defaultAction;
+    protected boolean isHistory;
 
     public AppCMSTrayItemAdapter(Context context,
                                  List<ContentDatum> adapterData,
                                  List<Component> components,
                                  AppCMSPresenter appCMSPresenter,
-                                 Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
+                                 Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                 String viewType) {
         this.adapterData = adapterData;
         this.components = components;
         this.appCMSPresenter = appCMSPresenter;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.defaultAction = getDefaultAction(context);
+        this.isHistory = jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY;
     }
 
     @Override
@@ -62,7 +68,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         View view = LayoutInflater
                 .from(parent.getContext())
                 .inflate(R.layout.continue_watching_item, parent, false);
-        ViewHolder viewHolder = new ViewHolder(view);
+        ViewHolder viewHolder = new ViewHolder(view, isHistory);
         applyStyles(viewHolder);
         return viewHolder;
     }
@@ -119,30 +125,63 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         return adapterData != null ? adapterData.size() : 0;
     }
 
+    @Override
+    public void addReceiver(OnInternalEvent e) {
+        //
+    }
+
+    @Override
+    public void sendEvent(InternalEvent<?> event) {
+        //
+    }
+
+    @Override
+    public void receiveEvent(InternalEvent<?> event) {
+        adapterData.clear();
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void cancel(boolean cancel) {
+        //
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         View itemView;
 
         @BindView(R.id.app_cms_continue_watching_video_image)
         ImageButton appCMSContinueWatchingVideoImage;
+
         @BindView(R.id.app_cms_continue_watching_play_button)
         ImageButton appCMSContinueWatchingPlayButton;
+
         @BindView(R.id.app_cms_continue_watching_title)
         TextView appCMSContinueWatchingTitle;
+
         @BindView(R.id.app_cms_continue_watching_description)
         TextView appCMSContinueWatchingDescription;
+
         @BindView(R.id.app_cms_continue_watching_select_to_delete_button)
         ImageButton appCMSContinueWatchingSelectToDeleteButton;
+
         @BindView(R.id.app_cms_continue_watching_delete_button)
         ImageButton appCMSContinueWatchingDeleteButton;
+
         @BindView(R.id.app_cms_continue_watching_duration)
         TextView appCMSContinueWatchingDuration;
-        @BindView(R.id.app_cms_continue_watching_separator_view)
-        View appCMSContinueWatchingSeperatorView;
 
-        public ViewHolder(View itemView) {
+        @BindView(R.id.app_cms_continue_watching_separator_view)
+        View appCMSContinueWatchingSeparatorView;
+
+        public ViewHolder(View itemView, boolean isHistoryView) {
             super(itemView);
             this.itemView = itemView;
             ButterKnife.bind(this, itemView);
+
+            if (isHistoryView) {
+                appCMSContinueWatchingDeleteButton.setVisibility(View.GONE);
+                appCMSContinueWatchingDeleteButton.setEnabled(false);
+            }
         }
     }
 
@@ -224,6 +263,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         component,
                                         viewHolder.appCMSContinueWatchingTitle);
                             }
+
+                            if (component.getFontSize() != 0) {
+                                viewHolder.appCMSContinueWatchingTitle.setTextSize(component.getFontSize());
+                            }
+
                             break;
                         case PAGE_API_DESCRIPTION:
                             viewHolder.appCMSContinueWatchingDescription.setTextColor(textColor);
@@ -236,6 +280,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         component,
                                         viewHolder.appCMSContinueWatchingDescription);
                             }
+
+                            if (component.getFontSize() != 0) {
+                                viewHolder.appCMSContinueWatchingTitle.setTextSize(component.getFontSize());
+                            }
+
                             break;
                         default:
                     }
@@ -244,8 +293,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 case PAGE_SEPARATOR_VIEW_KEY:
                 case PAGE_SEGMENTED_VIEW_KEY:
                     if (!TextUtils.isEmpty(component.getBackgroundColor())) {
-                        viewHolder.appCMSContinueWatchingSeperatorView
-                                .setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getBackgroundColor())));
+                        viewHolder.appCMSContinueWatchingSeparatorView
+                                .setBackgroundColor(Color.parseColor(getColor(
+                                        viewHolder.itemView.getContext(), component.getBackgroundColor())));
                     }
                     break;
                 default:
@@ -304,8 +354,16 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         Log.d(TAG, "Show delete button");
     }
 
-    private void delete(ContentDatum contentDatum) {
+    private void delete(final ContentDatum contentDatum) {
         Log.d(TAG, "Deleting item: " + contentDatum.getGist().getTitle());
+        appCMSPresenter.editWatchlist(contentDatum.getGist().getId(),
+                new Action1<AppCMSAddToWatchlistResult>() {
+                    @Override
+                    public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
+                        adapterData.remove(contentDatum);
+                        notifyDataSetChanged();
+                    }
+                }, false);
     }
 
     private void applyBorderToComponent(Context context, View view, Component component) {

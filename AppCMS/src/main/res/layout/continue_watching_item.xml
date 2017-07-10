@@ -44,6 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/app_cms_continue_watching_tray_height"
             android:layout_toEndOf="@id/app_cms_continue_watching_image_view"
+            android:layout_toStartOf="@id/app_cms_continue_watching_button_view"
             android:orientation="vertical">
 
             <TextView
@@ -61,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:ellipsize="end"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:padding="2dp" />
         </LinearLayout>
 
@@ -76,7 +77,7 @@
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical">
+                android:layout_gravity="center">
 
                 <ImageButton
                     android:id="@+id/app_cms_continue_watching_select_to_delete_button"
@@ -86,9 +87,12 @@
 
                 <ImageButton
                     android:id="@+id/app_cms_continue_watching_delete_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/transparent" />
+                    android:layout_width="@dimen/close_button_size"
+                    android:layout_height="@dimen/close_button_size"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@android:color/transparent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/cancel" />
             </FrameLayout>
 
             <TextView

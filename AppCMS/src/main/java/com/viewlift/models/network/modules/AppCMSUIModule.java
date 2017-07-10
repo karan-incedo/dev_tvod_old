@@ -10,6 +10,8 @@ import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
+import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
+import com.viewlift.models.network.rest.AppCMSAddToWatchlistRest;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
@@ -414,6 +416,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSAddToWatchlistRest providesAppCMSAddToWatchlistRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSAddToWatchlistRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -488,6 +496,13 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSUserVideoStatusCall providesAppCMSUserVideoStatusCall(AppCMSUserVideoStatusRest appCMSUserVideoStatusRest) {
         return new AppCMSUserVideoStatusCall(appCMSUserVideoStatusRest);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSAddToWatchlistCall providesAppCMSAddToWatchlistCall(AppCMSAddToWatchlistRest appCMSAddToWatchlistRest,
+                                                                     Gson gson) {
+        return new AppCMSAddToWatchlistCall(appCMSAddToWatchlistRest, gson);
     }
 
     @Provides

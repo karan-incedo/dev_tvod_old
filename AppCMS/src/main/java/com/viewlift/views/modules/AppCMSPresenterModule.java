@@ -4,6 +4,7 @@ import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.modules.AppCMSSearchModule;
+import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
@@ -54,6 +55,7 @@ public class AppCMSPresenterModule {
                                                    AppCMSResetPasswordCall appCMSResetPasswordCall,
                                                    AppCMSFacebookLoginCall appCMSFacebookLoginCall,
                                                    AppCMSUserIdentityCall appCMSUserIdentityCall,
+                                                   AppCMSAddToWatchlistCall appCMSAddToWatchlistCall,
 
                                                    AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall,
                                                    AppCMSUserVideoStatusCall appCMSUserVideoStatusCall,
@@ -81,6 +83,7 @@ public class AppCMSPresenterModule {
 
                 appCMSUpdateWatchHistoryCall,
                 appCMSUserVideoStatusCall,
+                appCMSAddToWatchlistCall,
 
                 jsonValueKeyMap,
                 pageNameToActionMap,

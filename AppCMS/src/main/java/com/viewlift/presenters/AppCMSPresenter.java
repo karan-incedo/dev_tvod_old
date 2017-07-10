@@ -30,6 +30,7 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.iid.InstanceID;
+import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -54,6 +55,7 @@ import com.viewlift.models.data.appcms.ui.authentication.SignInResponse;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
+import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.models.data.appcms.watchlist.AppCMSWatchlistResult;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
@@ -69,6 +71,7 @@ import com.viewlift.models.network.components.DaggerAppCMSAPIComponent;
 import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
 import com.viewlift.models.network.modules.AppCMSAPIModule;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
+import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
@@ -165,6 +168,7 @@ public class AppCMSPresenter {
     private final AppCMSWatchlistCall appCMSWatchlistCall;
     private final AppCMSHistoryCall appCMSHistoryCall;
     private final AppCMSUserVideoStatusCall appCMSUserVideoStatusCall;
+    private final AppCMSAddToWatchlistCall appCMSAddToWatchlistCall;
 
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
@@ -360,6 +364,7 @@ public class AppCMSPresenter {
 
                            AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall,
                            AppCMSUserVideoStatusCall appCMSUserVideoStatusCall,
+                           AppCMSAddToWatchlistCall appCMSAddToWatchlistCall,
 
                            Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                            Map<String, String> pageNameToActionMap,
@@ -384,6 +389,7 @@ public class AppCMSPresenter {
 
         this.appCMSUpdateWatchHistoryCall = appCMSUpdateWatchHistoryCall;
         this.appCMSUserVideoStatusCall = appCMSUserVideoStatusCall;
+        this.appCMSAddToWatchlistCall = appCMSAddToWatchlistCall;
 
         this.appCMSWatchlistCall = appCMSWatchlistCall;
         this.appCMSHistoryCall = appCMSHistoryCall;
@@ -816,6 +822,69 @@ public class AppCMSPresenter {
     public void unrestrictPortraitOnly() {
         if (currentActivity != null) {
             currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        }
+    }
+
+    public void editWatchlist(final String filmId,
+                              final Action1<AppCMSAddToWatchlistResult> resultAction1, boolean add) {
+
+        final String url = currentActivity.getString(R.string.app_cms_edit_watchlist_api_url,
+                appCMSMain.getApiBaseUrl(),
+                appCMSMain.getSite(),
+                getLoggedInUser(currentActivity),
+                filmId);
+
+        try {
+            AddToWatchlistRequest request = new AddToWatchlistRequest();
+            request.setUserId(getLoggedInUser(currentActivity));
+            request.setContentType(currentActivity.getString(R.string.add_to_watchlist_content_type_video));
+            request.setPosition(1L);
+            if (add) {
+                request.setContentId(filmId);
+            } else {
+                request.setContentIds(filmId);
+            }
+
+            appCMSAddToWatchlistCall.call(url, getAuthToken(currentActivity),
+                    new Action1<AppCMSAddToWatchlistResult>() {
+                        @Override
+                        public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
+                            try {
+                                Observable.just(addToWatchlistResult).subscribe(resultAction1);
+                            } catch (Exception e) {
+                                Log.e(TAG, "addToWatchlistContent: " + e.toString());
+                            }
+                        }
+                    }, request, add);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void clearWatchlist(final Action1<AppCMSAddToWatchlistResult> resultAction1) {
+        final String url = currentActivity.getString(R.string.app_cms_clear_watchlist_api_url,
+                appCMSMain.getApiBaseUrl(),
+                appCMSMain.getSite(),
+                getLoggedInUser(currentActivity));
+
+        try {
+            AddToWatchlistRequest request = new AddToWatchlistRequest();
+            request.setUserId(getLoggedInUser(currentActivity));
+            request.setContentType(currentActivity.getString(R.string.add_to_watchlist_content_type_video));
+            request.setPosition(1L);
+            appCMSAddToWatchlistCall.call(url, getAuthToken(currentActivity),
+                    new Action1<AppCMSAddToWatchlistResult>() {
+                        @Override
+                        public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
+                            try {
+                                Observable.just(addToWatchlistResult).subscribe(resultAction1);
+                            } catch (Exception e) {
+                                Log.e(TAG, "clearWatchlistContent: " + e.toString());
+                            }
+                        }
+                    }, request, false);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -1962,7 +2031,7 @@ public class AppCMSPresenter {
 //                                    getAppCMSAndroid(activity, main);
                                     break;
                                 case TV:
-                                    getAppCMSTV(activity , main , null);
+                                    getAppCMSTV(activity, main, null);
                                     break;
                                 default:
                             }
@@ -2355,9 +2424,7 @@ public class AppCMSPresenter {
             activity.startActivity(appCMSIntent);
         } catch (Exception e) {
             e.printStackTrace();
-        }
-
-        finally {
+        } finally {
             sendStopLoadingPageAction();
         }
     }

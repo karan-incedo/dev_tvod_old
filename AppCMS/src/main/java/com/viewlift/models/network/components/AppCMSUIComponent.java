@@ -1,6 +1,7 @@
 package com.viewlift.models.network.components;
 
 import com.viewlift.models.network.modules.AppCMSUIModule;
+import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
@@ -51,4 +52,6 @@ public interface AppCMSUIComponent {
     AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall();
 
     AppCMSUserVideoStatusCall appCMSUserVideoStatusCall();
+
+    AppCMSAddToWatchlistCall appCMSAddToWatchlistCall();
 }

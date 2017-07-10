@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
@@ -26,7 +25,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -46,6 +44,7 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.ui.page.Settings;
+import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
@@ -83,40 +82,61 @@ public class ViewCreator {
     }
 
     public static class UpdateImageIconAction implements Action1<UserVideoStatusResponse> {
-        public final ImageButton imageButton;
+        private final ImageButton imageButton;
+        private final AppCMSPresenter appCMSPresenter;
+        private final String filmId;
 
-        public UpdateImageIconAction(ImageButton imageButton) {
+        private View.OnClickListener addClickListener;
+        private View.OnClickListener removeClickListener;
+
+        public UpdateImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
+                                     String filmId) {
             this.imageButton = imageButton;
+            this.appCMSPresenter = presenter;
+            this.filmId = filmId;
+
+            addClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
+                            new Action1<AppCMSAddToWatchlistResult>() {
+                                @Override
+                                public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
+                                    UpdateImageIconAction.this.imageButton.setImageResource(R.drawable.remove_from_watchlist);
+                                    UpdateImageIconAction.this.imageButton.setOnClickListener(removeClickListener);
+                                }
+                            }, true);
+                }
+            };
+
+            removeClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
+                            new Action1<AppCMSAddToWatchlistResult>() {
+                                @Override
+                                public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
+                                    UpdateImageIconAction.this.imageButton.setImageResource(R.drawable.add_to_watchlist);
+                                    UpdateImageIconAction.this.imageButton.setOnClickListener(addClickListener);
+                                }
+                            }, false);
+                }
+            };
         }
 
         @Override
-        public void call(UserVideoStatusResponse userVideoStatusResponse) {
+        public void call(final UserVideoStatusResponse userVideoStatusResponse) {
             if (userVideoStatusResponse != null) {
                 if (userVideoStatusResponse.getQueued()) {
                     imageButton.setImageResource(R.drawable.remove_from_watchlist);
-                    imageButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // FIXME: 7/7/17 remove from watchlist api.
-                        }
-                    });
+                    imageButton.setOnClickListener(removeClickListener);
                 } else {
                     imageButton.setImageResource(R.drawable.add_to_watchlist);
-                    imageButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // FIXME: 7/7/17 add to watchlist api.
-                        }
-                    });
+                    imageButton.setOnClickListener(addClickListener);
                 }
             } else {
                 imageButton.setImageResource(R.drawable.add_to_watchlist);
-                imageButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // FIXME: 7/7/17 add to watchlist api.
-                    }
-                });
+                imageButton.setOnClickListener(addClickListener);
             }
         }
     }
@@ -180,8 +200,8 @@ public class ViewCreator {
         for (ModuleList module : modulesList) {
             if (!modulesToIgnore.contains(module.getView()) &&
                     (appCMSPresenter.isUserLoggedIn(context) ||
-                    (!appCMSPresenter.isUserLoggedIn(context) &&
-                    jsonValueKeyMap.get(module.getView()) != AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY))) {
+                            (!appCMSPresenter.isUserLoggedIn(context) &&
+                                    jsonValueKeyMap.get(module.getView()) != AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY))) {
                 Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
                 View childView = createModuleView(context, module, moduleAPI, pageView,
                         jsonValueKeyMap,
@@ -335,12 +355,12 @@ public class ViewCreator {
                                     final Component component,
                                     final Layout parentLayout,
                                     final Module moduleAPI,
-                                    @Nullable PageView pageView,
+                                    @Nullable final PageView pageView,
                                     final Settings settings,
                                     Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                     final AppCMSPresenter appCMSPresenter,
                                     boolean gridElement,
-                                    String viewType) {
+                                    final String viewType) {
         componentViewResult.componentView = null;
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
@@ -372,8 +392,11 @@ public class ViewCreator {
                         moduleAPI.getContentData(),
                         component.getComponents(),
                         appCMSPresenter,
-                        jsonValueKeyMap);
+                        jsonValueKeyMap,
+                        viewType);
                 ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
+                componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
+
                 break;
 
             case PAGE_COLLECTIONGRID_KEY:
@@ -439,8 +462,8 @@ public class ViewCreator {
 
             case PAGE_PAGE_CONTROL_VIEW_KEY:
                 long selectedColor = Long.parseLong(appCMSPresenter.getAppCMSMain().getBrand()
-                        .getGeneral()
-                        .getBlockTitleColor().replace("#", ""),
+                                .getGeneral()
+                                .getBlockTitleColor().replace("#", ""),
                         16);
                 long deselectedColor = component.getUnSelectedColor() != null ?
                         Long.valueOf(component.getUnSelectedColor(), 16) : 0L;
@@ -457,7 +480,6 @@ public class ViewCreator {
                 break;
 
 
-//             FIXME: 7/7/17 Will be used for dictating the button order - download/add to watchlist.
             case PAGE_BUTTON_KEY:
                 if (componentKey == AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) {
                     if (!appCMSPresenter.isUserLoggedIn(context)) {
@@ -502,9 +524,11 @@ public class ViewCreator {
 
                     case PAGE_ADD_TO_WATCHLIST_KEY:
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
                         appCMSPresenter.getUserVideoStatus(
                                 moduleAPI.getContentData().get(0).getGist().getId(),
-                                new UpdateImageIconAction((ImageButton) componentViewResult.componentView));
+                                new UpdateImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
+                                        moduleAPI.getContentData().get(0).getGist().getId()));
                         break;
 
                     case PAGE_VIDEO_WATCH_TRAILER_KEY:
@@ -661,8 +685,61 @@ public class ViewCreator {
                     case PAGE_FORGOTPASSWORD_KEY:
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                         break;
+
+                    case PAGE_REMOVEALL_KEY:
+                        final boolean isHistoryPage = jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY;
+                        if (isHistoryPage) {
+                            componentViewResult.componentView.setVisibility(View.GONE);
+                            componentViewResult.componentView.setEnabled(false);
+                        } else {
+                            componentViewResult.onInternalEvent = new OnInternalEvent() {
+                                private List<OnInternalEvent> receivers = new ArrayList<>();
+
+                                @Override
+                                public void addReceiver(OnInternalEvent e) {
+                                    receivers.add(e);
+                                }
+
+                                @Override
+                                public void sendEvent(InternalEvent<?> event) {
+                                    for (OnInternalEvent internalEvent : receivers) {
+                                        internalEvent.sendEvent(null);
+                                    }
+                                }
+
+                                @Override
+                                public void receiveEvent(InternalEvent<?> event) {
+                                    //
+                                }
+
+                                @Override
+                                public void cancel(boolean cancel) {
+                                    //
+                                }
+                            };
+                        }
+                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                            OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
+                            @Override
+                            public void onClick(View v) {
+                                if (isHistoryPage) {
+                                    //
+                                } else {
+                                    appCMSPresenter.clearWatchlist(new Action1<AppCMSAddToWatchlistResult>() {
+                                        @Override
+                                        public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
+                                            onInternalEvent.sendEvent(null);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+
+                        break;
+
                     default:
                 }
+
                 break;
 
             case PAGE_LABEL_KEY:
@@ -1099,7 +1176,7 @@ public class ViewCreator {
                 } else if (jsonValueKeyMap.get(module.getType()) != null &&
                         jsonValueKeyMap.get(moduleAPI.getModuleType()) != null &&
                         jsonValueKeyMap.get(module.getType()) ==
-                        jsonValueKeyMap.get(moduleAPI.getModuleType())) {
+                                jsonValueKeyMap.get(moduleAPI.getModuleType())) {
                     return moduleAPI;
                 }
             }
