@@ -16,6 +16,7 @@ import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
 import com.viewlift.views.components.DaggerAppCMSViewComponent;
 import com.viewlift.views.customviews.PageView;
+import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.modules.AppCMSPageViewModule;
 
 import snagfilms.com.air.appcms.R;
@@ -146,10 +147,6 @@ public class AppCMSPageFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (appCMSBinder != null && appCMSViewComponent.viewCreator() != null) {
-            appCMSViewComponent.viewCreator().removeLruCacheItem(getContext(), appCMSBinder.getPageId());
-        }
-
         appCMSBinder = null;
         pageView = null;
     }
@@ -184,5 +181,9 @@ public class AppCMSPageFragment extends Fragment {
                         appCMSBinder.getJsonValueKeyMap(),
                         appCMSPresenter))
                 .build();
+    }
+
+    public ViewCreator getViewCreator() {
+        return appCMSViewComponent.viewCreator();
     }
 }

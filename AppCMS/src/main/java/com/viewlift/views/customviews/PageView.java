@@ -23,6 +23,7 @@ import java.util.List;
 public class PageView extends BaseView {
     private final AppCMSPageUI appCMSPageUI;
     private List<AppCMSViewAdapter.ListWithAdapter> adapterList;
+    private boolean userLoggedOut;
 
     @Inject
     public PageView(Context context, AppCMSPageUI appCMSPageUI) {
@@ -79,5 +80,13 @@ public class PageView extends BaseView {
         nestedScrollView.addView(childrenContainer);
         addView(nestedScrollView);
         return childrenContainer;
+    }
+
+    public boolean isUserLoggedOut() {
+        return userLoggedOut;
+    }
+
+    public void setUserLoggedOut(boolean userLoggedOut) {
+        this.userLoggedOut = userLoggedOut;
     }
 }

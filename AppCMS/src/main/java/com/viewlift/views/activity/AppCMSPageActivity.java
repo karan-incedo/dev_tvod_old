@@ -28,6 +28,7 @@ import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.NavBarItemView;
+import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSPageFragment;
 
 import java.io.File;
@@ -276,6 +277,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        ViewCreator viewCreator = null;
+        for (int i = 0; i < getSupportFragmentManager().getBackStackEntryCount(); i++) {
+            Fragment fragment =
+                    getSupportFragmentManager().findFragmentById(getSupportFragmentManager().getBackStackEntryAt(i).getId());
+            if (fragment instanceof AppCMSPageFragment) {
+                viewCreator = ((AppCMSPageFragment) fragment).getViewCreator();
+            }
+        }
+        if (updatedAppCMSBinder != null && viewCreator != null) {
+            viewCreator.removeLruCacheItem(this, updatedAppCMSBinder.getPageId());
+        }
         unregisterReceiver(presenterActionReceiver);
         Log.d(TAG, "onDestroy()");
     }
