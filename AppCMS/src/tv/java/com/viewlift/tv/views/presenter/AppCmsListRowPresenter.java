@@ -12,11 +12,9 @@ import android.support.v17.leanback.widget.RowPresenter;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.viewlift.tv.utility.Utils;
-import com.viewlift.tv.views.CustomHeaderItem;
+import com.viewlift.tv.views.customviews.CustomHeaderItem;
 
 import snagfilms.com.air.appcms.R;
 
@@ -65,6 +63,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
             int listRowHeight =  customHeaderItem.getmListRowHeight();
 
             Log.d("AppCmsListRowPresenter" , " Left Margin = " + listRowLeftmargin + " Right margin = "+listRowRightmargin + " Height = "+listRowHeight);
+
             String listRowBackgroundColor = customHeaderItem.getmBackGroundColor();
 
             boolean isCarousal = customHeaderItem.ismIsCarousal();
@@ -82,6 +81,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
                 horizontalGridView.setLayoutParams(horizontalGrLayoutParams);
 
                 //set the background color
+                if(null != listRowBackgroundColor)
                 listRowView.setBackgroundColor(Color.parseColor(listRowBackgroundColor)/*ContextCompat.getColor(mContext,R.color.jumbotron_background_color)*/);
 
                 //set the ListRow height and width.
@@ -91,21 +91,13 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
 
             }else{
                 headerTitleContainer.setVisibility(View.VISIBLE);
-
                 int paddingTop = (int)mContext.getResources().getDimension(R.dimen.tray_list_row_padding_top);
-               // horizontalGrLayoutParams.setMargins(horizontalGridView.getLeft(), paddingTop , horizontalGridView.getRight(),horizontalGridView.getBottom());
-
                 horizontalGrLayoutParams.topMargin = paddingTop;
                 horizontalGridView.setLayoutParams(horizontalGrLayoutParams);
                 //set the ListRow height and width.
-                listRowParam.height = listRowHeight /*listRowHeight*/;
+                listRowParam.height = listRowHeight;
                 listRowParam.width =  LinearLayout.LayoutParams.MATCH_PARENT;
-               /* listRowParam.setMargins(listRowParam.leftMargin , 0 , listRowParam.rightMargin , listRowParam.bottomMargin);
-                listRowView.setLayoutParams(listRowParam);*/
-               // listRowView.setBackgroundColor(ContextCompat.getColor(mContext,android.R.color.holo_red_dark));
-
             }
-
         }
     }
 
