@@ -19,15 +19,15 @@ public class Record {
 
     @SerializedName("showQueue")
     @Expose
-    private boolean showQueue;
+    private Boolean showQueue;
 
     @SerializedName("addedDate")
     @Expose
-    private long addedDate;
+    private Long addedDate;
 
     @SerializedName("updateDate")
     @Expose
-    private long updateDate;
+    private Long updateDate;
 
     public ContentResponse getContentResponse() {
         return contentResponse;

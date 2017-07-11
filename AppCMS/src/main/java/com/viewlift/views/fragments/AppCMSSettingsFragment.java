@@ -92,7 +92,7 @@ public class AppCMSSettingsFragment extends DialogFragment {
         appCMSettingsSeparatorView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
                 .getBrand().getGeneral().getTextColor()));
         appCMSAccountTitle.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                .getBrand().getGeneral().getPageTitleColor()));
+                .getBrand().getGeneral().getTextColor()));
         appCMSAccountTitleSeparatorView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
                 .getBrand().getGeneral().getTextColor()));
         appCMSAccountNameTitle.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
@@ -133,6 +133,8 @@ public class AppCMSSettingsFragment extends DialogFragment {
 
         setBgColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
 
+        appCMSPresenter.dismissOpenDialogs();
+
         return view;
     }
 
@@ -152,6 +154,7 @@ public class AppCMSSettingsFragment extends DialogFragment {
     public void onPause() {
         super.onPause();
         dismiss();
+        appCMSPresenter.showMainFragmentView(true);
     }
 
     private void setBgColor(int bgColor) {

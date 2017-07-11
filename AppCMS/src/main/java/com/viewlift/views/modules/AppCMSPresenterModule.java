@@ -4,6 +4,7 @@ import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.modules.AppCMSSearchModule;
+import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
@@ -16,7 +17,9 @@ import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
+import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
+import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.presenters.AppCMSActionType;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -52,6 +55,11 @@ public class AppCMSPresenterModule {
                                                    AppCMSResetPasswordCall appCMSResetPasswordCall,
                                                    AppCMSFacebookLoginCall appCMSFacebookLoginCall,
                                                    AppCMSUserIdentityCall appCMSUserIdentityCall,
+                                                   AppCMSAddToWatchlistCall appCMSAddToWatchlistCall,
+
+                                                   AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall,
+                                                   AppCMSUserVideoStatusCall appCMSUserVideoStatusCall,
+
                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                    Map<String, String> pageNameToActionMap,
                                                    Map<String, AppCMSPageUI> actionToPageMap,
@@ -72,6 +80,11 @@ public class AppCMSPresenterModule {
                 appCMSResetPasswordCall,
                 appCMSFacebookLoginCall,
                 appCMSUserIdentityCall,
+
+                appCMSUpdateWatchHistoryCall,
+                appCMSUserVideoStatusCall,
+                appCMSAddToWatchlistCall,
+
                 jsonValueKeyMap,
                 pageNameToActionMap,
                 actionToPageMap,

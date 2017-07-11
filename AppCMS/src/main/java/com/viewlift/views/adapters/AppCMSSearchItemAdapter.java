@@ -96,6 +96,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                         action,
                         title,
                         null,
+                        null,
                         true)) {
                     Log.e(TAG, "Could not launch action: " +
                             " permalink: " +

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <item name="appcms_headerTitle" type="id"/>
+    <item name="appcms_imageView" type="id"/>
+    <item name="appcms_titleView" type="id"/>
+
+    <item name="appcms_browsefragment" type="id"></item>
+
+</resources>

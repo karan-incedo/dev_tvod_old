@@ -12,6 +12,8 @@ import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -22,6 +24,7 @@ import rx.Observable;
 import rx.functions.Action1;
 
 public class AppCMSHistoryCall {
+
     private static final String TAG = "AppCMSHistoryCallTAG_";
     private final AppCMSHistoryRest appCMSHistoryRest;
 
@@ -35,17 +38,22 @@ public class AppCMSHistoryCall {
     }
 
     @WorkerThread
-    public void call(String url, final Action1<AppCMSHistoryResult> historyResultAction1) throws IOException {
+    public void call(String url, String authToken,
+                     final Action1<AppCMSHistoryResult> historyResultAction1) throws IOException {
         try {
-            appCMSHistoryRest.get(url).enqueue(new Callback<AppCMSHistoryResult>() {
+            Map<String, String> authTokenMap = new HashMap<>();
+            authTokenMap.put("Authorization", authToken);
+            appCMSHistoryRest.get(url, authTokenMap).enqueue(new Callback<AppCMSHistoryResult>() {
                 @Override
-                public void onResponse(@NonNull Call<AppCMSHistoryResult> call, @NonNull Response<AppCMSHistoryResult> response) {
+                public void onResponse(@NonNull Call<AppCMSHistoryResult> call,
+                                       @NonNull Response<AppCMSHistoryResult> response) {
                     Observable.just(response.body()).subscribe(historyResultAction1);
                 }
 
                 @Override
-                public void onFailure(@NonNull Call<AppCMSHistoryResult> call, @NonNull Throwable t) {
-                    //
+                public void onFailure(@NonNull Call<AppCMSHistoryResult> call,
+                                      @NonNull Throwable t) {
+                    Log.e(TAG, "onFailure: " + t.getMessage());
                 }
             });
         } catch (Exception e) {

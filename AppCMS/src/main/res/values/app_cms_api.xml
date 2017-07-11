@@ -1,8 +1,10 @@
 <resources>
     <!-- Primary app values -->
-    <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
+    <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
+    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
     <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
-    <string name="app_cms_app_name">d9162bc2-1228-43da-84bf-e0e56421fe79</string>
+    <!--<string name="app_cms_app_name">d9162bc2-1228-43da-84bf-e0e56421fe79</string>-->
+    <string name="app_cms_app_name">00000149-86ec-d4f3-a7e9-e6fe760d0000</string>
     <string name="app_cms_url_with_appended_timestamp">%1$s?x=%2$d</string>
     <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
 
@@ -45,6 +47,12 @@
     <!-- AppCMS User Identity API -->
     <string name="app_cms_user_identity_api_url">%1$s/identity/user?site=%2$s</string>
 
+    <!-- AppCMS Update Video Watch History API -->
+    <string name="app_cms_update_watch_history_api_url">%1$s/content/video/history</string>
+
+    <!-- AppCMS User Video Status API -->
+    <string name="app_cms_video_status_api_url">%1$s/user/info/video/%2$s?site=%3$s</string>
+
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>
@@ -75,6 +83,7 @@
     <string name="app_cms_page_carousel_info_key">carouselInfo</string>
     <string name="app_cms_page_carousel_image_key">carouselImage</string>
     <string name="app_cms_page_carousel_add_to_watchlist_key">addToWatchlist</string>
+    <string name="app_cms_page_add_to_watchlist_key">watchlistButton</string>
     <string name="app_cms_page_font_bold_key">Bold</string>
     <string name="app_cms_page_font_semibold_key">Semibold</string>
     <string name="app_cms_page_font_extrabold_key">ExtraBold</string>
@@ -90,8 +99,18 @@
     <string name="app_cms_page_authentication_module">AC Authentication 01</string>
     <string name="app_cms_page_login_component_key">AC Login Component</string>
     <string name="app_cms_page_signup_component_key">AC SignUp Component</string>
+    <string name="app_cms_page_removeall_key">removeAll</string>
 
     <string name="app_cms_page_history_module_key">AC History 01</string>
+    <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>
+    <string name="app_cms_page_continue_watching_module_key">AC ContinueWatching 01</string>
+
+    <string name="app_cms_page_history_title">History</string>
+    <string name="app_cms_page_watchlist_title">WatchList</string>
+
+    <string name="app_cms_page_watchlist_duration_key">duration</string>
+    <string name="app_cms_page_watchlist_description_key">description</string>
+    <string name="app_cms_page_watchlist_title_key">title</string>
 
     <string name="app_cms_page_video_image_key">videoImage</string>
     <string name="app_cms_page_video_play_button_key">playButton</string>
@@ -113,6 +132,8 @@
     <string name="app_cms_page_api_title_key">title</string>
     <string name="app_cms_page_api_description_key">description</string>
     <string name="app_cms_page_navigation_contact_us_key">mailto</string>
+    <string name="app_cms_page_video_player_with_info_key">AC VideoPlayerWithInfo 01</string>
+    <string name="app_cms_page_api_video_detail_module_key">VideoDetailModule</string>
 
     <string name="app_cms_navigation_page_tag">navigation</string>
     <string name="app_cms_search_page_tag">search</string>
@@ -125,8 +146,9 @@
 
     <!-- AppAppCMSPageUIPage names for Actions -->
     <string name="app_cms_pagename_authenticationscreen_key">Authentication Screen</string>
-    <string name="app_cms_pagename_homepage_key">Home Page</string>
-    <string name="app_cms_pagename_videopage_key">Video Page</string>
+    <string name="app_cms_pagename_homescreen_key">Home Page</string>
+    <string name="app_cms_pagename_historyscreen_key">My History</string>
+    <string name="app_cms_pagename_videoscreen_key">Video Page</string>
 
     <!-- AppCMS Action names -->
     <string name="app_cms_action_initialize_key">Initalize</string>
@@ -135,6 +157,7 @@
     <string name="app_cms_action_homepage_nav">Home</string>
     <string name="app_cms_action_movies_nav">Movies</string>
     <string name="app_cms_action_videopage_key">play</string>
+    <string name="app_cms_action_historypage_key">My History</string>
     <string name="app_cms_action_watchvideo_key">watchVideo</string>
     <string name="app_cms_action_watchtrailervideo_key">watchTrailer</string>
     <string name="app_cms_action_share_key">share</string>
@@ -155,9 +178,12 @@
 
     <!-- AppCMS WatchList API -->
     <string name="app_cms_watchlist_api_url">%1$s/user/queues?site=%2$s&amp;userId=%3$s</string>
+    <string name="app_cms_edit_watchlist_api_url">%1$s/user/queues?site=%2$s&amp;userId=%3$s&amp;contentIds=%4$s</string>
+    <string name="app_cms_clear_watchlist_api_url">%1$s/user/queues?site=%2$s&amp;userId=%3$s&amp;</string>
 
     <!--AppCMS History API-->
     <string name="app_cms_history_api_url">%1$s/content/video/history/user/%2$s?site=%3$s&amp;userId=%4$s&amp;offset=0</string>
+    <string name="app_cms_api_history_module_key">HistoryModule</string>
 
     <!-- AppCMS Navigation menu -->
     <string name="app_cms_menu_icon_name">menu_</string>
@@ -183,6 +209,7 @@
     <string name="app_cms_currently_logged_out_message">CURRENTLY LOGGED OUT</string>
     <string name="app_cms_sign_out_label">SIGN OUT</string>
     <string name="play_ads_key">play_ads</string>
+    <string name="watched_time_key">watched_time</string>
     <string name="app_cms_password_reset_email_key">app_cms_password_reset_email</string>
     <string name="reset_password_text">RESET PASSWORD</string>
     <string name="app_cms_border_color_key">app_cms_border_color</string>
@@ -194,4 +221,5 @@
     <string name="app_cms_settings_page_title_text">Settings</string>
     <string name="app_cms_update_username_dialog_title">Update Username</string>
     <string name="app_cms_update_email_dialog_title">Update Email</string>
+    <string name="add_to_watchlist_content_type_video">video</string>
 </resources>

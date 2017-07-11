@@ -57,7 +57,7 @@ public class LoginModule extends ModuleView {
                        Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                        AppCMSPresenter appCMSPresenter,
                        ViewCreator viewCreator) {
-        super(context, module);
+        super(context, module, false);
         this.module = module;
         this.moduleAPI = moduleAPI;
         this.jsonValueKeyMap = jsonValueKeyMap;
@@ -100,13 +100,7 @@ public class LoginModule extends ModuleView {
                     buttonSelectors[0].setTextColor(textColor);
                     buttonSelectors[0].setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
                     buttonSelectors[0].setLayoutParams(loginSelectorLayoutParams);
-                    buttonSelectors[0].setCompoundDrawablePadding(loginBorderPadding);
-                    loginModuleSwitcherContainer.addView(buttonSelectors[0]);
-                    ModuleView moduleView = new ModuleView<>(getContext(), component);
-                    setViewHeight(getContext(), component.getLayout(), LayoutParams.MATCH_PARENT);
-                    childViews[0] = moduleView;
-                    addChildComponents(moduleView, component, 0);
-                    childContainer.addView(moduleView);
+
                     buttonSelectors[0].setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -114,16 +108,29 @@ public class LoginModule extends ModuleView {
                             unselectChild(1);
                         }
                     });
+
                     underlineViews[0] = new GradientDrawable();
                     underlineViews[0].setShape(GradientDrawable.LINE);
-                    Rect bounds = new Rect();
+                    buttonSelectors[0].setCompoundDrawablePadding(loginBorderPadding);
+                    Rect textBounds = new Rect();
                     Paint textPaint = buttonSelectors[0].getPaint();
                     textPaint.getTextBounds(buttonSelectors[0].getText().toString(),
                             0,
                             buttonSelectors[0].getText().length(),
-                            bounds);
+                            textBounds);
+                    Rect bounds = new Rect(0,
+                            textBounds.top,
+                            textBounds.width() + loginBorderPadding,
+                            textBounds.bottom);
                     underlineViews[0].setBounds(bounds);
                     buttonSelectors[0].setCompoundDrawables(null, null, null, underlineViews[0]);
+                    loginModuleSwitcherContainer.addView(buttonSelectors[0]);
+
+                    ModuleView moduleView = new ModuleView<>(getContext(), component, false);
+                    setViewHeight(getContext(), component.getLayout(), LayoutParams.MATCH_PARENT);
+                    childViews[0] = moduleView;
+                    addChildComponents(moduleView, component, 0);
+                    childContainer.addView(moduleView);
                 } else if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_SIGNUP_COMPONENT_KEY) {
                     buttonSelectors[1] = new Button(getContext());
                     FrameLayout.LayoutParams signupSelectorLayoutParams =
@@ -137,13 +144,6 @@ public class LoginModule extends ModuleView {
                     buttonSelectors[1].setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
                     signupSelectorLayoutParams.gravity = Gravity.END;
                     buttonSelectors[1].setLayoutParams(signupSelectorLayoutParams);
-                    buttonSelectors[1].setCompoundDrawablePadding(loginBorderPadding);
-                    loginModuleSwitcherContainer.addView(buttonSelectors[1]);
-                    ModuleView moduleView = new ModuleView<>(getContext(), component);
-                    setViewHeight(getContext(), component.getLayout(), LayoutParams.MATCH_PARENT);
-                    childViews[1] = moduleView;
-                    addChildComponents(moduleView, component, 1);
-                    childContainer.addView(moduleView);
                     buttonSelectors[1].setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -151,16 +151,29 @@ public class LoginModule extends ModuleView {
                             unselectChild(0);
                         }
                     });
+
                     underlineViews[1] = new GradientDrawable();
                     underlineViews[1].setShape(GradientDrawable.LINE);
-                    Rect bounds = new Rect();
+                    buttonSelectors[1].setCompoundDrawablePadding(loginBorderPadding);
+                    Rect textBounds = new Rect();
                     Paint textPaint = buttonSelectors[1].getPaint();
                     textPaint.getTextBounds(buttonSelectors[1].getText().toString(),
                             0,
                             buttonSelectors[1].getText().length(),
-                            bounds);
+                            textBounds);
+                    Rect bounds = new Rect(0,
+                            textBounds.top,
+                            textBounds.width() + loginBorderPadding,
+                            textBounds.bottom);
                     underlineViews[1].setBounds(bounds);
                     buttonSelectors[1].setCompoundDrawables(null, null, null, underlineViews[1]);
+                    loginModuleSwitcherContainer.addView(buttonSelectors[1]);
+
+                    ModuleView moduleView = new ModuleView<>(getContext(), component, false);
+                    setViewHeight(getContext(), component.getLayout(), LayoutParams.MATCH_PARENT);
+                    childViews[1] = moduleView;
+                    addChildComponents(moduleView, component, 1);
+                    childContainer.addView(moduleView);
                 }
             }
             childContainer.addView(loginModuleSwitcherContainer);
@@ -197,7 +210,8 @@ public class LoginModule extends ModuleView {
                         module.getSettings(),
                         jsonValueKeyMap,
                         appCMSPresenter,
-                        false);
+                        false,
+                        "");
                 View componentView = componentViewResult.componentView;
                 if (componentView != null) {
                     subComponentChildContainer.addView(componentView);
@@ -209,14 +223,15 @@ public class LoginModule extends ModuleView {
                             false,
                             jsonValueKeyMap,
                             componentViewResult.useMarginsAsPercentagesOverride,
-                            componentViewResult.useWidthOfScreen);
+                            componentViewResult.useWidthOfScreen,
+                            "");
                     AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
                     if (componentType == null) {
                         componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
                     }
                     switch (componentType) {
                         case PAGE_BUTTON_KEY:
-                            ((Button) componentView).setOnClickListener(new OnClickListener() {
+                            componentView.setOnClickListener(new OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     Log.d(TAG, "Button clicked: " + component.getAction());
@@ -228,6 +243,7 @@ public class LoginModule extends ModuleView {
                                                 component.getAction(),
                                                 null,
                                                 authData,
+                                                null,
                                                 true);
                                     }
                                 }
@@ -259,5 +275,6 @@ public class LoginModule extends ModuleView {
 
     private void applyUnderlineToComponent(GradientDrawable underline, int color) {
         underline.setStroke((int) convertDpToPixel(2, getContext()), color);
+        underline.setColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
     }
 }

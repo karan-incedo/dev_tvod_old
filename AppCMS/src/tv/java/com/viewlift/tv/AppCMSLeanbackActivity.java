@@ -3,7 +3,6 @@ package com.viewlift.tv;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;

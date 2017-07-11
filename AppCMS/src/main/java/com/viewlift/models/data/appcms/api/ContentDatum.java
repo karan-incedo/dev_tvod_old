@@ -1,9 +1,9 @@
 package com.viewlift.models.data.appcms.api;
 
-import java.util.List;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 public class ContentDatum {
 
@@ -21,15 +21,15 @@ public class ContentDatum {
 
     @SerializedName("showQueue")
     @Expose
-    private boolean showQueue;
+    private Boolean showQueue;
 
     @SerializedName("addedDate")
     @Expose
-    private long addedDate;
+    private Long addedDate;
 
     @SerializedName("updateDate")
     @Expose
-    private long updateDate;
+    private Long updateDate;
 
     @SerializedName("contentDetails")
     @Expose
@@ -103,7 +103,7 @@ public class ContentDatum {
         return addedDate;
     }
 
-    public void setAddedDate(long addedDate) {
+    public void setAddedDate(Long addedDate) {
         this.addedDate = addedDate;
     }
 
@@ -111,7 +111,7 @@ public class ContentDatum {
         return updateDate;
     }
 
-    public void setUpdateDate(long updateDate) {
+    public void setUpdateDate(Long updateDate) {
         this.updateDate = updateDate;
     }
 

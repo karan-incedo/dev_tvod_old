@@ -38,8 +38,10 @@ import snagfilms.com.air.appcms.R;
  */
 
 public class AppCMSPlayVideoFragment extends Fragment
-        implements AdErrorEvent.AdErrorListener, AdEvent.AdEventListener{
+        implements AdErrorEvent.AdErrorListener, AdEvent.AdEventListener {
     private static final String TAG = "PlayVideoFragment";
+
+    private static final long SECS_TO_MSECS = 1000L;
 
     private AppCMSPresenter appCMSPresenter;
 
@@ -63,6 +65,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private AdsLoader adsLoader;
     private AdsManager adsManager;
     private boolean isAdDisplayed;
+    private int watchedTime;
 
     public interface OnClosePlayerEvent {
         void closePlayer();
@@ -103,6 +106,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                                     permaLink,
                                     parentScreenName,
                                     videoPlayerView.getCurrentPosition());
+                            appCMSPresenter.updateWatchedTime(filmId,
+                                    videoPlayerView.getCurrentPosition() / 1000);
                         }
                     }
                 } catch (InterruptedException e) {
@@ -119,7 +124,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                                                       String hlsUrl,
                                                       String filmId,
                                                       String adsUrl,
-                                                      boolean requestAds) {
+                                                      boolean requestAds,
+                                                      int watchedTime) {
         AppCMSPlayVideoFragment appCMSPlayVideoFragment = new AppCMSPlayVideoFragment();
         Bundle args = new Bundle();
         args.putString(context.getString(R.string.video_player_font_color_key), fontColor);
@@ -129,6 +135,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         args.putString(context.getString(R.string.video_layer_film_id_key), filmId);
         args.putString(context.getString(R.string.video_player_ads_url_key), adsUrl);
         args.putBoolean(context.getString(R.string.video_player_request_ads_key), requestAds);
+        args.putInt(context.getString(R.string.watched_time_key), watchedTime);
         appCMSPlayVideoFragment.setArguments(args);
         return appCMSPlayVideoFragment;
     }
@@ -153,6 +160,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             filmId = args.getString(getContext().getString(R.string.video_layer_film_id_key));
             adsUrl = args.getString(getContext().getString(R.string.video_player_ads_url_key));
             shouldRequestAds = args.getBoolean(getContext().getString(R.string.video_player_request_ads_key));
+            watchedTime = args.getInt(getContext().getString(R.string.watched_time_key));
         }
 
         appCMSPresenter =
@@ -203,6 +211,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             videoPlayerView.setUri(Uri.parse(hlsUrl));
             Log.i(TAG, "Playing video: " + hlsUrl);
         }
+        videoPlayerView.setCurrentPosition((long) watchedTime * SECS_TO_MSECS);
         videoPlayerView.setOnPlayerStateChanged(new Action1<VideoPlayerView.PlayerState>() {
             @Override
             public void call(VideoPlayerView.PlayerState playerState) {
@@ -287,7 +296,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
-        Log.e(TAG, "Ad Error: " + adErrorEvent.getError().getMessage());
+        Log.e(TAG, "Ad DialogType: " + adErrorEvent.getError().getMessage());
         videoPlayerView.resumePlayer();
     }
 
@@ -345,7 +354,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         beaconMessageThread.sendBeaconPing = false;
         beaconMessageThread.runBeaconPing = false;
         beaconMessageThread = null;
-	    onClosePlayerEvent = null;
+        onClosePlayerEvent = null;
         adsLoader = null;
         super.onDestroyView();
     }

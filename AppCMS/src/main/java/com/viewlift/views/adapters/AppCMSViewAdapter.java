@@ -27,40 +27,9 @@ import snagfilms.com.air.appcms.R;
  * Created by viewlift on 5/5/17.
  */
 
-public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.ViewHolder> {
+public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.ViewHolder>
+        implements AppCMSBaseAdapter {
     private static final String TAG = "AppCMSViewAdapter";
-
-    public static class ListWithAdapter {
-        RecyclerView listView;
-        RecyclerView.Adapter adapter;
-
-        public RecyclerView getListView() {
-            return listView;
-        }
-
-        public RecyclerView.Adapter getAdapter() {
-            return adapter;
-        }
-
-        public static class Builder {
-            private ListWithAdapter listWithAdapter;
-            public Builder() {
-                listWithAdapter = new ListWithAdapter();
-            }
-            public Builder listview(RecyclerView listView) {
-                listWithAdapter.listView = listView;
-                return this;
-            }
-            public Builder adapter(RecyclerView.Adapter adapter) {
-                listWithAdapter.adapter = adapter;
-                return this;
-            }
-            public ListWithAdapter build() {
-                return listWithAdapter;
-            }
-        }
-    }
-
     protected Layout parentLayout;
     protected boolean useParentSize;
     protected Component component;
@@ -75,6 +44,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     protected int defaultHeight;
     protected boolean useMarginsAsPercentages;
     protected String defaultAction;
+    protected String viewType;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -86,7 +56,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                              Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                              Module moduleAPI,
                              int defaultWidth,
-                             int defaultHeight) {
+                             int defaultHeight,
+                             String viewType) {
         this.viewCreator = viewCreator;
         this.appCMSPresenter = appCMSPresenter;
         this.parentLayout = parentLayout;
@@ -103,6 +74,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.defaultHeight = defaultHeight;
         this.useMarginsAsPercentages = true;
         this.defaultAction = getDefaultAction(context);
+
+        this.viewType = viewType;
     }
 
     @Override
@@ -118,7 +91,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 defaultWidth,
                 defaultHeight,
                 useMarginsAsPercentages,
-                true);
+                true,
+                this.viewType);
         return new ViewHolder(view);
     }
 
@@ -139,21 +113,17 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         return adapterData.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        CollectionGridItemView componentView;
+    @Override
+    public void resetData(RecyclerView listView) {
 
-        public ViewHolder(View itemView) {
-            super(itemView);
-            this.componentView = (CollectionGridItemView) itemView;
-        }
     }
 
-    public void resetData(RecyclerView listView) {
+    @Override
+    public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
         listView.setAdapter(null);
-        List<ContentDatum> adapterDataTmp = new ArrayList<>(adapterData);
         adapterData = null;
         notifyDataSetChanged();
-        adapterData = adapterDataTmp;
+        adapterData = contentData;
         notifyDataSetChanged();
         listView.setAdapter(this);
         listView.invalidate();
@@ -175,18 +145,15 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     extraData[1] = hlsUrl;
                     extraData[2] = data.getGist().getId();
                     Log.d(TAG, "Launching " + permalink + ": " + action);
+
                     if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                             action,
                             title,
                             extraData,
+                            data,
                             false)) {
-                        Log.e(TAG, "Could not launch action: " +
-                                " permalink: " +
-                                permalink +
-                                " action: " +
-                                action +
-                                " hlsUrl: " +
-                                hlsUrl);
+                        Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
+                                + " action: " + action + " hlsUrl: " + hlsUrl);
                     }
                 }
 
@@ -196,14 +163,14 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     String filmId = data.getGist().getId();
                     String permaLink = data.getGist().getPermalink();
                     String title = data.getGist().getTitle();
-                    if (!appCMSPresenter.launchVideoPlayer(filmId, permaLink, title)) {
+                    if (!appCMSPresenter.launchVideoPlayer(filmId, permaLink, title, data)) {
                         Log.e(TAG, "Could not launch play action: " +
-                            " filmId: " +
-                            filmId +
-                            " permaLink: " +
-                            permaLink +
-                            " title: " +
-                            title);
+                                " filmId: " +
+                                filmId +
+                                " permaLink: " +
+                                permaLink +
+                                " title: " +
+                                title);
                     }
                 }
             };
@@ -218,6 +185,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                         defaultAction,
                         title,
+                        null,
                         null,
                         false)) {
                     Log.e(TAG, "Could not launch action: " +
@@ -249,5 +217,49 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             return data.getStreamingInfo().getVideoAssets().getHls();
         }
         return null;
+    }
+
+    public static class ListWithAdapter {
+        RecyclerView listView;
+        RecyclerView.Adapter adapter;
+
+        public RecyclerView getListView() {
+            return listView;
+        }
+
+        public RecyclerView.Adapter getAdapter() {
+            return adapter;
+        }
+
+        public static class Builder {
+            private ListWithAdapter listWithAdapter;
+
+            public Builder() {
+                listWithAdapter = new ListWithAdapter();
+            }
+
+            public Builder listview(RecyclerView listView) {
+                listWithAdapter.listView = listView;
+                return this;
+            }
+
+            public Builder adapter(RecyclerView.Adapter adapter) {
+                listWithAdapter.adapter = adapter;
+                return this;
+            }
+
+            public ListWithAdapter build() {
+                return listWithAdapter;
+            }
+        }
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        CollectionGridItemView componentView;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            this.componentView = (CollectionGridItemView) itemView;
+        }
     }
 }

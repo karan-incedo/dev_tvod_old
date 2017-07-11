@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
@@ -26,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -37,23 +37,23 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.VideoAssets;
+import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
+import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
-import com.viewlift.models.data.appcms.ui.page.Layout;
-import com.viewlift.models.data.appcms.ui.page.Settings;
+import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
+import com.viewlift.models.data.appcms.ui.page.Layout;
+import com.viewlift.models.data.appcms.ui.page.ModuleList;
+import com.viewlift.models.data.appcms.ui.page.Settings;
+import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
+import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
+import com.viewlift.views.adapters.AppCMSViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
-import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
-import com.viewlift.models.data.appcms.ui.page.ModuleList;
-import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
-import com.viewlift.views.adapters.AppCMSViewAdapter;
-
-import org.w3c.dom.Text;
 
 import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
@@ -67,6 +67,7 @@ public class ViewCreator {
 
     private static LruCache<String, PageView> pageViewLruCache;
     private static int PAGE_LRU_CACHE_SIZE = 10;
+    ComponentViewResult componentViewResult;
 
     private static LruCache<String, PageView> getPageViewLruCache() {
         if (pageViewLruCache == null) {
@@ -80,9 +81,47 @@ public class ViewCreator {
         OnInternalEvent onInternalEvent;
         boolean useMarginsAsPercentagesOverride;
         boolean useWidthOfScreen;
+        boolean shouldHideModule;
     }
 
-    ComponentViewResult componentViewResult;
+    public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
+        int runtime = (data.getGist().getRuntime() / 60);
+        String year = data.getGist().getYear();
+        String primaryCategory =
+                data.getGist().getPrimaryCategory() != null ?
+                        data.getGist().getPrimaryCategory().getTitle() :
+                        null;
+        boolean appendFirstSep = runtime > 0
+                && (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
+        boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year))
+                && !TextUtils.isEmpty(primaryCategory);
+        StringBuffer infoText = new StringBuffer();
+        if (runtime > 0) {
+            infoText.append(runtime + context.getString(R.string.mins_abbreviation));
+        }
+        if (appendFirstSep) {
+            infoText.append(context.getString(R.string.text_separator));
+        }
+        if (!TextUtils.isEmpty(year)) {
+            infoText.append(year);
+        }
+        if (appendSecondSep) {
+            infoText.append(context.getString(R.string.text_separator));
+        }
+        if (!TextUtils.isEmpty(primaryCategory)) {
+            infoText.append(primaryCategory.toUpperCase());
+        }
+        ((TextView) view).setText(infoText.toString());
+        view.setAlpha(0.6f);
+    }
+
+    public static long adjustColor1(long color1, long color2) {
+        double ratio = (double) color1 / (double) color2;
+        if (1.0 <= ratio && ratio <= 1.1) {
+            color1 *= 0.8;
+        }
+        return color1;
+    }
 
     public void removeLruCacheItem(Context context, String pageId) {
         if (getPageViewLruCache().get(pageId + BaseView.isLandscape(context)) != null) {
@@ -104,10 +143,14 @@ public class ViewCreator {
         boolean newView = false;
         if (pageView == null || pageView.getContext() != context) {
             pageView = new PageView(context, appCMSPageUI);
+            pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn(context));
             getPageViewLruCache().put(appCMSPageAPI.getId() + BaseView.isLandscape(context), pageView);
             newView = true;
         }
-        if (newView || !appCMSPresenter.isActionAPage(appCMSPageAPI.getId())) {
+        if (newView ||
+                !appCMSPresenter.isActionAPage(appCMSPageAPI.getId()) ||
+                appCMSPresenter.isUserLoggedIn(context) != pageView.isUserLoggedIn()) {
+            pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn(context));
             pageView.getChildrenContainer().removeAllViews();
             Runtime.getRuntime().gc();
             componentViewResult = new ComponentViewResult();
@@ -119,7 +162,36 @@ public class ViewCreator {
                     appCMSPresenter,
                     modulesToIgnore);
         } else {
-            pageView.notifyAdaptersOfUpdate();
+            int i = 0;
+            for (ModuleList module : appCMSPageUI.getModuleList()) {
+
+                if (!modulesToIgnore.contains(module.getView()) &&
+                        (appCMSPresenter.isUserLoggedIn(context) ||
+                                (!appCMSPresenter.isUserLoggedIn(context) &&
+                                        jsonValueKeyMap.get(module.getView()) != AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY))) {
+                    Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
+
+                    for (Component component : module.getComponents()) {
+                        AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
+
+                        if (componentType == null) {
+                            componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                        }
+
+                        if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY ||
+                                componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY ||
+                                componentType == AppCMSUIKeyType.PAGE_CAROUSEL_VIEW_KEY) {
+                            pageView.updateDataList(moduleAPI.getContentData(), i);
+                            i++;
+                        }
+                    }
+
+                    if (moduleAPI.getContentData() != null &&
+                            moduleAPI.getContentData().size() > 0) {
+                        pageView.showModule(module);
+                    }
+                }
+            }
         }
         return pageView;
     }
@@ -139,12 +211,12 @@ public class ViewCreator {
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList module : modulesList) {
-            if (!modulesToIgnore.contains(module.getView())) {
+            if (!modulesToIgnore.contains(module.getView()) &&
+                    (appCMSPresenter.isUserLoggedIn(context) ||
+                            (!appCMSPresenter.isUserLoggedIn(context) &&
+                                    jsonValueKeyMap.get(module.getView()) != AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY))) {
                 Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
-                View childView = createModuleView(context,
-                        module,
-                        moduleAPI,
-                        pageView,
+                View childView = createModuleView(context, module, moduleAPI, pageView,
                         jsonValueKeyMap,
                         appCMSPresenter);
                 if (childView != null) {
@@ -169,8 +241,9 @@ public class ViewCreator {
                     appCMSPresenter,
                     this);
         } else {
-            moduleView = new ModuleView<>(context, module);
+            moduleView = new ModuleView<>(context, module, true);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
+            boolean hideModule = false;
             if (module.getComponents() != null) {
                 for (int i = 0; i < module.getComponents().size(); i++) {
                     Component component = module.getComponents().get(i);
@@ -182,10 +255,17 @@ public class ViewCreator {
                             module.getSettings(),
                             jsonValueKeyMap,
                             appCMSPresenter,
-                            false);
+                            false,
+                            module.getView());
+
+                    if (componentViewResult.shouldHideModule) {
+                        hideModule = true;
+                    }
+
                     if (componentViewResult.onInternalEvent != null) {
                         appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
                     }
+
                     View componentView = componentViewResult.componentView;
                     if (componentView != null) {
                         childrenContainer.addView(componentView);
@@ -197,7 +277,8 @@ public class ViewCreator {
                                 false,
                                 jsonValueKeyMap,
                                 componentViewResult.useMarginsAsPercentagesOverride,
-                                componentViewResult.useWidthOfScreen);
+                                componentViewResult.useWidthOfScreen,
+                                module.getView());
                     } else {
                         moduleView.setComponentHasView(i, false);
                     }
@@ -214,6 +295,10 @@ public class ViewCreator {
                     }
                 }
             }
+
+            if (hideModule) {
+                moduleView.setVisibility(View.GONE);
+            }
         }
         return moduleView;
     }
@@ -229,7 +314,8 @@ public class ViewCreator {
                                                                int defaultWidth,
                                                                int defaultHeight,
                                                                boolean useMarginsAsPercentages,
-                                                               boolean gridElement) {
+                                                               boolean gridElement,
+                                                               String viewType) {
         CollectionGridItemView collectionGridItemView = new CollectionGridItemView(context,
                 parentLayout,
                 useParentLayout,
@@ -237,6 +323,7 @@ public class ViewCreator {
                 defaultWidth,
                 defaultHeight);
         List<OnInternalEvent> onInternalEvents = new ArrayList<>();
+
         for (int i = 0; i < component.getComponents().size(); i++) {
             Component childComponent = component.getComponents().get(i);
             createComponentView(context,
@@ -247,7 +334,9 @@ public class ViewCreator {
                     settings,
                     jsonValueKeyMap,
                     appCMSPresenter,
-                    gridElement);
+                    gridElement,
+                    viewType);
+
             if (componentViewResult.onInternalEvent != null) {
                 onInternalEvents.add(componentViewResult.onInternalEvent);
             }
@@ -268,7 +357,8 @@ public class ViewCreator {
                         false,
                         jsonValueKeyMap,
                         useMarginsAsPercentages,
-                        componentViewResult.useWidthOfScreen);
+                        componentViewResult.useWidthOfScreen,
+                        viewType);
             } else {
                 collectionGridItemView.setComponentHasView(i, false);
             }
@@ -288,38 +378,66 @@ public class ViewCreator {
                                     final Component component,
                                     final Layout parentLayout,
                                     final Module moduleAPI,
-                                    @Nullable PageView pageView,
+                                    @Nullable final PageView pageView,
                                     final Settings settings,
                                     Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                     final AppCMSPresenter appCMSPresenter,
-                                    boolean gridElement) {
+                                    boolean gridElement,
+                                    final String viewType) {
         componentViewResult.componentView = null;
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
+        componentViewResult.shouldHideModule = false;
+
         if (moduleAPI == null) {
             return;
         }
+
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
-        if (moduleAPI == null) {
-            return;
-        }
+
         if (componentType == null) {
             componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
 
         AppCMSUIKeyType componentKey = jsonValueKeyMap.get(component.getKey());
+
         if (componentKey == null) {
             componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
 
         switch (componentType) {
-            case PAGE_COLLECTIONGRID_KEY:
             case PAGE_TABLE_VIEW_KEY:
+                componentViewResult.componentView = new RecyclerView(context);
+
+                ((RecyclerView) componentViewResult.componentView)
+                        .setLayoutManager(new LinearLayoutManager(context,
+                                LinearLayoutManager.VERTICAL,
+                                false));
+                AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
+                        moduleAPI.getContentData(),
+                        component.getComponents(),
+                        appCMSPresenter,
+                        jsonValueKeyMap,
+                        viewType);
+                ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
+                componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
+
+                if (pageView != null) {
+                    pageView.addListWithAdapter(new AppCMSViewAdapter.ListWithAdapter.Builder()
+                            .adapter(appCMSTrayItemAdapter)
+                            .listview((RecyclerView) componentViewResult.componentView)
+                            .build());
+                }
+
+                break;
+
+            case PAGE_COLLECTIONGRID_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
                 ((RecyclerView) componentViewResult.componentView)
                         .setLayoutManager(new LinearLayoutManager(context,
                                 LinearLayoutManager.HORIZONTAL,
                                 false));
+
                 AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
                         this,
                         appCMSPresenter,
@@ -330,8 +448,10 @@ public class ViewCreator {
                         jsonValueKeyMap,
                         moduleAPI,
                         ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        viewType);
                 ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
+
                 if (pageView != null) {
                     pageView.addListWithAdapter(new AppCMSViewAdapter.ListWithAdapter.Builder()
                             .adapter(appCMSViewAdapter)
@@ -339,6 +459,12 @@ public class ViewCreator {
                             .build());
                 }
                 componentViewResult.useWidthOfScreen = true;
+
+                if (moduleAPI.getContentData() == null ||
+                        moduleAPI.getContentData().size() == 0) {
+                    componentViewResult.shouldHideModule = true;
+                }
+
                 break;
 
             case PAGE_CAROUSEL_VIEW_KEY:
@@ -373,30 +499,38 @@ public class ViewCreator {
                 break;
 
             case PAGE_PAGE_CONTROL_VIEW_KEY:
-                int selectedColor =
-                        component.getSelectedColor() != null ? Color.parseColor(getColor(context, component.getSelectedColor())) : 0;
-                int deselectedColor =
-                        component.getUnSelectedColor() != null ? Color.parseColor(getColor(context, component.getUnSelectedColor())) : 0;
+                long selectedColor = Long.parseLong(appCMSPresenter.getAppCMSMain().getBrand()
+                                .getGeneral()
+                                .getBlockTitleColor().replace("#", ""),
+                        16);
+                long deselectedColor = component.getUnSelectedColor() != null ?
+                        Long.valueOf(component.getUnSelectedColor(), 16) : 0L;
+
+                deselectedColor = adjustColor1(deselectedColor, selectedColor);
                 componentViewResult.componentView = new DotSelectorView(context,
                         component,
-                        selectedColor,
-                        deselectedColor);
+                        0xff000000 + (int) selectedColor,
+                        0xff000000 + (int) deselectedColor);
                 int numDots = moduleAPI.getContentData() != null ? moduleAPI.getContentData().size() : 0;
                 ((DotSelectorView) componentViewResult.componentView).addDots(numDots);
                 componentViewResult.onInternalEvent = (DotSelectorView) componentViewResult.componentView;
                 componentViewResult.useMarginsAsPercentagesOverride = false;
                 break;
 
+
             case PAGE_BUTTON_KEY:
-                // IGNORE FOR NOW
-                if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_ADD_TO_WATCHLIST_KEY) {
-                    return;
+                if (componentKey == AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) {
+                    if (!appCMSPresenter.isUserLoggedIn(context)) {
+                        return;
+                    }
                 }
-                if (componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY) {
+                if (componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY &&
+                        componentKey != AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) {
                     componentViewResult.componentView = new Button(context);
                 } else {
                     componentViewResult.componentView = new ImageButton(context);
                 }
+
                 if (!gridElement) {
                     if (!TextUtils.isEmpty(component.getText()) && componentKey != AppCMSUIKeyType.PAGE_PLAY_KEY) {
                         ((TextView) componentViewResult.componentView).setText(component.getText());
@@ -407,20 +541,32 @@ public class ViewCreator {
                         ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
                     }
                 }
+
                 if (!TextUtils.isEmpty(component.getTextColor())) {
                     ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context, component.getTextColor())));
                 }
+
                 if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                     componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
                 } else {
                     applyBorderToComponent(context, componentViewResult.componentView, component);
                 }
+
                 int tintColor = Color.parseColor(getColor(context,
                         appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
 
                 switch (componentKey) {
                     case PAGE_INFO_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.info_icon));
+                        break;
+
+                    case PAGE_ADD_TO_WATCHLIST_KEY:
+                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
+                        appCMSPresenter.getUserVideoStatus(
+                                moduleAPI.getContentData().get(0).getGist().getId(),
+                                new UpdateImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
+                                        moduleAPI.getContentData().get(0).getGist().getId()));
                         break;
 
                     case PAGE_VIDEO_WATCH_TRAILER_KEY:
@@ -442,6 +588,7 @@ public class ViewCreator {
                                             component.getAction(),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
                                             extraData,
+                                            null,
                                             false)) {
                                         Log.e(TAG, "Could not launch action: " +
                                                 " permalink: " +
@@ -488,6 +635,7 @@ public class ViewCreator {
                                                 component.getAction(),
                                                 moduleAPI.getContentData().get(0).getGist().getTitle(),
                                                 extraData,
+                                                moduleAPI.getContentData().get(0),
                                                 false)) {
                                             Log.e(TAG, "Could not launch action: " +
                                                     " permalink: " +
@@ -524,6 +672,7 @@ public class ViewCreator {
                                         component.getAction(),
                                         null,
                                         null,
+                                        null,
                                         false)) {
                                     Log.e(TAG, "Could not launch action: " +
                                             " action: " +
@@ -556,6 +705,7 @@ public class ViewCreator {
                                             component.getAction(),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
                                             extraData,
+                                            moduleAPI.getContentData().get(0),
                                             false)) {
                                         Log.e(TAG, "Could not launch action: " +
                                                 " permalink: " +
@@ -573,8 +723,62 @@ public class ViewCreator {
                     case PAGE_FORGOTPASSWORD_KEY:
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                         break;
+
+                    case PAGE_REMOVEALL_KEY:
+                        final boolean isHistoryPage = jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY;
+                        if (isHistoryPage) {
+                            componentViewResult.componentView.setVisibility(View.GONE);
+                            componentViewResult.componentView.setEnabled(false);
+                        } else {
+                            componentViewResult.onInternalEvent = new OnInternalEvent() {
+                                private List<OnInternalEvent> receivers = new ArrayList<>();
+
+                                @Override
+                                public void addReceiver(OnInternalEvent e) {
+                                    receivers.add(e);
+                                }
+
+                                @Override
+                                public void sendEvent(InternalEvent<?> event) {
+                                    for (OnInternalEvent internalEvent : receivers) {
+                                        internalEvent.receiveEvent(null);
+                                    }
+                                }
+
+                                @Override
+                                public void receiveEvent(InternalEvent<?> event) {
+                                    //
+                                }
+
+                                @Override
+                                public void cancel(boolean cancel) {
+                                    //
+                                }
+                            };
+                        }
+                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                            OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
+
+                            @Override
+                            public void onClick(View v) {
+                                if (isHistoryPage) {
+                                    //
+                                } else {
+                                    appCMSPresenter.clearWatchlist(new Action1<AppCMSAddToWatchlistResult>() {
+                                        @Override
+                                        public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
+                                            onInternalEvent.sendEvent(null);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+
+                        break;
+
                     default:
                 }
+
                 break;
 
             case PAGE_LABEL_KEY:
@@ -591,7 +795,12 @@ public class ViewCreator {
                                 Color.parseColor(getColor(context, component.getStyles().getTextColor()));
                     }
                 }
-                ((TextView) componentViewResult.componentView).setTextColor(textColor);
+                if (componentKey != AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY) {
+                    ((TextView) componentViewResult.componentView).setTextColor(textColor);
+                } else {
+                    ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context,
+                            appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())));
+                }
                 if (!gridElement) {
                     switch (componentKey) {
                         case PAGE_API_TITLE:
@@ -601,7 +810,12 @@ public class ViewCreator {
                                     ((TextView) componentViewResult.componentView).setMaxLines(component.getNumberOfLines());
                                 }
                                 ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
                             }
+
                             break;
 
                         case PAGE_API_DESCRIPTION:
@@ -621,6 +835,10 @@ public class ViewCreator {
                             } else if (moduleAPI.getSettings() != null && !moduleAPI.getSettings().getHideTitle() &&
                                     !TextUtils.isEmpty(moduleAPI.getTitle())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle().toUpperCase());
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
                             }
                             break;
 
@@ -683,6 +901,7 @@ public class ViewCreator {
                                         componentViewResult.componentView,
                                         component);
                             }
+                            break;
                         default:
                             if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText());
@@ -746,10 +965,25 @@ public class ViewCreator {
             case PAGE_PROGRESS_VIEW_KEY:
                 componentViewResult.componentView = new ProgressBar(context,
                         null,
-                        R.style.Widget_AppCompat_ProgressBar_Horizontal);
+                        android.R.attr.progressBarStyleHorizontal);
                 if (!TextUtils.isEmpty(component.getProgressColor())) {
                     int color = Color.parseColor(getColor(context, component.getProgressColor()));
-                    ((ProgressBar) componentViewResult.componentView).setProgressDrawable(new ColorDrawable(color));
+                    ((ProgressBar) componentViewResult.componentView).getProgressDrawable().setColorFilter(color, PorterDuff.Mode.SRC_IN);
+                }
+                if (appCMSPresenter.isUserLoggedIn(context)) {
+                    ((ProgressBar) componentViewResult.componentView).setMax(100);
+                    ((ProgressBar) componentViewResult.componentView).setProgress(0);
+                    if (moduleAPI.getContentData() != null &&
+                            moduleAPI.getContentData().size() > 0 &&
+                            moduleAPI.getContentData().get(0) != null &&
+                            moduleAPI.getContentData().get(0).getGist() != null &&
+                            moduleAPI.getContentData().get(0).getGist().getWatchedPercentage() != null) {
+                        ((ProgressBar) componentViewResult.componentView).setProgress(moduleAPI.getContentData().get(0).getGist().getWatchedPercentage());
+                    } else {
+                        ((ProgressBar) componentViewResult.componentView).setProgress(0);
+                    }
+                } else {
+                    componentViewResult.componentView.setVisibility(View.GONE);
                 }
                 break;
 
@@ -891,12 +1125,19 @@ public class ViewCreator {
                         new TextInputLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                 ViewGroup.LayoutParams.MATCH_PARENT);
                 textInputEditText.setLayoutParams(textInputEditTextLayoutParams);
+
                 ((TextInputLayout) componentViewResult.componentView).addView(textInputEditText);
+
+                ((TextInputLayout) componentViewResult.componentView).setHintEnabled(false);
+
                 break;
             case PAGE_VIDEO_STARRATING_KEY:
                 int starBorderColor = Color.parseColor(getColor(context, component.getBorderColor()));
                 int starFillColor = Color.parseColor(getColor(context, component.getFillColor()));
-                float starRating = moduleAPI.getContentData().get(0).getGist().getAverageStarRating();
+                float starRating = 0.0f;
+                if (moduleAPI.getContentData().get(0).getGist().getAverageStarRating() != null) {
+                    starRating = moduleAPI.getContentData().get(0).getGist().getAverageStarRating();
+                }
                 componentViewResult.componentView = new StarRating(context,
                         starBorderColor,
                         starFillColor,
@@ -905,37 +1146,6 @@ public class ViewCreator {
 
             default:
         }
-    }
-
-    public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
-        int runtime = (data.getGist().getRuntime() / 60);
-        String year = data.getGist().getYear();
-        String primaryCategory =
-                data.getGist().getPrimaryCategory() != null ?
-                        data.getGist().getPrimaryCategory().getTitle() :
-                        null;
-        boolean appendFirstSep = runtime > 0 &&
-                (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
-        boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year)) &&
-                !TextUtils.isEmpty(primaryCategory);
-        StringBuffer infoText = new StringBuffer();
-        if (runtime > 0) {
-            infoText.append(runtime + context.getString(R.string.mins_abbreviation));
-        }
-        if (appendFirstSep) {
-            infoText.append(context.getString(R.string.text_separator));
-        }
-        if (!TextUtils.isEmpty(year)) {
-            infoText.append(year);
-        }
-        if (appendSecondSep) {
-            infoText.append(context.getString(R.string.text_separator));
-        }
-        if (!TextUtils.isEmpty(primaryCategory)) {
-            infoText.append(primaryCategory.toUpperCase());
-        }
-        ((TextView) view).setText(infoText.toString());
-        view.setAlpha(0.6f);
     }
 
     private String getColor(Context context, String color) {
@@ -954,8 +1164,19 @@ public class ViewCreator {
                 }
             }
 
+            if (AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
+                if (appCMSPageAPI.getModules() != null && appCMSPageAPI.getModules().size() > 0) {
+                    return appCMSPageAPI.getModules().get(0);
+                }
+            }
+
             for (Module moduleAPI : appCMSPageAPI.getModules()) {
                 if (module.getId().equals(moduleAPI.getId())) {
+                    return moduleAPI;
+                } else if (jsonValueKeyMap.get(module.getType()) != null &&
+                        jsonValueKeyMap.get(moduleAPI.getModuleType()) != null &&
+                        jsonValueKeyMap.get(module.getType()) ==
+                                jsonValueKeyMap.get(moduleAPI.getModuleType())) {
                     return moduleAPI;
                 }
             }
@@ -1000,6 +1221,66 @@ public class ViewCreator {
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
             }
             textView.setTypeface(face);
+        }
+    }
+
+    public static class UpdateImageIconAction implements Action1<UserVideoStatusResponse> {
+        private final ImageButton imageButton;
+        private final AppCMSPresenter appCMSPresenter;
+        private final String filmId;
+
+        private View.OnClickListener addClickListener;
+        private View.OnClickListener removeClickListener;
+
+        public UpdateImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
+                                     String filmId) {
+            this.imageButton = imageButton;
+            this.appCMSPresenter = presenter;
+            this.filmId = filmId;
+
+            addClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
+                            new Action1<AppCMSAddToWatchlistResult>() {
+                                @Override
+                                public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
+                                    UpdateImageIconAction.this.imageButton.setImageResource(R.drawable.remove_from_watchlist);
+                                    UpdateImageIconAction.this.imageButton.setOnClickListener(removeClickListener);
+                                }
+                            }, true);
+                }
+            };
+
+            removeClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
+                            new Action1<AppCMSAddToWatchlistResult>() {
+                                @Override
+                                public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
+                                    UpdateImageIconAction.this.imageButton.setImageResource(R.drawable.add_to_watchlist);
+                                    UpdateImageIconAction.this.imageButton.setOnClickListener(addClickListener);
+                                }
+                            }, false);
+                }
+            };
+        }
+
+        @Override
+        public void call(final UserVideoStatusResponse userVideoStatusResponse) {
+            if (userVideoStatusResponse != null) {
+                if (userVideoStatusResponse.getQueued()) {
+                    imageButton.setImageResource(R.drawable.remove_from_watchlist);
+                    imageButton.setOnClickListener(removeClickListener);
+                } else {
+                    imageButton.setImageResource(R.drawable.add_to_watchlist);
+                    imageButton.setOnClickListener(addClickListener);
+                }
+            } else {
+                imageButton.setImageResource(R.drawable.add_to_watchlist);
+                imageButton.setOnClickListener(addClickListener);
+            }
         }
     }
 }

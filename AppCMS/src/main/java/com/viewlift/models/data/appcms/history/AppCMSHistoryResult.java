@@ -24,7 +24,6 @@ public class AppCMSHistoryResult {
     private Integer limit;
 
     public List<Record> getRecords() {
-
         return records;
     }
 
@@ -40,17 +39,19 @@ public class AppCMSHistoryResult {
         this.limit = limit;
     }
 
-    public AppCMSPageAPI convertToAppCMSPageAPI() {
+    public AppCMSPageAPI convertToAppCMSPageAPI(String Id) {
         AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
         Module module = new Module();
         List<ContentDatum> data = new ArrayList<>();
 
-        for (Record records : getRecords()) {
-            data.add(records.convertToContentDatum());
+        if (getRecords() != null) {
+            for (Record records : getRecords()) {
+                data.add(records.convertToContentDatum());
+            }
         }
 
         module.setContentData(data);
-
+        appCMSPageAPI.setId(Id);
         List<Module> moduleList = new ArrayList<>();
         moduleList.add(module);
         appCMSPageAPI.setModules(moduleList);

@@ -15,7 +15,6 @@ import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSWatchlistItemAdapter;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -60,14 +59,6 @@ public class AppCMSWatchlistActivity extends AppCompatActivity {
         LinearLayout appCMSWatchListResultsContainer =
                 (LinearLayout) findViewById(R.id.app_cms_watchlist_results_container);
 
-//        if (appCMSMain.getBrand() != null &&
-//                appCMSMain.getBrand().getGeneral() != null &&
-//                !TextUtils.isEmpty(appCMSMain.getBrand().getGeneral().getBackgroundColor())) {
-//            appCMSWatchListResultsContainer.setBackgroundColor(Color.parseColor(appCMSMain.getBrand()
-//                    .getGeneral()
-//                    .getBackgroundColor()));
-//        }
-
         handleIntent(getIntent());
     }
 
@@ -107,11 +98,11 @@ public class AppCMSWatchlistActivity extends AppCompatActivity {
         @Override
         protected List<AppCMSWatchlistResult> doInBackground(String... params) {
             if (params.length > 0) {
-                try {
-                    return appCMSWatchlistCall.call(params[0]);
-                } catch (IOException e) {
-                    Log.e(TAG, "doInBackground: " + params[0]);
-                }
+//                try {
+//                    return appCMSWatchlistCall.call(params[0]);
+//                } catch (IOException e) {
+//                    Log.e(TAG, "doInBackground: " + params[0]);
+//                }
             }
 
             return null;

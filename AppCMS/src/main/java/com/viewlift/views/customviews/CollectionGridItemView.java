@@ -50,19 +50,24 @@ public class CollectionGridItemView extends BaseView {
     public static class ItemContainer {
         View childView;
         Component component;
+
         public static class Builder {
             private ItemContainer itemContainer;
+
             public Builder() {
                 itemContainer = new ItemContainer();
             }
+
             public Builder childView(View childView) {
                 itemContainer.childView = childView;
                 return this;
             }
+
             public Builder component(Component component) {
                 itemContainer.component = component;
                 return this;
             }
+
             public ItemContainer build() {
                 return itemContainer;
             }
@@ -71,6 +76,7 @@ public class CollectionGridItemView extends BaseView {
 
     public interface OnClickHandler {
         void click(Component childComponent, ContentDatum data);
+
         void play(Component childComponent, ContentDatum data);
     }
 
@@ -175,7 +181,7 @@ public class CollectionGridItemView extends BaseView {
                           View view,
                           final ContentDatum data,
                           Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                          OnClickHandler onClickHandler) {
+                          final OnClickHandler onClickHandler) {
         final Component childComponent = matchComponentToView(view);
         if (childComponent != null) {
             boolean bringToFront = true;
@@ -302,7 +308,15 @@ public class CollectionGridItemView extends BaseView {
                     bringToFront = false;
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
-
+                if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
+                    ((TextView) view).setText("");
+                }
+                view.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onClickHandler.play(childComponent, data);
+                    }
+                });
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
                 if (TextUtils.isEmpty(((TextView) view).getText())) {
                     if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
@@ -314,6 +328,12 @@ public class CollectionGridItemView extends BaseView {
                         ViewCreator.setViewWithSubtitle(getContext(), data, view);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
                         ((TextView) view).setText(data.getGist().getTitle());
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
+                        ((TextView) view).setText(String.valueOf(data.getGist().getRuntime() / 60));
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE) {
+                        ((TextView) view).setText(data.getGist().getTitle());
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_API_DESCRIPTION) {
+                        ((TextView) view).setText(data.getGist().getDescription());
                     }
                 }
             }

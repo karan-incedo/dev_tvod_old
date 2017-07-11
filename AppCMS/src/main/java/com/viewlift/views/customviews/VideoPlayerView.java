@@ -50,7 +50,7 @@ import snagfilms.com.air.appcms.R;
 public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListener {
     private static final String TAG = "VideoPlayerFragment";
 
-    public class PlayerState {
+    public static class PlayerState {
         boolean playWhenReady;
         int playbackState;
 
@@ -109,6 +109,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         if (player != null) {
             return player.getPlayWhenReady();
         }
+
         return false;
     }
 
@@ -146,6 +147,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         if (player != null) {
             return player.getDuration();
         }
+
         return -1L;
     }
 
@@ -153,7 +155,14 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         if (player != null) {
             return player.getCurrentPosition();
         }
+
         return -1L;
+    }
+
+    public void setCurrentPosition(long currentPosition) {
+        if (player != null) {
+            player.seekTo(currentPosition);
+        }
     }
 
     private void init(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
@@ -168,21 +177,24 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
         mediaDataSourceFactory = buildDataSourceFactory(true);
+
         TrackSelection.Factory videoTrackSelectionFactory =
                 new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
         TrackSelector trackSelector =
                 new DefaultTrackSelector(videoTrackSelectionFactory);
+
         player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
         player.addListener(this);
         playerView.setPlayer(player);
         playerView.setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
             @Override
-            public void onVisibilityChange(int visiblity) {
+            public void onVisibilityChange(int visibility) {
                 if (onPlayerControlsStateChanged != null) {
-                    onPlayerControlsStateChanged.call(visiblity);
+                    onPlayerControlsStateChanged.call(visibility);
                 }
             }
         });
+
         addView(playerView);
     }
 
@@ -251,6 +263,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         playerState.playWhenReady = playWhenReady;
         playerState.playbackState = playbackState;
+
         if (onPlayerStateChanged != null) {
             Observable.just(playerState).subscribe(onPlayerStateChanged);
         }

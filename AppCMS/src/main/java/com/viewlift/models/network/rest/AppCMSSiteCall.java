@@ -30,7 +30,7 @@ public class AppCMSSiteCall {
             Log.d(TAG, "Attempting to retrieve site JSON: " + url);
             return appCMSSiteRest.get(url).execute().body();
         } catch (JsonSyntaxException e) {
-            Log.e(TAG, "Error parsing input JSON - " + url + ": " + e.toString());
+            Log.e(TAG, "DialogType parsing input JSON - " + url + ": " + e.toString());
         } catch (Exception e) {
             Log.e(TAG, "Network error retrieving site data - " + url + ": " + e.toString());
         }

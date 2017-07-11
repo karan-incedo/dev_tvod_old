@@ -22,12 +22,19 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.Gist;
+import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
+import com.viewlift.models.data.appcms.history.Record;
+import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
-import com.viewlift.models.data.appcms.ui.android.Primary;
+import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.NavBarItemView;
+import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSPageFragment;
 
 import java.io.File;
@@ -35,6 +42,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
 
 /**
@@ -140,7 +148,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                         try {
                             getSupportFragmentManager().popBackStack();
                         } catch (IllegalStateException e) {
-                            Log.e(TAG, "Error popping back stack: " + e.getMessage());
+                            Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                         }
                         handleBack(true, false, true);
                         if (appCMSBinderStack.size() > 0) {
@@ -276,6 +284,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        ViewCreator viewCreator = null;
+        for (int i = 0; i < getSupportFragmentManager().getBackStackEntryCount(); i++) {
+            Fragment fragment =
+                    getSupportFragmentManager().findFragmentById(getSupportFragmentManager().getBackStackEntryAt(i).getId());
+            if (fragment instanceof AppCMSPageFragment) {
+                viewCreator = ((AppCMSPageFragment) fragment).getViewCreator();
+            }
+        }
+        if (updatedAppCMSBinder != null && viewCreator != null) {
+            viewCreator.removeLruCacheItem(this, updatedAppCMSBinder.getPageId());
+        }
         unregisterReceiver(presenterActionReceiver);
         Log.d(TAG, "onDestroy()");
     }
@@ -296,13 +315,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     @Override
     public void onError(AppCMSBinder appCMSBinder) {
         if (appCMSBinder != null) {
-            Log.e(TAG, "Nav item - Error attempting to launch page: " + appCMSBinder.getPageName() + " - " + appCMSBinder.getPageId());
+            Log.e(TAG, "Nav item - DialogType attempting to launch page: " + appCMSBinder.getPageName() + " - " + appCMSBinder.getPageId());
         }
         if (appCMSBinderStack.size() > 0 && appCMSBinderStack.peek().equals(appCMSBinder.getPageId())) {
             try {
                 getSupportFragmentManager().popBackStackImmediate();
             } catch (IllegalStateException e) {
-                Log.e(TAG, "Error popping back stack: " + e.getMessage());
+                Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
             }
             handleBack(true, false, false);
         }
@@ -450,7 +469,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     private void handleNavbar(AppCMSBinder appCMSBinder) {
         final Navigation navigation = appCMSBinder.getNavigation();
-        if (navigation.getPrimary().size() == 0 || !appCMSBinder.isNavbarPresent()) {
+        if (navigation.getNavigationPrimary().size() == 0 || !appCMSBinder.isNavbarPresent()) {
             appCMSTabNavContainer.setVisibility(View.GONE);
         } else {
             appCMSTabNavContainer.setVisibility(View.VISIBLE);
@@ -489,7 +508,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         }
     }
 
-    private void handleLaunchPageAction(AppCMSBinder appCMSBinder) {
+    private void handleLaunchPageAction(final AppCMSBinder appCMSBinder) {
         Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
         int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
@@ -500,7 +519,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 try {
                     getSupportFragmentManager().popBackStack();
                 } catch (IllegalStateException e) {
-                    Log.e(TAG, "Error popping back stack: " + e.getMessage());
+                    Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                 }
                 handleBack(true, false, false);
             }
@@ -508,7 +527,50 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         appCMSBinderStack.push(appCMSBinder.getPageId());
         appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
         updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-        createScreenFromAppCMSBinder(appCMSBinder);
+
+        if (appCMSPresenter.isUserLoggedIn(this)) {
+            appCMSPresenter.getHistoryData(new Action1<AppCMSHistoryResult>() {
+                @Override
+                public void call(AppCMSHistoryResult appCMSHistoryResult) {
+                    if (appCMSHistoryResult != null &&
+                            appCMSHistoryResult.getRecords() != null) {
+                        for (Module module : appCMSBinder.getAppCMSPageAPI().getModules()) {
+                            if (appCMSBinder.getJsonValueKeyMap().get(module.getModuleType()) ==
+                                    AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
+                                AppCMSPageAPI pageAPI =
+                                        appCMSHistoryResult.convertToAppCMSPageAPI(module.getId());
+                                module.setContentData(pageAPI.getModules().get(0).getContentData());
+                            } else if (appCMSBinder.getJsonValueKeyMap().get(module.getModuleType()) ==
+                                    AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
+
+                                if (module.getContentData() != null &&
+                                        module.getContentData().size() > 0 &&
+                                        module.getContentData().get(0) != null &&
+                                        module.getContentData().get(0).getGist() != null) {
+                                    Gist moduleGist =
+                                            module.getContentData().get(0).getGist();
+                                    for (Record record : appCMSHistoryResult.getRecords()) {
+                                        if (record.getContentResponse() != null &&
+                                                record.getContentResponse().getGist() != null &&
+                                                record.getContentResponse().getGist().getId() != null &&
+                                                record.getContentResponse().getGist().getId().equals(moduleGist.getId())) {
+                                            Gist recordGist = record.getContentResponse().getGist();
+                                            moduleGist.setWatchedTime(recordGist.getWatchedTime());
+                                            moduleGist.setWatchedPercentage(recordGist.getWatchedPercentage());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        createScreenFromAppCMSBinder(appCMSBinder);
+                    } else {
+                        createScreenFromAppCMSBinder(appCMSBinder);
+                    }
+                }
+            });
+        } else {
+            createScreenFromAppCMSBinder(appCMSBinder);
+        }
     }
 
     private void hideSystemUI(View decorView) {
@@ -546,7 +608,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         });
     }
 
-    private void createHomeNavItem(final Primary homePageNav) {
+    private void createHomeNavItem(final NavigationPrimary homePageNav) {
         final NavBarItemView homeNavBarItemView =
                 (NavBarItemView) appCMSTabNavContainer.getChildAt(HOME_PAGE_INDEX);
         homeNavBarItemView.setImage(getIconName(homePageNav));
@@ -562,7 +624,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         homeNavBarItemView.setTag(homePageNav.getPageId());
     }
 
-    private void createMoviesNavItem(final Primary moviePageNav) {
+    private void createMoviesNavItem(final NavigationPrimary moviePageNav) {
         final NavBarItemView moviesNavBarItemView =
                 (NavBarItemView) appCMSTabNavContainer.getChildAt(MOVIES_PAGE_INDEX);
         moviesNavBarItemView.setImage(getIconName(moviePageNav));
@@ -592,7 +654,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         });
     }
 
-    private String getIconName(Primary navItem) {
+    private String getIconName(NavigationPrimary navItem) {
         StringBuffer iconName = new StringBuffer();
         iconName.append(navItem.getDisplayedPath().toLowerCase().replaceAll(" ", "_"));
         iconName.append(navItem.getUrl().replaceAll("/", "_"));
@@ -627,6 +689,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         appCMSPresenter.launchButtonSelectedAction(pagePath.toString(),
                 action,
                 title,
+                null,
                 null,
                 false);
     }

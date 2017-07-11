@@ -1,0 +1,119 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:orientation="vertical"
+    android:padding="4dp">
+
+    <TextView
+        android:id="@+id/app_cms_not_item_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/app_cms_not_items_label_text_size"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/app_cms_continue_watching_separator_view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/app_cms_separator_view_height" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <FrameLayout
+            android:id="@+id/app_cms_continue_watching_image_view"
+            android:layout_width="@dimen/app_cms_continue_watching_tray_image_width"
+            android:layout_height="@dimen/app_cms_continue_watching_tray_height"
+            android:layout_alignParentStart="true">
+
+            <ImageButton
+                android:id="@+id/app_cms_continue_watching_video_image"
+                android:layout_width="@dimen/app_cms_continue_watching_tray_image_width"
+                android:layout_height="@dimen/app_cms_continue_watching_tray_image_height"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter" />
+
+            <ImageButton
+                android:id="@+id/app_cms_continue_watching_play_button"
+                android:layout_width="@dimen/app_cms_continue_watching_play_button_width"
+                android:layout_height="@dimen/app_cms_continue_watching_play_button_height"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:padding="4dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/play_icon" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/app_cms_continue_watching_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/app_cms_continue_watching_tray_height"
+            android:layout_toEndOf="@id/app_cms_continue_watching_image_view"
+            android:layout_toStartOf="@id/app_cms_continue_watching_button_view"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/app_cms_continue_watching_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:padding="4dp" />
+
+            <TextView
+                android:id="@+id/app_cms_continue_watching_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:padding="2dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/app_cms_continue_watching_button_view"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/app_cms_continue_watching_tray_height"
+            android:layout_alignParentEnd="true"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <ImageButton
+                    android:id="@+id/app_cms_continue_watching_select_to_delete_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent" />
+
+                <ImageButton
+                    android:id="@+id/app_cms_continue_watching_delete_button"
+                    android:layout_width="@dimen/close_button_size"
+                    android:layout_height="@dimen/close_button_size"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@android:color/transparent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/cancel" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/app_cms_continue_watching_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.6" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.6"
+                android:text="@string/mins_abbreviation" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

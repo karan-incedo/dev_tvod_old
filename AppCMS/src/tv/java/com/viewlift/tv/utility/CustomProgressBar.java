@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import snagfilms.com.air.appcms.R;
 
+import static android.content.ContentValues.TAG;
+
 /**
  * Created by nitin.tyagi on 7/6/2017.
  */
@@ -23,6 +25,7 @@ public class CustomProgressBar {
     private static Context context;
     private Dialog dialog;
     private AnimationDrawable animDrawable;
+    private final String TAG = CustomProgressBar.class.getName();
     private CustomProgressBar() {
 
     }

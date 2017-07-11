@@ -80,7 +80,7 @@ public class GetAppCMSAPIAsyncTask extends AsyncTask<GetAppCMSAPIAsyncTask.Param
                         params[0].usePageIdQueryParam,
                         params[0].pageId);
             } catch (IOException e) {
-                Log.e(TAG, "Error retrieving page API data: " + e.getMessage());
+                Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
             }
         }
         return null;

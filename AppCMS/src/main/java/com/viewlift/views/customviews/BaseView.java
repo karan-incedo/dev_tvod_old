@@ -19,8 +19,6 @@ import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
 
 import java.util.Map;
 
-import rx.functions.Action1;
-
 /**
  * Created by viewlift on 5/17/17.
  */
@@ -74,7 +72,8 @@ public abstract class BaseView extends FrameLayout {
                                             boolean firstMeasurement,
                                             Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                             boolean useMarginsAsPercentages,
-                                            boolean useWidthOfScreen) {
+                                            boolean useWidthOfScreen,
+                                            String viewType) {
         Layout layout = childComponent.getLayout();
 
         if (!shouldShowView(childComponent)) {
@@ -321,11 +320,16 @@ public abstract class BaseView extends FrameLayout {
                         }
                     }
                     break;
+
                 case PAGE_PLAY_IMAGE_KEY:
-                    gravity = Gravity.CENTER;
-                    tm = 0;
-                    lm = 0;
+                    if (AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY != jsonValueKeyMap.get(viewType)
+                            && AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY != jsonValueKeyMap.get(viewType)) {
+                        gravity = Gravity.CENTER;
+                        tm = 0;
+                        lm = 0;
+                    }
                     break;
+
                 case PAGE_CAROUSEL_TITLE_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
                     if (isLandscape(getContext()) || !isTablet(getContext())) {
@@ -337,6 +341,7 @@ public abstract class BaseView extends FrameLayout {
                     }
                     lm = maxViewWidth / 2 - viewWidth / 2;
                     break;
+
                 case PAGE_CAROUSEL_INFO_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
                     if (isTablet(getContext())) {
@@ -351,6 +356,7 @@ public abstract class BaseView extends FrameLayout {
                     viewHeight *= 2;
                     lm = maxViewWidth / 2 - viewWidth / 2;
                     break;
+
                 case PAGE_THUMBNAIL_TITLE_KEY:
                     if (isTablet(getContext())) {
                         if (isLandscape(getContext())) {
@@ -363,6 +369,7 @@ public abstract class BaseView extends FrameLayout {
                         viewHeight *= 1.5;
                     }
                     break;
+
                 case PAGE_WATCH_VIDEO_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
                     lm = maxViewWidth / 2;
@@ -370,6 +377,7 @@ public abstract class BaseView extends FrameLayout {
                         tm -= viewHeight / 2;
                     }
                     break;
+
                 case PAGE_VIDEO_SHARE_KEY:
                     if (isTablet(getContext())) {
                         lm -= viewWidth / 2;
@@ -377,9 +385,17 @@ public abstract class BaseView extends FrameLayout {
                         viewHeight = (int) (viewWidth * 1.25);
                     }
                     break;
+
                 case PAGE_API_TITLE:
-                    viewHeight *= 1.5;
+                    viewHeight *= 1.1;
                     break;
+
+                case PAGE_ADD_TO_WATCHLIST_KEY:
+                    if (isTablet(getContext())) {
+                        lm -= viewWidth * 1.2;
+                    }
+                    break;
+
                 default:
             }
 
@@ -402,8 +418,12 @@ public abstract class BaseView extends FrameLayout {
                     (int) getViewHeight(getContext(),
                             layout,
                             viewHeight));
-            if (isLandscape(getContext())) {
-                viewHeight *= 1.5;
+            if (viewWidth > viewHeight) {
+                tm *= 2;
+            } else {
+                if (isLandscape(getContext())) {
+                    viewHeight *= 1.5;
+                }
             }
         } else if (componentType == AppCMSUIKeyType.PAGE_TEXTFIELD_KEY) {
             viewHeight *= 1.2;
@@ -525,7 +545,7 @@ public abstract class BaseView extends FrameLayout {
                         if (tmDiff < 0) {
                             tmDiff = 0;
                         }
-                        return parentViewHeight - bm -tmDiff;
+                        return parentViewHeight - bm - tmDiff;
                     } else {
                         return -1.0f;
                     }
