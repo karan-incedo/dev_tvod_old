@@ -66,6 +66,7 @@ public class ViewCreator {
 
     private static LruCache<String, PageView> pageViewLruCache;
     private static int PAGE_LRU_CACHE_SIZE = 10;
+    ComponentViewResult componentViewResult;
 
     private static LruCache<String, PageView> getPageViewLruCache() {
         if (pageViewLruCache == null) {
@@ -74,74 +75,44 @@ public class ViewCreator {
         return pageViewLruCache;
     }
 
-    public static class ComponentViewResult {
-        View componentView;
-        OnInternalEvent onInternalEvent;
-        boolean useMarginsAsPercentagesOverride;
-        boolean useWidthOfScreen;
+    public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
+        int runtime = (data.getGist().getRuntime() / 60);
+        String year = data.getGist().getYear();
+        String primaryCategory =
+                data.getGist().getPrimaryCategory() != null ?
+                        data.getGist().getPrimaryCategory().getTitle() :
+                        null;
+        boolean appendFirstSep = runtime > 0
+                && (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
+        boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year))
+                && !TextUtils.isEmpty(primaryCategory);
+        StringBuffer infoText = new StringBuffer();
+        if (runtime > 0) {
+            infoText.append(runtime + context.getString(R.string.mins_abbreviation));
+        }
+        if (appendFirstSep) {
+            infoText.append(context.getString(R.string.text_separator));
+        }
+        if (!TextUtils.isEmpty(year)) {
+            infoText.append(year);
+        }
+        if (appendSecondSep) {
+            infoText.append(context.getString(R.string.text_separator));
+        }
+        if (!TextUtils.isEmpty(primaryCategory)) {
+            infoText.append(primaryCategory.toUpperCase());
+        }
+        ((TextView) view).setText(infoText.toString());
+        view.setAlpha(0.6f);
     }
 
-    public static class UpdateImageIconAction implements Action1<UserVideoStatusResponse> {
-        private final ImageButton imageButton;
-        private final AppCMSPresenter appCMSPresenter;
-        private final String filmId;
-
-        private View.OnClickListener addClickListener;
-        private View.OnClickListener removeClickListener;
-
-        public UpdateImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
-                                     String filmId) {
-            this.imageButton = imageButton;
-            this.appCMSPresenter = presenter;
-            this.filmId = filmId;
-
-            addClickListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
-                            new Action1<AppCMSAddToWatchlistResult>() {
-                                @Override
-                                public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
-                                    UpdateImageIconAction.this.imageButton.setImageResource(R.drawable.remove_from_watchlist);
-                                    UpdateImageIconAction.this.imageButton.setOnClickListener(removeClickListener);
-                                }
-                            }, true);
-                }
-            };
-
-            removeClickListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
-                            new Action1<AppCMSAddToWatchlistResult>() {
-                                @Override
-                                public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
-                                    UpdateImageIconAction.this.imageButton.setImageResource(R.drawable.add_to_watchlist);
-                                    UpdateImageIconAction.this.imageButton.setOnClickListener(addClickListener);
-                                }
-                            }, false);
-                }
-            };
+    public static long adjustColor1(long color1, long color2) {
+        double ratio = (double) color1 / (double) color2;
+        if (1.0 <= ratio && ratio <= 1.1) {
+            color1 *= 0.8;
         }
-
-        @Override
-        public void call(final UserVideoStatusResponse userVideoStatusResponse) {
-            if (userVideoStatusResponse != null) {
-                if (userVideoStatusResponse.getQueued()) {
-                    imageButton.setImageResource(R.drawable.remove_from_watchlist);
-                    imageButton.setOnClickListener(removeClickListener);
-                } else {
-                    imageButton.setImageResource(R.drawable.add_to_watchlist);
-                    imageButton.setOnClickListener(addClickListener);
-                }
-            } else {
-                imageButton.setImageResource(R.drawable.add_to_watchlist);
-                imageButton.setOnClickListener(addClickListener);
-            }
-        }
+        return color1;
     }
-
-    ComponentViewResult componentViewResult;
 
     public void removeLruCacheItem(Context context, String pageId) {
         if (getPageViewLruCache().get(pageId + BaseView.isLandscape(context)) != null) {
@@ -182,7 +153,21 @@ public class ViewCreator {
                     appCMSPresenter,
                     modulesToIgnore);
         } else {
+            for (ModuleList module : appCMSPageUI.getModuleList()) {
+
+                int i = 0;
+
+                if (!modulesToIgnore.contains(module.getView()) &&
+                        (appCMSPresenter.isUserLoggedIn(context) ||
+                                (!appCMSPresenter.isUserLoggedIn(context) &&
+                                        jsonValueKeyMap.get(module.getView()) != AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY))) {
+                    Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
+                    pageView.updateDataList(moduleAPI.getContentData(), i++);
+                }
+            }
+
             pageView.notifyAdaptersOfUpdate();
+
         }
         return pageView;
     }
@@ -400,6 +385,13 @@ public class ViewCreator {
                         viewType);
                 ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
                 componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
+
+                if (pageView != null) {
+                    pageView.addListWithAdapter(new AppCMSViewAdapter.ListWithAdapter.Builder()
+                            .adapter(appCMSTrayItemAdapter)
+                            .listview((RecyclerView) componentViewResult.componentView)
+                            .build());
+                }
 
                 break;
 
@@ -707,7 +699,7 @@ public class ViewCreator {
                                 @Override
                                 public void sendEvent(InternalEvent<?> event) {
                                     for (OnInternalEvent internalEvent : receivers) {
-                                        internalEvent.sendEvent(null);
+                                        internalEvent.receiveEvent(null);
                                     }
                                 }
 
@@ -724,6 +716,7 @@ public class ViewCreator {
                         }
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
+
                             @Override
                             public void onClick(View v) {
                                 if (isHistoryPage) {
@@ -1113,45 +1106,6 @@ public class ViewCreator {
         }
     }
 
-    public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
-        int runtime = (data.getGist().getRuntime() / 60);
-        String year = data.getGist().getYear();
-        String primaryCategory =
-                data.getGist().getPrimaryCategory() != null ?
-                        data.getGist().getPrimaryCategory().getTitle() :
-                        null;
-        boolean appendFirstSep = runtime > 0
-                && (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
-        boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year))
-                && !TextUtils.isEmpty(primaryCategory);
-        StringBuffer infoText = new StringBuffer();
-        if (runtime > 0) {
-            infoText.append(runtime + context.getString(R.string.mins_abbreviation));
-        }
-        if (appendFirstSep) {
-            infoText.append(context.getString(R.string.text_separator));
-        }
-        if (!TextUtils.isEmpty(year)) {
-            infoText.append(year);
-        }
-        if (appendSecondSep) {
-            infoText.append(context.getString(R.string.text_separator));
-        }
-        if (!TextUtils.isEmpty(primaryCategory)) {
-            infoText.append(primaryCategory.toUpperCase());
-        }
-        ((TextView) view).setText(infoText.toString());
-        view.setAlpha(0.6f);
-    }
-
-    public static long adjustColor1(long color1, long color2) {
-        double ratio = (double) color1 / (double) color2;
-        if (1.0 <= ratio && ratio <= 1.1) {
-            color1 *= 0.8;
-        }
-        return color1;
-    }
-
     private String getColor(Context context, String color) {
         if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
             return context.getString(R.string.color_hash_prefix) + color;
@@ -1225,6 +1179,73 @@ public class ViewCreator {
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
             }
             textView.setTypeface(face);
+        }
+    }
+
+    public static class ComponentViewResult {
+        View componentView;
+        OnInternalEvent onInternalEvent;
+        boolean useMarginsAsPercentagesOverride;
+        boolean useWidthOfScreen;
+    }
+
+    public static class UpdateImageIconAction implements Action1<UserVideoStatusResponse> {
+        private final ImageButton imageButton;
+        private final AppCMSPresenter appCMSPresenter;
+        private final String filmId;
+
+        private View.OnClickListener addClickListener;
+        private View.OnClickListener removeClickListener;
+
+        public UpdateImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
+                                     String filmId) {
+            this.imageButton = imageButton;
+            this.appCMSPresenter = presenter;
+            this.filmId = filmId;
+
+            addClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
+                            new Action1<AppCMSAddToWatchlistResult>() {
+                                @Override
+                                public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
+                                    UpdateImageIconAction.this.imageButton.setImageResource(R.drawable.remove_from_watchlist);
+                                    UpdateImageIconAction.this.imageButton.setOnClickListener(removeClickListener);
+                                }
+                            }, true);
+                }
+            };
+
+            removeClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
+                            new Action1<AppCMSAddToWatchlistResult>() {
+                                @Override
+                                public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
+                                    UpdateImageIconAction.this.imageButton.setImageResource(R.drawable.add_to_watchlist);
+                                    UpdateImageIconAction.this.imageButton.setOnClickListener(addClickListener);
+                                }
+                            }, false);
+                }
+            };
+        }
+
+        @Override
+        public void call(final UserVideoStatusResponse userVideoStatusResponse) {
+            if (userVideoStatusResponse != null) {
+                if (userVideoStatusResponse.getQueued()) {
+                    imageButton.setImageResource(R.drawable.remove_from_watchlist);
+                    imageButton.setOnClickListener(removeClickListener);
+                } else {
+                    imageButton.setImageResource(R.drawable.add_to_watchlist);
+                    imageButton.setOnClickListener(addClickListener);
+                }
+            } else {
+                imageButton.setImageResource(R.drawable.add_to_watchlist);
+                imageButton.setOnClickListener(addClickListener);
+            }
         }
     }
 }

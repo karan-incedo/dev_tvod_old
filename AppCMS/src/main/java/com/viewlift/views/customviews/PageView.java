@@ -6,15 +6,17 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import javax.inject.Inject;
-
+import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
+import com.viewlift.views.adapters.AppCMSBaseAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 /**
  * Created by viewlift on 5/4/17.
@@ -47,8 +49,19 @@ public class PageView extends BaseView {
 
     public void notifyAdaptersOfUpdate() {
         for (AppCMSViewAdapter.ListWithAdapter listWithAdapter : adapterList) {
-            if (listWithAdapter.getAdapter() instanceof AppCMSViewAdapter) {
-                ((AppCMSViewAdapter) listWithAdapter.getAdapter()).resetData(listWithAdapter.getListView());
+            if (listWithAdapter.getAdapter() instanceof AppCMSBaseAdapter) {
+                ((AppCMSBaseAdapter) listWithAdapter.getAdapter())
+                        .resetData(listWithAdapter.getListView());
+            }
+        }
+    }
+
+    public void updateDataList(List<ContentDatum> contentData, int index) {
+        if (0 <= index && index < adapterList.size()) {
+            AppCMSViewAdapter.ListWithAdapter listWithAdapter = adapterList.get(index);
+            if (listWithAdapter.getAdapter() instanceof AppCMSBaseAdapter) {
+                ((AppCMSBaseAdapter) listWithAdapter.getAdapter())
+                        .updateData(contentData);
             }
         }
     }

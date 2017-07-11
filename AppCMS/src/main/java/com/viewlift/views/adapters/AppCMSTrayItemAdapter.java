@@ -24,6 +24,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ import snagfilms.com.air.appcms.R;
  */
 
 public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAdapter.ViewHolder>
-        implements OnInternalEvent {
+        implements OnInternalEvent, AppCMSBaseAdapter {
     private static final String TAG = "AppCMSTrayAdapter";
 
     private static final int SECONDS_PER_MINS = 60;
@@ -301,6 +302,23 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 default:
             }
         }
+    }
+
+    @Override
+    public void resetData(RecyclerView listView) {
+        listView.setAdapter(null);
+        List<ContentDatum> adapterDataTmp = new ArrayList<>(adapterData);
+        adapterData = null;
+        notifyDataSetChanged();
+        adapterData = adapterDataTmp;
+        notifyDataSetChanged();
+        listView.setAdapter(this);
+        listView.invalidate();
+    }
+
+    @Override
+    public void updateData(List<ContentDatum> contentData) {
+        adapterData = contentData;
     }
 
     private void click(ContentDatum data) {
