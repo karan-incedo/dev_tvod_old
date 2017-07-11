@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -73,6 +74,14 @@ public class ViewCreator {
             pageViewLruCache = new LruCache<>(PAGE_LRU_CACHE_SIZE);
         }
         return pageViewLruCache;
+    }
+
+    public static class ComponentViewResult {
+        View componentView;
+        OnInternalEvent onInternalEvent;
+        boolean useMarginsAsPercentagesOverride;
+        boolean useWidthOfScreen;
+        boolean shouldHideModule;
     }
 
     public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
@@ -153,21 +162,36 @@ public class ViewCreator {
                     appCMSPresenter,
                     modulesToIgnore);
         } else {
+            int i = 0;
             for (ModuleList module : appCMSPageUI.getModuleList()) {
-
-                int i = 0;
 
                 if (!modulesToIgnore.contains(module.getView()) &&
                         (appCMSPresenter.isUserLoggedIn(context) ||
                                 (!appCMSPresenter.isUserLoggedIn(context) &&
                                         jsonValueKeyMap.get(module.getView()) != AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY))) {
                     Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
-                    pageView.updateDataList(moduleAPI.getContentData(), i++);
+
+                    for (Component component : module.getComponents()) {
+                        AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
+
+                        if (componentType == null) {
+                            componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                        }
+
+                        if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY ||
+                                componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY ||
+                                componentType == AppCMSUIKeyType.PAGE_CAROUSEL_VIEW_KEY) {
+                            pageView.updateDataList(moduleAPI.getContentData(), i);
+                            i++;
+                        }
+                    }
+
+                    if (moduleAPI.getContentData() != null &&
+                            moduleAPI.getContentData().size() > 0) {
+                        pageView.showModule(module);
+                    }
                 }
             }
-
-            pageView.notifyAdaptersOfUpdate();
-
         }
         return pageView;
     }
@@ -219,6 +243,7 @@ public class ViewCreator {
         } else {
             moduleView = new ModuleView<>(context, module, true);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
+            boolean hideModule = false;
             if (module.getComponents() != null) {
                 for (int i = 0; i < module.getComponents().size(); i++) {
                     Component component = module.getComponents().get(i);
@@ -232,6 +257,11 @@ public class ViewCreator {
                             appCMSPresenter,
                             false,
                             module.getView());
+
+                    if (componentViewResult.shouldHideModule) {
+                        hideModule = true;
+                    }
+
                     if (componentViewResult.onInternalEvent != null) {
                         appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
                     }
@@ -264,6 +294,10 @@ public class ViewCreator {
                         }
                     }
                 }
+            }
+
+            if (hideModule) {
+                moduleView.setVisibility(View.GONE);
             }
         }
         return moduleView;
@@ -353,10 +387,12 @@ public class ViewCreator {
         componentViewResult.componentView = null;
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
+        componentViewResult.shouldHideModule = false;
 
         if (moduleAPI == null) {
             return;
         }
+
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
 
         if (componentType == null) {
@@ -423,6 +459,12 @@ public class ViewCreator {
                             .build());
                 }
                 componentViewResult.useWidthOfScreen = true;
+
+                if (moduleAPI.getContentData() == null ||
+                        moduleAPI.getContentData().size() == 0) {
+                    componentViewResult.shouldHideModule = true;
+                }
+
                 break;
 
             case PAGE_CAROUSEL_VIEW_KEY:
@@ -1180,13 +1222,6 @@ public class ViewCreator {
             }
             textView.setTypeface(face);
         }
-    }
-
-    public static class ComponentViewResult {
-        View componentView;
-        OnInternalEvent onInternalEvent;
-        boolean useMarginsAsPercentagesOverride;
-        boolean useWidthOfScreen;
     }
 
     public static class UpdateImageIconAction implements Action1<UserVideoStatusResponse> {

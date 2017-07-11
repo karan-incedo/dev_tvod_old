@@ -2,6 +2,7 @@ package com.viewlift.views.customviews;
 
 import android.content.Context;
 import android.support.v4.widget.NestedScrollView;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -10,6 +11,7 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
+import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.views.adapters.AppCMSBaseAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 
@@ -61,7 +63,18 @@ public class PageView extends BaseView {
             AppCMSViewAdapter.ListWithAdapter listWithAdapter = adapterList.get(index);
             if (listWithAdapter.getAdapter() instanceof AppCMSBaseAdapter) {
                 ((AppCMSBaseAdapter) listWithAdapter.getAdapter())
-                        .updateData(contentData);
+                        .updateData(listWithAdapter.getListView(), contentData);
+            }
+        }
+    }
+
+    public void showModule(ModuleList module) {
+        for (int i = 0; i < childrenContainer.getChildCount(); i++) {
+            View child = childrenContainer.getChildAt(i);
+            if (child instanceof ModuleView) {
+                if (module == ((ModuleView) child).getModule()) {
+                    child.setVisibility(VISIBLE);
+                }
             }
         }
     }

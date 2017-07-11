@@ -74,4 +74,6 @@
     <string name="video_player_request_ads_key">video_player_request_ads</string>
     <string name="app_cms_email_input_text_hint">EMAIL</string>
     <string name="please_input_your_email_address_to_send_a_reset_password_link_text">Please input your email address to send a reset password link.</string>
+    <string name="empty_history_list_message">Your history is currently empty.</string>
+    <string name="empty_watchlist_message">Your watchlist is currently empty.</string>
 </resources>

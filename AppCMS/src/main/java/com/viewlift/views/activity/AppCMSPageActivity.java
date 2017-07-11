@@ -22,6 +22,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.Gist;
+import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
+import com.viewlift.models.data.appcms.history.Record;
+import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
@@ -36,6 +42,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
 
 /**
@@ -501,7 +508,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         }
     }
 
-    private void handleLaunchPageAction(AppCMSBinder appCMSBinder) {
+    private void handleLaunchPageAction(final AppCMSBinder appCMSBinder) {
         Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
         int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
@@ -520,7 +527,50 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         appCMSBinderStack.push(appCMSBinder.getPageId());
         appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
         updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-        createScreenFromAppCMSBinder(appCMSBinder);
+
+        if (appCMSPresenter.isUserLoggedIn(this)) {
+            appCMSPresenter.getHistoryData(new Action1<AppCMSHistoryResult>() {
+                @Override
+                public void call(AppCMSHistoryResult appCMSHistoryResult) {
+                    if (appCMSHistoryResult != null &&
+                            appCMSHistoryResult.getRecords() != null) {
+                        for (Module module : appCMSBinder.getAppCMSPageAPI().getModules()) {
+                            if (appCMSBinder.getJsonValueKeyMap().get(module.getModuleType()) ==
+                                    AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
+                                AppCMSPageAPI pageAPI =
+                                        appCMSHistoryResult.convertToAppCMSPageAPI(module.getId());
+                                module.setContentData(pageAPI.getModules().get(0).getContentData());
+                            } else if (appCMSBinder.getJsonValueKeyMap().get(module.getModuleType()) ==
+                                    AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
+
+                                if (module.getContentData() != null &&
+                                        module.getContentData().size() > 0 &&
+                                        module.getContentData().get(0) != null &&
+                                        module.getContentData().get(0).getGist() != null) {
+                                    Gist moduleGist =
+                                            module.getContentData().get(0).getGist();
+                                    for (Record record : appCMSHistoryResult.getRecords()) {
+                                        if (record.getContentResponse() != null &&
+                                                record.getContentResponse().getGist() != null &&
+                                                record.getContentResponse().getGist().getId() != null &&
+                                                record.getContentResponse().getGist().getId().equals(moduleGist.getId())) {
+                                            Gist recordGist = record.getContentResponse().getGist();
+                                            moduleGist.setWatchedTime(recordGist.getWatchedTime());
+                                            moduleGist.setWatchedPercentage(recordGist.getWatchedPercentage());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        createScreenFromAppCMSBinder(appCMSBinder);
+                    } else {
+                        createScreenFromAppCMSBinder(appCMSBinder);
+                    }
+                }
+            });
+        } else {
+            createScreenFromAppCMSBinder(appCMSBinder);
+        }
     }
 
     private void hideSystemUI(View decorView) {

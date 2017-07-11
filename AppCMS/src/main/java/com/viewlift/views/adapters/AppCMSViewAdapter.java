@@ -115,19 +115,18 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     @Override
     public void resetData(RecyclerView listView) {
-        listView.setAdapter(null);
-        List<ContentDatum> adapterDataTmp = new ArrayList<>(adapterData);
-        adapterData = null;
-        notifyDataSetChanged();
-        adapterData = adapterDataTmp;
-        notifyDataSetChanged();
-        listView.setAdapter(this);
-        listView.invalidate();
+
     }
 
     @Override
-    public void updateData(List<ContentDatum> contentData) {
+    public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
+        listView.setAdapter(null);
+        adapterData = null;
+        notifyDataSetChanged();
         adapterData = contentData;
+        notifyDataSetChanged();
+        listView.setAdapter(this);
+        listView.invalidate();
     }
 
     protected void bindView(CollectionGridItemView itemView,

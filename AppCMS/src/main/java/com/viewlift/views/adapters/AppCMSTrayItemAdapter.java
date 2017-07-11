@@ -76,54 +76,72 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final ContentDatum contentDatum = adapterData.get(position);
+        if (adapterData != null && adapterData.size() > 0) {
+            final ContentDatum contentDatum = adapterData.get(position);
 
-        StringBuffer imageUrl = new StringBuffer(holder.itemView.getContext().getString(R.string.app_cms_image_with_resize_query,
-                contentDatum.getGist().getVideoImageUrl(),
-                holder.appCMSContinueWatchingVideoImage.getWidth(),
-                holder.appCMSContinueWatchingVideoImage.getHeight()));
-        Picasso.with(holder.itemView.getContext())
-                .load(imageUrl.toString())
-                .into(holder.appCMSContinueWatchingVideoImage);
+            StringBuffer imageUrl = new StringBuffer(holder.itemView.getContext().getString(R.string.app_cms_image_with_resize_query,
+                    contentDatum.getGist().getVideoImageUrl(),
+                    holder.appCMSContinueWatchingVideoImage.getWidth(),
+                    holder.appCMSContinueWatchingVideoImage.getHeight()));
+            Picasso.with(holder.itemView.getContext())
+                    .load(imageUrl.toString())
+                    .into(holder.appCMSContinueWatchingVideoImage);
 
-        holder.appCMSContinueWatchingVideoImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                click(contentDatum);
+            holder.appCMSContinueWatchingVideoImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    click(contentDatum);
+                }
+            });
+
+            holder.appCMSContinueWatchingPlayButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    play(contentDatum);
+                }
+            });
+
+            holder.appCMSContinueWatchingTitle.setText(contentDatum.getGist().getTitle());
+
+            holder.appCMSContinueWatchingDescription.setText(contentDatum.getGist().getDescription());
+
+            holder.appCMSContinueWatchingSelectToDeleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showDelete(contentDatum);
+                }
+            });
+
+            holder.appCMSContinueWatchingDeleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    delete(contentDatum);
+                }
+            });
+
+            holder.appCMSContinueWatchingDuration.setText(String.valueOf(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS));
+        } else {
+            holder.appCMSNotItemLabel.setVisibility(View.VISIBLE);
+            holder.appCMSNotItemLabel.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+            if (isHistory) {
+                holder.appCMSNotItemLabel.setText(holder.itemView.getContext().getString(R.string.empty_history_list_message));
+            } else {
+                holder.appCMSNotItemLabel.setText(holder.itemView.getContext().getString(R.string.empty_watchlist_message));
             }
-        });
-
-        holder.appCMSContinueWatchingPlayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                play(contentDatum);
-            }
-        });
-
-        holder.appCMSContinueWatchingTitle.setText(contentDatum.getGist().getTitle());
-
-        holder.appCMSContinueWatchingDescription.setText(contentDatum.getGist().getDescription());
-
-        holder.appCMSContinueWatchingSelectToDeleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDelete(contentDatum);
-            }
-        });
-
-        holder.appCMSContinueWatchingDeleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                delete(contentDatum);
-            }
-        });
-
-        holder.appCMSContinueWatchingDuration.setText(String.valueOf(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS));
+            holder.appCMSContinueWatchingVideoImage.setVisibility(View.GONE);
+            holder.appCMSContinueWatchingPlayButton.setVisibility(View.GONE);
+            holder.appCMSContinueWatchingTitle.setVisibility(View.GONE);
+            holder.appCMSContinueWatchingDescription.setVisibility(View.GONE);
+            holder.appCMSContinueWatchingSelectToDeleteButton.setVisibility(View.GONE);
+            holder.appCMSContinueWatchingDeleteButton.setVisibility(View.GONE);
+            holder.appCMSContinueWatchingDuration.setVisibility(View.GONE);
+            holder.appCMSContinueWatchingSeparatorView.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return adapterData != null ? adapterData.size() : 0;
+        return adapterData != null && adapterData.size() > 0 ? adapterData.size() : 1;
     }
 
     @Override
@@ -173,6 +191,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
         @BindView(R.id.app_cms_continue_watching_separator_view)
         View appCMSContinueWatchingSeparatorView;
+
+        @BindView(R.id.app_cms_not_item_label)
+        TextView appCMSNotItemLabel;
 
         public ViewHolder(View itemView, boolean isHistoryView) {
             super(itemView);
@@ -307,7 +328,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     @Override
     public void resetData(RecyclerView listView) {
         listView.setAdapter(null);
-        List<ContentDatum> adapterDataTmp = new ArrayList<>(adapterData);
+        List<ContentDatum> adapterDataTmp = null;
+        if (adapterData != null) {
+            adapterDataTmp = new ArrayList<>(adapterData);
+        } else {
+            adapterDataTmp = new ArrayList<>();
+        }
         adapterData = null;
         notifyDataSetChanged();
         adapterData = adapterDataTmp;
@@ -317,7 +343,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     @Override
-    public void updateData(List<ContentDatum> contentData) {
+    public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
         adapterData = contentData;
     }
 

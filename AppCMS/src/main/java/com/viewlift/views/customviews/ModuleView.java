@@ -55,4 +55,8 @@ public class ModuleView<T extends Module> extends BaseView {
     protected Layout getLayout() {
         return module.getLayout();
     }
+
+    public T getModule() {
+        return module;
+    }
 }

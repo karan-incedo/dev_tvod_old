@@ -13,5 +13,5 @@ import java.util.List;
 public interface AppCMSBaseAdapter {
     void resetData(RecyclerView listView);
 
-    void updateData(List<ContentDatum> contentData);
+    void updateData(RecyclerView listView, List<ContentDatum> contentData);
 }
