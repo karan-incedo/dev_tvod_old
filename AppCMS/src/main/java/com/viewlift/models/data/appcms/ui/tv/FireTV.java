@@ -17,6 +17,18 @@ public class FireTV {
 
     private String leftMargin;
 
+    public String getTopMargin() {
+        return topMargin;
+    }
+
+    public void setTopMargin(String topMargin) {
+        this.topMargin = topMargin;
+    }
+
+    private String topMargin;
+
+
+
     public String getPadding() {
         return padding;
     }

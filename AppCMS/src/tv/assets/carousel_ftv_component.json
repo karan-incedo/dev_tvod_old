@@ -1,48 +1,45 @@
- {
-      "id": "a3827681-b7c6-4ee6-9f89-26d93a89d9c2",
-      "settings": {
-        "loop": true,
-        "infoHover": false,
-        "thumbnailType": "landscape"
-      },
-      "view": "AC Carousel 01",
-      "type": "AC Carousel 01",
+{
+  "id": "a3827681-b7c6-4ee6-9f89-26d93a89d9c2",
+  "settings": {
+    "loop": true,
+    "infoHover": false,
+    "thumbnailType": "landscape"
+  },
+  "view": "AC Carousel 01",
+  "type": "AC Carousel 01",
+  "layout": {
+    "ftv": {
+      "height": 628,
+      "yAxis": 0,
+      "xAxis": 0,
+      "padding": 50,
+      "backgroundColor": "#172e3c"
+    }
+  },
+  "components": [
+    {
       "layout": {
         "ftv": {
-          "height": 628,
-          "yAxis": 0,
-          "xAxis": 0,
-          "padding": 50,
-          "backgroundColor":"#172e3c"
+          "topMargin": 15,
+          "bottomMargin": 15
         }
       },
+      "trayClickAction": "lectureDetailPage",
       "components": [
         {
           "layout": {
             "ftv": {
-              "yAxis": 0,
-              "xAxis": 0
+              "height": 548,
+              "padding": 6,
+              "width": 1540
             }
           },
-          "trayClickAction": "lectureDetailPage",
-          "components": [
-            {
-              "layout": {
-                "ftv": {
-                  "height": 548,
-                  "width": 1540,
-                  "bottomMargin": 0,
-                  "rightMargin": 0,
-                  "leftMargin": 0,
-                  "topMargin": 3
-                }
-              },
-              "type": "image",
-              "key": "carouselImage"
-            }
-          ],
-          "type": "carousel",
-          "key": "carousel"
+          "type": "image",
+          "key": "carouselImage"
         }
-      ]
+      ],
+      "type": "carousel",
+      "key": "carousel"
     }
+  ]
+}

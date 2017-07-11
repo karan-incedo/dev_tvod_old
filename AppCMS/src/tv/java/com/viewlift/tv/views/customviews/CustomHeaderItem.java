@@ -1,4 +1,4 @@
-package com.viewlift.tv.views;
+package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
 import android.support.v17.leanback.widget.HeaderItem;

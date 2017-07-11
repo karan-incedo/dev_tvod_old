@@ -10,11 +10,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
+import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseCompnentModule;
+import com.viewlift.tv.views.component.AppCMSTVViewComponent;
+import com.viewlift.tv.views.component.DaggerAppCMSTVViewComponent;
+import com.viewlift.tv.views.customviews.TVPageView;
+import com.viewlift.tv.views.module.AppCMSTVPageViewModule;
 import com.viewlift.views.binders.AppCMSBinder;
 
 import java.util.ArrayList;
@@ -32,6 +38,9 @@ public class AppCmsTVPageFragment extends Fragment {
 
     private FrameLayout pageContainer;
     private AppCMSBinder mAppCMSBinder;
+    private AppCMSPresenter appCMSPresenter;
+    private AppCMSTVViewComponent appCmsViewComponent;
+    private TVPageView tvPageView;
 
     public static AppCmsTVPageFragment newInstance(Context context , AppCMSBinder appCMSBinder){
         AppCmsTVPageFragment appCmsTVPageFragment = new AppCmsTVPageFragment();
@@ -59,14 +68,55 @@ public class AppCmsTVPageFragment extends Fragment {
         Bundle bundle = getArguments();
         mAppCMSBinder = (AppCMSBinder)bundle.getBinder("app_cms_binder");
 
-        listModule();
+        appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
+                .getAppCMSPresenterComponent()
+                .appCMSPresenter();
+
+        if (appCmsViewComponent == null && mAppCMSBinder != null) {
+            appCmsViewComponent = buildAppCMSViewComponent();
+        }
+
+
+        if (appCmsViewComponent != null) {
+            tvPageView = appCmsViewComponent.appCMSTVPageView();
+        } else {
+            tvPageView = null;
+        }
+
+       /* if (tvPageView != null) {
+            if (tvPageView.getParent() != null) {
+                ((ViewGroup) tvPageView.getParent()).removeAllViews();
+            }
+            //onPageCreation.onSuccess(appCMSBinder);
+        }*/
+        if (container != null) {
+            container.removeAllViews();
+        }
+
+
+        if((tvPageView.getChildrenContainer()).findViewById(R.id.appcms_browsefragment) != null){
+            AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(getActivity() ,
+                    appCmsViewComponent.tvviewCreator().mRowsAdapter);
+            getChildFragmentManager().beginTransaction().replace(R.id.appcms_browsefragment ,browseFragment , "frag").commit();
+        }
+        return tvPageView;
+
+
+        /*listModule();
 
         if(null != traymoduleLists){
            AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(getActivity() , traymoduleLists);
            getChildFragmentManager().beginTransaction().replace(R.id.page_container,browseFragment,"browse").commit();
-        }
+        }*/
 
-        return _rootView;
+       // return _rootView;
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        appCMSPresenter.sendStopLoadingPageAction();
     }
 
     @Override
@@ -117,7 +167,30 @@ public class AppCmsTVPageFragment extends Fragment {
     }
 
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        Bundle bundle = getArguments();
+        mAppCMSBinder = (AppCMSBinder)bundle.getBinder("app_cms_binder");
+
+        appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
+                .getAppCMSPresenterComponent()
+                .appCMSPresenter();
 
 
+        appCmsViewComponent = buildAppCMSViewComponent();
+    }
 
+
+    public AppCMSTVViewComponent buildAppCMSViewComponent() {
+        return DaggerAppCMSTVViewComponent.builder()
+                .appCMSTVPageViewModule(new AppCMSTVPageViewModule(getActivity(),
+                        mAppCMSBinder.getAppCMSPageUI(),
+                        mAppCMSBinder.getAppCMSPageAPI(),
+                        mAppCMSBinder.getJsonValueKeyMap(),
+                        appCMSPresenter
+                        ))
+                .build();
+    }
 }
