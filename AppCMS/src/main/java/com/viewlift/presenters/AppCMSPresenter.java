@@ -750,6 +750,7 @@ public class AppCMSPresenter {
 
             appCMSNavItemsFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
                     currentActivity.getString(R.string.app_cms_navigation_page_tag));
+            setNavItemToCurrentAction(currentActivity);
         }
         return result;
     }

@@ -2,6 +2,7 @@ package com.viewlift.views.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -35,6 +36,7 @@ import snagfilms.com.air.appcms.R;
 
 public class AppCMSNavItemsFragment extends DialogFragment {
     private AppCMSPresenter appCMSPresenter;
+    private AppCMSBinder appCMSBinder;
 
     public static AppCMSNavItemsFragment newInstance(Context context,
                                                      AppCMSBinder appCMSBinder,
@@ -62,7 +64,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
         int bgColor = args.getInt(getContext().getString(R.string.app_cms_bg_color_key));
         int borderColor = args.getInt(getContext().getString(R.string.app_cms_border_color_key));
 
-        final AppCMSBinder appCMSBinder =
+        appCMSBinder =
                 ((AppCMSBinder) args.getBinder(getContext().getString(R.string.fragment_page_bundle_key)));
         View view = inflater.inflate(R.layout.fragment_menu_nav, container, false);
         RecyclerView navItemsList = (RecyclerView) view.findViewById(R.id.nav_items_list);
@@ -127,16 +129,10 @@ public class AppCMSNavItemsFragment extends DialogFragment {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        dismiss();
-        appCMSPresenter.setNavItemToCurrentAction(getActivity());
-    }
-
-    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        setWindow();
+        dismiss();
+        appCMSPresenter.launchNavigationPage(appCMSBinder.getPageName(), appCMSBinder.getPageId());
     }
 
     private void setBgColor(int bgColor) {
