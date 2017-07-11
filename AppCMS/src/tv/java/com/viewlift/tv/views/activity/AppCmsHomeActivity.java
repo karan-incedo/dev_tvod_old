@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -78,7 +79,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements AppCmsNavi
                         /*if (isActive)*/ {
                             handleLaunchPageAction(updatedAppCMSBinder);
 
-                            appCMSPresenter.sendStopLoadingPageAction(); //stop the progress bar..
+                            //appCMSPresenter.sendStopLoadingPageAction(); //stop the progress bar..
 
                         }
                     } catch (ClassCastException e) {
@@ -107,12 +108,19 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements AppCmsNavi
     }
 
 
-    private void pageLoading(boolean shouldShowProgress){
-        if(shouldShowProgress){
-            CustomProgressBar.getInstance(this).showProgressDialog(this,"Loading...");
-        }else{
-            CustomProgressBar.getInstance(this).dismissProgressDialog();
-        }
+    private void pageLoading(final boolean shouldShowProgress){
+
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                if(shouldShowProgress){
+                    CustomProgressBar.getInstance(AppCmsHomeActivity.this).showProgressDialog(AppCmsHomeActivity.this,"Loading...");
+                }else{
+                    CustomProgressBar.getInstance(AppCmsHomeActivity.this).dismissProgressDialog();
+                }
+            }
+        });
+
     }
 
     private void selectNavItem(String pageId) {

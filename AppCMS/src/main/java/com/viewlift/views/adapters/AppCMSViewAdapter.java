@@ -27,44 +27,9 @@ import snagfilms.com.air.appcms.R;
  * Created by viewlift on 5/5/17.
  */
 
-public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.ViewHolder> {
+public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.ViewHolder>
+        implements AppCMSBaseAdapter {
     private static final String TAG = "AppCMSViewAdapter";
-
-    public static class ListWithAdapter {
-        RecyclerView listView;
-        RecyclerView.Adapter adapter;
-
-        public RecyclerView getListView() {
-            return listView;
-        }
-
-        public RecyclerView.Adapter getAdapter() {
-            return adapter;
-        }
-
-        public static class Builder {
-            private ListWithAdapter listWithAdapter;
-
-            public Builder() {
-                listWithAdapter = new ListWithAdapter();
-            }
-
-            public Builder listview(RecyclerView listView) {
-                listWithAdapter.listView = listView;
-                return this;
-            }
-
-            public Builder adapter(RecyclerView.Adapter adapter) {
-                listWithAdapter.adapter = adapter;
-                return this;
-            }
-
-            public ListWithAdapter build() {
-                return listWithAdapter;
-            }
-        }
-    }
-
     protected Layout parentLayout;
     protected boolean useParentSize;
     protected Component component;
@@ -148,15 +113,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         return adapterData.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        CollectionGridItemView componentView;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            this.componentView = (CollectionGridItemView) itemView;
-        }
-    }
-
+    @Override
     public void resetData(RecyclerView listView) {
         listView.setAdapter(null);
         List<ContentDatum> adapterDataTmp = new ArrayList<>(adapterData);
@@ -166,6 +123,11 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         notifyDataSetChanged();
         listView.setAdapter(this);
         listView.invalidate();
+    }
+
+    @Override
+    public void updateData(List<ContentDatum> contentData) {
+        adapterData = contentData;
     }
 
     protected void bindView(CollectionGridItemView itemView,
@@ -256,5 +218,49 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             return data.getStreamingInfo().getVideoAssets().getHls();
         }
         return null;
+    }
+
+    public static class ListWithAdapter {
+        RecyclerView listView;
+        RecyclerView.Adapter adapter;
+
+        public RecyclerView getListView() {
+            return listView;
+        }
+
+        public RecyclerView.Adapter getAdapter() {
+            return adapter;
+        }
+
+        public static class Builder {
+            private ListWithAdapter listWithAdapter;
+
+            public Builder() {
+                listWithAdapter = new ListWithAdapter();
+            }
+
+            public Builder listview(RecyclerView listView) {
+                listWithAdapter.listView = listView;
+                return this;
+            }
+
+            public Builder adapter(RecyclerView.Adapter adapter) {
+                listWithAdapter.adapter = adapter;
+                return this;
+            }
+
+            public ListWithAdapter build() {
+                return listWithAdapter;
+            }
+        }
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        CollectionGridItemView componentView;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            this.componentView = (CollectionGridItemView) itemView;
+        }
     }
 }

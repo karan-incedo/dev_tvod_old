@@ -2342,7 +2342,7 @@ public class AppCMSPresenter {
                         });
             } else {
                 cancelInternalEvents();
-                pushActionInternalEvents(pageId + BaseView.isLandscape(currentActivity));
+                pushActionInternalEvents(pageId);
                 if (launchActivity) {
                     launchTVPageActivity(currentActivity,
                             appCMSPageUI,
@@ -2428,5 +2428,9 @@ public class AppCMSPresenter {
         } finally {
             sendStopLoadingPageAction();
         }
+    }
+
+    public  Map<String, AppCMSUIKeyType> getJsonValueKeyMap(){
+        return  jsonValueKeyMap;
     }
 }

@@ -17,5 +17,4 @@ import dagger.Provides;
 @Component(modules = {AppCMSPresenterModule.class})
 public interface AppCMSPresenterComponent {
     AppCMSPresenter appCMSPresenter();
-    //void inject(AppCMSPresenter appCMSPresenter);
 }

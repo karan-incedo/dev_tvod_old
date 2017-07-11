@@ -1,18 +1,16 @@
 package com.viewlift.tv.views.presenter;
 
 import android.content.Context;
-import android.support.v17.leanback.widget.BaseCardView;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.RowHeaderPresenter;
-import android.support.v17.leanback.widget.RowHeaderPresenter.ViewHolder;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.viewlift.tv.views.CustomHeaderItem;
+import com.viewlift.tv.views.customviews.CustomHeaderItem;
 
 import snagfilms.com.air.appcms.R;
 
