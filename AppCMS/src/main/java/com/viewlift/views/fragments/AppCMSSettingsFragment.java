@@ -92,7 +92,7 @@ public class AppCMSSettingsFragment extends DialogFragment {
         appCMSettingsSeparatorView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
                 .getBrand().getGeneral().getTextColor()));
         appCMSAccountTitle.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                .getBrand().getGeneral().getPageTitleColor()));
+                .getBrand().getGeneral().getTextColor()));
         appCMSAccountTitleSeparatorView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
                 .getBrand().getGeneral().getTextColor()));
         appCMSAccountNameTitle.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
