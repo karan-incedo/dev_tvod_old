@@ -131,7 +131,6 @@ public class AppCMSNavItemsFragment extends DialogFragment {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        dismiss();
         appCMSPresenter.launchNavigationPage(appCMSBinder.getPageName(), appCMSBinder.getPageId());
     }
 
