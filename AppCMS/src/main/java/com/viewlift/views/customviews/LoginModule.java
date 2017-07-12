@@ -188,6 +188,10 @@ public class LoginModule extends ModuleView {
         applyUnderlineToComponent(underlineViews[childIndex], underlineColor);
         visibleEmailInputView = emailInputViews[childIndex];
         visiblePasswordInputView = passwordInputViews[childIndex];
+        if (childIndex == 1) {
+            visibleEmailInputView.setText("");
+            visiblePasswordInputView.setText("");
+        }
     }
 
     private void unselectChild(int childIndex) {
