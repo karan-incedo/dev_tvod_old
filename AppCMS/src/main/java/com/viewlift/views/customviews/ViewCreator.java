@@ -777,7 +777,9 @@ public class ViewCreator {
                 componentViewResult.componentView = new TextView(context);
                 int textColor = ContextCompat.getColor(context, R.color.colorAccent);
                 if (!TextUtils.isEmpty(component.getTextColor())) {
-                    textColor = Color.parseColor(getColor(context, component.getTextColor()));
+//                    textColor = Color.parseColor(getColor(context, component.getTextColor())); //FIXME: API brings in blue and not red.
+                    textColor = Color.parseColor(getColor(context,
+                            appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
                 } else if (component.getStyles() != null) {
                     if (!TextUtils.isEmpty(component.getStyles().getColor())) {
                         textColor = Color.parseColor(getColor(context, component.getStyles().getColor()));

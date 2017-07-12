@@ -68,7 +68,7 @@ public class AppCMSPageAPICall {
         String filename = getResourceFilename(pageId);
         AppCMSPageAPI appCMSPageAPI = null;
         try {
-            appCMSPageAPI = appCMSPageAPIRest.get(apiKey, urlWithContent).execute().body();
+            appCMSPageAPI = appCMSPageAPIRest.get(urlWithContent).execute().body();
             appCMSPageAPI = writePageToFile(filename, appCMSPageAPI);
         } catch (JsonSyntaxException e) {
             Log.w(TAG, "DialogType trying to parse input JSON " + urlWithContent + ": " + e.toString());

@@ -13,6 +13,5 @@ import retrofit2.http.Url;
 
 public interface AppCMSPageAPIRest {
     @GET
-    @Headers("Cache-Control: no-cache, no-store")
-    Call<AppCMSPageAPI> get(@Header("x-api-key") String apiKey, @Url String url);
+    Call<AppCMSPageAPI> get(@Url String url);
 }
