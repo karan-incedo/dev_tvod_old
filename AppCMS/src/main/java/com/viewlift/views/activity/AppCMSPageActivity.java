@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.viewlift.AppCMSApplication;
@@ -31,8 +32,8 @@ import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
-import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.NavBarItemView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSPageFragment;
@@ -42,6 +43,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
 
@@ -57,16 +60,27 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     private static final int MOVIES_PAGE_INDEX = 2;
     private static final int SEARCH_INDEX = 3;
 
+    @BindView(R.id.app_cms_page_loading_progressbar)
+    ProgressBar loadingProgressBar;
+
+    @BindView(R.id.app_cms_parent_view)
+    RelativeLayout appCMSParentView;
+
+    @BindView(R.id.app_cms_fragment)
+    FrameLayout appCMSFragment;
+
+    @BindView(R.id.app_cms_appbarlayout)
+    AppBarLayout appBarLayout;
+
+    @BindView(R.id.app_cms_tab_nav_container)
+    LinearLayout appCMSTabNavContainer;
+
     private AppCMSPresenter appCMSPresenter;
     private Stack<String> appCMSBinderStack;
     private Map<String, AppCMSBinder> appCMSBinderMap;
     private BroadcastReceiver presenterActionReceiver;
     private BroadcastReceiver presenterCloseActionReceiver;
 
-    private RelativeLayout appCMSParentView;
-    private FrameLayout appCMSFragment;
-    private AppBarLayout appBarLayout;
-    private LinearLayout appCMSTabNavContainer;
     private NavBarItemView pageViewDuringSearch;
     private boolean resumeInternalEvents;
     private boolean isActive;
@@ -78,12 +92,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_appcms_page);
 
-        appCMSParentView = (RelativeLayout) findViewById(R.id.app_cms_parent_view);
-        appCMSFragment = (FrameLayout) findViewById(R.id.app_cms_fragment);
-
-        appBarLayout = (AppBarLayout) findViewById(R.id.app_cms_appbarlayout);
-
-        appCMSTabNavContainer = (LinearLayout) findViewById(R.id.app_cms_tab_nav_container);
+        ButterKnife.bind(this);
 
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
@@ -114,7 +123,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                         if (isActive) {
                             handleLaunchPageAction(updatedAppCMSBinder);
                         } else if (updatedAppCMSBinder.shouldSendCloseAction()) {
-                            Intent appCMSIntent = new Intent(AppCMSPageActivity.this, AppCMSPageActivity.class);
+                            Intent appCMSIntent = new Intent(AppCMSPageActivity.this,
+                                    AppCMSPageActivity.class);
                             appCMSIntent.putExtra(AppCMSPageActivity.this.getString(R.string.app_cms_bundle_key), args);
                             appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                             AppCMSPageActivity.this.startActivity(appCMSIntent);
@@ -143,7 +153,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
-                    Log.d(TAG, "Received Presenter Close Action: fragment count = " + getSupportFragmentManager().getBackStackEntryCount());
+                    Log.d(TAG, "Received Presenter Close Action: fragment count = "
+                            + getSupportFragmentManager().getBackStackEntryCount());
                     if (appCMSBinderStack.size() > 1) {
                         try {
                             getSupportFragmentManager().popBackStack();
@@ -186,7 +197,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         int appCMSBinderStackSize = appCMSBinderStack.size();
         outState.putInt(getString(R.string.app_cms_binder_stack_size_key), appCMSBinderStackSize);
         for (int i = appCMSBinderStackSize - 1; i >= 0; i--) {
-            outState.putBinder(getString(R.string.app_cms_binder_stack_element_key, i), appCMSBinderMap.get(appCMSBinderStack.get(i)));
+            outState.putBinder(getString(R.string.app_cms_binder_stack_element_key, i),
+                    appCMSBinderMap.get(appCMSBinderStack.get(i)));
         }
         outState.putBoolean(getString(R.string.resume_internal_events_key), resumeInternalEvents);
         Log.d(TAG, "Saving instance state");
@@ -287,7 +299,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         ViewCreator viewCreator = null;
         for (int i = 0; i < getSupportFragmentManager().getBackStackEntryCount(); i++) {
             Fragment fragment =
-                    getSupportFragmentManager().findFragmentById(getSupportFragmentManager().getBackStackEntryAt(i).getId());
+                    getSupportFragmentManager().findFragmentById(getSupportFragmentManager()
+                            .getBackStackEntryAt(i).getId());
             if (fragment instanceof AppCMSPageFragment) {
                 viewCreator = ((AppCMSPageFragment) fragment).getViewCreator();
             }
@@ -312,11 +325,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void onError(AppCMSBinder appCMSBinder) {
         if (appCMSBinder != null) {
-            Log.e(TAG, "Nav item - DialogType attempting to launch page: " + appCMSBinder.getPageName() + " - " + appCMSBinder.getPageId());
+            Log.e(TAG, "Nav item - DialogType attempting to launch page: "
+                    + appCMSBinder.getPageName() + " - " + appCMSBinder.getPageId());
         }
+
         if (appCMSBinderStack.size() > 0 && appCMSBinderStack.peek().equals(appCMSBinder.getPageId())) {
             try {
                 getSupportFragmentManager().popBackStackImmediate();
@@ -351,12 +367,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         if (pageLoading) {
             appCMSFragment.setEnabled(false);
             appCMSTabNavContainer.setEnabled(false);
+            loadingProgressBar.setVisibility(View.VISIBLE);
+
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 appCMSTabNavContainer.getChildAt(i).setEnabled(false);
             }
+
         } else {
             appCMSFragment.setEnabled(true);
             appCMSTabNavContainer.setEnabled(true);
+            loadingProgressBar.setVisibility(View.GONE);
+
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 appCMSTabNavContainer.getChildAt(i).setEnabled(true);
             }
@@ -371,7 +392,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
             Log.d(TAG, "Back pressed - handling nav bar");
             handleNavbar(appCMSBinderMap.get(appCMSBinderStack.peek()));
-            Log.d(TAG, "Resetting previous AppCMS data: " + appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName());
+            Log.d(TAG, "Resetting previous AppCMS data: "
+                    + appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName());
         }
         if (shouldPopStack() || closeActionPage) {
             try {
@@ -416,7 +438,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             Fragment appCMSPageFragment = AppCMSPageFragment.newInstance(this, appCMSBinder);
-            fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment, appCMSBinder.getPageId());
+            fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment,
+                    appCMSBinder.getPageId());
             fragmentTransaction.addToBackStack(appCMSBinder.getPageId());
             fragmentTransaction.commit();
         } catch (IllegalStateException e) {
@@ -596,12 +619,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             @Override
             public void onClick(View v) {
                 if (appCMSBinderStack.size() > 0) {
-                    unselectAllNavItems();
+//                    unselectAllNavItems();
                     AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                    if (!appCMSPresenter.launchNavigationPage(appCMSBinder.getPageId(), appCMSBinder.getPageName())) {
+                    if (!appCMSPresenter.launchNavigationPage(appCMSBinder.getPageId(),
+                            appCMSBinder.getPageName())) {
                         Log.e(TAG, "Could not launch navigation page!");
                     } else {
                         resumeInternalEvents = true;
+                        selectNavItem(menuNavBarItemView);
                     }
                 }
             }
@@ -662,7 +687,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     }
 
     private void selectNavItem(String pageId) {
-        for (int i = 0 ; i < appCMSTabNavContainer.getChildCount(); i++) {
+        for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
             if (appCMSTabNavContainer.getChildAt(i).getTag() != null &&
                     pageId.contains(appCMSTabNavContainer.getChildAt(i).getTag().toString())) {
                 selectNavItem(((NavBarItemView) appCMSTabNavContainer.getChildAt(i)));
