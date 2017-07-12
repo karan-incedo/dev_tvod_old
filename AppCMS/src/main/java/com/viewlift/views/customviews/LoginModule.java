@@ -196,7 +196,7 @@ public class LoginModule extends ModuleView {
         applyUnderlineToComponent(underlineViews[childIndex], transparentColor);
     }
 
-    private void addChildComponents(ModuleView moduleView, Component subComponent, int childIndex) {
+    private void addChildComponents(ModuleView moduleView, Component subComponent, final int childIndex) {
         ViewCreator.ComponentViewResult componentViewResult = viewCreator.getComponentViewResult();
         ViewGroup subComponentChildContainer = moduleView.getChildrenContainer();
         if (componentViewResult != null && subComponentChildContainer != null) {
@@ -245,6 +245,10 @@ public class LoginModule extends ModuleView {
                                                 authData,
                                                 null,
                                                 true);
+                                        if (childIndex == 1) {
+                                            visibleEmailInputView.setText("");
+                                            visiblePasswordInputView.setText("");
+                                        }
                                     }
                                 }
                             });
