@@ -1,7 +1,6 @@
 package com.viewlift.presenters;
 
 import android.app.Activity;
-import android.support.v4.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,17 +17,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import com.apptentive.android.sdk.Apptentive;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -60,7 +57,6 @@ import com.viewlift.models.data.appcms.ui.authentication.SignInResponse;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
-import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.models.data.appcms.watchlist.AppCMSWatchlistResult;
@@ -136,15 +132,13 @@ import snagfilms.com.air.appcms.R;
  */
 
 public class AppCMSPresenter {
-    private static final String TAG = "AppCMSPresenter";
-
     public static final String PRESENTER_NAVIGATE_ACTION = "appcms_presenter_navigate_action";
     public static final String PRESENTER_PAGE_LOADING_ACTION = "appcms_presenter_page_loading_action";
     public static final String PRESENTER_STOP_PAGE_LOADING_ACTION = "appcms_presenter_stop_page_loading_action";
     public static final String PRESENTER_CLOSE_SCREEN_ACTION = "appcms_presenter_close_action";
     public static final String PRESENTER_RESET_NAVIGATION_ITEM_ACTION = "appcms_presenter_set_navigation_item_action";
     public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
-
+    private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
     private static final String REFRESH_TOKEN_SHARED_PREF_NAME = "refresh_token_pref";
@@ -210,147 +204,7 @@ public class AppCMSPresenter {
     private MetaPage loginPage;
 
     private PlatformType platformType;
-
-    public enum PlatformType {
-        ANDROID, TV
-    }
-
     private AppCMSNavItemsFragment appCMSNavItemsFragment;
-
-    public enum BeaconEvent {
-        PLAY, RESUME, PING, AD_REQUEST, AD_IMPRESSION
-    }
-
-    public enum DialogType {
-        NETWORK, SIGNIN, RESET_PASSWORD
-    }
-
-    private static class BeaconRunnable implements Runnable {
-        final AppCMSBeaconRest appCMSBeaconRest;
-        String url;
-
-        public BeaconRunnable(AppCMSBeaconRest appCMSBeaconRest) {
-            this.appCMSBeaconRest = appCMSBeaconRest;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
-        }
-
-        @Override
-        public void run() {
-            appCMSBeaconRest.sendBeaconMessage(url).enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                    Log.d(TAG, "Succeeded to send Beacon message: " + response.code());
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                    Log.d(TAG, "Failed to send Beacon message: " + t.getMessage());
-                }
-            });
-        }
-    }
-
-    private static abstract class AppCMSPageAPIAction implements Action1<AppCMSPageAPI> {
-        boolean appbarPresent;
-        boolean fullscreenEnabled;
-        boolean navbarPresent;
-        AppCMSPageUI appCMSPageUI;
-        String action;
-        String pageId;
-        String pageTitle;
-        boolean launchActivity;
-        boolean sendCloseAction;
-        Uri searchQuery;
-
-        public AppCMSPageAPIAction(boolean appbarPresent,
-                                   boolean fullscreenEnabled,
-                                   boolean navbarPresent,
-                                   AppCMSPageUI appCMSPageUI,
-                                   String action,
-                                   String pageId,
-                                   String pageTitle,
-                                   boolean launchActivity,
-                                   boolean sendCloseAction,
-                                   Uri searchQuery) {
-            this.appbarPresent = appbarPresent;
-            this.fullscreenEnabled = fullscreenEnabled;
-            this.navbarPresent = navbarPresent;
-            this.appCMSPageUI = appCMSPageUI;
-            this.action = action;
-            this.pageId = pageId;
-            this.pageTitle = pageTitle;
-            this.launchActivity = launchActivity;
-            this.sendCloseAction = sendCloseAction;
-            this.searchQuery = searchQuery;
-        }
-    }
-
-    private static abstract class AppCMSWatchlistAPIAction implements Action1<AppCMSWatchlistResult> {
-        boolean appbarPresent;
-        boolean fullscreenEnabled;
-        boolean navbarPresent;
-        AppCMSPageUI appCMSPageUI;
-        String action;
-        String pageId;
-        String pageTitle;
-        boolean launchActivity;
-        Uri searchQuery;
-
-        public AppCMSWatchlistAPIAction(boolean appbarPresent,
-                                        boolean fullscreenEnabled,
-                                        boolean navbarPresent,
-                                        AppCMSPageUI appCMSPageUI,
-                                        String action,
-                                        String pageId,
-                                        String pageTitle,
-                                        boolean launchActivity,
-                                        Uri searchQuery) {
-            this.appbarPresent = appbarPresent;
-            this.fullscreenEnabled = fullscreenEnabled;
-            this.navbarPresent = navbarPresent;
-            this.appCMSPageUI = appCMSPageUI;
-            this.action = action;
-            this.pageId = pageId;
-            this.pageTitle = pageTitle;
-            this.launchActivity = launchActivity;
-            this.searchQuery = searchQuery;
-        }
-    }
-
-    private static abstract class AppCMSHistoryAPIAction implements Action1<AppCMSHistoryResult> {
-        boolean appbarPresent;
-        boolean fullscreenEnabled;
-        boolean navbarPresent;
-        AppCMSPageUI appCMSPageUI;
-        String action;
-        String pageId;
-        String pageTitle;
-        boolean launchActivity;
-        Uri searchQuery;
-
-        public AppCMSHistoryAPIAction(boolean appbarPresent,
-                                      boolean fullscreenEnabled,
-                                      boolean navbarPresent,
-                                      AppCMSPageUI appCMSPageUI,
-                                      String action,
-                                      String pageId,
-                                      String pageTitle,
-                                      boolean launchActivity,
-                                      Uri searchQuery) {
-            this.appbarPresent = appbarPresent;
-            this.fullscreenEnabled = fullscreenEnabled;
-            this.navbarPresent = navbarPresent;
-            this.appCMSPageUI = appCMSPageUI;
-            this.action = action;
-            this.pageId = pageId;
-            this.pageTitle = pageTitle;
-            this.launchActivity = launchActivity;
-            this.searchQuery = searchQuery;
-        }
-    }
 
     @Inject
     public AppCMSPresenter(AppCMSMainUICall appCMSMainUICall,
@@ -656,8 +510,8 @@ public class AppCMSPresenter {
                                                 if (appCMSHistoryResult != null &&
                                                         appCMSHistoryResult.getRecords() != null) {
                                                     for (Module module : appCMSPageAPI.getModules()) {
-                                                        if (jsonValueKeyMap.get(module.getModuleType()) ==
-                                                                AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
+                                                        if (jsonValueKeyMap.get(module.getModuleType())
+                                                                == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
 
                                                             if (module.getContentData() != null &&
                                                                     module.getContentData().size() > 0 &&
@@ -760,7 +614,7 @@ public class AppCMSPresenter {
 
             appCMSNavItemsFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
                     currentActivity.getString(R.string.app_cms_navigation_page_tag));
-            setNavItemToCurrentAction(currentActivity);
+//            setNavItemToCurrentAction(currentActivity);
         }
         return result;
     }
@@ -1338,7 +1192,7 @@ public class AppCMSPresenter {
                                     getHistoryData(new Action1<AppCMSHistoryResult>() {
                                         @Override
                                         public void call(AppCMSHistoryResult appCMSHistoryResult) {
-                                            if (appCMSHistoryResult !=  null) {
+                                            if (appCMSHistoryResult != null) {
                                                 for (Module module : appCMSPageAPI.getModules()) {
                                                     if (jsonValueKeyMap.get(module.getModuleType()) ==
                                                             AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
@@ -2339,7 +2193,6 @@ public class AppCMSPresenter {
         }).execute(params);
     }
 
-
     public boolean navigateToTVPage(String pageId,
                                     String pageTitle,
                                     String url,
@@ -2475,7 +2328,6 @@ public class AppCMSPresenter {
         return result;
     }
 
-
     private void launchTVPageActivity(Activity activity,
                                       AppCMSPageUI appCMSPageUI,
                                       AppCMSPageAPI appCMSPageAPI,
@@ -2512,7 +2364,146 @@ public class AppCMSPresenter {
         }
     }
 
-    public  Map<String, AppCMSUIKeyType> getJsonValueKeyMap(){
-        return  jsonValueKeyMap;
+    public Map<String, AppCMSUIKeyType> getJsonValueKeyMap() {
+        return jsonValueKeyMap;
+    }
+
+    public enum PlatformType {
+        ANDROID, TV
+    }
+
+    public enum BeaconEvent {
+        PLAY, RESUME, PING, AD_REQUEST, AD_IMPRESSION
+    }
+
+    public enum DialogType {
+        NETWORK, SIGNIN, RESET_PASSWORD
+    }
+
+    private static class BeaconRunnable implements Runnable {
+        final AppCMSBeaconRest appCMSBeaconRest;
+        String url;
+
+        public BeaconRunnable(AppCMSBeaconRest appCMSBeaconRest) {
+            this.appCMSBeaconRest = appCMSBeaconRest;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        @Override
+        public void run() {
+            appCMSBeaconRest.sendBeaconMessage(url).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                    Log.d(TAG, "Succeeded to send Beacon message: " + response.code());
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                    Log.d(TAG, "Failed to send Beacon message: " + t.getMessage());
+                }
+            });
+        }
+    }
+
+    private static abstract class AppCMSPageAPIAction implements Action1<AppCMSPageAPI> {
+        boolean appbarPresent;
+        boolean fullscreenEnabled;
+        boolean navbarPresent;
+        AppCMSPageUI appCMSPageUI;
+        String action;
+        String pageId;
+        String pageTitle;
+        boolean launchActivity;
+        boolean sendCloseAction;
+        Uri searchQuery;
+
+        public AppCMSPageAPIAction(boolean appbarPresent,
+                                   boolean fullscreenEnabled,
+                                   boolean navbarPresent,
+                                   AppCMSPageUI appCMSPageUI,
+                                   String action,
+                                   String pageId,
+                                   String pageTitle,
+                                   boolean launchActivity,
+                                   boolean sendCloseAction,
+                                   Uri searchQuery) {
+            this.appbarPresent = appbarPresent;
+            this.fullscreenEnabled = fullscreenEnabled;
+            this.navbarPresent = navbarPresent;
+            this.appCMSPageUI = appCMSPageUI;
+            this.action = action;
+            this.pageId = pageId;
+            this.pageTitle = pageTitle;
+            this.launchActivity = launchActivity;
+            this.sendCloseAction = sendCloseAction;
+            this.searchQuery = searchQuery;
+        }
+    }
+
+    private static abstract class AppCMSWatchlistAPIAction implements Action1<AppCMSWatchlistResult> {
+        boolean appbarPresent;
+        boolean fullscreenEnabled;
+        boolean navbarPresent;
+        AppCMSPageUI appCMSPageUI;
+        String action;
+        String pageId;
+        String pageTitle;
+        boolean launchActivity;
+        Uri searchQuery;
+
+        public AppCMSWatchlistAPIAction(boolean appbarPresent,
+                                        boolean fullscreenEnabled,
+                                        boolean navbarPresent,
+                                        AppCMSPageUI appCMSPageUI,
+                                        String action,
+                                        String pageId,
+                                        String pageTitle,
+                                        boolean launchActivity,
+                                        Uri searchQuery) {
+            this.appbarPresent = appbarPresent;
+            this.fullscreenEnabled = fullscreenEnabled;
+            this.navbarPresent = navbarPresent;
+            this.appCMSPageUI = appCMSPageUI;
+            this.action = action;
+            this.pageId = pageId;
+            this.pageTitle = pageTitle;
+            this.launchActivity = launchActivity;
+            this.searchQuery = searchQuery;
+        }
+    }
+
+    private static abstract class AppCMSHistoryAPIAction implements Action1<AppCMSHistoryResult> {
+        boolean appbarPresent;
+        boolean fullscreenEnabled;
+        boolean navbarPresent;
+        AppCMSPageUI appCMSPageUI;
+        String action;
+        String pageId;
+        String pageTitle;
+        boolean launchActivity;
+        Uri searchQuery;
+
+        public AppCMSHistoryAPIAction(boolean appbarPresent,
+                                      boolean fullscreenEnabled,
+                                      boolean navbarPresent,
+                                      AppCMSPageUI appCMSPageUI,
+                                      String action,
+                                      String pageId,
+                                      String pageTitle,
+                                      boolean launchActivity,
+                                      Uri searchQuery) {
+            this.appbarPresent = appbarPresent;
+            this.fullscreenEnabled = fullscreenEnabled;
+            this.navbarPresent = navbarPresent;
+            this.appCMSPageUI = appCMSPageUI;
+            this.action = action;
+            this.pageId = pageId;
+            this.pageTitle = pageTitle;
+            this.launchActivity = launchActivity;
+            this.searchQuery = searchQuery;
+        }
     }
 }

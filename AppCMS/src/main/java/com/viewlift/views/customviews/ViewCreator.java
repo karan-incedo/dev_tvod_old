@@ -25,7 +25,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -74,14 +73,6 @@ public class ViewCreator {
             pageViewLruCache = new LruCache<>(PAGE_LRU_CACHE_SIZE);
         }
         return pageViewLruCache;
-    }
-
-    public static class ComponentViewResult {
-        View componentView;
-        OnInternalEvent onInternalEvent;
-        boolean useMarginsAsPercentagesOverride;
-        boolean useWidthOfScreen;
-        boolean shouldHideModule;
     }
 
     public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
@@ -1222,6 +1213,14 @@ public class ViewCreator {
             }
             textView.setTypeface(face);
         }
+    }
+
+    public static class ComponentViewResult {
+        View componentView;
+        OnInternalEvent onInternalEvent;
+        boolean useMarginsAsPercentagesOverride;
+        boolean useWidthOfScreen;
+        boolean shouldHideModule;
     }
 
     public static class UpdateImageIconAction implements Action1<UserVideoStatusResponse> {
