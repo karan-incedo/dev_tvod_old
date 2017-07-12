@@ -757,9 +757,13 @@ public class AppCMSPresenter {
                             Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor()),
                             Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
                             Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()));
-
-            appCMSNavItemsFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
-                    currentActivity.getString(R.string.app_cms_navigation_page_tag));
+            clearAdditionalFragment();
+            FragmentTransaction transaction =
+                    ((AppCompatActivity) currentActivity).getSupportFragmentManager().beginTransaction();
+            transaction.add(R.id.app_cms_addon_fragment,
+                    appCMSNavItemsFragment,
+                    currentActivity.getString(R.string.app_cms_settings_page_tag)).commit();
+            showMainFragmentView(false);
             setNavItemToCurrentAction(currentActivity);
         }
         return result;

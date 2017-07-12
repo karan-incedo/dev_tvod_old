@@ -134,7 +134,7 @@ public class AppCMSPageFragment extends Fragment {
             pageView.notifyAdaptersOfUpdate();
         }
         if (appCMSPresenter != null) {
-            appCMSPresenter.dismissOpenDialogs();
+            appCMSPresenter.showMainFragmentView(true);
         }
     }
 
