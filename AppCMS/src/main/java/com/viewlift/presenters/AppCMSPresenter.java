@@ -142,6 +142,7 @@ public class AppCMSPresenter {
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
     private static final String REFRESH_TOKEN_SHARED_PREF_NAME = "refresh_token_pref";
+    private static final String USER_LOGGED_IN_TIME_PREF_NAME = "user_loggedin_time_pref";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
 
@@ -1377,7 +1378,19 @@ public class AppCMSPresenter {
 
     public boolean setLoggedInUser(Context context, String userId) {
         SharedPreferences sharedPrefs = context.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
-        return sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, userId).commit();
+        return sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, userId).commit() &&
+                setLoggedInTime(context);
+    }
+
+    public long getLoggedInTime(Context context) {
+        SharedPreferences sharedPrefs = context.getSharedPreferences(USER_LOGGED_IN_TIME_PREF_NAME, 0);
+        return sharedPrefs.getLong("", 0L);
+    }
+
+    public boolean setLoggedInTime(Context context) {
+        SharedPreferences sharedPrefs = context.getSharedPreferences("", 0);
+        Date now = new Date();
+        return sharedPrefs.edit().putLong("", now.getTime()).commit();
     }
 
     public String getRefreshToken(Context context) {
