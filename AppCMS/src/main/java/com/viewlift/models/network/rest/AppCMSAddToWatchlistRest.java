@@ -11,7 +11,6 @@ import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
-import retrofit2.http.DELETE;
 import retrofit2.http.HTTP;
 import retrofit2.http.HeaderMap;
 import retrofit2.http.POST;
@@ -26,7 +25,7 @@ public interface AppCMSAddToWatchlistRest {
     Call<AppCMSAddToWatchlistResult> removeSingle(@Url String url, @HeaderMap Map<String,
             String> headers, @Body AddToWatchlistRequest request);
 
-    @HTTP(method = "DELETE", hasBody = true)
-    Call<AppCMSAddToWatchlistResult> removeAll(@Url String url, @HeaderMap Map<String, String> headers,
-                                                  @Body AddToWatchlistRequest request);
+//    @HTTP(method = "DELETE", hasBody = true)
+//    Call<AppCMSAddToWatchlistResult> removeAll(@Url String url, @HeaderMap Map<String,
+//            String> headers, @Body AddToWatchlistRequest request);
 }
