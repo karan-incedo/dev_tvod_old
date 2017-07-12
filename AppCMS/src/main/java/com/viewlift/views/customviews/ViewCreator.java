@@ -533,12 +533,14 @@ public class ViewCreator {
                     }
                 }
 
-                if (!TextUtils.isEmpty(component.getTextColor())) {
-                    ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context, component.getTextColor())));
+                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())) {
+                    if (componentViewResult.componentView instanceof TextView) {
+                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())));
+                    }
                 }
 
-                if (!TextUtils.isEmpty(component.getBackgroundColor())) {
-                    componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
+                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())) {
+                    componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())));
                 } else {
                     applyBorderToComponent(context, componentViewResult.componentView, component);
                 }
@@ -776,14 +778,14 @@ public class ViewCreator {
             case PAGE_TEXTVIEW_KEY:
                 componentViewResult.componentView = new TextView(context);
                 int textColor = ContextCompat.getColor(context, R.color.colorAccent);
-                if (!TextUtils.isEmpty(component.getTextColor())) {
-                    textColor = Color.parseColor(getColor(context, component.getTextColor()));
+                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())) {
+                    textColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
                 } else if (component.getStyles() != null) {
                     if (!TextUtils.isEmpty(component.getStyles().getColor())) {
                         textColor = Color.parseColor(getColor(context, component.getStyles().getColor()));
-                    } else if (!TextUtils.isEmpty(component.getStyles().getTextColor())) {
+                    } else if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())) {
                         textColor =
-                                Color.parseColor(getColor(context, component.getStyles().getTextColor()));
+                                Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
                     }
                 }
                 if (componentKey != AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY) {
@@ -981,9 +983,9 @@ public class ViewCreator {
             case PAGE_SEPARATOR_VIEW_KEY:
             case PAGE_SEGMENTED_VIEW_KEY:
                 componentViewResult.componentView = new View(context);
-                if (!TextUtils.isEmpty(component.getBackgroundColor())) {
+                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())) {
                     componentViewResult.componentView.
-                            setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
+                            setBackgroundColor(Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())));
                 }
                 break;
 
@@ -1026,7 +1028,7 @@ public class ViewCreator {
                     fontFamilyValueType = Typeface.BOLD;
                 }
 
-                textColor = Color.parseColor(getColor(context, component.getTextColor()));
+                textColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
                 String directorTitle = null;
                 StringBuffer directorListSb = new StringBuffer();
                 String starringTitle = null;
@@ -1099,12 +1101,8 @@ public class ViewCreator {
                 if (!TextUtils.isEmpty(component.getText())) {
                     textInputEditText.setHint(component.getText());
                 }
-                if (!TextUtils.isEmpty(component.getBackgroundColor())) {
-                    textInputEditText.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
-                }
-                if (!TextUtils.isEmpty(component.getTextColor())) {
-                    textInputEditText.setTextColor(Color.parseColor(getColor(context, component.getTextColor())));
-                }
+                textInputEditText.setTextColor(ContextCompat.getColor(context, android.R.color.black));
+                textInputEditText.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white));
                 setTypeFace(context, jsonValueKeyMap, component, textInputEditText);
                 int loginInputHorizontalMargin = context.getResources().getInteger(R.integer.app_cms_login_input_horizontal_margin);
                 textInputEditText.setPadding(loginInputHorizontalMargin,

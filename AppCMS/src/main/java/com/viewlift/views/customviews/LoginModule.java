@@ -47,6 +47,7 @@ public class LoginModule extends ModuleView {
     private EditText[] passwordInputViews;
     private int underlineColor;
     private int transparentColor;
+    private int bgColor;
     private int loginBorderPadding;
     private EditText visibleEmailInputView;
     private EditText visiblePasswordInputView;
@@ -81,12 +82,14 @@ public class LoginModule extends ModuleView {
             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
             underlineColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor());
             transparentColor = ContextCompat.getColor(getContext(), android.R.color.transparent);
+            bgColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor());
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             ViewGroup childContainer = getChildrenContainer();
             FrameLayout loginModuleSwitcherContainer = new FrameLayout(getContext());
             FrameLayout.LayoutParams loginModuleContainerLayoutParams =
                     new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             loginModuleSwitcherContainer.setLayoutParams(loginModuleContainerLayoutParams);
+            loginModuleSwitcherContainer.setBackgroundColor(bgColor);
             for (Component component : module.getComponents()) {
                 if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_LOGIN_COMPONENT_KEY) {
                     buttonSelectors[0] = new Button(getContext());
@@ -98,7 +101,7 @@ public class LoginModule extends ModuleView {
                             0);
                     buttonSelectors[0].setText(R.string.app_cms_log_in_pager_title);
                     buttonSelectors[0].setTextColor(textColor);
-                    buttonSelectors[0].setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+                    buttonSelectors[0].setBackgroundColor(bgColor);
                     buttonSelectors[0].setLayoutParams(loginSelectorLayoutParams);
 
                     buttonSelectors[0].setOnClickListener(new OnClickListener() {
@@ -141,7 +144,7 @@ public class LoginModule extends ModuleView {
                             0);
                     buttonSelectors[1].setText(R.string.app_cms_sign_up_pager_title);
                     buttonSelectors[1].setTextColor(textColor);
-                    buttonSelectors[1].setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+                    buttonSelectors[1].setBackgroundColor(bgColor);
                     signupSelectorLayoutParams.gravity = Gravity.END;
                     buttonSelectors[1].setLayoutParams(signupSelectorLayoutParams);
                     buttonSelectors[1].setOnClickListener(new OnClickListener() {
@@ -197,7 +200,7 @@ public class LoginModule extends ModuleView {
     private void unselectChild(int childIndex) {
         childViews[childIndex].setVisibility(GONE);
         buttonSelectors[childIndex].setAlpha(0.6f);
-        applyUnderlineToComponent(underlineViews[childIndex], transparentColor);
+        applyUnderlineToComponent(underlineViews[childIndex], bgColor);
     }
 
     private void addChildComponents(ModuleView moduleView, Component subComponent, final int childIndex) {
@@ -283,6 +286,6 @@ public class LoginModule extends ModuleView {
 
     private void applyUnderlineToComponent(GradientDrawable underline, int color) {
         underline.setStroke((int) convertDpToPixel(2, getContext()), color);
-        underline.setColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+        underline.setColor(bgColor);
     }
 }
