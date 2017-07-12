@@ -85,6 +85,7 @@ public class LoginModule extends ModuleView {
             bgColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor());
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             ViewGroup childContainer = getChildrenContainer();
+            childContainer.setBackgroundColor(bgColor);
             FrameLayout loginModuleSwitcherContainer = new FrameLayout(getContext());
             FrameLayout.LayoutParams loginModuleContainerLayoutParams =
                     new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -276,6 +277,9 @@ public class LoginModule extends ModuleView {
                                     break;
                                 default:
                             }
+                            break;
+                        default:
+                            componentView.setBackgroundColor(bgColor);
                     }
                 } else {
                     moduleView.setComponentHasView(i, false);
@@ -286,6 +290,6 @@ public class LoginModule extends ModuleView {
 
     private void applyUnderlineToComponent(GradientDrawable underline, int color) {
         underline.setStroke((int) convertDpToPixel(2, getContext()), color);
-        underline.setColor(bgColor);
+        underline.setColor(transparentColor);
     }
 }

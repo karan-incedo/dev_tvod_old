@@ -184,6 +184,9 @@ public class ViewCreator {
                 }
             }
         }
+        if (pageView != null) {
+            pageView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+        }
         return pageView;
     }
 
@@ -291,6 +294,9 @@ public class ViewCreator {
                 moduleView.setVisibility(View.GONE);
             }
         }
+        if (moduleView != null) {
+            moduleView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+        }
         return moduleView;
     }
 
@@ -379,6 +385,10 @@ public class ViewCreator {
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
         componentViewResult.shouldHideModule = false;
+
+        int transparentColor = ContextCompat.getColor(context, android.R.color.transparent);
+        int bgColor =
+                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor());
 
         if (moduleAPI == null) {
             return;
@@ -508,7 +518,6 @@ public class ViewCreator {
                 componentViewResult.useMarginsAsPercentagesOverride = false;
                 break;
 
-
             case PAGE_BUTTON_KEY:
                 if (componentKey == AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) {
                     if (!appCMSPresenter.isUserLoggedIn(context)) {
@@ -521,6 +530,7 @@ public class ViewCreator {
                 } else {
                     componentViewResult.componentView = new ImageButton(context);
                 }
+                componentViewResult.componentView.setBackgroundColor(bgColor);
 
                 if (!gridElement) {
                     if (!TextUtils.isEmpty(component.getText()) && componentKey != AppCMSUIKeyType.PAGE_PLAY_KEY) {
@@ -777,6 +787,7 @@ public class ViewCreator {
             case PAGE_LABEL_KEY:
             case PAGE_TEXTVIEW_KEY:
                 componentViewResult.componentView = new TextView(context);
+                componentViewResult.componentView.setBackgroundColor(bgColor);
                 int textColor = ContextCompat.getColor(context, R.color.colorAccent);
                 if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())) {
                     textColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
@@ -918,6 +929,7 @@ public class ViewCreator {
 
             case PAGE_IMAGE_KEY:
                 componentViewResult.componentView = new ImageView(context);
+                componentViewResult.componentView.setBackgroundColor(bgColor);
                 switch (componentKey) {
                     case PAGE_VIDEO_IMAGE_KEY:
                         int viewWidth = BaseView.isLandscape(context) ?
@@ -1082,6 +1094,7 @@ public class ViewCreator {
                 break;
             case PAGE_TEXTFIELD_KEY:
                 componentViewResult.componentView = new TextInputLayout(context);
+                componentViewResult.componentView.setBackgroundColor(bgColor);
                 TextInputEditText textInputEditText = new TextInputEditText(context);
                 switch (componentKey) {
                     case PAGE_EMAILTEXTFIELD_KEY:
