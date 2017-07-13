@@ -1,13 +1,16 @@
 <resources>
+    <string name="app_cms_base_url">https://release-api.viewlift.com</string>
+    <string name="app_cms_site_id">snagfilms</string>
+
+    <!-- AppCMS Films ID API -->
+    <string name="app_cms_films_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
+
     <string name="app_name">My Viewlift App</string>
-    <string name="hls_url1">https://ipad2snagfilms.akamaized.net/RisingFromTheAshes_Feature_800kbs.m3u8</string>
+    <string name="filmid1">fa9e8670-a745-11e0-a92a-0026bb61d036</string>
     <string name="ad_url1">http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&amp;iu=/225734590/SF_Video/Mapp_Android&amp;impl=s&amp;gdfp_req=1&amp;env=vp&amp;output=xml_vast2&amp;unviewed_position_start=1&amp;url=https://www.snagfilms.com/films/title/rising_from_the_ashes&amp;ad_rule=0&amp;correlator=1499971761904&amp;cust_params=APPID=snagfilms</string>
-    <string name="film_title1">Rising From The Ashes</string>
-    <string name="hls_url2">http://ipad.snagfilms.com/childrenunderground_hls.m3u8</string>
+    <string name="filmid2">00000139-25f6-ddfa-a7b9-b7fea6ff0000</string>
     <string name="ad_url2">http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&amp;iu=/225734590/SF_Video/Mapp_Android&amp;impl=s&amp;gdfp_req=1&amp;env=vp&amp;output=xml_vast2&amp;unviewed_position_start=1&amp;url=https://www.snagfilms.com/films/title/films/title/children_underground&amp;ad_rule=0&amp;correlator=1499971761904&amp;cust_params=APPID=snagfilms</string>
-    <string name="film_title2">Children Underground</string>
-    <string name="hls_url3">http://ipad.snagfilms.com/bomb2ChStereo.m3u8</string>
+    <string name="filmid3">0000013b-aa20-d46c-a57f-efbb06e30000</string>
     <string name="ad_url3">http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&amp;iu=/225734590/SF_Video/Mapp_Android&amp;impl=s&amp;gdfp_req=1&amp;env=vp&amp;output=xml_vast2&amp;unviewed_position_start=1&amp;url=https://www.snagfilms.com/films/title/beware_of_mr_baker&amp;ad_rule=0&amp;correlator=1499971761904&amp;cust_params=APPID=snagfilms</string>
-    <string name="film_title3">Beware of Mr. Baker</string>
     <string name="play_video">Play Video</string>
 </resources>

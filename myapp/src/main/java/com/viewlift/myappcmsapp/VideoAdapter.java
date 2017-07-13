@@ -1,4 +1,4 @@
-package viewlift.com.myappcmsapp;
+package com.viewlift.myappcmsapp;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,6 +17,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
         String hlsUrl;
         String adUrl;
         String title;
+        String filmId;
     }
 
     public interface OnItemClickedListener {
