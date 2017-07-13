@@ -1229,6 +1229,7 @@ public class AppCMSPresenter {
                                                             appCMSPageAPIAction.sendCloseAction,
                                                             appCMSPageAPIAction.searchQuery);
                                                 } else {
+                                                    showMainFragmentView(false);
                                                     Bundle args = getPageActivityBundle(currentActivity,
                                                             appCMSPageAPIAction.appCMSPageUI,
                                                             appCMSPageAPI,
@@ -1252,6 +1253,7 @@ public class AppCMSPresenter {
                                     });
                                 } else {
                                     if (this.launchActivity) {
+                                        showMainFragmentView(false);
                                         launchPageActivity(currentActivity,
                                                 this.appCMSPageUI,
                                                 appCMSPageAPI,
@@ -1265,6 +1267,7 @@ public class AppCMSPresenter {
                                                 this.sendCloseAction,
                                                 this.searchQuery);
                                     } else {
+                                        showMainFragmentView(false);
                                         Bundle args = getPageActivityBundle(currentActivity,
                                                 this.appCMSPageUI,
                                                 appCMSPageAPI,
