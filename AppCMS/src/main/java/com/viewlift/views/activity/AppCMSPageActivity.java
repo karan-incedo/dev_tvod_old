@@ -247,8 +247,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         super.onResume();
         if (resumeInternalEvents) {
             appCMSPresenter.restartInternalEvents();
+            appCMSPresenter.showMainFragmentView(false);
             Log.d(TAG, "onResume() - Resuming internal events");
         }
+
         if (pageViewDuringSearch != null) {
             selectNavItem(pageViewDuringSearch);
         } else {
