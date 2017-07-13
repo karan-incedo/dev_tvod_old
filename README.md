@@ -15,5 +15,8 @@ Second, you must initialize the SDK.  Add the following code to your App’s Act
 ppCMSSDK appCMSSDK = AppCMSSDK.initialize(this,
         getString(R.string.app_cms_baseurl),
         getString(R.string.app_cms_site_id));
-The app_cms_baseurl is a String resource that points to the AppCMS main.json file
-The app_cms_site_id is a String resource that points to the Site ID 
+The first parameter is the Android context.
+The app_cms_baseurl is a String resource that points to the AppCMS main.json file.
+The app_cms_site_id is a String resource that points to the Site ID of main.json file.
+
+Third, you may call launchPlayer() with a Film ID.  That Film ID will be associated with a film on the website.
