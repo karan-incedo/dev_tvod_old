@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 def final packageName = 'air.com.hoichoi'
 def final customApplicationId = 'HoiChoi'
-def final hostName = "http://www.hoichoi.tv/" //FIXME: confirm that this is the actual hostName!
+def final hostName = "http://www.hoichoi.tv"
 
 buildscript {
     repositories {
@@ -149,4 +149,7 @@ dependencies {
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
 
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
+    annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
 }

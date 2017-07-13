@@ -7,41 +7,137 @@ package com.viewlift.models.data.appcms.subscriptions;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Request {
+public class Request_ {
 
-    @SerializedName("request")
+    @SerializedName("siteInternalName")
     @Expose
-    private Request_ request;
+    private String siteInternalName;
 
-    @SerializedName("data")
+    @SerializedName("siteId")
     @Expose
-    private Data data;
+    private Object siteId;
 
-    @SerializedName("success")
+    @SerializedName("userId")
     @Expose
-    private Boolean success;
+    private Object userId;
 
-    public Request_ getRequest() {
-        return request;
+    @SerializedName("subscriptionOfferId")
+    @Expose
+    private Object subscriptionOfferId;
+
+    @SerializedName("onlyVisible")
+    @Expose
+    private Boolean onlyVisible;
+
+    @SerializedName("includeWebOnlyPlan")
+    @Expose
+    private Boolean includeWebOnlyPlan;
+
+    @SerializedName("onlySubscribableBasedOnDate")
+    @Expose
+    private Boolean onlySubscribableBasedOnDate;
+
+    @SerializedName("subscriptionPlanIds")
+    @Expose
+    private Object subscriptionPlanIds;
+
+    @SerializedName("countryCode")
+    @Expose
+    private Object countryCode;
+
+    @SerializedName("partnerPortal")
+    @Expose
+    private Boolean partnerPortal;
+
+    @SerializedName("authentication")
+    @Expose
+    private Authentication authentication;
+
+    public String getSiteInternalName() {
+        return siteInternalName;
     }
 
-    public void setRequest(Request_ request) {
-        this.request = request;
+    public void setSiteInternalName(String siteInternalName) {
+        this.siteInternalName = siteInternalName;
     }
 
-    public Data getData() {
-        return data;
+    public Object getSiteId() {
+        return siteId;
     }
 
-    public void setData(Data data) {
-        this.data = data;
+    public void setSiteId(Object siteId) {
+        this.siteId = siteId;
     }
 
-    public Boolean getSuccess() {
-        return success;
+    public Object getUserId() {
+        return userId;
     }
 
-    public void setSuccess(Boolean success) {
-        this.success = success;
+    public void setUserId(Object userId) {
+        this.userId = userId;
+    }
+
+    public Object getSubscriptionOfferId() {
+        return subscriptionOfferId;
+    }
+
+    public void setSubscriptionOfferId(Object subscriptionOfferId) {
+        this.subscriptionOfferId = subscriptionOfferId;
+    }
+
+    public Boolean getOnlyVisible() {
+        return onlyVisible;
+    }
+
+    public void setOnlyVisible(Boolean onlyVisible) {
+        this.onlyVisible = onlyVisible;
+    }
+
+    public Boolean getIncludeWebOnlyPlan() {
+        return includeWebOnlyPlan;
+    }
+
+    public void setIncludeWebOnlyPlan(Boolean includeWebOnlyPlan) {
+        this.includeWebOnlyPlan = includeWebOnlyPlan;
+    }
+
+    public Boolean getOnlySubscribableBasedOnDate() {
+        return onlySubscribableBasedOnDate;
+    }
+
+    public void setOnlySubscribableBasedOnDate(Boolean onlySubscribableBasedOnDate) {
+        this.onlySubscribableBasedOnDate = onlySubscribableBasedOnDate;
+    }
+
+    public Object getSubscriptionPlanIds() {
+        return subscriptionPlanIds;
+    }
+
+    public void setSubscriptionPlanIds(Object subscriptionPlanIds) {
+        this.subscriptionPlanIds = subscriptionPlanIds;
+    }
+
+    public Object getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(Object countryCode) {
+        this.countryCode = countryCode;
+    }
+
+    public Boolean getPartnerPortal() {
+        return partnerPortal;
+    }
+
+    public void setPartnerPortal(Boolean partnerPortal) {
+        this.partnerPortal = partnerPortal;
+    }
+
+    public Authentication getAuthentication() {
+        return authentication;
+    }
+
+    public void setAuthentication(Authentication authentication) {
+        this.authentication = authentication;
     }
 }

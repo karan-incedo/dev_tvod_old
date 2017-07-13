@@ -40,6 +40,7 @@ allprojects {
         leakcanaryVersion = "1.5.1"
         apptentiveVersion = "3.4.1"
         butterknifeVersion = "8.6.0"
+        stagVersion = "2.3.1"
     }
 }
 
