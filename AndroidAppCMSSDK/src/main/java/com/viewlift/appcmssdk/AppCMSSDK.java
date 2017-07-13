@@ -1,6 +1,5 @@
 package com.viewlift.appcmssdk;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
@@ -34,6 +33,13 @@ public class AppCMSSDK {
     private final AppCMSMainUICall appCMSMainUICall;
     private final AppCMSFilmRecordsCall appCMSFilmRecordsCall;
 
+    /**
+     * This will initialize an instance of the AppCMSSDK that can be used to launch a Video.
+     * @param context This is the base context to is used by the application.
+     * @param appCMSBaseURL This is the base URL of the AppCMS site.
+     * @param appCMSSiteId This is the Site ID of the AppCMS site.
+     * @return Returns an instance of the AppCMSSDK.
+     */
     public static AppCMSSDK initialize(Context context,
                                        String appCMSBaseURL,
                                        String appCMSSiteId) {
@@ -47,18 +53,10 @@ public class AppCMSSDK {
                 .appCMSSDK();
     }
 
-    AppCMSSDK(Context context,
-              String appCMSBaseURL,
-              String appCMSSiteId,
-              AppCMSMainUICall appCMSMainUICall,
-              AppCMSFilmRecordsCall appCMSFilmRecordsCall) {
-        this.context = context;
-        this.appCMSBaseURL = appCMSBaseURL;
-        this.appCMSSiteId = appCMSSiteId;
-        this.appCMSMainUICall = appCMSMainUICall;
-        this.appCMSFilmRecordsCall = appCMSFilmRecordsCall;
-    }
-
+    /**
+     * This launches a Video Player that will play a video associated with the Film ID.
+     * @param filmId This is the Film ID for the video to be played.
+     */
     public void launchVideo(final String filmId) {
         Log.d(TAG, "Retrieving AppCMSMain to get data for film with filmId: " + filmId);
         getAppCMSMain(new Action1<AppCMSMain>() {
@@ -129,6 +127,18 @@ public class AppCMSSDK {
                 }
             }
         });
+    }
+
+    AppCMSSDK(Context context,
+              String appCMSBaseURL,
+              String appCMSSiteId,
+              AppCMSMainUICall appCMSMainUICall,
+              AppCMSFilmRecordsCall appCMSFilmRecordsCall) {
+        this.context = context;
+        this.appCMSBaseURL = appCMSBaseURL;
+        this.appCMSSiteId = appCMSSiteId;
+        this.appCMSMainUICall = appCMSMainUICall;
+        this.appCMSFilmRecordsCall = appCMSFilmRecordsCall;
     }
 
     private void getAppCMSMain(Action1<AppCMSMain> resultReady) {
