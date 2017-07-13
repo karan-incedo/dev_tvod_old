@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">My Viewlift App</string>
+    <string name="hls_url">https://ipad2snagfilms.akamaized.net/RisingFromTheAshes_Feature_800kbs.m3u8</string>
+    <string name="ad_url">http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&amp;iu=/225734590/SF_Video/Mapp_Android&amp;impl=s&amp;gdfp_req=1&amp;env=vp&amp;output=xml_vast2&amp;unviewed_position_start=1&amp;url=https://www.snagfilms.com//films/title/rising_from_the_ashes&amp;ad_rule=0&amp;correlator=1499971761904&amp;cust_params=APPID=snagfilms</string>
+    <string name="play_video">Play Video</string>
+</resources>

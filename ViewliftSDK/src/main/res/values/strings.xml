@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">ViewliftSDK</string>
+    <string name="video_player_title_key">video_player_title</string>
+    <string name="video_player_hls_url_key">video_player_hls_url</string>
+    <string name="video_player_ads_url_key">video_player_ads_url</string>
+    <string name="video_fragment_tag_key">video_fragment</string>
+    <string name="user_agent">Viewlift Android</string>
+    <string name="done">DONE</string>
+</resources>
