@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import com.apptentive.android.sdk.Apptentive;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -534,6 +535,7 @@ public class AppCMSPresenter {
                                                         }
                                                     }
                                                 }
+                                                showMainFragmentView(false);
                                                 cancelInternalEvents();
                                                 pushActionInternalEvents(appCMSPageAPIAction.action
                                                         + BaseView.isLandscape(currentActivity));
@@ -558,6 +560,7 @@ public class AppCMSPresenter {
                                             }
                                         });
                                     } else {
+                                        showMainFragmentView(false);
                                         cancelInternalEvents();
                                         pushActionInternalEvents(this.action
                                                 + BaseView.isLandscape(currentActivity));
@@ -637,16 +640,22 @@ public class AppCMSPresenter {
                     mainFragmentView.setVisibility(View.INVISIBLE);
                 }
             }
-            FrameLayout additionalFragmentView =
+
+            FrameLayout addOnFragment =
                     (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
-            if (additionalFragmentView != null) {
-                if (show) {
-                    additionalFragmentView.setVisibility(View.INVISIBLE);
-                } else {
-                    additionalFragmentView.setVisibility(View.VISIBLE);
-                }
+            if (addOnFragment != null) {
+                addOnFragment.setVisibility(View.INVISIBLE);
             }
         }
+    }
+
+    public void showAddOnFragment() {
+        FrameLayout addOnFragment =
+                (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
+        if (addOnFragment != null) {
+            addOnFragment.setVisibility(View.VISIBLE);
+        }
+        showMainFragmentView(false);
     }
 
     public boolean isAdditionalFragmentViewAvailable() {
@@ -843,6 +852,7 @@ public class AppCMSPresenter {
                             navigationPageData.put(this.pageId, pageAPI);
 
                             if (this.launchActivity) {
+                                showMainFragmentView(false);
                                 launchPageActivity(currentActivity,
                                         this.appCMSPageUI,
                                         pageAPI,
@@ -856,6 +866,7 @@ public class AppCMSPresenter {
                                         false,
                                         this.searchQuery);
                             } else {
+                                showMainFragmentView(false);
                                 Bundle args = getPageActivityBundle(currentActivity,
                                         this.appCMSPageUI,
                                         pageAPI,
@@ -941,7 +952,6 @@ public class AppCMSPresenter {
 
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
-            final AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
 
             getHistoryPageContent(appCMSMain.getApiBaseUrl(),
                     pageIdToPageAPIUrlMap.get(pageId),
@@ -983,6 +993,7 @@ public class AppCMSPresenter {
                             navigationPageData.put(this.pageId, pageAPI);
 
                             if (this.launchActivity) {
+                                showMainFragmentView(false);
                                 launchPageActivity(currentActivity,
                                         this.appCMSPageUI,
                                         pageAPI,
@@ -996,6 +1007,7 @@ public class AppCMSPresenter {
                                         false,
                                         this.searchQuery);
                             } else {
+                                showMainFragmentView(false);
                                 Bundle args = getPageActivityBundle(currentActivity,
                                         this.appCMSPageUI,
                                         pageAPI,
@@ -1076,7 +1088,7 @@ public class AppCMSPresenter {
             transaction.add(R.id.app_cms_addon_fragment,
                     appCMSSettingsFragment,
                     currentActivity.getString(R.string.app_cms_settings_page_tag)).commit();
-            showMainFragmentView(false);
+            showAddOnFragment();
         }
     }
 
@@ -1203,6 +1215,7 @@ public class AppCMSPresenter {
                                                     }
                                                 }
                                                 if (appCMSPageAPIAction.launchActivity) {
+                                                    showMainFragmentView(false);
                                                     launchPageActivity(currentActivity,
                                                             appCMSPageAPIAction.appCMSPageUI,
                                                             appCMSPageAPI,

@@ -435,6 +435,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     private void createFragment(AppCMSBinder appCMSBinder) {
         try {
+            final int backstackCount = getSupportFragmentManager().getBackStackEntryCount();
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             Fragment appCMSPageFragment = AppCMSPageFragment.newInstance(this, appCMSBinder);
@@ -442,6 +443,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                     appCMSBinder.getPageId());
             fragmentTransaction.addToBackStack(appCMSBinder.getPageId());
             fragmentTransaction.commit();
+            getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+                @Override
+                public void onBackStackChanged() {
+                    if (appCMSPresenter != null &&
+                            getSupportFragmentManager().getBackStackEntryCount() == backstackCount + 1) {
+                        appCMSPresenter.dismissOpenDialogs();
+                        appCMSPresenter.showMainFragmentView(true);
+                        getSupportFragmentManager().removeOnBackStackChangedListener(this);
+                    }
+                }
+            });
         } catch (IllegalStateException e) {
             Log.e(TAG, "Failed to add Fragment to back stack");
         }
@@ -495,8 +507,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         if (navigation.getNavigationPrimary().size() == 0 || !appCMSBinder.isNavbarPresent()) {
             appCMSTabNavContainer.setVisibility(View.GONE);
         } else {
-            appCMSTabNavContainer.setVisibility(View.VISIBLE);
-            selectNavItem(appCMSBinder.getPageId());
+            if (appCMSFragment.getVisibility() == View.VISIBLE) {
+                appCMSTabNavContainer.setVisibility(View.VISIBLE);
+                selectNavItem(appCMSBinder.getPageId());
+            }
         }
     }
 
@@ -619,7 +633,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             @Override
             public void onClick(View v) {
                 if (appCMSBinderStack.size() > 0) {
-//                    unselectAllNavItems();
                     AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
                     if (!appCMSPresenter.launchNavigationPage(appCMSBinder.getPageId(),
                             appCMSBinder.getPageName())) {
