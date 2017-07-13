@@ -1,0 +1,46 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "26.0.0"
+    defaultConfig {
+        minSdkVersion 23
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+configurations {
+    demoDebugCompile {}
+    fullReleaseCompile {}
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    testImplementation "junit:junit:$rootProject.ext.junitVersion"
+    implementation "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
+    implementation "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
+    compile "com.google.dagger:dagger:$rootProject.ext.daggerVersion"
+    compile "com.google.code.gson:gson:$rootProject.ext.gsonVersion"
+    compile "com.squareup.okhttp3:okhttp:$rootProject.ext.okHttp3Version"
+    compile "com.squareup.okhttp3:okhttp-urlconnection:$rootProject.ext.okHttp3Version"
+    compile "com.squareup.retrofit2:retrofit:$rootProject.ext.retrofit2Version"
+    compile "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofit2Version"
+    compile "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
+    compile "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
+    compile "com.google.android.exoplayer:exoplayer:$rootProject.ext.exoplayerVersion"
+    compile "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
+    compile "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
+}

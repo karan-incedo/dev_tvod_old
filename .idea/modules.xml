@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/AndroidAppCMSMaster.iml" filepath="$PROJECT_DIR$/AndroidAppCMSMaster.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AndroidAppCMSSDK/AndroidAppCMSSDK.iml" filepath="$PROJECT_DIR$/AndroidAppCMSSDK/AndroidAppCMSSDK.iml" />
+      <module fileurl="file://$PROJECT_DIR$/myappcmsapp/myappcmsapp.iml" filepath="$PROJECT_DIR$/myappcmsapp/myappcmsapp.iml" />
+    </modules>
+  </component>
+</project>

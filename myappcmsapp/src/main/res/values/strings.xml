@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">My AppCMS App</string>
+    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
+    <string name="app_cms_site_id">00000149-86ec-d4f3-a7e9-e6fe760d0000</string>
+    <string name="my_film_id">fa9e8670-a745-11e0-a92a-0026bb61d036</string>
+</resources>
