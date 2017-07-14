@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -184,6 +185,9 @@ public class ViewCreator {
                 }
             }
         }
+        if (pageView != null) {
+            pageView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+        }
         return pageView;
     }
 
@@ -259,17 +263,22 @@ public class ViewCreator {
 
                     View componentView = componentViewResult.componentView;
                     if (componentView != null) {
-                        childrenContainer.addView(componentView);
-                        moduleView.setComponentHasView(i, true);
-                        moduleView.setViewMarginsFromComponent(component,
-                                componentView,
-                                moduleView.getLayout(),
-                                childrenContainer,
-                                false,
-                                jsonValueKeyMap,
-                                componentViewResult.useMarginsAsPercentagesOverride,
-                                componentViewResult.useWidthOfScreen,
-                                module.getView());
+                        if (componentViewResult.addToPageView) {
+                            pageView.addView(componentView);
+                        } else {
+
+                            childrenContainer.addView(componentView);
+                            moduleView.setComponentHasView(i, true);
+                            moduleView.setViewMarginsFromComponent(component,
+                                    componentView,
+                                    moduleView.getLayout(),
+                                    childrenContainer,
+                                    false,
+                                    jsonValueKeyMap,
+                                    componentViewResult.useMarginsAsPercentagesOverride,
+                                    componentViewResult.useWidthOfScreen,
+                                    module.getView());
+                        }
                     } else {
                         moduleView.setComponentHasView(i, false);
                     }
@@ -290,6 +299,9 @@ public class ViewCreator {
             if (hideModule) {
                 moduleView.setVisibility(View.GONE);
             }
+        }
+        if (moduleView != null) {
+            moduleView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
         }
         return moduleView;
     }
@@ -379,6 +391,7 @@ public class ViewCreator {
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
         componentViewResult.shouldHideModule = false;
+        componentViewResult.addToPageView = false;
 
         if (moduleAPI == null) {
             return;
@@ -468,17 +481,17 @@ public class ViewCreator {
                 if (settings.getLoop()) {
                     loop = settings.getLoop();
                 }
-                AppCMSCarouselItemAdapter appCMSCarouselItemAdapter
-                        = new AppCMSCarouselItemAdapter(context,
-                        this,
-                        appCMSPresenter,
-                        settings,
-                        parentLayout,
-                        component,
-                        jsonValueKeyMap,
-                        moduleAPI,
-                        (RecyclerView) componentViewResult.componentView,
-                        loop);
+                AppCMSCarouselItemAdapter appCMSCarouselItemAdapter =
+                        new AppCMSCarouselItemAdapter(context,
+                                this,
+                                appCMSPresenter,
+                                settings,
+                                parentLayout,
+                                component,
+                                jsonValueKeyMap,
+                                moduleAPI,
+                                (RecyclerView) componentViewResult.componentView,
+                                loop);
                 ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSCarouselItemAdapter);
                 if (pageView != null) {
                     pageView.addListWithAdapter(new AppCMSViewAdapter.ListWithAdapter.Builder()
@@ -507,7 +520,6 @@ public class ViewCreator {
                 componentViewResult.onInternalEvent = (DotSelectorView) componentViewResult.componentView;
                 componentViewResult.useMarginsAsPercentagesOverride = false;
                 break;
-
 
             case PAGE_BUTTON_KEY:
                 if (componentKey == AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) {
@@ -718,12 +730,23 @@ public class ViewCreator {
                         break;
 
                     case PAGE_REMOVEALL_KEY:
-                        final boolean isHistoryPage = jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY;
+                        componentViewResult.addToPageView = true;
+
+                        FrameLayout.LayoutParams removeAllLayoutParams =
+                                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                        removeAllLayoutParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                        componentViewResult.componentView.setLayoutParams(removeAllLayoutParams);
+
+                        final boolean isHistoryPage = jsonValueKeyMap.get(viewType)
+                                == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY;
                         if (isHistoryPage) {
                             componentViewResult.componentView.setVisibility(View.GONE);
                             componentViewResult.componentView.setEnabled(false);
                         } else {
                             componentViewResult.onInternalEvent = new OnInternalEvent() {
+                                final View removeAllButton = componentViewResult.componentView;
                                 private List<OnInternalEvent> receivers = new ArrayList<>();
 
                                 @Override
@@ -740,7 +763,7 @@ public class ViewCreator {
 
                                 @Override
                                 public void receiveEvent(InternalEvent<?> event) {
-                                    //
+                                    removeAllButton.setVisibility(View.VISIBLE);
                                 }
 
                                 @Override
@@ -753,7 +776,7 @@ public class ViewCreator {
                             OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
 
                             @Override
-                            public void onClick(View v) {
+                            public void onClick(final View v) {
                                 if (isHistoryPage) {
                                     //
                                 } else {
@@ -761,6 +784,7 @@ public class ViewCreator {
                                         @Override
                                         public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
                                             onInternalEvent.sendEvent(null);
+                                            v.setVisibility(View.GONE);
                                         }
                                     });
                                 }
@@ -778,7 +802,6 @@ public class ViewCreator {
             case PAGE_TEXTVIEW_KEY:
                 componentViewResult.componentView = new TextView(context);
                 int textColor = ContextCompat.getColor(context, R.color.colorAccent);
-
                 if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())) {
                     textColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
                 } else if (component.getStyles() != null) {
@@ -1220,6 +1243,7 @@ public class ViewCreator {
         boolean useMarginsAsPercentagesOverride;
         boolean useWidthOfScreen;
         boolean shouldHideModule;
+        boolean addToPageView;
     }
 
     public static class UpdateImageIconAction implements Action1<UserVideoStatusResponse> {

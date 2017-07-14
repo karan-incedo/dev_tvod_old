@@ -49,6 +49,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     protected String defaultAction;
     protected boolean isHistory;
+    private List<OnInternalEvent> receivers;
 
     public AppCMSTrayItemAdapter(Context context,
                                  List<ContentDatum> adapterData,
@@ -62,6 +63,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.defaultAction = getDefaultAction(context);
         this.isHistory = jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY;
+        this.receivers = new ArrayList<>();
+
+        if (adapterData.size() > 0) {
+            sendEvent(null);
+        }
     }
 
     @Override
@@ -83,15 +89,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     contentDatum.getGist().getVideoImageUrl(),
                     holder.appCMSContinueWatchingVideoImage.getWidth(),
                     holder.appCMSContinueWatchingVideoImage.getHeight()));
-
             Picasso.with(holder.itemView.getContext())
                     .load(imageUrl.toString())
                     .into(holder.appCMSContinueWatchingVideoImage);
-
-            holder.appCMSContinueWatchingTitle.setText(contentDatum.getGist().getTitle());
-            holder.appCMSContinueWatchingDescription.setText(contentDatum.getGist().getDescription());
-            holder.appCMSContinueWatchingDuration.setText(String.valueOf(contentDatum.getGist()
-                    .getRuntime() / SECONDS_PER_MINS));
 
             holder.appCMSContinueWatchingVideoImage.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -107,20 +107,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 }
             });
 
+            holder.appCMSContinueWatchingTitle.setText(contentDatum.getGist().getTitle());
 
-            holder.appCMSContinueWatchingTitle.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    click(contentDatum);
-                }
-            });
-
-            holder.appCMSContinueWatchingDescription.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    click(contentDatum);
-                }
-            });
+            holder.appCMSContinueWatchingDescription.setText(contentDatum.getGist().getDescription());
 
             holder.appCMSContinueWatchingSelectToDeleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -136,6 +125,21 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 }
             });
 
+            holder.appCMSContinueWatchingTitle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    click(contentDatum);
+                }
+            });
+
+            holder.appCMSContinueWatchingDescription.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    click(contentDatum);
+                }
+            });
+
+            holder.appCMSContinueWatchingDuration.setText(String.valueOf(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS));
         } else {
             holder.appCMSNotItemLabel.setVisibility(View.VISIBLE);
             holder.appCMSNotItemLabel.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
@@ -162,12 +166,14 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     @Override
     public void addReceiver(OnInternalEvent e) {
-        //
+        receivers.add(e);
     }
 
     @Override
     public void sendEvent(InternalEvent<?> event) {
-        //
+        for (OnInternalEvent internalEvent : receivers) {
+            internalEvent.receiveEvent(null);
+        }
     }
 
     @Override
@@ -291,7 +297,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                         viewHolder.appCMSContinueWatchingSeparatorView
                                 .setBackgroundColor(Color.parseColor(getColor(
-                                        viewHolder.itemView.getContext(), component.getBackgroundColor())));
+                                        viewHolder.itemView.getContext(),
+                                        component.getBackgroundColor())));
                     }
                     break;
                 default:
@@ -319,6 +326,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     @Override
     public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
         adapterData = contentData;
+
+        if (adapterData.size() > 0) {
+            sendEvent(null);
+        }
     }
 
     private void click(ContentDatum data) {
