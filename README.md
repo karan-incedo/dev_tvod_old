@@ -15,6 +15,4 @@ Second, you must initialize the SDK.  Add the following code to your App’s Act
 ppCMSSDK viewliftSDK = AppCMSSDK.initialize(this);
 The only parameter is the Android context.
 
-Third, you should call the Films API to retrieve the Film data associated with a specific Film ID.  The Film API also includes the capability to retrieve multiple Film datums from multiple Film IDs.  The URL is constructed using the base API URL, a comma delimited list of Film IDS and the value for the Site ID.  The result contains descriptive details about each film and the streaming information (such as HLS data).
-
-Fourth, you may call launchPlayer() with a Film HLS URL and Ad URL.  
+Third, you may call launchPlayer() with a Film HLS URL and Ad URL.  
