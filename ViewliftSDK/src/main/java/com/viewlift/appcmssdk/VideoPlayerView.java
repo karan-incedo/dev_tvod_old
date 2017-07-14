@@ -194,7 +194,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
                 }
             }
         });
-        
+
         addView(playerView);
 
         AudioManager audioManager =
