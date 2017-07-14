@@ -447,11 +447,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
                 @Override
                 public void onBackStackChanged() {
-                    if (appCMSPresenter != null &&
-                            getSupportFragmentManager().getBackStackEntryCount() == appCMSBinderStack.size()) {
-                        appCMSPresenter.dismissOpenDialogs();
-                        appCMSPresenter.showMainFragmentView(true);
-                    }
+                    appCMSPresenter.dismissOpenDialogs();
+                    appCMSPresenter.showMainFragmentView(true);
                     getSupportFragmentManager().removeOnBackStackChangedListener(this);
                 }
             });
