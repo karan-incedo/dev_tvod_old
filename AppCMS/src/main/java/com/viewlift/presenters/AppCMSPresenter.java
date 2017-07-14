@@ -26,7 +26,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import com.apptentive.android.sdk.Apptentive;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -397,7 +396,7 @@ public class AppCMSPresenter {
                     playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), requestAds);
                     if (contentDatum != null &&
                             contentDatum.getGist() != null &&
-                            contentDatum.getGist().getWatchedTime() != null) {
+                            contentDatum.getGist().getWatchedTime() != 0) {
                         playVideoIntent.putExtra(currentActivity.getString(R.string.watched_time_key), contentDatum.getGist().getWatchedTime());
                     }
                 } else {
@@ -1504,21 +1503,15 @@ public class AppCMSPresenter {
     }
 
     public NavigationPrimary findHomePageNavItem() {
-        for (NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()) {
-            AppCMSUIKeyType navTitle = jsonValueKeyMap.get(navigationPrimary.getTitle());
-            if (navTitle == AppCMSUIKeyType.ANDROID_HOME_NAV_KEY) {
-                return navigationPrimary;
-            }
+        if (navigation.getNavigationPrimary().size() >= 1) {
+            return navigation.getNavigationPrimary().get(0);
         }
         return null;
     }
 
     public NavigationPrimary findMoviesPageNavItem() {
-        for (NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()) {
-            AppCMSUIKeyType navTitle = jsonValueKeyMap.get(navigationPrimary.getTitle());
-            if (navTitle == AppCMSUIKeyType.ANDROID_MOVIES_NAV_KEY) {
-                return navigationPrimary;
-            }
+        if (navigation.getNavigationPrimary().size() >= 2) {
+            return navigation.getNavigationPrimary().get(1);
         }
         return null;
     }

@@ -471,7 +471,7 @@ public class ViewCreator {
                                 LinearLayoutManager.HORIZONTAL,
                                 false));
                 boolean loop = false;
-                if (settings.getLoop() != null) {
+                if (settings.getLoop()) {
                     loop = settings.getLoop();
                 }
                 AppCMSCarouselItemAdapter appCMSCarouselItemAdapter =
@@ -975,7 +975,7 @@ public class ViewCreator {
                             moduleAPI.getContentData().size() > 0 &&
                             moduleAPI.getContentData().get(0) != null &&
                             moduleAPI.getContentData().get(0).getGist() != null &&
-                            moduleAPI.getContentData().get(0).getGist().getWatchedPercentage() != null) {
+                            moduleAPI.getContentData().get(0).getGist().getWatchedPercentage() != 0) {
                         ((ProgressBar) componentViewResult.componentView).setProgress(moduleAPI.getContentData().get(0).getGist().getWatchedPercentage());
                     } else {
                         ((ProgressBar) componentViewResult.componentView).setProgress(0);
@@ -1129,7 +1129,7 @@ public class ViewCreator {
                 int starBorderColor = Color.parseColor(getColor(context, component.getBorderColor()));
                 int starFillColor = Color.parseColor(getColor(context, component.getFillColor()));
                 float starRating = 0.0f;
-                if (moduleAPI.getContentData().get(0).getGist().getAverageStarRating() != null) {
+                if (moduleAPI.getContentData().get(0).getGist().getAverageStarRating() != 0f) {
                     starRating = moduleAPI.getContentData().get(0).getGist().getAverageStarRating();
                 }
                 componentViewResult.componentView = new StarRating(context,
@@ -1179,7 +1179,7 @@ public class ViewCreator {
     }
 
     private void applyBorderToComponent(Context context, View view, Component component) {
-        if (component.getBorderWidth() != null && component.getBorderColor() != null) {
+        if (component.getBorderWidth() != 0 && component.getBorderColor() != null) {
             if (component.getBorderWidth() > 0 && !TextUtils.isEmpty(component.getBorderColor())) {
                 GradientDrawable ageBorder = new GradientDrawable();
                 ageBorder.setShape(GradientDrawable.RECTANGLE);
