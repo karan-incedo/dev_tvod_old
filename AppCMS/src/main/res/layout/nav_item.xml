@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/bottom_navbar_height"
+    android:orientation="horizontal"
+    android:padding="@dimen/nav_item_padding"
+    android:foreground="?android:attr/selectableItemBackground">
+    <TextView
+        android:id="@+id/nav_item_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="9"
+        android:layout_gravity="start|left|center_vertical"
+        android:textSize="@dimen/nav_item_text_size"
+        android:textColor="@color/colorNavBarText"
+        android:layout_margin="@dimen/nav_item_margin"/>
+
+</LinearLayout>

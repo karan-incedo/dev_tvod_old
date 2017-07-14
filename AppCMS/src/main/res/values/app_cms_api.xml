@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary app values -->
+    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
+    <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
+    <string name="app_cms_app_name">00000149-86ec-d4f3-a7e9-e6fe760d0000</string>
+    <string name="app_cms_url_with_appended_timestamp">%1$s?x=%2$d</string>
+    <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
+
+    <!-- AppCMS StreamingInfo API -->
+    <string name="app_cms_streaminginfo_api_url">%1$s/content/videos/%2$s?site=%3$s&amp;fields=streamingInfo</string>
+
+    <!-- AppCMS Search API -->
+    <string name="app_cms_search_api_url">%1$s/content/search?site=%2$s&amp;searchTerm=%3$s</string>
+
+    <!-- AppCMS Ads API -->
+    <string name="app_cms_ads_api_url">http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&amp;iu=/225734590/SF_Video/Mapp_Android&amp;impl=s&amp;gdfp_req=1&amp;env=vp&amp;output=xml_vast2&amp;unviewed_position_start=1&amp;url=%1$s&amp;ad_rule=0&amp;correlator=%2$d&amp;cust_params=APPID=%3$s</string>
+
+    <!-- AppCMS Beacon API -->
+    <string name="app_cms_beacon_url">https://%1$s/events?aid=%2$s&amp;cid=%3$s&amp;pfm=%4$s&amp;dp1=%5$s&amp;vid=%6$s&amp;url=%7$s&amp;ref=%8$s&amp;pa=%9$s&amp;vpos=%10$d&amp;uid=%11$s</string>
+    <string name="app_cms_beacon_platform">Android</string>
+    <string name="app_cms_beacon_dpm_android">Standard Android OS</string>
+    <string name="app_cms_beacon_video_player_parent_screen_name">VideoPlayer</string>
+
+    <!-- AppCMS Apptentive API -->
+    <string name="app_cms_apptentive_api_key">b662ac9b5b55b2d40c803ba80cc2e3e5a239c4270b872a9b04d6eb7b8157ccc4</string>
+
+    <!-- AppCMS Google Analytics -->
+    <string name="app_cms_template_page_separator">&#160;-&#160;</string>
+
+    <!-- AppCMS JSON data input keys -->
+    <string-array name="app_cms_modules_to_ignore">
+        <item>AC Masthead 01</item>
+        <item>AC Footer 01</item>
+    </string-array>
+    <string name="app_cms_android_navigation_key">navigation</string>
+    <string name="app_cms_page_button_key">button</string>
+    <string name="app_cms_page_image_key">image</string>
+    <string name="app_cms_page_label_key">label</string>
+    <string name="app_cms_page_collection_grid_key">collectionGrid</string>
+    <string name="app_cms_page_progress_view_key">progressView</string>
+    <string name="app_cms_page_carousel_key">carousel</string>
+    <string name="app_cms_page_page_control_key">pageControl</string>
+    <string name="app_cms_page_separator_key">separatorView</string>
+    <string name="app_cms_page_castview_key">castView</string>
+    <string name="app_cms_page_bg_key">bg</string>
+    <string name="app_cms_page_logo_key">logo</string>
+    <string name="app_cms_page_info_key">info</string>
+    <string name="app_cms_page_play_key">play</string>
+    <string name="app_cms_page_play_image_key">playImage</string>
+    <string name="app_cms_page_tray_title_key">trayTitle</string>
+    <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
+    <string name="app_cms_page_thumbnail_title_key">thumbnailTitle</string>
+    <string name="app_cms_page_text_alignment_center_key">center</string>
+    <string name="app_cms_page_carousel_title_key">carouselTitle</string>
+    <string name="app_cms_page_carousel_info_key">carouselInfo</string>
+    <string name="app_cms_page_carousel_image_key">carouselImage</string>
+    <string name="app_cms_page_carousel_add_to_watchlist_key">addToWatchlist</string>
+    <string name="app_cms_page_font_bold_key">Bold</string>
+    <string name="app_cms_page_font_semibold_key">Semibold</string>
+    <string name="app_cms_page_font_extrabold_key">ExtraBold</string>
+    <string name="app_cms_page_font_family_key">OpenSans</string>
+    <string name="app_cms_page_textview_key">textView</string>
+    <string name="app_cms_page_video_image_key">videoImage</string>
+    <string name="app_cms_page_video_play_button_key">playButton</string>
+    <string name="app_cms_page_video_description_key">videoDescriptionText</string>
+    <string name="app_cms_page_video_title_key">videoTitle</string>
+    <string name="app_cms_page_video_subtitle_key">videoSubTitle</string>
+    <string name="app_cms_page_video_ageLabel_key">ageLabel</string>
+    <string name="app_cms_page_video_share_key">shareButton</string>
+    <string name="app_cms_page_video_close_key">closeButton</string>
+    <string name="app_cms_page_video_watchnow_key">watchNow</string>
+    <string name="app_cms_page_watchTrailer_key">watchTrailer</string>
+    <string name="app_cms_page_share_key">shareButton</string>
+    <string name="app_cms_page_video_starrating_key">starRating</string>
+    <string name="app_cms_page_video_credits_director_key">Director</string>
+    <string name="app_cms_page_video_credits_directedby_key">Directed by</string>
+    <string name="app_cms_page_video_credits_directors">Directors</string>
+    <string name="app_cms_page_video_credits_starring_key">Starring</string>
+    <string name="app_cms_page_api_thumbnail_url_key">thumbnail</string>
+    <string name="app_cms_page_api_title_key">title</string>
+    <string name="app_cms_page_api_description_key">description</string>
+    <string name="app_cms_page_navigation_contact_us_key">mailto</string>
+
+    <string name="app_cms_navigation_page_tag">navigation</string>
+    <string name="app_cms_search_page_tag">search</string>
+    <string name="app_cms_video_page_tag">video</string>
+    <string name="app_cms_main_page_tag">main</string>
+
+    <string name="app_cms_closing_page_name">closing_page</string>
+
+    <!-- AppAppCMSPageUIPage names for Actions -->
+    <string name="app_cms_pagename_splashscreen_key">Splash Screen</string>
+    <string name="app_cms_pagename_homepage_key">Home Page</string>
+    <string name="app_cms_pagename_videopage_key">Video Page</string>
+
+    <!-- AppCMS Action names -->
+    <string name="app_cms_action_splashpage_key">Splash Screen</string>
+    <string name="app_cms_action_homepage_key">Home Page</string>
+    <string name="app_cms_action_homepage_nav">Home</string>
+    <string name="app_cms_action_movies_nav">Movies</string>
+    <string name="app_cms_action_videopage_key">play</string>
+    <string name="app_cms_action_watchvideo_key">watchVideo</string>
+    <string name="app_cms_action_watchtrailervideo_key">watchTrailer</string>
+    <string name="app_cms_action_share_key">share</string>
+    <string name="app_cms_action_close_key">close</string>
+    <string name="app_cms_action_search_key">search</string>
+    <string name="app_cms_action_qualifier_watchvideo_key">trailer</string>
+
+    <!-- AppCMS Data values -->
+    <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true</string>
+    <string name="app_cms_page_id_query_parameter">pageId=</string>
+    <string name="app_cms_page_path_query_parameter">path=</string>
+    <string name="app_cms_api_key">XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F</string>
+
+    <!-- AppCMS Navigation menu -->
+    <string name="app_cms_menu_icon_name">menu_</string>
+    <string name="app_cms_menu_label">Menu</string>
+    <string name="app_cms_home_icon_name">home_page_</string>
+    <string name="app_cms_home_label">Home</string>
+    <string name="app_cms_movies_icon_name">categories_page_categories</string>
+    <string name="app_cms_movies_label">Movies</string>
+    <string name="app_cms_search_icon_name">search_</string>
+
+    <!-- AppCMS VideoPlayer values -->
+    <string name="app_cms_user_agent">AppCMS Android</string>
+    <string name="app_cms_default_video_ext">m3u8</string>
+    <string name="play_ads_key">play_ads</string>
+
+    <!-- AppCMS Image with Resize Query -->
+    <string name="app_cms_image_with_resize_query">%1$s?impolicy=resize&amp;w=%2$d&amp;h=%3$d</string>
+</resources>

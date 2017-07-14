@@ -1,0 +1,121 @@
+
+package com.viewlift.models.data.appcms.api;
+
+import java.util.List;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+public class ContentDatum {
+
+    @SerializedName("gist")
+    @Expose
+    private Gist gist;
+    @SerializedName("contentDetails")
+    @Expose
+    private ContentDetails contentDetails;
+    @SerializedName("streamingInfo")
+    @Expose
+    private StreamingInfo streamingInfo;
+    @SerializedName("categories")
+    @Expose
+    private List<Category> categories = null;
+    @SerializedName("tags")
+    @Expose
+    private List<Tag> tags = null;
+    @SerializedName("external")
+    @Expose
+    private External external;
+    @SerializedName("statistics")
+    @Expose
+    private Statistics statistics;
+    @SerializedName("channels")
+    @Expose
+    private List<Object> channels = null;
+    @SerializedName("creditBlocks")
+    @Expose
+    private List<CreditBlock> creditBlocks = null;
+    @SerializedName("parentalRating")
+    @Expose
+    private String parentalRating;
+
+    public Gist getGist() {
+        return gist;
+    }
+
+    public void setGist(Gist gist) {
+        this.gist = gist;
+    }
+
+    public ContentDetails getContentDetails() {
+        return contentDetails;
+    }
+
+    public void setContentDetails(ContentDetails contentDetails) {
+        this.contentDetails = contentDetails;
+    }
+
+    public StreamingInfo getStreamingInfo() {
+        return streamingInfo;
+    }
+
+    public void setStreamingInfo(StreamingInfo streamingInfo) {
+        this.streamingInfo = streamingInfo;
+    }
+
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public External getExternal() {
+        return external;
+    }
+
+    public void setExternal(External external) {
+        this.external = external;
+    }
+
+    public Statistics getStatistics() {
+        return statistics;
+    }
+
+    public void setStatistics(Statistics statistics) {
+        this.statistics = statistics;
+    }
+
+    public List<Object> getChannels() {
+        return channels;
+    }
+
+    public void setChannels(List<Object> channels) {
+        this.channels = channels;
+    }
+
+    public List<CreditBlock> getCreditBlocks() {
+        return creditBlocks;
+    }
+
+    public void setCreditBlocks(List<CreditBlock> creditBlocks) {
+        this.creditBlocks = creditBlocks;
+    }
+
+    public String getParentalRating() {
+        return parentalRating;
+    }
+
+    public void setParentalRating(String parentalRating) {
+        this.parentalRating = parentalRating;
+    }
+
+}

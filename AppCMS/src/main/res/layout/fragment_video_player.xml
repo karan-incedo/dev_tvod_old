@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/app_cms_video_player_info_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/app_cms_video_player_done_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.2"
+            android:background="@android:color/transparent"
+            android:focusable="false"
+            android:padding="0dp"
+            android:text="@string/done"
+            android:textColor="@color/colorAccent" />
+
+        <com.viewlift.views.customviews.AlwaysSelectedTextView
+            android:id="@+id/app_cms_video_player_title_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:layout_weight="8"
+            android:background="@android:color/transparent"
+            android:ellipsize="marquee"
+            android:fadingEdge="horizontal"
+            android:padding="0dp"
+            android:singleLine="true"
+            android:textAlignment="center"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/app_cms_video_player_title_view_text_size" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.2"
+            android:background="@android:color/transparent"
+            android:enabled="false"
+            android:focusable="false"
+            android:padding="0dp"
+            android:textColor="@color/colorAccent" />
+
+    </LinearLayout>
+
+    <com.viewlift.views.customviews.VideoPlayerView
+        android:id="@+id/app_cms_video_player_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="false">
+
+    </com.viewlift.views.customviews.VideoPlayerView>
+
+</RelativeLayout>
