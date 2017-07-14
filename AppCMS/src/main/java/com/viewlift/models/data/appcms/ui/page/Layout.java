@@ -1,32 +1,24 @@
+
 package com.viewlift.models.data.appcms.ui.page;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.viewlift.models.data.appcms.ui.tv.FireTV;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class Layout {
 
     @SerializedName("tabletPortrait")
     @Expose
-    TabletPortrait tabletPortrait;
-
+    private TabletPortrait tabletPortrait;
     @SerializedName("desktop")
     @Expose
-    Desktop desktop;
-
+    private Desktop desktop;
     @SerializedName("mobile")
     @Expose
-    Mobile mobile;
-
+    private Mobile mobile;
     @SerializedName("tabletLandscape")
     @Expose
-    TabletLandscape tabletLandscape;
-
-    @SerializedName("ftv")
-    @Expose
-    FireTV tv;
+    private TabletLandscape tabletLandscape;
 
     public TabletPortrait getTabletPortrait() {
         return tabletPortrait;
@@ -59,6 +51,10 @@ public class Layout {
     public void setTabletLandscape(TabletLandscape tabletLandscape) {
         this.tabletLandscape = tabletLandscape;
     }
+
+    @SerializedName("ftv")
+    @Expose
+    private FireTV tv;
 
     public FireTV getTv() {
         return tv;

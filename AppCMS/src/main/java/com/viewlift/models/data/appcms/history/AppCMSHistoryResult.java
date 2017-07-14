@@ -9,21 +9,19 @@ import com.google.gson.annotations.SerializedName;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
-import com.vimeo.stag.UseStag;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@UseStag
 public class AppCMSHistoryResult {
 
     @SerializedName("records")
     @Expose
-    List<Record> records = null;
+    private List<Record> records = null;
 
     @SerializedName("limit")
     @Expose
-    int limit;
+    private Integer limit;
 
     public List<Record> getRecords() {
         return records;
@@ -33,11 +31,11 @@ public class AppCMSHistoryResult {
         this.records = records;
     }
 
-    public int getLimit() {
+    public Integer getLimit() {
         return limit;
     }
 
-    public void setLimit(int limit) {
+    public void setLimit(Integer limit) {
         this.limit = limit;
     }
 

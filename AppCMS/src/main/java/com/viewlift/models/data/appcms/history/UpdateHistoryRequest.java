@@ -2,30 +2,26 @@ package com.viewlift.models.data.appcms.history;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
+
+import javax.inject.Singleton;
 
 /**
  * Created by viewlift on 7/7/17.
  */
 
-@UseStag
 public class UpdateHistoryRequest {
-
     @SerializedName("userId")
     @Expose
-    String userId;
-
+    private String userId;
     @SerializedName("videoId")
     @Expose
-    String videoId;
-
+    private String videoId;
     @SerializedName("watchedTime")
     @Expose
-    long watchedTime;
-
+    private Long watchedTime;
     @SerializedName("siteOwner")
     @Expose
-    String siteOwner;
+    private String siteOwner;
 
     public String getUserId() {
         return userId;
@@ -43,11 +39,11 @@ public class UpdateHistoryRequest {
         this.videoId = videoId;
     }
 
-    public long getWatchedTime() {
+    public Long getWatchedTime() {
         return watchedTime;
     }
 
-    public void setWatchedTime(long watchedTime) {
+    public void setWatchedTime(Long watchedTime) {
         this.watchedTime = watchedTime;
     }
 

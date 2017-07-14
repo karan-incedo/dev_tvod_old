@@ -1,33 +1,27 @@
+
 package com.viewlift.models.data.appcms.api;
 
+import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-import java.util.List;
-
-@UseStag
 public class CreditBlock {
 
     @SerializedName("id")
     @Expose
-    Object id;
-
+    private Object id;
     @SerializedName("title")
     @Expose
-    String title;
-
+    private String title;
     @SerializedName("credits")
     @Expose
-    List<Credit> credits = null;
-
+    private List<Credit> credits = null;
     @SerializedName("containsHollywoodCelebrities")
     @Expose
-    boolean containsHollywoodCelebrities;
-
+    private Boolean containsHollywoodCelebrities;
     @SerializedName("containsTVCelebrities")
     @Expose
-    boolean containsTVCelebrities;
+    private Boolean containsTVCelebrities;
 
     public Object getId() {
         return id;
@@ -53,19 +47,20 @@ public class CreditBlock {
         this.credits = credits;
     }
 
-    public boolean getContainsHollywoodCelebrities() {
+    public Boolean getContainsHollywoodCelebrities() {
         return containsHollywoodCelebrities;
     }
 
-    public void setContainsHollywoodCelebrities(boolean containsHollywoodCelebrities) {
+    public void setContainsHollywoodCelebrities(Boolean containsHollywoodCelebrities) {
         this.containsHollywoodCelebrities = containsHollywoodCelebrities;
     }
 
-    public boolean getContainsTVCelebrities() {
+    public Boolean getContainsTVCelebrities() {
         return containsTVCelebrities;
     }
 
-    public void setContainsTVCelebrities(boolean containsTVCelebrities) {
+    public void setContainsTVCelebrities(Boolean containsTVCelebrities) {
         this.containsTVCelebrities = containsTVCelebrities;
     }
+
 }

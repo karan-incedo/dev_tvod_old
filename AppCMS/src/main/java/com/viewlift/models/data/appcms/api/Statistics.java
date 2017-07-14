@@ -1,37 +1,34 @@
+
 package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class Statistics {
 
     @SerializedName("tmdbRatingCount")
     @Expose
-    int tmdbRatingCount;
-
+    private Integer tmdbRatingCount;
     @SerializedName("tmdbRatingAvg")
     @Expose
-    int tmdbRatingAvg;
-
+    private Integer tmdbRatingAvg;
     @SerializedName("averageViewerGrade")
     @Expose
-    String averageViewerGrade;
+    private String averageViewerGrade;
 
-    public int getTmdbRatingCount() {
+    public Integer getTmdbRatingCount() {
         return tmdbRatingCount;
     }
 
-    public void setTmdbRatingCount(int tmdbRatingCount) {
+    public void setTmdbRatingCount(Integer tmdbRatingCount) {
         this.tmdbRatingCount = tmdbRatingCount;
     }
 
-    public int getTmdbRatingAvg() {
+    public Integer getTmdbRatingAvg() {
         return tmdbRatingAvg;
     }
 
-    public void setTmdbRatingAvg(int tmdbRatingAvg) {
+    public void setTmdbRatingAvg(Integer tmdbRatingAvg) {
         this.tmdbRatingAvg = tmdbRatingAvg;
     }
 
@@ -42,4 +39,5 @@ public class Statistics {
     public void setAverageViewerGrade(String averageViewerGrade) {
         this.averageViewerGrade = averageViewerGrade;
     }
+
 }

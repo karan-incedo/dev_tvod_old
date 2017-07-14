@@ -1,31 +1,26 @@
+
 package com.viewlift.models.data.appcms.ui.main;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class Footer {
 
     @SerializedName("textColor")
     @Expose
-    String textColor;
-
+    private String textColor;
     @SerializedName("backgroundColor")
     @Expose
-    String backgroundColor;
-
+    private String backgroundColor;
     @SerializedName("link")
     @Expose
-    Link link;
-
+    private Link link;
     @SerializedName("link--active")
     @Expose
-    LinkActive linkActive;
-
+    private LinkActive linkActive;
     @SerializedName("link--hover")
     @Expose
-    LinkHover linkHover;
+    private LinkHover linkHover;
 
     public String getTextColor() {
         return textColor;
@@ -66,4 +61,5 @@ public class Footer {
     public void setLinkHover(LinkHover linkHover) {
         this.linkHover = linkHover;
     }
+
 }

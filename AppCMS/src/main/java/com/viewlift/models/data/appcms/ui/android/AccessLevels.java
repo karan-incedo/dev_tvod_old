@@ -2,48 +2,45 @@ package com.viewlift.models.data.appcms.ui.android;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
 /**
  * Created by viewlift on 7/6/17.
  */
 
-@UseStag
 public class AccessLevels {
-
     @SerializedName("loggedOut")
     @Expose
-    boolean loggedOut;
+    private Boolean loggedOut;
 
     @SerializedName("loggedIn")
     @Expose
-    boolean loggedIn;
+    private Boolean loggedIn;
 
     @SerializedName("subscribed")
     @Expose
-    boolean subscribed;
+    private Boolean subscribed;
 
-    public boolean getLoggedOut() {
+    public Boolean getLoggedOut() {
         return loggedOut;
     }
 
-    public void setLoggedOut(boolean loggedOut) {
+    public void setLoggedOut(Boolean loggedOut) {
         this.loggedOut = loggedOut;
     }
 
-    public boolean getLoggedIn() {
+    public Boolean getLoggedIn() {
         return loggedIn;
     }
 
-    public void setLoggedIn(boolean loggedIn) {
+    public void setLoggedIn(Boolean loggedIn) {
         this.loggedIn = loggedIn;
     }
 
-    public boolean getSubscribed() {
+    public Boolean getSubscribed() {
         return subscribed;
     }
 
-    public void setSubscribed(boolean subscribed) {
+    public void setSubscribed(Boolean subscribed) {
         this.subscribed = subscribed;
     }
 }

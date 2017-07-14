@@ -2,38 +2,30 @@ package com.viewlift.models.data.appcms.ui.page;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
 /**
  * Created by viewlift on 6/1/17.
  */
 
-@UseStag
 public class Styles {
-
     @SerializedName("backgroundColor")
     @Expose
-    String backgroundColor;
-
+    private String backgroundColor;
     @SerializedName("action")
     @Expose
-    String action;
-
+    private String action;
     @SerializedName("cornerRadius")
     @Expose
-    int cornerRadius;
-
+    private int cornerRadius;
     @SerializedName("padding")
     @Expose
-    int padding;
-
+    private int padding;
     @SerializedName("color")
     @Expose
-    String color;
-
+    private String color;
     @SerializedName("textColor")
     @Expose
-    String textColor;
+    private String textColor;
 
     public String getBackgroundColor() {
         return backgroundColor;

@@ -1,27 +1,23 @@
+
 package com.viewlift.models.data.appcms.ui.main;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class General {
 
     @SerializedName("textColor")
     @Expose
-    String textColor;
-
+    private String textColor;
     @SerializedName("pageTitleColor")
     @Expose
-    String pageTitleColor;
-
+    private String pageTitleColor;
     @SerializedName("backgroundColor")
     @Expose
-    String backgroundColor;
-
+    private String backgroundColor;
     @SerializedName("blockTitleColor")
     @Expose
-    String blockTitleColor;
+    private String blockTitleColor;
 
     public String getTextColor() {
         return textColor;
@@ -54,4 +50,5 @@ public class General {
     public void setBlockTitleColor(String blockTitleColor) {
         this.blockTitleColor = blockTitleColor;
     }
+
 }

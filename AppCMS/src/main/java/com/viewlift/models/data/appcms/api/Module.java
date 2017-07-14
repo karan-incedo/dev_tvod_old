@@ -2,80 +2,78 @@ package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
 import java.util.List;
 
-@UseStag
 public class Module {
 
     @SerializedName("id")
     @Expose
-    String id;
+    private String id;
 
     @SerializedName("name")
     @Expose
-    String name;
+    private String name;
 
     @SerializedName("ad")
     @Expose
-    String ad;
+    private String ad;
 
     @SerializedName("description")
     @Expose
-    String description;
+    private String description;
 
     @SerializedName("settings")
     @Expose
-    Settings settings;
+    private Settings settings;
 
     @SerializedName("filters")
     @Expose
-    Filters filters;
+    private Filters filters;
 
     @SerializedName("contentData")
     @Expose
-    List<ContentDatum> contentData = null;
+    private List<ContentDatum> contentData = null;
 
     @SerializedName("moduleType")
     @Expose
-    String moduleType;
+    private String moduleType;
 
     @SerializedName("contentType")
     @Expose
-    String contentType;
+    private String contentType;
 
     @SerializedName("title")
     @Expose
-    String title;
+    private String title;
 
     @SerializedName("metadataMap")
     @Expose
-    Object metadataMap;
+    private Object metadataMap;
 
     @SerializedName("viewType")
     @Expose
-    String viewType;
+    private String viewType;
 
     @SerializedName("menuLinks")
     @Expose
-    Object menuLinks;
+    private Object menuLinks;
 
     @SerializedName("supportedDeviceLinks")
     @Expose
-    Object supportedDeviceLinks;
+    private Object supportedDeviceLinks;
 
     @SerializedName("searchText")
     @Expose
-    Object searchText;
+    private Object searchText;
 
     @SerializedName("navigation")
     @Expose
-    Object navigation;
+    private Object navigation;
 
     @SerializedName("rawText")
     @Expose
-    String rawText;
+    private String rawText;
 
     public String getId() {
         return id;

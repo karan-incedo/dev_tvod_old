@@ -1,35 +1,29 @@
+
 package com.viewlift.models.data.appcms.ui.authentication;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class Raw {
 
     @SerializedName("at_hash")
     @Expose
-    String atHash;
-
+    private String atHash;
     @SerializedName("site")
     @Expose
-    String site;
-
+    private String site;
     @SerializedName("id")
     @Expose
-    String id;
-
+    private String id;
     @SerializedName("provider")
     @Expose
-    String provider;
-
+    private String provider;
     @SerializedName("email")
     @Expose
-    String email;
-
+    private String email;
     @SerializedName("picture")
     @Expose
-    String picture;
+    private String picture;
 
     public String getAtHash() {
         return atHash;
@@ -78,4 +72,5 @@ public class Raw {
     public void setPicture(String picture) {
         this.picture = picture;
     }
+
 }

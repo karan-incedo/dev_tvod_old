@@ -1,35 +1,29 @@
+
 package com.viewlift.models.data.appcms.ui.main;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class Brand {
 
     @SerializedName("footer")
     @Expose
-    Footer footer;
-
+    private Footer footer;
     @SerializedName("navigation")
     @Expose
-    Navigation navigation;
-
+    private Navigation navigation;
     @SerializedName("link")
     @Expose
-    Link__ link;
-
+    private Link__ link;
     @SerializedName("cta")
     @Expose
-    Cta cta;
-
+    private Cta cta;
     @SerializedName("link--hover")
     @Expose
-    LinkHover__ linkHover;
-
+    private LinkHover__ linkHover;
     @SerializedName("general")
     @Expose
-    General general;
+    private General general;
 
     public Footer getFooter() {
         return footer;
@@ -78,4 +72,5 @@ public class Brand {
     public void setGeneral(General general) {
         this.general = general;
     }
+
 }

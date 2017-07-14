@@ -1,59 +1,47 @@
+
 package com.viewlift.models.data.appcms.ui.authentication;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class UserIdentity {
 
     @SerializedName("_raw")
     @Expose
-    Raw raw;
-
+    private Raw raw;
     @SerializedName("registerdVia")
     @Expose
-    String registerdVia;
-
+    private String registerdVia;
     @SerializedName("at_hash")
     @Expose
-    String atHash;
-
+    private String atHash;
     @SerializedName("registeredOn")
     @Expose
-    String registeredOn;
-
+    private String registeredOn;
     @SerializedName("userId")
     @Expose
-    String userId;
-
+    private String userId;
     @SerializedName("provider")
     @Expose
-    String provider;
-
+    private String provider;
     @SerializedName("site")
     @Expose
-    String site;
-
+    private String site;
     @SerializedName("id")
     @Expose
-    String id;
-
+    private String id;
     @SerializedName("email")
     @Expose
-    String email;
-
+    private String email;
     @SerializedName("picture")
     @Expose
-    String picture;
-
+    private String picture;
     @SerializedName("country")
     @Expose
-    String country;
-
+    private String country;
     @SerializedName("name")
     @Expose
-    String name;
+    private String name;
 
     public Raw getRaw() {
         return raw;
@@ -150,4 +138,5 @@ public class UserIdentity {
     public void setName(String name) {
         this.name = name;
     }
+
 }

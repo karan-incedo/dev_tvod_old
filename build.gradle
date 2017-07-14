@@ -23,7 +23,7 @@ allprojects {
         mockitoVersion = "1.10.19"
         espressoVersion = "2.2.2"
         dexmakerVersion = "1.0"
-        androidsupportVersion = "25.4.0"
+        androidsupportVersion = "25.3.1"
         androidsupportconstraintVersion = "1.0.2"
         picassoVersion = "2.5.2"
         daggerVersion = "2.9"
@@ -40,7 +40,6 @@ allprojects {
         leakcanaryVersion = "1.5.1"
         apptentiveVersion = "3.4.1"
         butterknifeVersion = "8.6.0"
-        stagVersion = "2.3.1"
     }
 }
 

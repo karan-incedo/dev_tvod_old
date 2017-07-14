@@ -1,10 +1,9 @@
+
 package com.viewlift.models.data.appcms.ui.android;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class Images {
 
     @SerializedName("mobileAppIcon")
@@ -18,4 +17,5 @@ public class Images {
     public void setMobileAppIcon(String mobileAppIcon) {
         this.mobileAppIcon = mobileAppIcon;
     }
+
 }

@@ -1,165 +1,150 @@
+
 package com.viewlift.models.data.appcms.ui.page;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class TabletLandscape {
 
     @SerializedName("yAxis")
     @Expose
-    float yAxis;
-
+    private Float yAxis;
     @SerializedName("width")
     @Expose
-    float width;
-
+    private Float width;
     @SerializedName("height")
     @Expose
-    float height;
-
+    private Float height;
     @SerializedName("rightMargin")
     @Expose
-    float rightMargin;
-
+    private Float rightMargin;
     @SerializedName("leftMargin")
     @Expose
-    float leftMargin;
-
+    private Float leftMargin;
     @SerializedName("topMargin")
     @Expose
-    float topMargin;
-
+    private Float topMargin;
     @SerializedName("bottomMargin")
     @Expose
-    float bottomMargin;
-
+    private Float bottomMargin;
     @SerializedName("xAxis")
     @Expose
-    float xAxis;
-
+    private Float xAxis;
     @SerializedName("gridHeight")
     @Expose
-    float gridHeight;
-
+    private Float gridHeight;
     @SerializedName("gridWidth")
     @Expose
-    float gridWidth;
-
+    private Float gridWidth;
     @SerializedName("fontSize")
     @Expose
-    int fontSize;
-
+    private int fontSize;
     @SerializedName("trayPadding")
     @Expose
-    float trayPadding;
-
+    private Float trayPadding;
     @SerializedName("fontSizeKey")
     @Expose
-    float fontSizeKey;
-
+    private Float fontSizeKey;
     @SerializedName("fontSizeValue")
     @Expose
-    float fontSizeValue;
-
+    private Float fontSizeValue;
     @SerializedName("maximumWidth")
     @Expose
-    float maximumWidth;
+    private Float maximumWidth;
 
-    public float getYAxis() {
+    public Float getYAxis() {
         return yAxis;
     }
 
-    public void setYAxis(float yAxis) {
+    public void setYAxis(Float yAxis) {
         this.yAxis = yAxis;
     }
 
-    public float getHeight() {
+    public Float getHeight() {
         return height;
     }
 
-    public void setHeight(float height) {
+    public void setHeight(Float height) {
         this.height = height;
     }
 
-    public float getWidth() {
+    public Float getWidth() {
         return width;
     }
 
-    public void setWidth(float width) {
+    public void setWidth(Float width) {
         this.width = width;
     }
 
-    public float getRightMargin() {
+    public Float getRightMargin() {
         return rightMargin;
     }
 
-    public void setRightMargin(float rightMargin) {
+    public void setRightMargin(Float rightMargin) {
         this.rightMargin = rightMargin;
     }
 
-    public float getLeftMargin() {
+    public Float getLeftMargin() {
         return leftMargin;
     }
 
-    public void setLeftMargin(float leftMargin) {
+    public void setLeftMargin(Float leftMargin) {
         this.leftMargin = leftMargin;
     }
 
-    public float getTopMargin() {
+    public Float getTopMargin() {
         return topMargin;
     }
 
-    public void setTopMargin(float topMargin) {
+    public void setTopMargin(Float topMargin) {
         this.topMargin = topMargin;
     }
 
-    public float getBottomMargin() {
+    public Float getBottomMargin() {
         return bottomMargin;
     }
 
-    public void setBottomMargin(float bottomMargin) {
+    public void setBottomMargin(Float bottomMargin) {
         this.bottomMargin = bottomMargin;
     }
 
-    public float getXAxis() {
+    public Float getXAxis() {
         return xAxis;
     }
 
-    public void setXAxis(float xAxis) {
+    public void setXAxis(Float xAxis) {
         this.xAxis = xAxis;
     }
 
-    public float getyAxis() {
+    public Float getyAxis() {
         return yAxis;
     }
 
-    public void setyAxis(float yAxis) {
+    public void setyAxis(Float yAxis) {
         this.yAxis = yAxis;
     }
 
-    public float getxAxis() {
+    public Float getxAxis() {
         return xAxis;
     }
 
-    public void setxAxis(float xAxis) {
+    public void setxAxis(Float xAxis) {
         this.xAxis = xAxis;
     }
 
-    public float getGridHeight() {
+    public Float getGridHeight() {
         return gridHeight;
     }
 
-    public void setGridHeight(float gridHeight) {
+    public void setGridHeight(Float gridHeight) {
         this.gridHeight = gridHeight;
     }
 
-    public float getGridWidth() {
+    public Float getGridWidth() {
         return gridWidth;
     }
 
-    public void setGridWidth(float gridWidth) {
+    public void setGridWidth(Float gridWidth) {
         this.gridWidth = gridWidth;
     }
 
@@ -171,35 +156,35 @@ public class TabletLandscape {
         this.fontSize = fontSize;
     }
 
-    public float getTrayPadding() {
+    public Float getTrayPadding() {
         return trayPadding;
     }
 
-    public void setTrayPadding(float trayPadding) {
+    public void setTrayPadding(Float trayPadding) {
         this.trayPadding = trayPadding;
     }
 
-    public float getFontSizeKey() {
+    public Float getFontSizeKey() {
         return fontSizeKey;
     }
 
-    public void setFontSizeKey(float fontSizeKey) {
+    public void setFontSizeKey(Float fontSizeKey) {
         this.fontSizeKey = fontSizeKey;
     }
 
-    public float getFontSizeValue() {
+    public Float getFontSizeValue() {
         return fontSizeValue;
     }
 
-    public void setFontSizeValue(float fontSizeValue) {
+    public void setFontSizeValue(Float fontSizeValue) {
         this.fontSizeValue = fontSizeValue;
     }
 
-    public float getMaximumWidth() {
+    public Float getMaximumWidth() {
         return maximumWidth;
     }
 
-    public void setMaximumWidth(float maximumWidth) {
+    public void setMaximumWidth(Float maximumWidth) {
         this.maximumWidth = maximumWidth;
     }
 }

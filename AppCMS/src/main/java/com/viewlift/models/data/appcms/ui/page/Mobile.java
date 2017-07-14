@@ -1,193 +1,174 @@
+
 package com.viewlift.models.data.appcms.ui.page;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class Mobile {
 
     @SerializedName("width")
     @Expose
-    float width;
-
+    private Float width;
     @SerializedName("height")
     @Expose
-    float height;
-
+    private Float height;
     @SerializedName("yAxis")
     @Expose
-    float yAxis;
-
+    private Float yAxis;
     @SerializedName("rightMargin")
     @Expose
-    float rightMargin;
-
+    private Float rightMargin;
     @SerializedName("leftMargin")
     @Expose
-    float leftMargin;
-
+    private Float leftMargin;
     @SerializedName("topMargin")
     @Expose
-    float topMargin;
-
+    private Float topMargin;
     @SerializedName("bottomMargin")
     @Expose
-    float bottomMargin;
-
+    private Float bottomMargin;
     @SerializedName("xAxis")
     @Expose
-    float xAxis;
-
+    private Float xAxis;
     @SerializedName("gridWidth")
     @Expose
-    float gridWidth;
-
+    private Float gridWidth;
     @SerializedName("gridHeight")
     @Expose
-    float gridHeight;
-
+    private Float gridHeight;
     @SerializedName("fontSize")
     @Expose
-    int fontSize;
-
+    private int fontSize;
     @SerializedName("marginBottom")
     @Expose
-    float marginBottom;
-
+    private Float marginBottom;
     @SerializedName("marginTop")
     @Expose
-    float marginTop;
-
+    private Float marginTop;
     @SerializedName("marginLeft")
     @Expose
-    float marginLeft;
-
+    private Float marginLeft;
     @SerializedName("marginRight")
     @Expose
-    float marginRight;
-
+    private Float marginRight;
     @SerializedName("trayPadding")
     @Expose
-    float trayPadding;
-
+    private Float trayPadding;
     @SerializedName("fontSizeKey")
     @Expose
-    float fontSizeKey;
-
+    private Float fontSizeKey;
     @SerializedName("fontSizeValue")
     @Expose
-    float fontSizeValue;
-
+    private Float fontSizeValue;
     @SerializedName("maximumWidth")
     @Expose
-    float maximumWidth;
+    private Float maximumWidth;
 
-    public float getWidth() {
+    public Float getWidth() {
         return width;
     }
 
-    public void setWidth(float width) {
+    public void setWidth(Float width) {
         this.width = width;
     }
 
-    public float getHeight() {
+    public Float getHeight() {
         return height;
     }
 
-    public void setHeight(float height) {
+    public void setHeight(Float height) {
         this.height = height;
     }
 
-    public float getYAxis() {
+    public Float getYAxis() {
         return yAxis;
     }
 
-    public void setYAxis(float yAxis) {
+    public void setYAxis(Float yAxis) {
         this.yAxis = yAxis;
     }
 
-    public float getRightMargin() {
-        if (marginRight != 0f) {
+    public Float getRightMargin() {
+        if (marginRight != null) {
             return marginRight;
         }
         return rightMargin;
     }
 
-    public void setRightMargin(float rightMargin) {
+    public void setRightMargin(Float rightMargin) {
         this.rightMargin = rightMargin;
     }
 
-    public float getLeftMargin() {
-        if (marginLeft != 0f) {
+    public Float getLeftMargin() {
+        if (marginLeft != null) {
             return marginLeft;
         }
         return leftMargin;
     }
 
-    public void setLeftMargin(float leftMargin) {
+    public void setLeftMargin(Float leftMargin) {
         this.leftMargin = leftMargin;
     }
 
-    public float getTopMargin() {
-        if (marginTop != 0f) {
+    public Float getTopMargin() {
+        if (marginTop != null) {
             return marginTop;
         }
         return topMargin;
     }
 
-    public void setTopMargin(float topMargin) {
+    public void setTopMargin(Float topMargin) {
         this.topMargin = topMargin;
     }
 
-    public float getBottomMargin() {
-        if (marginBottom != 0f) {
+    public Float getBottomMargin() {
+        if (marginBottom != null) {
             return marginBottom;
         }
         return bottomMargin;
     }
 
-    public void setBottomMargin(float bottomMargin) {
+    public void setBottomMargin(Float bottomMargin) {
         this.bottomMargin = bottomMargin;
     }
 
-    public float getXAxis() {
+    public Float getXAxis() {
         return xAxis;
     }
 
-    public void setXAxis(float xAxis) {
+    public void setXAxis(Float xAxis) {
         this.xAxis = xAxis;
     }
 
-    public float getyAxis() {
+    public Float getyAxis() {
         return yAxis;
     }
 
-    public void setyAxis(float yAxis) {
+    public void setyAxis(Float yAxis) {
         this.yAxis = yAxis;
     }
 
-    public float getxAxis() {
+    public Float getxAxis() {
         return xAxis;
     }
 
-    public void setxAxis(float xAxis) {
+    public void setxAxis(Float xAxis) {
         this.xAxis = xAxis;
     }
 
-    public float getGridWidth() {
+    public Float getGridWidth() {
         return gridWidth;
     }
 
-    public void setGridWidth(float gridWidth) {
+    public void setGridWidth(Float gridWidth) {
         this.gridWidth = gridWidth;
     }
 
-    public float getGridHeight() {
+    public Float getGridHeight() {
         return gridHeight;
     }
 
-    public void setGridHeight(float gridHeight) {
+    public void setGridHeight(Float gridHeight) {
         this.gridHeight = gridHeight;
     }
 
@@ -199,67 +180,67 @@ public class Mobile {
         this.fontSize = fontSize;
     }
 
-    public float getMarginBottom() {
+    public Float getMarginBottom() {
         return marginBottom;
     }
 
-    public void setMarginBottom(float marginBottom) {
+    public void setMarginBottom(Float marginBottom) {
         this.marginBottom = marginBottom;
     }
 
-    public float getMarginTop() {
+    public Float getMarginTop() {
         return marginTop;
     }
 
-    public void setMarginTop(float marginTop) {
+    public void setMarginTop(Float marginTop) {
         this.marginTop = marginTop;
     }
 
-    public float getMarginLeft() {
+    public Float getMarginLeft() {
         return marginLeft;
     }
 
-    public void setMarginLeft(float marginLeft) {
+    public void setMarginLeft(Float marginLeft) {
         this.marginLeft = marginLeft;
     }
 
-    public float getMarginRight() {
+    public Float getMarginRight() {
         return marginRight;
     }
 
-    public void setMarginRight(float marginRight) {
+    public void setMarginRight(Float marginRight) {
         this.marginRight = marginRight;
     }
 
-    public float getTrayPadding() {
+    public Float getTrayPadding() {
         return trayPadding;
     }
 
-    public void setTrayPadding(float trayPadding) {
+    public void setTrayPadding(Float trayPadding) {
         this.trayPadding = trayPadding;
     }
 
-    public float getFontSizeKey() {
+    public Float getFontSizeKey() {
         return fontSizeKey;
     }
 
-    public void setFontSizeKey(float fontSizeKey) {
+    public void setFontSizeKey(Float fontSizeKey) {
         this.fontSizeKey = fontSizeKey;
     }
 
-    public float getFontSizeValue() {
+    public Float getFontSizeValue() {
         return fontSizeValue;
     }
 
-    public void setFontSizeValue(float fontSizeValue) {
+    public void setFontSizeValue(Float fontSizeValue) {
         this.fontSizeValue = fontSizeValue;
     }
 
-    public float getMaximumWidth() {
+    public Float getMaximumWidth() {
         return maximumWidth;
     }
 
-    public void setMaximumWidth(float maximumWidth) {
+    public void setMaximumWidth(Float maximumWidth) {
         this.maximumWidth = maximumWidth;
     }
 }

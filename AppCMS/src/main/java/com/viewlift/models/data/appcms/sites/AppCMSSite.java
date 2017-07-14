@@ -1,43 +1,35 @@
+
 package com.viewlift.models.data.appcms.sites;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class AppCMSSite {
 
     @SerializedName("assetDetails")
     @Expose
-    Object assetDetails;
-
+    private Object assetDetails;
     @SerializedName("gist")
     @Expose
-    Gist gist;
-
+    private Gist gist;
     @SerializedName("settings")
     @Expose
-    Object settings;
-
+    private Object settings;
     @SerializedName("siteDetails")
     @Expose
-    SiteDetails siteDetails;
-
+    private SiteDetails siteDetails;
     @SerializedName("notifications")
     @Expose
-    Object notifications;
-
+    private Object notifications;
     @SerializedName("readWritePolicy")
     @Expose
-    String readWritePolicy;
-
+    private String readWritePolicy;
     @SerializedName("siteInternalName")
     @Expose
-    Object siteInternalName;
-
+    private Object siteInternalName;
     @SerializedName("appAccess")
     @Expose
-    Object appAccess;
+    private Object appAccess;
 
     public Object getAssetDetails() {
         return assetDetails;
@@ -102,4 +94,5 @@ public class AppCMSSite {
     public void setAppAccess(Object appAccess) {
         this.appAccess = appAccess;
     }
+
 }

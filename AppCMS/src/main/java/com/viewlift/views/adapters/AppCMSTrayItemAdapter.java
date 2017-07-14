@@ -411,7 +411,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     private void applyBorderToComponent(Context context, View view, Component component) {
-        if (component.getBorderWidth() != 0 && component.getBorderColor() != null) {
+        if (component.getBorderWidth() != null && component.getBorderColor() != null) {
             if (component.getBorderWidth() > 0 && !TextUtils.isEmpty(component.getBorderColor())) {
                 GradientDrawable ageBorder = new GradientDrawable();
                 ageBorder.setShape(GradientDrawable.RECTANGLE);

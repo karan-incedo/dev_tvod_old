@@ -1,19 +1,17 @@
+
 package com.viewlift.models.data.appcms.ui.main;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class DropdownActive {
 
     @SerializedName("textColor")
     @Expose
-    String textColor;
-
+    private String textColor;
     @SerializedName("backgroundColor")
     @Expose
-    String backgroundColor;
+    private String backgroundColor;
 
     public String getTextColor() {
         return textColor;
@@ -30,4 +28,5 @@ public class DropdownActive {
     public void setBackgroundColor(String backgroundColor) {
         this.backgroundColor = backgroundColor;
     }
+
 }

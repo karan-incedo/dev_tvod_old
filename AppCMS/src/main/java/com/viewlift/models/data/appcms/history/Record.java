@@ -7,30 +7,27 @@ package com.viewlift.models.data.appcms.history;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.viewlift.models.data.appcms.api.ContentDatum;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class Record {
-
     @SerializedName("contentResponse")
     @Expose
-    ContentResponse contentResponse;
+    private ContentResponse contentResponse;
 
     @SerializedName("userId")
     @Expose
-    String userID;
+    private String userID;
 
     @SerializedName("showQueue")
     @Expose
-    boolean showQueue;
+    private Boolean showQueue;
 
     @SerializedName("addedDate")
     @Expose
-    long addedDate;
+    private Long addedDate;
 
     @SerializedName("updateDate")
     @Expose
-    long updateDate;
+    private Long updateDate;
 
     public ContentResponse getContentResponse() {
         return contentResponse;
