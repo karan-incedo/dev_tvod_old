@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -51,6 +53,7 @@ public class LoginModule extends ModuleView {
     private int loginBorderPadding;
     private EditText visibleEmailInputView;
     private EditText visiblePasswordInputView;
+    private ImageButton closeButton;
 
     public LoginModule(Context context,
                        ModuleList module,
@@ -85,6 +88,7 @@ public class LoginModule extends ModuleView {
             bgColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor());
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             ViewGroup childContainer = getChildrenContainer();
+            childContainer.setBackgroundColor(bgColor);
             FrameLayout loginModuleSwitcherContainer = new FrameLayout(getContext());
             FrameLayout.LayoutParams loginModuleContainerLayoutParams =
                     new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -179,6 +183,42 @@ public class LoginModule extends ModuleView {
                     childContainer.addView(moduleView);
                 }
             }
+
+            final String closeAction = getContext().getString(R.string.app_cms_action_close_key);
+            closeButton = new ImageButton(getContext());
+            closeButton.setImageResource(R.drawable.cancel);
+            closeButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            closeButton.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+            closeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!appCMSPresenter.launchButtonSelectedAction(null,
+                            closeAction,
+                            null,
+                            null,
+                            null,
+                            false)) {
+                        Log.e(TAG, "Could not launch action: " +
+                                " action: " +
+                                closeAction);
+                    }
+                }
+            });
+            closeButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            int closeButtonSize =
+                    (int) getContext().getResources().getDimension(R.dimen.close_button_size);
+            int closeButtonMargin =
+                    (int) getContext().getResources().getDimension(R.dimen.close_button_margin);
+            FrameLayout.LayoutParams closeButtonLayoutParams =
+                    new FrameLayout.LayoutParams(closeButtonSize, closeButtonSize);
+            closeButtonLayoutParams.setMargins(closeButtonMargin,
+                    closeButtonMargin,
+                    closeButtonMargin,
+                    closeButtonMargin);
+            closeButtonLayoutParams.gravity = Gravity.TOP | Gravity.END;
+            closeButton.setLayoutParams(closeButtonLayoutParams);
+            loginModuleSwitcherContainer.addView(closeButton);
+
             childContainer.addView(loginModuleSwitcherContainer);
             selectChild(0);
             unselectChild(1);
@@ -276,6 +316,9 @@ public class LoginModule extends ModuleView {
                                     break;
                                 default:
                             }
+                            break;
+                        default:
+                            componentView.setBackgroundColor(bgColor);
                     }
                 } else {
                     moduleView.setComponentHasView(i, false);
@@ -286,6 +329,6 @@ public class LoginModule extends ModuleView {
 
     private void applyUnderlineToComponent(GradientDrawable underline, int color) {
         underline.setStroke((int) convertDpToPixel(2, getContext()), color);
-        underline.setColor(bgColor);
+        underline.setColor(transparentColor);
     }
 }
