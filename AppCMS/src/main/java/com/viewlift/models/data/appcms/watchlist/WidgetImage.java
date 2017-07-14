@@ -2,16 +2,18 @@ package com.viewlift.models.data.appcms.watchlist;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class WidgetImage {
 
     @SerializedName("objectKey")
     @Expose
-    private String objectKey;
+    String objectKey;
 
     @SerializedName("id")
     @Expose
-    private String id;
+    String id;
 
     public String getObjectKey() {
         return objectKey;

@@ -2,30 +2,38 @@ package com.viewlift.models.data.appcms.history;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
 /**
  * Created by viewlift on 7/7/17.
  */
 
+@UseStag
 public class UserVideoStatusResponse {
+
     @SerializedName("contentId")
     @Expose
     String contentId;
+
     @SerializedName("userId")
     @Expose
     String userId;
+
     @SerializedName("isQueued")
     @Expose
-    Boolean isQueued;
+    boolean isQueued;
+
     @SerializedName("isWatched")
     @Expose
-    Boolean isWatched;
+    boolean isWatched;
+
     @SerializedName("watchedPercentage")
     @Expose
-    Long watchedPercentage;
+    long watchedPercentage;
+
     @SerializedName("watchedTime")
     @Expose
-    Long watchedTime;
+    long watchedTime;
 
     public String getContentId() {
         return contentId;
@@ -43,35 +51,35 @@ public class UserVideoStatusResponse {
         this.userId = userId;
     }
 
-    public Boolean getQueued() {
+    public boolean getQueued() {
         return isQueued;
     }
 
-    public void setQueued(Boolean queued) {
+    public void setQueued(boolean queued) {
         isQueued = queued;
     }
 
-    public Boolean getWatched() {
+    public boolean getWatched() {
         return isWatched;
     }
 
-    public void setWatched(Boolean watched) {
+    public void setWatched(boolean watched) {
         isWatched = watched;
     }
 
-    public Long getWatchedPercentage() {
+    public long getWatchedPercentage() {
         return watchedPercentage;
     }
 
-    public void setWatchedPercentage(Long watchedPercentage) {
+    public void setWatchedPercentage(long watchedPercentage) {
         this.watchedPercentage = watchedPercentage;
     }
 
-    public Long getWatchedTime() {
+    public long getWatchedTime() {
         return watchedTime;
     }
 
-    public void setWatchedTime(Long watchedTime) {
+    public void setWatchedTime(long watchedTime) {
         this.watchedTime = watchedTime;
     }
 }

@@ -2,84 +2,86 @@ package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class Gist {
 
     @SerializedName("id")
     @Expose
-    private String id;
+    String id;
 
     @SerializedName("permalink")
     @Expose
-    private String permalink;
+    String permalink;
 
     @SerializedName("title")
     @Expose
-    private String title;
+    String title;
 
     @SerializedName("logLine")
     @Expose
-    private String logLine;
+    String logLine;
 
     @SerializedName("description")
     @Expose
-    private String description;
+    String description;
 
     @SerializedName("year")
     @Expose
-    private String year;
+    String year;
 
     @SerializedName("free")
     @Expose
-    private Boolean free;
+    boolean free;
 
     @SerializedName("publishDate")
     @Expose
-    private Long publishDate;
+    long publishDate;
 
     @SerializedName("runtime")
     @Expose
-    private Integer runtime;
+    int runtime;
 
     @SerializedName("posterImageUrl")
     @Expose
-    private String posterImageUrl;
+    String posterImageUrl;
 
     @SerializedName("videoImageUrl")
     @Expose
-    private String videoImageUrl;
+    String videoImageUrl;
 
     @SerializedName("addedDate")
     @Expose
-    private Long addedDate;
+    long addedDate;
 
     @SerializedName("updateDate")
     @Expose
-    private Long updateDate;
+    long updateDate;
 
     @SerializedName("primaryCategory")
     @Expose
-    private PrimaryCategory primaryCategory;
+    PrimaryCategory primaryCategory;
 
     @SerializedName("watchedTime")
     @Expose
-    private Integer watchedTime;
+    int watchedTime;
 
     @SerializedName("contentType")
     @Expose
-    private String contentType;
+    String contentType;
 
     @SerializedName("averageGrade")
     @Expose
-    private String averageGrade;
+    String averageGrade;
 
     @SerializedName("averageStarRating")
     @Expose
-    private Float averageStarRating;
+    float averageStarRating;
 
     @SerializedName("watchedPercentage")
     @Expose
-    private Integer watchedPercentage;
+    int watchedPercentage;
 
     public String getId() {
         return id;
@@ -129,27 +131,27 @@ public class Gist {
         this.year = year;
     }
 
-    public Boolean getFree() {
+    public boolean getFree() {
         return free;
     }
 
-    public void setFree(Boolean free) {
+    public void setFree(boolean free) {
         this.free = free;
     }
 
-    public Long getPublishDate() {
+    public long getPublishDate() {
         return publishDate;
     }
 
-    public void setPublishDate(Long publishDate) {
+    public void setPublishDate(long publishDate) {
         this.publishDate = publishDate;
     }
 
-    public Integer getRuntime() {
+    public int getRuntime() {
         return runtime;
     }
 
-    public void setRuntime(Integer runtime) {
+    public void setRuntime(int runtime) {
         this.runtime = runtime;
     }
 
@@ -169,19 +171,19 @@ public class Gist {
         this.videoImageUrl = videoImageUrl;
     }
 
-    public Long getAddedDate() {
+    public long getAddedDate() {
         return addedDate;
     }
 
-    public void setAddedDate(Long addedDate) {
+    public void setAddedDate(long addedDate) {
         this.addedDate = addedDate;
     }
 
-    public Long getUpdateDate() {
+    public long getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Long updateDate) {
+    public void setUpdateDate(long updateDate) {
         this.updateDate = updateDate;
     }
 
@@ -193,11 +195,11 @@ public class Gist {
         this.primaryCategory = primaryCategory;
     }
 
-    public Integer getWatchedTime() {
+    public int getWatchedTime() {
         return watchedTime;
     }
 
-    public void setWatchedTime(Integer watchedTime) {
+    public void setWatchedTime(int watchedTime) {
         this.watchedTime = watchedTime;
     }
 
@@ -217,19 +219,19 @@ public class Gist {
         this.averageGrade = averageGrade;
     }
 
-    public Float getAverageStarRating() {
+    public float getAverageStarRating() {
         return averageStarRating;
     }
 
-    public void setAverageStarRating(Float averageStarRating) {
+    public void setAverageStarRating(float averageStarRating) {
         this.averageStarRating = averageStarRating;
     }
 
-    public Integer getWatchedPercentage() {
+    public int getWatchedPercentage() {
         return watchedPercentage;
     }
 
-    public void setWatchedPercentage(Integer watchedPercentage) {
+    public void setWatchedPercentage(int watchedPercentage) {
         this.watchedPercentage = watchedPercentage;
     }
 }

@@ -6,20 +6,22 @@ package com.viewlift.models.data.appcms.subscriptions;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class Authentication {
 
     @SerializedName("accessKey")
     @Expose
-    private String accessKey;
+    String accessKey;
 
     @SerializedName("signature")
     @Expose
-    private String signature;
+    String signature;
 
     @SerializedName("timestamp")
     @Expose
-    private String timestamp;
+    String timestamp;
 
     public String getAccessKey() {
         return accessKey;

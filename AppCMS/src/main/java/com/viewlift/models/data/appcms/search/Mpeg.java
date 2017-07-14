@@ -1,23 +1,27 @@
-
 package com.viewlift.models.data.appcms.search;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class Mpeg {
 
     @SerializedName("codec")
     @Expose
-    private String codec;
+    String codec;
+
     @SerializedName("renditionValue")
     @Expose
-    private String renditionValue;
+    String renditionValue;
+
     @SerializedName("bitrate")
     @Expose
-    private Integer bitrate;
+    int bitrate;
+
     @SerializedName("url")
     @Expose
-    private String url;
+    String url;
 
     public String getCodec() {
         return codec;
@@ -35,11 +39,11 @@ public class Mpeg {
         this.renditionValue = renditionValue;
     }
 
-    public Integer getBitrate() {
+    public int getBitrate() {
         return bitrate;
     }
 
-    public void setBitrate(Integer bitrate) {
+    public void setBitrate(int bitrate) {
         this.bitrate = bitrate;
     }
 
@@ -50,5 +54,4 @@ public class Mpeg {
     public void setUrl(String url) {
         this.url = url;
     }
-
 }

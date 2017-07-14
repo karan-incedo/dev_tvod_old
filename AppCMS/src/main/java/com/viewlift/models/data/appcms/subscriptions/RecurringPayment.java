@@ -6,38 +6,40 @@ package com.viewlift.models.data.appcms.subscriptions;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class RecurringPayment {
 
     @SerializedName("preTax")
     @Expose
-    private Double preTax;
+    double preTax;
 
     @SerializedName("tax")
     @Expose
-    private Integer tax;
+    int tax;
 
     @SerializedName("currencyCode")
     @Expose
-    private String currencyCode;
+    String currencyCode;
 
     @SerializedName("total")
     @Expose
-    private Double total;
+    double total;
 
-    public Double getPreTax() {
+    public double getPreTax() {
         return preTax;
     }
 
-    public void setPreTax(Double preTax) {
+    public void setPreTax(double preTax) {
         this.preTax = preTax;
     }
 
-    public Integer getTax() {
+    public int getTax() {
         return tax;
     }
 
-    public void setTax(Integer tax) {
+    public void setTax(int tax) {
         this.tax = tax;
     }
 
@@ -49,11 +51,11 @@ public class RecurringPayment {
         this.currencyCode = currencyCode;
     }
 
-    public Double getTotal() {
+    public double getTotal() {
         return total;
     }
 
-    public void setTotal(Double total) {
+    public void setTotal(double total) {
         this.total = total;
     }
 }

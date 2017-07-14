@@ -1,17 +1,19 @@
-
 package com.viewlift.models.data.appcms.ui.main;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class Border {
 
     @SerializedName("color")
     @Expose
-    private String color;
+    String color;
+
     @SerializedName("width")
     @Expose
-    private String width;
+    String width;
 
     public String getColor() {
         return color;
@@ -28,5 +30,4 @@ public class Border {
     public void setWidth(String width) {
         this.width = width;
     }
-
 }

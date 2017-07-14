@@ -1,11 +1,10 @@
 package com.viewlift.models.network.components;
 
+import com.viewlift.models.network.modules.AppCMSAPIModule;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
+import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
 
 import javax.inject.Singleton;
-
-import com.viewlift.models.network.modules.AppCMSAPIModule;
-import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
 
 import dagger.Component;
 
@@ -14,8 +13,9 @@ import dagger.Component;
  */
 
 @Singleton
-@Component(modules={AppCMSAPIModule.class})
+@Component(modules = {AppCMSAPIModule.class})
 public interface AppCMSAPIComponent {
     AppCMSPageAPICall appCMSPageAPICall();
+
     AppCMSStreamingInfoCall appCMSStreamingInfoCall();
 }

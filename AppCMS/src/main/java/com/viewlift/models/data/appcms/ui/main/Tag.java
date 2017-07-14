@@ -6,14 +6,18 @@ package com.viewlift.models.data.appcms.ui.main;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class Tag {
+
     @SerializedName("title")
     @Expose
-    private String title;
+    String title;
+
     @SerializedName("uuid")
     @Expose
-    private String uuid;
+    String uuid;
 
     public String getTitle() {
         return title;

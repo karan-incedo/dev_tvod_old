@@ -6,52 +6,54 @@ package com.viewlift.models.data.appcms.subscriptions;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
-public class Request_ {
+@UseStag
+public class Request {
 
     @SerializedName("siteInternalName")
     @Expose
-    private String siteInternalName;
+    String siteInternalName;
 
     @SerializedName("siteId")
     @Expose
-    private Object siteId;
+    Object siteId;
 
     @SerializedName("userId")
     @Expose
-    private Object userId;
+    Object userId;
 
     @SerializedName("subscriptionOfferId")
     @Expose
-    private Object subscriptionOfferId;
+    Object subscriptionOfferId;
 
     @SerializedName("onlyVisible")
     @Expose
-    private Boolean onlyVisible;
+    boolean onlyVisible;
 
     @SerializedName("includeWebOnlyPlan")
     @Expose
-    private Boolean includeWebOnlyPlan;
+    boolean includeWebOnlyPlan;
 
     @SerializedName("onlySubscribableBasedOnDate")
     @Expose
-    private Boolean onlySubscribableBasedOnDate;
+    boolean onlySubscribableBasedOnDate;
 
     @SerializedName("subscriptionPlanIds")
     @Expose
-    private Object subscriptionPlanIds;
+    Object subscriptionPlanIds;
 
     @SerializedName("countryCode")
     @Expose
-    private Object countryCode;
+    Object countryCode;
 
     @SerializedName("partnerPortal")
     @Expose
-    private Boolean partnerPortal;
+    boolean partnerPortal;
 
     @SerializedName("authentication")
     @Expose
-    private Authentication authentication;
+    Authentication authentication;
 
     public String getSiteInternalName() {
         return siteInternalName;
@@ -85,27 +87,27 @@ public class Request_ {
         this.subscriptionOfferId = subscriptionOfferId;
     }
 
-    public Boolean getOnlyVisible() {
+    public boolean getOnlyVisible() {
         return onlyVisible;
     }
 
-    public void setOnlyVisible(Boolean onlyVisible) {
+    public void setOnlyVisible(boolean onlyVisible) {
         this.onlyVisible = onlyVisible;
     }
 
-    public Boolean getIncludeWebOnlyPlan() {
+    public boolean getIncludeWebOnlyPlan() {
         return includeWebOnlyPlan;
     }
 
-    public void setIncludeWebOnlyPlan(Boolean includeWebOnlyPlan) {
+    public void setIncludeWebOnlyPlan(boolean includeWebOnlyPlan) {
         this.includeWebOnlyPlan = includeWebOnlyPlan;
     }
 
-    public Boolean getOnlySubscribableBasedOnDate() {
+    public boolean getOnlySubscribableBasedOnDate() {
         return onlySubscribableBasedOnDate;
     }
 
-    public void setOnlySubscribableBasedOnDate(Boolean onlySubscribableBasedOnDate) {
+    public void setOnlySubscribableBasedOnDate(boolean onlySubscribableBasedOnDate) {
         this.onlySubscribableBasedOnDate = onlySubscribableBasedOnDate;
     }
 
@@ -125,11 +127,11 @@ public class Request_ {
         this.countryCode = countryCode;
     }
 
-    public Boolean getPartnerPortal() {
+    public boolean getPartnerPortal() {
         return partnerPortal;
     }
 
-    public void setPartnerPortal(Boolean partnerPortal) {
+    public void setPartnerPortal(boolean partnerPortal) {
         this.partnerPortal = partnerPortal;
     }
 

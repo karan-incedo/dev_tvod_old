@@ -1,20 +1,23 @@
-
 package com.viewlift.models.data.appcms.ui.page;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class Settings {
 
     @SerializedName("title")
     @Expose
-    private String title;
+    String title;
+
     @SerializedName("description")
     @Expose
-    private String description;
+    String description;
+
     @SerializedName("loop")
     @Expose
-    private Boolean loop;
+    boolean loop;
 
     public String getTitle() {
         return title;
@@ -32,12 +35,11 @@ public class Settings {
         this.description = description;
     }
 
-    public Boolean getLoop() {
+    public boolean getLoop() {
         return loop;
     }
 
-    public void setLoop(Boolean loop) {
+    public void setLoop(boolean loop) {
         this.loop = loop;
     }
-
 }

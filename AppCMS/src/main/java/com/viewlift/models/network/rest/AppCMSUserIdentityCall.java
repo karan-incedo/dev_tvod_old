@@ -10,8 +10,8 @@ import javax.inject.Inject;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import rx.functions.Action1;
 import rx.Observable;
+import rx.functions.Action1;
 
 /**
  * Created by viewlift on 7/6/17.

@@ -172,6 +172,8 @@ public class AppCMSPresenter {
     private final AppCMSUserVideoStatusCall appCMSUserVideoStatusCall;
     private final AppCMSAddToWatchlistCall appCMSAddToWatchlistCall;
 
+//    private final AppCMSSubscriptionCall appCMSSubscriptionCall;
+
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private Activity currentActivity;
@@ -228,6 +230,8 @@ public class AppCMSPresenter {
                            AppCMSUserVideoStatusCall appCMSUserVideoStatusCall,
                            AppCMSAddToWatchlistCall appCMSAddToWatchlistCall,
 
+//                           AppCMSSubscriptionCall appCMSSubscriptionCall,
+
                            Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                            Map<String, String> pageNameToActionMap,
                            Map<String, AppCMSPageUI> actionToPageMap,
@@ -252,6 +256,8 @@ public class AppCMSPresenter {
         this.appCMSUpdateWatchHistoryCall = appCMSUpdateWatchHistoryCall;
         this.appCMSUserVideoStatusCall = appCMSUserVideoStatusCall;
         this.appCMSAddToWatchlistCall = appCMSAddToWatchlistCall;
+
+//        this.appCMSSubscriptionCall = appCMSSubscriptionCall;
 
         this.appCMSWatchlistCall = appCMSWatchlistCall;
         this.appCMSHistoryCall = appCMSHistoryCall;
@@ -396,7 +402,7 @@ public class AppCMSPresenter {
                     playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), requestAds);
                     if (contentDatum != null &&
                             contentDatum.getGist() != null &&
-                            contentDatum.getGist().getWatchedTime() != null) {
+                            contentDatum.getGist().getWatchedTime() != 0) {
                         playVideoIntent.putExtra(currentActivity.getString(R.string.watched_time_key), contentDatum.getGist().getWatchedTime());
                     }
                 } else {
@@ -1312,16 +1318,13 @@ public class AppCMSPresenter {
         return result;
     }
 
-    public boolean sendDeepLinkAction(Uri deeplinkUri) {
+    public void sendDeepLinkAction(Uri deeplinkUri) {
         Log.d(TAG, "Sending deeplink action");
-        boolean result = false;
         if (currentActivity != null) {
             Intent deeplinkIntent = new Intent(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION);
             deeplinkIntent.setData(deeplinkUri);
             currentActivity.sendBroadcast(deeplinkIntent);
-            result = true;
         }
-        return result;
     }
 
     public void sendStopLoadingPageAction() {
@@ -1489,21 +1492,15 @@ public class AppCMSPresenter {
     }
 
     public NavigationPrimary findHomePageNavItem() {
-        for (NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()) {
-            AppCMSUIKeyType navTitle = jsonValueKeyMap.get(navigationPrimary.getTitle());
-            if (navTitle == AppCMSUIKeyType.ANDROID_HOME_NAV_KEY) {
-                return navigationPrimary;
-            }
+        if (navigation.getNavigationPrimary().size() >= 1) {
+            return navigation.getNavigationPrimary().get(0);
         }
         return null;
     }
 
     public NavigationPrimary findMoviesPageNavItem() {
-        for (NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()) {
-            AppCMSUIKeyType navTitle = jsonValueKeyMap.get(navigationPrimary.getTitle());
-            if (navTitle == AppCMSUIKeyType.ANDROID_MOVIES_NAV_KEY) {
-                return navigationPrimary;
-            }
+        if (navigation.getNavigationPrimary().size() >= 2) {
+            return navigation.getNavigationPrimary().get(1);
         }
         return null;
     }
@@ -1978,7 +1975,6 @@ public class AppCMSPresenter {
                             switch (platformType) {
                                 case ANDROID:
                                     getAppCMSAndroid(activity, main);
-//                                    getAppCMSAndroid(activity, main);
                                     break;
                                 case TV:
                                     getAppCMSTV(activity, main, null);

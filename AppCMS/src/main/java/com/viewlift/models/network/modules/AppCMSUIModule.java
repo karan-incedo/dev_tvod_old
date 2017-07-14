@@ -7,6 +7,7 @@ package com.viewlift.models.network.modules;
 import android.content.Context;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -29,6 +30,8 @@ import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordRest;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignInRest;
+import com.viewlift.models.network.rest.AppCMSSubscriptionCall;
+import com.viewlift.models.network.rest.AppCMSSubscriptionRest;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryRest;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
@@ -38,6 +41,7 @@ import com.viewlift.models.network.rest.AppCMSUserVideoStatusRest;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistRest;
 import com.viewlift.presenters.AppCMSActionType;
+import com.viewlift.stag.generated.Stag;
 
 import java.io.File;
 import java.util.HashMap;
@@ -98,10 +102,6 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_historyscreen_key),
                 AppCMSUIKeyType.ANDROID_HISTORY_SCREEN_KEY);
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_action_homepage_nav),
-                AppCMSUIKeyType.ANDROID_HOME_NAV_KEY);
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_action_movies_nav),
-                AppCMSUIKeyType.ANDROID_MOVIES_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_button_key),
                 AppCMSUIKeyType.PAGE_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_label_key),
@@ -307,7 +307,9 @@ public class AppCMSUIModule {
     @Provides
     @Singleton
     public Gson providesGson() {
-        return new Gson();
+//        return new Gson();
+        return new GsonBuilder().registerTypeAdapterFactory(new Stag.Factory())
+                .create();
     }
 
     @Provides
@@ -422,6 +424,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSSubscriptionRest providesAppCMSSubscriptionRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSSubscriptionRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -434,7 +442,8 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSAndroidUICall providesAppCMSAndroidUICall(AppCMSAndroidUIRest appCMSAndroidUIRest, Gson gson) {
+    public AppCMSAndroidUICall providesAppCMSAndroidUICall(AppCMSAndroidUIRest appCMSAndroidUIRest,
+                                                           Gson gson) {
         return new AppCMSAndroidUICall(appCMSAndroidUIRest, gson, storageDirectory);
     }
 
@@ -503,6 +512,13 @@ public class AppCMSUIModule {
     public AppCMSAddToWatchlistCall providesAppCMSAddToWatchlistCall(AppCMSAddToWatchlistRest appCMSAddToWatchlistRest,
                                                                      Gson gson) {
         return new AppCMSAddToWatchlistCall(appCMSAddToWatchlistRest, gson);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSSubscriptionCall providesAppCMSSubscriptionCall(AppCMSSubscriptionRest appCMSSubscriptionRest,
+                                                                 Gson gson) {
+        return new AppCMSSubscriptionCall(appCMSSubscriptionRest, gson);
     }
 
     @Provides

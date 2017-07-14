@@ -1,33 +1,41 @@
-
 package com.viewlift.models.data.appcms.ui.android;
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+import java.util.List;
+
+@UseStag
 public class NavigationFooter {
 
     @SerializedName("title")
     @Expose
-    private String title;
+    String title;
+
     @SerializedName("items")
     @Expose
-    private List<Object> items = null;
+    List<Object> items = null;
+
     @SerializedName("pageId")
     @Expose
-    private String pageId;
+    String pageId;
+
     @SerializedName("url")
     @Expose
-    private String url;
+    String url;
+
     @SerializedName("anchor")
     @Expose
-    private String anchor;
+    String anchor;
+
     @SerializedName("displayedName")
     @Expose
-    private String displayedName;
+    String displayedName;
+
     @SerializedName("accessLevels")
     @Expose
-    private AccessLevels accessLevels;
+    AccessLevels accessLevels;
 
     public String getTitle() {
         return title;

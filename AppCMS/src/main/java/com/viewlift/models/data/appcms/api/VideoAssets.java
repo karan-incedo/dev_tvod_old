@@ -1,21 +1,25 @@
-
 package com.viewlift.models.data.appcms.api;
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+import java.util.List;
+
+@UseStag
 public class VideoAssets {
 
     @SerializedName("type")
     @Expose
-    private String type;
+    String type;
+
     @SerializedName("mpeg")
     @Expose
-    private List<Mpeg> mpeg = null;
+    List<Mpeg> mpeg = null;
+
     @SerializedName("hls")
     @Expose
-    private String hls;
+    String hls;
 
     public String getType() {
         return type;
@@ -40,5 +44,4 @@ public class VideoAssets {
     public void setHls(String hls) {
         this.hls = hls;
     }
-
 }

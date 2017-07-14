@@ -7,7 +7,10 @@ import java.util.List;
  */
 
 public interface Module {
+
     List<Component> getComponents();
+
     Layout getLayout();
+
     String getView();
 }

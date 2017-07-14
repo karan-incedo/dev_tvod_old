@@ -61,6 +61,17 @@ android {
             manifest.srcFile 'src/tv/AndroidManifest.xml'
         }
     }
+    defaultConfig {
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [
+                        stagAssumeHungarianNotation: 'false',
+                        stagGeneratedPackageName   : 'com.viewlift.stag.generated',
+                        stagDebug                  : 'true' // Generates output to Gradle console
+                ]
+            }
+        }
+    }
     buildTypes {
         debug {
             multiDexEnabled true
