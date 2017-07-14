@@ -2,18 +2,16 @@ package com.viewlift.models.data.appcms.watchlist;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class Channel {
 
     @SerializedName("objectKey")
     @Expose
-    String objectKey;
+    private String objectKey;
 
     @SerializedName("id")
     @Expose
-    String id;
+    private String id;
 
     public String getObjectKey() {
         return objectKey;

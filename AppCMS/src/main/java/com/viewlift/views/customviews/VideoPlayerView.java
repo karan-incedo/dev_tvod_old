@@ -1,9 +1,7 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
-import android.media.AudioManager;
 import android.net.Uri;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -196,16 +194,6 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
                 }
             }
         });
-
-        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.requestAudioFocus(new AudioManager.OnAudioFocusChangeListener() {
-                    @Override
-                    public void onAudioFocusChange(int focusChange) {
-                        Log.i(TAG, "Audio focus has changed: " + focusChange);
-                    }
-                },
-                AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN);
 
         addView(playerView);
     }

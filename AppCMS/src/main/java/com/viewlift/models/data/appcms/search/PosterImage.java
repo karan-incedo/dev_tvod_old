@@ -1,23 +1,20 @@
+
 package com.viewlift.models.data.appcms.search;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class PosterImage {
 
     @SerializedName("objectKey")
     @Expose
-    String objectKey;
-
+    private String objectKey;
     @SerializedName("id")
     @Expose
-    String id;
-
+    private String id;
     @SerializedName("url")
     @Expose
-    String url;
+    private String url;
 
     public String getObjectKey() {
         return objectKey;
@@ -42,4 +39,5 @@ public class PosterImage {
     public void setUrl(String url) {
         this.url = url;
     }
+
 }

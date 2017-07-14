@@ -1,31 +1,26 @@
+
 package com.viewlift.models.data.appcms.ui.android;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class MetaPage {
 
     @SerializedName("Page-Name")
     @Expose
-    String pageName;
-
+    private String pageName;
     @SerializedName("Page-Type")
     @Expose
-    String pageType;
-
+    private String pageType;
     @SerializedName("Page-ID")
     @Expose
-    String pageId;
-
+    private String pageId;
     @SerializedName("Page-UI")
     @Expose
-    String pageUI;
-
+    private String pageUI;
     @SerializedName("Page-API")
     @Expose
-    String pageAPI;
+    private String pageAPI;
 
     public String getPageName() {
         return pageName;
@@ -66,4 +61,5 @@ public class MetaPage {
     public void setPageAPI(String pageAPI) {
         this.pageAPI = pageAPI;
     }
+
 }

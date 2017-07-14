@@ -7,7 +7,6 @@ package com.viewlift.models.network.modules;
 import android.content.Context;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -39,7 +38,6 @@ import com.viewlift.models.network.rest.AppCMSUserVideoStatusRest;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistRest;
 import com.viewlift.presenters.AppCMSActionType;
-import com.viewlift.stag.generated.Stag;
 
 import java.io.File;
 import java.util.HashMap;
@@ -100,6 +98,10 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_historyscreen_key),
                 AppCMSUIKeyType.ANDROID_HISTORY_SCREEN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_action_homepage_nav),
+                AppCMSUIKeyType.ANDROID_HOME_NAV_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_action_movies_nav),
+                AppCMSUIKeyType.ANDROID_MOVIES_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_button_key),
                 AppCMSUIKeyType.PAGE_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_label_key),
@@ -305,9 +307,7 @@ public class AppCMSUIModule {
     @Provides
     @Singleton
     public Gson providesGson() {
-//        return new Gson();
-        return new GsonBuilder().registerTypeAdapterFactory(new Stag.Factory())
-                .create();
+        return new Gson();
     }
 
     @Provides
@@ -434,8 +434,7 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSAndroidUICall providesAppCMSAndroidUICall(AppCMSAndroidUIRest appCMSAndroidUIRest,
-                                                           Gson gson) {
+    public AppCMSAndroidUICall providesAppCMSAndroidUICall(AppCMSAndroidUIRest appCMSAndroidUIRest, Gson gson) {
         return new AppCMSAndroidUICall(appCMSAndroidUIRest, gson, storageDirectory);
     }
 

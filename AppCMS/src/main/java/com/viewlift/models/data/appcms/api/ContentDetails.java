@@ -1,87 +1,69 @@
+
 package com.viewlift.models.data.appcms.api;
 
+import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-import java.util.List;
-
-@UseStag
 public class ContentDetails {
 
     @SerializedName("autoGenerateRelated")
     @Expose
-    boolean autoGenerateRelated;
-
+    private Boolean autoGenerateRelated;
     @SerializedName("partner")
     @Expose
-    Object partner;
-
+    private Object partner;
     @SerializedName("episode")
     @Expose
-    int episode;
-
+    private Integer episode;
     @SerializedName("trailers")
     @Expose
-    List<Trailer> trailers = null;
-
+    private List<Trailer> trailers = null;
     @SerializedName("geoRestriction")
     @Expose
-    String geoRestriction;
-
+    private String geoRestriction;
     @SerializedName("author")
     @Expose
-    Object author;
-
+    private Object author;
     @SerializedName("relatedVideoIds")
     @Expose
-    List<String> relatedVideoIds = null;
-
+    private List<String> relatedVideoIds = null;
     @SerializedName("creditBlocks")
     @Expose
-    Object creditBlocks;
-
+    private Object creditBlocks;
     @SerializedName("posterImage")
     @Expose
-    PosterImage posterImage;
-
+    private PosterImage posterImage;
     @SerializedName("videoImage")
     @Expose
-    VideoImage videoImage;
-
+    private VideoImage videoImage;
     @SerializedName("widgetImage")
     @Expose
-    WidgetImage widgetImage;
-
+    private WidgetImage widgetImage;
     @SerializedName("androidPosterImage")
     @Expose
-    Object androidPosterImage;
-
+    private Object androidPosterImage;
     @SerializedName("startDate")
     @Expose
-    long startDate;
-
+    private Long startDate;
     @SerializedName("endDate")
     @Expose
-    long endDate;
-
+    private Long endDate;
     @SerializedName("closedCaptions")
     @Expose
-    Object closedCaptions;
-
+    private Object closedCaptions;
     @SerializedName("deviceControls")
     @Expose
-    List<String> deviceControls = null;
-
+    private List<String> deviceControls = null;
     @SerializedName("status")
     @Expose
-    String status;
+    private String status;
 
-    public boolean getAutoGenerateRelated() {
+    public Boolean getAutoGenerateRelated() {
         return autoGenerateRelated;
     }
 
-    public void setAutoGenerateRelated(boolean autoGenerateRelated) {
+    public void setAutoGenerateRelated(Boolean autoGenerateRelated) {
         this.autoGenerateRelated = autoGenerateRelated;
     }
 
@@ -93,11 +75,11 @@ public class ContentDetails {
         this.partner = partner;
     }
 
-    public int getEpisode() {
+    public Integer getEpisode() {
         return episode;
     }
 
-    public void setEpisode(int episode) {
+    public void setEpisode(Integer episode) {
         this.episode = episode;
     }
 
@@ -173,19 +155,19 @@ public class ContentDetails {
         this.androidPosterImage = androidPosterImage;
     }
 
-    public long getStartDate() {
+    public Long getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(long startDate) {
+    public void setStartDate(Long startDate) {
         this.startDate = startDate;
     }
 
-    public long getEndDate() {
+    public Long getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(long endDate) {
+    public void setEndDate(Long endDate) {
         this.endDate = endDate;
     }
 
@@ -212,4 +194,5 @@ public class ContentDetails {
     public void setStatus(String status) {
         this.status = status;
     }
+
 }

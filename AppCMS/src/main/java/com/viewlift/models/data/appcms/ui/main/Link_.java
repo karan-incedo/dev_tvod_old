@@ -1,25 +1,21 @@
+
 package com.viewlift.models.data.appcms.ui.main;
 
+import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-import java.util.List;
-
-@UseStag
 public class Link_ {
 
     @SerializedName("textColor")
     @Expose
-    String textColor;
-
+    private String textColor;
     @SerializedName("style")
     @Expose
-    List<String> style = null;
-
+    private List<String> style = null;
     @SerializedName("backgroundColor")
     @Expose
-    String backgroundColor;
+    private String backgroundColor;
 
     public String getTextColor() {
         return textColor;
@@ -44,4 +40,5 @@ public class Link_ {
     public void setBackgroundColor(String backgroundColor) {
         this.backgroundColor = backgroundColor;
     }
+
 }

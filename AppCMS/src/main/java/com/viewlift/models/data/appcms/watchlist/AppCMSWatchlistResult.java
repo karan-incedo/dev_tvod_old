@@ -10,25 +10,23 @@ import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.history.Record;
-import com.vimeo.stag.UseStag;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@UseStag
 public class AppCMSWatchlistResult {
 
     @SerializedName("records")
     @Expose
-    List<Record> records = null;
+    private List<Record> records = null;
 
     @SerializedName("nextOffset")
     @Expose
-    Integer nextOffset;
+    private Integer nextOffset;
 
     @SerializedName("limit")
     @Expose
-    Integer limit;
+    private Integer limit;
 
     public List<Record> getRecords() {
         return records;

@@ -55,7 +55,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginBottom="@dimen/footer_logo_padding"
         android:layout_marginRight="@dimen/footer_logo_padding"
-        android:background="@drawable/snagfilms_app_logo"
+        android:background="@drawable/splash_icon"
         android:layout_gravity="right"/>
 
 

@@ -2,28 +2,26 @@ package com.viewlift.models.data.appcms.watchlist;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
 import java.util.List;
 
-@UseStag
 public class CreditBlock {
 
     @SerializedName("credits")
     @Expose
-    List<Credit> credits = null;
+    private List<Credit> credits = null;
 
     @SerializedName("containsHollywoodCelebrities")
     @Expose
-    Boolean containsHollywoodCelebrities;
+    private Boolean containsHollywoodCelebrities;
 
     @SerializedName("containsTVCelebrities")
     @Expose
-    Boolean containsTVCelebrities;
+    private Boolean containsTVCelebrities;
 
     @SerializedName("title")
     @Expose
-    String title;
+    private String title;
 
     public List<Credit> getCredits() {
         return credits;

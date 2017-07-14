@@ -1,149 +1,114 @@
+
 package com.viewlift.models.data.appcms.ui.page;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
 import java.util.List;
 
-@UseStag
 public class Component implements Module {
 
     @SerializedName("text")
     @Expose
-    String text;
-
+    private String text;
     @SerializedName("textColor")
     @Expose
-    String textColor;
-
+    private String textColor;
     @SerializedName("backgroundColor")
     @Expose
-    String backgroundColor;
-
+    private String backgroundColor;
     @SerializedName("layout")
     @Expose
-    Layout layout;
-
+    private Layout layout;
     @SerializedName("backgroundSelectedColor")
     @Expose
-    String backgroundSelectedColor;
-
+    private String backgroundSelectedColor;
     @SerializedName("action")
     @Expose
-    String action;
-
+    private String action;
     @SerializedName("type")
     @Expose
-    String type;
-
+    private String type;
     @SerializedName("key")
     @Expose
-    String key;
-
+    private String key;
     @SerializedName("borderColor")
     @Expose
-    String borderColor;
-
+    private String borderColor;
     @SerializedName("fillColor")
     @Expose
-    String fillColor;
-
+    private String fillColor;
     @SerializedName("borderWidth")
     @Expose
-    int borderWidth;
-
+    private Integer borderWidth;
     @SerializedName("imageName")
     @Expose
-    String imageName;
-
+    private String imageName;
     @SerializedName("textAlignment")
     @Expose
-    String textAlignment;
-
+    private String textAlignment;
     @SerializedName("numberOfLines")
     @Expose
-    int numberOfLines;
-
+    private int numberOfLines;
     @SerializedName("trayPadding")
     @Expose
-    int trayPadding;
-
+    private int trayPadding;
     @SerializedName("cornerRadius")
     @Expose
-    int cornerRadius;
-
+    private int cornerRaidus;
     @SerializedName("isHorizontalScroll")
     @Expose
-    boolean isHorizontalScroll;
-
+    private boolean isHorizontalScroll;
     @SerializedName("supportPagination")
     @Expose
-    boolean supportPagination;
-
+    private boolean supportPagination;
     @SerializedName("trayClickAction")
     @Expose
-    String trayClickAction;
-
+    private String trayClickAction;
     @SerializedName("fontFamily")
     @Expose
-    String fontFamily;
-
+    private String fontFamily;
     @SerializedName("fontSize")
     @Expose
-    int fontSize;
-
+    private int fontSize;
     @SerializedName("components")
     @Expose
-    List<Component> components = null;
-
+    private List<Component> components;
     @SerializedName("progressColor")
     @Expose
-    String progressColor;
-
+    private String progressColor;
     @SerializedName("unprogressColor")
-    @Expose
-    String unprogressColor;
-
+    private String unprogressColor;
     @SerializedName("selectedColor")
     @Expose
-    String selectedColor;
-
+    private String selectedColor;
     @SerializedName("unSelectedColor")
     @Expose
-    String unSelectedColor;
-
+    private String unSelectedColor;
     @SerializedName("isVisibleForPhone")
     @Expose
-    boolean isVisibleForPhone;
-
+    private boolean isVisibleForPhone;
     @SerializedName("isVisibleForTablet")
     @Expose
-    boolean isVisibleForTablet;
-
+    private boolean isVisibleForTablet;
     @SerializedName("styles")
     @Expose
-    Styles styles;
-
+    private Styles styles;
     @SerializedName("fontWeight")
     @Expose
-    String fontWeight;
-
+    private String fontWeight;
     @SerializedName("fontFamilyKey")
     @Expose
-    String fontFamilyKey;
-
+    private String fontFamilyKey;
     @SerializedName("fontFamilyValue")
     @Expose
-    String fontFamilyValue;
-
+    private String fontFamilyValue;
     @SerializedName("view")
     @Expose
-    String view;
-
+    private String view;
     @SerializedName("protected")
     @Expose
-    boolean isViewProtected;
+    private boolean viewProtected;
 
     public String getText() {
         return text;
@@ -225,11 +190,11 @@ public class Component implements Module {
         this.fillColor = fillColor;
     }
 
-    public int getBorderWidth() {
+    public Integer getBorderWidth() {
         return borderWidth;
     }
 
-    public void setBorderWidth(int borderWidth) {
+    public void setBorderWidth(Integer borderWidth) {
         this.borderWidth = borderWidth;
     }
 
@@ -265,12 +230,12 @@ public class Component implements Module {
         this.trayPadding = trayPadding;
     }
 
-    public int getCornerRadius() {
-        return cornerRadius;
+    public int getCornerRaidus() {
+        return cornerRaidus;
     }
 
-    public void setCornerRadius(int cornerRadius) {
-        this.cornerRadius = cornerRadius;
+    public void setCornerRaidus(int cornerRaidus) {
+        this.cornerRaidus = cornerRaidus;
     }
 
     public boolean isHorizontalScroll() {
@@ -358,7 +323,7 @@ public class Component implements Module {
     }
 
     public void setVisibleForPhone(boolean visibleForPhone) {
-        this.isVisibleForPhone = visibleForPhone;
+        isVisibleForPhone = visibleForPhone;
     }
 
     public boolean isVisibleForTablet() {
@@ -366,7 +331,7 @@ public class Component implements Module {
     }
 
     public void setVisibleForTablet(boolean visibleForTablet) {
-        this.isVisibleForTablet = visibleForTablet;
+        isVisibleForTablet = visibleForTablet;
     }
 
     public Styles getStyles() {
@@ -410,10 +375,10 @@ public class Component implements Module {
     }
 
     public boolean isViewProtected() {
-        return isViewProtected;
+        return viewProtected;
     }
 
-    public void setIsViewProtected(boolean isViewProtected) {
-        this.isViewProtected = isViewProtected;
+    public void setViewProtected(boolean viewProtected) {
+        this.viewProtected = viewProtected;
     }
 }

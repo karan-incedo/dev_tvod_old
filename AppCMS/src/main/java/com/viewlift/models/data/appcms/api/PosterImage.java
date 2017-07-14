@@ -1,47 +1,38 @@
+
 package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class PosterImage {
 
     @SerializedName("id")
     @Expose
-    String id;
-
+    private String id;
     @SerializedName("publishDate")
     @Expose
-    long publishDate;
-
+    private Long publishDate;
     @SerializedName("updateDate")
     @Expose
-    long updateDate;
-
+    private Long updateDate;
     @SerializedName("addedDate")
     @Expose
-    long addedDate;
-
+    private Long addedDate;
     @SerializedName("siteOwner")
     @Expose
-    String siteOwner;
-
+    private String siteOwner;
     @SerializedName("name")
     @Expose
-    String name;
-
+    private String name;
     @SerializedName("url")
     @Expose
-    String url;
-
+    private String url;
     @SerializedName("secureUrl")
     @Expose
-    String secureUrl;
-
+    private String secureUrl;
     @SerializedName("imageTag")
     @Expose
-    String imageTag;
+    private String imageTag;
 
     public String getId() {
         return id;
@@ -51,27 +42,27 @@ public class PosterImage {
         this.id = id;
     }
 
-    public long getPublishDate() {
+    public Long getPublishDate() {
         return publishDate;
     }
 
-    public void setPublishDate(long publishDate) {
+    public void setPublishDate(Long publishDate) {
         this.publishDate = publishDate;
     }
 
-    public long getUpdateDate() {
+    public Long getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(long updateDate) {
+    public void setUpdateDate(Long updateDate) {
         this.updateDate = updateDate;
     }
 
-    public long getAddedDate() {
+    public Long getAddedDate() {
         return addedDate;
     }
 
-    public void setAddedDate(long addedDate) {
+    public void setAddedDate(Long addedDate) {
         this.addedDate = addedDate;
     }
 
@@ -114,4 +105,5 @@ public class PosterImage {
     public void setImageTag(String imageTag) {
         this.imageTag = imageTag;
     }
+
 }

@@ -1,41 +1,35 @@
+
 package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class Filters {
 
     @SerializedName("limit")
     @Expose
-    int limit;
-
+    private Integer limit;
     @SerializedName("offset")
     @Expose
-    Object offset;
-
+    private Object offset;
     @SerializedName("tags")
     @Expose
-    Object tags;
-
+    private Object tags;
     @SerializedName("categories")
     @Expose
-    Object categories;
-
+    private Object categories;
     @SerializedName("sortBy")
     @Expose
-    String sortBy;
-
+    private String sortBy;
     @SerializedName("contentStatus")
     @Expose
-    String contentStatus;
+    private String contentStatus;
 
-    public int getLimit() {
+    public Integer getLimit() {
         return limit;
     }
 
-    public void setLimit(int limit) {
+    public void setLimit(Integer limit) {
         this.limit = limit;
     }
 
@@ -78,4 +72,5 @@ public class Filters {
     public void setContentStatus(String contentStatus) {
         this.contentStatus = contentStatus;
     }
+
 }

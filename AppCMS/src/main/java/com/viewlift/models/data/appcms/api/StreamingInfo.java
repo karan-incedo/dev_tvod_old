@@ -1,33 +1,29 @@
+
 package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class StreamingInfo {
 
     @SerializedName("isLiveStream")
     @Expose
-    boolean isLiveStream;
-
+    private Boolean isLiveStream;
     @SerializedName("videoAssets")
     @Expose
-    VideoAssets videoAssets;
-
+    private VideoAssets videoAssets;
     @SerializedName("audioAssets")
     @Expose
-    Object audioAssets;
-
+    private Object audioAssets;
     @SerializedName("cuePoints")
     @Expose
-    String cuePoints;
+    private String cuePoints;
 
-    public boolean getIsLiveStream() {
+    public Boolean getIsLiveStream() {
         return isLiveStream;
     }
 
-    public void setIsLiveStream(boolean isLiveStream) {
+    public void setIsLiveStream(Boolean isLiveStream) {
         this.isLiveStream = isLiveStream;
     }
 
@@ -54,4 +50,5 @@ public class StreamingInfo {
     public void setCuePoints(String cuePoints) {
         this.cuePoints = cuePoints;
     }
+
 }

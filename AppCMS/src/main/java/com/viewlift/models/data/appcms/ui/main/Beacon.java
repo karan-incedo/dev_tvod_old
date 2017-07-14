@@ -1,23 +1,20 @@
+
 package com.viewlift.models.data.appcms.ui.main;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class Beacon {
 
     @SerializedName("siteName")
     @Expose
-    String siteName;
-
+    private String siteName;
     @SerializedName("clientId")
     @Expose
-    String clientId;
-
+    private String clientId;
     @SerializedName("apiBaseUrl")
     @Expose
-    String apiBaseUrl;
+    private String apiBaseUrl;
 
     public String getSiteName() {
         return siteName;
@@ -42,4 +39,5 @@ public class Beacon {
     public void setApiBaseUrl(String apiBaseUrl) {
         this.apiBaseUrl = apiBaseUrl;
     }
+
 }

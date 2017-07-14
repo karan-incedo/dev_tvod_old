@@ -1,27 +1,23 @@
+
 package com.viewlift.models.data.appcms.ui.main;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class Cta {
 
     @SerializedName("secondary--hover")
     @Expose
-    SecondaryHover secondaryHover;
-
+    private SecondaryHover secondaryHover;
     @SerializedName("primary")
     @Expose
-    Primary primary;
-
+    private Primary primary;
     @SerializedName("secondary")
     @Expose
-    Secondary secondary;
-
+    private Secondary secondary;
     @SerializedName("primary--hover")
     @Expose
-    PrimaryHover primaryHover;
+    private PrimaryHover primaryHover;
 
     public SecondaryHover getSecondaryHover() {
         return secondaryHover;
@@ -54,4 +50,5 @@ public class Cta {
     public void setPrimaryHover(PrimaryHover primaryHover) {
         this.primaryHover = primaryHover;
     }
+
 }

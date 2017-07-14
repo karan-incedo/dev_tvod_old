@@ -1,21 +1,18 @@
+
 package com.viewlift.models.data.appcms.ui.page;
 
+import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-import java.util.List;
-
-@UseStag
 public class AppCMSPageUI {
 
     @SerializedName("moduleList")
     @Expose
-    List<ModuleList> moduleList = null;
-
+    private List<ModuleList> moduleList = null;
     @SerializedName("version")
     @Expose
-    String version;
+    private String version;
 
     public List<ModuleList> getModuleList() {
         return moduleList;
@@ -32,4 +29,5 @@ public class AppCMSPageUI {
     public void setVersion(String version) {
         this.version = version;
     }
+
 }

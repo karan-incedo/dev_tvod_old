@@ -6,30 +6,32 @@ package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class AddToWatchlistRequest {
 
     @SerializedName("userId")
     @Expose
-    String userId;
+    private String userId;
 
     @SerializedName("contentId")
     @Expose
-    String contentId;
+    private String contentId;
 
     @SerializedName("contentType")
     @Expose
-    String contentType;
+    private String contentType;
 
     @SerializedName("position")
     @Expose
-    long position;
+    private Long position;
 
     @SerializedName("contentIds")
     @Expose
-    String contentIds = null;
+    private String contentIds = null;
+
+    public void setContentIds(String contentIds) {
+        this.contentIds = contentIds;
+    }
 
     public String getUserId() {
         return userId;
@@ -55,19 +57,15 @@ public class AddToWatchlistRequest {
         this.contentType = contentType;
     }
 
-    public long getPosition() {
+    public Long getPosition() {
         return position;
     }
 
-    public void setPosition(long position) {
+    public void setPosition(Long position) {
         this.position = position;
     }
 
     public String getContentIds() {
         return contentIds;
-    }
-
-    public void setContentIds(String contentIds) {
-        this.contentIds = contentIds;
     }
 }

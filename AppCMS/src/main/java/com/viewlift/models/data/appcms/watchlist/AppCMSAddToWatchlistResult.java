@@ -6,50 +6,48 @@ package com.viewlift.models.data.appcms.watchlist;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class AppCMSAddToWatchlistResult {
 
     @SerializedName("userId")
     @Expose
-    String userId;
+    private String userId;
 
     @SerializedName("contentId")
     @Expose
-    String contentId;
+    private String contentId;
 
     @SerializedName("contentType")
     @Expose
-    String contentType;
+    private String contentType;
 
     @SerializedName("siteOwner")
     @Expose
-    String siteOwner;
+    private String siteOwner;
 
     @SerializedName("actionId")
     @Expose
-    String actionId;
+    private String actionId;
 
     @SerializedName("action")
     @Expose
-    String action;
+    private String action;
 
     @SerializedName("id")
     @Expose
-    String id;
+    private String id;
 
     @SerializedName("addedDate")
     @Expose
-    Long addedDate;
+    private Long addedDate;
 
     @SerializedName("updateDate")
     @Expose
-    Long updateDate;
+    private Long updateDate;
 
     @SerializedName("user")
     @Expose
-    Object user;
+    private Object user;
 
     public String getUserId() {
         return userId;

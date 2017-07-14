@@ -1,35 +1,29 @@
+
 package com.viewlift.models.data.appcms.ui.main;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class Navigation {
 
     @SerializedName("link")
     @Expose
-    Link_ link;
-
+    private Link_ link;
     @SerializedName("link--active")
     @Expose
-    LinkActive_ linkActive;
-
+    private LinkActive_ linkActive;
     @SerializedName("dropdown--active")
     @Expose
-    DropdownActive dropdownActive;
-
+    private DropdownActive dropdownActive;
     @SerializedName("dropdown--hover")
     @Expose
-    DropdownHover dropdownHover;
-
+    private DropdownHover dropdownHover;
     @SerializedName("link--hover")
     @Expose
-    LinkHover_ linkHover;
-
+    private LinkHover_ linkHover;
     @SerializedName("dropdown")
     @Expose
-    Dropdown dropdown;
+    private Dropdown dropdown;
 
     public Link_ getLink() {
         return link;
@@ -78,4 +72,5 @@ public class Navigation {
     public void setDropdown(Dropdown dropdown) {
         this.dropdown = dropdown;
     }
+
 }

@@ -1,87 +1,68 @@
+
 package com.viewlift.models.data.appcms.ui.main;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-@UseStag
 public class AppCMSMain {
 
     @SerializedName("id")
     @Expose
-    String id;
-
+    private String id;
     @SerializedName("accessKey")
     @Expose
-    String accessKey;
-
+    private String accessKey;
     @SerializedName("apiBaseUrl")
     @Expose
-    String apiBaseUrl;
-
+    private String apiBaseUrl;
     @SerializedName("pageEndpoint")
     @Expose
-    String pageEndpoint;
-
+    private String pageEndpoint;
     @SerializedName("internalName")
     @Expose
-    String internalName;
-
+    private String internalName;
     @SerializedName("faqUrl")
     @Expose
-    String faqUrl;
-
+    private String faqUrl;
     @SerializedName("beacon")
     @Expose
-    Beacon beacon;
-
+    private Beacon beacon;
     @SerializedName("site")
     @Expose
-    String site;
-
+    private String site;
     @SerializedName("serviceType")
     @Expose
-    String serviceType;
-
+    private String serviceType;
     @SerializedName("domainName")
     @Expose
-    String domainName;
-
+    private String domainName;
     @SerializedName("brand")
     @Expose
-    Brand brand;
-
+    private Brand brand;
     @SerializedName("content")
     @Expose
-    Content content;
-
+    private Content content;
     @SerializedName("images")
     @Expose
-    Images images;
-
+    private Images images;
     @SerializedName("version")
     @Expose
-    String version;
-
+    private String version;
     @SerializedName("old_version")
     @Expose
-    String oldVersion;
-
+    private String oldVersion;
     @SerializedName("Web")
     @Expose
-    String web;
-
+    private String web;
     @SerializedName("iOS")
     @Expose
-    String iOS;
-
+    private String iOS;
     @SerializedName("Android")
     @Expose
-    String android;
-
+    private String android;
     @SerializedName("timestamp")
     @Expose
-    long timestamp;
+    private Long timestamp;
 
     public String getId() {
         return id;
@@ -235,11 +216,11 @@ public class AppCMSMain {
         this.iOS = iOS;
     }
 
-    public long getTimestamp() {
+    public Long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
 }

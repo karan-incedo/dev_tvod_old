@@ -3,12 +3,10 @@ package com.viewlift.models.network.modules;
 import android.content.Context;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageAPIRest;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoRest;
-import com.viewlift.stag.generated.Stag;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -44,9 +42,7 @@ public class AppCMSAPIModule {
     @Provides
     @Singleton
     public Gson providesGson() {
-//        return new Gson();
-        return new GsonBuilder().registerTypeAdapterFactory(new Stag.Factory())
-                .create();
+        return new Gson();
     }
 
     @Provides
