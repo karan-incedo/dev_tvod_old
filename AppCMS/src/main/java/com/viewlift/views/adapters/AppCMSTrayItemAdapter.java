@@ -83,9 +83,15 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     contentDatum.getGist().getVideoImageUrl(),
                     holder.appCMSContinueWatchingVideoImage.getWidth(),
                     holder.appCMSContinueWatchingVideoImage.getHeight()));
+
             Picasso.with(holder.itemView.getContext())
                     .load(imageUrl.toString())
                     .into(holder.appCMSContinueWatchingVideoImage);
+
+            holder.appCMSContinueWatchingTitle.setText(contentDatum.getGist().getTitle());
+            holder.appCMSContinueWatchingDescription.setText(contentDatum.getGist().getDescription());
+            holder.appCMSContinueWatchingDuration.setText(String.valueOf(contentDatum.getGist()
+                    .getRuntime() / SECONDS_PER_MINS));
 
             holder.appCMSContinueWatchingVideoImage.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -97,13 +103,24 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             holder.appCMSContinueWatchingPlayButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    play(contentDatum);
+                    click(contentDatum);
                 }
             });
 
-            holder.appCMSContinueWatchingTitle.setText(contentDatum.getGist().getTitle());
 
-            holder.appCMSContinueWatchingDescription.setText(contentDatum.getGist().getDescription());
+            holder.appCMSContinueWatchingTitle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    click(contentDatum);
+                }
+            });
+
+            holder.appCMSContinueWatchingDescription.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    click(contentDatum);
+                }
+            });
 
             holder.appCMSContinueWatchingSelectToDeleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -119,7 +136,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 }
             });
 
-            holder.appCMSContinueWatchingDuration.setText(String.valueOf(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS));
         } else {
             holder.appCMSNotItemLabel.setVisibility(View.VISIBLE);
             holder.appCMSNotItemLabel.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
@@ -163,48 +179,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     @Override
     public void cancel(boolean cancel) {
         //
-    }
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        View itemView;
-
-        @BindView(R.id.app_cms_continue_watching_video_image)
-        ImageButton appCMSContinueWatchingVideoImage;
-
-        @BindView(R.id.app_cms_continue_watching_play_button)
-        ImageButton appCMSContinueWatchingPlayButton;
-
-        @BindView(R.id.app_cms_continue_watching_title)
-        TextView appCMSContinueWatchingTitle;
-
-        @BindView(R.id.app_cms_continue_watching_description)
-        TextView appCMSContinueWatchingDescription;
-
-        @BindView(R.id.app_cms_continue_watching_select_to_delete_button)
-        ImageButton appCMSContinueWatchingSelectToDeleteButton;
-
-        @BindView(R.id.app_cms_continue_watching_delete_button)
-        ImageButton appCMSContinueWatchingDeleteButton;
-
-        @BindView(R.id.app_cms_continue_watching_duration)
-        TextView appCMSContinueWatchingDuration;
-
-        @BindView(R.id.app_cms_continue_watching_separator_view)
-        View appCMSContinueWatchingSeparatorView;
-
-        @BindView(R.id.app_cms_not_item_label)
-        TextView appCMSNotItemLabel;
-
-        public ViewHolder(View itemView, boolean isHistoryView) {
-            super(itemView);
-            this.itemView = itemView;
-            ButterKnife.bind(this, itemView);
-
-            if (isHistoryView) {
-                appCMSContinueWatchingDeleteButton.setVisibility(View.GONE);
-                appCMSContinueWatchingDeleteButton.setEnabled(false);
-            }
-        }
     }
 
     private String getHlsUrl(ContentDatum data) {
@@ -454,6 +428,48 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
             }
             textView.setTypeface(face);
+        }
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        View itemView;
+
+        @BindView(R.id.app_cms_continue_watching_video_image)
+        ImageButton appCMSContinueWatchingVideoImage;
+
+        @BindView(R.id.app_cms_continue_watching_play_button)
+        ImageButton appCMSContinueWatchingPlayButton;
+
+        @BindView(R.id.app_cms_continue_watching_title)
+        TextView appCMSContinueWatchingTitle;
+
+        @BindView(R.id.app_cms_continue_watching_description)
+        TextView appCMSContinueWatchingDescription;
+
+        @BindView(R.id.app_cms_continue_watching_select_to_delete_button)
+        ImageButton appCMSContinueWatchingSelectToDeleteButton;
+
+        @BindView(R.id.app_cms_continue_watching_delete_button)
+        ImageButton appCMSContinueWatchingDeleteButton;
+
+        @BindView(R.id.app_cms_continue_watching_duration)
+        TextView appCMSContinueWatchingDuration;
+
+        @BindView(R.id.app_cms_continue_watching_separator_view)
+        View appCMSContinueWatchingSeparatorView;
+
+        @BindView(R.id.app_cms_not_item_label)
+        TextView appCMSNotItemLabel;
+
+        public ViewHolder(View itemView, boolean isHistoryView) {
+            super(itemView);
+            this.itemView = itemView;
+            ButterKnife.bind(this, itemView);
+
+            if (isHistoryView) {
+                appCMSContinueWatchingDeleteButton.setVisibility(View.GONE);
+                appCMSContinueWatchingDeleteButton.setEnabled(false);
+            }
         }
     }
 }
