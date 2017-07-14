@@ -783,6 +783,7 @@ public class ViewCreator {
             case PAGE_TEXTVIEW_KEY:
                 componentViewResult.componentView = new TextView(context);
                 int textColor = ContextCompat.getColor(context, R.color.colorAccent);
+
                 if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())) {
                     textColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
                 } else if (component.getStyles() != null) {
