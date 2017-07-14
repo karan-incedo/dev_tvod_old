@@ -1,323 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AndroidLayouts">
-    <shared>
-      <config />
-    </shared>
-  </component>
-  <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="62c935f0-1e0a-46fe-8ee7-25ecbc61321e" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/VideoFragment.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/AddToWatchlistRequest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/AppCMSPageAPI.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/AppCMSStreamingInfo.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/Category.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/ContentDatum.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/ContentDetails.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/Credit.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/CreditBlock.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/External.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/Filters.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/Gist.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/MetadataMap.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/Module.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/Mpeg.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/PosterImage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/PrimaryCategory.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/Settings.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/Statistics.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/StreamingInfo.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/Tag.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/Trailer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/VideoAssets.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/VideoImage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/api/WidgetImage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/films/Category.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/films/ContentDetails.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/films/CreditBlock.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/films/External.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/films/FeaturedTag.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/films/FilmRecordResult.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/films/Gist.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/films/HlsDetail.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/films/Mpeg.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/films/PosterImage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/films/PrimaryCategory.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/films/Record.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/films/Statistics.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/films/StreamingInfo.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/films/Tag.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/films/Trailer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/films/VideoAssets.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/films/VideoImage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/films/WidgetImage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/history/AppCMSHistoryResult.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/history/Category.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/history/Channel.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/history/ContentResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/history/Credit.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/history/CreditBlock.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/history/Mpeg.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/history/PosterImage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/history/PrimaryCategory.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/history/Record.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/history/Tag.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/history/Thumbnail.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/history/UpdateHistoryRequest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/history/UserVideoStatusResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/history/VideoAsset.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/history/VideoImage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/history/WidgetImage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/search/AppCMSSearchResult.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/search/Category.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/search/Channel.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/search/Credit.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/search/CreditBlock.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/search/Mpeg.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/search/PosterImage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/search/PrimaryCategory.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/search/Tag.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/search/Thumbnail.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/search/VideoAsset.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/search/VideoImage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/search/WidgetImage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/sites/AppAccess.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/sites/AppCMSSite.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/sites/BrandLogo.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/sites/Gist.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/sites/SiteDetails.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/AppCMSUIKeyType.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/android/AccessLevels.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/android/Analytics.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/android/AppCMSAndroidUI.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/android/Images.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/android/MetaPage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/android/Navigation.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/android/NavigationFooter.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/android/NavigationPrimary.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/android/NavigationUser.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/authentication/FacebookLoginResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/authentication/ForgotPasswordRequest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/authentication/ForgotPasswordResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/authentication/Raw.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/authentication/RefreshIdentityResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/authentication/SignInRequest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/authentication/SignInResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/authentication/UserIdentity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/AppCMSMain.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/Beacon.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/Border.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/Border_.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/Border__.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/Border___.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/Brand.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/Category.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/Content.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/Cta.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/Dropdown.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/DropdownActive.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/DropdownHover.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/Footer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/General.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/Images.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/Link.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/LinkActive.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/LinkActive_.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/LinkHover.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/LinkHover_.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/LinkHover__.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/Link_.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/Link__.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/Navigation.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/Primary.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/PrimaryHover.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/Secondary.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/SecondaryHover.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/main/Tag.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/page/AppCMSPageUI.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/page/Component.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/page/Desktop.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/page/Layout.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/page/Mobile.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/page/Module.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/page/ModuleList.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/page/Settings.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/page/Styles.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/page/TabletLandscape.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/page/TabletPortrait.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/ui/tv/FireTV.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/watchlist/AppCMSAddToWatchlistResult.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/watchlist/AppCMSWatchlistResult.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/watchlist/Category.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/watchlist/Channel.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/watchlist/Credit.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/watchlist/CreditBlock.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/watchlist/Mpeg.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/watchlist/PosterImage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/watchlist/PrimaryCategory.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/watchlist/Tag.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/watchlist/Thumbnail.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/watchlist/VideoAsset.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/watchlist/VideoImage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/data/appcms/watchlist/WidgetImage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/components/AppCMSAPIComponent.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/components/AppCMSSearchComponent.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/components/AppCMSSiteComponent.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/components/AppCMSUIComponent.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/modules/AppCMSAPIModule.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/modules/AppCMSSearchModule.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/modules/AppCMSSearchUrlData.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/modules/AppCMSSearchUrlModule.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/modules/AppCMSSiteModule.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/modules/AppCMSUIModule.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSAddToWatchlistCall.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSAddToWatchlistRest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSAndroidUICall.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSAndroidUIRest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSBeaconRest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSFacebookLoginCall.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSFacebookLoginRest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSFilmRecordsCall.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSFilmRecordsRest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSHistoryCall.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSHistoryRest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSMainUICall.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSMainUIRest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSPageAPICall.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSPageAPIRest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSPageUICall.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSPageUIRest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSRefreshIdentityCall.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSRefreshIdentityRest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSResetPasswordCall.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSResetPasswordRest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSSearchCall.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSSearchRest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSSignInCall.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSSignInRest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSSiteCall.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSSiteRest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSStreamingInfoCall.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSStreamingInfoRest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSUpdateWatchHistoryCall.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSUpdateWatchHistoryRest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSUserIdentityCall.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSUserIdentityRest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSUserVideoStatusCall.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSUserVideoStatusRest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSWatchlistCall.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/models/network/rest/AppCMSWatchlistRest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/views/activities/AppCMSPlayVideoActivity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/views/customviews/AlwaysSelectedTextView.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/views/fragments/AppCMSPlayVideoFragment.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/build/android-profile/profile-2017-07-13-14-33-19-449.json" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/build/android-profile/profile-2017-07-13-14-33-19-449.rawproto" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/AppCMSSDK.java" afterPath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/ViewliftSDK.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/AppCMSSDKComponent.java" afterPath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/ViewliftSDKComponent.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/AppCMSSDKModule.java" afterPath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/ViewliftSDKModule.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/views/customviews/VideoPlayerView.java" afterPath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/VideoPlayerView.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/4.1-milestone-1/fileHashes/fileHashes.bin" afterPath="$PROJECT_DIR$/.gradle/4.1-milestone-1/fileHashes/fileHashes.bin" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/4.1-milestone-1/fileHashes/fileHashes.lock" afterPath="$PROJECT_DIR$/.gradle/4.1-milestone-1/fileHashes/fileHashes.lock" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/4.1-milestone-1/fileHashes/resourceHashesCache.bin" afterPath="$PROJECT_DIR$/.gradle/4.1-milestone-1/fileHashes/resourceHashesCache.bin" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/4.1-milestone-1/taskHistory/fileSnapshots.bin" afterPath="$PROJECT_DIR$/.gradle/4.1-milestone-1/taskHistory/fileSnapshots.bin" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/4.1-milestone-1/taskHistory/taskHistory.bin" afterPath="$PROJECT_DIR$/.gradle/4.1-milestone-1/taskHistory/taskHistory.bin" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/4.1-milestone-1/taskHistory/taskHistory.lock" afterPath="$PROJECT_DIR$/.gradle/4.1-milestone-1/taskHistory/taskHistory.lock" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/AndroidAppCMSSDK.iml" afterPath="$PROJECT_DIR$/AndroidAppCMSSDK/AndroidAppCMSSDK.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/res/values/app_cms_api.xml" afterPath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/res/values/app_cms_api.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/res/values/integer.xml" afterPath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/res/values/integer.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/res/values/strings.xml" afterPath="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/res/values/strings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/allclasses-frame.html" afterPath="$PROJECT_DIR$/allclasses-frame.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/allclasses-noframe.html" afterPath="$PROJECT_DIR$/allclasses-noframe.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/AppCMSSDK.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/AppCMSSDK.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/AppCMSSDKComponent.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/AppCMSSDKComponent.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/AppCMSSDKModule.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/AppCMSSDKModule.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/AppCMSSDKModule_ProvidesAppCMSSDKFactory.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/AppCMSSDKModule_ProvidesAppCMSSDKFactory.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/BuildConfig.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/BuildConfig.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/DaggerAppCMSSDKComponent.Builder.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/DaggerAppCMSSDKComponent.Builder.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/DaggerAppCMSSDKComponent.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/DaggerAppCMSSDKComponent.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/ExampleInstrumentedTest.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/ExampleInstrumentedTest.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/ExampleUnitTest.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/ExampleUnitTest.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.anim.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.anim.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.array.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.array.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.attr.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.attr.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.bool.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.bool.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.color.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.color.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.dimen.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.dimen.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.drawable.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.drawable.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.id.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.id.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.integer.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.integer.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.layout.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.layout.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.mipmap.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.mipmap.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.raw.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.raw.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.string.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.string.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.style.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.style.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.styleable.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/R.styleable.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/package-frame.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/package-frame.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/package-summary.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/package-summary.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/viewlift/appcmssdk/package-tree.html" afterPath="$PROJECT_DIR$/com/viewlift/appcmssdk/package-tree.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/constant-values.html" afterPath="$PROJECT_DIR$/constant-values.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/deprecated-list.html" afterPath="$PROJECT_DIR$/deprecated-list.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/help-doc.html" afterPath="$PROJECT_DIR$/help-doc.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-1.html" afterPath="$PROJECT_DIR$/index-files/index-1.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-10.html" afterPath="$PROJECT_DIR$/index-files/index-10.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-11.html" afterPath="$PROJECT_DIR$/index-files/index-11.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-12.html" afterPath="$PROJECT_DIR$/index-files/index-12.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-13.html" afterPath="$PROJECT_DIR$/index-files/index-13.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-14.html" afterPath="$PROJECT_DIR$/index-files/index-14.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-15.html" afterPath="$PROJECT_DIR$/index-files/index-15.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-16.html" afterPath="$PROJECT_DIR$/index-files/index-16.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-17.html" afterPath="$PROJECT_DIR$/index-files/index-17.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-18.html" afterPath="$PROJECT_DIR$/index-files/index-18.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-19.html" afterPath="$PROJECT_DIR$/index-files/index-19.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-2.html" afterPath="$PROJECT_DIR$/index-files/index-2.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-20.html" afterPath="$PROJECT_DIR$/index-files/index-20.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-21.html" afterPath="$PROJECT_DIR$/index-files/index-21.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-22.html" afterPath="$PROJECT_DIR$/index-files/index-22.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-23.html" afterPath="$PROJECT_DIR$/index-files/index-23.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-3.html" afterPath="$PROJECT_DIR$/index-files/index-3.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-4.html" afterPath="$PROJECT_DIR$/index-files/index-4.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-5.html" afterPath="$PROJECT_DIR$/index-files/index-5.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-6.html" afterPath="$PROJECT_DIR$/index-files/index-6.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-7.html" afterPath="$PROJECT_DIR$/index-files/index-7.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-8.html" afterPath="$PROJECT_DIR$/index-files/index-8.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index-files/index-9.html" afterPath="$PROJECT_DIR$/index-files/index-9.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/myappcmsapp/myappcmsapp.iml" afterPath="$PROJECT_DIR$/myappcmsapp/myappcmsapp.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/myappcmsapp/src/main/java/viewlift/com/myappcmsapp/MainActivity.java" afterPath="$PROJECT_DIR$/myappcmsapp/src/main/java/viewlift/com/myappcmsapp/MainActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/myappcmsapp/src/main/res/values/strings.xml" afterPath="$PROJECT_DIR$/myappcmsapp/src/main/res/values/strings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/overview-frame.html" afterPath="$PROJECT_DIR$/overview-frame.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/overview-summary.html" afterPath="$PROJECT_DIR$/overview-summary.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/overview-tree.html" afterPath="$PROJECT_DIR$/overview-tree.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package-list" afterPath="$PROJECT_DIR$/package-list" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/BuildConfig.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/BuildConfig.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/ExampleInstrumentedTest.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/ExampleInstrumentedTest.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/ExampleUnitTest.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/ExampleUnitTest.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/MainActivity.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/MainActivity.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.anim.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.anim.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.attr.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.attr.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.bool.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.bool.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.color.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.color.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.dimen.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.dimen.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.drawable.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.drawable.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.id.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.id.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.integer.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.integer.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.layout.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.layout.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.mipmap.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.mipmap.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.string.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.string.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.style.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.style.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.styleable.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/R.styleable.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/package-frame.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/package-frame.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/package-summary.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/package-summary.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/viewlift/com/myappcmsapp/package-tree.html" afterPath="$PROJECT_DIR$/viewlift/com/myappcmsapp/package-tree.html" />
-    </list>
+    <list default="true" id="62c935f0-1e0a-46fe-8ee7-25ecbc61321e" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -330,154 +14,6 @@
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
     </projectState>
-  </component>
-  <component name="ExternalProjectsManager">
-    <system id="GRADLE">
-      <state>
-        <projects_view />
-      </state>
-    </system>
-  </component>
-  <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="ViewliftSDK.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/ViewliftSDK.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="390">
-              <caret line="28" column="0" lean-forward="false" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#1140#1192#0" expanded="true" />
-                <element signature="e#1253#1305#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="VideoPlayerView.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/VideoPlayerView.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2233">
-              <caret line="177" column="58" lean-forward="false" selection-start-line="177" selection-start-column="48" selection-end-line="177" selection-end-column="58" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="VideoActivity.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/VideoActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="570">
-              <caret line="38" column="57" lean-forward="false" selection-start-line="38" selection-start-column="35" selection-end-line="38" selection-end-column="57" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="app_cms_api.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/res/values/app_cms_api.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15">
-              <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="strings.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/res/values/strings.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="8" column="12" lean-forward="false" selection-start-line="8" selection-start-column="12" selection-end-line="8" selection-end-column="12" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="VideoFragment.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/VideoFragment.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2235">
-              <caret line="160" column="59" lean-forward="false" selection-start-line="160" selection-start-column="59" selection-end-line="160" selection-end-column="59" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/myappcmsapp/src/main/java/viewlift/com/myappcmsapp/MainActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="15" column="42" lean-forward="false" selection-start-line="15" selection-start-column="42" selection-end-line="15" selection-end-column="42" />
-              <folding>
-                <element signature="e#494#521#0" expanded="true" />
-                <element signature="e#539#565#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ViewliftSDKModule.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/ViewliftSDKModule.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="405">
-              <caret line="27" column="53" lean-forward="false" selection-start-line="27" selection-start-column="53" selection-end-line="27" selection-end-column="53" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#707#783#0" expanded="true" />
-                <element signature="e#1660#1661#0" expanded="true" />
-                <element signature="e#1707#1708#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ViewliftSDKComponent.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/ViewliftSDKComponent.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="integer.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/res/values/integer.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15">
-              <caret line="1" column="50" lean-forward="false" selection-start-line="1" selection-start-column="19" selection-end-line="1" selection-end-column="50" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
-  </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Class" />
-      </list>
-    </option>
-  </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>ads</find>
-      <find>&amp;</find>
-      <find>film</find>
-    </findStrings>
-  </component>
-  <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GradleLocalSettings">
     <option name="myGradleHomes">
@@ -3102,32 +2638,12 @@
       <projects_view />
     </option>
   </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/AppCMSSDK.java" />
-        <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/VideoPlayer.java" />
-        <option value="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/VideoFragment.java" />
-        <option value="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/VideoActivity.java" />
-        <option value="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/res/values/app_cms_api.xml" />
-        <option value="$PROJECT_DIR$/myappcmsapp/src/main/res/values/strings.xml" />
-        <option value="$PROJECT_DIR$/myappcmsapp/src/main/java/viewlift/com/myappcmsapp/MainActivity.java" />
-        <option value="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/VideoPlayerView.java" />
-        <option value="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/res/values/integer.xml" />
-        <option value="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/ViewliftSDKModule.java" />
-        <option value="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/ViewliftSDK.java" />
-        <option value="$PROJECT_DIR$/AndroidAppCMSSDK/src/main/res/values/strings.xml" />
-      </list>
-    </option>
-  </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="72" />
     <option name="y" value="34" />
     <option name="width" value="1272" />
     <option name="height" value="809" />
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator currentView="AndroidView" proportions="" version="1">
       <flattenPackages />
@@ -3143,10 +2659,10 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="ProjectPane" />
       <pane id="PackagesPane" />
       <pane id="Scratches" />
       <pane id="Scope" />
-      <pane id="ProjectPane" />
       <pane id="AndroidView">
         <subPane>
           <PATH>
@@ -3157,190 +2673,6 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="myappcmsapp" />
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidResFolderNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="values" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidResFolderTypeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="AndroidAppCMSMaster" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="myappcmsapp" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidResFolderNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="AndroidAppCMSMaster" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="myappcmsapp" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="AndroidAppCMSMaster" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="myappcmsapp" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="viewlift" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="myappcmsapp" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="AndroidAppCMSMaster" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="myappcmsapp" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidModuleNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="AndroidAppCMSMaster" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="AndroidAppCMSSDK" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidResFolderNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="values" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidResFolderTypeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="AndroidAppCMSMaster" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="AndroidAppCMSSDK" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidResFolderNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mipmap" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidResFolderTypeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="AndroidAppCMSMaster" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="AndroidAppCMSSDK" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidResFolderNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="layout" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidResFolderTypeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="AndroidAppCMSMaster" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="AndroidAppCMSSDK" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidResFolderNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="drawable" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidResFolderTypeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="AndroidAppCMSMaster" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="AndroidAppCMSSDK" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="AndroidAppCMSMaster" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="AndroidAppCMSSDK" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.android.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="viewlift" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="appcmssdk" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -3359,7 +2691,6 @@
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="device.picker.selection" value="Nexus_9_API_23" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -3444,51 +2775,6 @@
       <option name="ACTIVITY_CLASS" value="" />
       <method />
     </configuration>
-    <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests">
-      <module name="" />
-      <option name="TESTING_TYPE" value="0" />
-      <option name="INSTRUMENTATION_RUNNER_CLASS" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="CLASS_NAME" value="" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="EXTRA_OPTIONS" value="" />
-      <option name="CLEAR_LOGCAT" value="false" />
-      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
-      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
-      <option name="FORCE_STOP_RUNNING_APP" value="true" />
-      <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
-      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
-      <option name="PREFERRED_AVD" value="" />
-      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
-      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
-      <option name="DEBUGGER_TYPE" value="Auto" />
-      <Auto>
-        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
-        <option name="SHOW_STATIC_VARS" value="true" />
-        <option name="WORKING_DIR" value="" />
-        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
-        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
-      </Auto>
-      <Hybrid>
-        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
-        <option name="SHOW_STATIC_VARS" value="true" />
-        <option name="WORKING_DIR" value="" />
-        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
-        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
-      </Hybrid>
-      <Java />
-      <Native>
-        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
-        <option name="SHOW_STATIC_VARS" value="true" />
-        <option name="WORKING_DIR" value="" />
-        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
-        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
-      </Native>
-      <Profilers>
-        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
-      </Profilers>
-      <method />
-    </configuration>
     <configuration default="true" type="Application" factoryName="Application">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <option name="MAIN_CLASS_NAME" />
@@ -3501,89 +2787,6 @@
       <option name="ENV_VARIABLES" />
       <option name="PASS_PARENT_ENVS" value="true" />
       <module name="" />
-      <envs />
-      <method />
-    </configuration>
-    <configuration default="true" type="GradleRunConfiguration" factoryName="Gradle">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list />
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <method />
-    </configuration>
-    <configuration default="true" type="JUnit" factoryName="JUnit">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <module name="" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="METHOD_NAME" />
-      <option name="TEST_OBJECT" value="class" />
-      <option name="VM_PARAMETERS" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="singleModule" />
-      </option>
-      <envs />
-      <patterns />
-      <method />
-    </configuration>
-    <configuration default="true" type="JarApplication" factoryName="JAR Application">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <envs />
-      <method />
-    </configuration>
-    <configuration default="true" type="Java Scratch" factoryName="Java Scratch">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <option name="SCRATCH_FILE_ID" value="0" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="" />
-      <envs />
-      <method />
-    </configuration>
-    <configuration default="true" type="JetRunConfigurationType" factoryName="Kotlin">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="AndroidAppCMSMaster" />
-      <envs />
-      <method />
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType" factoryName="Kotlin script">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <option name="filePath" />
-      <option name="vmParameters" />
-      <option name="alternativeJrePath" />
-      <option name="programParameters" />
-      <option name="passParentEnvs" value="true" />
-      <option name="workingDirectory" />
-      <option name="isAlternativeJrePathEnabled" value="false" />
       <envs />
       <method />
     </configuration>
@@ -3623,7 +2826,7 @@
       <listeners />
       <method />
     </configuration>
-    <configuration default="false" name="myappcmsapp" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
+    <configuration default="false" name="myappcmsapp" type="AndroidRunConfigurationType" factoryName="Android App">
       <module name="myappcmsapp" />
       <option name="DEPLOY" value="true" />
       <option name="ARTIFACT_NAME" value="" />
@@ -3706,40 +2909,39 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="72" y="34" width="1272" height="809" extended-state="0" />
-    <editor active="true" />
     <layout>
-      <window_info id="Android Profiler" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Logcat" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36219338" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Profiler" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Logcat" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Device File Explorer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Device File Explorer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32756132" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32756132" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2504065" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Gradle View" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32756132" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Fabric" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2495935" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Gradle View" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Fabric" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -3748,234 +2950,5 @@
   <component name="XDebuggerManager">
     <breakpoint-manager />
     <watches-manager />
-  </component>
-  <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="0">
-            <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-            <folding />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/ViewliftSDK.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="58" column="50" lean-forward="false" selection-start-line="58" selection-start-column="50" selection-end-line="58" selection-end-column="50" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1140#1192#0" expanded="true" />
-            <element signature="e#1253#1305#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/ViewliftSDKModule.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="720">
-          <caret line="67" column="5" lean-forward="true" selection-start-line="67" selection-start-column="5" selection-end-line="67" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#707#783#0" expanded="true" />
-            <element signature="e#1660#1661#0" expanded="true" />
-            <element signature="e#1707#1708#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/res/values/app_cms_api.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" column="27" lean-forward="false" selection-start-line="12" selection-start-column="27" selection-end-line="12" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/VideoActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="31" column="0" lean-forward="true" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#825#867#0" expanded="true" />
-            <element signature="e#916#960#0" expanded="true" />
-            <element signature="e#1009#1053#0" expanded="true" />
-            <element signature="e#1535#1577#0" expanded="true" />
-            <element signature="e#1623#1665#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="23" lean-forward="true" selection-start-line="16" selection-start-column="23" selection-end-line="16" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="0">
-            <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-            <folding />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/res/values/styles.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/res/values/dimens.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/res/values/colors.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/myappcmsapp/src/main/res/values/strings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="24" lean-forward="false" selection-start-line="3" selection-start-column="18" selection-end-line="3" selection-end-column="24" />
-          <folding>
-            <element signature="e#256#261#0" expanded="true" />
-            <element signature="e#296#301#0" expanded="true" />
-            <element signature="e#307#312#0" expanded="true" />
-            <element signature="e#322#327#0" expanded="true" />
-            <element signature="e#333#338#0" expanded="true" />
-            <element signature="e#354#359#0" expanded="true" />
-            <element signature="e#384#389#0" expanded="true" />
-            <element signature="e#453#458#0" expanded="true" />
-            <element signature="e#467#472#0" expanded="true" />
-            <element signature="e#496#501#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/myappcmsapp/src/main/java/viewlift/com/myappcmsapp/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="15" column="42" lean-forward="false" selection-start-line="15" selection-start-column="42" selection-end-line="15" selection-end-column="42" />
-          <folding>
-            <element signature="e#494#521#0" expanded="true" />
-            <element signature="e#539#565#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/res/values/integer.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="50" lean-forward="false" selection-start-line="1" selection-start-column="19" selection-end-line="1" selection-end-column="50" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/build/intermediates/bundles/debug/res/layout/fragment_video_player.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-96">
-          <caret line="14" column="43" lean-forward="false" selection-start-line="14" selection-start-column="43" selection-end-line="14" selection-end-column="43" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/res/values/strings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="12" lean-forward="false" selection-start-line="8" selection-start-column="12" selection-end-line="8" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/res/values/app_cms_api.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/VideoActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="38" column="57" lean-forward="false" selection-start-line="38" selection-start-column="35" selection-end-line="38" selection-end-column="57" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/VideoFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2235">
-          <caret line="160" column="59" lean-forward="false" selection-start-line="160" selection-start-column="59" selection-end-line="160" selection-end-column="59" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/VideoPlayerView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2233">
-          <caret line="177" column="58" lean-forward="false" selection-start-line="177" selection-start-column="48" selection-end-line="177" selection-end-column="58" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/ViewliftSDK.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="28" column="0" lean-forward="false" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1140#1192#0" expanded="true" />
-            <element signature="e#1253#1305#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/ViewliftSDKModule.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="27" column="53" lean-forward="false" selection-start-line="27" selection-start-column="53" selection-end-line="27" selection-end-column="53" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#707#783#0" expanded="true" />
-            <element signature="e#1660#1661#0" expanded="true" />
-            <element signature="e#1707#1708#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AndroidAppCMSSDK/src/main/java/com/viewlift/appcmssdk/ViewliftSDKComponent.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
   </component>
 </project>

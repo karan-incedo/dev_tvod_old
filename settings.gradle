@@ -1,1 +1,1 @@
-include ':ViewliftSDK', ':myapp'
+include ':AndroidAppCMSSDK', ':myappcmsapp'
