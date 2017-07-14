@@ -1,26 +1,31 @@
-
 package com.viewlift.models.data.appcms.ui.android;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class Analytics {
 
     @SerializedName("googleTagManagerId")
     @Expose
-    private String googleTagManagerId;
+    String googleTagManagerId;
+
     @SerializedName("googleAnalyticsId")
     @Expose
-    private String googleAnalyticsId;
+    String googleAnalyticsId;
+
     @SerializedName("kochavaAppId")
     @Expose
-    private String kochavaAppId;
+    String kochavaAppId;
+
     @SerializedName("appflyerDevKey")
     @Expose
-    private String appflyerDevKey;
+    String appflyerDevKey;
+
     @SerializedName("omnitureAppSDKConfigFile")
     @Expose
-    private String omnitureAppSDKConfigFile;
+    String omnitureAppSDKConfigFile;
 
     public String getGoogleTagManagerId() {
         return googleTagManagerId;
@@ -61,5 +66,4 @@ public class Analytics {
     public void setOmnitureAppSDKConfigFile(String omnitureAppSDKConfigFile) {
         this.omnitureAppSDKConfigFile = omnitureAppSDKConfigFile;
     }
-
 }

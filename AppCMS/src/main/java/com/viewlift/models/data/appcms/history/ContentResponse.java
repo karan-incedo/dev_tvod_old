@@ -7,15 +7,18 @@ package com.viewlift.models.data.appcms.history;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.viewlift.models.data.appcms.api.Gist;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class ContentResponse {
+
     @SerializedName("gist")
     @Expose
-    private Gist gist;
+    Gist gist;
 
     @SerializedName("grade")
     @Expose
-    private String grade;
+    String grade;
 
     public Gist getGist() {
         return gist;

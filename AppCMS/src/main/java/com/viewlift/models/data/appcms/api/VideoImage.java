@@ -1,38 +1,47 @@
-
 package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class VideoImage {
 
     @SerializedName("id")
     @Expose
-    private String id;
+    String id;
+
     @SerializedName("publishDate")
     @Expose
-    private Long publishDate;
+    long publishDate;
+
     @SerializedName("updateDate")
     @Expose
-    private Long updateDate;
+    long updateDate;
+
     @SerializedName("addedDate")
     @Expose
-    private Long addedDate;
+    long addedDate;
+
     @SerializedName("siteOwner")
     @Expose
-    private String siteOwner;
+    String siteOwner;
+
     @SerializedName("name")
     @Expose
-    private String name;
+    String name;
+
     @SerializedName("url")
     @Expose
-    private String url;
+    String url;
+
     @SerializedName("secureUrl")
     @Expose
-    private String secureUrl;
+    String secureUrl;
+
     @SerializedName("imageTag")
     @Expose
-    private String imageTag;
+    String imageTag;
 
     public String getId() {
         return id;
@@ -42,27 +51,27 @@ public class VideoImage {
         this.id = id;
     }
 
-    public Long getPublishDate() {
+    public long getPublishDate() {
         return publishDate;
     }
 
-    public void setPublishDate(Long publishDate) {
+    public void setPublishDate(long publishDate) {
         this.publishDate = publishDate;
     }
 
-    public Long getUpdateDate() {
+    public long getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Long updateDate) {
+    public void setUpdateDate(long updateDate) {
         this.updateDate = updateDate;
     }
 
-    public Long getAddedDate() {
+    public long getAddedDate() {
         return addedDate;
     }
 
-    public void setAddedDate(Long addedDate) {
+    public void setAddedDate(long addedDate) {
         this.addedDate = addedDate;
     }
 
@@ -105,5 +114,4 @@ public class VideoImage {
     public void setImageTag(String imageTag) {
         this.imageTag = imageTag;
     }
-
 }

@@ -87,6 +87,7 @@ public class AppCMSSettingsFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 dismiss();
+                appCMSPresenter.setNavItemToCurrentAction(getActivity());
             }
         });
         appCMSettingsSeparatorView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain()

@@ -1,30 +1,37 @@
-
 package com.viewlift.models.data.appcms.api;
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+import java.util.List;
+
+@UseStag
 public class AppCMSPageAPI {
 
     @SerializedName("id")
     @Expose
-    private String id;
+    String id;
+
     @SerializedName("path")
     @Expose
-    private List<String> path = null;
+    List<String> path = null;
+
     @SerializedName("title")
     @Expose
-    private String title;
+    String title;
+
     @SerializedName("metadataMap")
     @Expose
-    private MetadataMap metadataMap;
+    MetadataMap metadataMap;
+
     @SerializedName("modules")
     @Expose
-    private List<Module> modules = null;
+    List<Module> modules = null;
+
     @SerializedName("moduleIds")
     @Expose
-    private List<String> moduleIds = null;
+    List<String> moduleIds = null;
 
     public String getId() {
         return id;

@@ -1,21 +1,25 @@
-
 package com.viewlift.models.data.appcms.ui.android;
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+import java.util.List;
+
+@UseStag
 public class Navigation {
 
     @SerializedName("primary")
     @Expose
-    private List<NavigationPrimary> navigationPrimary = null;
+    List<NavigationPrimary> navigationPrimary = null;
+
     @SerializedName("user")
     @Expose
-    private List<NavigationUser> navigationUser = null;
+    List<NavigationUser> navigationUser = null;
+
     @SerializedName("footer")
     @Expose
-    private List<NavigationFooter> navigationFooter = null;
+    List<NavigationFooter> navigationFooter = null;
 
     public List<NavigationPrimary> getNavigationPrimary() {
         return navigationPrimary;

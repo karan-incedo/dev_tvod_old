@@ -1,17 +1,19 @@
-
 package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class Category {
 
     @SerializedName("id")
     @Expose
-    private String id;
+    String id;
+
     @SerializedName("title")
     @Expose
-    private String title;
+    String title;
 
     public String getId() {
         return id;

@@ -2,18 +2,20 @@ package com.viewlift.models.data.appcms.history;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
 import java.util.List;
 
+@UseStag
 public class VideoAsset {
 
     @SerializedName("mpeg")
     @Expose
-    private List<Mpeg> mpeg = null;
+    List<Mpeg> mpeg = null;
 
     @SerializedName("hls")
     @Expose
-    private String hls;
+    String hls;
 
     public List<Mpeg> getMpeg() {
         return mpeg;

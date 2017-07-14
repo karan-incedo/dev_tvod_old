@@ -1,20 +1,23 @@
-
 package com.viewlift.models.data.appcms.sites;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class BrandLogo {
 
     @SerializedName("name")
     @Expose
-    private String name;
+    String name;
+
     @SerializedName("url")
     @Expose
-    private String url;
+    String url;
+
     @SerializedName("imageTag")
     @Expose
-    private String imageTag;
+    String imageTag;
 
     public String getName() {
         return name;
@@ -39,5 +42,4 @@ public class BrandLogo {
     public void setImageTag(String imageTag) {
         this.imageTag = imageTag;
     }
-
 }

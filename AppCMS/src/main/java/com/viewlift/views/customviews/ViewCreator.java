@@ -184,6 +184,9 @@ public class ViewCreator {
                 }
             }
         }
+        if (pageView != null) {
+            pageView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+        }
         return pageView;
     }
 
@@ -290,6 +293,9 @@ public class ViewCreator {
             if (hideModule) {
                 moduleView.setVisibility(View.GONE);
             }
+        }
+        if (moduleView != null) {
+            moduleView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
         }
         return moduleView;
     }
@@ -465,7 +471,7 @@ public class ViewCreator {
                                 LinearLayoutManager.HORIZONTAL,
                                 false));
                 boolean loop = false;
-                if (settings.getLoop() != null) {
+                if (settings.getLoop()) {
                     loop = settings.getLoop();
                 }
                 AppCMSCarouselItemAdapter appCMSCarouselItemAdapter =
@@ -507,7 +513,6 @@ public class ViewCreator {
                 componentViewResult.onInternalEvent = (DotSelectorView) componentViewResult.componentView;
                 componentViewResult.useMarginsAsPercentagesOverride = false;
                 break;
-
 
             case PAGE_BUTTON_KEY:
                 if (componentKey == AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) {
@@ -778,7 +783,6 @@ public class ViewCreator {
             case PAGE_TEXTVIEW_KEY:
                 componentViewResult.componentView = new TextView(context);
                 int textColor = ContextCompat.getColor(context, R.color.colorAccent);
-
                 if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())) {
                     textColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
                 } else if (component.getStyles() != null) {
@@ -971,7 +975,7 @@ public class ViewCreator {
                             moduleAPI.getContentData().size() > 0 &&
                             moduleAPI.getContentData().get(0) != null &&
                             moduleAPI.getContentData().get(0).getGist() != null &&
-                            moduleAPI.getContentData().get(0).getGist().getWatchedPercentage() != null) {
+                            moduleAPI.getContentData().get(0).getGist().getWatchedPercentage() != 0) {
                         ((ProgressBar) componentViewResult.componentView).setProgress(moduleAPI.getContentData().get(0).getGist().getWatchedPercentage());
                     } else {
                         ((ProgressBar) componentViewResult.componentView).setProgress(0);
@@ -1125,7 +1129,7 @@ public class ViewCreator {
                 int starBorderColor = Color.parseColor(getColor(context, component.getBorderColor()));
                 int starFillColor = Color.parseColor(getColor(context, component.getFillColor()));
                 float starRating = 0.0f;
-                if (moduleAPI.getContentData().get(0).getGist().getAverageStarRating() != null) {
+                if (moduleAPI.getContentData().get(0).getGist().getAverageStarRating() != 0f) {
                     starRating = moduleAPI.getContentData().get(0).getGist().getAverageStarRating();
                 }
                 componentViewResult.componentView = new StarRating(context,
@@ -1175,7 +1179,7 @@ public class ViewCreator {
     }
 
     private void applyBorderToComponent(Context context, View view, Component component) {
-        if (component.getBorderWidth() != null && component.getBorderColor() != null) {
+        if (component.getBorderWidth() != 0 && component.getBorderColor() != null) {
             if (component.getBorderWidth() > 0 && !TextUtils.isEmpty(component.getBorderColor())) {
                 GradientDrawable ageBorder = new GradientDrawable();
                 ageBorder.setShape(GradientDrawable.RECTANGLE);

@@ -1,41 +1,51 @@
-
 package com.viewlift.models.data.appcms.sites;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class Gist {
 
     @SerializedName("name")
     @Expose
-    private String name;
+    String name;
+
     @SerializedName("companyName")
     @Expose
-    private String companyName;
+    String companyName;
+
     @SerializedName("serviceType")
     @Expose
-    private String serviceType;
+    String serviceType;
+
     @SerializedName("domainName")
     @Expose
-    private String domainName;
+    String domainName;
+
     @SerializedName("id")
     @Expose
-    private String id;
+    String id;
+
     @SerializedName("siteInternalName")
     @Expose
-    private String siteInternalName;
+    String siteInternalName;
+
     @SerializedName("appAccess")
     @Expose
-    private AppAccess appAccess;
+    AppAccess appAccess;
+
     @SerializedName("updateDate")
     @Expose
-    private Long updateDate;
+    long updateDate;
+
     @SerializedName("addedDate")
     @Expose
-    private Long addedDate;
+    long addedDate;
+
     @SerializedName("productionMode")
     @Expose
-    private Boolean productionMode;
+    boolean productionMode;
 
     public String getName() {
         return name;
@@ -93,28 +103,27 @@ public class Gist {
         this.appAccess = appAccess;
     }
 
-    public Long getUpdateDate() {
+    public long getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Long updateDate) {
+    public void setUpdateDate(long updateDate) {
         this.updateDate = updateDate;
     }
 
-    public Long getAddedDate() {
+    public long getAddedDate() {
         return addedDate;
     }
 
-    public void setAddedDate(Long addedDate) {
+    public void setAddedDate(long addedDate) {
         this.addedDate = addedDate;
     }
 
-    public Boolean getProductionMode() {
+    public boolean getProductionMode() {
         return productionMode;
     }
 
-    public void setProductionMode(Boolean productionMode) {
+    public void setProductionMode(boolean productionMode) {
         this.productionMode = productionMode;
     }
-
 }

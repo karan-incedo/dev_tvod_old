@@ -2,27 +2,34 @@ package com.viewlift.models.data.appcms.ui.authentication;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
 /**
  * Created by viewlift on 7/5/17.
  */
 
+@UseStag
 public class SignInResponse {
+
     @SerializedName("authorizationToken")
     @Expose
-    private String authorizationToken;
+    String authorizationToken;
+
     @SerializedName("refreshToken")
     @Expose
-    private String refreshToken;
+    String refreshToken;
+
     @SerializedName("email")
     @Expose
-    private String email;
+    String email;
+
     @SerializedName("name")
     @Expose
-    private String name;
+    String name;
+
     @SerializedName("error")
     @Expose
-    private String error;
+    String error;
 
     public String getAuthorizationToken() {
         return authorizationToken;

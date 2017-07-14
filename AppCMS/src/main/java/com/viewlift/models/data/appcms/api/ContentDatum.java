@@ -2,70 +2,72 @@ package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
 import java.util.List;
 
+@UseStag
 public class ContentDatum {
 
     @SerializedName("gist")
     @Expose
-    private Gist gist;
+    Gist gist;
 
     @SerializedName("grade")
     @Expose
-    private String grade;
+    String grade;
 
     @SerializedName("userId")
     @Expose
-    private String userId;
+    String userId;
 
     @SerializedName("showQueue")
     @Expose
-    private Boolean showQueue;
+    boolean showQueue;
 
     @SerializedName("addedDate")
     @Expose
-    private Long addedDate;
+    long addedDate;
 
     @SerializedName("updateDate")
     @Expose
-    private Long updateDate;
+    long updateDate;
 
     @SerializedName("contentDetails")
     @Expose
-    private ContentDetails contentDetails;
+    ContentDetails contentDetails;
 
     @SerializedName("streamingInfo")
     @Expose
-    private StreamingInfo streamingInfo;
+    StreamingInfo streamingInfo;
 
     @SerializedName("categories")
     @Expose
-    private List<Category> categories = null;
+    List<Category> categories = null;
 
     @SerializedName("tags")
     @Expose
-    private List<Tag> tags = null;
+    List<Tag> tags = null;
 
     @SerializedName("external")
     @Expose
-    private External external;
+    External external;
 
     @SerializedName("statistics")
     @Expose
-    private Statistics statistics;
+    Statistics statistics;
 
     @SerializedName("channels")
     @Expose
-    private List<Object> channels = null;
+    List<Object> channels = null;
 
     @SerializedName("creditBlocks")
     @Expose
-    private List<CreditBlock> creditBlocks = null;
+    List<CreditBlock> creditBlocks = null;
 
     @SerializedName("parentalRating")
     @Expose
-    private String parentalRating;
+    String parentalRating;
 
     public Gist getGist() {
         return gist;

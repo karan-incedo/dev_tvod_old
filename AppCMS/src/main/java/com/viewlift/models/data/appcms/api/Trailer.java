@@ -1,32 +1,39 @@
-
 package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class Trailer {
 
     @SerializedName("id")
     @Expose
-    private String id;
+    String id;
+
     @SerializedName("permalink")
     @Expose
-    private String permalink;
+    String permalink;
+
     @SerializedName("mediaType")
     @Expose
-    private Object mediaType;
+    Object mediaType;
+
     @SerializedName("videoImageUrl")
     @Expose
-    private Object videoImageUrl;
+    Object videoImageUrl;
+
     @SerializedName("posterImageUrl")
     @Expose
-    private Object posterImageUrl;
+    Object posterImageUrl;
+
     @SerializedName("videoAssets")
     @Expose
-    private VideoAssets videoAssets;
+    VideoAssets videoAssets;
+
     @SerializedName("title")
     @Expose
-    private String title;
+    String title;
 
     public String getId() {
         return id;
@@ -83,5 +90,4 @@ public class Trailer {
     public void setTitle(String title) {
         this.title = title;
     }
-
 }

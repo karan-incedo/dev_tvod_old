@@ -247,8 +247,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         super.onResume();
         if (resumeInternalEvents) {
             appCMSPresenter.restartInternalEvents();
+            appCMSPresenter.showMainFragmentView(false);
             Log.d(TAG, "onResume() - Resuming internal events");
         }
+
         if (pageViewDuringSearch != null) {
             selectNavItem(pageViewDuringSearch);
         } else {
@@ -442,6 +444,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                     appCMSBinder.getPageId());
             fragmentTransaction.addToBackStack(appCMSBinder.getPageId());
             fragmentTransaction.commit();
+            getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+                @Override
+                public void onBackStackChanged() {
+                    appCMSPresenter.dismissOpenDialogs();
+                    appCMSPresenter.showMainFragmentView(true);
+                    getSupportFragmentManager().removeOnBackStackChangedListener(this);
+                }
+            });
         } catch (IllegalStateException e) {
             Log.e(TAG, "Failed to add Fragment to back stack");
         }
@@ -495,8 +505,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         if (navigation.getNavigationPrimary().size() == 0 || !appCMSBinder.isNavbarPresent()) {
             appCMSTabNavContainer.setVisibility(View.GONE);
         } else {
-            appCMSTabNavContainer.setVisibility(View.VISIBLE);
-            selectNavItem(appCMSBinder.getPageId());
+            if (appCMSFragment.getVisibility() == View.VISIBLE) {
+                appCMSTabNavContainer.setVisibility(View.VISIBLE);
+                selectNavItem(appCMSBinder.getPageId());
+            }
         }
     }
 
@@ -619,7 +631,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             @Override
             public void onClick(View v) {
                 if (appCMSBinderStack.size() > 0) {
-//                    unselectAllNavItems();
                     AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
                     if (!appCMSPresenter.launchNavigationPage(appCMSBinder.getPageId(),
                             appCMSBinder.getPageName())) {
