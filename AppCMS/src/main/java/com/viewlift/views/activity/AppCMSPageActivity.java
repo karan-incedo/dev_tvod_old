@@ -437,7 +437,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     private void createFragment(AppCMSBinder appCMSBinder) {
         try {
-            final int backstackCount = getSupportFragmentManager().getBackStackEntryCount();
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             Fragment appCMSPageFragment = AppCMSPageFragment.newInstance(this, appCMSBinder);
@@ -449,11 +448,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 @Override
                 public void onBackStackChanged() {
                     if (appCMSPresenter != null &&
-                            getSupportFragmentManager().getBackStackEntryCount() == backstackCount + 1) {
+                            getSupportFragmentManager().getBackStackEntryCount() == appCMSBinderStack.size()) {
                         appCMSPresenter.dismissOpenDialogs();
                         appCMSPresenter.showMainFragmentView(true);
-                        getSupportFragmentManager().removeOnBackStackChangedListener(this);
                     }
+                    getSupportFragmentManager().removeOnBackStackChangedListener(this);
                 }
             });
         } catch (IllegalStateException e) {

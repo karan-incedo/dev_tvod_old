@@ -636,15 +636,14 @@ public class AppCMSPresenter {
             if (mainFragmentView != null) {
                 if (show) {
                     mainFragmentView.setVisibility(View.VISIBLE);
+                    FrameLayout addOnFragment =
+                            (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
+                    if (addOnFragment != null) {
+                        addOnFragment.setVisibility(View.GONE);
+                    }
                 } else {
-                    mainFragmentView.setVisibility(View.INVISIBLE);
+                    mainFragmentView.setVisibility(View.GONE);
                 }
-            }
-
-            FrameLayout addOnFragment =
-                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
-            if (addOnFragment != null) {
-                addOnFragment.setVisibility(View.INVISIBLE);
             }
         }
     }
