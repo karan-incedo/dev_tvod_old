@@ -49,6 +49,17 @@ android {
             }
         }
     }
+    defaultConfig {
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [
+                        stagAssumeHungarianNotation: 'false',
+                        stagGeneratedPackageName   : 'com.viewlift.stag.generated',
+                        stagDebug                  : 'true' // Generates output to Gradle console
+                ]
+            }
+        }
+    }
     sourceSets {
         mobile {
             java.srcDirs = ['src/mobile/java']
@@ -149,4 +160,7 @@ dependencies {
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
 
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
+    annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
 }
