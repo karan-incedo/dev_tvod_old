@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -262,17 +263,22 @@ public class ViewCreator {
 
                     View componentView = componentViewResult.componentView;
                     if (componentView != null) {
-                        childrenContainer.addView(componentView);
-                        moduleView.setComponentHasView(i, true);
-                        moduleView.setViewMarginsFromComponent(component,
-                                componentView,
-                                moduleView.getLayout(),
-                                childrenContainer,
-                                false,
-                                jsonValueKeyMap,
-                                componentViewResult.useMarginsAsPercentagesOverride,
-                                componentViewResult.useWidthOfScreen,
-                                module.getView());
+                        if (componentViewResult.addToPageView) {
+                            pageView.addView(componentView);
+                        } else {
+
+                            childrenContainer.addView(componentView);
+                            moduleView.setComponentHasView(i, true);
+                            moduleView.setViewMarginsFromComponent(component,
+                                    componentView,
+                                    moduleView.getLayout(),
+                                    childrenContainer,
+                                    false,
+                                    jsonValueKeyMap,
+                                    componentViewResult.useMarginsAsPercentagesOverride,
+                                    componentViewResult.useWidthOfScreen,
+                                    module.getView());
+                        }
                     } else {
                         moduleView.setComponentHasView(i, false);
                     }
@@ -385,6 +391,7 @@ public class ViewCreator {
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
         componentViewResult.shouldHideModule = false;
+        componentViewResult.addToPageView = false;
 
         if (moduleAPI == null) {
             return;
@@ -723,12 +730,23 @@ public class ViewCreator {
                         break;
 
                     case PAGE_REMOVEALL_KEY:
-                        final boolean isHistoryPage = jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY;
+                        componentViewResult.addToPageView = true;
+
+                        FrameLayout.LayoutParams removeAllLayoutParams =
+                                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                        removeAllLayoutParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                        componentViewResult.componentView.setLayoutParams(removeAllLayoutParams);
+
+                        final boolean isHistoryPage = jsonValueKeyMap.get(viewType)
+                                == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY;
                         if (isHistoryPage) {
                             componentViewResult.componentView.setVisibility(View.GONE);
                             componentViewResult.componentView.setEnabled(false);
                         } else {
                             componentViewResult.onInternalEvent = new OnInternalEvent() {
+                                final View removeAllButton = componentViewResult.componentView;
                                 private List<OnInternalEvent> receivers = new ArrayList<>();
 
                                 @Override
@@ -745,7 +763,7 @@ public class ViewCreator {
 
                                 @Override
                                 public void receiveEvent(InternalEvent<?> event) {
-                                    //
+                                    removeAllButton.setVisibility(View.VISIBLE);
                                 }
 
                                 @Override
@@ -758,7 +776,7 @@ public class ViewCreator {
                             OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
 
                             @Override
-                            public void onClick(View v) {
+                            public void onClick(final View v) {
                                 if (isHistoryPage) {
                                     //
                                 } else {
@@ -766,6 +784,7 @@ public class ViewCreator {
                                         @Override
                                         public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
                                             onInternalEvent.sendEvent(null);
+                                            v.setVisibility(View.GONE);
                                         }
                                     });
                                 }
@@ -1224,6 +1243,7 @@ public class ViewCreator {
         boolean useMarginsAsPercentagesOverride;
         boolean useWidthOfScreen;
         boolean shouldHideModule;
+        boolean addToPageView;
     }
 
     public static class UpdateImageIconAction implements Action1<UserVideoStatusResponse> {

@@ -49,6 +49,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     protected String defaultAction;
     protected boolean isHistory;
+    private List<OnInternalEvent> receivers;
 
     public AppCMSTrayItemAdapter(Context context,
                                  List<ContentDatum> adapterData,
@@ -62,6 +63,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.defaultAction = getDefaultAction(context);
         this.isHistory = jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY;
+        this.receivers = new ArrayList<>();
+
+        if (adapterData.size() > 0) {
+            sendEvent(null);
+        }
     }
 
     @Override
@@ -160,12 +166,14 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     @Override
     public void addReceiver(OnInternalEvent e) {
-        //
+        receivers.add(e);
     }
 
     @Override
     public void sendEvent(InternalEvent<?> event) {
-        //
+        for (OnInternalEvent internalEvent : receivers) {
+            internalEvent.receiveEvent(null);
+        }
     }
 
     @Override
@@ -289,7 +297,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                         viewHolder.appCMSContinueWatchingSeparatorView
                                 .setBackgroundColor(Color.parseColor(getColor(
-                                        viewHolder.itemView.getContext(), component.getBackgroundColor())));
+                                        viewHolder.itemView.getContext(),
+                                        component.getBackgroundColor())));
                     }
                     break;
                 default:
@@ -317,6 +326,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     @Override
     public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
         adapterData = contentData;
+
+        if (adapterData.size() > 0) {
+            sendEvent(null);
+        }
     }
 
     private void click(ContentDatum data) {
