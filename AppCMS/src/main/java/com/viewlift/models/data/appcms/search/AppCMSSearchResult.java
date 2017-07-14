@@ -1,141 +1,185 @@
-
 package com.viewlift.models.data.appcms.search;
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+import java.util.List;
+
+@UseStag
 public class AppCMSSearchResult {
 
     @SerializedName("tmsId")
     @Expose
-    private String tmsId;
+    String tmsId;
+
     @SerializedName("logLine")
     @Expose
-    private String logLine;
+    String logLine;
+
     @SerializedName("updateDate")
     @Expose
-    private String updateDate;
+    String updateDate;
+
     @SerializedName("addedDate")
     @Expose
-    private String addedDate;
+    String addedDate;
+
     @SerializedName("year")
     @Expose
-    private String year;
+    String year;
+
     @SerializedName("imdbId")
     @Expose
-    private String imdbId;
+    String imdbId;
+
     @SerializedName("publishDate")
     @Expose
-    private String publishDate;
+    String publishDate;
+
     @SerializedName("description")
     @Expose
-    private String description;
+    String description;
+
     @SerializedName("episode")
     @Expose
-    private Integer episode;
+    int episode;
+
     @SerializedName("posterImage")
     @Expose
-    private PosterImage posterImage;
+    PosterImage posterImage;
+
     @SerializedName("seoTitle")
     @Expose
-    private String seoTitle;
+    String seoTitle;
+
     @SerializedName("title")
     @Expose
-    private String title;
+    String title;
+
     @SerializedName("averageViewerGrade")
     @Expose
-    private String averageViewerGrade;
+    String averageViewerGrade;
+
     @SerializedName("tmdbRatingAvg")
     @Expose
-    private Integer tmdbRatingAvg;
+    int tmdbRatingAvg;
+
     @SerializedName("parentalRating")
     @Expose
-    private String parentalRating;
+    String parentalRating;
+
     @SerializedName("tmdbId")
     @Expose
-    private Integer tmdbId;
+    int tmdbId;
+
     @SerializedName("primaryCategory")
     @Expose
-    private PrimaryCategory primaryCategory;
+    PrimaryCategory primaryCategory;
+
     @SerializedName("relatedVideoIds")
     @Expose
-    private List<String> relatedVideoIds = null;
+    List<String> relatedVideoIds = null;
+
     @SerializedName("deviceControls")
     @Expose
-    private String deviceControls;
+    String deviceControls;
+
     @SerializedName("objectKey")
     @Expose
-    private String objectKey;
+    String objectKey;
+
     @SerializedName("categories")
     @Expose
-    private List<Category> categories = null;
+    List<Category> categories = null;
+
     @SerializedName("id")
     @Expose
-    private String id;
+    String id;
+
     @SerializedName("free")
     @Expose
-    private Boolean free;
+    boolean free;
+
     @SerializedName("thumbnail")
     @Expose
-    private Thumbnail thumbnail;
+    Thumbnail thumbnail;
+
     @SerializedName("geoRestriction")
     @Expose
-    private String geoRestriction;
+    String geoRestriction;
+
     @SerializedName("runtime")
     @Expose
-    private Integer runtime;
+    int runtime;
+
     @SerializedName("tmdbRatingCount")
     @Expose
-    private Integer tmdbRatingCount;
+    int tmdbRatingCount;
+
     @SerializedName("autoGenerateRelated")
     @Expose
-    private Boolean autoGenerateRelated;
+    boolean autoGenerateRelated;
+
     @SerializedName("ipadAssets")
     @Expose
-    private List<Object> ipadAssets = null;
+    List<Object> ipadAssets = null;
+
     @SerializedName("liveStream")
     @Expose
-    private Boolean liveStream;
+    boolean liveStream;
+
     @SerializedName("creditBlocks")
     @Expose
-    private List<CreditBlock> creditBlocks = null;
+    List<CreditBlock> creditBlocks = null;
+
     @SerializedName("tags")
     @Expose
-    private List<Tag> tags = null;
+    List<Tag> tags = null;
+
     @SerializedName("trailers")
     @Expose
-    private List<Object> trailers = null;
+    List<Object> trailers = null;
+
     @SerializedName("cuePoints")
     @Expose
-    private String cuePoints;
+    String cuePoints;
+
     @SerializedName("site")
     @Expose
-    private String site;
+    String site;
+
     @SerializedName("channels")
     @Expose
-    private List<Channel> channels = null;
+    List<Channel> channels = null;
+
     @SerializedName("widgetImage")
     @Expose
-    private WidgetImage widgetImage;
+    WidgetImage widgetImage;
+
     @SerializedName("closedCaptions")
     @Expose
-    private List<Object> closedCaptions = null;
+    List<Object> closedCaptions = null;
+
     @SerializedName("name")
     @Expose
-    private String name;
+    String name;
+
     @SerializedName("videoImage")
     @Expose
-    private VideoImage videoImage;
+    VideoImage videoImage;
+
     @SerializedName("videoAssets")
     @Expose
-    private List<VideoAsset> videoAssets = null;
+    List<VideoAsset> videoAssets = null;
+
     @SerializedName("permalink")
     @Expose
-    private String permalink;
+    String permalink;
+
     @SerializedName("status")
     @Expose
-    private String status;
+    String status;
 
     public String getTmsId() {
         return tmsId;
@@ -201,11 +245,11 @@ public class AppCMSSearchResult {
         this.description = description;
     }
 
-    public Integer getEpisode() {
+    public int getEpisode() {
         return episode;
     }
 
-    public void setEpisode(Integer episode) {
+    public void setEpisode(int episode) {
         this.episode = episode;
     }
 
@@ -241,11 +285,11 @@ public class AppCMSSearchResult {
         this.averageViewerGrade = averageViewerGrade;
     }
 
-    public Integer getTmdbRatingAvg() {
+    public int getTmdbRatingAvg() {
         return tmdbRatingAvg;
     }
 
-    public void setTmdbRatingAvg(Integer tmdbRatingAvg) {
+    public void setTmdbRatingAvg(int tmdbRatingAvg) {
         this.tmdbRatingAvg = tmdbRatingAvg;
     }
 
@@ -257,11 +301,11 @@ public class AppCMSSearchResult {
         this.parentalRating = parentalRating;
     }
 
-    public Integer getTmdbId() {
+    public int getTmdbId() {
         return tmdbId;
     }
 
-    public void setTmdbId(Integer tmdbId) {
+    public void setTmdbId(int tmdbId) {
         this.tmdbId = tmdbId;
     }
 
@@ -313,11 +357,11 @@ public class AppCMSSearchResult {
         this.id = id;
     }
 
-    public Boolean getFree() {
+    public boolean getFree() {
         return free;
     }
 
-    public void setFree(Boolean free) {
+    public void setFree(boolean free) {
         this.free = free;
     }
 
@@ -337,27 +381,27 @@ public class AppCMSSearchResult {
         this.geoRestriction = geoRestriction;
     }
 
-    public Integer getRuntime() {
+    public int getRuntime() {
         return runtime;
     }
 
-    public void setRuntime(Integer runtime) {
+    public void setRuntime(int runtime) {
         this.runtime = runtime;
     }
 
-    public Integer getTmdbRatingCount() {
+    public int getTmdbRatingCount() {
         return tmdbRatingCount;
     }
 
-    public void setTmdbRatingCount(Integer tmdbRatingCount) {
+    public void setTmdbRatingCount(int tmdbRatingCount) {
         this.tmdbRatingCount = tmdbRatingCount;
     }
 
-    public Boolean getAutoGenerateRelated() {
+    public boolean getAutoGenerateRelated() {
         return autoGenerateRelated;
     }
 
-    public void setAutoGenerateRelated(Boolean autoGenerateRelated) {
+    public void setAutoGenerateRelated(boolean autoGenerateRelated) {
         this.autoGenerateRelated = autoGenerateRelated;
     }
 
@@ -369,11 +413,11 @@ public class AppCMSSearchResult {
         this.ipadAssets = ipadAssets;
     }
 
-    public Boolean getLiveStream() {
+    public boolean getLiveStream() {
         return liveStream;
     }
 
-    public void setLiveStream(Boolean liveStream) {
+    public void setLiveStream(boolean liveStream) {
         this.liveStream = liveStream;
     }
 
@@ -480,5 +524,4 @@ public class AppCMSSearchResult {
     public void setStatus(String status) {
         this.status = status;
     }
-
 }

@@ -1,48 +1,53 @@
-
 package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class Settings {
 
     @SerializedName("lazyLoad")
     @Expose
-    private Boolean lazyLoad;
+    boolean lazyLoad;
+
     @SerializedName("hideTitle")
     @Expose
-    private Boolean hideTitle;
+    boolean hideTitle;
+
     @SerializedName("hideDate")
     @Expose
-    private Boolean hideDate;
+    boolean hideDate;
+
     @SerializedName("displayDevices")
     @Expose
-    private Object displayDevices;
+    Object displayDevices;
+
     @SerializedName("divClassName")
     @Expose
-    private Object divClassName;
+    Object divClassName;
 
-    public Boolean getLazyLoad() {
+    public boolean getLazyLoad() {
         return lazyLoad;
     }
 
-    public void setLazyLoad(Boolean lazyLoad) {
+    public void setLazyLoad(boolean lazyLoad) {
         this.lazyLoad = lazyLoad;
     }
 
-    public Boolean getHideTitle() {
+    public boolean getHideTitle() {
         return hideTitle;
     }
 
-    public void setHideTitle(Boolean hideTitle) {
+    public void setHideTitle(boolean hideTitle) {
         this.hideTitle = hideTitle;
     }
 
-    public Boolean getHideDate() {
+    public boolean getHideDate() {
         return hideDate;
     }
 
-    public void setHideDate(Boolean hideDate) {
+    public void setHideDate(boolean hideDate) {
         this.hideDate = hideDate;
     }
 
@@ -61,5 +66,4 @@ public class Settings {
     public void setDivClassName(Object divClassName) {
         this.divClassName = divClassName;
     }
-
 }

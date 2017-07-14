@@ -1,18 +1,21 @@
-
 package com.viewlift.models.data.appcms.ui.main;
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+import java.util.List;
+
+@UseStag
 public class Content {
 
     @SerializedName("tags")
     @Expose
-    private List<Tag> tags = null;
+    List<Tag> tags = null;
+
     @SerializedName("categories")
     @Expose
-    private List<Category> categories = null;
+    List<Category> categories = null;
 
     public List<Tag> getTags() {
         return tags;
@@ -29,5 +32,4 @@ public class Content {
     public void setCategories(List<Category> categories) {
         this.categories = categories;
     }
-
 }

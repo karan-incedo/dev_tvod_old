@@ -1,17 +1,19 @@
-
 package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class Credit {
 
     @SerializedName("title")
     @Expose
-    private String title;
+    String title;
+
     @SerializedName("url")
     @Expose
-    private String url;
+    String url;
 
     public String getTitle() {
         return title;

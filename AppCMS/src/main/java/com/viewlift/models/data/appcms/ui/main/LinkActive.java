@@ -1,14 +1,15 @@
-
 package com.viewlift.models.data.appcms.ui.main;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class LinkActive {
 
     @SerializedName("textColor")
     @Expose
-    private String textColor;
+    String textColor;
 
     public String getTextColor() {
         return textColor;
@@ -17,5 +18,4 @@ public class LinkActive {
     public void setTextColor(String textColor) {
         this.textColor = textColor;
     }
-
 }

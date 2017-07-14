@@ -1,17 +1,19 @@
-
 package com.viewlift.models.data.appcms.search;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class VideoImage {
 
     @SerializedName("objectKey")
     @Expose
-    private String objectKey;
+    String objectKey;
+
     @SerializedName("id")
     @Expose
-    private String id;
+    String id;
 
     public String getObjectKey() {
         return objectKey;
@@ -28,5 +30,4 @@ public class VideoImage {
     public void setId(String id) {
         this.id = id;
     }
-
 }

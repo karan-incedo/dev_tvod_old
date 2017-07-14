@@ -1,65 +1,69 @@
-
 package com.viewlift.models.data.appcms.ui.page;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class Desktop {
 
     @SerializedName("height")
     @Expose
-    private Float height;
+    float height;
+
     @SerializedName("yAxis")
     @Expose
-    private Float yAxis;
+    float yAxis;
+
     @SerializedName("rightMargin")
     @Expose
-    private Float rightMargin;
+    float rightMargin;
+
     @SerializedName("leftMargin")
     @Expose
-    private Float leftMargin;
+    float leftMargin;
+
     @SerializedName("xAxis")
     @Expose
-    private Float xAxis;
+    float xAxis;
 
-    public Float getHeight() {
+    public float getHeight() {
         return height;
     }
 
-    public void setHeight(Float height) {
+    public void setHeight(float height) {
         this.height = height;
     }
 
-    public Float getYAxis() {
+    public float getYAxis() {
         return yAxis;
     }
 
-    public void setYAxis(Float yAxis) {
+    public void setYAxis(float yAxis) {
         this.yAxis = yAxis;
     }
 
-    public Float getRightMargin() {
+    public float getRightMargin() {
         return rightMargin;
     }
 
-    public void setRightMargin(Float rightMargin) {
+    public void setRightMargin(float rightMargin) {
         this.rightMargin = rightMargin;
     }
 
-    public Float getLeftMargin() {
+    public float getLeftMargin() {
         return leftMargin;
     }
 
-    public void setLeftMargin(Float leftMargin) {
+    public void setLeftMargin(float leftMargin) {
         this.leftMargin = leftMargin;
     }
 
-    public Float getXAxis() {
+    public float getXAxis() {
         return xAxis;
     }
 
-    public void setXAxis(Float xAxis) {
+    public void setXAxis(float xAxis) {
         this.xAxis = xAxis;
     }
-
 }

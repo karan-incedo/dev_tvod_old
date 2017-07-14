@@ -1,27 +1,33 @@
-
 package com.viewlift.models.data.appcms.ui.android;
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+import java.util.List;
+
+@UseStag
 public class AppCMSAndroidUI {
 
     @SerializedName("navigation")
     @Expose
-    private Navigation navigation;
+    Navigation navigation;
+
     @SerializedName("images")
     @Expose
-    private Images images;
+    Images images;
+
     @SerializedName("pages")
     @Expose
-    private List<MetaPage> metaPages = null;
+    List<MetaPage> metaPages = null;
+
     @SerializedName("analytics")
     @Expose
-    private Analytics analytics;
+    Analytics analytics;
+
     @SerializedName("version")
     @Expose
-    private String version;
+    String version;
 
     public Navigation getNavigation() {
         return navigation;
@@ -62,5 +68,4 @@ public class AppCMSAndroidUI {
     public void setVersion(String version) {
         this.version = version;
     }
-
 }
