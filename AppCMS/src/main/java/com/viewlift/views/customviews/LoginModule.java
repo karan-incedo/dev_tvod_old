@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -51,6 +53,7 @@ public class LoginModule extends ModuleView {
     private int loginBorderPadding;
     private EditText visibleEmailInputView;
     private EditText visiblePasswordInputView;
+    private ImageButton closeButton;
 
     public LoginModule(Context context,
                        ModuleList module,
@@ -180,6 +183,42 @@ public class LoginModule extends ModuleView {
                     childContainer.addView(moduleView);
                 }
             }
+
+            final String closeAction = getContext().getString(R.string.app_cms_action_close_key);
+            closeButton = new ImageButton(getContext());
+            closeButton.setImageResource(R.drawable.cancel);
+            closeButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            closeButton.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+            closeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!appCMSPresenter.launchButtonSelectedAction(null,
+                            closeAction,
+                            null,
+                            null,
+                            null,
+                            false)) {
+                        Log.e(TAG, "Could not launch action: " +
+                                " action: " +
+                                closeAction);
+                    }
+                }
+            });
+            closeButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            int closeButtonSize =
+                    (int) getContext().getResources().getDimension(R.dimen.close_button_size);
+            int closeButtonMargin =
+                    (int) getContext().getResources().getDimension(R.dimen.close_button_margin);
+            FrameLayout.LayoutParams closeButtonLayoutParams =
+                    new FrameLayout.LayoutParams(closeButtonSize, closeButtonSize);
+            closeButtonLayoutParams.setMargins(closeButtonMargin,
+                    closeButtonMargin,
+                    closeButtonMargin,
+                    closeButtonMargin);
+            closeButtonLayoutParams.gravity = Gravity.TOP | Gravity.END;
+            closeButton.setLayoutParams(closeButtonLayoutParams);
+            loginModuleSwitcherContainer.addView(closeButton);
+
             childContainer.addView(loginModuleSwitcherContainer);
             selectChild(0);
             unselectChild(1);
