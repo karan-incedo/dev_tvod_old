@@ -296,13 +296,13 @@ public class AppCMSPresenter {
         if (currentActivity != null &&
                 !loadingPage && appCMSMain != null &&
                 !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
-                !TextUtils.isEmpty(appCMSMain.getSite())) {
+                !TextUtils.isEmpty(appCMSMain.getInternalName())) {
             result = true;
             final String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
             String url = currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
                     appCMSMain.getApiBaseUrl(),
                     filmId,
-                    appCMSMain.getSite());
+                    appCMSMain.getInternalName());
             GetAppCMSStreamingInfoAsyncTask.Params params =
                     new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
             new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall,
@@ -346,7 +346,7 @@ public class AppCMSPresenter {
             updateHistoryRequest.setUserId(getLoggedInUser(currentActivity));
             updateHistoryRequest.setWatchedTime(watchedTime);
             updateHistoryRequest.setVideoId(filmId);
-            updateHistoryRequest.setSiteOwner(appCMSMain.getSite());
+            updateHistoryRequest.setSiteOwner(appCMSMain.getInternalName());
 
             String url = currentActivity.getString(R.string.app_cms_update_watch_history_api_url,
                     appCMSMain.getApiBaseUrl());
@@ -363,7 +363,7 @@ public class AppCMSPresenter {
 
     public void getUserVideoStatus(String filmId, Action1<UserVideoStatusResponse> responseAction) {
         String url = currentActivity.getString(R.string.app_cms_video_status_api_url,
-                appCMSMain.getApiBaseUrl(), filmId, appCMSMain.getSite());
+                appCMSMain.getApiBaseUrl(), filmId, appCMSMain.getInternalName());
         appCMSUserVideoStatusCall.call(url, getAuthToken(currentActivity), responseAction);
     }
 
@@ -396,7 +396,7 @@ public class AppCMSPresenter {
                     playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), requestAds);
                     if (contentDatum != null &&
                             contentDatum.getGist() != null &&
-                            contentDatum.getGist().getWatchedTime() != null) {
+                            contentDatum.getGist().getWatchedTime() != 0) {
                         playVideoIntent.putExtra(currentActivity.getString(R.string.watched_time_key), contentDatum.getGist().getWatchedTime());
                     }
                 } else {
@@ -415,7 +415,7 @@ public class AppCMSPresenter {
                         currentActivity.getString(R.string.app_cms_ads_api_url,
                                 getPermalinkCompletePath(pagePath),
                                 now.getTime(),
-                                appCMSMain.getSite()));
+                                appCMSMain.getInternalName()));
                 playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_bg_color_key),
                         appCMSMain.getBrand()
                                 .getGeneral()
@@ -487,7 +487,7 @@ public class AppCMSPresenter {
                 AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
                 getPageIdContent(appCMSMain.getApiBaseUrl(),
                         actionToPageAPIUrlMap.get(action),
-                        appCMSMain.getSite(),
+                        appCMSMain.getInternalName(),
                         false,
                         pagePath,
                         new AppCMSPageAPIAction(appbarPresent,
@@ -534,6 +534,7 @@ public class AppCMSPresenter {
                                                         }
                                                     }
                                                 }
+                                                showMainFragmentView(false);
                                                 cancelInternalEvents();
                                                 pushActionInternalEvents(appCMSPageAPIAction.action
                                                         + BaseView.isLandscape(currentActivity));
@@ -558,6 +559,7 @@ public class AppCMSPresenter {
                                             }
                                         });
                                     } else {
+                                        showMainFragmentView(false);
                                         cancelInternalEvents();
                                         pushActionInternalEvents(this.action
                                                 + BaseView.isLandscape(currentActivity));
@@ -633,20 +635,25 @@ public class AppCMSPresenter {
             if (mainFragmentView != null) {
                 if (show) {
                     mainFragmentView.setVisibility(View.VISIBLE);
+                    FrameLayout addOnFragment =
+                            (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
+                    if (addOnFragment != null) {
+                        addOnFragment.setVisibility(View.GONE);
+                    }
                 } else {
-                    mainFragmentView.setVisibility(View.INVISIBLE);
-                }
-            }
-            FrameLayout additionalFragmentView =
-                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
-            if (additionalFragmentView != null) {
-                if (show) {
-                    additionalFragmentView.setVisibility(View.INVISIBLE);
-                } else {
-                    additionalFragmentView.setVisibility(View.VISIBLE);
+                    mainFragmentView.setVisibility(View.GONE);
                 }
             }
         }
+    }
+
+    public void showAddOnFragment() {
+        FrameLayout addOnFragment =
+                (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
+        if (addOnFragment != null) {
+            addOnFragment.setVisibility(View.VISIBLE);
+        }
+        showMainFragmentView(false);
     }
 
     public boolean isAdditionalFragmentViewAvailable() {
@@ -702,7 +709,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_facebook_login_api_url,
                     appCMSMain.getApiBaseUrl(),
-                    appCMSMain.getSite());
+                    appCMSMain.getInternalName());
             appCMSFacebookLoginCall.call(url,
                     new Action1<FacebookLoginResponse>() {
                         @Override
@@ -738,7 +745,7 @@ public class AppCMSPresenter {
 
         final String url = currentActivity.getString(R.string.app_cms_edit_watchlist_api_url,
                 appCMSMain.getApiBaseUrl(),
-                appCMSMain.getSite(),
+                appCMSMain.getInternalName(),
                 getLoggedInUser(currentActivity),
                 filmId);
 
@@ -772,7 +779,7 @@ public class AppCMSPresenter {
     public void clearWatchlist(final Action1<AppCMSAddToWatchlistResult> resultAction1) {
         final String url = currentActivity.getString(R.string.app_cms_clear_watchlist_api_url,
                 appCMSMain.getApiBaseUrl(),
-                appCMSMain.getSite(),
+                appCMSMain.getInternalName(),
                 getLoggedInUser(currentActivity));
 
         try {
@@ -806,7 +813,7 @@ public class AppCMSPresenter {
 
             getWatchlistPageContent(appCMSMain.getApiBaseUrl(),
                     pageIdToPageAPIUrlMap.get(pageId),
-                    appCMSMain.getSite(),
+                    appCMSMain.getInternalName(),
                     true,
                     getPageId(appCMSPageUI), new AppCMSWatchlistAPIAction(true,
                             false,
@@ -843,6 +850,7 @@ public class AppCMSPresenter {
                             navigationPageData.put(this.pageId, pageAPI);
 
                             if (this.launchActivity) {
+                                showMainFragmentView(false);
                                 launchPageActivity(currentActivity,
                                         this.appCMSPageUI,
                                         pageAPI,
@@ -856,6 +864,7 @@ public class AppCMSPresenter {
                                         false,
                                         this.searchQuery);
                             } else {
+                                showMainFragmentView(false);
                                 Bundle args = getPageActivityBundle(currentActivity,
                                         this.appCMSPageUI,
                                         pageAPI,
@@ -916,7 +925,7 @@ public class AppCMSPresenter {
             AppCMSPageUI appCMSPageUI = navigationPages.get(historyMetaPage.getPageId());
             getHistoryPageContent(appCMSMain.getApiBaseUrl(),
                     historyMetaPage.getPageAPI(),
-                    appCMSMain.getSite(),
+                    appCMSMain.getInternalName(),
                     true,
                     getPageId(appCMSPageUI),
                     new AppCMSHistoryAPIAction(true,
@@ -941,11 +950,10 @@ public class AppCMSPresenter {
 
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
-            final AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
 
             getHistoryPageContent(appCMSMain.getApiBaseUrl(),
                     pageIdToPageAPIUrlMap.get(pageId),
-                    appCMSMain.getSite(),
+                    appCMSMain.getInternalName(),
                     true,
                     getPageId(appCMSPageUI), new AppCMSHistoryAPIAction(true,
                             false,
@@ -983,6 +991,7 @@ public class AppCMSPresenter {
                             navigationPageData.put(this.pageId, pageAPI);
 
                             if (this.launchActivity) {
+                                showMainFragmentView(false);
                                 launchPageActivity(currentActivity,
                                         this.appCMSPageUI,
                                         pageAPI,
@@ -996,6 +1005,7 @@ public class AppCMSPresenter {
                                         false,
                                         this.searchQuery);
                             } else {
+                                showMainFragmentView(false);
                                 Bundle args = getPageActivityBundle(currentActivity,
                                         this.appCMSPageUI,
                                         pageAPI,
@@ -1076,7 +1086,7 @@ public class AppCMSPresenter {
             transaction.add(R.id.app_cms_addon_fragment,
                     appCMSSettingsFragment,
                     currentActivity.getString(R.string.app_cms_settings_page_tag)).commit();
-            showMainFragmentView(false);
+            showAddOnFragment();
         }
     }
 
@@ -1084,7 +1094,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_forgot_password_api_url,
                     appCMSMain.getApiBaseUrl(),
-                    appCMSMain.getSite());
+                    appCMSMain.getInternalName());
             appCMSResetPasswordCall.call(url,
                     email,
                     new Action1<ForgotPasswordResponse>() {
@@ -1108,7 +1118,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
                     appCMSMain.getApiBaseUrl(),
-                    appCMSMain.getSite());
+                    appCMSMain.getInternalName());
             appCMSUserIdentityCall.callGet(url,
                     getAuthToken(currentActivity),
                     new Action1<UserIdentity>() {
@@ -1126,7 +1136,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
                     appCMSMain.getApiBaseUrl(),
-                    appCMSMain.getSite());
+                    appCMSMain.getInternalName());
             UserIdentity userIdentity = new UserIdentity();
             userIdentity.setName(username);
             userIdentity.setEmail(email);
@@ -1169,7 +1179,7 @@ public class AppCMSPresenter {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             getPageIdContent(appCMSMain.getApiBaseUrl(),
                     pageIdToPageAPIUrlMap.get(pageId),
-                    appCMSMain.getSite(),
+                    appCMSMain.getInternalName(),
                     true,
                     getPageId(appCMSPageUI),
                     new AppCMSPageAPIAction(true,
@@ -1203,6 +1213,7 @@ public class AppCMSPresenter {
                                                     }
                                                 }
                                                 if (appCMSPageAPIAction.launchActivity) {
+                                                    showMainFragmentView(false);
                                                     launchPageActivity(currentActivity,
                                                             appCMSPageAPIAction.appCMSPageUI,
                                                             appCMSPageAPI,
@@ -1216,6 +1227,7 @@ public class AppCMSPresenter {
                                                             appCMSPageAPIAction.sendCloseAction,
                                                             appCMSPageAPIAction.searchQuery);
                                                 } else {
+                                                    showMainFragmentView(false);
                                                     Bundle args = getPageActivityBundle(currentActivity,
                                                             appCMSPageAPIAction.appCMSPageUI,
                                                             appCMSPageAPI,
@@ -1239,6 +1251,7 @@ public class AppCMSPresenter {
                                     });
                                 } else {
                                     if (this.launchActivity) {
+                                        showMainFragmentView(false);
                                         launchPageActivity(currentActivity,
                                                 this.appCMSPageUI,
                                                 appCMSPageAPI,
@@ -1252,6 +1265,7 @@ public class AppCMSPresenter {
                                                 this.sendCloseAction,
                                                 this.searchQuery);
                                     } else {
+                                        showMainFragmentView(false);
                                         Bundle args = getPageActivityBundle(currentActivity,
                                                 this.appCMSPageUI,
                                                 appCMSPageAPI,
@@ -1489,21 +1503,15 @@ public class AppCMSPresenter {
     }
 
     public NavigationPrimary findHomePageNavItem() {
-        for (NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()) {
-            AppCMSUIKeyType navTitle = jsonValueKeyMap.get(navigationPrimary.getTitle());
-            if (navTitle == AppCMSUIKeyType.ANDROID_HOME_NAV_KEY) {
-                return navigationPrimary;
-            }
+        if (navigation.getNavigationPrimary().size() >= 1) {
+            return navigation.getNavigationPrimary().get(0);
         }
         return null;
     }
 
     public NavigationPrimary findMoviesPageNavItem() {
-        for (NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()) {
-            AppCMSUIKeyType navTitle = jsonValueKeyMap.get(navigationPrimary.getTitle());
-            if (navTitle == AppCMSUIKeyType.ANDROID_MOVIES_NAV_KEY) {
-                return navigationPrimary;
-            }
+        if (navigation.getNavigationPrimary().size() >= 2) {
+            return navigation.getNavigationPrimary().get(1);
         }
         return null;
     }
@@ -1532,7 +1540,7 @@ public class AppCMSPresenter {
                         .getApiBaseUrl())) {
                     Log.e(TAG, "AppCMS key for API Base URL not found");
                     launchErrorActivity(activity, platformType);
-                } else if (TextUtils.isEmpty(main.getSite())) {
+                } else if (TextUtils.isEmpty(main.getInternalName())) {
                     Log.e(TAG, "AppCMS key for API Site ID not found");
                     launchErrorActivity(activity, platformType);
                 } else {
@@ -1545,7 +1553,7 @@ public class AppCMSPresenter {
 
                     appCMSSearchUrlComponent = DaggerAppCMSSearchUrlComponent.builder()
                             .appCMSSearchUrlModule(new AppCMSSearchUrlModule(main.getApiBaseUrl(),
-                                    main.getSite(),
+                                    main.getInternalName(),
                                     appCMSSearchCall))
                             .build();
                     getAppCMSSite(activity, main, platformType);
@@ -1781,7 +1789,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_signup_api_url,
                     appCMSMain.getApiBaseUrl(),
-                    appCMSMain.getSite());
+                    appCMSMain.getInternalName());
             startLoginAsyncTask(url, email, password);
         }
     }
@@ -1790,7 +1798,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                     appCMSMain.getApiBaseUrl(),
-                    appCMSMain.getSite());
+                    appCMSMain.getInternalName());
             startLoginAsyncTask(url, email, password);
         }
     }
@@ -2224,7 +2232,7 @@ public class AppCMSPresenter {
             if (appCMSPageAPI == null) {
                 getPageIdContent(appCMSMain.getApiBaseUrl(),
                         pageIdToPageAPIUrlMap.get(pageId),
-                        appCMSMain.getSite(),
+                        appCMSMain.getInternalName(),
                         true,
                         getPageId(appCMSPageUI),
                         new AppCMSPageAPIAction(true,

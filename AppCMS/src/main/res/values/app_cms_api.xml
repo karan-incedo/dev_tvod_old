@@ -155,7 +155,7 @@
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
 
     <!-- AppCMS Action names -->
-    <string name="app_cms_action_initialize_key">Initalize</string>
+    <string name="app_cms_action_initialize_key">Initialize</string>
     <string name="app_cms_action_authpage_key">Authentication Screen</string>
     <string name="app_cms_action_homepage_key">Home Page</string>
     <string name="app_cms_action_homepage_nav">Home</string>

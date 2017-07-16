@@ -1,20 +1,23 @@
-
 package com.viewlift.models.data.appcms.search;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class Credit {
 
     @SerializedName("objectKey")
     @Expose
-    private String objectKey;
+    String objectKey;
+
     @SerializedName("title")
     @Expose
-    private String title;
+    String title;
+
     @SerializedName("url")
     @Expose
-    private String url;
+    String url;
 
     public String getObjectKey() {
         return objectKey;
@@ -39,5 +42,4 @@ public class Credit {
     public void setUrl(String url) {
         this.url = url;
     }
-
 }

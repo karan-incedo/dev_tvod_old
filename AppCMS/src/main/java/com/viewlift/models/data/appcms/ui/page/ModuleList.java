@@ -1,32 +1,39 @@
-
 package com.viewlift.models.data.appcms.ui.page;
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+import java.util.List;
+
+@UseStag
 public class ModuleList implements Module {
 
     @SerializedName("id")
     @Expose
-    private String id;
+    String id;
+
     @SerializedName("layout")
     @Expose
-    private Layout layout;
+    Layout layout;
+
     @SerializedName("settings")
     @Expose
-    private Settings settings;
+    Settings settings;
+
     @SerializedName("view")
     @Expose
-    private String view;
+    String view;
+
     @SerializedName("components")
     @JsonAdapter(ComponentListDeserializer.class)
     @Expose
-    private List<Component> components;
+    List<Component> components;
+
     @SerializedName("type")
     @Expose
-    private String type;
+    String type;
 
     public String getId() {
         return id;

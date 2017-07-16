@@ -4,6 +4,10 @@ import android.content.Context;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,9 +15,6 @@ import java.io.OutputStream;
 
 import javax.inject.Inject;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import snagfilms.com.air.appcms.R;
 
 /**

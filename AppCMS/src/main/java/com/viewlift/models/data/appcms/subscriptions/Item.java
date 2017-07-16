@@ -6,102 +6,104 @@ package com.viewlift.models.data.appcms.subscriptions;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
 import java.util.List;
 
+@UseStag
 public class Item {
-
-    @SerializedName("currencyCode")
-    @Expose
-    private String currencyCode;
-
-    @SerializedName("visible")
-    @Expose
-    private Boolean visible;
-
-    @SerializedName("plansMetaData")
-    @Expose
-    private String plansMetaData;
 
     @SerializedName("countryCode")
     @Expose
-    private List<Object> countryCode = null;
+    List<Object> countryCode = null;
 
     @SerializedName("acceptableSubscriptionOffers")
     @Expose
-    private List<AcceptableSubscriptionOffer> acceptableSubscriptionOffers = null;
-
-    @SerializedName("type")
-    @Expose
-    private String type;
-
-    @SerializedName("billingCyclePeriodType")
-    @Expose
-    private String billingCyclePeriodType;
-
-    @SerializedName("maxConnectedDevices")
-    @Expose
-    private Integer maxConnectedDevices;
-
-    @SerializedName("isPlanSubscribableBasedOnDate")
-    @Expose
-    private Boolean isPlanSubscribableBasedOnDate;
+    List<AcceptableSubscriptionOffer> acceptableSubscriptionOffers = null;
 
     @SerializedName("preAppliedSubscriptionOffers")
     @Expose
-    private List<PreAppliedSubscriptionOffer> preAppliedSubscriptionOffers = null;
+    List<PreAppliedSubscriptionOffer> preAppliedSubscriptionOffers = null;
+
+    @SerializedName("currencyCode")
+    @Expose
+    String currencyCode;
+
+    @SerializedName("visible")
+    @Expose
+    boolean visible;
+
+    @SerializedName("plansMetaData")
+    @Expose
+    String plansMetaData;
+
+    @SerializedName("type")
+    @Expose
+    String type;
+
+    @SerializedName("billingCyclePeriodType")
+    @Expose
+    String billingCyclePeriodType;
+
+    @SerializedName("maxConnectedDevices")
+    @Expose
+    int maxConnectedDevices;
+
+    @SerializedName("isPlanSubscribableBasedOnDate")
+    @Expose
+    boolean isPlanSubscribableBasedOnDate;
 
     @SerializedName("id")
     @Expose
-    private String id;
+    String id;
 
     @SerializedName("maxSimultaneousStreams")
     @Expose
-    private Integer maxSimultaneousStreams;
+    int maxSimultaneousStreams;
 
     @SerializedName("schedule")
     @Expose
-    private Schedule schedule;
+    Schedule schedule;
 
     @SerializedName("recurringPayment")
     @Expose
-    private RecurringPayment recurringPayment;
+    RecurringPayment recurringPayment;
 
     @SerializedName("billingFrequencyType")
     @Expose
-    private Boolean billingFrequencyType;
+    boolean billingFrequencyType;
 
     @SerializedName("deviceMetaData")
     @Expose
-    private String deviceMetaData;
+    String deviceMetaData;
 
     @SerializedName("description")
     @Expose
-    private String description;
+    String description;
 
     @SerializedName("name")
     @Expose
-    private String name;
+    String name;
 
     @SerializedName("billingCyclePeriodTypeFrequencyLabel")
     @Expose
-    private String billingCyclePeriodTypeFrequencyLabel;
+    String billingCyclePeriodTypeFrequencyLabel;
 
     @SerializedName("billingCyclePeriodMultiplier")
     @Expose
-    private Integer billingCyclePeriodMultiplier;
+    int billingCyclePeriodMultiplier;
 
     @SerializedName("acceptableOffersCount")
     @Expose
-    private Integer acceptableOffersCount;
+    int acceptableOffersCount;
 
     @SerializedName("identifier")
     @Expose
-    private String identifier;
+    String identifier;
 
     @SerializedName("preAppliedSubscriptionOffersCount")
     @Expose
-    private Integer preAppliedSubscriptionOffersCount;
+    int preAppliedSubscriptionOffersCount;
 
     public String getCurrencyCode() {
         return currencyCode;
@@ -111,11 +113,11 @@ public class Item {
         this.currencyCode = currencyCode;
     }
 
-    public Boolean getVisible() {
+    public boolean getVisible() {
         return visible;
     }
 
-    public void setVisible(Boolean visible) {
+    public void setVisible(boolean visible) {
         this.visible = visible;
     }
 
@@ -159,19 +161,19 @@ public class Item {
         this.billingCyclePeriodType = billingCyclePeriodType;
     }
 
-    public Integer getMaxConnectedDevices() {
+    public int getMaxConnectedDevices() {
         return maxConnectedDevices;
     }
 
-    public void setMaxConnectedDevices(Integer maxConnectedDevices) {
+    public void setMaxConnectedDevices(int maxConnectedDevices) {
         this.maxConnectedDevices = maxConnectedDevices;
     }
 
-    public Boolean getIsPlanSubscribableBasedOnDate() {
+    public boolean getIsPlanSubscribableBasedOnDate() {
         return isPlanSubscribableBasedOnDate;
     }
 
-    public void setIsPlanSubscribableBasedOnDate(Boolean isPlanSubscribableBasedOnDate) {
+    public void setIsPlanSubscribableBasedOnDate(boolean isPlanSubscribableBasedOnDate) {
         this.isPlanSubscribableBasedOnDate = isPlanSubscribableBasedOnDate;
     }
 
@@ -191,11 +193,11 @@ public class Item {
         this.id = id;
     }
 
-    public Integer getMaxSimultaneousStreams() {
+    public int getMaxSimultaneousStreams() {
         return maxSimultaneousStreams;
     }
 
-    public void setMaxSimultaneousStreams(Integer maxSimultaneousStreams) {
+    public void setMaxSimultaneousStreams(int maxSimultaneousStreams) {
         this.maxSimultaneousStreams = maxSimultaneousStreams;
     }
 
@@ -215,11 +217,11 @@ public class Item {
         this.recurringPayment = recurringPayment;
     }
 
-    public Boolean getBillingFrequencyType() {
+    public boolean getBillingFrequencyType() {
         return billingFrequencyType;
     }
 
-    public void setBillingFrequencyType(Boolean billingFrequencyType) {
+    public void setBillingFrequencyType(boolean billingFrequencyType) {
         this.billingFrequencyType = billingFrequencyType;
     }
 
@@ -255,19 +257,19 @@ public class Item {
         this.billingCyclePeriodTypeFrequencyLabel = billingCyclePeriodTypeFrequencyLabel;
     }
 
-    public Integer getBillingCyclePeriodMultiplier() {
+    public int getBillingCyclePeriodMultiplier() {
         return billingCyclePeriodMultiplier;
     }
 
-    public void setBillingCyclePeriodMultiplier(Integer billingCyclePeriodMultiplier) {
+    public void setBillingCyclePeriodMultiplier(int billingCyclePeriodMultiplier) {
         this.billingCyclePeriodMultiplier = billingCyclePeriodMultiplier;
     }
 
-    public Integer getAcceptableOffersCount() {
+    public int getAcceptableOffersCount() {
         return acceptableOffersCount;
     }
 
-    public void setAcceptableOffersCount(Integer acceptableOffersCount) {
+    public void setAcceptableOffersCount(int acceptableOffersCount) {
         this.acceptableOffersCount = acceptableOffersCount;
     }
 
@@ -279,11 +281,11 @@ public class Item {
         this.identifier = identifier;
     }
 
-    public Integer getPreAppliedSubscriptionOffersCount() {
+    public int getPreAppliedSubscriptionOffersCount() {
         return preAppliedSubscriptionOffersCount;
     }
 
-    public void setPreAppliedSubscriptionOffersCount(Integer preAppliedSubscriptionOffersCount) {
+    public void setPreAppliedSubscriptionOffersCount(int preAppliedSubscriptionOffersCount) {
         this.preAppliedSubscriptionOffersCount = preAppliedSubscriptionOffersCount;
     }
 }

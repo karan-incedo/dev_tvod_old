@@ -1,32 +1,39 @@
-
 package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class External {
 
     @SerializedName("brightCoveId")
     @Expose
-    private Object brightCoveId;
+    Object brightCoveId;
+
     @SerializedName("yTVideoId")
     @Expose
-    private Object yTVideoId;
+    Object yTVideoId;
+
     @SerializedName("tmsId")
     @Expose
-    private Object tmsId;
+    Object tmsId;
+
     @SerializedName("fBVideoId")
     @Expose
-    private Object fBVideoId;
+    Object fBVideoId;
+
     @SerializedName("externalId")
     @Expose
-    private Object externalId;
+    Object externalId;
+
     @SerializedName("imdbId")
     @Expose
-    private String imdbId;
+    String imdbId;
+
     @SerializedName("tmdbId")
     @Expose
-    private Integer tmdbId;
+    int tmdbId;
 
     public Object getBrightCoveId() {
         return brightCoveId;
@@ -76,12 +83,11 @@ public class External {
         this.imdbId = imdbId;
     }
 
-    public Integer getTmdbId() {
+    public int getTmdbId() {
         return tmdbId;
     }
 
-    public void setTmdbId(Integer tmdbId) {
+    public void setTmdbId(int tmdbId) {
         this.tmdbId = tmdbId;
     }
-
 }

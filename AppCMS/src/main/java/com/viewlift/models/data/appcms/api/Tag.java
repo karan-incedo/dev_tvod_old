@@ -1,47 +1,59 @@
-
 package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class Tag {
 
     @SerializedName("id")
     @Expose
-    private String id;
+    String id;
+
     @SerializedName("publishDate")
     @Expose
-    private Object publishDate;
+    Object publishDate;
+
     @SerializedName("updateDate")
     @Expose
-    private Object updateDate;
+    Object updateDate;
+
     @SerializedName("addedDate")
     @Expose
-    private Object addedDate;
+    Object addedDate;
+
     @SerializedName("permalink")
     @Expose
-    private Object permalink;
+    Object permalink;
+
     @SerializedName("siteOwner")
     @Expose
-    private Object siteOwner;
+    Object siteOwner;
+
     @SerializedName("registeredDate")
     @Expose
-    private Object registeredDate;
+    Object registeredDate;
+
     @SerializedName("title")
     @Expose
-    private String title;
+    String title;
+
     @SerializedName("titleOverride")
     @Expose
-    private Object titleOverride;
+    Object titleOverride;
+
     @SerializedName("promoImages")
     @Expose
-    private Object promoImages;
+    Object promoImages;
+
     @SerializedName("poster")
     @Expose
-    private Object poster;
+    Object poster;
+
     @SerializedName("description")
     @Expose
-    private Object description;
+    Object description;
 
     public String getId() {
         return id;
@@ -138,5 +150,4 @@ public class Tag {
     public void setDescription(Object description) {
         this.description = description;
     }
-
 }

@@ -6,28 +6,30 @@ package com.viewlift.models.data.appcms.subscriptions;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
 import java.util.List;
 
+@UseStag
 public class Data {
-
-    @SerializedName("count")
-    @Expose
-    private Integer count;
 
     @SerializedName("items")
     @Expose
-    private List<Item> items = null;
+    List<Item> items = null;
+
+    @SerializedName("count")
+    @Expose
+    int count;
 
     @SerializedName("type")
     @Expose
-    private String type;
+    String type;
 
-    public Integer getCount() {
+    public int getCount() {
         return count;
     }
 
-    public void setCount(Integer count) {
+    public void setCount(int count) {
         this.count = count;
     }
 

@@ -1,20 +1,23 @@
-
 package com.viewlift.models.data.appcms.ui.main;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class Primary {
 
     @SerializedName("textColor")
     @Expose
-    private String textColor;
+    String textColor;
+
     @SerializedName("backgroundColor")
     @Expose
-    private String backgroundColor;
+    String backgroundColor;
+
     @SerializedName("border")
     @Expose
-    private Border_ border;
+    Border_ border;
 
     public String getTextColor() {
         return textColor;
@@ -39,5 +42,4 @@ public class Primary {
     public void setBorder(Border_ border) {
         this.border = border;
     }
-
 }
