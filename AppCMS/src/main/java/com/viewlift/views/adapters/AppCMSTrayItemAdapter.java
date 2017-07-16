@@ -65,7 +65,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         this.isHistory = jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY;
         this.receivers = new ArrayList<>();
 
-        if (adapterData.size() > 0) {
+        if (adapterData != null && adapterData.size() > 0) {
             sendEvent(null);
         }
     }
