@@ -505,10 +505,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         if (navigation.getNavigationPrimary().size() == 0 || !appCMSBinder.isNavbarPresent()) {
             appCMSTabNavContainer.setVisibility(View.GONE);
         } else {
-            if (appCMSFragment.getVisibility() == View.VISIBLE) {
-                appCMSTabNavContainer.setVisibility(View.VISIBLE);
-                selectNavItem(appCMSBinder.getPageId());
-            }
+            appCMSTabNavContainer.setVisibility(View.VISIBLE);
+            selectNavItem(appCMSBinder.getPageId());
         }
     }
 
