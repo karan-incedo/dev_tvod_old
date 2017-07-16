@@ -314,7 +314,7 @@ public class CollectionGridItemView extends BaseView {
                 view.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        onClickHandler.play(childComponent, data);
+                        onClickHandler.click(childComponent, data);
                     }
                 });
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
