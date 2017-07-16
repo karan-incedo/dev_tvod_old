@@ -617,7 +617,6 @@ public class AppCMSPresenter {
 
             appCMSNavItemsFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
                     currentActivity.getString(R.string.app_cms_navigation_page_tag));
-//            setNavItemToCurrentAction(currentActivity);
         }
         return result;
     }
@@ -1623,13 +1622,14 @@ public class AppCMSPresenter {
 
     public void pushActionInternalEvents(String action) {
         Log.d(TAG, "Stack size - pushing internal events: " + currentActions.size());
-        if (currentActions.size() > 0 && !isActionAPage(currentActions.peek())) {
-            Log.d(TAG, "Stack size - pushing internal events (popping extra): "
-                    + currentActions.size());
-            popActionInternalEvents();
-        }
         if (onActionInternalEvents.get(action) == null) {
             onActionInternalEvents.put(action, new ArrayList<OnInternalEvent>());
+        }
+        int currentActionPos = currentActions.search(action);
+        if (0 < currentActionPos) {
+            for (int i = 0; i < currentActionPos; i++) {
+                currentActions.pop();
+            }
         }
         currentActions.push(action);
     }
