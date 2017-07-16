@@ -228,17 +228,27 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        Log.d(TAG, "Back pressed - Binder stack size: " + appCMSBinderStack.size());
-        pageLoading(false);
-        handleBack(true, appCMSBinderStack.size() < 2, true);
-        if (appCMSBinderStack.size() > 0 && appCMSBinderMap.get(appCMSBinderStack.peek()) != null) {
-            AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-            handleBack(true, appCMSBinderStack.size() < 2, false);
-            handleLaunchPageAction(appCMSBinder);
-        } else {
-            isActive = false;
-            finishAffinity();
+        if (appCMSPresenter != null && appCMSPresenter.isMainFragmentViewVisible()) {
+            super.onBackPressed();
+            Log.d(TAG, "Back pressed - Binder stack size: " + appCMSBinderStack.size());
+            pageLoading(false);
+            handleBack(true, appCMSBinderStack.size() < 2, true);
+            if (appCMSBinderStack.size() > 0 && appCMSBinderMap.get(appCMSBinderStack.peek()) != null) {
+                AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                handleBack(true, appCMSBinderStack.size() < 2, false);
+                handleLaunchPageAction(appCMSBinder);
+            } else {
+                isActive = false;
+                finishAffinity();
+            }
+            if (appCMSPresenter != null) {
+                appCMSPresenter.popActionInternalEvents();
+                appCMSPresenter.restartInternalEvents();
+            }
+        } else if (appCMSPresenter != null) {
+            appCMSPresenter.popActionInternalEvents();
+            appCMSPresenter.setNavItemToCurrentAction(this);
+            appCMSPresenter.showMainFragmentView(true);
         }
     }
 
@@ -696,6 +706,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     }
 
     private void selectNavItem(String pageId) {
+        boolean foundPage = false;
         for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
             if (appCMSTabNavContainer.getChildAt(i).getTag() != null &&
                     pageId.contains(appCMSTabNavContainer.getChildAt(i).getTag().toString())) {
@@ -704,7 +715,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                         pageId +
                         " index: " +
                         i);
+                foundPage = true;
             }
+        }
+        if (!foundPage) {
+            final NavBarItemView menuNavBarItemView =
+                    (NavBarItemView) appCMSTabNavContainer.getChildAt(NAV_PAGE_INDEX);
+            selectNavItem(menuNavBarItemView);
         }
     }
 

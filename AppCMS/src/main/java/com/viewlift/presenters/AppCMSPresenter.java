@@ -627,6 +627,17 @@ public class AppCMSPresenter {
         }
     }
 
+    public boolean isMainFragmentViewVisible() {
+        if (currentActivity != null) {
+            FrameLayout mainFragmentView =
+                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_fragment);
+            if (mainFragmentView != null) {
+                return mainFragmentView.getVisibility() == View.VISIBLE;
+            }
+        }
+        return false;
+    }
+
     public void showMainFragmentView(boolean show) {
         if (currentActivity != null) {
             FrameLayout mainFragmentView =
@@ -1072,10 +1083,12 @@ public class AppCMSPresenter {
         }
     }
 
-    public void navigateToSettingsPage() {
+    public void navigateToSettingsPage(String settingsPageId) {
         if (currentActivity != null &&
                 currentActivity instanceof AppCompatActivity &&
                 isAdditionalFragmentViewAvailable()) {
+            pushActionInternalEvents(settingsPageId);
+
             clearAdditionalFragment();
             FragmentTransaction transaction =
                     ((AppCompatActivity) currentActivity).getSupportFragmentManager().beginTransaction();
@@ -1084,6 +1097,7 @@ public class AppCMSPresenter {
                     appCMSSettingsFragment,
                     currentActivity.getString(R.string.app_cms_settings_page_tag)).commit();
             showAddOnFragment();
+            setNavItemToCurrentAction(currentActivity);
         }
     }
 
@@ -1516,13 +1530,6 @@ public class AppCMSPresenter {
             }
         }
 
-        for (NavigationUser navigationUser : navigation.getNavigationUser()) {
-            if (!TextUtils.isEmpty(navigationUser.getPageId()) &&
-                    action.contains(navigationUser.getPageId())) {
-                return true;
-            }
-        }
-
         return false;
     }
 
@@ -1937,6 +1944,8 @@ public class AppCMSPresenter {
                                     break;
                                 default:
                             }
+                        } else {
+                            launchErrorActivity(activity, platformType);
                         }
                     }
                 }).execute(url);

@@ -116,7 +116,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     break;
 
                                 case "Settings":
-                                    appCMSPresenter.navigateToSettingsPage();
+                                    appCMSPresenter.navigateToSettingsPage(navigationUser.getPageId());
                                     break;
 
                                 default:
