@@ -1,6 +1,7 @@
 package com.viewlift.models.data.appcms.ui.page;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
@@ -26,6 +27,7 @@ public class ModuleList implements Module {
     String view;
 
     @SerializedName("components")
+    @JsonAdapter(ComponentListDeserializer.class)
     @Expose
     List<Component> components;
 
