@@ -3,6 +3,7 @@ package com.viewlift.models.data.appcms.ui.page;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 
 public class ModuleList implements Module {
@@ -20,6 +21,7 @@ public class ModuleList implements Module {
     @Expose
     private String view;
     @SerializedName("components")
+    @JsonAdapter(ComponentListDeserializer.class)
     @Expose
     private List<Component> components;
     @SerializedName("type")
