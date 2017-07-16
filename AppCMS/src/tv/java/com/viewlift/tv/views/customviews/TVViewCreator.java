@@ -131,7 +131,7 @@ public class TVViewCreator {
             newView = true;
         }
 
-        if (true/*newView || !appCMSPresenter.isActionAPage(appCMSPageAPI.getId())*/) {
+        if (true/*newView || !appCMSPresenter.isPagePrimary(appCMSPageAPI.getId())*/) {
             pageView.getChildrenContainer().removeAllViews();
             Runtime.getRuntime().gc();
             componentViewResult = new ComponentViewResult();

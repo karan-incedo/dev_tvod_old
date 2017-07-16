@@ -1522,8 +1522,15 @@ public class AppCMSPresenter {
     public AppCMSMain getAppCMSMain() {
         return appCMSMain;
     }
+    
+    public boolean isPageAVideoPage(String pageName) {
+        if (currentActivity != null) {
+            return pageName.contains(currentActivity.getString(R.string.app_cms_video_page_page_name));
+        }
+        return false;
+    }
 
-    public boolean isActionAPage(String action) {
+    public boolean isPagePrimary(String action) {
         for (NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()) {
             if (!TextUtils.isEmpty(navigationPrimary.getPageId()) && action.contains(navigationPrimary.getPageId())) {
                 return true;
