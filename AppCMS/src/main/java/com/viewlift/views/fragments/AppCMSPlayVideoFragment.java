@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -53,7 +54,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private String parentScreenName;
     private String adsUrl;
     private boolean shouldRequestAds;
-    private LinearLayout videoPlayerInfoContainer;
+    private ConstraintLayout videoPlayerInfoContainer;
     private Button videoPlayerViewDoneButton;
     private TextView videoPlayerTitleView;
     private VideoPlayerView videoPlayerView;
@@ -182,7 +183,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         View rootView = inflater.inflate(R.layout.fragment_video_player, container, false);
 
         videoPlayerInfoContainer =
-                (LinearLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
+                (ConstraintLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
 
         videoPlayerTitleView = (TextView) rootView.findViewById(R.id.app_cms_video_player_title_view);
         if (!TextUtils.isEmpty(title)) {

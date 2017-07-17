@@ -198,10 +198,18 @@ public class ViewCreator {
                                             moduleAPI.getContentData().get(0).getGist() != null &&
                                             moduleAPI.getContentData().get(0).getGist()
                                                     .getWatchedPercentage() != 0) {
-                                        ((ProgressBar) componentViewResult.componentView)
-                                                .setProgress(moduleAPI.getContentData()
-                                                        .get(0).getGist().getWatchedPercentage());
+                                        if (moduleAPI.getContentData()
+                                                .get(0).getGist().getWatchedPercentage() > 0) {
+                                            ((ProgressBar) componentViewResult.componentView).setVisibility(View.VISIBLE);
+                                            ((ProgressBar) componentViewResult.componentView)
+                                                    .setProgress(moduleAPI.getContentData()
+                                                            .get(0).getGist().getWatchedPercentage());
+                                        } else {
+                                            ((ProgressBar) componentViewResult.componentView).setVisibility(View.INVISIBLE);
+                                            ((ProgressBar) componentViewResult.componentView).setProgress(0);
+                                        }
                                     } else {
+                                        ((ProgressBar) componentViewResult.componentView).setVisibility(View.INVISIBLE);
                                         ((ProgressBar) componentViewResult.componentView).setProgress(0);
                                     }
                                 }
@@ -1041,9 +1049,18 @@ public class ViewCreator {
                             moduleAPI.getContentData().get(0) != null &&
                             moduleAPI.getContentData().get(0).getGist() != null &&
                             moduleAPI.getContentData().get(0).getGist().getWatchedPercentage() != 0) {
-                        ((ProgressBar) componentViewResult.componentView).setProgress(moduleAPI
-                                .getContentData().get(0).getGist().getWatchedPercentage());
+                        if (moduleAPI.getContentData()
+                                .get(0).getGist().getWatchedPercentage() > 0) {
+                            ((ProgressBar) componentViewResult.componentView).setVisibility(View.VISIBLE);
+                            ((ProgressBar) componentViewResult.componentView)
+                                    .setProgress(moduleAPI.getContentData()
+                                            .get(0).getGist().getWatchedPercentage());
+                        } else {
+                            ((ProgressBar) componentViewResult.componentView).setVisibility(View.INVISIBLE);
+                            ((ProgressBar) componentViewResult.componentView).setProgress(0);
+                        }
                     } else {
+                        ((ProgressBar) componentViewResult.componentView).setVisibility(View.INVISIBLE);
                         ((ProgressBar) componentViewResult.componentView).setProgress(0);
                     }
                 } else {

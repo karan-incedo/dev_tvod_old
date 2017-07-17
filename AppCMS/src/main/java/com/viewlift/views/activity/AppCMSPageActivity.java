@@ -27,6 +27,7 @@ import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.internal.CallbackManagerImpl;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.viewlift.AppCMSApplication;
@@ -260,6 +261,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     @Override
     public void onBackPressed() {
         if (appCMSPresenter != null && appCMSPresenter.isMainFragmentViewVisible()) {
+            appCMSPresenter.showMainFragmentView(false);
             super.onBackPressed();
             Log.d(TAG, "Back pressed - Binder stack size: " + appCMSBinderStack.size());
             pageLoading(false);
@@ -374,7 +376,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+        if (FacebookSdk.isFacebookRequestCode(requestCode)) {
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     @SuppressWarnings("ConstantConditions")

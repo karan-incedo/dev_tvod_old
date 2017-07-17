@@ -132,11 +132,6 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
 
-//import com.viewlift.models.network.components.AppCMSAPIComponent;
-//import com.viewlift.models.network.components.AppCMSSearchUrlComponent;
-//import com.viewlift.models.network.components.DaggerAppCMSAPIComponent;
-//import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
-
 /**
  * Created by viewlift on 5/3/17.
  */
