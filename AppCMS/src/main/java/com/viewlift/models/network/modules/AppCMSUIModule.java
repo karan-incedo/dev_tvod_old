@@ -67,6 +67,8 @@ public class AppCMSUIModule {
     private final Map<String, AppCMSPageAPI> actionToPageAPIMap;
     private final Map<String, AppCMSActionType> actionToActionTypeMap;
     private final long defaultConnectionTimeout;
+    private final long defaultWriteConnectionTimeout;
+    private final long defaultReadConnectionTimeout;
     private final long unknownHostExceptionTimeout;
 
     public AppCMSUIModule(Context context) {
@@ -91,6 +93,12 @@ public class AppCMSUIModule {
         this.defaultConnectionTimeout =
                 context.getResources().getInteger(R.integer.app_cms_default_connection_timeout_msec);
 
+        this.defaultWriteConnectionTimeout =
+                context.getResources().getInteger(R.integer.app_cms_default_write_timeout_msec);
+
+        this.defaultReadConnectionTimeout =
+                context.getResources().getInteger(R.integer.app_cms_default_read_timeout_msec);
+
         this.unknownHostExceptionTimeout =
                 context.getResources().getInteger(R.integer.app_cms_unknownhostexception_connection_timeout_msec);
     }
@@ -102,6 +110,12 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_historyscreen_key),
                 AppCMSUIKeyType.ANDROID_HISTORY_SCREEN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_watchlist_navigation_title),
+                AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_history_navigation_title),
+                AppCMSUIKeyType.ANDROID_HISTORY_NAV_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_settings_page_title_text),
+                AppCMSUIKeyType.ANDROID_SETTINGS_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_button_key),
                 AppCMSUIKeyType.PAGE_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_label_key),
@@ -323,8 +337,8 @@ public class AppCMSUIModule {
     public OkHttpClient providesOkHttpClient() {
         return new OkHttpClient.Builder()
                 .connectTimeout(defaultConnectionTimeout, TimeUnit.MILLISECONDS)
-                .writeTimeout(defaultConnectionTimeout, TimeUnit.MILLISECONDS)
-                .readTimeout(defaultConnectionTimeout, TimeUnit.MILLISECONDS)
+                .writeTimeout(defaultWriteConnectionTimeout, TimeUnit.MILLISECONDS)
+                .readTimeout(defaultReadConnectionTimeout, TimeUnit.MILLISECONDS)
                 .build();
     }
 

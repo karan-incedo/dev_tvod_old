@@ -8,11 +8,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationFooter;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.presenters.AppCMSPresenter;
+
+import java.util.Map;
 
 import snagfilms.com.air.appcms.R;
 
@@ -25,6 +28,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
 
     private final Navigation navigation;
     private final AppCMSPresenter appCMSPresenter;
+    private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final int textColor;
     private boolean userLoggedIn;
     private int numPrimaryItems;
@@ -32,12 +36,14 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
     private int numFooterItems;
 
     public AppCMSNavItemsAdapter(Navigation navigation,
-                                 boolean userLoggedIn,
                                  AppCMSPresenter appCMSPresenter,
+                                 Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                 boolean userLoggedIn,
                                  int textColor) {
         this.navigation = navigation;
-        this.userLoggedIn = userLoggedIn;
         this.appCMSPresenter = appCMSPresenter;
+        this.jsonValueKeyMap = jsonValueKeyMap;
+        this.userLoggedIn = userLoggedIn;
         this.textColor = textColor;
     }
 
@@ -104,19 +110,23 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            switch (navigationUser.getTitle()) {
-                                case "Watchlist":
+                            AppCMSUIKeyType titleKey = jsonValueKeyMap.get(navigationUser.getTitle());
+                            if (titleKey == null) {
+                                titleKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                            }
+                            switch (titleKey) {
+                                case ANDROID_WATCHLIST_NAV_KEY:
                                     appCMSPresenter.navigateToWatchlistPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
 
-                                case "History":
+                                case ANDROID_HISTORY_NAV_KEY:
                                     appCMSPresenter.navigateToHistoryPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
 
-                                case "Settings":
-                                    appCMSPresenter.navigateToSettingsPage();
+                                case ANDROID_SETTINGS_NAV_KEY:
+                                    appCMSPresenter.navigateToSettingsPage(navigationUser.getPageId());
                                     break;
 
                                 default:
@@ -127,8 +137,6 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                             true,
                                             true,
                                             null)) {
-                                        //
-                                    } else {
                                         Log.e(TAG, "Could not navigate to page with Title: "
                                                 + navigationUser.getTitle() + " Id: " + navigationUser.getPageId());
                                     }

@@ -124,6 +124,7 @@ public class ViewCreator {
     public PageView generatePage(Context context,
                                  AppCMSPageUI appCMSPageUI,
                                  AppCMSPageAPI appCMSPageAPI,
+                                 String screenName,
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                  AppCMSPresenter appCMSPresenter,
                                  List<String> modulesToIgnore) {
@@ -136,11 +137,16 @@ public class ViewCreator {
         if (pageView == null || pageView.getContext() != context) {
             pageView = new PageView(context, appCMSPageUI);
             pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn(context));
-            getPageViewLruCache().put(appCMSPageAPI.getId() + BaseView.isLandscape(context), pageView);
+            if (appCMSPresenter.isPageAVideoPage(screenName)) {
+                getPageViewLruCache().put(screenName + BaseView.isLandscape(context), pageView);
+            } else {
+                getPageViewLruCache().put(appCMSPageAPI.getId() + BaseView.isLandscape(context), pageView);
+            }
             newView = true;
         }
         if (newView ||
-                !appCMSPresenter.isActionAPage(appCMSPageAPI.getId()) ||
+                !appCMSPresenter.isPagePrimary(appCMSPageAPI.getId()) ||
+                !appCMSPresenter.isPageAVideoPage(screenName) ||
                 appCMSPresenter.isUserLoggedIn(context) != pageView.isUserLoggedIn()) {
             pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn(context));
             pageView.getChildrenContainer().removeAllViews();
@@ -175,6 +181,23 @@ public class ViewCreator {
                                 componentType == AppCMSUIKeyType.PAGE_CAROUSEL_VIEW_KEY) {
                             pageView.updateDataList(moduleAPI.getContentData(), i);
                             i++;
+                        } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
+                            View view = pageView.findViewFromComponentId(moduleAPI.getId() + component.getKey());
+                            if (view != null && view instanceof ProgressBar) {
+                                if (appCMSPresenter.isUserLoggedIn(context)) {
+                                    ((ProgressBar) componentViewResult.componentView).setMax(100);
+                                    ((ProgressBar) componentViewResult.componentView).setProgress(0);
+                                    if (moduleAPI.getContentData() != null &&
+                                            moduleAPI.getContentData().size() > 0 &&
+                                            moduleAPI.getContentData().get(0) != null &&
+                                            moduleAPI.getContentData().get(0).getGist() != null &&
+                                            moduleAPI.getContentData().get(0).getGist().getWatchedPercentage() != 0) {
+                                        ((ProgressBar) componentViewResult.componentView).setProgress(moduleAPI.getContentData().get(0).getGist().getWatchedPercentage());
+                                    } else {
+                                        ((ProgressBar) componentViewResult.componentView).setProgress(0);
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -427,7 +450,7 @@ public class ViewCreator {
                 componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
 
                 if (pageView != null) {
-                    pageView.addListWithAdapter(new AppCMSViewAdapter.ListWithAdapter.Builder()
+                    pageView.addListWithAdapter(new ListWithAdapter.Builder()
                             .adapter(appCMSTrayItemAdapter)
                             .listview((RecyclerView) componentViewResult.componentView)
                             .build());
@@ -457,7 +480,7 @@ public class ViewCreator {
                 ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
 
                 if (pageView != null) {
-                    pageView.addListWithAdapter(new AppCMSViewAdapter.ListWithAdapter.Builder()
+                    pageView.addListWithAdapter(new ListWithAdapter.Builder()
                             .adapter(appCMSViewAdapter)
                             .listview((RecyclerView) componentViewResult.componentView)
                             .build());
@@ -494,7 +517,7 @@ public class ViewCreator {
                                 loop);
                 ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSCarouselItemAdapter);
                 if (pageView != null) {
-                    pageView.addListWithAdapter(new AppCMSViewAdapter.ListWithAdapter.Builder()
+                    pageView.addListWithAdapter(new ListWithAdapter.Builder()
                             .adapter(appCMSCarouselItemAdapter)
                             .listview((RecyclerView) componentViewResult.componentView)
                             .build());
@@ -873,7 +896,6 @@ public class ViewCreator {
                                     new ViewCreatorMultiLineLayoutListener(((TextView) componentViewResult.componentView),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
                                             videoDescription,
-                                            textColor,
                                             appCMSPresenter,
                                             false);
                             textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
@@ -983,8 +1005,8 @@ public class ViewCreator {
                 componentViewResult.componentView = new ProgressBar(context,
                         null,
                         android.R.attr.progressBarStyleHorizontal);
-                if (!TextUtils.isEmpty(component.getProgressColor())) {
-                    int color = Color.parseColor(getColor(context, component.getProgressColor()));
+                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())) {
+                    int color = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
                     ((ProgressBar) componentViewResult.componentView).getProgressDrawable().setColorFilter(color, PorterDuff.Mode.SRC_IN);
                 }
                 if (appCMSPresenter.isUserLoggedIn(context)) {
@@ -1002,6 +1024,10 @@ public class ViewCreator {
                 } else {
                     componentViewResult.componentView.setVisibility(View.GONE);
                 }
+                pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
+                        .id(moduleAPI.getId() + component.getKey())
+                        .view(componentViewResult.componentView)
+                        .build());
                 break;
 
             case PAGE_SEPARATOR_VIEW_KEY:

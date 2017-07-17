@@ -145,6 +145,7 @@
     <string name="app_cms_main_page_tag">main</string>
     <string name="app_cms_reset_password_page_tag">reset_password</string>
     <string name="app_cms_settings_page_tag">settings</string>
+    <string name="app_cms_more_page_tag">more</string>
 
     <string name="app_cms_closing_page_name">closing_page</string>
 

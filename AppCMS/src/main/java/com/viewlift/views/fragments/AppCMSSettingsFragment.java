@@ -36,6 +36,14 @@ import snagfilms.com.air.appcms.R;
  */
 
 public class AppCMSSettingsFragment extends DialogFragment {
+    public static AppCMSSettingsFragment newInstance() {
+        AppCMSSettingsFragment appCMSSettingsFragment = new AppCMSSettingsFragment();
+        return appCMSSettingsFragment;
+    }
+
+    private enum InputField {
+        USERNAME, EMAIL
+    }
 
     @BindView(R.id.app_cms_settings_page_title)
     TextView appCMSSettingsPageTitle;
@@ -94,6 +102,11 @@ public class AppCMSSettingsFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 dismiss();
+                if (appCMSPresenter != null) {
+                    appCMSPresenter.popActionInternalEvents();
+                    appCMSPresenter.setNavItemToCurrentAction(getActivity());
+                    appCMSPresenter.showMainFragmentView(true);
+                }
             }
         });
         appCMSettingsSeparatorView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
@@ -155,13 +168,6 @@ public class AppCMSSettingsFragment extends DialogFragment {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         setWindow();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        dismiss();
-        appCMSPresenter.showMainFragmentView(true);
     }
 
     private void setBgColor(int bgColor) {

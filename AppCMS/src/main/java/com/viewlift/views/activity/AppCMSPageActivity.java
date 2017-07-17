@@ -22,6 +22,13 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Gist;
@@ -47,6 +54,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
+
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -86,6 +96,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     private boolean isActive;
     private boolean shouldSendCloseOthersAction;
     private AppCMSBinder updatedAppCMSBinder;
+
+    private CallbackManager callbackManager;
+    private AccessTokenTracker accessTokenTracker;
+    private AccessToken accessToken;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -188,6 +202,23 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
         shouldSendCloseOthersAction = false;
 
+        callbackManager = CallbackManager.Factory.create();
+
+        accessTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(
+                    AccessToken oldAccessToken,
+                    AccessToken currentAccessToken) {
+                AppCMSPageActivity.this.accessToken = currentAccessToken;
+                if (appCMSPresenter != null) {
+                    appCMSPresenter.setFacebookAccessToken(AppCMSPageActivity.this,
+                            currentAccessToken.getToken());
+                }
+            }
+        };
+
+        accessToken = AccessToken.getCurrentAccessToken();
+
         Log.d(TAG, "onCreate()");
     }
 
@@ -228,17 +259,27 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        Log.d(TAG, "Back pressed - Binder stack size: " + appCMSBinderStack.size());
-        pageLoading(false);
-        handleBack(true, appCMSBinderStack.size() < 2, true);
-        if (appCMSBinderStack.size() > 0 && appCMSBinderMap.get(appCMSBinderStack.peek()) != null) {
-            AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-            handleBack(true, appCMSBinderStack.size() < 2, false);
-            handleLaunchPageAction(appCMSBinder);
-        } else {
-            isActive = false;
-            finishAffinity();
+        if (appCMSPresenter != null && appCMSPresenter.isMainFragmentViewVisible()) {
+            super.onBackPressed();
+            Log.d(TAG, "Back pressed - Binder stack size: " + appCMSBinderStack.size());
+            pageLoading(false);
+            handleBack(true, appCMSBinderStack.size() < 2, true);
+            if (appCMSBinderStack.size() > 0 && appCMSBinderMap.get(appCMSBinderStack.peek()) != null) {
+                AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                handleBack(true, appCMSBinderStack.size() < 2, false);
+                handleLaunchPageAction(appCMSBinder);
+            } else {
+                isActive = false;
+                finishAffinity();
+            }
+            if (appCMSPresenter != null) {
+                appCMSPresenter.popActionInternalEvents();
+                appCMSPresenter.restartInternalEvents();
+            }
+        } else if (appCMSPresenter != null) {
+            appCMSPresenter.popActionInternalEvents();
+            appCMSPresenter.setNavItemToCurrentAction(this);
+            appCMSPresenter.showMainFragmentView(true);
         }
     }
 
@@ -311,6 +352,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             viewCreator.removeLruCacheItem(this, updatedAppCMSBinder.getPageId());
         }
         unregisterReceiver(presenterActionReceiver);
+
+        accessTokenTracker.stopTracking();
+
         Log.d(TAG, "onDestroy()");
     }
 
@@ -325,6 +369,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             processDeepLink(appCMSBinder.getSearchQuery());
             appCMSBinder.clearSearchQuery();
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -412,7 +462,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
 
     private boolean shouldPopStack() {
         return appCMSBinderStack.size() > 0 &&
-                !appCMSPresenter.isActionAPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId());
+                !appCMSPresenter.isPagePrimary(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId());
     }
 
     private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder) {
@@ -696,6 +746,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     }
 
     private void selectNavItem(String pageId) {
+        boolean foundPage = false;
         for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
             if (appCMSTabNavContainer.getChildAt(i).getTag() != null &&
                     pageId.contains(appCMSTabNavContainer.getChildAt(i).getTag().toString())) {
@@ -704,7 +755,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                         pageId +
                         " index: " +
                         i);
+                foundPage = true;
             }
+        }
+        if (!foundPage) {
+            final NavBarItemView menuNavBarItemView =
+                    (NavBarItemView) appCMSTabNavContainer.getChildAt(NAV_PAGE_INDEX);
+            selectNavItem(menuNavBarItemView);
         }
     }
 

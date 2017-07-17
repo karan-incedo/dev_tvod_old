@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -89,11 +90,62 @@ public class LoginModule extends ModuleView {
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             ViewGroup childContainer = getChildrenContainer();
             childContainer.setBackgroundColor(bgColor);
-            FrameLayout loginModuleSwitcherContainer = new FrameLayout(getContext());
-            FrameLayout.LayoutParams loginModuleContainerLayoutParams =
+
+            LinearLayout topLayoutContainer = new LinearLayout(getContext());
+            MarginLayoutParams topLayoutContainerLayoutParams =
                     new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            topLayoutContainerLayoutParams.setMargins(0, 0, 0, 0);
+            topLayoutContainer.setLayoutParams(topLayoutContainerLayoutParams);
+            topLayoutContainer.setPadding(0, 0, 0, 0);
+            topLayoutContainer.setOrientation(LinearLayout.VERTICAL);
+
+            FrameLayout loginModuleSwitcherContainer = new FrameLayout(getContext());
+            MarginLayoutParams loginModuleContainerLayoutParams =
+                    new MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            loginModuleContainerLayoutParams.setMargins(0, 0, 0, 0);
             loginModuleSwitcherContainer.setLayoutParams(loginModuleContainerLayoutParams);
             loginModuleSwitcherContainer.setBackgroundColor(bgColor);
+            loginModuleSwitcherContainer.setPadding(0, 0, 0, 0);
+
+            final String closeAction = getContext().getString(R.string.app_cms_action_close_key);
+            closeButton = new ImageButton(getContext());
+            closeButton.setImageResource(R.drawable.cancel);
+            closeButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            closeButton.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+            closeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!appCMSPresenter.launchButtonSelectedAction(null,
+                            closeAction,
+                            null,
+                            null,
+                            null,
+                            false)) {
+                        Log.e(TAG, "Could not launch action: " +
+                                " action: " +
+                                closeAction);
+                    }
+                }
+            });
+            closeButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+            int closeButtonImageSize = (int) getContext().getResources().getDimension(R.dimen.close_button_size);
+            int closeButtonMargin =
+                    (int) convertDpToPixel(getContext().getResources().getDimension(R.dimen.close_button_margin),
+                            getContext());
+            LinearLayout.LayoutParams closeButtonLayoutParams =
+                    new LinearLayout.LayoutParams(closeButtonImageSize, closeButtonImageSize);
+            closeButtonLayoutParams.setMargins(closeButtonMargin,
+                    closeButtonMargin,
+                    closeButtonMargin,
+                    closeButtonMargin);
+            closeButtonLayoutParams.gravity = Gravity.END;
+            closeButton.setLayoutParams(closeButtonLayoutParams);
+            closeButton.setPadding(0, 0, 0, 0);
+
+            topLayoutContainer.addView(closeButton);
+            topLayoutContainer.addView(loginModuleSwitcherContainer);
+
             for (Component component : module.getComponents()) {
                 if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_LOGIN_COMPONENT_KEY) {
                     buttonSelectors[0] = new Button(getContext());
@@ -137,7 +189,7 @@ public class LoginModule extends ModuleView {
                     setViewHeight(getContext(), component.getLayout(), LayoutParams.MATCH_PARENT);
                     childViews[0] = moduleView;
                     addChildComponents(moduleView, component, 0);
-                    childContainer.addView(moduleView);
+                    topLayoutContainer.addView(moduleView);
                 } else if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_SIGNUP_COMPONENT_KEY) {
                     buttonSelectors[1] = new Button(getContext());
                     FrameLayout.LayoutParams signupSelectorLayoutParams =
@@ -180,46 +232,11 @@ public class LoginModule extends ModuleView {
                     setViewHeight(getContext(), component.getLayout(), LayoutParams.MATCH_PARENT);
                     childViews[1] = moduleView;
                     addChildComponents(moduleView, component, 1);
-                    childContainer.addView(moduleView);
+                    topLayoutContainer.addView(moduleView);
                 }
             }
 
-            final String closeAction = getContext().getString(R.string.app_cms_action_close_key);
-            closeButton = new ImageButton(getContext());
-            closeButton.setImageResource(R.drawable.cancel);
-            closeButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            closeButton.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
-            closeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (!appCMSPresenter.launchButtonSelectedAction(null,
-                            closeAction,
-                            null,
-                            null,
-                            null,
-                            false)) {
-                        Log.e(TAG, "Could not launch action: " +
-                                " action: " +
-                                closeAction);
-                    }
-                }
-            });
-            closeButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            int closeButtonSize =
-                    (int) getContext().getResources().getDimension(R.dimen.close_button_size);
-            int closeButtonMargin =
-                    (int) getContext().getResources().getDimension(R.dimen.close_button_margin);
-            FrameLayout.LayoutParams closeButtonLayoutParams =
-                    new FrameLayout.LayoutParams(closeButtonSize, closeButtonSize);
-            closeButtonLayoutParams.setMargins(closeButtonMargin,
-                    closeButtonMargin,
-                    closeButtonMargin,
-                    closeButtonMargin);
-            closeButtonLayoutParams.gravity = Gravity.TOP | Gravity.END;
-            closeButton.setLayoutParams(closeButtonLayoutParams);
-            loginModuleSwitcherContainer.addView(closeButton);
-
-            childContainer.addView(loginModuleSwitcherContainer);
+            childContainer.addView(topLayoutContainer);
             selectChild(0);
             unselectChild(1);
         }
@@ -243,11 +260,14 @@ public class LoginModule extends ModuleView {
         applyUnderlineToComponent(underlineViews[childIndex], bgColor);
     }
 
-    private void addChildComponents(ModuleView moduleView, Component subComponent, final int childIndex) {
+    private void addChildComponents(ModuleView moduleView,
+                                    Component subComponent,
+                                    final int childIndex) {
         ViewCreator.ComponentViewResult componentViewResult = viewCreator.getComponentViewResult();
         ViewGroup subComponentChildContainer = moduleView.getChildrenContainer();
+        float parentYAxis = 2 * getYAxis(getContext(), subComponent.getLayout(), 0.0f);
         if (componentViewResult != null && subComponentChildContainer != null) {
-            for (int i = 0; i < subComponent.getComponents().size(); i++) {
+            for (int i = 1; i < subComponent.getComponents().size(); i++) {
                 final Component component = subComponent.getComponents().get(i);
                 viewCreator.createComponentView(getContext(),
                         component,
@@ -261,6 +281,15 @@ public class LoginModule extends ModuleView {
                         "");
                 View componentView = componentViewResult.componentView;
                 if (componentView != null) {
+                    float componentYAxis = getYAxis(getContext(),
+                            component.getLayout(),
+                            0.0f);
+                    if (!component.isyAxisSetManually()) {
+                        setYAxis(getContext(),
+                                component.getLayout(),
+                                componentYAxis - parentYAxis);
+                        component.setyAxisSetManually(true);
+                    }
                     subComponentChildContainer.addView(componentView);
                     moduleView.setComponentHasView(i, true);
                     moduleView.setViewMarginsFromComponent(component,
@@ -292,10 +321,6 @@ public class LoginModule extends ModuleView {
                                                 authData,
                                                 null,
                                                 true);
-                                        if (childIndex == 1) {
-                                            visibleEmailInputView.setText("");
-                                            visiblePasswordInputView.setText("");
-                                        }
                                     }
                                 }
                             });

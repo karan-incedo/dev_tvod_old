@@ -178,12 +178,16 @@ public class AppCMSPageFragment extends Fragment {
                 .appCMSPageViewModule(new AppCMSPageViewModule(getContext(),
                         appCMSBinder.getAppCMSPageUI(),
                         appCMSBinder.getAppCMSPageAPI(),
+                        appCMSBinder.getScreenName(),
                         appCMSBinder.getJsonValueKeyMap(),
                         appCMSPresenter))
                 .build();
     }
 
     public ViewCreator getViewCreator() {
-        return appCMSViewComponent.viewCreator();
+        if (appCMSViewComponent != null) {
+            return appCMSViewComponent.viewCreator();
+        }
+        return null;
     }
 }

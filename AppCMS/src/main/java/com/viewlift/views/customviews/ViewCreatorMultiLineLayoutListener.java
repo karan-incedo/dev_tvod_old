@@ -27,19 +27,16 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
     private final AppCMSPresenter appCMSPresenter;
     private final String title;
     private final String fullText;
-    private final int textColor;
     private final boolean forceMaxLines;
 
     public ViewCreatorMultiLineLayoutListener(TextView textView,
                                               String title,
                                               String fullText,
-                                              int textColor,
                                               AppCMSPresenter appCMSPresenter,
                                               boolean forceMaxLines) {
         this.textView = textView;
         this.title = title;
         this.fullText = fullText;
-        this.textColor = textColor;
         this.appCMSPresenter = appCMSPresenter;
         this.forceMaxLines = forceMaxLines;
     }
@@ -64,21 +61,23 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
                     textView.getLayout() != null &&
                     appCMSPresenter != null) {
                 int lineEnd = textView.getLayout().getLineEnd(linesCompletelyVisible - 1) - EXTRA_TRUNC_CHARS;
-                SpannableString spannableTextWithMore =
-                        new SpannableString(textView.getContext().getString(R.string.string_with_ellipse_and_more,
-                                textView.getText().subSequence(0, lineEnd)));
-                ClickableSpan clickableSpan = new ClickableSpan() {
-                    @Override
-                    public void onClick(View widget) {
-                        appCMSPresenter.showMoreDialog(title, fullText, textColor);
-                    }
-                };
-                spannableTextWithMore.setSpan(clickableSpan,
-                        spannableTextWithMore.length() - CLICKABLE_CHAR_COUNT,
-                        spannableTextWithMore.length(),
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                textView.setText(spannableTextWithMore);
-                textView.setMovementMethod(LinkMovementMethod.getInstance());
+                if (0 < lineEnd) {
+                    SpannableString spannableTextWithMore =
+                            new SpannableString(textView.getContext().getString(R.string.string_with_ellipse_and_more,
+                                    textView.getText().subSequence(0, lineEnd)));
+                    ClickableSpan clickableSpan = new ClickableSpan() {
+                        @Override
+                        public void onClick(View widget) {
+                            appCMSPresenter.showMoreDialog(title, fullText);
+                        }
+                    };
+                    spannableTextWithMore.setSpan(clickableSpan,
+                            spannableTextWithMore.length() - CLICKABLE_CHAR_COUNT,
+                            spannableTextWithMore.length(),
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    textView.setText(spannableTextWithMore);
+                    textView.setMovementMethod(LinkMovementMethod.getInstance());
+                }
             }
         } else if (forceMaxLines) {
             textView.setMaxLines(linesCompletelyVisible);

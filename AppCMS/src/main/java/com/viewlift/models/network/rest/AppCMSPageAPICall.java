@@ -2,6 +2,7 @@ package com.viewlift.models.network.rest;
 
 import android.content.Context;
 import android.support.annotation.WorkerThread;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -70,7 +71,9 @@ public class AppCMSPageAPICall {
         AppCMSPageAPI appCMSPageAPI = null;
         try {
             appCMSPageAPI = appCMSPageAPIRest.get(urlWithContent).execute().body();
-            appCMSPageAPI = writePageToFile(filename, appCMSPageAPI);
+            if (filename != null) {
+                appCMSPageAPI = writePageToFile(filename, appCMSPageAPI);
+            }
         } catch (JsonSyntaxException e) {
             Log.w(TAG, "DialogType trying to parse input JSON " + urlWithContent + ": " + e.toString());
         } catch (Exception e) {
@@ -90,14 +93,17 @@ public class AppCMSPageAPICall {
     }
 
     private String getResourceFilename(String pageId) {
-        final String API_SUFFIX = "_API";
-        final String JSON_EXT = ".json";
-        int startIndex = pageId.lastIndexOf("/");
-        if (startIndex >= 0) {
-            startIndex += 1;
-        } else {
-            startIndex = 0;
+        if (!TextUtils.isEmpty(pageId)) {
+            final String API_SUFFIX = "_API";
+            final String JSON_EXT = ".json";
+            int startIndex = pageId.lastIndexOf("/");
+            if (startIndex >= 0) {
+                startIndex += 1;
+            } else {
+                startIndex = 0;
+            }
+            return pageId.substring(startIndex) + API_SUFFIX + JSON_EXT;
         }
-        return pageId.substring(startIndex) + API_SUFFIX + JSON_EXT;
+        return null;
     }
 }

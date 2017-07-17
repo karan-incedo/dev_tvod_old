@@ -72,8 +72,9 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
         AppCMSNavItemsAdapter appCMSNavItemsAdapter = new AppCMSNavItemsAdapter(appCMSBinder.getNavigation(),
-                appCMSBinder.isUserLoggedIn(),
                 appCMSPresenter,
+                appCMSBinder.getJsonValueKeyMap(),
+                appCMSBinder.isUserLoggedIn(),
                 textColor);
         navItemsList.setAdapter(appCMSNavItemsAdapter);
         if (!BaseView.isTablet(getContext())) {
@@ -110,10 +111,10 @@ public class AppCMSNavItemsFragment extends DialogFragment {
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dismiss();
                 if (appCMSPresenter != null) {
                     appCMSPresenter.setNavItemToCurrentAction(getActivity());
                 }
-                dismiss();
             }
         });
 
@@ -126,6 +127,14 @@ public class AppCMSNavItemsFragment extends DialogFragment {
     public void onStart() {
         super.onStart();
         setWindow();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (appCMSPresenter != null) {
+            appCMSPresenter.setNavItemToCurrentAction(getActivity());
+        }
     }
 
     @Override

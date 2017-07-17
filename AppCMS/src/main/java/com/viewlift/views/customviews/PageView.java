@@ -2,6 +2,7 @@ package com.viewlift.views.customviews;
 
 import android.content.Context;
 import android.support.v4.widget.NestedScrollView;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -26,13 +27,15 @@ import javax.inject.Inject;
 
 public class PageView extends BaseView {
     private final AppCMSPageUI appCMSPageUI;
-    private List<AppCMSViewAdapter.ListWithAdapter> adapterList;
+    private List<ListWithAdapter> adapterList;
+    private List<ViewWithComponentId> viewsWithComponentIds;
     private boolean userLoggedIn;
 
     @Inject
     public PageView(Context context, AppCMSPageUI appCMSPageUI) {
         super(context);
         this.appCMSPageUI = appCMSPageUI;
+        this.viewsWithComponentIds = new ArrayList<>();
         init();
     }
 
@@ -45,12 +48,12 @@ public class PageView extends BaseView {
         adapterList = new ArrayList<>();
     }
 
-    public void addListWithAdapter(AppCMSViewAdapter.ListWithAdapter listWithAdapter) {
+    public void addListWithAdapter(ListWithAdapter listWithAdapter) {
         adapterList.add(listWithAdapter);
     }
 
     public void notifyAdaptersOfUpdate() {
-        for (AppCMSViewAdapter.ListWithAdapter listWithAdapter : adapterList) {
+        for (ListWithAdapter listWithAdapter : adapterList) {
             if (listWithAdapter.getAdapter() instanceof AppCMSBaseAdapter) {
                 ((AppCMSBaseAdapter) listWithAdapter.getAdapter())
                         .resetData(listWithAdapter.getListView());
@@ -60,7 +63,7 @@ public class PageView extends BaseView {
 
     public void updateDataList(List<ContentDatum> contentData, int index) {
         if (0 <= index && index < adapterList.size()) {
-            AppCMSViewAdapter.ListWithAdapter listWithAdapter = adapterList.get(index);
+            ListWithAdapter listWithAdapter = adapterList.get(index);
             if (listWithAdapter.getAdapter() instanceof AppCMSBaseAdapter) {
                 ((AppCMSBaseAdapter) listWithAdapter.getAdapter())
                         .updateData(listWithAdapter.getListView(), contentData);
@@ -114,5 +117,20 @@ public class PageView extends BaseView {
 
     public void setUserLoggedIn(boolean userLoggedIn) {
         this.userLoggedIn = userLoggedIn;
+    }
+
+    public void addViewWithComponentId(ViewWithComponentId viewWithComponentId) {
+        viewsWithComponentIds.add(viewWithComponentId);
+    }
+
+    public View findViewFromComponentId(String id) {
+        if (!TextUtils.isEmpty(id)) {
+            for (ViewWithComponentId viewWithComponentId : viewsWithComponentIds) {
+                if (!TextUtils.isEmpty(viewWithComponentId.id) && viewWithComponentId.id.equals(id)) {
+                    return viewWithComponentId.view;
+                }
+            }
+        }
+        return null;
     }
 }
