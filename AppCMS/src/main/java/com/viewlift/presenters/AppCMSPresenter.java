@@ -28,6 +28,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 
 import com.apptentive.android.sdk.Apptentive;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -99,6 +100,7 @@ import com.viewlift.views.activity.AppCMSSearchActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.OnInternalEvent;
+import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSResetPasswordFragment;
 import com.viewlift.views.fragments.AppCMSSearchFragment;
@@ -109,6 +111,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -143,6 +146,7 @@ public class AppCMSPresenter {
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
     private static final String REFRESH_TOKEN_SHARED_PREF_NAME = "refresh_token_pref";
     private static final String USER_LOGGED_IN_TIME_PREF_NAME = "user_loggedin_time_pref";
+    private static final String FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME = "facebook_access_token_shared_pref_name";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
 
@@ -284,7 +288,7 @@ public class AppCMSPresenter {
     }
 
     public void initializeGA(String trackerId) {
-        if (this.googleAnalytics == null) {
+        if (this.googleAnalytics == null && currentActivity != null) {
             this.googleAnalytics = GoogleAnalytics.getInstance(currentActivity);
             this.tracker = this.googleAnalytics.newTracker(trackerId);
         }
@@ -719,18 +723,8 @@ public class AppCMSPresenter {
 
     public void loginFacebook() {
         if (currentActivity != null) {
-            String url = currentActivity.getString(R.string.app_cms_facebook_login_api_url,
-                    appCMSMain.getApiBaseUrl(),
-                    appCMSMain.getInternalName());
-            appCMSFacebookLoginCall.call(url,
-                    new Action1<FacebookLoginResponse>() {
-                        @Override
-                        public void call(FacebookLoginResponse facebookLoginResponse) {
-                            if (facebookLoginResponse != null) {
-
-                            }
-                        }
-                    });
+            LoginManager.getInstance().logInWithReadPermissions(currentActivity,
+                    Arrays.asList("public_profile", "user_friends"));
         }
     }
 
@@ -1099,7 +1093,7 @@ public class AppCMSPresenter {
             clearAdditionalFragment();
             FragmentTransaction transaction =
                     ((AppCompatActivity) currentActivity).getSupportFragmentManager().beginTransaction();
-            AppCMSSettingsFragment appCMSSettingsFragment = AppCMSSettingsFragment.newInstance(currentActivity);
+            AppCMSSettingsFragment appCMSSettingsFragment = AppCMSSettingsFragment.newInstance();
             transaction.add(R.id.app_cms_addon_fragment,
                     appCMSSettingsFragment,
                     currentActivity.getString(R.string.app_cms_settings_page_tag)).commit();
@@ -1314,10 +1308,12 @@ public class AppCMSPresenter {
     }
 
     public void sendStopLoadingPageAction() {
-        Intent stopLoadingPageIntent =
-                new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
-        currentActivity.sendBroadcast(stopLoadingPageIntent);
-        showDialog(DialogType.NETWORK, null, null);
+        if (currentActivity != null) {
+            Intent stopLoadingPageIntent =
+                    new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+            currentActivity.sendBroadcast(stopLoadingPageIntent);
+            showDialog(DialogType.NETWORK, null, null);
+        }
     }
 
     public void launchErrorActivity(Activity activity, PlatformType platformType) {
@@ -1361,45 +1357,99 @@ public class AppCMSPresenter {
     }
 
     public String getLoggedInUser(Context context) {
-        SharedPreferences sharedPrefs = context.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
-        return sharedPrefs.getString(USER_ID_SHARED_PREF_NAME, null);
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
+            return sharedPrefs.getString(USER_ID_SHARED_PREF_NAME, null);
+        }
+        return null;
     }
 
     public boolean setLoggedInUser(Context context, String userId) {
-        SharedPreferences sharedPrefs = context.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
-        return sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, userId).commit() &&
-                setLoggedInTime(context);
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
+            return sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, userId).commit() &&
+                    setLoggedInTime(context);
+        }
+        return false;
     }
 
     public long getLoggedInTime(Context context) {
-        SharedPreferences sharedPrefs = context.getSharedPreferences(USER_LOGGED_IN_TIME_PREF_NAME, 0);
-        return sharedPrefs.getLong("", 0L);
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_LOGGED_IN_TIME_PREF_NAME, 0);
+            return sharedPrefs.getLong("", 0L);
+        }
+        return 0L;
     }
 
     public boolean setLoggedInTime(Context context) {
-        SharedPreferences sharedPrefs = context.getSharedPreferences("", 0);
-        Date now = new Date();
-        return sharedPrefs.edit().putLong("", now.getTime()).commit();
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences("", 0);
+            Date now = new Date();
+            return sharedPrefs.edit().putLong("", now.getTime()).commit();
+        }
+        return false;
     }
 
     public String getRefreshToken(Context context) {
-        SharedPreferences sharedPrefs = context.getSharedPreferences(REFRESH_TOKEN_SHARED_PREF_NAME, 0);
-        return sharedPrefs.getString(REFRESH_TOKEN_SHARED_PREF_NAME, null);
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(REFRESH_TOKEN_SHARED_PREF_NAME, 0);
+            return sharedPrefs.getString(REFRESH_TOKEN_SHARED_PREF_NAME, null);
+        }
+        return null;
     }
 
     public boolean setRefreshToken(Context context, String refreshToken) {
-        SharedPreferences sharedPrefs = context.getSharedPreferences(REFRESH_TOKEN_SHARED_PREF_NAME, 0);
-        return sharedPrefs.edit().putString(REFRESH_TOKEN_SHARED_PREF_NAME, refreshToken).commit();
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(REFRESH_TOKEN_SHARED_PREF_NAME, 0);
+            return sharedPrefs.edit().putString(REFRESH_TOKEN_SHARED_PREF_NAME, refreshToken).commit();
+        }
+        return false;
     }
 
     public String getAuthToken(Context context) {
-        SharedPreferences sharedPrefs = context.getSharedPreferences(AUTH_TOKEN_SHARED_PREF_NAME, 0);
-        return sharedPrefs.getString(AUTH_TOKEN_SHARED_PREF_NAME, null);
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(AUTH_TOKEN_SHARED_PREF_NAME, 0);
+            return sharedPrefs.getString(AUTH_TOKEN_SHARED_PREF_NAME, null);
+        }
+        return null;
     }
 
     public boolean setAuthToken(Context context, String authToken) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(AUTH_TOKEN_SHARED_PREF_NAME, 0);
-        return sharedPreferences.edit().putString(AUTH_TOKEN_SHARED_PREF_NAME, authToken).commit();
+        if (context != null) {
+            SharedPreferences sharedPreferences = context.getSharedPreferences(AUTH_TOKEN_SHARED_PREF_NAME, 0);
+            return sharedPreferences.edit().putString(AUTH_TOKEN_SHARED_PREF_NAME, authToken).commit();
+        }
+        return false;
+    }
+
+    public String getFacebookAccessToken(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME, 0);
+            return sharedPrefs.getString(FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME, null);
+        }
+        return null;
+    }
+
+    public boolean setFacebookAccessToken(Context context, String facebookAccessToken) {
+        if (context != null) {
+            String url = currentActivity.getString(R.string.app_cms_facebook_login_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSMain.getInternalName());
+            appCMSFacebookLoginCall.call(url,
+                    getFacebookAccessToken(currentActivity),
+                    new Action1<FacebookLoginResponse>() {
+                        @Override
+                        public void call(FacebookLoginResponse facebookLoginResponse) {
+                            if (facebookLoginResponse != null) {
+
+                            }
+                        }
+                    });
+
+            SharedPreferences sharedPreferences = context.getSharedPreferences(FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME, 0);
+            return sharedPreferences.edit().putString(FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME, facebookAccessToken).commit();
+        }
+        return false;
     }
 
     public void logout() {
@@ -1562,20 +1612,25 @@ public class AppCMSPresenter {
         return appCMSSearchUrlComponent;
     }
 
-    public void showMoreDialog(String title, String fullText, int textColor) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
-        builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
-                Integer.toHexString(textColor).substring(2),
-                title)))
-                .setMessage(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
-                        Integer.toHexString(textColor).substring(2),
-                        fullText)));
-        AlertDialog dialog = builder.create();
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor(
-                    appCMSMain.getBrand().getGeneral().getBackgroundColor())));
+    public void showMoreDialog(String title, String fullText) {
+        if (currentActivity != null &&
+                currentActivity instanceof AppCompatActivity &&
+                isAdditionalFragmentViewAvailable()) {
+            pushActionInternalEvents(currentActivity.getString(R.string.more_page_action));
+
+            clearAdditionalFragment();
+            FragmentTransaction transaction =
+                    ((AppCompatActivity) currentActivity).getSupportFragmentManager().beginTransaction();
+            AppCMSMoreFragment appCMSMoreFragment =
+                    AppCMSMoreFragment.newInstance(currentActivity,
+                            title,
+                            fullText);
+            transaction.add(R.id.app_cms_addon_fragment,
+                    appCMSMoreFragment,
+                    currentActivity.getString(R.string.app_cms_more_page_tag)).commit();
+            showAddOnFragment();
+            setNavItemToCurrentAction(currentActivity);
         }
-        dialog.show();
     }
 
     public boolean shouldLoginAgain() {
@@ -1757,7 +1812,7 @@ public class AppCMSPresenter {
     private String getBeaconUrl(String vid, String screenName, String parentScreenName,
                                 long currentPosition, BeaconEvent event) {
         String url = null;
-        if (currentActivity != null) {
+        if (currentActivity != null && appCMSMain != null) {
             final String utfEncoding = currentActivity.getString(R.string.utf8enc);
             String uid = InstanceID.getInstance(currentActivity).getId();
             int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
@@ -1877,7 +1932,7 @@ public class AppCMSPresenter {
     }
 
     public void setNavItemToCurrentAction(Activity activity) {
-        if (currentActions.size() > 0) {
+        if (activity != null && currentActions != null && currentActions.size() > 0) {
             Intent setNavigationItemIntent = new Intent(PRESENTER_RESET_NAVIGATION_ITEM_ACTION);
             setNavigationItemIntent.putExtra(activity.getString(R.string.navigation_item_key),
                     currentActions.peek());
@@ -1976,37 +2031,38 @@ public class AppCMSPresenter {
     private void getAppCMSSite(final Activity activity,
                                final AppCMSMain main,
                                final PlatformType platformType) {
-        String url = currentActivity.getString(R.string.app_cms_site_api_url,
-                main.getApiBaseUrl(),
-                main.getDomainName());
-        new GetAppCMSSiteAsyncTask(appCMSSiteCall,
-                new Action1<AppCMSSite>() {
-                    @Override
-                    public void call(AppCMSSite appCMSSite) {
-                        if (appCMSSite != null) {
-                            AppCMSAPIComponent appCMSAPIComponent = DaggerAppCMSAPIComponent.builder()
-                                    .appCMSAPIModule(new AppCMSAPIModule(activity,
-                                            main.getApiBaseUrl(),
-                                            appCMSSite.getGist().getAppAccess().getAppSecretKey()))
-                                    .build();
-                            appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
-                            appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
-                            clearMaps();
-                            switch (platformType) {
-                                case ANDROID:
-                                    getAppCMSAndroid(activity, main);
-//                                    getAppCMSAndroid(activity, main);
-                                    break;
-                                case TV:
-                                    getAppCMSTV(activity, main, null);
-                                    break;
-                                default:
+        if (currentActivity != null) {
+            String url = currentActivity.getString(R.string.app_cms_site_api_url,
+                    main.getApiBaseUrl(),
+                    main.getDomainName());
+            new GetAppCMSSiteAsyncTask(appCMSSiteCall,
+                    new Action1<AppCMSSite>() {
+                        @Override
+                        public void call(AppCMSSite appCMSSite) {
+                            if (appCMSSite != null) {
+                                AppCMSAPIComponent appCMSAPIComponent = DaggerAppCMSAPIComponent.builder()
+                                        .appCMSAPIModule(new AppCMSAPIModule(activity,
+                                                main.getApiBaseUrl(),
+                                                appCMSSite.getGist().getAppAccess().getAppSecretKey()))
+                                        .build();
+                                appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
+                                appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
+                                clearMaps();
+                                switch (platformType) {
+                                    case ANDROID:
+                                        getAppCMSAndroid(activity, main);
+                                        break;
+                                    case TV:
+                                        getAppCMSTV(activity, main, null);
+                                        break;
+                                    default:
+                                }
+                            } else {
+                                launchErrorActivity(activity, platformType);
                             }
-                        } else {
-                            launchErrorActivity(activity, platformType);
                         }
-                    }
-                }).execute(url);
+                    }).execute(url);
+        }
     }
 
     private void getAppCMSAndroid(final Activity activity, final AppCMSMain main) {

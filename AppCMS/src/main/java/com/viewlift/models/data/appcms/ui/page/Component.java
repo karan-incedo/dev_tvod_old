@@ -6,7 +6,7 @@ import com.vimeo.stag.UseStag;
 
 import java.util.List;
 
-@UseStag
+@UseStag(UseStag.FieldOption.SERIALIZED_NAME)
 public class Component implements Module {
 
     @SerializedName("text")
@@ -144,6 +144,8 @@ public class Component implements Module {
     @SerializedName("protected")
     @Expose
     boolean isViewProtected;
+
+    boolean yAxisSetManually;
 
     public String getText() {
         return text;
@@ -415,5 +417,13 @@ public class Component implements Module {
 
     public void setIsViewProtected(boolean isViewProtected) {
         this.isViewProtected = isViewProtected;
+    }
+
+    public boolean isyAxisSetManually() {
+        return yAxisSetManually;
+    }
+
+    public void setyAxisSetManually(boolean yAxisSetManually) {
+        this.yAxisSetManually = yAxisSetManually;
     }
 }

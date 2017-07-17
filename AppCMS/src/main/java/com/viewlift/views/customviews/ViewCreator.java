@@ -896,7 +896,6 @@ public class ViewCreator {
                                     new ViewCreatorMultiLineLayoutListener(((TextView) componentViewResult.componentView),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
                                             videoDescription,
-                                            textColor,
                                             appCMSPresenter,
                                             false);
                             textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
@@ -1006,8 +1005,8 @@ public class ViewCreator {
                 componentViewResult.componentView = new ProgressBar(context,
                         null,
                         android.R.attr.progressBarStyleHorizontal);
-                if (!TextUtils.isEmpty(component.getProgressColor())) {
-                    int color = Color.parseColor(getColor(context, component.getProgressColor()));
+                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())) {
+                    int color = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
                     ((ProgressBar) componentViewResult.componentView).getProgressDrawable().setColorFilter(color, PorterDuff.Mode.SRC_IN);
                 }
                 if (appCMSPresenter.isUserLoggedIn(context)) {

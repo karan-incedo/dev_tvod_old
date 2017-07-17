@@ -105,4 +105,11 @@
     <string name="app_cms_video_page_page_name">Video Page</string>
     <string name="app_cms_watchlist_navigation_title">Watchlist</string>
     <string name="app_cms_history_navigation_title">History</string>
+    <string name="app_cms_more_text_key">app_cms_more_text</string>
+    <string name="app_cms_more_title_key">app_cms_more_title</string>
+    <string name="more_page_action">MorePage</string>
+
+    <!-- AppCMS Facebook Login values -->
+    <string name="facebook_app_id">227991737252697</string>
+    <string name="fb_login_protocol_scheme">fb227991737252697</string>
 </resources>

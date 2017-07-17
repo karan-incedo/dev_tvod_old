@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/app_cms_settings_page_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:textSize="@dimen/app_cms_settings_page_title_textsize"
+        android:text="@string/app_cms_settings_page_title_text"
+        android:textStyle="bold"/>
+    <ImageButton
+        android:id="@+id/app_cms_close_button"
+        android:layout_width="@dimen/close_button_size"
+        android:layout_height="@dimen/close_button_size"
+        android:scaleType="fitCenter"
+        android:background="@android:color/transparent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/close_button_margin"
+        android:src="@drawable/cancel" />
+    <View
+        android:id="@+id/app_cms_settings_separator_view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/app_cms_separator_view_height"
+        android:layout_below="@id/app_cms_close_button"
+        android:alpha="0.6"/>
+    <TextView
+        android:id="@+id/app_cms_more_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/app_cms_account_padding"
+        android:layout_below="@id/app_cms_settings_separator_view"/>
+
+</RelativeLayout>
