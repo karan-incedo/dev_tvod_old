@@ -2,9 +2,7 @@ package com.viewlift.views.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -72,8 +70,9 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
         AppCMSNavItemsAdapter appCMSNavItemsAdapter = new AppCMSNavItemsAdapter(appCMSBinder.getNavigation(),
-                appCMSBinder.isUserLoggedIn(),
                 appCMSPresenter,
+                appCMSBinder.getJsonValueKeyMap(),
+                appCMSBinder.isUserLoggedIn(),
                 textColor);
         navItemsList.setAdapter(appCMSNavItemsAdapter);
         if (!BaseView.isTablet(getContext())) {
