@@ -7,6 +7,7 @@ import com.viewlift.models.network.modules.AppCMSSearchModule;
 import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSDeleteHistoryCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginRest;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
@@ -49,6 +50,8 @@ public class AppCMSPresenterModule {
                                                    AppCMSWatchlistCall appCMSWatchlistCall,
                                                    AppCMSHistoryCall appCMSHistoryCall,
 
+                                                   AppCMSDeleteHistoryCall appCMSDeleteHistoryCall,
+
                                                    AppCMSBeaconRest appCMSBeaconRest,
                                                    AppCMSSignInCall appCMSSignInCall,
                                                    AppCMSRefreshIdentityCall appCMSRefreshIdentityCall,
@@ -73,6 +76,8 @@ public class AppCMSPresenterModule {
 
                 appCMSWatchlistCall,
                 appCMSHistoryCall,
+
+                appCMSDeleteHistoryCall,
 
                 appCMSBeaconRest,
                 appCMSSignInCall,

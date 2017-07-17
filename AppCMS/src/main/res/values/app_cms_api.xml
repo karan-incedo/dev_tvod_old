@@ -185,6 +185,8 @@
     <!--AppCMS History API-->
     <string name="app_cms_history_api_url">%1$s/content/video/history/user/%2$s?site=%3$s&amp;userId=%4$s&amp;offset=0</string>
     <string name="app_cms_api_history_module_key">HistoryModule</string>
+    <string name="app_cms_edit_history_api_url">%1$s/content/video/history/user/%2$s?site=%3$s&amp;videoIds=%4$s</string>
+    <string name="app_cms_clear_history_api_url">%1$s/content/video/history/user/%2$s?site=%3$s</string>
 
     <!-- AppCMS Navigation menu -->
     <string name="app_cms_menu_icon_name">menu_</string>

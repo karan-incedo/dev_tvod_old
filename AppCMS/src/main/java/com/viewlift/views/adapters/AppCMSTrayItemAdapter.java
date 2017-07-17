@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.history.AppCMSDeleteHistoryResult;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
@@ -384,15 +385,27 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     private void delete(final ContentDatum contentDatum) {
-        Log.d(TAG, "Deleting item: " + contentDatum.getGist().getTitle());
-        appCMSPresenter.editWatchlist(contentDatum.getGist().getId(),
-                new Action1<AppCMSAddToWatchlistResult>() {
-                    @Override
-                    public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
-                        adapterData.remove(contentDatum);
-                        notifyDataSetChanged();
-                    }
-                }, false);
+        if (isHistory) {
+            Log.d(TAG, "Deleting history item: " + contentDatum.getGist().getTitle());
+            appCMSPresenter.editHistory(contentDatum.getGist().getId(),
+                    new Action1<AppCMSDeleteHistoryResult>() {
+                        @Override
+                        public void call(AppCMSDeleteHistoryResult appCMSDeleteHistoryResult) {
+                            adapterData.remove(contentDatum);
+                            notifyDataSetChanged();
+                        }
+                    }, false);
+        } else {
+            Log.d(TAG, "Deleting watchlist item: " + contentDatum.getGist().getTitle());
+            appCMSPresenter.editWatchlist(contentDatum.getGist().getId(),
+                    new Action1<AppCMSAddToWatchlistResult>() {
+                        @Override
+                        public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
+                            adapterData.remove(contentDatum);
+                            notifyDataSetChanged();
+                        }
+                    }, false);
+        }
     }
 
     private void applyBorderToComponent(Context context, View view, Component component) {
@@ -477,10 +490,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             this.itemView = itemView;
             ButterKnife.bind(this, itemView);
 
-            if (isHistoryView) {
-                appCMSContinueWatchingDeleteButton.setVisibility(View.GONE);
-                appCMSContinueWatchingDeleteButton.setEnabled(false);
-            }
+//            if (isHistoryView) {
+//                appCMSContinueWatchingDeleteButton.setVisibility(View.GONE);
+//                appCMSContinueWatchingDeleteButton.setEnabled(false);
+//            }
         }
     }
 }

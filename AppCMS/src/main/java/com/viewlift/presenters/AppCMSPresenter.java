@@ -37,9 +37,11 @@ import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
+import com.viewlift.models.data.appcms.history.AppCMSDeleteHistoryResult;
 import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
 import com.viewlift.models.data.appcms.history.Record;
 import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
@@ -50,7 +52,6 @@ import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
-import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.FacebookLoginResponse;
 import com.viewlift.models.data.appcms.ui.authentication.ForgotPasswordResponse;
 import com.viewlift.models.data.appcms.ui.authentication.RefreshIdentityResponse;
@@ -78,6 +79,7 @@ import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSDeleteHistoryCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
@@ -130,6 +132,11 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
 
+//import com.viewlift.models.network.components.AppCMSAPIComponent;
+//import com.viewlift.models.network.components.AppCMSSearchUrlComponent;
+//import com.viewlift.models.network.components.DaggerAppCMSAPIComponent;
+//import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
+
 /**
  * Created by viewlift on 5/3/17.
  */
@@ -178,6 +185,8 @@ public class AppCMSPresenter {
     private final AppCMSUserVideoStatusCall appCMSUserVideoStatusCall;
     private final AppCMSAddToWatchlistCall appCMSAddToWatchlistCall;
 
+    private final AppCMSDeleteHistoryCall appCMSDeleteHistoryCall;
+
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private Activity currentActivity;
@@ -223,6 +232,8 @@ public class AppCMSPresenter {
                            AppCMSWatchlistCall appCMSWatchlistCall,
                            AppCMSHistoryCall appCMSHistoryCall,
 
+                           AppCMSDeleteHistoryCall appCMSDeleteHistoryCall,
+
                            AppCMSBeaconRest appCMSBeaconRest,
                            AppCMSSignInCall appCMSSignInCall,
                            AppCMSRefreshIdentityCall appCMSRefreshIdentityCall,
@@ -261,6 +272,8 @@ public class AppCMSPresenter {
 
         this.appCMSWatchlistCall = appCMSWatchlistCall;
         this.appCMSHistoryCall = appCMSHistoryCall;
+
+        this.appCMSDeleteHistoryCall = appCMSDeleteHistoryCall;
 
         this.loadingPage = false;
         this.navigationPages = new HashMap<>();
@@ -782,11 +795,46 @@ public class AppCMSPresenter {
         }
     }
 
+    public void editHistory(final String filmId,
+                            final Action1<AppCMSDeleteHistoryResult> resultAction1, boolean post) {
+        final String url = currentActivity.getString(R.string.app_cms_edit_history_api_url,
+                appCMSMain.getApiBaseUrl(),
+                getLoggedInUser(currentActivity),
+                appCMSMain.getInternalName(),
+                filmId);
+
+        try {
+            DeleteHistoryRequest request = new DeleteHistoryRequest();
+            request.setUserId(getLoggedInUser(currentActivity));
+            request.setContentType(currentActivity.getString(R.string.delete_history_content_type_video));
+            request.setPosition(1L);
+            if (post) {
+                request.setContentId(filmId);
+            } else {
+                request.setContentIds(filmId);
+            }
+
+            appCMSDeleteHistoryCall.call(url, getAuthToken(currentActivity),
+                    new Action1<AppCMSDeleteHistoryResult>() {
+                        @Override
+                        public void call(AppCMSDeleteHistoryResult appCMSDeleteHistoryResult) {
+                            try {
+                                Observable.just(appCMSDeleteHistoryResult).subscribe(resultAction1);
+                            } catch (Exception e) {
+                                Log.e(TAG, "deleteHistoryContent: " + e.toString());
+                            }
+                        }
+                    }, request, post);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void clearWatchlist(final Action1<AppCMSAddToWatchlistResult> resultAction1) {
         final String url = currentActivity.getString(R.string.app_cms_clear_watchlist_api_url,
                 appCMSMain.getApiBaseUrl(),
-                appCMSMain.getInternalName(),
-                getLoggedInUser(currentActivity));
+                getLoggedInUser(currentActivity),
+                appCMSMain.getInternalName());
 
         try {
             AddToWatchlistRequest request = new AddToWatchlistRequest();
@@ -801,6 +849,33 @@ public class AppCMSPresenter {
                                 Observable.just(addToWatchlistResult).subscribe(resultAction1);
                             } catch (Exception e) {
                                 Log.e(TAG, "clearWatchlistContent: " + e.toString());
+                            }
+                        }
+                    }, request, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void clearHistory(final Action1<AppCMSDeleteHistoryResult> resultAction1) {
+        final String url = currentActivity.getString(R.string.app_cms_clear_history_api_url,
+                appCMSMain.getApiBaseUrl(),
+                getLoggedInUser(currentActivity),
+                appCMSMain.getInternalName());
+
+        try {
+            DeleteHistoryRequest request = new DeleteHistoryRequest();
+            request.setUserId(getLoggedInUser(currentActivity));
+            request.setContentType(currentActivity.getString(R.string.delete_history_content_type_video));
+            request.setPosition(1L);
+            appCMSDeleteHistoryCall.call(url, getAuthToken(currentActivity),
+                    new Action1<AppCMSDeleteHistoryResult>() {
+                        @Override
+                        public void call(AppCMSDeleteHistoryResult appCMSDeleteHistoryResult) {
+                            try {
+                                Observable.just(appCMSDeleteHistoryResult).subscribe(resultAction1);
+                            } catch (Exception e) {
+                                Log.e(TAG, "clearHistoryContent: " + e.toString());
                             }
                         }
                     }, request, false);
@@ -1590,7 +1665,7 @@ public class AppCMSPresenter {
     public AppCMSMain getAppCMSMain() {
         return appCMSMain;
     }
-    
+
     public boolean isPageAVideoPage(String pageName) {
         if (currentActivity != null) {
             return pageName.contains(currentActivity.getString(R.string.app_cms_video_page_page_name));
