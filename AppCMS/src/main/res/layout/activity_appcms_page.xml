@@ -22,18 +22,17 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:orientation="vertical">
 
                 <ImageView
                     android:id="@+id/app_cms_toolbar_logo"
                     android:layout_width="wrap_content"
-                    android:layout_height="?attr/actionBarSize"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/logo_icon" />
-
+                    android:background="@drawable/logo_icon"
+                    android:scaleType="centerInside" />
             </LinearLayout>
 
         </android.support.v7.widget.Toolbar>

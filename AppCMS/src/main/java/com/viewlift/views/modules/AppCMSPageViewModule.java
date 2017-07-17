@@ -4,11 +4,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
-import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
-import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.views.customviews.PageView;
-import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +12,10 @@ import java.util.Map;
 
 import javax.inject.Singleton;
 
+import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
+import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
+import com.viewlift.views.customviews.PageView;
+import com.viewlift.views.customviews.ViewCreator;
 import dagger.Module;
 import dagger.Provides;
 import snagfilms.com.air.appcms.R;

@@ -56,9 +56,6 @@
     <string name="age_rating_converted_fourteen">14+</string>
     <string name="age_rating_converted_default">18+</string>
     <string name="no_results">No results</string>
-    <string name="video_player_title_key">video_player_title</string>
-    <string name="video_player_permalink_key">video_player_permalink</string>
-    <string name="video_player_font_color_key">video_player_font_color</string>
     <string name="opensans_bold_ttf">fonts/OpenSans-Bold.ttf</string>
     <string name="opensans_semibold_ttf">fonts/OpenSans-Semibold.ttf</string>
     <string name="opensans_extrabold_ttf">fonts/OpenSans-ExtraBold.ttf</string>
@@ -76,4 +73,43 @@
     <string name="please_input_your_email_address_to_send_a_reset_password_link_text">Please input your email address to send a reset password link.</string>
     <string name="empty_history_list_message">Your history is currently empty.</string>
     <string name="empty_watchlist_message">Your watchlist is currently empty.</string>
+    <string name="app_cms_currently_logged_out_message">CURRENTLY LOGGED OUT</string>
+    <string name="app_cms_sign_out_label">SIGN OUT</string>
+
+    <string name="app_cms_login_again">Your session has expired.  Please login again.</string>
+    <string name="app_cms_error_email_password">Email and password are not valid.</string>
+    <string name="app_cms_edit_settings_button_text">EDIT</string>
+    <string name="app_cms_account_name_title_text">Name:</string>
+    <string name="app_cms_account_title_text">ACCOUNT</string>
+    <string name="app_cms_account_email_title_text">Email:</string>
+    <string name="app_cms_settings_page_title_text">Settings</string>
+    <string name="app_cms_update_username_dialog_title">Update Username</string>
+    <string name="app_cms_update_email_dialog_title">Update Email</string>
+    <string name="add_to_watchlist_content_type_video">video</string>
+    <string name="app_cms_border_color_key">app_cms_border_color</string>
+    <string name="app_cms_password_reset_email_key">app_cms_password_reset_email</string>
+    <string name="video_player_title_key">video_player_title</string>
+    <string name="video_player_permalink_key">video_player_permalink</string>
+    <string name="video_player_font_color_key">video_player_font_color</string>
+    <string name="play_ads_key">play_ads</string>
+    <string name="reset_password_text">RESET PASSWORD</string>
+    <string name="watched_time_key">watched_time</string>
+
+    <!-- AppCMS VideoPlayer values -->
+    <string name="app_cms_user_agent">AppCMS Android</string>
+    <string name="app_cms_default_video_ext">m3u8</string>
+
+    <!-- AppCMS Login values -->
+    <string name="app_cms_log_in_pager_title">LOG IN</string>
+    <string name="app_cms_sign_up_pager_title">SIGN UP</string>
+    <string name="app_cms_video_page_page_name">Video Page</string>
+    <string name="app_cms_watchlist_navigation_title">Watchlist</string>
+    <string name="app_cms_history_navigation_title">History</string>
+    <string name="app_cms_more_text_key">app_cms_more_text</string>
+    <string name="app_cms_more_title_key">app_cms_more_title</string>
+    <string name="more_page_action">MorePage</string>
+
+    <!-- AppCMS Facebook Login values -->
+    <string name="facebook_app_id">227991737252697</string>
+    <string name="fb_login_protocol_scheme">fb227991737252697</string>
 </resources>

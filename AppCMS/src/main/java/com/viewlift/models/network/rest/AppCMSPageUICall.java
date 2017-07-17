@@ -84,7 +84,7 @@ public class AppCMSPageUICall {
         int startIndex = url.lastIndexOf(PATH_SEP);
         int endIndex = url.indexOf(JSON_EXT) + JSON_EXT.length();
         if (0 <= startIndex && startIndex < endIndex) {
-            return url.substring(startIndex + 1, endIndex);
+            return url.substring(startIndex+1, endIndex);
         }
         return url;
     }
