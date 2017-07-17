@@ -40,7 +40,7 @@
     <TextView
         android:id="@+id/app_cms_more_text"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:padding="@dimen/app_cms_account_padding"
         app:layout_constraintTop_toBottomOf="@id/app_cms_settings_separator_view"/>
 
