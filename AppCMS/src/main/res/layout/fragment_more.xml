@@ -35,13 +35,13 @@
         android:id="@+id/app_cms_settings_separator_view"
         android:layout_width="match_parent"
         android:layout_height="@dimen/app_cms_separator_view_height"
-        android:layout_below="@id/app_cms_close_button"
-        android:alpha="0.6"/>
+        app:layout_constraintTop_toBottomOf="app_cms_close_button"
+        android:alpha="0.6" />
     <TextView
         android:id="@+id/app_cms_more_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="@dimen/app_cms_account_padding"
-        android:layout_below="@id/app_cms_settings_separator_view"/>
+        app:layout_constraintTop_toBottomOf="app_cms_settings_separator_view"/>
 
 </android.support.constraint.ConstraintLayout>
