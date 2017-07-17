@@ -28,7 +28,7 @@
     <string name="app_cms_beacon_video_player_parent_screen_name">VideoPlayer</string>
 
     <!-- AppCMS Apptentive API -->
-    <string name="app_cms_apptentive_api_key">b662ac9b5b55b2d40c803ba80cc2e3e5a239c4270b872a9b04d6eb7b8157ccc4</string>
+    <string name="app_cms_apptentive_api_key">dfde9505539f2dc1d24700c09fb096b5280ed4cbed0828084540ada79a2b00f7</string>
 
     <!-- AppCMS Google Analytics -->
     <string name="app_cms_template_page_separator">&#160;-&#160;</string>
@@ -191,6 +191,9 @@
     <string name="app_cms_api_history_module_key">HistoryModule</string>
     <string name="app_cms_edit_history_api_url">%1$s/content/video/history/user/%2$s?site=%3$s&amp;videoIds=%4$s</string>
     <string name="app_cms_clear_history_api_url">%1$s/content/video/history/user/%2$s?site=%3$s</string>
+
+    <!--AppCMS Subscription API-->
+    <string name="app_cms_subscription_api_url">%1$s/content/pages/user/%2$s?site=%3$s&amp;userId=%4$s</string>
 
     <!-- AppCMS Navigation menu -->
     <string name="app_cms_menu_icon_name">menu_</string>
