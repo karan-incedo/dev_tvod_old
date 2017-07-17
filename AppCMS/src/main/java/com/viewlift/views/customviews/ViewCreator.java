@@ -1081,6 +1081,7 @@ public class ViewCreator {
                             setBackgroundColor(Color.parseColor(getColor(context,
                                     appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())));
                 }
+                componentViewResult.componentView.setAlpha(0.6f);
                 break;
 
             case PAGE_CASTVIEW_VIEW_KEY:
