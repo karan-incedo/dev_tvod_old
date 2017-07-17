@@ -12,7 +12,7 @@ import dagger.Component;
  */
 
 @Singleton
-@Component(modules = {AppCMSSearchModule.class})
+@Component(modules={AppCMSSearchModule.class})
 public interface AppCMSSearchComponent {
     AppCMSSearchCall appCMSSearchCall();
 }

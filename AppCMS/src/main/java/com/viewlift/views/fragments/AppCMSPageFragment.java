@@ -133,15 +133,6 @@ public class AppCMSPageFragment extends Fragment {
         } else {
             pageView.notifyAdaptersOfUpdate();
         }
-        if (appCMSPresenter != null) {
-            appCMSPresenter.showMainFragmentView(true);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
     }
 
     @Override
