@@ -251,8 +251,4 @@ public class AppCMSSettingsFragment extends DialogFragment {
             }
         }
     }
-
-    private enum InputField {
-        USERNAME, EMAIL
-    }
 }
