@@ -76,6 +76,7 @@
     <string name="app_cms_currently_logged_out_message">CURRENTLY LOGGED OUT</string>
     <string name="app_cms_sign_out_label">SIGN OUT</string>
 
+    <string name="app_cms_login_again">Your session has expired.  Please login again.</string>
     <string name="app_cms_error_email_password">Email and password are not valid.</string>
     <string name="app_cms_edit_settings_button_text">EDIT</string>
     <string name="app_cms_account_name_title_text">Name:</string>

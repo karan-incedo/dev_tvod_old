@@ -147,6 +147,8 @@ public class AppCMSPresenter {
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
 
     private static final long MILLISECONDS_PER_SECOND = 1000L;
+    private static final long SECONDS_PER_MINUTE = 60L;
+    private static final long MAX_SESSION_DURATION_IN_MINUTES = 30L;
 
     private final AppCMSMainUICall appCMSMainUICall;
     private final AppCMSAndroidUICall appCMSAndroidUICall;
@@ -376,7 +378,7 @@ public class AppCMSPresenter {
         boolean result = false;
         Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
         if (!isNetworkConnected()) {
-            showDialog(DialogType.NETWORK, null);
+            showDialog(DialogType.NETWORK, null, null);
         } else if (currentActivity != null && !loadingPage) {
             final AppCMSActionType actionType = actionToActionTypeMap.get(action);
             if (actionType == null) {
@@ -1042,29 +1044,34 @@ public class AppCMSPresenter {
                                        boolean userPageIdQueryParam, String pageId,
                                        final AppCMSHistoryAPIAction history) {
 
-        String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
-                appCMSMain.getApiBaseUrl(),
-                getRefreshToken(currentActivity));
+        if (shouldLoginAgain()) {
+            showLoginAgainDialogAndLoginPage();
+        } else {
 
-        appCMSRefreshIdentityCall.call(url, new Action1<RefreshIdentityResponse>() {
-            @Override
-            public void call(RefreshIdentityResponse refreshIdentityResponse) {
-                try {
-                    appCMSHistoryCall.call(currentActivity.getString(R.string.app_cms_history_api_url,
-                            apiBaseUrl, getLoggedInUser(currentActivity), siteiD,
-                            getLoggedInUser(currentActivity)),
-                            getAuthToken(currentActivity),
-                            new Action1<AppCMSHistoryResult>() {
-                                @Override
-                                public void call(AppCMSHistoryResult appCMSHistoryResult) {
-                                    history.call(appCMSHistoryResult);
-                                }
-                            });
-                } catch (IOException e) {
-                    Log.e(TAG, "getHistoryPageContent: " + e.toString());
+            String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    getRefreshToken(currentActivity));
+
+            appCMSRefreshIdentityCall.call(url, new Action1<RefreshIdentityResponse>() {
+                @Override
+                public void call(RefreshIdentityResponse refreshIdentityResponse) {
+                    try {
+                        appCMSHistoryCall.call(currentActivity.getString(R.string.app_cms_history_api_url,
+                                apiBaseUrl, getLoggedInUser(currentActivity), siteiD,
+                                getLoggedInUser(currentActivity)),
+                                getAuthToken(currentActivity),
+                                new Action1<AppCMSHistoryResult>() {
+                                    @Override
+                                    public void call(AppCMSHistoryResult appCMSHistoryResult) {
+                                        history.call(appCMSHistoryResult);
+                                    }
+                                });
+                    } catch (IOException e) {
+                        Log.e(TAG, "getHistoryPageContent: " + e.toString());
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     public void navigateToLoginPage() {
@@ -1115,10 +1122,13 @@ public class AppCMSPresenter {
                                 Log.d(TAG, "Successfully reset password for email: " + email);
                                 showDialog(DialogType.RESET_PASSWORD,
                                         currentActivity.getString(R.string.app_cms_reset_password_success_description,
-                                                email));
+                                                email),
+                                        null);
                             } else if (forgotPasswordResponse != null) {
                                 Log.e(TAG, "Failed to reset password for email: " + email);
-                                showDialog(DialogType.RESET_PASSWORD, forgotPasswordResponse.getError());
+                                showDialog(DialogType.RESET_PASSWORD,
+                                        forgotPasswordResponse.getError(),
+                                        null);
                             }
                         }
                     });
@@ -1127,17 +1137,21 @@ public class AppCMSPresenter {
 
     public void getUserData(final Action1<UserIdentity> userIdentityAction) {
         if (currentActivity != null) {
-            String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
-                    appCMSMain.getApiBaseUrl(),
-                    appCMSMain.getInternalName());
-            appCMSUserIdentityCall.callGet(url,
-                    getAuthToken(currentActivity),
-                    new Action1<UserIdentity>() {
-                        @Override
-                        public void call(UserIdentity userIdentity) {
-                            Observable.just(userIdentity).subscribe(userIdentityAction);
-                        }
-                    });
+            if (shouldLoginAgain()) {
+                showLoginAgainDialogAndLoginPage();
+            } else {
+                String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        appCMSMain.getInternalName());
+                appCMSUserIdentityCall.callGet(url,
+                        getAuthToken(currentActivity),
+                        new Action1<UserIdentity>() {
+                            @Override
+                            public void call(UserIdentity userIdentity) {
+                                Observable.just(userIdentity).subscribe(userIdentityAction);
+                            }
+                        });
+            }
         }
     }
 
@@ -1145,21 +1159,25 @@ public class AppCMSPresenter {
                                String email,
                                final Action1<UserIdentity> userIdentityAction) {
         if (currentActivity != null) {
-            String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
-                    appCMSMain.getApiBaseUrl(),
-                    appCMSMain.getInternalName());
-            UserIdentity userIdentity = new UserIdentity();
-            userIdentity.setName(username);
-            userIdentity.setEmail(email);
-            appCMSUserIdentityCall.callPost(url,
-                    getAuthToken(currentActivity),
-                    userIdentity,
-                    new Action1<UserIdentity>() {
-                        @Override
-                        public void call(UserIdentity userIdentity) {
-                            Observable.just(userIdentity).subscribe(userIdentityAction);
-                        }
-                    });
+            if (shouldLoginAgain()) {
+                showLoginAgainDialogAndLoginPage();
+            } else {
+                String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        appCMSMain.getInternalName());
+                UserIdentity userIdentity = new UserIdentity();
+                userIdentity.setName(username);
+                userIdentity.setEmail(email);
+                appCMSUserIdentityCall.callPost(url,
+                        getAuthToken(currentActivity),
+                        userIdentity,
+                        new Action1<UserIdentity>() {
+                            @Override
+                            public void call(UserIdentity userIdentity) {
+                                Observable.just(userIdentity).subscribe(userIdentityAction);
+                            }
+                        });
+            }
         }
     }
 
@@ -1299,7 +1317,7 @@ public class AppCMSPresenter {
         Intent stopLoadingPageIntent =
                 new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
         currentActivity.sendBroadcast(stopLoadingPageIntent);
-        showDialog(DialogType.NETWORK, null);
+        showDialog(DialogType.NETWORK, null, null);
     }
 
     public void launchErrorActivity(Activity activity, PlatformType platformType) {
@@ -1560,7 +1578,37 @@ public class AppCMSPresenter {
         dialog.show();
     }
 
-    public void showDialog(DialogType dialogType, String optionalMessage) {
+    public boolean shouldLoginAgain() {
+        if (currentActivity != null) {
+            long lastLoginTime = getLoggedInTime(currentActivity);
+            if (lastLoginTime > 0) {
+                long now = new Date().getTime();
+                long timeDiff = now - lastLoginTime;
+                long minutesSinceLogin = timeDiff / (MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE);
+                if (minutesSinceLogin >= MAX_SESSION_DURATION_IN_MINUTES) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void showLoginAgainDialogAndLoginPage() {
+        if (currentActivity != null) {
+            showDialog(DialogType.SIGNIN,
+                    currentActivity.getString(R.string.app_cms_login_again),
+                    new Action0() {
+                        @Override
+                        public void call() {
+                            navigateToLoginPage();
+                        }
+                    });
+        }
+    }
+
+    public void showDialog(DialogType dialogType,
+                           String optionalMessage,
+                           final Action0 onDismissAction) {
         if (currentActivity != null) {
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
@@ -1594,6 +1642,9 @@ public class AppCMSPresenter {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
+                                    if (onDismissAction != null) {
+                                        onDismissAction.call();
+                                    }
                                 }
                             });
             AlertDialog dialog = builder.create();
@@ -1782,7 +1833,7 @@ public class AppCMSPresenter {
                             // Show log error
                             Log.e(TAG, "Email and password are not valid.");
                             showDialog(DialogType.SIGNIN, currentActivity.getString(
-                                    R.string.app_cms_error_email_password));
+                                    R.string.app_cms_error_email_password), null);
                         } else {
                             refreshToken = signInResponse.getRefreshToken();
                             setAuthToken(currentActivity, signInResponse.getAuthorizationToken());
