@@ -31,6 +31,7 @@ import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordRest;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignInRest;
+import com.viewlift.models.network.rest.AppCMSSubscriptionRest;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryRest;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
@@ -438,6 +439,12 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSDeleteHistoryRest providesAppCMSDeleteHistoryRest(Retrofit retrofit) {
         return retrofit.create(AppCMSDeleteHistoryRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSSubscriptionRest providesAppCMSSubscriptionRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSSubscriptionRest.class);
     }
 
     @Provides
