@@ -16,6 +16,7 @@ import com.viewlift.models.network.rest.AppCMSAddToWatchlistRest;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSDeleteHistoryRest;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginRest;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
@@ -319,7 +320,6 @@ public class AppCMSUIModule {
     @Provides
     @Singleton
     public Gson providesGson() {
-//        return new Gson();
         return new GsonBuilder().registerTypeAdapterFactory(new Stag.Factory())
                 .create();
     }
@@ -432,6 +432,12 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSAddToWatchlistRest providesAppCMSAddToWatchlistRest(Retrofit retrofit) {
         return retrofit.create(AppCMSAddToWatchlistRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSDeleteHistoryRest providesAppCMSDeleteHistoryRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSDeleteHistoryRest.class);
     }
 
     @Provides
