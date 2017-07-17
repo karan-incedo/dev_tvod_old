@@ -69,10 +69,6 @@ import com.viewlift.models.network.background.tasks.GetAppCMSRefreshIdentityAsyn
 import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
 import com.viewlift.models.network.background.tasks.PostAppCMSLoginRequestAsyncTask;
-//import com.viewlift.models.network.components.AppCMSAPIComponent;
-//import com.viewlift.models.network.components.AppCMSSearchUrlComponent;
-//import com.viewlift.models.network.components.DaggerAppCMSAPIComponent;
-//import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
 import com.viewlift.models.network.components.AppCMSAPIComponent;
 import com.viewlift.models.network.components.AppCMSSearchUrlComponent;
 import com.viewlift.models.network.components.DaggerAppCMSAPIComponent;
@@ -132,6 +128,11 @@ import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
+
+//import com.viewlift.models.network.components.AppCMSAPIComponent;
+//import com.viewlift.models.network.components.AppCMSSearchUrlComponent;
+//import com.viewlift.models.network.components.DaggerAppCMSAPIComponent;
+//import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
 
 /**
  * Created by viewlift on 5/3/17.
@@ -804,16 +805,19 @@ public class AppCMSPresenter {
                             final Action1<AppCMSDeleteHistoryResult> resultAction1, boolean post) {
         final String url = currentActivity.getString(R.string.app_cms_edit_history_api_url,
                 appCMSMain.getApiBaseUrl(),
-                appCMSMain.getInternalName(),
                 getLoggedInUser(currentActivity),
+                appCMSMain.getInternalName(),
                 filmId);
 
         try {
             DeleteHistoryRequest request = new DeleteHistoryRequest();
+            request.setUserId(getLoggedInUser(currentActivity));
+            request.setContentType(currentActivity.getString(R.string.delete_history_content_type_video));
+            request.setPosition(1L);
             if (post) {
-                // TODO: 7/17/17 setContentId(filmId);
+                request.setContentId(filmId);
             } else {
-                // TODO: 7/17/17 setContentIds(filmId);
+                request.setContentIds(filmId);
             }
 
             appCMSDeleteHistoryCall.call(url, getAuthToken(currentActivity),
@@ -835,8 +839,8 @@ public class AppCMSPresenter {
     public void clearWatchlist(final Action1<AppCMSAddToWatchlistResult> resultAction1) {
         final String url = currentActivity.getString(R.string.app_cms_clear_watchlist_api_url,
                 appCMSMain.getApiBaseUrl(),
-                appCMSMain.getInternalName(),
-                getLoggedInUser(currentActivity));
+                getLoggedInUser(currentActivity),
+                appCMSMain.getInternalName());
 
         try {
             AddToWatchlistRequest request = new AddToWatchlistRequest();
@@ -862,12 +866,14 @@ public class AppCMSPresenter {
     public void clearHistory(final Action1<AppCMSDeleteHistoryResult> resultAction1) {
         final String url = currentActivity.getString(R.string.app_cms_clear_history_api_url,
                 appCMSMain.getApiBaseUrl(),
-                appCMSMain.getInternalName(),
-                getLoggedInUser(currentActivity));
+                getLoggedInUser(currentActivity),
+                appCMSMain.getInternalName());
 
         try {
             DeleteHistoryRequest request = new DeleteHistoryRequest();
-            //
+            request.setUserId(getLoggedInUser(currentActivity));
+            request.setContentType(currentActivity.getString(R.string.delete_history_content_type_video));
+            request.setPosition(1L);
             appCMSDeleteHistoryCall.call(url, getAuthToken(currentActivity),
                     new Action1<AppCMSDeleteHistoryResult>() {
                         @Override
