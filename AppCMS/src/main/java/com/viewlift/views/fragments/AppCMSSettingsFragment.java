@@ -36,7 +36,7 @@ import snagfilms.com.air.appcms.R;
  */
 
 public class AppCMSSettingsFragment extends DialogFragment {
-    public static AppCMSSettingsFragment newInstance(Context context) {
+    public static AppCMSSettingsFragment newInstance() {
         AppCMSSettingsFragment appCMSSettingsFragment = new AppCMSSettingsFragment();
         return appCMSSettingsFragment;
     }

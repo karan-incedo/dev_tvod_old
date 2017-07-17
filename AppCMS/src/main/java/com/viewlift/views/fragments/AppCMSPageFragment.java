@@ -176,6 +176,9 @@ public class AppCMSPageFragment extends Fragment {
     }
 
     public ViewCreator getViewCreator() {
-        return appCMSViewComponent.viewCreator();
+        if (appCMSViewComponent != null) {
+            return appCMSViewComponent.viewCreator();
+        }
+        return null;
     }
 }

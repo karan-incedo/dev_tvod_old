@@ -261,11 +261,14 @@ public class LoginModule extends ModuleView {
         applyUnderlineToComponent(underlineViews[childIndex], bgColor);
     }
 
-    private void addChildComponents(ModuleView moduleView, Component subComponent, final int childIndex) {
+    private void addChildComponents(ModuleView moduleView,
+                                    Component subComponent,
+                                    final int childIndex) {
         ViewCreator.ComponentViewResult componentViewResult = viewCreator.getComponentViewResult();
         ViewGroup subComponentChildContainer = moduleView.getChildrenContainer();
+        float parentYAxis = 2 * getYAxis(getContext(), subComponent.getLayout(), 0.0f);
         if (componentViewResult != null && subComponentChildContainer != null) {
-            for (int i = 0; i < subComponent.getComponents().size(); i++) {
+            for (int i = 1; i < subComponent.getComponents().size(); i++) {
                 final Component component = subComponent.getComponents().get(i);
                 viewCreator.createComponentView(getContext(),
                         component,
@@ -279,6 +282,15 @@ public class LoginModule extends ModuleView {
                         "");
                 View componentView = componentViewResult.componentView;
                 if (componentView != null) {
+                    float componentYAxis = getYAxis(getContext(),
+                            component.getLayout(),
+                            0.0f);
+                    if (!component.isyAxisSetManually()) {
+                        setYAxis(getContext(),
+                                component.getLayout(),
+                                componentYAxis - parentYAxis);
+                        component.setyAxisSetManually(true);
+                    }
                     subComponentChildContainer.addView(componentView);
                     moduleView.setComponentHasView(i, true);
                     moduleView.setViewMarginsFromComponent(component,

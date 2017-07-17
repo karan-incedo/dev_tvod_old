@@ -27,19 +27,16 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
     private final AppCMSPresenter appCMSPresenter;
     private final String title;
     private final String fullText;
-    private final int textColor;
     private final boolean forceMaxLines;
 
     public ViewCreatorMultiLineLayoutListener(TextView textView,
                                               String title,
                                               String fullText,
-                                              int textColor,
                                               AppCMSPresenter appCMSPresenter,
                                               boolean forceMaxLines) {
         this.textView = textView;
         this.title = title;
         this.fullText = fullText;
-        this.textColor = textColor;
         this.appCMSPresenter = appCMSPresenter;
         this.forceMaxLines = forceMaxLines;
     }
@@ -71,7 +68,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
                     ClickableSpan clickableSpan = new ClickableSpan() {
                         @Override
                         public void onClick(View widget) {
-                            appCMSPresenter.showMoreDialog(title, fullText, textColor);
+                            appCMSPresenter.showMoreDialog(title, fullText);
                         }
                     };
                     spannableTextWithMore.setSpan(clickableSpan,

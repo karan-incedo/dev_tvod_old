@@ -22,6 +22,13 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Gist;
@@ -47,6 +54,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
+
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -86,6 +96,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
     private boolean isActive;
     private boolean shouldSendCloseOthersAction;
     private AppCMSBinder updatedAppCMSBinder;
+
+    private CallbackManager callbackManager;
+    private AccessTokenTracker accessTokenTracker;
+    private AccessToken accessToken;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -187,6 +201,23 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         resumeInternalEvents = false;
 
         shouldSendCloseOthersAction = false;
+
+        callbackManager = CallbackManager.Factory.create();
+
+        accessTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(
+                    AccessToken oldAccessToken,
+                    AccessToken currentAccessToken) {
+                AppCMSPageActivity.this.accessToken = currentAccessToken;
+                if (appCMSPresenter != null) {
+                    appCMSPresenter.setFacebookAccessToken(AppCMSPageActivity.this,
+                            currentAccessToken.getToken());
+                }
+            }
+        };
+
+        accessToken = AccessToken.getCurrentAccessToken();
 
         Log.d(TAG, "onCreate()");
     }
@@ -321,6 +352,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             viewCreator.removeLruCacheItem(this, updatedAppCMSBinder.getPageId());
         }
         unregisterReceiver(presenterActionReceiver);
+
+        accessTokenTracker.stopTracking();
+
         Log.d(TAG, "onDestroy()");
     }
 
@@ -335,6 +369,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
             processDeepLink(appCMSBinder.getSearchQuery());
             appCMSBinder.clearSearchQuery();
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     @SuppressWarnings("ConstantConditions")
