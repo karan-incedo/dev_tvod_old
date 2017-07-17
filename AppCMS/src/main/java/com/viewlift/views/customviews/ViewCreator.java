@@ -1027,15 +1027,10 @@ public class ViewCreator {
                 componentViewResult.componentView = new ProgressBar(context,
                         null,
                         android.R.attr.progressBarStyleHorizontal);
-//<<<<<<< HEAD
-//                if (!TextUtils.isEmpty(component.getProgressColor())) {
-//                    int color = Color.parseColor(getColor(context, component.getProgressColor()));
-//                    ((ProgressBar) componentViewResult.componentView).getProgressDrawable()
-//                            .setColorFilter(color, PorterDuff.Mode.SRC_IN);
-//=======
-                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())) {
-                    int color = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
-                    ((ProgressBar) componentViewResult.componentView).getProgressDrawable().setColorFilter(color, PorterDuff.Mode.SRC_IN);
+                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())) {
+                    int color = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+                    ((ProgressBar) componentViewResult.componentView).getProgressDrawable()
+                            .setColorFilter(color, PorterDuff.Mode.SRC_IN);
                 }
 
                 if (appCMSPresenter.isUserLoggedIn(context)) {
@@ -1210,15 +1205,15 @@ public class ViewCreator {
                 break;
 
             case PAGE_VIDEO_STARRATING_KEY:
-                int starBorderColor = Color.parseColor(getColor(context, component.getBorderColor()));
-                int starFillColor = Color.parseColor(getColor(context, component.getFillColor()));
+                int starColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+
                 float starRating = 0.0f;
                 if (moduleAPI.getContentData().get(0).getGist().getAverageStarRating() != 0f) {
                     starRating = moduleAPI.getContentData().get(0).getGist().getAverageStarRating();
                 }
                 componentViewResult.componentView = new StarRating(context,
-                        starBorderColor,
-                        starFillColor,
+                        starColor,
+                        starColor,
                         starRating);
                 break;
 
