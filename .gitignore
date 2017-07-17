@@ -7,7 +7,8 @@
 /build
 /captures
 .externalNativeBuild
-/.idea
+/.idea/misc.xml
+/.idea/encodings.xml
 /AppCMS/release/*
 /*.apk
 /*.json
