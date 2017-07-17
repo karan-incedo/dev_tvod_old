@@ -65,6 +65,6 @@ public class Layout {
     }
 
     public void setTv(FireTV ftv) {
-        this.tv = tv;
+        this.tv = ftv;
     }
 }
