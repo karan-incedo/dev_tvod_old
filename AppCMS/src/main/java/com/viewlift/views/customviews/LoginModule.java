@@ -237,7 +237,6 @@ public class LoginModule extends ModuleView {
             }
 
             childContainer.addView(topLayoutContainer);
-
             selectChild(0);
             unselectChild(1);
         }

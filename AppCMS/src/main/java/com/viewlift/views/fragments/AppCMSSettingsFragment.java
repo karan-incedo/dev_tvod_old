@@ -47,28 +47,43 @@ public class AppCMSSettingsFragment extends DialogFragment {
 
     @BindView(R.id.app_cms_settings_page_title)
     TextView appCMSSettingsPageTitle;
+
     @BindView(R.id.app_cms_close_button)
     ImageButton appCMSCloseButton;
+
     @BindView(R.id.app_cms_settings_separator_view)
     View appCMSettingsSeparatorView;
+
     @BindView(R.id.app_cms_account_title)
     TextView appCMSAccountTitle;
+
     @BindView(R.id.app_cms_account_title_separator_view)
     View appCMSAccountTitleSeparatorView;
+
     @BindView(R.id.app_cms_account_name_title)
     TextView appCMSAccountNameTitle;
+
     @BindView(R.id.app_cms_account_name_info)
     TextView appCMSAccountNameInfo;
+
     @BindView(R.id.app_cms_edit_account_name_button)
     Button appCMSEditAccountNameButton;
+
     @BindView(R.id.app_cms_account_email_title)
     TextView appCMSAccountEmailTitle;
+
     @BindView(R.id.app_cms_account_email_info)
     TextView appCMSAccountEmailInfo;
+
     @BindView(R.id.app_cms_edit_account_email_button)
     Button appCMSEditAccountEmailButton;
 
     private AppCMSPresenter appCMSPresenter;
+
+    public static AppCMSSettingsFragment newInstance(Context context) {
+        AppCMSSettingsFragment appCMSSettingsFragment = new AppCMSSettingsFragment();
+        return appCMSSettingsFragment;
+    }
 
     @Nullable
     @Override
@@ -235,5 +250,9 @@ public class AppCMSSettingsFragment extends DialogFragment {
                 appCMSAccountEmailInfo.setText(userIdentity.getEmail());
             }
         }
+    }
+
+    private enum InputField {
+        USERNAME, EMAIL
     }
 }

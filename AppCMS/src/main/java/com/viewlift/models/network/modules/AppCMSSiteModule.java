@@ -13,7 +13,7 @@ import retrofit2.Retrofit;
  * Created by viewlift on 6/15/17.
  */
 
-@Module(includes={AppCMSUIModule.class})
+@Module(includes = {AppCMSUIModule.class})
 public class AppCMSSiteModule {
     @Provides
     @Singleton
