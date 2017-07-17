@@ -16,6 +16,7 @@ import com.viewlift.models.network.rest.AppCMSAddToWatchlistRest;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSDeleteHistoryRest;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginRest;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
@@ -30,8 +31,6 @@ import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordRest;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignInRest;
-import com.viewlift.models.network.rest.AppCMSSubscriptionCall;
-import com.viewlift.models.network.rest.AppCMSSubscriptionRest;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryRest;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
@@ -321,7 +320,6 @@ public class AppCMSUIModule {
     @Provides
     @Singleton
     public Gson providesGson() {
-//        return new Gson();
         return new GsonBuilder().registerTypeAdapterFactory(new Stag.Factory())
                 .create();
     }
@@ -438,8 +436,8 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSSubscriptionRest providesAppCMSSubscriptionRest(Retrofit retrofit) {
-        return retrofit.create(AppCMSSubscriptionRest.class);
+    public AppCMSDeleteHistoryRest providesAppCMSDeleteHistoryRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSDeleteHistoryRest.class);
     }
 
     @Provides
@@ -526,13 +524,6 @@ public class AppCMSUIModule {
     public AppCMSAddToWatchlistCall providesAppCMSAddToWatchlistCall(AppCMSAddToWatchlistRest appCMSAddToWatchlistRest,
                                                                      Gson gson) {
         return new AppCMSAddToWatchlistCall(appCMSAddToWatchlistRest, gson);
-    }
-
-    @Provides
-    @Singleton
-    public AppCMSSubscriptionCall providesAppCMSSubscriptionCall(AppCMSSubscriptionRest appCMSSubscriptionRest,
-                                                                 Gson gson) {
-        return new AppCMSSubscriptionCall(appCMSSubscriptionRest, gson);
     }
 
     @Provides

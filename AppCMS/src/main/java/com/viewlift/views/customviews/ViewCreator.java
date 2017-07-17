@@ -37,6 +37,7 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.VideoAssets;
+import com.viewlift.models.data.appcms.history.AppCMSDeleteHistoryResult;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
@@ -132,7 +133,8 @@ public class ViewCreator {
             return null;
         }
 
-        PageView pageView = getPageViewLruCache().get(appCMSPageAPI.getId() + BaseView.isLandscape(context));
+        PageView pageView = getPageViewLruCache().get(appCMSPageAPI.getId()
+                + BaseView.isLandscape(context));
         boolean newView = false;
         if (pageView == null || pageView.getContext() != context) {
             pageView = new PageView(context, appCMSPageUI);
@@ -140,7 +142,8 @@ public class ViewCreator {
             if (appCMSPresenter.isPageAVideoPage(screenName)) {
                 getPageViewLruCache().put(screenName + BaseView.isLandscape(context), pageView);
             } else {
-                getPageViewLruCache().put(appCMSPageAPI.getId() + BaseView.isLandscape(context), pageView);
+                getPageViewLruCache().put(appCMSPageAPI.getId()
+                        + BaseView.isLandscape(context), pageView);
             }
             newView = true;
         }
@@ -166,7 +169,8 @@ public class ViewCreator {
                 if (!modulesToIgnore.contains(module.getView()) &&
                         (appCMSPresenter.isUserLoggedIn(context) ||
                                 (!appCMSPresenter.isUserLoggedIn(context) &&
-                                        jsonValueKeyMap.get(module.getView()) != AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY))) {
+                                        jsonValueKeyMap.get(module.getView())
+                                                != AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY))) {
                     Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
 
                     for (Component component : module.getComponents()) {
@@ -182,7 +186,8 @@ public class ViewCreator {
                             pageView.updateDataList(moduleAPI.getContentData(), i);
                             i++;
                         } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
-                            View view = pageView.findViewFromComponentId(moduleAPI.getId() + component.getKey());
+                            View view = pageView.findViewFromComponentId(moduleAPI.getId()
+                                    + component.getKey());
                             if (view != null && view instanceof ProgressBar) {
                                 if (appCMSPresenter.isUserLoggedIn(context)) {
                                     ((ProgressBar) componentViewResult.componentView).setMax(100);
@@ -191,8 +196,11 @@ public class ViewCreator {
                                             moduleAPI.getContentData().size() > 0 &&
                                             moduleAPI.getContentData().get(0) != null &&
                                             moduleAPI.getContentData().get(0).getGist() != null &&
-                                            moduleAPI.getContentData().get(0).getGist().getWatchedPercentage() != 0) {
-                                        ((ProgressBar) componentViewResult.componentView).setProgress(moduleAPI.getContentData().get(0).getGist().getWatchedPercentage());
+                                            moduleAPI.getContentData().get(0).getGist()
+                                                    .getWatchedPercentage() != 0) {
+                                        ((ProgressBar) componentViewResult.componentView)
+                                                .setProgress(moduleAPI.getContentData()
+                                                        .get(0).getGist().getWatchedPercentage());
                                     } else {
                                         ((ProgressBar) componentViewResult.componentView).setProgress(0);
                                     }
@@ -232,7 +240,8 @@ public class ViewCreator {
             if (!modulesToIgnore.contains(module.getView()) &&
                     (appCMSPresenter.isUserLoggedIn(context) ||
                             (!appCMSPresenter.isUserLoggedIn(context) &&
-                                    jsonValueKeyMap.get(module.getView()) != AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY))) {
+                                    jsonValueKeyMap.get(module.getView())
+                                            != AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY))) {
                 Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
                 View childView = createModuleView(context, module, moduleAPI, pageView,
                         jsonValueKeyMap,
@@ -568,14 +577,20 @@ public class ViewCreator {
                     }
                 }
 
-                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())) {
+                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand()
+                        .getGeneral().getTextColor())) {
                     if (componentViewResult.componentView instanceof TextView) {
-                        ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())));
+                        ((TextView) componentViewResult.componentView).setTextColor(
+                                Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain()
+                                        .getBrand().getGeneral().getTextColor())));
                     }
                 }
 
-                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())) {
-                    componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())));
+                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
+                        .getBlockTitleColor())) {
+                    componentViewResult.componentView.setBackgroundColor(Color.parseColor(
+                            getColor(context, appCMSPresenter.getAppCMSMain().getBrand()
+                                    .getGeneral().getBlockTitleColor())));
                 } else {
                     applyBorderToComponent(context, componentViewResult.componentView, component);
                 }
@@ -589,12 +604,14 @@ public class ViewCreator {
                         break;
 
                     case PAGE_ADD_TO_WATCHLIST_KEY:
-                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        ((ImageButton) componentViewResult.componentView)
+                                .setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
                         appCMSPresenter.getUserVideoStatus(
                                 moduleAPI.getContentData().get(0).getGist().getId(),
-                                new UpdateImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
-                                        moduleAPI.getContentData().get(0).getGist().getId()));
+                                new UpdateImageIconAction((ImageButton) componentViewResult
+                                        .componentView, appCMSPresenter, moduleAPI.getContentData()
+                                        .get(0).getGist().getId()));
                         break;
 
                     case PAGE_VIDEO_WATCH_TRAILER_KEY:
@@ -729,7 +746,8 @@ public class ViewCreator {
                                     filmUrl.append(moduleAPI.getContentData().get(0).getGist().getPermalink());
                                     String[] extraData = new String[1];
                                     extraData[0] = filmUrl.toString();
-                                    if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
+                                    if (!appCMSPresenter.launchButtonSelectedAction(
+                                            moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                             component.getAction(),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
                                             extraData,
@@ -749,7 +767,8 @@ public class ViewCreator {
                         break;
 
                     case PAGE_FORGOTPASSWORD_KEY:
-                        componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+                        componentViewResult.componentView.setBackgroundColor(
+                                ContextCompat.getColor(context, android.R.color.transparent));
                         break;
 
                     case PAGE_REMOVEALL_KEY:
@@ -764,44 +783,46 @@ public class ViewCreator {
 
                         final boolean isHistoryPage = jsonValueKeyMap.get(viewType)
                                 == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY;
-                        if (isHistoryPage) {
-                            componentViewResult.componentView.setVisibility(View.GONE);
-                            componentViewResult.componentView.setEnabled(false);
-                        } else {
-                            componentViewResult.onInternalEvent = new OnInternalEvent() {
-                                final View removeAllButton = componentViewResult.componentView;
-                                private List<OnInternalEvent> receivers = new ArrayList<>();
 
-                                @Override
-                                public void addReceiver(OnInternalEvent e) {
-                                    receivers.add(e);
-                                }
+                        componentViewResult.onInternalEvent = new OnInternalEvent() {
+                            final View removeAllButton = componentViewResult.componentView;
+                            private List<OnInternalEvent> receivers = new ArrayList<>();
 
-                                @Override
-                                public void sendEvent(InternalEvent<?> event) {
-                                    for (OnInternalEvent internalEvent : receivers) {
-                                        internalEvent.receiveEvent(null);
-                                    }
-                                }
+                            @Override
+                            public void addReceiver(OnInternalEvent e) {
+                                receivers.add(e);
+                            }
 
-                                @Override
-                                public void receiveEvent(InternalEvent<?> event) {
-                                    removeAllButton.setVisibility(View.VISIBLE);
+                            @Override
+                            public void sendEvent(InternalEvent<?> event) {
+                                for (OnInternalEvent internalEvent : receivers) {
+                                    internalEvent.receiveEvent(null);
                                 }
+                            }
 
-                                @Override
-                                public void cancel(boolean cancel) {
-                                    //
-                                }
-                            };
-                        }
+                            @Override
+                            public void receiveEvent(InternalEvent<?> event) {
+                                removeAllButton.setVisibility(View.VISIBLE);
+                            }
+
+                            @Override
+                            public void cancel(boolean cancel) {
+                                //
+                            }
+                        };
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
 
                             @Override
                             public void onClick(final View v) {
                                 if (isHistoryPage) {
-                                    //
+                                    appCMSPresenter.clearHistory(new Action1<AppCMSDeleteHistoryResult>() {
+                                        @Override
+                                        public void call(AppCMSDeleteHistoryResult appCMSDeleteHistoryResult) {
+                                            onInternalEvent.sendEvent(null);
+                                            v.setVisibility(View.GONE);
+                                        }
+                                    });
                                 } else {
                                     appCMSPresenter.clearWatchlist(new Action1<AppCMSAddToWatchlistResult>() {
                                         @Override
@@ -952,7 +973,8 @@ public class ViewCreator {
                 }
 
                 if (!TextUtils.isEmpty(component.getBackgroundColor())) {
-                    componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
+                    componentViewResult.componentView.setBackgroundColor(
+                            Color.parseColor(getColor(context, component.getBackgroundColor())));
                 }
                 if (!TextUtils.isEmpty(component.getFontFamily())) {
                     setTypeFace(context,
@@ -1005,10 +1027,17 @@ public class ViewCreator {
                 componentViewResult.componentView = new ProgressBar(context,
                         null,
                         android.R.attr.progressBarStyleHorizontal);
+//<<<<<<< HEAD
+//                if (!TextUtils.isEmpty(component.getProgressColor())) {
+//                    int color = Color.parseColor(getColor(context, component.getProgressColor()));
+//                    ((ProgressBar) componentViewResult.componentView).getProgressDrawable()
+//                            .setColorFilter(color, PorterDuff.Mode.SRC_IN);
+//=======
                 if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())) {
                     int color = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
                     ((ProgressBar) componentViewResult.componentView).getProgressDrawable().setColorFilter(color, PorterDuff.Mode.SRC_IN);
                 }
+
                 if (appCMSPresenter.isUserLoggedIn(context)) {
                     ((ProgressBar) componentViewResult.componentView).setMax(100);
                     ((ProgressBar) componentViewResult.componentView).setProgress(0);
@@ -1017,7 +1046,8 @@ public class ViewCreator {
                             moduleAPI.getContentData().get(0) != null &&
                             moduleAPI.getContentData().get(0).getGist() != null &&
                             moduleAPI.getContentData().get(0).getGist().getWatchedPercentage() != 0) {
-                        ((ProgressBar) componentViewResult.componentView).setProgress(moduleAPI.getContentData().get(0).getGist().getWatchedPercentage());
+                        ((ProgressBar) componentViewResult.componentView).setProgress(moduleAPI
+                                .getContentData().get(0).getGist().getWatchedPercentage());
                     } else {
                         ((ProgressBar) componentViewResult.componentView).setProgress(0);
                     }
@@ -1033,9 +1063,11 @@ public class ViewCreator {
             case PAGE_SEPARATOR_VIEW_KEY:
             case PAGE_SEGMENTED_VIEW_KEY:
                 componentViewResult.componentView = new View(context);
-                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())) {
+                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
+                        .getTextColor())) {
                     componentViewResult.componentView.
-                            setBackgroundColor(Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())));
+                            setBackgroundColor(Color.parseColor(getColor(context,
+                                    appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())));
                 }
                 break;
 
@@ -1078,7 +1110,8 @@ public class ViewCreator {
                     fontFamilyValueType = Typeface.BOLD;
                 }
 
-                textColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                textColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain()
+                        .getBrand().getGeneral().getTextColor()));
                 String directorTitle = null;
                 StringBuffer directorListSb = new StringBuffer();
                 String starringTitle = null;
@@ -1130,6 +1163,7 @@ public class ViewCreator {
                         BaseView.getFontSizeKey(context, component.getLayout()),
                         BaseView.getFontSizeValue(context, component.getLayout()));
                 break;
+
             case PAGE_TEXTFIELD_KEY:
                 componentViewResult.componentView = new TextInputLayout(context);
                 TextInputEditText textInputEditText = new TextInputEditText(context);
@@ -1138,14 +1172,17 @@ public class ViewCreator {
                     case PAGE_EMAILTEXTFIELD2_KEY:
                         textInputEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                         break;
+
                     case PAGE_PASSWORDTEXTFIELD_KEY:
                     case PAGE_PASSWORDTEXTFIELD2_KEY:
                         textInputEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
                         ((TextInputLayout) componentViewResult.componentView).setPasswordVisibilityToggleEnabled(true);
                         break;
+
                     case PAGE_MOBILETEXTFIELD_KEY:
                         textInputEditText.setInputType(InputType.TYPE_CLASS_PHONE);
                         break;
+
                     default:
                 }
                 if (!TextUtils.isEmpty(component.getText())) {
@@ -1154,7 +1191,8 @@ public class ViewCreator {
                 textInputEditText.setTextColor(ContextCompat.getColor(context, android.R.color.black));
                 textInputEditText.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white));
                 setTypeFace(context, jsonValueKeyMap, component, textInputEditText);
-                int loginInputHorizontalMargin = context.getResources().getInteger(R.integer.app_cms_login_input_horizontal_margin);
+                int loginInputHorizontalMargin = context.getResources().getInteger(
+                        R.integer.app_cms_login_input_horizontal_margin);
                 textInputEditText.setPadding(loginInputHorizontalMargin,
                         0,
                         loginInputHorizontalMargin,
@@ -1170,6 +1208,7 @@ public class ViewCreator {
                 ((TextInputLayout) componentViewResult.componentView).setHintEnabled(false);
 
                 break;
+
             case PAGE_VIDEO_STARRATING_KEY:
                 int starBorderColor = Color.parseColor(getColor(context, component.getBorderColor()));
                 int starFillColor = Color.parseColor(getColor(context, component.getFillColor()));
@@ -1248,16 +1287,23 @@ public class ViewCreator {
             Typeface face = null;
             switch (fontWeight) {
                 case PAGE_TEXT_BOLD_KEY:
-                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_bold_ttf));
+                    face = Typeface.createFromAsset(context.getAssets(),
+                            context.getString(R.string.opensans_bold_ttf));
                     break;
+
                 case PAGE_TEXT_SEMIBOLD_KEY:
-                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_semibold_ttf));
+                    face = Typeface.createFromAsset(context.getAssets(),
+                            context.getString(R.string.opensans_semibold_ttf));
                     break;
+
                 case PAGE_TEXT_EXTRABOLD_KEY:
-                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_extrabold_ttf));
+                    face = Typeface.createFromAsset(context.getAssets(),
+                            context.getString(R.string.opensans_extrabold_ttf));
                     break;
+
                 default:
-                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
+                    face = Typeface.createFromAsset(context.getAssets(),
+                            context.getString(R.string.opensans_regular_ttf));
             }
             textView.setTypeface(face);
         }
@@ -1293,7 +1339,8 @@ public class ViewCreator {
                             new Action1<AppCMSAddToWatchlistResult>() {
                                 @Override
                                 public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
-                                    UpdateImageIconAction.this.imageButton.setImageResource(R.drawable.remove_from_watchlist);
+                                    UpdateImageIconAction.this.imageButton.setImageResource(
+                                            R.drawable.remove_from_watchlist);
                                     UpdateImageIconAction.this.imageButton.setOnClickListener(removeClickListener);
                                 }
                             }, true);
@@ -1307,7 +1354,8 @@ public class ViewCreator {
                             new Action1<AppCMSAddToWatchlistResult>() {
                                 @Override
                                 public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
-                                    UpdateImageIconAction.this.imageButton.setImageResource(R.drawable.add_to_watchlist);
+                                    UpdateImageIconAction.this.imageButton.setImageResource(
+                                            R.drawable.add_to_watchlist);
                                     UpdateImageIconAction.this.imageButton.setOnClickListener(addClickListener);
                                 }
                             }, false);

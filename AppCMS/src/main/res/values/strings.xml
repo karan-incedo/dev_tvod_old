@@ -86,6 +86,7 @@
     <string name="app_cms_update_username_dialog_title">Update Username</string>
     <string name="app_cms_update_email_dialog_title">Update Email</string>
     <string name="add_to_watchlist_content_type_video">video</string>
+    <string name="delete_history_content_type_video">video</string>
     <string name="app_cms_border_color_key">app_cms_border_color</string>
     <string name="app_cms_password_reset_email_key">app_cms_password_reset_email</string>
     <string name="video_player_title_key">video_player_title</string>
