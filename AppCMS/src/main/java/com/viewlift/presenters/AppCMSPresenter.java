@@ -32,6 +32,8 @@ import com.facebook.login.LoginManager;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.iid.InstanceID;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -148,6 +150,9 @@ public class AppCMSPresenter {
     public static final String PRESENTER_CLOSE_SCREEN_ACTION = "appcms_presenter_close_action";
     public static final String PRESENTER_RESET_NAVIGATION_ITEM_ACTION = "appcms_presenter_set_navigation_item_action";
     public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
+
+    public static final int RC_GOOGLE_SIGN_IN = 1001;
+
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
@@ -731,6 +736,13 @@ public class AppCMSPresenter {
             appCMSResetPasswordFragment.show(((AppCompatActivity) currentActivity)
                             .getSupportFragmentManager(),
                     currentActivity.getString(R.string.app_cms_reset_password_page_tag));
+        }
+    }
+
+    public void loginGooglePlus(GoogleApiClient googleApiClient) {
+        if (currentActivity != null) {
+            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+            currentActivity.startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
         }
     }
 
