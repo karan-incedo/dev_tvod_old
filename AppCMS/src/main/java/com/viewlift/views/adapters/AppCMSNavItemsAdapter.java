@@ -34,6 +34,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
     private int numPrimaryItems;
     private int numUserItems;
     private int numFooterItems;
+    private boolean itemSelected;
 
     public AppCMSNavItemsAdapter(Navigation navigation,
                                  AppCMSPresenter appCMSPresenter,
@@ -81,6 +82,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                         navigationPrimary.getTitle() +
                                         " Id: " +
                                         navigationPrimary.getPageId());
+                            } else {
+                                itemSelected = true;
                             }
                         }
                     });
@@ -114,6 +117,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             if (titleKey == null) {
                                 titleKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
                             }
+                            itemSelected = true;
                             switch (titleKey) {
                                 case ANDROID_WATCHLIST_NAV_KEY:
                                     appCMSPresenter.navigateToWatchlistPage(navigationUser.getPageId(),
@@ -171,6 +175,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                itemSelected = true;
                                 if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
                                         navigationFooter.getTitle(),
                                         navigationFooter.getUrl(),
@@ -259,6 +264,14 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
         }
 
         return totalItemCount;
+    }
+
+    public boolean isItemSelected() {
+        return itemSelected;
+    }
+
+    public void setItemSelected(boolean itemSelected) {
+        this.itemSelected = itemSelected;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

@@ -615,49 +615,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
         appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
         updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
 
-        if (appCMSPresenter.isUserLoggedIn(this)) {
-            appCMSPresenter.getHistoryData(new Action1<AppCMSHistoryResult>() {
-                @Override
-                public void call(AppCMSHistoryResult appCMSHistoryResult) {
-                    if (appCMSHistoryResult != null &&
-                            appCMSHistoryResult.getRecords() != null) {
-                        for (Module module : appCMSBinder.getAppCMSPageAPI().getModules()) {
-                            if (appCMSBinder.getJsonValueKeyMap().get(module.getModuleType()) ==
-                                    AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
-                                AppCMSPageAPI pageAPI =
-                                        appCMSHistoryResult.convertToAppCMSPageAPI(module.getId());
-                                module.setContentData(pageAPI.getModules().get(0).getContentData());
-                            } else if (appCMSBinder.getJsonValueKeyMap().get(module.getModuleType()) ==
-                                    AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
-
-                                if (module.getContentData() != null &&
-                                        module.getContentData().size() > 0 &&
-                                        module.getContentData().get(0) != null &&
-                                        module.getContentData().get(0).getGist() != null) {
-                                    Gist moduleGist =
-                                            module.getContentData().get(0).getGist();
-                                    for (Record record : appCMSHistoryResult.getRecords()) {
-                                        if (record.getContentResponse() != null &&
-                                                record.getContentResponse().getGist() != null &&
-                                                record.getContentResponse().getGist().getId() != null &&
-                                                record.getContentResponse().getGist().getId().equals(moduleGist.getId())) {
-                                            Gist recordGist = record.getContentResponse().getGist();
-                                            moduleGist.setWatchedTime(recordGist.getWatchedTime());
-                                            moduleGist.setWatchedPercentage(recordGist.getWatchedPercentage());
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        createScreenFromAppCMSBinder(appCMSBinder);
-                    } else {
-                        createScreenFromAppCMSBinder(appCMSBinder);
-                    }
-                }
-            });
-        } else {
-            createScreenFromAppCMSBinder(appCMSBinder);
-        }
+        createScreenFromAppCMSBinder(appCMSBinder);
     }
 
     private void hideSystemUI(View decorView) {

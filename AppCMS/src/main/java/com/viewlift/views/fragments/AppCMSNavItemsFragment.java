@@ -35,6 +35,7 @@ import snagfilms.com.air.appcms.R;
 public class AppCMSNavItemsFragment extends DialogFragment {
     private AppCMSPresenter appCMSPresenter;
     private AppCMSBinder appCMSBinder;
+    private AppCMSNavItemsAdapter appCMSNavItemsAdapter;
 
     public static AppCMSNavItemsFragment newInstance(Context context,
                                                      AppCMSBinder appCMSBinder,
@@ -69,7 +70,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
-        AppCMSNavItemsAdapter appCMSNavItemsAdapter = new AppCMSNavItemsAdapter(appCMSBinder.getNavigation(),
+        appCMSNavItemsAdapter = new AppCMSNavItemsAdapter(appCMSBinder.getNavigation(),
                 appCMSPresenter,
                 appCMSBinder.getJsonValueKeyMap(),
                 appCMSBinder.isUserLoggedIn(),
@@ -132,13 +133,18 @@ public class AppCMSNavItemsFragment extends DialogFragment {
         super.onStop();
         if (appCMSPresenter != null) {
             appCMSPresenter.setNavItemToCurrentAction(getActivity());
+            if (!appCMSNavItemsAdapter.isItemSelected()) {
+                appCMSPresenter.showMainFragmentView(true);
+            }
         }
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        appCMSPresenter.launchNavigationPage(appCMSBinder.getPageName(), appCMSBinder.getPageId());
+        if (isVisible()) {
+            appCMSPresenter.launchNavigationPage(appCMSBinder.getPageName(), appCMSBinder.getPageId());
+        }
     }
 
     private void setBgColor(int bgColor) {
