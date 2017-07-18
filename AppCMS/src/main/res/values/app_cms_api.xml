@@ -1,13 +1,13 @@
 <resources>
     <!-- Primary app values -->
-    <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
+    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
     <!--<string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
     <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
 
     <!--<string name="app_cms_app_name">d9162bc2-1228-43da-84bf-e0e56421fe79</string>-->
 
-    <!--<string name="app_cms_app_name">00000149-86ec-d4f3-a7e9-e6fe760d0000</string>-->
-    <string name="app_cms_app_name">9d2c4ddd-94e3-44af-bee8-851e76d6b96e</string>
+    <string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>
+    <!--<string name="app_cms_app_name">9d2c4ddd-94e3-44af-bee8-851e76d6b96e</string>-->
 
     <string name="app_cms_url_with_appended_timestamp">%1$s?x=%2$d</string>
     <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
@@ -150,14 +150,16 @@
     <string name="app_cms_closing_page_name">closing_page</string>
 
     <!-- AppAppCMSPageUIPage names for Actions -->
-    <string name="app_cms_pagename_authenticationscreen_key">Authentication Screen</string>
+    <string name="app_cms_pagename_authscreen_key">Authentication Screen</string>
+    <string name="app_cms_pagename_splashscreen_key">Splash Screen</string>
     <string name="app_cms_pagename_homescreen_key">Home Page</string>
     <string name="app_cms_pagename_historyscreen_key">My History</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
 
     <!-- AppCMS Action names -->
-    <string name="app_cms_action_initialize_key">Initalize</string>
+    <string name="app_cms_action_initialize_key">Initialize</string>
     <string name="app_cms_action_authpage_key">Authentication Screen</string>
+    <string name="app_cms_action_splashpage_key">Splash Screen</string>
     <string name="app_cms_action_homepage_key">Home Page</string>
     <string name="app_cms_action_homepage_nav">Home</string>
     <string name="app_cms_action_movies_nav">Movies</string>
@@ -170,6 +172,7 @@
     <string name="app_cms_action_search_key">search</string>
     <string name="app_cms_action_login_key">login</string>
     <string name="app_cms_action_forgotpassword_key">forgotPassword</string>
+    <string name="app_cms_action_logingoogle_key">loginGoogle</string>
     <string name="app_cms_action_loginfacebook_key">loginFacebook</string>
     <string name="app_cms_action_signup_key">signup</string>
     <string name="app_cms_action_logout_key">logout</string>

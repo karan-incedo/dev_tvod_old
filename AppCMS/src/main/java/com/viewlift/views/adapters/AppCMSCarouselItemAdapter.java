@@ -168,7 +168,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                     listView.setOnScrollListener(scrollListener);
                     return true;
                 } else if (motionEvent.getActionMasked() == MotionEvent.ACTION_UP) {
-                    if (!scrolled && childIndex != -1) {
+                    if (!scrolled && childIndex != -1 && adapterData.size() != 0) {
                         onClickHandler.click(component,
                                 adapterData.get(childIndex % adapterData.size()));
                     } else {
@@ -316,7 +316,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
     }
 
     private int calculateUpdateIndex(int index) {
-        if (adapterData.size() > 0 && Math.abs(updatedIndex - index) > adapterData.size()) {
+        if (adapterData.size() != 0 && Math.abs(updatedIndex - index) > adapterData.size()) {
             int visibleIndexInItems = updatedIndex % adapterData.size();
             return updatedIndex + (index - visibleIndexInItems);
         }

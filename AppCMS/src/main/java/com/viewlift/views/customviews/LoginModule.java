@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.common.SignInButton;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
@@ -235,6 +236,16 @@ public class LoginModule extends ModuleView {
                     topLayoutContainer.addView(moduleView);
                 }
             }
+
+            SignInButton signInButton = new SignInButton(getContext());
+            signInButton.setSize(SignInButton.SIZE_STANDARD);
+            signInButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    appCMSPresenter.loginGoogle(appCMSPresenter.getGoogleApiClient());
+                }
+            });
+            topLayoutContainer.addView(signInButton);
 
             childContainer.addView(topLayoutContainer);
             selectChild(0);

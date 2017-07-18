@@ -167,3 +167,5 @@ dependencies {
     compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
 }
+
+apply plugin: 'com.google.gms.google-services'

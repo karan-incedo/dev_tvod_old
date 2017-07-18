@@ -136,11 +136,6 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
 
-//import com.viewlift.models.network.components.AppCMSAPIComponent;
-//import com.viewlift.models.network.components.AppCMSSearchUrlComponent;
-//import com.viewlift.models.network.components.DaggerAppCMSAPIComponent;
-//import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
-
 /**
  * Created by viewlift on 5/3/17.
  */
@@ -219,6 +214,8 @@ public class AppCMSPresenter {
     private Runnable beaconMessageThread;
     private GoogleAnalytics googleAnalytics;
     private Tracker tracker;
+
+    private GoogleApiClient googleApiClient;
 
     private String tvHomeScreenPackage = "com.viewlift.tv.views.activity.AppCmsHomeActivity";
     private String tvErrorScreenPackage = "com.viewlift.tv.views.activity.AppCmsTvErrorActivity";
@@ -472,6 +469,8 @@ public class AppCMSPresenter {
                 Log.d(TAG, "Forgot password selected: " + extraData[0]);
                 closeSoftKeyboard();
                 launchResetPasswordPage(extraData[0]);
+            } else if (actionType == AppCMSActionType.LOGIN_GOOGLE) {
+                loginGoogle(googleApiClient);
             } else if (actionType == AppCMSActionType.LOGIN_FACEBOOK) {
                 Log.d(TAG, "Login Facebook selected");
                 loginFacebook();
@@ -491,6 +490,7 @@ public class AppCMSPresenter {
                 loadingPage = true;
                 switch (actionType) {
                     case AUTH_PAGE:
+                    case SPLASH_PAGE:
                         appbarPresent = false;
                         fullscreenEnabled = false;
                         navbarPresent = false;
@@ -626,26 +626,34 @@ public class AppCMSPresenter {
         boolean result = false;
         if (currentActivity != null) {
             result = true;
-            appCMSNavItemsFragment =
-                    AppCMSNavItemsFragment.newInstance(currentActivity,
-                            getAppCMSBinder(currentActivity,
-                                    null,
-                                    null,
-                                    previousPageId,
-                                    previousPageName,
-                                    null,
-                                    false,
-                                    true,
-                                    false,
-                                    false,
-                                    false,
-                                    null),
-                            Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor()),
-                            Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
-                            Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()));
+            if (appCMSNavItemsFragment != null) {
+                showMainFragmentView(false);
+                appCMSNavItemsFragment.dismiss();
+                appCMSNavItemsFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
+                        currentActivity.getString(R.string.app_cms_navigation_page_tag));
+            } else {
+                showMainFragmentView(false);
+                appCMSNavItemsFragment =
+                        AppCMSNavItemsFragment.newInstance(currentActivity,
+                                getAppCMSBinder(currentActivity,
+                                        null,
+                                        null,
+                                        previousPageId,
+                                        previousPageName,
+                                        null,
+                                        false,
+                                        true,
+                                        false,
+                                        false,
+                                        false,
+                                        null),
+                                Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor()),
+                                Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
+                                Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()));
 
-            appCMSNavItemsFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
-                    currentActivity.getString(R.string.app_cms_navigation_page_tag));
+                appCMSNavItemsFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
+                        currentActivity.getString(R.string.app_cms_navigation_page_tag));
+            }
         }
         return result;
     }
@@ -744,7 +752,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void loginGooglePlus(GoogleApiClient googleApiClient) {
+    public void loginGoogle(GoogleApiClient googleApiClient) {
         if (currentActivity != null) {
             Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
             currentActivity.startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
@@ -2225,7 +2233,7 @@ public class AppCMSPresenter {
                                                 + firstPage.getPageName());
                                         boolean navbarPresent =
                                                 (jsonValueKeyMap.get(firstPage.getPageName())
-                                                        != AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY);
+                                                        != AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY);
                                         boolean launchSuccess = navigateToPage(firstPage.getPageId(),
                                                 firstPage.getPageName(),
                                                 firstPage.getPageUI(),
@@ -2261,11 +2269,18 @@ public class AppCMSPresenter {
             pagesToProcess = new ConcurrentLinkedQueue<>();
         }
         if (metaPageList.size() > 0) {
+            int pageToQueueIndex = -1;
+            if (appCMSMain.isForceLogin()) {
+                pageToQueueIndex = getSplashPage(metaPageList);
+            }
+            if (pageToQueueIndex < 0) {
+                pageToQueueIndex = getHomePage(metaPageList);
+            }
+
             int loginPageIndex = getSigninPage(metaPageList);
             if (loginPageIndex >= 0) {
                 loginPage = metaPageList.get(loginPageIndex);
             }
-            int pageToQueueIndex = getHomePage(metaPageList);
             if (pageToQueueIndex >= 0) {
                 pagesToProcess.add(metaPageList.get(pageToQueueIndex));
                 Log.d(TAG, "Queuing meta page: " +
@@ -2326,6 +2341,16 @@ public class AppCMSPresenter {
         for (int i = 0; i < metaPageList.size(); i++) {
             if (jsonValueKeyMap.get(metaPageList.get(i).getPageName()) ==
                     AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int getSplashPage(List<MetaPage> metaPageList) {
+        for (int i = 0; i < metaPageList.size(); i++) {
+            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName()) ==
+                    AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY) {
                 return i;
             }
         }
@@ -2576,6 +2601,14 @@ public class AppCMSPresenter {
         } finally {
             sendStopLoadingPageAction();
         }
+    }
+
+    public GoogleApiClient getGoogleApiClient() {
+        return googleApiClient;
+    }
+
+    public void setGoogleApiClient(GoogleApiClient googleApiClient) {
+        this.googleApiClient = googleApiClient;
     }
 
     public Map<String, AppCMSUIKeyType> getJsonValueKeyMap() {

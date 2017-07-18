@@ -104,8 +104,10 @@ public class AppCMSUIModule {
     }
 
     private void createJsonValueKeyMap(Context context) {
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_authenticationscreen_key),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_authscreen_key),
                 AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_splashscreen_key),
+                AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_homescreen_key),
                 AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_historyscreen_key),
@@ -264,7 +266,7 @@ public class AppCMSUIModule {
     }
 
     private void createPageNameToActionMap(Context context) {
-        this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_authenticationscreen_key),
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_splashscreen_key),
                 context.getString(R.string.app_cms_action_authpage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_homescreen_key),
                 context.getString(R.string.app_cms_action_homepage_key));
@@ -291,6 +293,8 @@ public class AppCMSUIModule {
 
     private void createActionToActionTypeMap(Context context) {
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_authpage_key),
+                AppCMSActionType.SPLASH_PAGE);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_authpage_key),
                 AppCMSActionType.AUTH_PAGE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_pagename_homescreen_key),
                 AppCMSActionType.HOME_PAGE);
@@ -310,6 +314,8 @@ public class AppCMSUIModule {
                 AppCMSActionType.LOGIN);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_forgotpassword_key),
                 AppCMSActionType.FORGOT_PASSWORD);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_forgotpassword_key),
+                AppCMSActionType.LOGIN_GOOGLE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_loginfacebook_key),
                 AppCMSActionType.LOGIN_FACEBOOK);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_signup_key),
