@@ -24,7 +24,7 @@ import rx.Observable;
 import rx.functions.Action1;
 
 public class AppCMSSubscriptionCall {
-    private static final String TAG = "AppCMSSubsriptionCall";
+    private static final String TAG = "AppCMSSubscriptionCall";
     private final AppCMSSubscriptionRest appCMSSubscriptionRest;
 
     @SuppressWarnings({"unused, FieldCanBeLocal"})
@@ -43,7 +43,7 @@ public class AppCMSSubscriptionCall {
         try {
             Map<String, String> authTokenMap = new HashMap<>();
             authTokenMap.put("Authorization", authToken);
-            appCMSSubscriptionRest.add(url, authTokenMap, request).enqueue(
+            appCMSSubscriptionRest.request(url, authTokenMap, request).enqueue(
                     new Callback<AppCMSSubscriptionResult>() {
                         @Override
                         public void onResponse(@NonNull Call<AppCMSSubscriptionResult> call,

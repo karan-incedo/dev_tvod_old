@@ -17,6 +17,6 @@ import retrofit2.http.Url;
 
 public interface AppCMSSubscriptionRest {
     @POST
-    Call<AppCMSSubscriptionResult> add(@Url String url, @HeaderMap Map<String, String> headers,
-                                       @Body SubscriptionRequest request);
+    Call<AppCMSSubscriptionResult> request(@Url String url, @HeaderMap Map<String, String> headers,
+                                           @Body SubscriptionRequest request);
 }

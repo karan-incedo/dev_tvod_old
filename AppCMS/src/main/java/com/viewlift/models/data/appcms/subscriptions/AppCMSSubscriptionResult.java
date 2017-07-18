@@ -11,39 +11,63 @@ import com.vimeo.stag.UseStag;
 @UseStag
 public class AppCMSSubscriptionResult {
 
-    @SerializedName("request")
+    @SerializedName("subscriptionPlanInfo")
     @Expose
-    Request request;
+    Object subscriptionPlanInfo;
 
-    @SerializedName("data")
+    @SerializedName("subscriptionInfo")
     @Expose
-    Data data;
+    Object subscriptionInfo;
 
-    @SerializedName("success")
+    @SerializedName("recurringPaymentAgreementReferenceId")
     @Expose
-    boolean success;
+    long recurringPaymentAgreementReferenceId;
 
-    public Request getRequest() {
-        return request;
+    @SerializedName("recurringPaymentAgreementId")
+    @Expose
+    long recurringPaymentAgreementId;
+
+    @SerializedName("subscriptionOfferUsage")
+    @Expose
+    Object subscriptionOfferUsage;
+
+    public Object getSubscriptionPlanInfo() {
+        return subscriptionPlanInfo;
     }
 
-    public void setRequest(Request request) {
-        this.request = request;
+    public void setSubscriptionPlanInfo(Object subscriptionPlanInfo) {
+        this.subscriptionPlanInfo = subscriptionPlanInfo;
     }
 
-    public Data getData() {
-        return data;
+    public Object getSubscriptionInfo() {
+        return subscriptionInfo;
     }
 
-    public void setData(Data data) {
-        this.data = data;
+    public void setSubscriptionInfo(Object subscriptionInfo) {
+        this.subscriptionInfo = subscriptionInfo;
     }
 
-    public boolean getSuccess() {
-        return success;
+    public long getRecurringPaymentAgreementReferenceId() {
+        return recurringPaymentAgreementReferenceId;
     }
 
-    public void setSuccess(boolean success) {
-        this.success = success;
+    public void setRecurringPaymentAgreementReferenceId(long recurringPaymentAgreementReferenceId) {
+        this.recurringPaymentAgreementReferenceId = recurringPaymentAgreementReferenceId;
+    }
+
+    public long getRecurringPaymentAgreementId() {
+        return recurringPaymentAgreementId;
+    }
+
+    public void setRecurringPaymentAgreementId(long recurringPaymentAgreementId) {
+        this.recurringPaymentAgreementId = recurringPaymentAgreementId;
+    }
+
+    public Object getSubscriptionOfferUsage() {
+        return subscriptionOfferUsage;
+    }
+
+    public void setSubscriptionOfferUsage(Object subscriptionOfferUsage) {
+        this.subscriptionOfferUsage = subscriptionOfferUsage;
     }
 }

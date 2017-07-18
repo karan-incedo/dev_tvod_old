@@ -194,6 +194,8 @@
 
     <!--AppCMS Subscription API-->
     <string name="app_cms_subscription_api_url">%1$s/content/pages/site=%2$s&amp;path=%3$s&amp;includeContent=true</string>
+    <string name="app_cms_subscription_platform_key">android_phone</string>
+    <string name="app_cms_subscription_key">android</string>
 
     <!-- AppCMS Navigation menu -->
     <string name="app_cms_menu_icon_name">menu_</string>
