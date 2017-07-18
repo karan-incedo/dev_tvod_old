@@ -2,8 +2,13 @@ package com.viewlift.models.network.rest;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 
+import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.HeaderMap;
+import retrofit2.http.Headers;
 import retrofit2.http.Url;
 
 /**
@@ -12,5 +17,5 @@ import retrofit2.http.Url;
 
 public interface AppCMSPageAPIRest {
     @GET
-    Call<AppCMSPageAPI> get(@Url String url);
+    Call<AppCMSPageAPI> get(@Url String url, @HeaderMap Map<String, String> headers);
 }

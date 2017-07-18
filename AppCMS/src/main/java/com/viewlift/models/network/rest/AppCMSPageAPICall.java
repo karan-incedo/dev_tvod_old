@@ -5,17 +5,18 @@ import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import snagfilms.com.air.appcms.R;
 
 /**
@@ -29,6 +30,7 @@ public class AppCMSPageAPICall {
     private final String apiKey;
     private final Gson gson;
     private final File storageDirectory;
+    private Map<String, String> headersMap;
 
     @Inject
     public AppCMSPageAPICall(AppCMSPageAPIRest appCMSPageAPIRest,
@@ -39,6 +41,7 @@ public class AppCMSPageAPICall {
         this.apiKey = apiKey;
         this.gson = gson;
         this.storageDirectory = storageDirectory;
+        this.headersMap = new HashMap<>();
     }
 
     @WorkerThread
@@ -46,6 +49,7 @@ public class AppCMSPageAPICall {
                               String baseUrl,
                               String endpoint,
                               String siteId,
+                              String authToken,
                               boolean usePageIdQueryParam,
                               String pageId) throws IOException {
         String urlWithContent;
@@ -70,7 +74,12 @@ public class AppCMSPageAPICall {
         String filename = getResourceFilename(pageId);
         AppCMSPageAPI appCMSPageAPI = null;
         try {
-            appCMSPageAPI = appCMSPageAPIRest.get(urlWithContent).execute().body();
+            headersMap.clear();
+            headersMap.put("x-api-key", apiKey);
+            if (!TextUtils.isEmpty(authToken)) {
+                headersMap.put("Authorization", authToken);
+            }
+            appCMSPageAPI = appCMSPageAPIRest.get(urlWithContent, headersMap).execute().body();
             if (filename != null) {
                 appCMSPageAPI = writePageToFile(filename, appCMSPageAPI);
             }

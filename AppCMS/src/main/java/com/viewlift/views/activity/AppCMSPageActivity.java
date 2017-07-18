@@ -8,7 +8,6 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
@@ -26,11 +25,11 @@ import android.widget.RelativeLayout;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.internal.CallbackManagerImpl;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Gist;
@@ -58,14 +57,13 @@ import rx.functions.Action1;
 import snagfilms.com.air.appcms.R;
 
 import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 
 /**
  * Created by viewlift on 5/5/17.
  */
 
-public class AppCMSPageActivity extends AppCompatActivity implements
-        AppCMSPageFragment.OnPageCreation,
-        GoogleApiClient.OnConnectionFailedListener{
+public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageFragment.OnPageCreation {
     private static final String TAG = "AppCMSPageActivity";
 
     private static final int NAV_PAGE_INDEX = 0;
@@ -100,13 +98,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private boolean shouldSendCloseOthersAction;
     private AppCMSBinder updatedAppCMSBinder;
 
-    /** Facebook SignIn */
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
     private AccessToken accessToken;
-
-    /** Google+ SignIn */
-    GoogleApiClient googleApiClient;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -226,14 +220,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         accessToken = AccessToken.getCurrentAccessToken();
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-
         Log.d(TAG, "onCreate()");
     }
 
@@ -275,6 +261,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     public void onBackPressed() {
         if (appCMSPresenter != null && appCMSPresenter.isMainFragmentViewVisible()) {
+            appCMSPresenter.showMainFragmentView(false);
             super.onBackPressed();
             Log.d(TAG, "Back pressed - Binder stack size: " + appCMSBinderStack.size());
             pageLoading(false);
@@ -391,11 +378,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         super.onActivityResult(requestCode, resultCode, data);
         if (FacebookSdk.isFacebookRequestCode(requestCode)) {
             callbackManager.onActivityResult(requestCode, resultCode, data);
-        } else if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            if (result.isSuccess()) {
-
-            }
         }
     }
 
@@ -435,11 +417,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSBinder != null) {
             handleLaunchPageAction(appCMSBinder);
         }
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e(TAG, "Google SignIn connection failed: " + connectionResult.getErrorMessage());
     }
 
     public void pageLoading(boolean pageLoading) {
@@ -638,49 +615,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
         updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
 
-        if (appCMSPresenter.isUserLoggedIn(this)) {
-            appCMSPresenter.getHistoryData(new Action1<AppCMSHistoryResult>() {
-                @Override
-                public void call(AppCMSHistoryResult appCMSHistoryResult) {
-                    if (appCMSHistoryResult != null &&
-                            appCMSHistoryResult.getRecords() != null) {
-                        for (Module module : appCMSBinder.getAppCMSPageAPI().getModules()) {
-                            if (appCMSBinder.getJsonValueKeyMap().get(module.getModuleType()) ==
-                                    AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
-                                AppCMSPageAPI pageAPI =
-                                        appCMSHistoryResult.convertToAppCMSPageAPI(module.getId());
-                                module.setContentData(pageAPI.getModules().get(0).getContentData());
-                            } else if (appCMSBinder.getJsonValueKeyMap().get(module.getModuleType()) ==
-                                    AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
-
-                                if (module.getContentData() != null &&
-                                        module.getContentData().size() > 0 &&
-                                        module.getContentData().get(0) != null &&
-                                        module.getContentData().get(0).getGist() != null) {
-                                    Gist moduleGist =
-                                            module.getContentData().get(0).getGist();
-                                    for (Record record : appCMSHistoryResult.getRecords()) {
-                                        if (record.getContentResponse() != null &&
-                                                record.getContentResponse().getGist() != null &&
-                                                record.getContentResponse().getGist().getId() != null &&
-                                                record.getContentResponse().getGist().getId().equals(moduleGist.getId())) {
-                                            Gist recordGist = record.getContentResponse().getGist();
-                                            moduleGist.setWatchedTime(recordGist.getWatchedTime());
-                                            moduleGist.setWatchedPercentage(recordGist.getWatchedPercentage());
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        createScreenFromAppCMSBinder(appCMSBinder);
-                    } else {
-                        createScreenFromAppCMSBinder(appCMSBinder);
-                    }
-                }
-            });
-        } else {
-            createScreenFromAppCMSBinder(appCMSBinder);
-        }
+        createScreenFromAppCMSBinder(appCMSBinder);
     }
 
     private void hideSystemUI(View decorView) {

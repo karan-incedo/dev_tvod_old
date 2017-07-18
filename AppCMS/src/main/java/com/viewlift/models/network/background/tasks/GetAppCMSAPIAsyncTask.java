@@ -27,6 +27,7 @@ public class GetAppCMSAPIAsyncTask extends AsyncTask<GetAppCMSAPIAsyncTask.Param
         String baseUrl;
         String endpoint;
         String siteId;
+        String authToken;
         boolean usePageIdQueryParam;
         String pageId;
         public static class Builder {
@@ -58,6 +59,10 @@ public class GetAppCMSAPIAsyncTask extends AsyncTask<GetAppCMSAPIAsyncTask.Param
                 params.pageId = pageId;
                 return this;
             }
+            public Builder authToken(String authToken) {
+                params.authToken = authToken;
+                return this;
+            }
             public Params build() {
                 return params;
             }
@@ -77,6 +82,7 @@ public class GetAppCMSAPIAsyncTask extends AsyncTask<GetAppCMSAPIAsyncTask.Param
                         params[0].baseUrl,
                         params[0].endpoint,
                         params[0].siteId,
+                        params[0].authToken,
                         params[0].usePageIdQueryParam,
                         params[0].pageId);
             } catch (IOException e) {

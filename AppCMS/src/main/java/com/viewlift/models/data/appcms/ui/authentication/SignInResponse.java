@@ -31,6 +31,14 @@ public class SignInResponse {
     @Expose
     String error;
 
+    @SerializedName("userId")
+    @Expose
+    String userId;
+
+    @SerializedName("picture")
+    @Expose
+    String picture;
+
     public String getAuthorizationToken() {
         return authorizationToken;
     }
@@ -69,5 +77,21 @@ public class SignInResponse {
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 }
