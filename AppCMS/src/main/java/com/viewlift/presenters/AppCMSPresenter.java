@@ -42,11 +42,13 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
+import com.viewlift.models.data.appcms.api.SubscriptionRequest;
 import com.viewlift.models.data.appcms.history.AppCMSDeleteHistoryResult;
 import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
 import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
+import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionResult;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 import com.viewlift.models.data.appcms.ui.android.MetaPage;
@@ -91,6 +93,7 @@ import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
+import com.viewlift.models.network.rest.AppCMSSubscriptionCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
 import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
@@ -184,6 +187,7 @@ public class AppCMSPresenter {
     private final AppCMSAddToWatchlistCall appCMSAddToWatchlistCall;
 
     private final AppCMSDeleteHistoryCall appCMSDeleteHistoryCall;
+    private final AppCMSSubscriptionCall appCMSSubscriptionCall;
 
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
@@ -231,6 +235,7 @@ public class AppCMSPresenter {
                            AppCMSHistoryCall appCMSHistoryCall,
 
                            AppCMSDeleteHistoryCall appCMSDeleteHistoryCall,
+                           AppCMSSubscriptionCall appCMSSubscriptionCall,
 
                            AppCMSBeaconRest appCMSBeaconRest,
                            AppCMSSignInCall appCMSSignInCall,
@@ -272,6 +277,7 @@ public class AppCMSPresenter {
         this.appCMSHistoryCall = appCMSHistoryCall;
 
         this.appCMSDeleteHistoryCall = appCMSDeleteHistoryCall;
+        this.appCMSSubscriptionCall = appCMSSubscriptionCall;
 
         this.loadingPage = false;
         this.navigationPages = new HashMap<>();
@@ -839,7 +845,6 @@ public class AppCMSPresenter {
             showMainFragmentView(false);
 
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
-            AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
 
             getWatchlistPageContent(appCMSMain.getApiBaseUrl(),
                     pageIdToPageAPIUrlMap.get(pageId),
@@ -1112,6 +1117,164 @@ public class AppCMSPresenter {
                                 });
                     } catch (IOException e) {
                         Log.e(TAG, "getHistoryPageContent: " + e.toString());
+                    }
+                }
+            });
+        }
+    }
+
+    public void navigateToSubscriptionPage(String pageId,
+                                           String pageTitle,
+                                           String siteId,
+                                           String planId,
+                                           String email,
+                                           String path,
+                                           boolean launchActivity) {
+
+        if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
+            showMainFragmentView(false);
+            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+
+            getSubscriptionPageContent(siteId, planId, email, path,
+                    new AppCMSSubscriptionAPIAction(true,
+                            false,
+                            true,
+                            appCMSPageUI,
+                            pageId,
+                            pageId,
+                            pageTitle,
+                            launchActivity, null) {
+                        @Override
+                        public void call(AppCMSSubscriptionResult subscriptionResult) {
+                            cancelInternalEvents();
+                            pushActionInternalEvents(this.pageId
+                                    + BaseView.isLandscape(currentActivity));
+
+                            AppCMSPageAPI pageAPI = null;
+
+                            if (subscriptionResult != null &&
+                                    subscriptionResult.getSubscriptionInfo() != null) {
+                                //pageAPI = appCMSHistoryResult.convertToAppCMSPageAPI(this.pageId);
+                            } else {
+                                pageAPI = new AppCMSPageAPI();
+                                pageAPI.setId(this.pageId);
+                                List<String> moduleIds = new ArrayList<>();
+                                List<Module> apiModules = new ArrayList();
+                                for (ModuleList module : appCMSPageUI.getModuleList()) {
+                                    Module module1 = new Module();
+                                    module1.setId(module.getId());
+                                    apiModules.add(module1);
+                                    moduleIds.add(module.getId());
+                                }
+                                pageAPI.setModuleIds(moduleIds);
+                                pageAPI.setModules(apiModules);
+                            }
+
+                            navigationPageData.put(this.pageId, pageAPI);
+
+                            if (this.launchActivity) {
+                                launchPageActivity(currentActivity,
+                                        this.appCMSPageUI,
+                                        pageAPI,
+                                        this.pageId,
+                                        this.pageTitle,
+                                        pageIdToPageNameMap.get(this.pageId),
+                                        loadFromFile,
+                                        this.appbarPresent,
+                                        this.fullscreenEnabled,
+                                        this.navbarPresent,
+                                        false,
+                                        this.searchQuery);
+                            } else {
+                                Bundle args = getPageActivityBundle(currentActivity,
+                                        this.appCMSPageUI,
+                                        pageAPI,
+                                        this.pageId,
+                                        this.pageTitle,
+                                        pageIdToPageNameMap.get(this.pageId),
+                                        loadFromFile,
+                                        this.appbarPresent,
+                                        this.fullscreenEnabled,
+                                        this.navbarPresent,
+                                        false,
+                                        null);
+
+                                Intent subscriptionIntent = new Intent(AppCMSPresenter
+                                        .PRESENTER_NAVIGATE_ACTION);
+                                subscriptionIntent.putExtra(currentActivity.getString(
+                                        R.string.app_cms_bundle_key), args);
+                                currentActivity.sendBroadcast(subscriptionIntent);
+                            }
+                        }
+                    });
+        }
+    }
+
+    private void getSubscriptionPageContent(final String siteId,
+                                            String planId,
+                                            String email,
+                                            final String path,
+                                            final AppCMSSubscriptionAPIAction subscriptionAction) {
+
+        final SubscriptionRequest request = new SubscriptionRequest();
+        request.setSiteInternalName(appCMSMain.getInternalName());
+        request.setUserId(getLoggedInUser(currentActivity));
+        request.setSiteId(siteId);
+        request.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
+        request.setPlanId(planId);
+        request.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
+        request.setEmail(email);
+
+        if (shouldRefreshAuthToken()) {
+            callRefreshIdentity(new Action0() {
+                @Override
+                public void call() {
+                    final String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
+                            appCMSMain.getApiBaseUrl(),
+                            getRefreshToken(currentActivity));
+
+                    appCMSRefreshIdentityCall.call(url, new Action1<RefreshIdentityResponse>() {
+                        @Override
+                        public void call(RefreshIdentityResponse refreshIdentityResponse) {
+                            try {
+                                appCMSSubscriptionCall.call(currentActivity.getString(
+                                        R.string.app_cms_subscription_api_url, appCMSMain.getApiBaseUrl(),
+                                        siteId, path),
+                                        getAuthToken(currentActivity),
+                                        new Action1<AppCMSSubscriptionResult>() {
+                                            @Override
+                                            public void call(AppCMSSubscriptionResult result) {
+                                                subscriptionAction.call(result);
+                                            }
+                                        }, request);
+                            } catch (Exception e) {
+                                Log.e(TAG, "getSubscriptionPageContent: " + e.toString());
+                            }
+                        }
+                    });
+                }
+            });
+        } else {
+            final String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    getRefreshToken(currentActivity));
+
+            appCMSRefreshIdentityCall.call(url, new Action1<RefreshIdentityResponse>() {
+                @Override
+                public void call(RefreshIdentityResponse refreshIdentityResponse) {
+                    try {
+                        appCMSSubscriptionCall.call(currentActivity.getString(
+                                R.string.app_cms_subscription_api_url, appCMSMain.getApiBaseUrl(),
+                                siteId, path),
+                                getAuthToken(currentActivity),
+                                new Action1<AppCMSSubscriptionResult>() {
+                                    @Override
+                                    public void call(AppCMSSubscriptionResult result) {
+                                        subscriptionAction.call(result);
+                                    }
+                                }, request);
+                    } catch (Exception e) {
+                        Log.e(TAG, "getSubscriptionPageContent: " + e.toString());
                     }
                 }
             });
@@ -2676,4 +2839,39 @@ public class AppCMSPresenter {
             this.searchQuery = searchQuery;
         }
     }
+
+    private static abstract class AppCMSSubscriptionAPIAction
+            implements Action1<AppCMSSubscriptionResult> {
+
+        boolean appbarPresent;
+        boolean fullscreenEnabled;
+        boolean navbarPresent;
+        AppCMSPageUI appCMSPageUI;
+        String action;
+        String pageId;
+        String pageTitle;
+        boolean launchActivity;
+        Uri searchQuery;
+
+        public AppCMSSubscriptionAPIAction(boolean appbarPresent,
+                                           boolean fullscreenEnabled,
+                                           boolean navbarPresent,
+                                           AppCMSPageUI appCMSPageUI,
+                                           String action,
+                                           String pageId,
+                                           String pageTitle,
+                                           boolean launchActivity,
+                                           Uri searchQuery) {
+            this.appbarPresent = appbarPresent;
+            this.fullscreenEnabled = fullscreenEnabled;
+            this.navbarPresent = navbarPresent;
+            this.appCMSPageUI = appCMSPageUI;
+            this.action = action;
+            this.pageId = pageId;
+            this.pageTitle = pageTitle;
+            this.launchActivity = launchActivity;
+            this.searchQuery = searchQuery;
+        }
+    }
+
 }
