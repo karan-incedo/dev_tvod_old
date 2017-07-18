@@ -196,7 +196,7 @@
     <string name="app_cms_clear_history_api_url">%1$s/content/video/history/user/%2$s?site=%3$s</string>
 
     <!--AppCMS Subscription API-->
-    <string name="app_cms_subscription_api_url">%1$s/content/pages/user/%2$s?site=%3$s&amp;userId=%4$s</string>
+    <string name="app_cms_subscription_api_url">%1$s/content/pages/site=%2$s&amp;path=%3$s&amp;includeContent=true</string>
 
     <!-- AppCMS Navigation menu -->
     <string name="app_cms_menu_icon_name">menu_</string>
