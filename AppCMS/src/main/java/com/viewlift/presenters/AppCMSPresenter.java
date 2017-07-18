@@ -32,18 +32,18 @@ import com.facebook.login.LoginManager;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.iid.InstanceID;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
-import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.history.AppCMSDeleteHistoryResult;
 import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
-import com.viewlift.models.data.appcms.history.Record;
 import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
@@ -143,6 +143,9 @@ public class AppCMSPresenter {
     public static final String PRESENTER_CLOSE_SCREEN_ACTION = "appcms_presenter_close_action";
     public static final String PRESENTER_RESET_NAVIGATION_ITEM_ACTION = "appcms_presenter_set_navigation_item_action";
     public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
+
+    public static final int RC_GOOGLE_SIGN_IN = 1001;
+
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
@@ -206,6 +209,7 @@ public class AppCMSPresenter {
     private Runnable beaconMessageThread;
     private GoogleAnalytics googleAnalytics;
     private Tracker tracker;
+    private GoogleApiClient googleApiClient;
 
     private String tvHomeScreenPackage = "com.viewlift.tv.views.activity.AppCmsHomeActivity";
     private String tvErrorScreenPackage = "com.viewlift.tv.views.activity.AppCmsTvErrorActivity";
@@ -668,6 +672,13 @@ public class AppCMSPresenter {
             appCMSResetPasswordFragment.show(((AppCompatActivity) currentActivity)
                             .getSupportFragmentManager(),
                     currentActivity.getString(R.string.app_cms_reset_password_page_tag));
+        }
+    }
+
+    public void loginGoogle(GoogleApiClient googleApiClient) {
+        if (currentActivity != null) {
+            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+            currentActivity.startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
         }
     }
 
@@ -1246,6 +1257,14 @@ public class AppCMSPresenter {
                         });
             }
         }
+    }
+
+    public GoogleApiClient getGoogleApiClient() {
+        return googleApiClient;
+    }
+
+    public void setGoogleApiClient(GoogleApiClient googleApiClient) {
+        this.googleApiClient = googleApiClient;
     }
 
     private void closeSoftKeyboard() {

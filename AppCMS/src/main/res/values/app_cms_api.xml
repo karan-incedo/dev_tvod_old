@@ -27,9 +27,6 @@
     <string name="app_cms_beacon_dpm_android">Standard Android OS</string>
     <string name="app_cms_beacon_video_player_parent_screen_name">VideoPlayer</string>
 
-    <!-- AppCMS Apptentive API -->
-    <string name="app_cms_apptentive_api_key">dfde9505539f2dc1d24700c09fb096b5280ed4cbed0828084540ada79a2b00f7</string>
-
     <!-- AppCMS Google Analytics -->
     <string name="app_cms_template_page_separator">&#160;-&#160;</string>
 
