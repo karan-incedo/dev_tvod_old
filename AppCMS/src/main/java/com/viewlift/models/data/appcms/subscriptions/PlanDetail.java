@@ -47,7 +47,7 @@ public class PlanDetail {
 
     @SerializedName("scheduledFromDate")
     @Expose
-    int scheduledFromDate;
+    long scheduledFromDate;
 
     @SerializedName("supportedDevices")
     @Expose
@@ -59,11 +59,11 @@ public class PlanDetail {
 
     @SerializedName("numberOfAllowedStreams")
     @Expose
-    int numberOfAllowedStreams;
+    long numberOfAllowedStreams;
 
     @SerializedName("numberOfAllowedDevices")
     @Expose
-    int numberOfAllowedDevices;
+    long numberOfAllowedDevices;
 
     public double getRecurringPaymentAmount() {
         return recurringPaymentAmount;
@@ -129,11 +129,11 @@ public class PlanDetail {
         isDefault = aDefault;
     }
 
-    public int getScheduledFromDate() {
+    public long getScheduledFromDate() {
         return scheduledFromDate;
     }
 
-    public void setScheduledFromDate(int scheduledFromDate) {
+    public void setScheduledFromDate(long scheduledFromDate) {
         this.scheduledFromDate = scheduledFromDate;
     }
 
@@ -153,19 +153,19 @@ public class PlanDetail {
         this.visible = visible;
     }
 
-    public int getNumberOfAllowedStreams() {
+    public long getNumberOfAllowedStreams() {
         return numberOfAllowedStreams;
     }
 
-    public void setNumberOfAllowedStreams(int numberOfAllowedStreams) {
+    public void setNumberOfAllowedStreams(long numberOfAllowedStreams) {
         this.numberOfAllowedStreams = numberOfAllowedStreams;
     }
 
-    public int getNumberOfAllowedDevices() {
+    public long getNumberOfAllowedDevices() {
         return numberOfAllowedDevices;
     }
 
-    public void setNumberOfAllowedDevices(int numberOfAllowedDevices) {
+    public void setNumberOfAllowedDevices(long numberOfAllowedDevices) {
         this.numberOfAllowedDevices = numberOfAllowedDevices;
     }
 }
