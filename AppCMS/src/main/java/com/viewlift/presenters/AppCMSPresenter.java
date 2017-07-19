@@ -40,6 +40,7 @@ import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.iid.InstanceID;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
@@ -138,7 +139,6 @@ import retrofit2.Response;
 import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Action1;
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/3/17.
@@ -703,7 +703,7 @@ public class AppCMSPresenter {
     }
 
     public void initiateItemPurchase(final IInAppBillingService inAppBillingService,
-                                   String sku) {
+                                     String sku) {
         if (currentActivity != null) {
             try {
                 Bundle buyIntentBundle = inAppBillingService.getBuyIntent(3,

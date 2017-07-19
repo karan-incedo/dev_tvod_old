@@ -8,6 +8,7 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -31,6 +32,8 @@ import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordRest;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignInRest;
+import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
+import com.viewlift.models.network.rest.AppCMSSubscriptionPlanRest;
 import com.viewlift.models.network.rest.AppCMSSubscriptionRest;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryRest;
@@ -55,7 +58,6 @@ import dagger.Provides;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import com.viewlift.R;
 
 @Module
 public class AppCMSUIModule {
@@ -455,6 +457,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSSubscriptionPlanRest providesAppCMSSubscriptionPlanRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSSubscriptionPlanRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -537,6 +545,13 @@ public class AppCMSUIModule {
     public AppCMSAddToWatchlistCall providesAppCMSAddToWatchlistCall(AppCMSAddToWatchlistRest appCMSAddToWatchlistRest,
                                                                      Gson gson) {
         return new AppCMSAddToWatchlistCall(appCMSAddToWatchlistRest, gson);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSSubscriptionPlanCall appCMSSubscriptionPlanCall(AppCMSSubscriptionPlanRest appCMSSubscriptionPlanRest,
+                                                                 Gson gson) {
+        return new AppCMSSubscriptionPlanCall(appCMSSubscriptionPlanRest, gson);
     }
 
     @Provides

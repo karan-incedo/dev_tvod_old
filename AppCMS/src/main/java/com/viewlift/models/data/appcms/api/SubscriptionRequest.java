@@ -39,6 +39,10 @@ public class SubscriptionRequest {
     @Expose
     String email;
 
+    @SerializedName("stripeToken")
+    @Expose
+    String stripeToken;
+
     public String getSiteInternalName() {
         return siteInternalName;
     }
@@ -93,5 +97,13 @@ public class SubscriptionRequest {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getStripeToken() {
+        return stripeToken;
+    }
+
+    public void setStripeToken(String stripeToken) {
+        this.stripeToken = stripeToken;
     }
 }
