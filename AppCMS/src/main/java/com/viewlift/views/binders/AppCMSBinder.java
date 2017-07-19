@@ -19,10 +19,11 @@ import com.viewlift.models.data.appcms.ui.android.Navigation;
 public class AppCMSBinder extends Binder {
     private final AppCMSMain appCMSMain;
     private final AppCMSPageUI appCMSPageUI;
-    private final AppCMSPageAPI appCMSPageAPI;
+    private AppCMSPageAPI appCMSPageAPI;
     private final Navigation navigation;
     private final String pageId;
     private final String pageName;
+    private final String pagePath;
     private final String screenName;
     private final boolean loadedFromFile;
     private final boolean appbarPresent;
@@ -39,6 +40,7 @@ public class AppCMSBinder extends Binder {
                         Navigation navigation,
                         String pageId,
                         String pageName,
+                        String pagePath,
                         String screenName,
                         boolean loadedFromFile,
                         boolean appbarPresent,
@@ -54,6 +56,7 @@ public class AppCMSBinder extends Binder {
         this.navigation = navigation;
         this.pageId = pageId;
         this.pageName = pageName;
+        this.pagePath = pagePath;
         this.screenName = screenName;
         this.loadedFromFile = loadedFromFile;
         this.appbarPresent = appbarPresent;
@@ -87,6 +90,10 @@ public class AppCMSBinder extends Binder {
 
     public String getPageName() {
         return pageName;
+    }
+
+    public String getPagePath() {
+        return pagePath;
     }
 
     public boolean getLoadedFromFile() {
@@ -131,5 +138,9 @@ public class AppCMSBinder extends Binder {
 
     public boolean shouldSendCloseAction() {
         return sendCloseAction;
+    }
+
+    public void updateAppCMSPageAPI(AppCMSPageAPI appCMSPageAPI) {
+        this.appCMSPageAPI = appCMSPageAPI;
     }
 }

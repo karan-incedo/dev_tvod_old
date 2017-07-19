@@ -32,6 +32,7 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
@@ -47,7 +48,9 @@ import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSPageFragment;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -160,6 +163,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                     if (intent.getData() != null) {
                         processDeepLink(intent.getData());
                     }
+                } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION)) {
+                    updateData();
                 }
             }
         };
@@ -198,6 +203,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 new IntentFilter(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM_ACTION));
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION));
+        registerReceiver(presenterActionReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION));
 
         resumeInternalEvents = false;
 
@@ -745,5 +752,35 @@ public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageF
                 null,
                 null,
                 false);
+    }
+
+    private void updateData() {
+        final AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+        if (appCMSPresenter != null) {
+            for (String appCMSBinderKey : appCMSBinderMap.keySet()) {
+                final AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderKey);
+                if (appCMSBinder != null) {
+                    String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
+                    boolean usePageIdQueryParam = true;
+                    if (appCMSPresenter.isPageAVideoPage(appCMSBinder.getPageName())) {
+                        endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getPageName());
+                        usePageIdQueryParam = false;
+                    }
+                    appCMSPresenter.getPageIdContent(appCMSMain.getApiBaseUrl(),
+                            endPoint,
+                            appCMSMain.getInternalName(),
+                            usePageIdQueryParam,
+                            appCMSBinder.getPagePath(),
+                            new Action1<AppCMSPageAPI>() {
+                                @Override
+                                public void call(final AppCMSPageAPI appCMSPageAPI) {
+                                    if (appCMSPageAPI != null) {
+                                        appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
+                                    }
+                                }
+                            });
+                }
+            }
+        }
     }
 }
