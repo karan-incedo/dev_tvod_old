@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.app.Activity;
 
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.appcms.R;
 
 
 public class AppCmsTvErrorActivity extends Activity {

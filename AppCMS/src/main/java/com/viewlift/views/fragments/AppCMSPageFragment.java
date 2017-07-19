@@ -19,7 +19,7 @@ import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.modules.AppCMSPageViewModule;
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/3/17.

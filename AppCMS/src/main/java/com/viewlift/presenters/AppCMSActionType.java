@@ -5,6 +5,7 @@ package com.viewlift.presenters;
  */
 
 public enum AppCMSActionType {
+    SPLASH_PAGE,
     AUTH_PAGE,
     HOME_PAGE,
     HISTORY_PAGE,
@@ -15,6 +16,7 @@ public enum AppCMSActionType {
     CLOSE,
     LOGIN,
     FORGOT_PASSWORD,
+    LOGIN_GOOGLE,
     LOGIN_FACEBOOK,
     SIGNUP,
     LOGOUT

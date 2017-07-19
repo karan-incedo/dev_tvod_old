@@ -35,7 +35,7 @@ import javax.inject.Inject;
 import rx.functions.Action1;
 import rx.Observable;
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 6/12/17.

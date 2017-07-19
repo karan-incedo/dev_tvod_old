@@ -19,7 +19,7 @@ import com.viewlift.views.customviews.BaseView;
 
 import java.util.List;
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 6/12/17.

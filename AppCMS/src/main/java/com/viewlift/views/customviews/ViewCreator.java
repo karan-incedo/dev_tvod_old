@@ -57,7 +57,7 @@ import java.util.List;
 import java.util.Map;
 
 import rx.functions.Action1;
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -138,6 +138,7 @@ public class ViewCreator {
         if (appCMSPresenter.isPageAVideoPage(screenName)) {
             pageView = getPageViewLruCache().get(screenName + BaseView.isLandscape(context));
         }
+
         boolean newView = false;
         if (pageView == null || pageView.getContext() != context) {
             pageView = new PageView(context, appCMSPageUI);
@@ -1053,16 +1054,16 @@ public class ViewCreator {
                             moduleAPI.getContentData().get(0).getGist().getWatchedPercentage() != 0) {
                         if (moduleAPI.getContentData()
                                 .get(0).getGist().getWatchedPercentage() > 0) {
-                            ((ProgressBar) componentViewResult.componentView).setVisibility(View.VISIBLE);
+                            componentViewResult.componentView.setVisibility(View.VISIBLE);
                             ((ProgressBar) componentViewResult.componentView)
                                     .setProgress(moduleAPI.getContentData()
                                             .get(0).getGist().getWatchedPercentage());
                         } else {
-                            ((ProgressBar) componentViewResult.componentView).setVisibility(View.INVISIBLE);
+                            componentViewResult.componentView.setVisibility(View.INVISIBLE);
                             ((ProgressBar) componentViewResult.componentView).setProgress(0);
                         }
                     } else {
-                        ((ProgressBar) componentViewResult.componentView).setVisibility(View.INVISIBLE);
+                        componentViewResult.componentView.setVisibility(View.INVISIBLE);
                         ((ProgressBar) componentViewResult.componentView).setProgress(0);
                     }
                 } else {

@@ -43,7 +43,7 @@ import com.google.android.exoplayer2.util.Util;
 
 import rx.Observable;
 import rx.functions.Action1;
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/31/17.

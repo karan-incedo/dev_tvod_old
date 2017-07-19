@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import java.io.InputStream;
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.appcms.R;
 
 /**
  * Created by nitin.tyagi on 7/3/2017.

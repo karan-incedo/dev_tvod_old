@@ -28,7 +28,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.appcms.R;
 
 /**
  * Created by nitin.tyagi on 6/28/2017.

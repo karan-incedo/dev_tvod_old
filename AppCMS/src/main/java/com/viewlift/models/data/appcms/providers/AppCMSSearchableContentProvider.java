@@ -27,8 +27,8 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import okhttp3.OkHttpClient;
-import snagfilms.com.air.appcms.BuildConfig;
-import snagfilms.com.air.appcms.R;
+import com.viewlift.BuildConfig;
+import com.viewlift.R;
 
 import static android.app.SearchManager.SUGGEST_URI_PATH_QUERY;
 

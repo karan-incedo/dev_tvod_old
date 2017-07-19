@@ -22,7 +22,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 public class AppCMSHistoryItemAdapter extends RecyclerView.Adapter<AppCMSHistoryItemAdapter.ViewHolder> {
 

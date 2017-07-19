@@ -3,10 +3,17 @@
 /local.properties
 .DS_Store
 /build
+/.idea/*
 /captures
 .externalNativeBuild
+<<<<<<< HEAD
 /.idea/*
+=======
+/.idea/misc.xml
+/.idea/encodings.xml
+>>>>>>> phase_3
 /AppCMS/release/*
 /*.apk
 /*.json
-/AppCMS/*.json
+/.idea/misc.xml
+/.idea/modules.xml

@@ -23,7 +23,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.functions.Action1;
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 public class AppCMSWatchlistActivity extends AppCompatActivity {
 

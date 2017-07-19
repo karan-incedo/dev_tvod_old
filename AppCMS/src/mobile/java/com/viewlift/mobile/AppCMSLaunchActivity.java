@@ -11,7 +11,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 
 import com.viewlift.views.components.AppCMSPresenterComponent;
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";

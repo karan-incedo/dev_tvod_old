@@ -8,6 +8,7 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -31,6 +32,9 @@ import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordRest;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignInRest;
+import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
+import com.viewlift.models.network.rest.AppCMSSubscriptionPlanRest;
+import com.viewlift.models.network.rest.AppCMSSubscriptionRest;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryRest;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
@@ -54,7 +58,6 @@ import dagger.Provides;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import snagfilms.com.air.appcms.R;
 
 @Module
 public class AppCMSUIModule {
@@ -103,8 +106,10 @@ public class AppCMSUIModule {
     }
 
     private void createJsonValueKeyMap(Context context) {
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_authenticationscreen_key),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_authscreen_key),
                 AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_splashscreen_key),
+                AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_homescreen_key),
                 AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_historyscreen_key),
@@ -263,7 +268,7 @@ public class AppCMSUIModule {
     }
 
     private void createPageNameToActionMap(Context context) {
-        this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_authenticationscreen_key),
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_splashscreen_key),
                 context.getString(R.string.app_cms_action_authpage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_homescreen_key),
                 context.getString(R.string.app_cms_action_homepage_key));
@@ -290,6 +295,8 @@ public class AppCMSUIModule {
 
     private void createActionToActionTypeMap(Context context) {
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_authpage_key),
+                AppCMSActionType.SPLASH_PAGE);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_authpage_key),
                 AppCMSActionType.AUTH_PAGE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_pagename_homescreen_key),
                 AppCMSActionType.HOME_PAGE);
@@ -309,6 +316,8 @@ public class AppCMSUIModule {
                 AppCMSActionType.LOGIN);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_forgotpassword_key),
                 AppCMSActionType.FORGOT_PASSWORD);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_forgotpassword_key),
+                AppCMSActionType.LOGIN_GOOGLE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_loginfacebook_key),
                 AppCMSActionType.LOGIN_FACEBOOK);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_signup_key),
@@ -442,6 +451,18 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSSubscriptionRest providesAppCMSSubscriptionRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSSubscriptionRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSSubscriptionPlanRest providesAppCMSSubscriptionPlanRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSSubscriptionPlanRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -524,6 +545,13 @@ public class AppCMSUIModule {
     public AppCMSAddToWatchlistCall providesAppCMSAddToWatchlistCall(AppCMSAddToWatchlistRest appCMSAddToWatchlistRest,
                                                                      Gson gson) {
         return new AppCMSAddToWatchlistCall(appCMSAddToWatchlistRest, gson);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSSubscriptionPlanCall appCMSSubscriptionPlanCall(AppCMSSubscriptionPlanRest appCMSSubscriptionPlanRest,
+                                                                 Gson gson) {
+        return new AppCMSSubscriptionPlanCall(appCMSSubscriptionPlanRest, gson);
     }
 
     @Provides

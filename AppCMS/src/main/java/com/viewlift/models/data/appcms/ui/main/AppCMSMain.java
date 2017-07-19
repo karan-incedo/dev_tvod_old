@@ -83,6 +83,9 @@ public class AppCMSMain {
     @Expose
     long timestamp;
 
+    @SerializedName("forceLogin")
+    boolean forceLogin;
+
     public String getId() {
         return id;
     }
@@ -241,5 +244,13 @@ public class AppCMSMain {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public boolean isForceLogin() {
+        return forceLogin;
+    }
+
+    public void setForceLogin(boolean forceLogin) {
+        this.forceLogin = forceLogin;
     }
 }

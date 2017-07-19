@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.viewlift.tv.views.customviews.CustomHeaderItem;
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.appcms.R;
 
 /**
  * Created by nitin.tyagi on 7/2/2017.

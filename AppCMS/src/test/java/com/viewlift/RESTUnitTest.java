@@ -22,7 +22,7 @@ import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

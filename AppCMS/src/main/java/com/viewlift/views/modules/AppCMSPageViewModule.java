@@ -18,7 +18,7 @@ import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.ViewCreator;
 import dagger.Module;
 import dagger.Provides;
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/5/17.

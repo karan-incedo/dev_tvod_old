@@ -9,15 +9,15 @@ import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
-import com.viewlift.models.network.rest.AppCMSFacebookLoginRest;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
-import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
+import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
+import com.viewlift.models.network.rest.AppCMSSubscriptionCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
 import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
@@ -52,6 +52,8 @@ public class AppCMSPresenterModule {
 
                                                    AppCMSDeleteHistoryCall appCMSDeleteHistoryCall,
 
+                                                   AppCMSSubscriptionCall appCMSSubscriptionCall,
+
                                                    AppCMSBeaconRest appCMSBeaconRest,
                                                    AppCMSSignInCall appCMSSignInCall,
                                                    AppCMSRefreshIdentityCall appCMSRefreshIdentityCall,
@@ -78,6 +80,7 @@ public class AppCMSPresenterModule {
                 appCMSHistoryCall,
 
                 appCMSDeleteHistoryCall,
+                appCMSSubscriptionCall,
 
                 appCMSBeaconRest,
                 appCMSSignInCall,

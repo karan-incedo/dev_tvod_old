@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 public class AppCMSWatchlistFragment extends Fragment {
 

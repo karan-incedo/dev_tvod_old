@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("snagfilms.com.air.androidappcms", appContext.getPackageName());
+        assertEquals("com.viewlift.androidappcms", appContext.getPackageName());
     }
 }
