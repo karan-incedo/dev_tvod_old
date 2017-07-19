@@ -47,7 +47,7 @@ public class AppCMSSubscriptionPlanCall {
         switch (subscriptionCallType) {
 
             case R.string.app_cms_subscription_plan_list_key:
-                appCMSSubscriptionPlanRest.getList(url)
+                appCMSSubscriptionPlanRest.getPlanList(url)
                         .enqueue(new Callback<List<AppCMSSubscriptionPlanResult>>() {
                             @Override
                             public void onResponse(@NonNull Call<List<AppCMSSubscriptionPlanResult>> call,
@@ -64,7 +64,7 @@ public class AppCMSSubscriptionPlanCall {
                 break;
 
             case R.string.app_cms_subscription_plan_create_key:
-                appCMSSubscriptionPlanRest.create(url, request)
+                appCMSSubscriptionPlanRest.createPlan(url, request)
                         .enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
                             @Override
                             public void onResponse(@NonNull Call<AppCMSSubscriptionPlanResult> call,
@@ -81,7 +81,20 @@ public class AppCMSSubscriptionPlanCall {
                 break;
 
             case R.string.app_cms_subscription_plan_update_key:
-                //
+                appCMSSubscriptionPlanRest.updatePlan(url, request)
+                        .enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
+                            @Override
+                            public void onResponse(@NonNull Call<AppCMSSubscriptionPlanResult> call,
+                                                   @NonNull Response<AppCMSSubscriptionPlanResult> response) {
+                                Observable.just(response.body()).subscribe(resultAction1);
+                            }
+
+                            @Override
+                            public void onFailure(@NonNull Call<AppCMSSubscriptionPlanResult> call,
+                                                  @NonNull Throwable t) {
+                                Log.e(TAG, "onFailure: " + t.getMessage());
+                            }
+                        });
                 break;
 
             default:

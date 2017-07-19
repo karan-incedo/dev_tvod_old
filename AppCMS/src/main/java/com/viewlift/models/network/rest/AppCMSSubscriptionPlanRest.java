@@ -13,14 +13,16 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Url;
 
 public interface AppCMSSubscriptionPlanRest {
     @GET
-    Call<List<AppCMSSubscriptionPlanResult>> getList(@Url String url);
+    Call<List<AppCMSSubscriptionPlanResult>> getPlanList(@Url String url);
 
     @POST
-    Call<AppCMSSubscriptionPlanResult> create(@Url String url, @Body SubscriptionRequest request);
+    Call<AppCMSSubscriptionPlanResult> createPlan(@Url String url, @Body SubscriptionRequest request);
 
-    // TODO: 7/19/17 @PUT - update(@Url String url, ...);
+    @PUT
+    Call<AppCMSSubscriptionPlanResult> updatePlan(@Url String url, @Body SubscriptionRequest request);
 }
