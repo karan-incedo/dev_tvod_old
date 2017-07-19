@@ -25,6 +25,7 @@ public class NavBarItemView extends LinearLayout {
     private TextView navLabel;
     private String tag;
     private boolean hasFocus;
+    private int highlightColor;
 
     public NavBarItemView(Context context) {
         super(context);
@@ -61,7 +62,7 @@ public class NavBarItemView extends LinearLayout {
         this.hasFocus = hasFocus;
         int color = ContextCompat.getColor(getContext(), R.color.colorNavBarText);
         if (hasFocus) {
-            color = ContextCompat.getColor(getContext(), R.color.colorAccent);
+            color = highlightColor;
         }
         applyTintToDrawable(navImage.getDrawable(), color);
         navLabel.setTextColor(color);
@@ -117,6 +118,10 @@ public class NavBarItemView extends LinearLayout {
 
     public boolean isItemSelected() {
         return hasFocus;
+    }
+
+    public void setHighlightColor(int highlightColor) {
+        this.highlightColor = highlightColor;
     }
 
     private void applyTintToDrawable(@Nullable Drawable drawable, int color) {

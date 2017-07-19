@@ -701,8 +701,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void createMenuNavItem() {
         final NavBarItemView menuNavBarItemView =
                 (NavBarItemView) appCMSTabNavContainer.getChildAt(NAV_PAGE_INDEX);
+        int highlightColor =
+                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
         menuNavBarItemView.setImage(getString(R.string.app_cms_menu_icon_name));
         menuNavBarItemView.setLabel(getString(R.string.app_cms_menu_label));
+        menuNavBarItemView.setHighlightColor(highlightColor);
         menuNavBarItemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -723,7 +726,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void createHomeNavItem(final NavigationPrimary homePageNav) {
         final NavBarItemView homeNavBarItemView =
                 (NavBarItemView) appCMSTabNavContainer.getChildAt(HOME_PAGE_INDEX);
+        int highlightColor =
+                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
         homeNavBarItemView.setImage(getIconName(homePageNav));
+        homeNavBarItemView.setHighlightColor(highlightColor);
         homeNavBarItemView.setLabel(homePageNav.getTitle());
         homeNavBarItemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -739,7 +745,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void createMoviesNavItem(final NavigationPrimary moviePageNav) {
         final NavBarItemView moviesNavBarItemView =
                 (NavBarItemView) appCMSTabNavContainer.getChildAt(MOVIES_PAGE_INDEX);
+        int highlightColor =
+                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
         moviesNavBarItemView.setImage(getIconName(moviePageNav));
+        moviesNavBarItemView.setHighlightColor(highlightColor);
         moviesNavBarItemView.setLabel(moviePageNav.getTitle());
         moviesNavBarItemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -755,7 +764,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void createSearchNavItem() {
         NavBarItemView searchNavBarItemView =
                 (NavBarItemView) appCMSTabNavContainer.getChildAt(SEARCH_INDEX);
+        int highlightColor =
+                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
         searchNavBarItemView.setImage(getString(R.string.app_cms_search_icon_name));
+        searchNavBarItemView.setHighlightColor(highlightColor);
         searchNavBarItemView.hideLabel();
         searchNavBarItemView.setOnClickListener(new View.OnClickListener() {
             @Override
