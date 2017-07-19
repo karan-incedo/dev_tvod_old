@@ -1,13 +1,16 @@
 package com.viewlift.views.activity;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -23,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import com.android.vending.billing.IInAppBillingService;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
@@ -48,7 +52,7 @@ import java.util.Stack;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 import com.facebook.FacebookSdk;
 
@@ -98,6 +102,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private AccessToken accessToken;
 
     private GoogleApiClient googleApiClient;
+
+    private IInAppBillingService inAppBillingService;
+
+    private ServiceConnection inAppBillingServiceConn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -226,8 +234,26 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
+        inAppBillingServiceConn = new ServiceConnection() {
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                inAppBillingService = null;
+            }
+
+            @Override
+            public void onServiceConnected(ComponentName name,
+                                           IBinder service) {
+                inAppBillingService = IInAppBillingService.Stub.asInterface(service);
+            }
+        };
+        Intent serviceIntent =
+                new Intent("com.android.vending.billing.InAppBillingService.BIND");
+        serviceIntent.setPackage("com.android.vending");
+        bindService(serviceIntent, inAppBillingServiceConn, Context.BIND_AUTO_CREATE);
+
         if (appCMSPresenter != null) {
             appCMSPresenter.setGoogleApiClient(googleApiClient);
+            appCMSPresenter.setInAppBillingServiceConn(inAppBillingServiceConn);
         }
 
         Log.d(TAG, "onCreate()");
@@ -367,6 +393,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         accessTokenTracker.stopTracking();
 
+        if (inAppBillingService != null) {
+            unbindService(inAppBillingServiceConn);
+        }
+
         Log.d(TAG, "onDestroy()");
     }
 
@@ -386,12 +416,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (FacebookSdk.isFacebookRequestCode(requestCode)) {
-            callbackManager.onActivityResult(requestCode, resultCode, data);
-        } else if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            if (result.isSuccess()) {
-
+        if (resultCode == RESULT_OK) {
+            if (FacebookSdk.isFacebookRequestCode(requestCode)) {
+                callbackManager.onActivityResult(requestCode, resultCode, data);
+                // Call to backend Facebook API
+            } else if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
+                GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                if (result.isSuccess()) {
+                    // Call to backend Google SignIn API
+                }
+            } else if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
+                // Call to backend subscription API
             }
         }
     }

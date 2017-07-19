@@ -78,7 +78,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.appcms.R;
 
 /**
  * Created by viewlift on 5/5/17.

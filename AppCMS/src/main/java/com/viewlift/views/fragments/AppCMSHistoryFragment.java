@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import com.viewlift.presenters.AppCMSPresenter;
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 public class AppCMSHistoryFragment extends Fragment {
 

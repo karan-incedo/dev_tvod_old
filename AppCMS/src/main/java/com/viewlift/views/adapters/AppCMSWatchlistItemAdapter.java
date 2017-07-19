@@ -24,7 +24,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 public class AppCMSWatchlistItemAdapter extends RecyclerView.Adapter<AppCMSWatchlistItemAdapter.ViewHolder> {
     private static final float STANDARD_MOBILE_WIDTH_PX = 375f;

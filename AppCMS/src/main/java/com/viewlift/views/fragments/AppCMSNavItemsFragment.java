@@ -26,7 +26,7 @@ import com.viewlift.views.adapters.AppCMSNavItemsAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/30/17.

@@ -20,7 +20,7 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 6/14/17.

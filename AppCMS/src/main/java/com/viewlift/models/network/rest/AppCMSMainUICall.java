@@ -29,7 +29,7 @@ import java.util.concurrent.TimeoutException;
 import javax.inject.Inject;
 
 import okhttp3.OkHttpClient;
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/4/17.

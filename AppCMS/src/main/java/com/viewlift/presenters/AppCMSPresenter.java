@@ -1,10 +1,13 @@
 package com.viewlift.presenters;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
@@ -15,6 +18,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
@@ -27,6 +31,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 
+import com.android.vending.billing.IInAppBillingService;
 import com.apptentive.android.sdk.Apptentive;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -133,7 +138,7 @@ import retrofit2.Response;
 import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Action1;
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/3/17.
@@ -148,6 +153,7 @@ public class AppCMSPresenter {
     public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
 
     public static final int RC_GOOGLE_SIGN_IN = 1001;
+    public static final int RC_PURCHASE_PLAY_STORE_ITEM = 1002;
 
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
@@ -214,6 +220,7 @@ public class AppCMSPresenter {
     private GoogleAnalytics googleAnalytics;
     private Tracker tracker;
     private GoogleApiClient googleApiClient;
+    private ServiceConnection inAppBillingServiceConn;
 
     private String tvHomeScreenPackage = "com.viewlift.tv.views.activity.AppCmsHomeActivity";
     private String tvErrorScreenPackage = "com.viewlift.tv.views.activity.AppCmsTvErrorActivity";
@@ -692,6 +699,28 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             LoginManager.getInstance().logInWithReadPermissions(currentActivity,
                     Arrays.asList("public_profile", "user_friends"));
+        }
+    }
+
+    public void initiateItemPurchase(final IInAppBillingService inAppBillingService,
+                                   String sku) {
+        if (currentActivity != null) {
+            try {
+                Bundle buyIntentBundle = inAppBillingService.getBuyIntent(3,
+                        currentActivity.getPackageName(),
+                        sku,
+                        "subs",
+                        null);
+                PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+                currentActivity.startIntentSenderForResult(pendingIntent.getIntentSender(),
+                        RC_PURCHASE_PLAY_STORE_ITEM,
+                        new Intent(),
+                        0,
+                        0,
+                        0);
+            } catch (RemoteException | IntentSender.SendIntentException e) {
+                Log.e(TAG, "Failed to purchase item with sku: " + sku);
+            }
         }
     }
 
@@ -1428,6 +1457,14 @@ public class AppCMSPresenter {
 
     public void setGoogleApiClient(GoogleApiClient googleApiClient) {
         this.googleApiClient = googleApiClient;
+    }
+
+    public ServiceConnection getInAppBillingServiceConn() {
+        return inAppBillingServiceConn;
+    }
+
+    public void setInAppBillingServiceConn(ServiceConnection inAppBillingServiceConn) {
+        this.inAppBillingServiceConn = inAppBillingServiceConn;
     }
 
     private void closeSoftKeyboard() {

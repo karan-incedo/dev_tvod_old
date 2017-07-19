@@ -17,7 +17,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.Map;
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/30/17.

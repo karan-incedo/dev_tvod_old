@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 import com.viewlift.tv.utility.Utils;
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.appcms.R;
 
 
 /**

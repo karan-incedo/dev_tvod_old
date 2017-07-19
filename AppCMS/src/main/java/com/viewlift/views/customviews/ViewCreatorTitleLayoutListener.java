@@ -5,7 +5,7 @@ import android.graphics.Rect;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 6/15/17.

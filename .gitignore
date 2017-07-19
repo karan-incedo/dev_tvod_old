@@ -14,3 +14,5 @@
 /*.apk
 /*.json
 /AppCMS/*.json
+.idea/misc.xml
+.idea/modules.xml

@@ -29,7 +29,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.functions.Action1;
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 7/6/17.

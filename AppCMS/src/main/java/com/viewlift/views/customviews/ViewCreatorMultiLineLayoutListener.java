@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.viewlift.presenters.AppCMSPresenter;
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 6/7/17.

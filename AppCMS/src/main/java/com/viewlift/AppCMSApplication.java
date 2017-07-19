@@ -15,7 +15,7 @@ import com.viewlift.views.components.DaggerAppCMSPresenterComponent;
 import com.viewlift.views.modules.AppCMSPresenterModule;
 
 import io.fabric.sdk.android.Fabric;
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/4/17.

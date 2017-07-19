@@ -38,7 +38,7 @@ import java.util.zip.Inflater;
 
 import javax.inject.Inject;
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.appcms.R;
 
 /**
  * Created by nitin.tyagi on 6/27/2017.

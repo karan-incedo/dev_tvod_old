@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 public class AppCMSHistoryActivity extends AppCompatActivity {
 

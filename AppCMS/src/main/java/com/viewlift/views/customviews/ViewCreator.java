@@ -57,7 +57,7 @@ import java.util.List;
 import java.util.Map;
 
 import rx.functions.Action1;
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/5/17.

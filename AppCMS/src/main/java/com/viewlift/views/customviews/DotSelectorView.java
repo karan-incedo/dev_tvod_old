@@ -16,7 +16,7 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import java.util.ArrayList;
 import java.util.List;
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/26/17.

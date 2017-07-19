@@ -55,7 +55,7 @@ import dagger.Provides;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 @Module
 public class AppCMSUIModule {
