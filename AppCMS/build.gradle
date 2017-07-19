@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
-def final packageName = 'air.com.snagfilms'
-def final customApplicationId = 'SnagFilms'
-def final hostName = "www.snagfilms.com"
+def final packageName = 'com.viewlift.hoichoi'
+def final customApplicationId = 'HoiChoi'
+def final hostName = "www.hoichoi.tv"
 
 buildscript {
     repositories {
