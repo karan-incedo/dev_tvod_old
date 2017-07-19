@@ -17,7 +17,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.Map;
 
-import com.viewlift.R;
+import snagfilms.com.air.appcms.R;
 
 /**
  * Created by viewlift on 5/30/17.
@@ -130,6 +130,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     break;
 
                                 case ANDROID_SETTINGS_NAV_KEY:
+                                    itemSelected = false;
                                     appCMSPresenter.navigateToSettingsPage(navigationUser.getPageId());
                                     break;
 

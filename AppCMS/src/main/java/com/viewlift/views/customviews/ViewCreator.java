@@ -57,7 +57,7 @@ import java.util.List;
 import java.util.Map;
 
 import rx.functions.Action1;
-import com.viewlift.R;
+import snagfilms.com.air.appcms.R;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -135,6 +135,9 @@ public class ViewCreator {
 
         PageView pageView = getPageViewLruCache().get(appCMSPageAPI.getId()
                 + BaseView.isLandscape(context));
+        if (appCMSPresenter.isPageAVideoPage(screenName)) {
+            pageView = getPageViewLruCache().get(screenName + BaseView.isLandscape(context));
+        }
         boolean newView = false;
         if (pageView == null || pageView.getContext() != context) {
             pageView = new PageView(context, appCMSPageUI);
@@ -148,8 +151,7 @@ public class ViewCreator {
             newView = true;
         }
         if (newView ||
-                !appCMSPresenter.isPagePrimary(appCMSPageAPI.getId()) ||
-                !appCMSPresenter.isPageAVideoPage(screenName) ||
+                (!appCMSPresenter.isPagePrimary(appCMSPageAPI.getId()) && !appCMSPresenter.isPageAVideoPage(screenName)) ||
                 appCMSPresenter.isUserLoggedIn(context) != pageView.isUserLoggedIn()) {
             pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn(context));
             pageView.getChildrenContainer().removeAllViews();
@@ -190,19 +192,27 @@ public class ViewCreator {
                                     + component.getKey());
                             if (view != null && view instanceof ProgressBar) {
                                 if (appCMSPresenter.isUserLoggedIn(context)) {
-                                    ((ProgressBar) componentViewResult.componentView).setMax(100);
-                                    ((ProgressBar) componentViewResult.componentView).setProgress(0);
+                                    ((ProgressBar) view).setMax(100);
+                                    ((ProgressBar) view).setProgress(0);
                                     if (moduleAPI.getContentData() != null &&
                                             moduleAPI.getContentData().size() > 0 &&
                                             moduleAPI.getContentData().get(0) != null &&
                                             moduleAPI.getContentData().get(0).getGist() != null &&
                                             moduleAPI.getContentData().get(0).getGist()
                                                     .getWatchedPercentage() != 0) {
-                                        ((ProgressBar) componentViewResult.componentView)
-                                                .setProgress(moduleAPI.getContentData()
-                                                        .get(0).getGist().getWatchedPercentage());
+                                        if (moduleAPI.getContentData()
+                                                .get(0).getGist().getWatchedPercentage() > 0) {
+                                            view.setVisibility(View.VISIBLE);
+                                            ((ProgressBar) view)
+                                                    .setProgress(moduleAPI.getContentData()
+                                                            .get(0).getGist().getWatchedPercentage());
+                                        } else {
+                                            view.setVisibility(View.INVISIBLE);
+                                            ((ProgressBar) view).setProgress(0);
+                                        }
                                     } else {
-                                        ((ProgressBar) componentViewResult.componentView).setProgress(0);
+                                        view.setVisibility(View.INVISIBLE);
+                                        ((ProgressBar) view).setProgress(0);
                                     }
                                 }
                             }
@@ -1041,9 +1051,18 @@ public class ViewCreator {
                             moduleAPI.getContentData().get(0) != null &&
                             moduleAPI.getContentData().get(0).getGist() != null &&
                             moduleAPI.getContentData().get(0).getGist().getWatchedPercentage() != 0) {
-                        ((ProgressBar) componentViewResult.componentView).setProgress(moduleAPI
-                                .getContentData().get(0).getGist().getWatchedPercentage());
+                        if (moduleAPI.getContentData()
+                                .get(0).getGist().getWatchedPercentage() > 0) {
+                            ((ProgressBar) componentViewResult.componentView).setVisibility(View.VISIBLE);
+                            ((ProgressBar) componentViewResult.componentView)
+                                    .setProgress(moduleAPI.getContentData()
+                                            .get(0).getGist().getWatchedPercentage());
+                        } else {
+                            ((ProgressBar) componentViewResult.componentView).setVisibility(View.INVISIBLE);
+                            ((ProgressBar) componentViewResult.componentView).setProgress(0);
+                        }
                     } else {
+                        ((ProgressBar) componentViewResult.componentView).setVisibility(View.INVISIBLE);
                         ((ProgressBar) componentViewResult.componentView).setProgress(0);
                     }
                 } else {
@@ -1064,6 +1083,7 @@ public class ViewCreator {
                             setBackgroundColor(Color.parseColor(getColor(context,
                                     appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())));
                 }
+                componentViewResult.componentView.setAlpha(0.6f);
                 break;
 
             case PAGE_CASTVIEW_VIEW_KEY:

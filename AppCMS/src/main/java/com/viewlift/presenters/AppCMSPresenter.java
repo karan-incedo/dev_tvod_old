@@ -1,13 +1,10 @@
 package com.viewlift.presenters;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentSender;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
@@ -18,7 +15,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
@@ -31,16 +27,12 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 
-import com.android.vending.billing.IInAppBillingService;
 import com.apptentive.android.sdk.Apptentive;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.iid.InstanceID;
-import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
@@ -48,13 +40,11 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
-import com.viewlift.models.data.appcms.api.SubscriptionRequest;
 import com.viewlift.models.data.appcms.history.AppCMSDeleteHistoryResult;
 import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
 import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
-import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionResult;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 import com.viewlift.models.data.appcms.ui.android.MetaPage;
@@ -99,7 +89,6 @@ import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
-import com.viewlift.models.network.rest.AppCMSSubscriptionCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
 import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
@@ -139,6 +128,7 @@ import retrofit2.Response;
 import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import snagfilms.com.air.appcms.R;
 
 /**
  * Created by viewlift on 5/3/17.
@@ -150,11 +140,9 @@ public class AppCMSPresenter {
     public static final String PRESENTER_STOP_PAGE_LOADING_ACTION = "appcms_presenter_stop_page_loading_action";
     public static final String PRESENTER_CLOSE_SCREEN_ACTION = "appcms_presenter_close_action";
     public static final String PRESENTER_RESET_NAVIGATION_ITEM_ACTION = "appcms_presenter_set_navigation_item_action";
+    public static final String PRESENTER_UPDATE_HISTORY_ACTION = "appcms_presenter_update_history_action";
+    public static final String PRESENTER_REFRESH_PAGE_ACTION = "appcms_presenter_refresh_page_action";
     public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
-
-    public static final int RC_GOOGLE_SIGN_IN = 1001;
-    public static final int RC_PURCHASE_PLAY_STORE_ITEM = 1002;
-
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
@@ -193,7 +181,6 @@ public class AppCMSPresenter {
     private final AppCMSAddToWatchlistCall appCMSAddToWatchlistCall;
 
     private final AppCMSDeleteHistoryCall appCMSDeleteHistoryCall;
-    private final AppCMSSubscriptionCall appCMSSubscriptionCall;
 
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
@@ -219,8 +206,6 @@ public class AppCMSPresenter {
     private Runnable beaconMessageThread;
     private GoogleAnalytics googleAnalytics;
     private Tracker tracker;
-    private GoogleApiClient googleApiClient;
-    private ServiceConnection inAppBillingServiceConn;
 
     private String tvHomeScreenPackage = "com.viewlift.tv.views.activity.AppCmsHomeActivity";
     private String tvErrorScreenPackage = "com.viewlift.tv.views.activity.AppCmsTvErrorActivity";
@@ -242,7 +227,6 @@ public class AppCMSPresenter {
                            AppCMSHistoryCall appCMSHistoryCall,
 
                            AppCMSDeleteHistoryCall appCMSDeleteHistoryCall,
-                           AppCMSSubscriptionCall appCMSSubscriptionCall,
 
                            AppCMSBeaconRest appCMSBeaconRest,
                            AppCMSSignInCall appCMSSignInCall,
@@ -284,7 +268,6 @@ public class AppCMSPresenter {
         this.appCMSHistoryCall = appCMSHistoryCall;
 
         this.appCMSDeleteHistoryCall = appCMSDeleteHistoryCall;
-        this.appCMSSubscriptionCall = appCMSSubscriptionCall;
 
         this.loadingPage = false;
         this.navigationPages = new HashMap<>();
@@ -385,7 +368,12 @@ public class AppCMSPresenter {
                     new Action1<String>() {
                         @Override
                         public void call(String s) {
-                            //
+                            // Call update history
+                            if (currentActivity != null) {
+                                Intent updateHistoryIntent = new Intent(PRESENTER_UPDATE_HISTORY_ACTION);
+
+                                currentActivity.sendBroadcast(updateHistoryIntent);
+                            }
                         }
                     });
         }
@@ -528,6 +516,7 @@ public class AppCMSPresenter {
                                 action,
                                 getPageId(appCMSPageUI),
                                 filmTitle,
+                                pagePath,
                                 false,
                                 closeLauncher,
                                 null) {
@@ -542,6 +531,7 @@ public class AppCMSPresenter {
                                             appCMSPageAPI,
                                             this.pageId,
                                             appCMSPageAPI.getTitle(),
+                                            this.pagePath,
                                             screenName.toString(),
                                             loadFromFile,
                                             this.appbarPresent,
@@ -567,16 +557,18 @@ public class AppCMSPresenter {
         return result;
     }
 
-    public boolean launchNavigationPage(String previousPageId, String previousPageName) {
+    public boolean launchNavigationPage(String previousPageId,
+                                        String previousPageName) {
         boolean result = false;
         showMainFragmentView(false);
-        appCMSNavItemsFragment =
+        AppCMSNavItemsFragment navItemsFragment =
                 AppCMSNavItemsFragment.newInstance(currentActivity,
                         getAppCMSBinder(currentActivity,
                                 null,
                                 null,
                                 previousPageId,
                                 previousPageName,
+                                null,
                                 null,
                                 false,
                                 true,
@@ -588,16 +580,17 @@ public class AppCMSPresenter {
                         Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
                         Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()));
 
-        appCMSNavItemsFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
+        navItemsFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
                 currentActivity.getString(R.string.app_cms_navigation_page_tag));
+
         return result;
     }
 
-    public void dismissOpenDialogs() {
+    public void dismissOpenDialogs(AppCMSNavItemsFragment newAppCMSNavItemsFragment) {
         if (appCMSNavItemsFragment != null) {
             appCMSNavItemsFragment.dismiss();
-            appCMSNavItemsFragment = null;
         }
+        appCMSNavItemsFragment = newAppCMSNavItemsFragment;
     }
 
     public boolean isMainFragmentViewVisible() {
@@ -688,39 +681,10 @@ public class AppCMSPresenter {
         }
     }
 
-    public void loginGoogle(GoogleApiClient googleApiClient) {
-        if (currentActivity != null) {
-            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-            currentActivity.startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
-        }
-    }
-
     public void loginFacebook() {
         if (currentActivity != null) {
             LoginManager.getInstance().logInWithReadPermissions(currentActivity,
                     Arrays.asList("public_profile", "user_friends"));
-        }
-    }
-
-    public void initiateItemPurchase(final IInAppBillingService inAppBillingService,
-                                     String sku) {
-        if (currentActivity != null) {
-            try {
-                Bundle buyIntentBundle = inAppBillingService.getBuyIntent(3,
-                        currentActivity.getPackageName(),
-                        sku,
-                        "subs",
-                        null);
-                PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
-                currentActivity.startIntentSenderForResult(pendingIntent.getIntentSender(),
-                        RC_PURCHASE_PLAY_STORE_ITEM,
-                        new Intent(),
-                        0,
-                        0,
-                        0);
-            } catch (RemoteException | IntentSender.SendIntentException e) {
-                Log.e(TAG, "Failed to purchase item with sku: " + sku);
-            }
         }
     }
 
@@ -874,6 +838,7 @@ public class AppCMSPresenter {
             showMainFragmentView(false);
 
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+            AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
 
             getWatchlistPageContent(appCMSMain.getApiBaseUrl(),
                     pageIdToPageAPIUrlMap.get(pageId),
@@ -886,6 +851,7 @@ public class AppCMSPresenter {
                             pageId,
                             pageId,
                             pageTitle,
+                            pageId,
                             launchActivity, null) {
                         @Override
                         public void call(AppCMSWatchlistResult appCMSWatchlistResult) {
@@ -919,6 +885,7 @@ public class AppCMSPresenter {
                                         pageAPI,
                                         this.pageId,
                                         this.pageTitle,
+                                        this.pagePath,
                                         pageIdToPageNameMap.get(this.pageId),
                                         loadFromFile,
                                         this.appbarPresent,
@@ -932,6 +899,7 @@ public class AppCMSPresenter {
                                         pageAPI,
                                         this.pageId,
                                         this.pageTitle,
+                                        this.pagePath,
                                         pageIdToPageNameMap.get(this.pageId),
                                         loadFromFile,
                                         this.appbarPresent,
@@ -997,6 +965,7 @@ public class AppCMSPresenter {
                             historyMetaPage.getPageId(),
                             historyMetaPage.getPageId(),
                             historyMetaPage.getPageName(),
+                            historyMetaPage.getPageId(),
                             false,
                             null) {
                         @Override
@@ -1025,6 +994,7 @@ public class AppCMSPresenter {
                             pageId,
                             pageId,
                             pageTitle,
+                            pageId,
                             launchActivity, null) {
                         @Override
                         public void call(AppCMSHistoryResult appCMSHistoryResult) {
@@ -1059,6 +1029,7 @@ public class AppCMSPresenter {
                                         pageAPI,
                                         this.pageId,
                                         this.pageTitle,
+                                        this.pagePath,
                                         pageIdToPageNameMap.get(this.pageId),
                                         loadFromFile,
                                         this.appbarPresent,
@@ -1072,6 +1043,7 @@ public class AppCMSPresenter {
                                         pageAPI,
                                         this.pageId,
                                         this.pageTitle,
+                                        this.pagePath,
                                         pageIdToPageNameMap.get(this.pageId),
                                         loadFromFile,
                                         this.appbarPresent,
@@ -1146,164 +1118,6 @@ public class AppCMSPresenter {
                                 });
                     } catch (IOException e) {
                         Log.e(TAG, "getHistoryPageContent: " + e.toString());
-                    }
-                }
-            });
-        }
-    }
-
-    public void navigateToSubscriptionPage(String pageId,
-                                           String pageTitle,
-                                           String siteId,
-                                           String planId,
-                                           String email,
-                                           String path,
-                                           boolean launchActivity) {
-
-        if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
-            showMainFragmentView(false);
-            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
-
-            getSubscriptionPageContent(siteId, planId, email, path,
-                    new AppCMSSubscriptionAPIAction(true,
-                            false,
-                            true,
-                            appCMSPageUI,
-                            pageId,
-                            pageId,
-                            pageTitle,
-                            launchActivity, null) {
-                        @Override
-                        public void call(AppCMSSubscriptionResult subscriptionResult) {
-                            cancelInternalEvents();
-                            pushActionInternalEvents(this.pageId
-                                    + BaseView.isLandscape(currentActivity));
-
-                            AppCMSPageAPI pageAPI = null;
-
-                            if (subscriptionResult != null &&
-                                    subscriptionResult.getSubscriptionInfo() != null) {
-                                //pageAPI = appCMSHistoryResult.convertToAppCMSPageAPI(this.pageId);
-                            } else {
-                                pageAPI = new AppCMSPageAPI();
-                                pageAPI.setId(this.pageId);
-                                List<String> moduleIds = new ArrayList<>();
-                                List<Module> apiModules = new ArrayList();
-                                for (ModuleList module : appCMSPageUI.getModuleList()) {
-                                    Module module1 = new Module();
-                                    module1.setId(module.getId());
-                                    apiModules.add(module1);
-                                    moduleIds.add(module.getId());
-                                }
-                                pageAPI.setModuleIds(moduleIds);
-                                pageAPI.setModules(apiModules);
-                            }
-
-                            navigationPageData.put(this.pageId, pageAPI);
-
-                            if (this.launchActivity) {
-                                launchPageActivity(currentActivity,
-                                        this.appCMSPageUI,
-                                        pageAPI,
-                                        this.pageId,
-                                        this.pageTitle,
-                                        pageIdToPageNameMap.get(this.pageId),
-                                        loadFromFile,
-                                        this.appbarPresent,
-                                        this.fullscreenEnabled,
-                                        this.navbarPresent,
-                                        false,
-                                        this.searchQuery);
-                            } else {
-                                Bundle args = getPageActivityBundle(currentActivity,
-                                        this.appCMSPageUI,
-                                        pageAPI,
-                                        this.pageId,
-                                        this.pageTitle,
-                                        pageIdToPageNameMap.get(this.pageId),
-                                        loadFromFile,
-                                        this.appbarPresent,
-                                        this.fullscreenEnabled,
-                                        this.navbarPresent,
-                                        false,
-                                        null);
-
-                                Intent subscriptionIntent = new Intent(AppCMSPresenter
-                                        .PRESENTER_NAVIGATE_ACTION);
-                                subscriptionIntent.putExtra(currentActivity.getString(
-                                        R.string.app_cms_bundle_key), args);
-                                currentActivity.sendBroadcast(subscriptionIntent);
-                            }
-                        }
-                    });
-        }
-    }
-
-    private void getSubscriptionPageContent(final String siteId,
-                                            String planId,
-                                            String email,
-                                            final String path,
-                                            final AppCMSSubscriptionAPIAction subscriptionAction) {
-
-        final SubscriptionRequest request = new SubscriptionRequest();
-        request.setSiteInternalName(appCMSMain.getInternalName());
-        request.setUserId(getLoggedInUser(currentActivity));
-        request.setSiteId(siteId);
-        request.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
-        request.setPlanId(planId);
-        request.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
-        request.setEmail(email);
-
-        if (shouldRefreshAuthToken()) {
-            callRefreshIdentity(new Action0() {
-                @Override
-                public void call() {
-                    final String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
-                            appCMSMain.getApiBaseUrl(),
-                            getRefreshToken(currentActivity));
-
-                    appCMSRefreshIdentityCall.call(url, new Action1<RefreshIdentityResponse>() {
-                        @Override
-                        public void call(RefreshIdentityResponse refreshIdentityResponse) {
-                            try {
-                                appCMSSubscriptionCall.call(currentActivity.getString(
-                                        R.string.app_cms_subscription_api_url, appCMSMain.getApiBaseUrl(),
-                                        siteId, path),
-                                        getAuthToken(currentActivity),
-                                        new Action1<AppCMSSubscriptionResult>() {
-                                            @Override
-                                            public void call(AppCMSSubscriptionResult result) {
-                                                subscriptionAction.call(result);
-                                            }
-                                        }, request);
-                            } catch (Exception e) {
-                                Log.e(TAG, "getSubscriptionPageContent: " + e.toString());
-                            }
-                        }
-                    });
-                }
-            });
-        } else {
-            final String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
-                    appCMSMain.getApiBaseUrl(),
-                    getRefreshToken(currentActivity));
-
-            appCMSRefreshIdentityCall.call(url, new Action1<RefreshIdentityResponse>() {
-                @Override
-                public void call(RefreshIdentityResponse refreshIdentityResponse) {
-                    try {
-                        appCMSSubscriptionCall.call(currentActivity.getString(
-                                R.string.app_cms_subscription_api_url, appCMSMain.getApiBaseUrl(),
-                                siteId, path),
-                                getAuthToken(currentActivity),
-                                new Action1<AppCMSSubscriptionResult>() {
-                                    @Override
-                                    public void call(AppCMSSubscriptionResult result) {
-                                        subscriptionAction.call(result);
-                                    }
-                                }, request);
-                    } catch (Exception e) {
-                        Log.e(TAG, "getSubscriptionPageContent: " + e.toString());
                     }
                 }
             });
@@ -1451,22 +1265,6 @@ public class AppCMSPresenter {
         }
     }
 
-    public GoogleApiClient getGoogleApiClient() {
-        return googleApiClient;
-    }
-
-    public void setGoogleApiClient(GoogleApiClient googleApiClient) {
-        this.googleApiClient = googleApiClient;
-    }
-
-    public ServiceConnection getInAppBillingServiceConn() {
-        return inAppBillingServiceConn;
-    }
-
-    public void setInAppBillingServiceConn(ServiceConnection inAppBillingServiceConn) {
-        this.inAppBillingServiceConn = inAppBillingServiceConn;
-    }
-
     private void closeSoftKeyboard() {
         if (currentActivity != null) {
             View view = currentActivity.getCurrentFocus();
@@ -1505,6 +1303,7 @@ public class AppCMSPresenter {
                             pageId,
                             pageId,
                             pageTitle,
+                            pageId,
                             launchActivity,
                             sendCloseAction,
                             searchQuery) {
@@ -1520,6 +1319,7 @@ public class AppCMSPresenter {
                                             appCMSPageAPI,
                                             this.pageId,
                                             this.pageTitle,
+                                            this.pagePath,
                                             pageIdToPageNameMap.get(this.pageId),
                                             loadFromFile,
                                             this.appbarPresent,
@@ -1533,6 +1333,7 @@ public class AppCMSPresenter {
                                             appCMSPageAPI,
                                             this.pageId,
                                             this.pageTitle,
+                                            this.pagePath,
                                             pageIdToPageNameMap.get(this.pageId),
                                             loadFromFile,
                                             this.appbarPresent,
@@ -1566,6 +1367,13 @@ public class AppCMSPresenter {
             setNavItemToCurrentAction(currentActivity);
         }
         return result;
+    }
+
+    public void sendRefreshPageAction() {
+        if (currentActivity != null) {
+            Intent refreshPageIntent = new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION);
+            currentActivity.sendBroadcast(refreshPageIntent);
+        }
     }
 
     public boolean sendCloseOthersAction(String pageName, boolean closeSelf) {
@@ -1643,6 +1451,14 @@ public class AppCMSPresenter {
                 .pageId(pageId)
                 .build();
         new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
+    }
+
+    public String getPageIdToPageAPIUrl(String pageId) {
+        return pageIdToPageAPIUrlMap.get(pageId);
+    }
+
+    public String getPageNameToPageAPIUrl(String pageName) {
+        return actionToPageAPIUrlMap.get(pageNameToActionMap.get(pageName));
     }
 
     public boolean isUserLoggedIn(Context context) {
@@ -2227,6 +2043,7 @@ public class AppCMSPresenter {
                                          AppCMSPageAPI appCMSPageAPI,
                                          String pageID,
                                          String pageName,
+                                         String pagePath,
                                          String screenName,
                                          boolean loadFromFile,
                                          boolean appbarPresent,
@@ -2240,6 +2057,7 @@ public class AppCMSPresenter {
                 appCMSPageAPI,
                 pageID,
                 pageName,
+                pagePath,
                 screenName,
                 loadFromFile,
                 appbarPresent,
@@ -2256,6 +2074,7 @@ public class AppCMSPresenter {
                                          AppCMSPageAPI appCMSPageAPI,
                                          String pageID,
                                          String pageName,
+                                         String pagePath,
                                          String screenName,
                                          boolean loadFromFile,
                                          boolean appbarPresent,
@@ -2269,6 +2088,7 @@ public class AppCMSPresenter {
                 navigation,
                 pageID,
                 pageName,
+                pagePath,
                 screenName,
                 loadFromFile,
                 appbarPresent,
@@ -2285,6 +2105,7 @@ public class AppCMSPresenter {
                                     AppCMSPageAPI appCMSPageAPI,
                                     String pageId,
                                     String pageName,
+                                    String pagePath,
                                     String screenName,
                                     boolean loadFromFile,
                                     boolean appbarPresent,
@@ -2297,6 +2118,7 @@ public class AppCMSPresenter {
                 appCMSPageAPI,
                 pageId,
                 pageName,
+                pagePath,
                 screenName,
                 loadFromFile,
                 appbarPresent,
@@ -2591,6 +2413,7 @@ public class AppCMSPresenter {
                                 pageId,
                                 pageId,
                                 pageTitle,
+                                pageId,
                                 launchActivity,
                                 false,
                                 searchQuery) {
@@ -2622,6 +2445,7 @@ public class AppCMSPresenter {
                                                 appCMSPageAPI,
                                                 this.pageId,
                                                 this.pageTitle,
+                                                this.pagePath,
                                                 pageIdToPageNameMap.get(this.pageId),
                                                 loadFromFile,
                                                 this.appbarPresent,
@@ -2667,6 +2491,7 @@ public class AppCMSPresenter {
                             appCMSPageAPI,
                             pageId,
                             pageTitle,
+                            pageId,
                             pageIdToPageNameMap.get(pageId),
                             loadFromFile,
                             true,
@@ -2714,6 +2539,7 @@ public class AppCMSPresenter {
                 appCMSPageAPI,
                 pageId,
                 pageName,
+                pageId,
                 screenName,
                 loadFromFile,
                 appbarPresent,
@@ -2786,6 +2612,7 @@ public class AppCMSPresenter {
         String action;
         String pageId;
         String pageTitle;
+        String pagePath;
         boolean launchActivity;
         boolean sendCloseAction;
         Uri searchQuery;
@@ -2797,6 +2624,7 @@ public class AppCMSPresenter {
                                    String action,
                                    String pageId,
                                    String pageTitle,
+                                   String pagePath,
                                    boolean launchActivity,
                                    boolean sendCloseAction,
                                    Uri searchQuery) {
@@ -2807,6 +2635,7 @@ public class AppCMSPresenter {
             this.action = action;
             this.pageId = pageId;
             this.pageTitle = pageTitle;
+            this.pagePath = pagePath;
             this.launchActivity = launchActivity;
             this.sendCloseAction = sendCloseAction;
             this.searchQuery = searchQuery;
@@ -2821,6 +2650,7 @@ public class AppCMSPresenter {
         String action;
         String pageId;
         String pageTitle;
+        String pagePath;
         boolean launchActivity;
         Uri searchQuery;
 
@@ -2831,6 +2661,7 @@ public class AppCMSPresenter {
                                         String action,
                                         String pageId,
                                         String pageTitle,
+                                        String pagePath,
                                         boolean launchActivity,
                                         Uri searchQuery) {
             this.appbarPresent = appbarPresent;
@@ -2840,6 +2671,7 @@ public class AppCMSPresenter {
             this.action = action;
             this.pageId = pageId;
             this.pageTitle = pageTitle;
+            this.pagePath = pagePath;
             this.launchActivity = launchActivity;
             this.searchQuery = searchQuery;
         }
@@ -2853,6 +2685,7 @@ public class AppCMSPresenter {
         String action;
         String pageId;
         String pageTitle;
+        String pagePath;
         boolean launchActivity;
         Uri searchQuery;
 
@@ -2863,6 +2696,7 @@ public class AppCMSPresenter {
                                       String action,
                                       String pageId,
                                       String pageTitle,
+                                      String pagePath,
                                       boolean launchActivity,
                                       Uri searchQuery) {
             this.appbarPresent = appbarPresent;
@@ -2872,43 +2706,9 @@ public class AppCMSPresenter {
             this.action = action;
             this.pageId = pageId;
             this.pageTitle = pageTitle;
+            this.pagePath = pagePath;
             this.launchActivity = launchActivity;
             this.searchQuery = searchQuery;
         }
     }
-
-    private static abstract class AppCMSSubscriptionAPIAction
-            implements Action1<AppCMSSubscriptionResult> {
-
-        boolean appbarPresent;
-        boolean fullscreenEnabled;
-        boolean navbarPresent;
-        AppCMSPageUI appCMSPageUI;
-        String action;
-        String pageId;
-        String pageTitle;
-        boolean launchActivity;
-        Uri searchQuery;
-
-        public AppCMSSubscriptionAPIAction(boolean appbarPresent,
-                                           boolean fullscreenEnabled,
-                                           boolean navbarPresent,
-                                           AppCMSPageUI appCMSPageUI,
-                                           String action,
-                                           String pageId,
-                                           String pageTitle,
-                                           boolean launchActivity,
-                                           Uri searchQuery) {
-            this.appbarPresent = appbarPresent;
-            this.fullscreenEnabled = fullscreenEnabled;
-            this.navbarPresent = navbarPresent;
-            this.appCMSPageUI = appCMSPageUI;
-            this.action = action;
-            this.pageId = pageId;
-            this.pageTitle = pageTitle;
-            this.launchActivity = launchActivity;
-            this.searchQuery = searchQuery;
-        }
-    }
-
 }

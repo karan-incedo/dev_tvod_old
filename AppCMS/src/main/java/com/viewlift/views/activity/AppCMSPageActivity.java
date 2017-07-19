@@ -1,17 +1,13 @@
 package com.viewlift.views.activity;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
@@ -26,18 +22,11 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
-import com.android.vending.billing.IInAppBillingService;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
-import com.facebook.FacebookSdk;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.viewlift.AppCMSApplication;
-import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
@@ -54,14 +43,16 @@ import java.util.Stack;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.functions.Action1;
+import snagfilms.com.air.appcms.R;
+
+import com.facebook.FacebookSdk;
 
 /**
  * Created by viewlift on 5/5/17.
  */
 
-public class AppCMSPageActivity extends AppCompatActivity implements
-        AppCMSPageFragment.OnPageCreation,
-        GoogleApiClient.OnConnectionFailedListener {
+public class AppCMSPageActivity extends AppCompatActivity implements AppCMSPageFragment.OnPageCreation {
     private static final String TAG = "AppCMSPageActivity";
 
     private static final int NAV_PAGE_INDEX = 0;
@@ -99,12 +90,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
     private AccessToken accessToken;
-
-    private GoogleApiClient googleApiClient;
-
-    private IInAppBillingService inAppBillingService;
-
-    private ServiceConnection inAppBillingServiceConn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -164,6 +149,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     if (intent.getData() != null) {
                         processDeepLink(intent.getData());
                     }
+                } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION)) {
+                    updateData();
+                } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION)) {
+                    AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                    handleLaunchPageAction(appCMSBinder);
                 }
             }
         };
@@ -202,6 +192,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM_ACTION));
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION));
+        registerReceiver(presenterActionReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION));
+        registerReceiver(presenterActionReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION));
 
         resumeInternalEvents = false;
 
@@ -223,37 +217,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         };
 
         accessToken = AccessToken.getCurrentAccessToken();
-
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-
-        inAppBillingServiceConn = new ServiceConnection() {
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                inAppBillingService = null;
-            }
-
-            @Override
-            public void onServiceConnected(ComponentName name,
-                                           IBinder service) {
-                inAppBillingService = IInAppBillingService.Stub.asInterface(service);
-            }
-        };
-        Intent serviceIntent =
-                new Intent("com.android.vending.billing.InAppBillingService.BIND");
-        serviceIntent.setPackage("com.android.vending");
-        bindService(serviceIntent, inAppBillingServiceConn, Context.BIND_AUTO_CREATE);
-
-        if (appCMSPresenter != null) {
-            appCMSPresenter.setGoogleApiClient(googleApiClient);
-            appCMSPresenter.setInAppBillingServiceConn(inAppBillingServiceConn);
-        }
 
         Log.d(TAG, "onCreate()");
     }
@@ -323,37 +286,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        if (resumeInternalEvents) {
-            appCMSPresenter.restartInternalEvents();
-            appCMSPresenter.showMainFragmentView(false);
-            Log.d(TAG, "onResume() - Resuming internal events");
-        }
-
-        if (pageViewDuringSearch != null) {
-            selectNavItem(pageViewDuringSearch);
-        } else {
-            if (appCMSBinderStack != null && appCMSBinderStack.size() > 0) {
-                Log.d(TAG, "Activity resumed - resetting nav item");
-                selectNavItem(appCMSBinderStack.peek());
-            }
-        }
-
-        if (!isActive) {
-            if (updatedAppCMSBinder != null) {
-                handleLaunchPageAction(updatedAppCMSBinder);
-            }
-        }
-
-        isActive = true;
-
-        if (shouldSendCloseOthersAction && appCMSPresenter != null) {
-            appCMSPresenter.sendCloseOthersAction(null, false);
-            shouldSendCloseOthersAction = false;
-        }
-
-        registerReceiver(presenterCloseActionReceiver,
-                new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
-
+        resume();
         Log.d(TAG, "onResume()");
     }
 
@@ -392,10 +325,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         accessTokenTracker.stopTracking();
 
-        if (inAppBillingService != null) {
-            unbindService(inAppBillingServiceConn);
-        }
-
         Log.d(TAG, "onDestroy()");
     }
 
@@ -415,18 +344,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (FacebookSdk.isFacebookRequestCode(requestCode)) {
-                callbackManager.onActivityResult(requestCode, resultCode, data);
-                // Call to backend Facebook API
-            } else if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
-                GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-                if (result.isSuccess()) {
-                    // Call to backend Google SignIn API
-                }
-            } else if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
-                // Call to backend subscription API
-            }
+        if (FacebookSdk.isFacebookRequestCode(requestCode)) {
+            callbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -456,15 +375,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        AppCMSBinder appCMSBinder = appCMSBinderStack.size() > 0 ?
-                appCMSBinderMap.get(appCMSBinderStack.peek()) :
-                null;
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            Log.d(TAG, "Orientation changed - handling back");
-            handleBack(true, true, false);
-        }
-        if (appCMSBinder != null) {
-            handleLaunchPageAction(appCMSBinder);
+        if (appCMSPresenter != null && appCMSPresenter.isMainFragmentViewVisible()) {
+            AppCMSBinder appCMSBinder = appCMSBinderStack.size() > 0 ?
+                    appCMSBinderMap.get(appCMSBinderStack.peek()) :
+                    null;
+            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                Log.d(TAG, "Orientation changed - handling back");
+                handleBack(true, true, false);
+            }
+            if (appCMSBinder != null) {
+                handleLaunchPageAction(appCMSBinder);
+            }
         }
     }
 
@@ -513,6 +434,39 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
     }
 
+    private void resume() {
+        if (resumeInternalEvents) {
+            appCMSPresenter.restartInternalEvents();
+            appCMSPresenter.showMainFragmentView(false);
+            Log.d(TAG, "onResume() - Resuming internal events");
+        }
+
+        if (pageViewDuringSearch != null) {
+            selectNavItem(pageViewDuringSearch);
+        } else {
+            if (appCMSBinderStack != null && appCMSBinderStack.size() > 0) {
+                Log.d(TAG, "Activity resumed - resetting nav item");
+                selectNavItem(appCMSBinderStack.peek());
+            }
+        }
+
+        if (!isActive) {
+            if (updatedAppCMSBinder != null) {
+                handleLaunchPageAction(updatedAppCMSBinder);
+            }
+        }
+
+        isActive = true;
+
+        if (shouldSendCloseOthersAction && appCMSPresenter != null) {
+            appCMSPresenter.sendCloseOthersAction(null, false);
+            shouldSendCloseOthersAction = false;
+        }
+
+        registerReceiver(presenterCloseActionReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
+    }
+
     private boolean shouldPopStack() {
         return appCMSBinderStack.size() > 0 &&
                 !appCMSPresenter.isPagePrimary(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId());
@@ -550,7 +504,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
                 @Override
                 public void onBackStackChanged() {
-                    appCMSPresenter.dismissOpenDialogs();
+                    appCMSPresenter.dismissOpenDialogs(null);
                     appCMSPresenter.showMainFragmentView(true);
                     getSupportFragmentManager().removeOnBackStackChangedListener(this);
                 }
@@ -651,7 +605,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
         if (0 < distanceFromStackTop) {
             for (int i = 0; i < distanceFromStackTop; i++) {
-                Log.d(TAG, "Popping stack to getList to page item");
+                Log.d(TAG, "Popping stack to get to page item");
                 try {
                     getSupportFragmentManager().popBackStack();
                 } catch (IllegalStateException e) {
@@ -796,8 +750,33 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 false);
     }
 
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e(TAG, "Google sign in connection failed: " + connectionResult.getErrorMessage());
+    private void updateData() {
+        final AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+        if (appCMSPresenter != null) {
+            for (String appCMSBinderKey : appCMSBinderMap.keySet()) {
+                final AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderKey);
+                if (appCMSBinder != null) {
+                    String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
+                    boolean usePageIdQueryParam = true;
+                    if (appCMSPresenter.isPageAVideoPage(appCMSBinder.getPageName())) {
+                        endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getPageName());
+                        usePageIdQueryParam = false;
+                    }
+                    appCMSPresenter.getPageIdContent(appCMSMain.getApiBaseUrl(),
+                            endPoint,
+                            appCMSMain.getInternalName(),
+                            usePageIdQueryParam,
+                            appCMSBinder.getPagePath(),
+                            new Action1<AppCMSPageAPI>() {
+                                @Override
+                                public void call(final AppCMSPageAPI appCMSPageAPI) {
+                                    if (appCMSPageAPI != null) {
+                                        appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
+                                    }
+                                }
+                            });
+                }
+            }
+        }
     }
 }
