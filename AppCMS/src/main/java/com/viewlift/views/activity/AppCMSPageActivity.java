@@ -728,7 +728,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 (NavBarItemView) appCMSTabNavContainer.getChildAt(HOME_PAGE_INDEX);
         int highlightColor =
                 Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
-        homeNavBarItemView.setImage(getIconName(homePageNav));
+        homeNavBarItemView.setImage(getString(R.string.app_cms_home_icon_name));
         homeNavBarItemView.setHighlightColor(highlightColor);
         homeNavBarItemView.setLabel(homePageNav.getTitle());
         homeNavBarItemView.setOnClickListener(new View.OnClickListener() {
@@ -747,7 +747,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 (NavBarItemView) appCMSTabNavContainer.getChildAt(MOVIES_PAGE_INDEX);
         int highlightColor =
                 Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
-        moviesNavBarItemView.setImage(getIconName(moviePageNav));
+        moviesNavBarItemView.setImage(getString(R.string.app_cms_movies_icon_name));
         moviesNavBarItemView.setHighlightColor(highlightColor);
         moviesNavBarItemView.setLabel(moviePageNav.getTitle());
         moviesNavBarItemView.setOnClickListener(new View.OnClickListener() {
@@ -776,13 +776,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.launchSearchPage();
             }
         });
-    }
-
-    private String getIconName(NavigationPrimary navItem) {
-        StringBuffer iconName = new StringBuffer();
-        iconName.append(navItem.getDisplayedPath().toLowerCase().replaceAll(" ", "_"));
-        iconName.append(navItem.getUrl().replaceAll("/", "_"));
-        return iconName.toString();
     }
 
     private void selectNavItem(String pageId) {
