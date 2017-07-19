@@ -6,7 +6,6 @@ import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
@@ -27,7 +26,7 @@ import com.viewlift.views.adapters.AppCMSNavItemsAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
 
-import snagfilms.com.air.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/30/17.
@@ -95,11 +94,9 @@ public class AppCMSNavItemsFragment extends DialogFragment {
             appCMSNavLoginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    appCMSPresenter.navigateToLoginPage();
+                    appCMSPresenter.navigateToLoginPage();
                     dismiss();
-                    if (appCMSPresenter != null) {
-                        appCMSPresenter.showMainFragmentView(true);
-                        appCMSPresenter.setNavItemToCurrentAction(getActivity());
-                    }
                 }
             });
             GradientDrawable loginBorder = new GradientDrawable();
@@ -115,9 +112,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
             public void onClick(View v) {
                 dismiss();
                 if (appCMSPresenter != null) {
-                    appCMSPresenter.showMainFragmentView(true);
                     appCMSPresenter.setNavItemToCurrentAction(getActivity());
-                    appCMSPresenter.sendRefreshPageAction();
                 }
             }
         });
@@ -127,22 +122,6 @@ public class AppCMSNavItemsFragment extends DialogFragment {
         return view;
     }
 
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new Dialog(getActivity(), getTheme()){
-            @Override
-            public void onBackPressed() {
-                dismiss();
-                if (appCMSPresenter != null) {
-                    appCMSPresenter.setNavItemToCurrentAction(getActivity());
-                    appCMSPresenter.showMainFragmentView(true);
-                    appCMSPresenter.sendRefreshPageAction();
-                }
-            }
-        };
-    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -150,17 +129,11 @@ public class AppCMSNavItemsFragment extends DialogFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        appCMSPresenter.dismissOpenDialogs(this);
-    }
-
-    @Override
     public void onStop() {
         super.onStop();
         if (appCMSPresenter != null) {
             appCMSPresenter.setNavItemToCurrentAction(getActivity());
-            if (appCMSNavItemsAdapter.isItemSelected()) {
+            if (!appCMSNavItemsAdapter.isItemSelected()) {
                 appCMSPresenter.showMainFragmentView(true);
             }
         }
@@ -170,8 +143,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (isVisible()) {
-            appCMSPresenter.launchNavigationPage(appCMSBinder.getPageName(),
-                    appCMSBinder.getPageId());
+            appCMSPresenter.launchNavigationPage(appCMSBinder.getPageName(), appCMSBinder.getPageId());
         }
     }
 
