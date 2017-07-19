@@ -3,7 +3,6 @@ package com.viewlift.models.network.rest;
 import android.support.annotation.WorkerThread;
 
 import com.google.gson.Gson;
-import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,6 +13,8 @@ import java.io.OutputStream;
 import java.util.Scanner;
 
 import javax.inject.Inject;
+
+import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 
 /**
  * Created by viewlift on 5/9/17.
@@ -72,7 +73,7 @@ public class AppCMSAndroidUICall {
         int endIndex = url.indexOf(JSON_EXT) + JSON_EXT.length();
         int startIndex = url.lastIndexOf(PATH_SEP);
         if (0 <= startIndex && startIndex < endIndex) {
-            return url.substring(startIndex + 1, endIndex);
+            return url.substring(startIndex+1, endIndex);
         }
         return url;
     }

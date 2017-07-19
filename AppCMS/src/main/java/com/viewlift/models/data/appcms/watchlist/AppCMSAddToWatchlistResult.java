@@ -41,11 +41,11 @@ public class AppCMSAddToWatchlistResult {
 
     @SerializedName("addedDate")
     @Expose
-    Long addedDate;
+    long addedDate;
 
     @SerializedName("updateDate")
     @Expose
-    Long updateDate;
+    long updateDate;
 
     @SerializedName("user")
     @Expose
@@ -107,19 +107,19 @@ public class AppCMSAddToWatchlistResult {
         this.id = id;
     }
 
-    public Long getAddedDate() {
+    public long getAddedDate() {
         return addedDate;
     }
 
-    public void setAddedDate(Long addedDate) {
+    public void setAddedDate(long addedDate) {
         this.addedDate = addedDate;
     }
 
-    public Long getUpdateDate() {
+    public long getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Long updateDate) {
+    public void setUpdateDate(long updateDate) {
         this.updateDate = updateDate;
     }
 

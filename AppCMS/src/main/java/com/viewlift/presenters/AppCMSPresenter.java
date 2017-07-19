@@ -150,6 +150,8 @@ public class AppCMSPresenter {
     public static final String PRESENTER_STOP_PAGE_LOADING_ACTION = "appcms_presenter_stop_page_loading_action";
     public static final String PRESENTER_CLOSE_SCREEN_ACTION = "appcms_presenter_close_action";
     public static final String PRESENTER_RESET_NAVIGATION_ITEM_ACTION = "appcms_presenter_set_navigation_item_action";
+    public static final String PRESENTER_UPDATE_HISTORY_ACTION = "appcms_presenter_update_history_action";
+    public static final String PRESENTER_REFRESH_PAGE_ACTION = "appcms_presenter_refresh_page_action";
     public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
 
     public static final int RC_GOOGLE_SIGN_IN = 1001;
@@ -193,6 +195,7 @@ public class AppCMSPresenter {
     private final AppCMSAddToWatchlistCall appCMSAddToWatchlistCall;
 
     private final AppCMSDeleteHistoryCall appCMSDeleteHistoryCall;
+
     private final AppCMSSubscriptionCall appCMSSubscriptionCall;
 
     private AppCMSPageAPICall appCMSPageAPICall;
@@ -242,6 +245,7 @@ public class AppCMSPresenter {
                            AppCMSHistoryCall appCMSHistoryCall,
 
                            AppCMSDeleteHistoryCall appCMSDeleteHistoryCall,
+
                            AppCMSSubscriptionCall appCMSSubscriptionCall,
 
                            AppCMSBeaconRest appCMSBeaconRest,
@@ -284,6 +288,7 @@ public class AppCMSPresenter {
         this.appCMSHistoryCall = appCMSHistoryCall;
 
         this.appCMSDeleteHistoryCall = appCMSDeleteHistoryCall;
+
         this.appCMSSubscriptionCall = appCMSSubscriptionCall;
 
         this.loadingPage = false;
@@ -385,7 +390,12 @@ public class AppCMSPresenter {
                     new Action1<String>() {
                         @Override
                         public void call(String s) {
-                            //
+                            // Call update history
+                            if (currentActivity != null) {
+                                Intent updateHistoryIntent = new Intent(PRESENTER_UPDATE_HISTORY_ACTION);
+
+                                currentActivity.sendBroadcast(updateHistoryIntent);
+                            }
                         }
                     });
         }
@@ -528,6 +538,7 @@ public class AppCMSPresenter {
                                 action,
                                 getPageId(appCMSPageUI),
                                 filmTitle,
+                                pagePath,
                                 false,
                                 closeLauncher,
                                 null) {
@@ -542,6 +553,7 @@ public class AppCMSPresenter {
                                             appCMSPageAPI,
                                             this.pageId,
                                             appCMSPageAPI.getTitle(),
+                                            this.pagePath,
                                             screenName.toString(),
                                             loadFromFile,
                                             this.appbarPresent,
@@ -567,16 +579,18 @@ public class AppCMSPresenter {
         return result;
     }
 
-    public boolean launchNavigationPage(String previousPageId, String previousPageName) {
+    public boolean launchNavigationPage(String previousPageId,
+                                        String previousPageName) {
         boolean result = false;
         showMainFragmentView(false);
-        appCMSNavItemsFragment =
+        AppCMSNavItemsFragment navItemsFragment =
                 AppCMSNavItemsFragment.newInstance(currentActivity,
                         getAppCMSBinder(currentActivity,
                                 null,
                                 null,
                                 previousPageId,
                                 previousPageName,
+                                null,
                                 null,
                                 false,
                                 true,
@@ -588,16 +602,18 @@ public class AppCMSPresenter {
                         Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
                         Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()));
 
-        appCMSNavItemsFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
+        navItemsFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
                 currentActivity.getString(R.string.app_cms_navigation_page_tag));
+
         return result;
     }
 
-    public void dismissOpenDialogs() {
+    public void dismissOpenDialogs(AppCMSNavItemsFragment newAppCMSNavItemsFragment) {
         if (appCMSNavItemsFragment != null) {
             appCMSNavItemsFragment.dismiss();
             appCMSNavItemsFragment = null;
         }
+        appCMSNavItemsFragment = newAppCMSNavItemsFragment;
     }
 
     public boolean isMainFragmentViewVisible() {
@@ -886,6 +902,7 @@ public class AppCMSPresenter {
                             pageId,
                             pageId,
                             pageTitle,
+                            pageId,
                             launchActivity, null) {
                         @Override
                         public void call(AppCMSWatchlistResult appCMSWatchlistResult) {
@@ -919,6 +936,7 @@ public class AppCMSPresenter {
                                         pageAPI,
                                         this.pageId,
                                         this.pageTitle,
+                                        this.pagePath,
                                         pageIdToPageNameMap.get(this.pageId),
                                         loadFromFile,
                                         this.appbarPresent,
@@ -932,6 +950,7 @@ public class AppCMSPresenter {
                                         pageAPI,
                                         this.pageId,
                                         this.pageTitle,
+                                        this.pagePath,
                                         pageIdToPageNameMap.get(this.pageId),
                                         loadFromFile,
                                         this.appbarPresent,
@@ -997,6 +1016,7 @@ public class AppCMSPresenter {
                             historyMetaPage.getPageId(),
                             historyMetaPage.getPageId(),
                             historyMetaPage.getPageName(),
+                            historyMetaPage.getPageId(),
                             false,
                             null) {
                         @Override
@@ -1025,6 +1045,7 @@ public class AppCMSPresenter {
                             pageId,
                             pageId,
                             pageTitle,
+                            pageId,
                             launchActivity, null) {
                         @Override
                         public void call(AppCMSHistoryResult appCMSHistoryResult) {
@@ -1059,6 +1080,7 @@ public class AppCMSPresenter {
                                         pageAPI,
                                         this.pageId,
                                         this.pageTitle,
+                                        this.pagePath,
                                         pageIdToPageNameMap.get(this.pageId),
                                         loadFromFile,
                                         this.appbarPresent,
@@ -1072,6 +1094,7 @@ public class AppCMSPresenter {
                                         pageAPI,
                                         this.pageId,
                                         this.pageTitle,
+                                        this.pagePath,
                                         pageIdToPageNameMap.get(this.pageId),
                                         loadFromFile,
                                         this.appbarPresent,
@@ -1207,6 +1230,7 @@ public class AppCMSPresenter {
                                         pageAPI,
                                         this.pageId,
                                         this.pageTitle,
+                                        this.pageId,
                                         pageIdToPageNameMap.get(this.pageId),
                                         loadFromFile,
                                         this.appbarPresent,
@@ -1220,6 +1244,7 @@ public class AppCMSPresenter {
                                         pageAPI,
                                         this.pageId,
                                         this.pageTitle,
+                                        this.pageId,
                                         pageIdToPageNameMap.get(this.pageId),
                                         loadFromFile,
                                         this.appbarPresent,
@@ -1505,6 +1530,7 @@ public class AppCMSPresenter {
                             pageId,
                             pageId,
                             pageTitle,
+                            pageId,
                             launchActivity,
                             sendCloseAction,
                             searchQuery) {
@@ -1520,6 +1546,7 @@ public class AppCMSPresenter {
                                             appCMSPageAPI,
                                             this.pageId,
                                             this.pageTitle,
+                                            this.pagePath,
                                             pageIdToPageNameMap.get(this.pageId),
                                             loadFromFile,
                                             this.appbarPresent,
@@ -1533,6 +1560,7 @@ public class AppCMSPresenter {
                                             appCMSPageAPI,
                                             this.pageId,
                                             this.pageTitle,
+                                            this.pagePath,
                                             pageIdToPageNameMap.get(this.pageId),
                                             loadFromFile,
                                             this.appbarPresent,
@@ -1566,6 +1594,13 @@ public class AppCMSPresenter {
             setNavItemToCurrentAction(currentActivity);
         }
         return result;
+    }
+
+    public void sendRefreshPageAction() {
+        if (currentActivity != null) {
+            Intent refreshPageIntent = new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION);
+            currentActivity.sendBroadcast(refreshPageIntent);
+        }
     }
 
     public boolean sendCloseOthersAction(String pageName, boolean closeSelf) {
@@ -1643,6 +1678,14 @@ public class AppCMSPresenter {
                 .pageId(pageId)
                 .build();
         new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
+    }
+
+    public String getPageIdToPageAPIUrl(String pageId) {
+        return pageIdToPageAPIUrlMap.get(pageId);
+    }
+
+    public String getPageNameToPageAPIUrl(String pageName) {
+        return actionToPageAPIUrlMap.get(pageNameToActionMap.get(pageName));
     }
 
     public boolean isUserLoggedIn(Context context) {
@@ -2227,6 +2270,7 @@ public class AppCMSPresenter {
                                          AppCMSPageAPI appCMSPageAPI,
                                          String pageID,
                                          String pageName,
+                                         String pagePath,
                                          String screenName,
                                          boolean loadFromFile,
                                          boolean appbarPresent,
@@ -2240,6 +2284,7 @@ public class AppCMSPresenter {
                 appCMSPageAPI,
                 pageID,
                 pageName,
+                pagePath,
                 screenName,
                 loadFromFile,
                 appbarPresent,
@@ -2256,6 +2301,7 @@ public class AppCMSPresenter {
                                          AppCMSPageAPI appCMSPageAPI,
                                          String pageID,
                                          String pageName,
+                                         String pagePath,
                                          String screenName,
                                          boolean loadFromFile,
                                          boolean appbarPresent,
@@ -2269,6 +2315,7 @@ public class AppCMSPresenter {
                 navigation,
                 pageID,
                 pageName,
+                pagePath,
                 screenName,
                 loadFromFile,
                 appbarPresent,
@@ -2285,6 +2332,7 @@ public class AppCMSPresenter {
                                     AppCMSPageAPI appCMSPageAPI,
                                     String pageId,
                                     String pageName,
+                                    String pagePath,
                                     String screenName,
                                     boolean loadFromFile,
                                     boolean appbarPresent,
@@ -2297,6 +2345,7 @@ public class AppCMSPresenter {
                 appCMSPageAPI,
                 pageId,
                 pageName,
+                pagePath,
                 screenName,
                 loadFromFile,
                 appbarPresent,
@@ -2591,6 +2640,7 @@ public class AppCMSPresenter {
                                 pageId,
                                 pageId,
                                 pageTitle,
+                                pageId,
                                 launchActivity,
                                 false,
                                 searchQuery) {
@@ -2622,6 +2672,7 @@ public class AppCMSPresenter {
                                                 appCMSPageAPI,
                                                 this.pageId,
                                                 this.pageTitle,
+                                                this.pagePath,
                                                 pageIdToPageNameMap.get(this.pageId),
                                                 loadFromFile,
                                                 this.appbarPresent,
@@ -2667,6 +2718,7 @@ public class AppCMSPresenter {
                             appCMSPageAPI,
                             pageId,
                             pageTitle,
+                            pageId,
                             pageIdToPageNameMap.get(pageId),
                             loadFromFile,
                             true,
@@ -2714,6 +2766,7 @@ public class AppCMSPresenter {
                 appCMSPageAPI,
                 pageId,
                 pageName,
+                pageId,
                 screenName,
                 loadFromFile,
                 appbarPresent,
@@ -2786,6 +2839,7 @@ public class AppCMSPresenter {
         String action;
         String pageId;
         String pageTitle;
+        String pagePath;
         boolean launchActivity;
         boolean sendCloseAction;
         Uri searchQuery;
@@ -2797,6 +2851,7 @@ public class AppCMSPresenter {
                                    String action,
                                    String pageId,
                                    String pageTitle,
+                                   String pagePath,
                                    boolean launchActivity,
                                    boolean sendCloseAction,
                                    Uri searchQuery) {
@@ -2807,6 +2862,7 @@ public class AppCMSPresenter {
             this.action = action;
             this.pageId = pageId;
             this.pageTitle = pageTitle;
+            this.pagePath = pagePath;
             this.launchActivity = launchActivity;
             this.sendCloseAction = sendCloseAction;
             this.searchQuery = searchQuery;
@@ -2821,6 +2877,7 @@ public class AppCMSPresenter {
         String action;
         String pageId;
         String pageTitle;
+        String pagePath;
         boolean launchActivity;
         Uri searchQuery;
 
@@ -2831,6 +2888,7 @@ public class AppCMSPresenter {
                                         String action,
                                         String pageId,
                                         String pageTitle,
+                                        String pagePath,
                                         boolean launchActivity,
                                         Uri searchQuery) {
             this.appbarPresent = appbarPresent;
@@ -2840,6 +2898,7 @@ public class AppCMSPresenter {
             this.action = action;
             this.pageId = pageId;
             this.pageTitle = pageTitle;
+            this.pagePath = pagePath;
             this.launchActivity = launchActivity;
             this.searchQuery = searchQuery;
         }
@@ -2853,6 +2912,7 @@ public class AppCMSPresenter {
         String action;
         String pageId;
         String pageTitle;
+        String pagePath;
         boolean launchActivity;
         Uri searchQuery;
 
@@ -2863,6 +2923,7 @@ public class AppCMSPresenter {
                                       String action,
                                       String pageId,
                                       String pageTitle,
+                                      String pagePath,
                                       boolean launchActivity,
                                       Uri searchQuery) {
             this.appbarPresent = appbarPresent;
@@ -2872,6 +2933,7 @@ public class AppCMSPresenter {
             this.action = action;
             this.pageId = pageId;
             this.pageTitle = pageTitle;
+            this.pagePath = pagePath;
             this.launchActivity = launchActivity;
             this.searchQuery = searchQuery;
         }

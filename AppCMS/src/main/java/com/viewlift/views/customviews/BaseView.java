@@ -115,7 +115,7 @@ public abstract class BaseView extends FrameLayout {
                         }
                     }
 
-                    if (getViewWidth(tabletLandscape) == -1 && tabletLandscape.getXAxis() != 0f) {
+                    if (getViewWidth(tabletLandscape) == -1f && tabletLandscape.getXAxis() != 0f) {
                         float scaledX = DEVICE_WIDTH * (tabletLandscape.getXAxis() / STANDARD_TABLET_HEIGHT_PX);
                         lm = Math.round(scaledX);
                     } else if (tabletLandscape.getLeftMargin() != 0f) {

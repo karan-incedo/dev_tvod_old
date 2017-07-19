@@ -24,11 +24,11 @@ public class AppCMSWatchlistResult {
 
     @SerializedName("nextOffset")
     @Expose
-    Integer nextOffset;
+    int nextOffset;
 
     @SerializedName("limit")
     @Expose
-    Integer limit;
+    int limit;
 
     public List<Record> getRecords() {
         return records;
@@ -38,19 +38,19 @@ public class AppCMSWatchlistResult {
         this.records = records;
     }
 
-    public Integer getNextOffset() {
+    public int etNextOffset() {
         return nextOffset;
     }
 
-    public void setNextOffset(Integer nextOffset) {
+    public void setNextOffset(int nextOffset) {
         this.nextOffset = nextOffset;
     }
 
-    public Integer getLimit() {
+    public int getLimit() {
         return limit;
     }
 
-    public void setLimit(Integer limit) {
+    public void setLimit(int limit) {
         this.limit = limit;
     }
 

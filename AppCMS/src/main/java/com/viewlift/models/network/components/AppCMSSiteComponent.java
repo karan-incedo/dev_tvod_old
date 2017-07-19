@@ -12,7 +12,7 @@ import dagger.Component;
  */
 
 @Singleton
-@Component(modules = {AppCMSSiteModule.class})
+@Component(modules={AppCMSSiteModule.class})
 public interface AppCMSSiteComponent {
     AppCMSSiteCall appCMSSiteCall();
 }

@@ -51,6 +51,7 @@ public class AppCMSPresenterModule {
                                                    AppCMSHistoryCall appCMSHistoryCall,
 
                                                    AppCMSDeleteHistoryCall appCMSDeleteHistoryCall,
+
                                                    AppCMSSubscriptionCall appCMSSubscriptionCall,
 
                                                    AppCMSBeaconRest appCMSBeaconRest,

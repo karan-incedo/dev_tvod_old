@@ -18,7 +18,6 @@ import retrofit2.http.Url;
 public interface AppCMSUserIdentityRest {
     @GET
     Call<UserIdentity> get(@Url String url, @HeaderMap Map<String, String> authHeaders);
-
     @POST
     Call<UserIdentity> post(@Url String url, @HeaderMap Map<String, String> authHeaders, @Body UserIdentity userIdentity);
 

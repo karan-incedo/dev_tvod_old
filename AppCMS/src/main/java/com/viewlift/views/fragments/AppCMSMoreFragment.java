@@ -94,7 +94,7 @@ public class AppCMSMoreFragment extends DialogFragment {
                 Integer.toHexString(Color.parseColor(textColor)).substring(2),
                 args.getString(getContext().getString(R.string.app_cms_more_text_key)))));
 
-        appCMSPresenter.dismissOpenDialogs();
+        appCMSPresenter.dismissOpenDialogs(null);
 
         setBgColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
 

@@ -1,5 +1,6 @@
 package com.viewlift.models.network.modules;
 
+import com.google.gson.Gson;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSearchRest;
 
@@ -13,7 +14,7 @@ import retrofit2.Retrofit;
  * Created by viewlift on 6/12/17.
  */
 
-@Module(includes = {AppCMSSiteModule.class})
+@Module(includes={AppCMSSiteModule.class})
 public class AppCMSSearchModule {
     @Provides
     @Singleton
