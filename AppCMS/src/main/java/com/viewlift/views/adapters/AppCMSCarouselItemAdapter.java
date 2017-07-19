@@ -302,6 +302,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
         updatedIndex = getDefaultIndex();
         sendEvent(new InternalEvent<Object>(updatedIndex));
         listView.scrollToPosition(updatedIndex);
+        cancel(false);
     }
 
     private int getDefaultIndex() {

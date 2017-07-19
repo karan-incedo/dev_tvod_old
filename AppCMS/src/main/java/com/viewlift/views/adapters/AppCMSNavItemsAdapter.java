@@ -130,6 +130,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     break;
 
                                 case ANDROID_SETTINGS_NAV_KEY:
+                                    itemSelected = false;
                                     appCMSPresenter.navigateToSettingsPage(navigationUser.getPageId());
                                     break;
 

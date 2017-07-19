@@ -141,6 +141,7 @@ public class AppCMSPresenter {
     public static final String PRESENTER_CLOSE_SCREEN_ACTION = "appcms_presenter_close_action";
     public static final String PRESENTER_RESET_NAVIGATION_ITEM_ACTION = "appcms_presenter_set_navigation_item_action";
     public static final String PRESENTER_UPDATE_HISTORY_ACTION = "appcms_presenter_update_history_action";
+    public static final String PRESENTER_REFRESH_PAGE_ACTION = "appcms_presenter_refresh_page_action";
     public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
@@ -556,10 +557,11 @@ public class AppCMSPresenter {
         return result;
     }
 
-    public boolean launchNavigationPage(String previousPageId, String previousPageName) {
+    public boolean launchNavigationPage(String previousPageId,
+                                        String previousPageName) {
         boolean result = false;
         showMainFragmentView(false);
-        appCMSNavItemsFragment =
+        AppCMSNavItemsFragment navItemsFragment =
                 AppCMSNavItemsFragment.newInstance(currentActivity,
                         getAppCMSBinder(currentActivity,
                                 null,
@@ -578,16 +580,17 @@ public class AppCMSPresenter {
                         Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
                         Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()));
 
-        appCMSNavItemsFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
+        navItemsFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
                 currentActivity.getString(R.string.app_cms_navigation_page_tag));
+
         return result;
     }
 
-    public void dismissOpenDialogs() {
+    public void dismissOpenDialogs(AppCMSNavItemsFragment newAppCMSNavItemsFragment) {
         if (appCMSNavItemsFragment != null) {
             appCMSNavItemsFragment.dismiss();
-            appCMSNavItemsFragment = null;
         }
+        appCMSNavItemsFragment = newAppCMSNavItemsFragment;
     }
 
     public boolean isMainFragmentViewVisible() {
@@ -1364,6 +1367,13 @@ public class AppCMSPresenter {
             setNavItemToCurrentAction(currentActivity);
         }
         return result;
+    }
+
+    public void sendRefreshPageAction() {
+        if (currentActivity != null) {
+            Intent refreshPageIntent = new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION);
+            currentActivity.sendBroadcast(refreshPageIntent);
+        }
     }
 
     public boolean sendCloseOthersAction(String pageName, boolean closeSelf) {

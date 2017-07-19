@@ -138,7 +138,7 @@ public class AppCMSSettingsFragment extends DialogFragment {
 
         setBgColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
 
-        appCMSPresenter.dismissOpenDialogs();
+        appCMSPresenter.dismissOpenDialogs(null);
 
         return view;
     }
