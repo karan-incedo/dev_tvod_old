@@ -30,12 +30,14 @@ import com.android.vending.billing.IInAppBillingService;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
+import com.facebook.FacebookSdk;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
@@ -52,9 +54,6 @@ import java.util.Stack;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.viewlift.R;
-
-import com.facebook.FacebookSdk;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -652,7 +651,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
         if (0 < distanceFromStackTop) {
             for (int i = 0; i < distanceFromStackTop; i++) {
-                Log.d(TAG, "Popping stack to get to page item");
+                Log.d(TAG, "Popping stack to getList to page item");
                 try {
                     getSupportFragmentManager().popBackStack();
                 } catch (IllegalStateException e) {
