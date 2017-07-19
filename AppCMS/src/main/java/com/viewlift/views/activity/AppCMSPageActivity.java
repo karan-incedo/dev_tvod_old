@@ -403,7 +403,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 // Call to backend Facebook API
             } else if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-                if (result.isSuccess()) {
+                if (result != null && result.isSuccess()) {
                     // Call to backend Google SignIn API
                 }
             } else if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
