@@ -111,19 +111,21 @@ public class CollectionGridItemView extends BaseView {
 
         FrameLayout.LayoutParams layoutParams;
         if (component.getStyles() != null) {
-            int marginRight = (int) convertHorizontalValue(getContext(), component.getStyles().getPadding());
-            MarginLayoutParams marginLayoutParams = new MarginLayoutParams(width, height);
-            marginLayoutParams.setMargins(0, 0, marginRight, 0);
-            layoutParams = new FrameLayout.LayoutParams(marginLayoutParams);
+            int paddingRight = (int) convertHorizontalValue(getContext(), component.getStyles().getPadding());
+            setPadding(0, 0, paddingRight, 0);
         } else if (getTrayPadding(getContext(), component.getLayout()) != -1.0f) {
             int trayPadding = (int) getTrayPadding(getContext(), component.getLayout());
-            int marginRight = (int) convertHorizontalValue(getContext(), trayPadding);
-            MarginLayoutParams marginLayoutParams = new MarginLayoutParams(width, height);
-            marginLayoutParams.setMargins(0, 0, marginRight, 0);
-            layoutParams = new FrameLayout.LayoutParams(marginLayoutParams);
-        } else {
-            layoutParams = new FrameLayout.LayoutParams(width, height);
+            int paddingRight = (int) convertHorizontalValue(getContext(), trayPadding);
+            setPadding(0, 0, paddingRight, 0);
         }
+        int horizontalMargin = (int) convertHorizontalValue(getContext(), getHorizontalMargin(getContext(), parentLayout));
+        int verticalMargin = (int) convertVerticalValue(getContext(), getVerticalMargin(getContext(), parentLayout, height, 0));
+        MarginLayoutParams marginLayoutParams = new MarginLayoutParams(width, height);
+        marginLayoutParams.setMargins(horizontalMargin,
+                verticalMargin,
+                horizontalMargin,
+                verticalMargin);
+        layoutParams = new FrameLayout.LayoutParams(marginLayoutParams);
         setLayoutParams(layoutParams);
         childItems = new ArrayList<>();
         if (component.getComponents() != null) {

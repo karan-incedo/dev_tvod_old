@@ -357,19 +357,6 @@ public abstract class BaseView extends FrameLayout {
                     lm = maxViewWidth / 2 - viewWidth / 2;
                     break;
 
-                case PAGE_THUMBNAIL_TITLE_KEY:
-                    if (isTablet(getContext())) {
-                        if (isLandscape(getContext())) {
-                            tm -= viewHeight / 8;
-                            viewHeight *= 2;
-                            bm += viewHeight * 1.1;
-                        }
-                    } else {
-                        tm -= viewHeight / 2;
-                        viewHeight *= 1.5;
-                    }
-                    break;
-
                 case PAGE_WATCH_VIDEO_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
                     lm = maxViewWidth / 2;
@@ -406,24 +393,6 @@ public abstract class BaseView extends FrameLayout {
 
             if (maxViewWidth != -1) {
                 ((TextView) view).setMaxWidth(maxViewWidth);
-            }
-        } else if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {
-            viewWidth = (int) getGridWidth(getContext(),
-                    layout,
-                    (int) getViewWidth(getContext(),
-                            layout,
-                            viewWidth));
-            viewHeight = (int) getGridHeight(getContext(),
-                    layout,
-                    (int) getViewHeight(getContext(),
-                            layout,
-                            viewHeight));
-            if (viewWidth > viewHeight) {
-                tm *= 2;
-            } else {
-                if (isLandscape(getContext())) {
-                    viewHeight *= 1.5;
-                }
             }
         } else if (componentType == AppCMSUIKeyType.PAGE_TEXTFIELD_KEY) {
             viewHeight *= 1.2;
