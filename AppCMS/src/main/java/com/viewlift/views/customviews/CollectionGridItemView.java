@@ -3,13 +3,17 @@ package com.viewlift.views.customviews;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
 import android.support.v7.widget.CardView;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.StrikethroughSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +23,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -30,8 +35,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import com.viewlift.R;
-
 /**
  * Created by viewlift on 5/5/17.
  */
@@ -42,43 +45,9 @@ public class CollectionGridItemView extends BaseView {
     private final Layout parentLayout;
     private final boolean userParentLayout;
     private final Component component;
-    private List<ItemContainer> childItems;
-
     protected int defaultWidth;
     protected int defaultHeight;
-
-    public static class ItemContainer {
-        View childView;
-        Component component;
-
-        public static class Builder {
-            private ItemContainer itemContainer;
-
-            public Builder() {
-                itemContainer = new ItemContainer();
-            }
-
-            public Builder childView(View childView) {
-                itemContainer.childView = childView;
-                return this;
-            }
-
-            public Builder component(Component component) {
-                itemContainer.component = component;
-                return this;
-            }
-
-            public ItemContainer build() {
-                return itemContainer;
-            }
-        }
-    }
-
-    public interface OnClickHandler {
-        void click(Component childComponent, ContentDatum data);
-
-        void play(Component childComponent, ContentDatum data);
-    }
+    private List<ItemContainer> childItems;
 
     @Inject
     public CollectionGridItemView(Context context,
@@ -341,10 +310,36 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setText(data.getGist().getDescription());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY) {
                         ((TextView) view).setText(data.getName());
+                        ((TextView) view).setTextColor(Color.parseColor(
+                                childComponent.getTextColor()));
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY) {
-                        ((TextView) view).setText(String.valueOf(data.getPlanDetails().get(0).getRecurringPaymentAmount()));
+
+                        if (data.getPlanDetails().get(0).getDiscountedPrice() != 0) {
+                            StringBuilder stringBuilder = new StringBuilder(String.valueOf(data.getPlanDetails()
+                                    .get(0).getRecurringPaymentAmount()));
+
+                            int strikeThroughLength = stringBuilder.length();
+                            stringBuilder.append("     ").append(String.valueOf(data.getPlanDetails().get(0).getDiscountedPrice()));
+
+
+                            SpannableString spannableString =
+                                    new SpannableString(stringBuilder.toString());
+                            spannableString.setSpan(new StrikethroughSpan(), 0,
+                                    strikeThroughLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            ((TextView) view).setText(spannableString);
+                        } else {
+                            ((TextView) view).setText(String.valueOf(data.getPlanDetails().get(0)
+                                    .getRecurringPaymentAmount()));
+                            ((TextView) view).setPaintFlags(((TextView) view).getPaintFlags());
+                        }
+
+                        ((TextView) view).setTextColor(Color.parseColor(
+                                childComponent.getTextColor()));
+
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_BESTVALUE_KEY) {
-                        ((TextView) view).setText(String.valueOf(data.getPlanDetails().get(0).getDiscountedPrice()));
+                        ((TextView) view).setText(childComponent.getText());
+                        ((TextView) view).setTextColor(Color.parseColor(
+                                childComponent.getTextColor()));
                     }
                 }
             }
@@ -364,5 +359,38 @@ public class CollectionGridItemView extends BaseView {
             }
         }
         return result;
+    }
+
+    public interface OnClickHandler {
+        void click(Component childComponent, ContentDatum data);
+
+        void play(Component childComponent, ContentDatum data);
+    }
+
+    public static class ItemContainer {
+        View childView;
+        Component component;
+
+        public static class Builder {
+            private ItemContainer itemContainer;
+
+            public Builder() {
+                itemContainer = new ItemContainer();
+            }
+
+            public Builder childView(View childView) {
+                itemContainer.childView = childView;
+                return this;
+            }
+
+            public Builder component(Component component) {
+                itemContainer.component = component;
+                return this;
+            }
+
+            public ItemContainer build() {
+                return itemContainer;
+            }
+        }
     }
 }
