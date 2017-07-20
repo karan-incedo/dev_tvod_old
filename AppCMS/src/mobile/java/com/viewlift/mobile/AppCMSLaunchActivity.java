@@ -37,12 +37,6 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        finish();
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
     }
