@@ -139,7 +139,18 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         if (onClickHandler == null) {
 
             if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
+                onClickHandler = new CollectionGridItemView.OnClickHandler() {
 
+                    @Override
+                    public void click(Component childComponent, ContentDatum data) {
+                        appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier());
+                    }
+
+                    @Override
+                    public void play(Component childComponent, ContentDatum data) {
+                        // NO-OP - Play is not implemented here
+                    }
+                };
             } else {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override

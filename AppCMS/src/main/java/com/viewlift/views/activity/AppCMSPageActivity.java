@@ -239,6 +239,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             public void onServiceConnected(ComponentName name,
                                            IBinder service) {
                 inAppBillingService = IInAppBillingService.Stub.asInterface(service);
+                if (appCMSPresenter != null) {
+                    appCMSPresenter.setInAppBillingService(inAppBillingService);
+                }
             }
         };
         Intent serviceIntent =
@@ -386,6 +389,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 // Call to backend Facebook API
             } else if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
                 // Call to backend subscription API
+            }
+        } else if (resultCode == RESULT_CANCELED) {
+            if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
+                appCMSPresenter.setActiveSubscriptionSku(this, null);
             }
         }
     }

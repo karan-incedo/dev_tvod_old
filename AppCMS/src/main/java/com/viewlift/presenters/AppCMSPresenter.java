@@ -156,12 +156,17 @@ public class AppCMSPresenter {
 
     public static final int RC_PURCHASE_PLAY_STORE_ITEM = 1002;
 
+    public enum LaunchType {
+        LOGIN, SUBSCRIBE, LOGIN_AND_SIGNUP
+    }
+
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
     private static final String REFRESH_TOKEN_SHARED_PREF_NAME = "refresh_token_pref";
     private static final String USER_LOGGED_IN_TIME_PREF_NAME = "user_loggedin_time_pref";
     private static final String FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME = "facebook_access_token_shared_pref_name";
+    private static final String ACTIVE_SUBSCRIPTION_SKU = "active_subscription_sku_key";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
 
@@ -237,6 +242,9 @@ public class AppCMSPresenter {
     private PlatformType platformType;
     private AppCMSNavItemsFragment appCMSNavItemsFragment;
 
+    private LaunchType launchType;
+    private IInAppBillingService inAppBillingService;
+
     @Inject
     public AppCMSPresenter(AppCMSMainUICall appCMSMainUICall,
                            AppCMSAndroidUICall appCMSAndroidUICall,
@@ -311,6 +319,8 @@ public class AppCMSPresenter {
         this.currentActions = new Stack<>();
         this.beaconMessageRunnable = new BeaconRunnable(appCMSBeaconRest);
         this.beaconMessageThread = new Thread(this.beaconMessageRunnable);
+
+        this.launchType = LaunchType.LOGIN_AND_SIGNUP;
     }
 
     public void setCurrentActivity(Activity activity) {
@@ -733,13 +743,26 @@ public class AppCMSPresenter {
         }
     }
 
-    public void initiateItemPurchase(final IInAppBillingService inAppBillingService,
-                                     String sku) {
+    public void setInAppBillingService(IInAppBillingService inAppBillingService) {
+        this.inAppBillingService = inAppBillingService;
+    }
+
+    public void initiateSignUpAndSubscription(String sku) {
         if (currentActivity != null) {
+            launchType = LaunchType.SUBSCRIBE;
+            setActiveSubscriptionSku(currentActivity, sku);
+            navigateToLoginPage();
+        }
+    }
+
+    public void initiateItemPurchase() {
+        if (currentActivity != null &&
+                inAppBillingService != null &&
+                getActiveSubscriptionSku(currentActivity) != null) {
             try {
                 Bundle buyIntentBundle = inAppBillingService.getBuyIntent(3,
                         currentActivity.getPackageName(),
-                        sku,
+                        getActiveSubscriptionSku(currentActivity),
                         "subs",
                         null);
                 PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
@@ -749,8 +772,9 @@ public class AppCMSPresenter {
                         0,
                         0,
                         0);
+                launchType = LaunchType.LOGIN;
             } catch (RemoteException | IntentSender.SendIntentException e) {
-                Log.e(TAG, "Failed to purchase item with sku: " + sku);
+                Log.e(TAG, "Failed to purchase item with sku: " + getActiveSubscriptionSku(currentActivity));
             }
         }
     }
@@ -1817,6 +1841,22 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public String getActiveSubscriptionSku(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(ACTIVE_SUBSCRIPTION_SKU, 0);
+            return sharedPrefs.getString(ACTIVE_SUBSCRIPTION_SKU, null);
+        }
+        return null;
+    }
+
+    public boolean setActiveSubscriptionSku(Context context, String subscriptionSku) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(ACTIVE_SUBSCRIPTION_SKU, 0);
+            return sharedPrefs.edit().putString(ACTIVE_SUBSCRIPTION_SKU, subscriptionSku).commit();
+        }
+        return false;
+    }
+
     public void logout() {
         if (currentActivity != null) {
             SharedPreferences sharedPrefs = currentActivity.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
@@ -2234,6 +2274,10 @@ public class AppCMSPresenter {
         }
     }
 
+    public LaunchType getLaunchType() {
+        return launchType;
+    }
+
     private void startLoginAsyncTask(String url, String email, String password) {
         PostAppCMSLoginRequestAsyncTask.Params params = new PostAppCMSLoginRequestAsyncTask.Params
                 .Builder()
@@ -2251,20 +2295,26 @@ public class AppCMSPresenter {
                             showDialog(DialogType.SIGNIN, currentActivity.getString(
                                     R.string.app_cms_error_email_password), null);
                         } else {
+
                             setRefreshToken(currentActivity, signInResponse.getRefreshToken());
                             setAuthToken(currentActivity, signInResponse.getAuthorizationToken());
                             setLoggedInUser(currentActivity, signInResponse.getUserId());
-                            NavigationPrimary homePageNavItem = findHomePageNavItem();
-                            if (homePageNavItem != null) {
-                                navigateToPage(homePageNavItem.getPageId(),
-                                        homePageNavItem.getTitle(),
-                                        homePageNavItem.getUrl(),
-                                        false,
-                                        true,
-                                        false,
-                                        true,
-                                        false,
-                                        deeplinkSearchQuery);
+
+                            if (launchType == LaunchType.LOGIN_AND_SIGNUP) {
+                                NavigationPrimary homePageNavItem = findHomePageNavItem();
+                                if (homePageNavItem != null) {
+                                    navigateToPage(homePageNavItem.getPageId(),
+                                            homePageNavItem.getTitle(),
+                                            homePageNavItem.getUrl(),
+                                            false,
+                                            true,
+                                            false,
+                                            true,
+                                            false,
+                                            deeplinkSearchQuery);
+                                }
+                            } else {
+                                initiateItemPurchase();
                             }
                         }
                     }
@@ -2529,6 +2579,7 @@ public class AppCMSPresenter {
                 pageToQueueIndex = getSplashPage(metaPageList);
                 if (pageToQueueIndex >= 0) {
                     splashPage = metaPageList.get(pageToQueueIndex);
+                    launchType = LaunchType.LOGIN;
                 }
             }
             if (pageToQueueIndex == -1) {
