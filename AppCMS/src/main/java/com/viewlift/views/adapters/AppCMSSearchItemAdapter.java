@@ -12,6 +12,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -111,13 +112,27 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             viewHolder.filmTitle.setText(appCMSSearchResults.get(adapterPosition).getTitle());
         }
 
-        if (appCMSSearchResults.get(adapterPosition).getThumbnail() != null &&
-                !TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getPosterImage().getUrl())) {
+        if (!TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getPosterImage().getUrl())) {
+
+            final String imageUrl = viewHolder.view.getContext().getString(R.string.app_cms_image_with_resize_query,
+                    appCMSSearchResults.get(adapterPosition).getPosterImage().getUrl(),
+                    imageWidth,
+                    imageHeight);
+
             Picasso.with(viewHolder.view.getContext())
-                    .load(appCMSSearchResults.get(adapterPosition).getPosterImage().getUrl())
-                    .resize(imageWidth, imageHeight)
-                    .centerCrop()
-                    .into(viewHolder.filmThumbnail);
+                    .load(imageUrl)
+                    .into(viewHolder.filmThumbnail,
+                            new Callback() {
+                                @Override
+                                public void onSuccess() {
+                                    Log.d(TAG, "Loaded image: " + imageUrl);
+                                }
+
+                                @Override
+                                public void onError() {
+                                    Log.e(TAG, "Failed to load image: " + imageUrl);
+                                }
+                            });
         }
     }
 
