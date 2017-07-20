@@ -19,5 +19,7 @@ public enum AppCMSActionType {
     LOGIN_GOOGLE,
     LOGIN_FACEBOOK,
     SIGNUP,
-    LOGOUT
+    LOGOUT,
+    START_TRIAL,
+    SIGNIN
 }

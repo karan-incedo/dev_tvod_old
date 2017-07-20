@@ -1,11 +1,11 @@
 <resources>
     <!-- Primary app values -->
-    <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
+    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
     <!--<string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
     <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
     <!--<string name="app_cms_app_name">d9162bc2-1228-43da-84bf-e0e56421fe79</string>-->
 
-    <string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>
+    <string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>
     <!--<string name="app_cms_app_name">9d2c4ddd-94e3-44af-bee8-851e76d6b96e</string>-->
 
     <string name="app_cms_url_with_appended_timestamp">%1$s?x=%2$d</string>
@@ -58,6 +58,7 @@
         <item>AC Masthead 01</item>
         <item>AC Footer 01</item>
     </string-array>
+    <string name="app_cms_main_svod_service_type_key">SVOD</string>
     <string name="app_cms_android_navigation_key">navigation</string>
     <string name="app_cms_page_button_key">button</string>
     <string name="app_cms_page_image_key">image</string>
@@ -173,6 +174,9 @@
     <string name="app_cms_action_signup_key">signup</string>
     <string name="app_cms_action_logout_key">logout</string>
     <string name="app_cms_action_qualifier_watchvideo_key">trailer</string>
+    <string name="app_cms_action_start_trial_key">startTrial</string>
+    <string name="app_cms_action_signin_key">signIn</string>
+    <string name="app_cms_action_browse_key">browse</string>
 
     <!-- AppCMS Data values -->
     <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true</string>

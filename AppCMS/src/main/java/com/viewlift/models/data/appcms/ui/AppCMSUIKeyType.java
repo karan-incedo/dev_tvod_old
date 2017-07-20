@@ -5,6 +5,7 @@ package com.viewlift.models.data.appcms.ui;
  */
 
 public enum AppCMSUIKeyType {
+    MAIN_SVOD_SERVICE_TYPE,
     ANDROID_AUTH_SCREEN_KEY,
     ANDROID_SPLASH_SCREEN_KEY,
     ANDROID_HOME_SCREEN_KEY,

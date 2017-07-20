@@ -106,6 +106,8 @@ public class AppCMSUIModule {
     }
 
     private void createJsonValueKeyMap(Context context) {
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_main_svod_service_type_key),
+                AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_authscreen_key),
                 AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_splashscreen_key),
@@ -300,6 +302,8 @@ public class AppCMSUIModule {
                 AppCMSActionType.AUTH_PAGE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_pagename_homescreen_key),
                 AppCMSActionType.HOME_PAGE);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_browse_key),
+                AppCMSActionType.HOME_PAGE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_historypage_key),
                 AppCMSActionType.HISTORY_PAGE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_videopage_key),
@@ -314,6 +318,8 @@ public class AppCMSUIModule {
                 AppCMSActionType.CLOSE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_login_key),
                 AppCMSActionType.LOGIN);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_signin_key),
+                AppCMSActionType.SIGNIN);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_forgotpassword_key),
                 AppCMSActionType.FORGOT_PASSWORD);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_forgotpassword_key),
@@ -324,6 +330,8 @@ public class AppCMSUIModule {
                 AppCMSActionType.SIGNUP);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_logout_key),
                 AppCMSActionType.LOGOUT);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_browse_key),
+                AppCMSActionType.START_TRIAL);
     }
 
     @Provides

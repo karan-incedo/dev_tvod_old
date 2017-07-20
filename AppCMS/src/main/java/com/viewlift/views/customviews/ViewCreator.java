@@ -66,11 +66,11 @@ import com.viewlift.R;
 public class ViewCreator {
     private static final String TAG = "ViewCreator";
 
-    private static LruCache<String, PageView> pageViewLruCache;
+    private LruCache<String, PageView> pageViewLruCache;
     private static int PAGE_LRU_CACHE_SIZE = 10;
     ComponentViewResult componentViewResult;
 
-    private static LruCache<String, PageView> getPageViewLruCache() {
+    private LruCache<String, PageView> getPageViewLruCache() {
         if (pageViewLruCache == null) {
             pageViewLruCache = new LruCache<>(PAGE_LRU_CACHE_SIZE);
         }
@@ -849,6 +849,17 @@ public class ViewCreator {
                         break;
 
                     default:
+                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                appCMSPresenter.launchButtonSelectedAction(null,
+                                        component.getAction(),
+                                        null,
+                                        null,
+                                        null,
+                                        false);
+                            }
+                        });
                 }
 
                 break;

@@ -117,6 +117,8 @@ import com.viewlift.views.fragments.AppCMSResetPasswordFragment;
 import com.viewlift.views.fragments.AppCMSSearchFragment;
 import com.viewlift.views.fragments.AppCMSSettingsFragment;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -229,7 +231,9 @@ public class AppCMSPresenter {
     private String tvErrorScreenPackage = "com.viewlift.tv.views.activity.AppCmsTvErrorActivity";
 
     private Uri deeplinkSearchQuery;
+    private MetaPage splashPage;
     private MetaPage loginPage;
+    private MetaPage homePage;
 
     private PlatformType platformType;
     private AppCMSNavItemsFragment appCMSNavItemsFragment;
@@ -490,6 +494,20 @@ public class AppCMSPresenter {
                 Log.d(TAG, "Sign-Up selected: " + extraData[0]);
                 closeSoftKeyboard();
                 signup(extraData[0], extraData[1]);
+            } else if (actionType == AppCMSActionType.START_TRIAL) {
+                Log.d(TAG, "Start Trial selected");
+            } else if (actionType == AppCMSActionType.HOME_PAGE) {
+                navigateToPage(homePage.getPageId(),
+                        homePage.getPageName(),
+                        homePage.getPageUI(),
+                        true,
+                        true,
+                        false,
+                        true,
+                        false,
+                        deeplinkSearchQuery);
+            } else if (actionType == AppCMSActionType.SIGNIN) {
+                navigateToLoginPage();
             } else {
                 showMainFragmentView(false);
                 boolean appbarPresent = true;
@@ -1342,6 +1360,8 @@ public class AppCMSPresenter {
                     loginPage.getPageUI(),
                     false,
                     false,
+                    true,
+                    false,
                     false,
                     deeplinkSearchQuery);
             if (!launchSuccess) {
@@ -1507,6 +1527,8 @@ public class AppCMSPresenter {
                                   String pageTitle,
                                   String url,
                                   boolean launchActivity,
+                                  boolean appbarPresent,
+                                  boolean fullscreenEnabled,
                                   boolean navbarPresent,
                                   boolean sendCloseAction,
                                   final Uri searchQuery) {
@@ -1523,8 +1545,8 @@ public class AppCMSPresenter {
                     appCMSMain.getInternalName(),
                     true,
                     getPageId(appCMSPageUI),
-                    new AppCMSPageAPIAction(true,
-                            false,
+                    new AppCMSPageAPIAction(appbarPresent,
+                            fullscreenEnabled,
                             navbarPresent,
                             appCMSPageUI,
                             pageId,
@@ -1800,6 +1822,8 @@ public class AppCMSPresenter {
                         false,
                         true,
                         false,
+                        true,
+                        false,
                         deeplinkSearchQuery);
             }
         }
@@ -1934,13 +1958,20 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public boolean isPagePrimary(String action) {
+    public boolean isPagePrimary(String pageId) {
         for (NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()) {
-            if (!TextUtils.isEmpty(navigationPrimary.getPageId()) && action.contains(navigationPrimary.getPageId())) {
+            if (!TextUtils.isEmpty(navigationPrimary.getPageId()) && pageId.contains(navigationPrimary.getPageId())) {
                 return true;
             }
         }
 
+        return false;
+    }
+
+    public boolean isPageSplashPage(String pageId) {
+        if (!TextUtils.isEmpty(pageId) && !TextUtils.isEmpty(splashPage.getPageId())) {
+            return splashPage.getPageId().equals(pageId);
+        }
         return false;
     }
 
@@ -2224,6 +2255,8 @@ public class AppCMSPresenter {
                                         false,
                                         true,
                                         false,
+                                        true,
+                                        false,
                                         deeplinkSearchQuery);
                             }
                         }
@@ -2428,13 +2461,17 @@ public class AppCMSPresenter {
                                     if (firstPage != null) {
                                         Log.d(TAG, "Launching first page: "
                                                 + firstPage.getPageName());
-                                        boolean navbarPresent =
+                                        boolean appbarPresent =
                                                 (jsonValueKeyMap.get(firstPage.getPageName())
-                                                        != AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY);
+                                                        != AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY);
+                                        boolean navbarPresent = appbarPresent;
+                                        boolean fullscreen = !appbarPresent;
                                         boolean launchSuccess = navigateToPage(firstPage.getPageId(),
                                                 firstPage.getPageName(),
                                                 firstPage.getPageUI(),
                                                 true,
+                                                appbarPresent,
+                                                fullscreen,
                                                 navbarPresent,
                                                 false,
                                                 deeplinkSearchQuery);
@@ -2470,7 +2507,21 @@ public class AppCMSPresenter {
             if (loginPageIndex >= 0) {
                 loginPage = metaPageList.get(loginPageIndex);
             }
-            int pageToQueueIndex = getHomePage(metaPageList);
+            int homePageIndex = getHomePage(metaPageList);
+            if (homePageIndex >= 0) {
+                homePage = metaPageList.get(homePageIndex);
+            }
+            int pageToQueueIndex = -1;
+            if (jsonValueKeyMap.get(appCMSMain.getServiceType()) ==
+                    AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE) {
+                pageToQueueIndex = getSplashPage(metaPageList);
+                if (pageToQueueIndex >= 0) {
+                    splashPage = metaPageList.get(pageToQueueIndex);
+                }
+            }
+            if (pageToQueueIndex == -1) {
+                pageToQueueIndex = homePageIndex;
+            }
             if (pageToQueueIndex >= 0) {
                 pagesToProcess.add(metaPageList.get(pageToQueueIndex));
                 Log.d(TAG, "Queuing meta page: " +
@@ -2525,6 +2576,16 @@ public class AppCMSPresenter {
                     }
                 },
                 loadFromFile);
+    }
+
+    private int getSplashPage(List<MetaPage> metaPageList) {
+        for (int i = 0; i < metaPageList.size(); i++) {
+            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName()) ==
+                    AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private int getSigninPage(List<MetaPage> metaPageList) {
