@@ -343,6 +343,7 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setText(data.getName());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY) {
                         ((TextView) view).setText(String.valueOf(data.getPlanDetails().get(0).getRecurringPaymentAmount()));
+                        ((TextView) view).setPaintFlags(((TextView) view).getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_BESTVALUE_KEY) {
                         ((TextView) view).setText(String.valueOf(data.getPlanDetails().get(0).getDiscountedPrice()));
                     }
