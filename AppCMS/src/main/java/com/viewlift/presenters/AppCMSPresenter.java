@@ -244,6 +244,8 @@ public class AppCMSPresenter {
 
     private LaunchType launchType;
     private IInAppBillingService inAppBillingService;
+    private String subscriptionUserEmail;
+    private String subscriptionUserPassword;
 
     @Inject
     public AppCMSPresenter(AppCMSMainUICall appCMSMainUICall,
@@ -492,6 +494,9 @@ public class AppCMSPresenter {
                 }
             } else if (actionType == AppCMSActionType.CLOSE) {
                 sendCloseOthersAction(null, true);
+                if (launchType == LaunchType.SUBSCRIBE) {
+                    launchType = LaunchType.LOGIN;
+                }
             } else if (actionType == AppCMSActionType.LOGIN) {
                 Log.d(TAG, "Login action selected: " + extraData[0]);
                 closeSoftKeyboard();
@@ -756,6 +761,9 @@ public class AppCMSPresenter {
     }
 
     public void initiateItemPurchase() {
+        if (launchType == LaunchType.SUBSCRIBE) {
+            launchType = LaunchType.LOGIN;
+        }
         if (currentActivity != null &&
                 inAppBillingService != null &&
                 getActiveSubscriptionSku(currentActivity) != null) {
@@ -2249,12 +2257,26 @@ public class AppCMSPresenter {
         }
     }
 
+    public void reinitiateSignup() {
+        // Call to backend subscription API
+        signup(subscriptionUserEmail, subscriptionUserPassword);
+        subscriptionUserEmail = null;
+        subscriptionUserPassword = null;
+    }
+
     public void signup(String email, String password) {
         if (currentActivity != null) {
-            String url = currentActivity.getString(R.string.app_cms_signup_api_url,
-                    appCMSMain.getApiBaseUrl(),
-                    appCMSMain.getInternalName());
-            startLoginAsyncTask(url, email, password);
+            if (launchType == LaunchType.LOGIN_AND_SIGNUP ||
+                    launchType == LaunchType.LOGIN) {
+                String url = currentActivity.getString(R.string.app_cms_signup_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        appCMSMain.getInternalName());
+                startLoginAsyncTask(url, email, password);
+            } else {
+                subscriptionUserEmail = email;
+                subscriptionUserPassword = password;
+                initiateItemPurchase();
+            }
         }
     }
 
@@ -2302,26 +2324,21 @@ public class AppCMSPresenter {
                             setRefreshToken(currentActivity, signInResponse.getRefreshToken());
                             setAuthToken(currentActivity, signInResponse.getAuthorizationToken());
                             setLoggedInUser(currentActivity, signInResponse.getUserId());
-
-                            if (launchType == LaunchType.LOGIN_AND_SIGNUP ||
-                                    launchType == LaunchType.LOGIN) {
-                                NavigationPrimary homePageNavItem = findHomePageNavItem();
-                                if (homePageNavItem != null) {
-                                    navigateToPage(homePageNavItem.getPageId(),
-                                            homePageNavItem.getTitle(),
-                                            homePageNavItem.getUrl(),
-                                            false,
-                                            true,
-                                            false,
-                                            true,
-                                            false,
-                                            deeplinkSearchQuery);
-                                }
-                            } else {
-                                initiateItemPurchase();
+                            NavigationPrimary homePageNavItem = findHomePageNavItem();
+                            if (homePageNavItem != null) {
+                                navigateToPage(homePageNavItem.getPageId(),
+                                        homePageNavItem.getTitle(),
+                                        homePageNavItem.getUrl(),
+                                        false,
+                                        true,
+                                        false,
+                                        true,
+                                        false,
+                                        deeplinkSearchQuery);
                             }
                         }
                     }
+
                 }).execute(params);
     }
 

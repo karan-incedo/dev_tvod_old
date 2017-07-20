@@ -311,6 +311,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.popActionInternalEvents();
                 appCMSPresenter.restartInternalEvents();
             }
+            if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+                appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN);
+            }
         } else if (appCMSPresenter != null) {
             appCMSPresenter.popActionInternalEvents();
             appCMSPresenter.setNavItemToCurrentAction(this);
@@ -388,7 +391,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 callbackManager.onActivityResult(requestCode, resultCode, data);
                 // Call to backend Facebook API
             } else if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
-                // Call to backend subscription API
+                appCMSPresenter.reinitiateSignup();
             }
         } else if (resultCode == RESULT_CANCELED) {
             if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
