@@ -150,6 +150,7 @@
     <string name="app_cms_pagename_authscreen_key">Authentication Screen</string>
     <string name="app_cms_pagename_splashscreen_key">Splash Screen</string>
     <string name="app_cms_pagename_homescreen_key">Home Page</string>
+    <string name="app_cms_pagename_subscriptionscreen_key">View Plans</string>
     <string name="app_cms_pagename_historyscreen_key">My History</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
 

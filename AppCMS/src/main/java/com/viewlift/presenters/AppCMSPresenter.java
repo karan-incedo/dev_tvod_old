@@ -232,6 +232,7 @@ public class AppCMSPresenter {
     private MetaPage splashPage;
     private MetaPage loginPage;
     private MetaPage homePage;
+    private MetaPage subscriptionPage;
 
     private PlatformType platformType;
     private AppCMSNavItemsFragment appCMSNavItemsFragment;
@@ -1353,7 +1354,21 @@ public class AppCMSPresenter {
     }
 
     public void navigateToTrialPage() {
-        //
+        if (subscriptionPage != null) {
+            boolean launchSuccess = navigateToPage(subscriptionPage.getPageId(),
+                    subscriptionPage.getPageName(),
+                    subscriptionPage.getPageUI(),
+                    false,
+                    false,
+                    true,
+                    false,
+                    false,
+                    deeplinkSearchQuery);
+            if (!launchSuccess) {
+                Log.e(TAG, "Failed to launch page: " + subscriptionPage.getPageName());
+                launchErrorActivity(currentActivity, platformType);
+            }
+        }
     }
 
     public void navigateToLoginPage() {
@@ -2514,9 +2529,14 @@ public class AppCMSPresenter {
             if (homePageIndex >= 0) {
                 homePage = metaPageList.get(homePageIndex);
             }
+            int subscriptionPageIndex = getSubscriptionPage(metaPageList);
+            if (subscriptionPageIndex >= 0) {
+                subscriptionPage = metaPageList.get(subscriptionPageIndex);
+            }
             int pageToQueueIndex = -1;
             if (jsonValueKeyMap.get(appCMSMain.getServiceType()) ==
-                    AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE) {
+                    AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE &&
+                    !isUserLoggedIn(currentActivity)) {
                 pageToQueueIndex = getSplashPage(metaPageList);
                 if (pageToQueueIndex >= 0) {
                     splashPage = metaPageList.get(pageToQueueIndex);
@@ -2605,6 +2625,16 @@ public class AppCMSPresenter {
         for (int i = 0; i < metaPageList.size(); i++) {
             if (jsonValueKeyMap.get(metaPageList.get(i).getPageName()) ==
                     AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int getSubscriptionPage(List<MetaPage> metaPageList) {
+        for (int i = 0; i < metaPageList.size(); i++) {
+            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName()) ==
+                    AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY) {
                 return i;
             }
         }
