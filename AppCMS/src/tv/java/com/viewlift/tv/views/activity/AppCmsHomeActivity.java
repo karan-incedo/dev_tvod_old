@@ -26,7 +26,7 @@ import com.viewlift.tv.views.fragment.AppCmsTVPageFragment;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.NavBarItemView;
 
-import com.viewlift.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by nitin.tyagi on 6/27/2017.

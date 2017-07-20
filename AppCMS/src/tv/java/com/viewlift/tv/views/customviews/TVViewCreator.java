@@ -78,7 +78,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import com.viewlift.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -245,7 +245,7 @@ public class TVViewCreator {
                     appCMSPresenter,
                     this);*/
         } else {
-            moduleView = new ModuleView<>(context, module);
+            moduleView = new ModuleView<>(context, module, true);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
             if (module.getComponents() != null) {
                 for (int i = 0; i < module.getComponents().size(); i++) {
@@ -539,6 +539,7 @@ public class TVViewCreator {
                                             component.getAction(),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
                                             extraData,
+                                            moduleAPI.getContentData().get(0),
                                             false)) {
                                         Log.e(TAG, "Could not launch action: " +
                                                 " permalink: " +
@@ -585,6 +586,7 @@ public class TVViewCreator {
                                                 component.getAction(),
                                                 moduleAPI.getContentData().get(0).getGist().getTitle(),
                                                 extraData,
+                                                moduleAPI.getContentData().get(0),
                                                 false)) {
                                             Log.e(TAG, "Could not launch action: " +
                                                     " permalink: " +
@@ -621,6 +623,7 @@ public class TVViewCreator {
                                         component.getAction(),
                                         null,
                                         null,
+                                        null,
                                         false)) {
                                     Log.e(TAG, "Could not launch action: " +
                                             " action: " +
@@ -653,6 +656,7 @@ public class TVViewCreator {
                                             component.getAction(),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
                                             extraData,
+                                            moduleAPI.getContentData().get(0),
                                             false)) {
                                         Log.e(TAG, "Could not launch action: " +
                                                 " permalink: " +
@@ -735,7 +739,6 @@ public class TVViewCreator {
                                     new ViewCreatorMultiLineLayoutListener(((TextView) componentViewResult.componentView),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
                                             videoDescription,
-                                            textColor,
                                             appCMSPresenter,
                                             false);
                             textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
@@ -1061,7 +1064,7 @@ public class TVViewCreator {
     }
 
     private void applyBorderToComponent(Context context, View view, Component component) {
-        if (component.getBorderWidth() != null && component.getBorderColor() != null) {
+        if (component.getBorderColor() != null) {
             if (component.getBorderWidth() > 0 && !TextUtils.isEmpty(component.getBorderColor())) {
                 GradientDrawable ageBorder = new GradientDrawable();
                 ageBorder.setShape(GradientDrawable.RECTANGLE);

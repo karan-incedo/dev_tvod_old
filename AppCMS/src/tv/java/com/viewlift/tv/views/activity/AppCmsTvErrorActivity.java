@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.app.Activity;
 
 
-import com.viewlift.appcms.R;
+import com.viewlift.R;
 
 
 public class AppCmsTvErrorActivity extends Activity {

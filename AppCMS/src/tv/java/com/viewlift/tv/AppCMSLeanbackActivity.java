@@ -20,7 +20,7 @@ import com.viewlift.tv.utility.CustomProgressBar;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.views.components.AppCMSPresenterComponent;
 
-import com.viewlift.appcms.R;
+import com.viewlift.R;
 
 import static android.content.ContentValues.TAG;
 

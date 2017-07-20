@@ -36,7 +36,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import com.viewlift.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by nitin.tyagi on 6/29/2017.

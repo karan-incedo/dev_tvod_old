@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
 
 import com.viewlift.tv.views.customviews.CustomHeaderItem;
 
-import com.viewlift.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by nitin.tyagi on 7/2/2017.

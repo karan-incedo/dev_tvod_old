@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 import com.viewlift.tv.utility.Utils;
 
-import com.viewlift.appcms.R;
+import com.viewlift.R;
 
 
 /**

@@ -11,6 +11,7 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.customviews.BaseView;
+import com.viewlift.views.customviews.ListWithAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,7 @@ public class TVPageView extends FrameLayout {
        // adapterList = new ArrayList<>();
     }
 
-    public void addListWithAdapter(AppCMSViewAdapter.ListWithAdapter listWithAdapter) {
+    public void addListWithAdapter(ListWithAdapter listWithAdapter) {
        // adapterList.add(listWithAdapter);
     }
 

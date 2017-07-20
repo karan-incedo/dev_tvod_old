@@ -20,7 +20,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import com.viewlift.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/5/17.

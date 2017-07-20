@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.viewlift.appcms.R;
+import com.viewlift.R;
 
 import static android.content.ContentValues.TAG;
 

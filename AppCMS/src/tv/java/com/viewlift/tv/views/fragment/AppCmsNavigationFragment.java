@@ -27,7 +27,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
-import com.viewlift.models.data.appcms.ui.android.Primary;
+import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.views.binders.AppCMSBinder;
@@ -38,7 +38,7 @@ import java.util.zip.Inflater;
 
 import javax.inject.Inject;
 
-import com.viewlift.appcms.R;
+import com.viewlift.R;
 
 /**
  * Created by nitin.tyagi on 6/27/2017.
@@ -149,7 +149,7 @@ public class AppCmsNavigationFragment extends Fragment {
 
 
         public Object getItem(int i) {
-            return navigation.getPrimary().get(i);
+            return navigation.getNavigationPrimary().get(i);
         }
 
         @Override
@@ -163,7 +163,7 @@ public class AppCmsNavigationFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(NavItemHolder holder, final int position) {
-            final Primary primary = (Primary)getItem(position);
+            final NavigationPrimary primary = (NavigationPrimary)getItem(position);
             holder.navItemView.setText(primary.getTitle().toString());
             Log.d("NavigationAdapter", primary.getTitle().toString());
 
@@ -197,8 +197,8 @@ public class AppCmsNavigationFragment extends Fragment {
         @Override
         public int getItemCount() {
             int totalCount = 0;
-            if (null != this.navigation && null != navigation.getPrimary())
-                totalCount = this.navigation.getPrimary().size();
+            if (null != this.navigation && null != navigation.getNavigationPrimary())
+                totalCount = this.navigation.getNavigationPrimary().size();
             return totalCount;
         }
 
