@@ -752,6 +752,7 @@ public class AppCMSPresenter {
             launchType = LaunchType.SUBSCRIBE;
             setActiveSubscriptionSku(currentActivity, sku);
             navigateToLoginPage();
+            launchType = LaunchType.LOGIN;
         }
     }
 
@@ -772,7 +773,6 @@ public class AppCMSPresenter {
                         0,
                         0,
                         0);
-                launchType = LaunchType.LOGIN;
             } catch (RemoteException | IntentSender.SendIntentException e) {
                 Log.e(TAG, "Failed to purchase item with sku: " + getActiveSubscriptionSku(currentActivity));
             }
