@@ -347,17 +347,19 @@ public class LoginModule extends ModuleView {
                                 case PAGE_EMAILTEXTFIELD_KEY:
                                 case PAGE_EMAILTEXTFIELD2_KEY:
                                     emailInputViews[childIndex] = ((TextInputLayout) componentView).getEditText();
-                                    if (launchType == AppCMSPresenter.LaunchType.LOGIN ||
-                                            launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
-                                        visibleEmailInputView = emailInputViews[childIndex];
+                                    if (launchType == AppCMSPresenter.LaunchType.LOGIN) {
+                                        visibleEmailInputView = emailInputViews[0];
+                                    } else if (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+                                        visibleEmailInputView = emailInputViews[1];
                                     }
                                     break;
                                 case PAGE_PASSWORDTEXTFIELD_KEY:
                                 case PAGE_PASSWORDTEXTFIELD2_KEY:
                                     passwordInputViews[childIndex] = ((TextInputLayout) componentView).getEditText();
-                                    if (launchType == AppCMSPresenter.LaunchType.LOGIN ||
-                                            launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
-                                        visiblePasswordInputView = passwordInputViews[childIndex];
+                                    if (launchType == AppCMSPresenter.LaunchType.LOGIN) {
+                                        visiblePasswordInputView = passwordInputViews[0];
+                                    } else if (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+                                        visiblePasswordInputView = passwordInputViews[1];
                                     }
                                     break;
                                 default:
