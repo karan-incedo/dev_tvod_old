@@ -183,7 +183,8 @@ public class CollectionGridItemView extends BaseView {
                           View view,
                           final ContentDatum data,
                           Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                          final OnClickHandler onClickHandler) {
+                          final OnClickHandler onClickHandler,
+                          final AppCMSUIKeyType viewTypeKey) {
         final Component childComponent = matchComponentToView(view);
         if (childComponent != null) {
             boolean bringToFront = true;
@@ -312,6 +313,8 @@ public class CollectionGridItemView extends BaseView {
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
                     ((TextView) view).setText("");
+                } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PURCHASE_BUTTON_KEY) {
+                    ((TextView) view).setText(childComponent.getText());
                 }
                 view.setOnClickListener(new OnClickListener() {
                     @Override
@@ -336,6 +339,12 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setText(data.getGist().getTitle());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_DESCRIPTION) {
                         ((TextView) view).setText(data.getGist().getDescription());
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY) {
+                        ((TextView) view).setText(data.getName());
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY) {
+                        ((TextView) view).setText(String.valueOf(data.getPlanDetails().get(0).getRecurringPaymentAmount()));
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_BESTVALUE_KEY) {
+                        ((TextView) view).setText(String.valueOf(data.getPlanDetails().get(0).getDiscountedPrice()));
                     }
                 }
             }

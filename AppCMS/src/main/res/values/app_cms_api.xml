@@ -135,7 +135,14 @@
     <string name="app_cms_page_navigation_contact_us_key">mailto</string>
     <string name="app_cms_page_video_player_with_info_key">AC VideoPlayerWithInfo 01</string>
     <string name="app_cms_page_api_video_detail_module_key">VideoDetailModule</string>
+
+    <!-- Subscription Keys -->
     <string name="app_cms_page_subscription_selectionplan_key">AC SelectPlan 01</string>
+    <string name="app_cms_plan_title_key">planTitle</string>
+    <string name="app_cms_plan_priceinfo_key">planPriceInfo</string>
+    <string name="app_cms_plan_bestvalue_key">planBestValueLabel</string>
+    <string name="app_cms_plan_purchase_button_key">planPurchaseButton</string>
+    <string name="app_cms_plan_meta_dataview_key">planMetaDataView</string>
 
     <string name="app_cms_navigation_page_tag">navigation</string>
     <string name="app_cms_search_page_tag">search</string>

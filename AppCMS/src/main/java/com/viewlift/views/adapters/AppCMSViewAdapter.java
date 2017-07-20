@@ -45,6 +45,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     protected boolean useMarginsAsPercentages;
     protected String defaultAction;
     protected String viewType;
+    protected AppCMSUIKeyType viewTypeKey;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -76,6 +77,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.defaultAction = getDefaultAction(context);
 
         this.viewType = viewType;
+        this.viewTypeKey = jsonValueKeyMap.get(viewType);
+        if (this.viewTypeKey == null) {
+            this.viewTypeKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+        }
     }
 
     @Override
@@ -132,77 +137,87 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     protected void bindView(CollectionGridItemView itemView,
                             final ContentDatum data) throws IllegalArgumentException {
         if (onClickHandler == null) {
-            onClickHandler = new CollectionGridItemView.OnClickHandler() {
-                @Override
-                public void click(Component childComponent, ContentDatum data) {
-                    Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
-                    String permalink = data.getGist().getPermalink();
-                    String action = defaultAction;
-                    String title = data.getGist().getTitle();
-                    String hlsUrl = getHlsUrl(data);
-                    String[] extraData = new String[3];
-                    extraData[0] = permalink;
-                    extraData[1] = hlsUrl;
-                    extraData[2] = data.getGist().getId();
-                    Log.d(TAG, "Launching " + permalink + ": " + action);
 
-                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                            action,
-                            title,
-                            extraData,
-                            data,
-                            false)) {
-                        Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
-                                + " action: " + action + " hlsUrl: " + hlsUrl);
-                    }
-                }
+            if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
 
-                @Override
-                public void play(Component childComponent, ContentDatum data) {
-                    Log.d(TAG, "Playing item: " + data.getGist().getTitle());
-                    String filmId = data.getGist().getId();
-                    String permaLink = data.getGist().getPermalink();
-                    String title = data.getGist().getTitle();
-                    if (!appCMSPresenter.launchVideoPlayer(filmId, permaLink, title, data)) {
-                        Log.e(TAG, "Could not launch play action: " +
-                                " filmId: " +
-                                filmId +
-                                " permaLink: " +
-                                permaLink +
-                                " title: " +
-                                title);
+            } else {
+                onClickHandler = new CollectionGridItemView.OnClickHandler() {
+                    @Override
+                    public void click(Component childComponent, ContentDatum data) {
+                        Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
+                        String permalink = data.getGist().getPermalink();
+                        String action = defaultAction;
+                        String title = data.getGist().getTitle();
+                        String hlsUrl = getHlsUrl(data);
+                        String[] extraData = new String[3];
+                        extraData[0] = permalink;
+                        extraData[1] = hlsUrl;
+                        extraData[2] = data.getGist().getId();
+                        Log.d(TAG, "Launching " + permalink + ": " + action);
+
+                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                action,
+                                title,
+                                extraData,
+                                data,
+                                false)) {
+                            Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
+                                    + " action: " + action + " hlsUrl: " + hlsUrl);
+                        }
                     }
-                }
-            };
+
+                    @Override
+                    public void play(Component childComponent, ContentDatum data) {
+                        Log.d(TAG, "Playing item: " + data.getGist().getTitle());
+                        String filmId = data.getGist().getId();
+                        String permaLink = data.getGist().getPermalink();
+                        String title = data.getGist().getTitle();
+                        if (!appCMSPresenter.launchVideoPlayer(filmId, permaLink, title, data)) {
+                            Log.e(TAG, "Could not launch play action: " +
+                                    " filmId: " +
+                                    filmId +
+                                    " permaLink: " +
+                                    permaLink +
+                                    " title: " +
+                                    title);
+                        }
+                    }
+                };
+            }
         }
 
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String permalink = data.getGist().getPermalink();
-                String title = data.getGist().getTitle();
-                Log.d(TAG, "Launching " + permalink + ":" + defaultAction);
-                if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                        defaultAction,
-                        title,
-                        null,
-                        null,
-                        false)) {
-                    Log.e(TAG, "Could not launch action: " +
-                            " permalink: " +
-                            permalink +
-                            " action: " +
-                            defaultAction);
+        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
+
+        } else {
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String permalink = data.getGist().getPermalink();
+                    String title = data.getGist().getTitle();
+                    Log.d(TAG, "Launching " + permalink + ":" + defaultAction);
+                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                            defaultAction,
+                            title,
+                            null,
+                            null,
+                            false)) {
+                        Log.e(TAG, "Could not launch action: " +
+                                " permalink: " +
+                                permalink +
+                                " action: " +
+                                defaultAction);
+                    }
                 }
-            }
-        });
+            });
+        }
 
         for (int i = 0; i < itemView.getNumberOfChildren(); i++) {
             itemView.bindChild(itemView.getContext(),
                     itemView.getChild(i),
                     data,
                     jsonValueKeyMap,
-                    onClickHandler);
+                    onClickHandler,
+                    viewTypeKey);
         }
     }
 

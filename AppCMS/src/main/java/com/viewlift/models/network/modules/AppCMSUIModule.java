@@ -207,6 +207,17 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_description_key),
                 AppCMSUIKeyType.PAGE_API_DESCRIPTION);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_title_key),
+                AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_priceinfo_key),
+                AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_bestvalue_key),
+                AppCMSUIKeyType.PAGE_PLAN_BESTVALUE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_purchase_button_key),
+                AppCMSUIKeyType.PAGE_PLAN_PURCHASE_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_meta_dataview_key),
+                AppCMSUIKeyType.PAGE_PLAN_META_DATA_VIEW_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_module_key),
                 AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_module_key),

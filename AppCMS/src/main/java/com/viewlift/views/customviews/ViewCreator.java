@@ -909,6 +909,8 @@ public class ViewCreator {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
                             } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
+                            } else if (!TextUtils.isEmpty(component.getText())) {
+                                ((TextView) componentViewResult.componentView).setText(component.getText());
                             }
 
                             break;
@@ -1259,6 +1261,10 @@ public class ViewCreator {
                         starColor,
                         starColor,
                         starRating);
+                break;
+            case PAGE_PLAN_META_DATA_VIEW_KEY:
+                componentViewResult.componentView = new FrameLayout(context);
+
                 break;
 
             default:
