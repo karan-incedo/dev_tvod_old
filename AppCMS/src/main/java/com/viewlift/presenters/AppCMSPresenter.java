@@ -752,7 +752,6 @@ public class AppCMSPresenter {
             launchType = LaunchType.SUBSCRIBE;
             setActiveSubscriptionSku(currentActivity, sku);
             navigateToLoginPage();
-            launchType = LaunchType.LOGIN;
         }
     }
 
@@ -2278,6 +2277,10 @@ public class AppCMSPresenter {
         return launchType;
     }
 
+    public void setLaunchType(LaunchType launchType) {
+        this.launchType = launchType;
+    }
+
     private void startLoginAsyncTask(String url, String email, String password) {
         PostAppCMSLoginRequestAsyncTask.Params params = new PostAppCMSLoginRequestAsyncTask.Params
                 .Builder()
@@ -2300,7 +2303,8 @@ public class AppCMSPresenter {
                             setAuthToken(currentActivity, signInResponse.getAuthorizationToken());
                             setLoggedInUser(currentActivity, signInResponse.getUserId());
 
-                            if (launchType == LaunchType.LOGIN_AND_SIGNUP) {
+                            if (launchType == LaunchType.LOGIN_AND_SIGNUP ||
+                                    launchType == LaunchType.LOGIN) {
                                 NavigationPrimary homePageNavItem = findHomePageNavItem();
                                 if (homePageNavItem != null) {
                                     navigateToPage(homePageNavItem.getPageId(),

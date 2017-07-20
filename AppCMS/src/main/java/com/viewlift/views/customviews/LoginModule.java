@@ -76,6 +76,9 @@ public class LoginModule extends ModuleView {
         this.passwordInputViews = new EditText[NUM_CHILD_VIEWS];
         this.loginBorderPadding = context.getResources().getInteger(R.integer.app_cms_login_underline_padding);
         this.launchType = appCMSPresenter.getLaunchType();
+        if (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN);
+        }
         init();
     }
 
