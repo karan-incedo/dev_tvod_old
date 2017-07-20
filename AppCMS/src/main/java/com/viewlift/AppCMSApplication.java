@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.apptentive.android.sdk.Apptentive;
 import com.crashlytics.android.Crashlytics;
-import com.squareup.leakcanary.LeakCanary;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
 import com.viewlift.models.network.modules.AppCMSUIModule;
 import com.viewlift.views.components.AppCMSPresenterComponent;
@@ -15,7 +14,6 @@ import com.viewlift.views.components.DaggerAppCMSPresenterComponent;
 import com.viewlift.views.modules.AppCMSPresenterModule;
 
 import io.fabric.sdk.android.Fabric;
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/4/17.
@@ -29,12 +27,6 @@ public class AppCMSApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
-            return;
-        }
-        LeakCanary.install(this);
 
         Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
 

@@ -157,9 +157,6 @@ dependencies {
     compile "com.facebook.android:facebook-android-sdk:$rootProject.ext.facebookSdkVersion"
 
     compile "com.apptentive:apptentive-android:$rootProject.ext.apptentiveVersion"
-    debugCompile "com.squareup.leakcanary:leakcanary-android:$rootProject.ext.leakcanaryVersion"
-    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.ext.leakcanaryVersion"
-    testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.ext.leakcanaryVersion"
     provided "javax.annotation:jsr250-api:$rootProject.ext.jsr250_apiVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
 
