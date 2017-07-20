@@ -34,10 +34,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.facebook.FacebookSdk;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.viewlift.R;
 
 import com.viewlift.models.data.appcms.ui.android.Navigation;
@@ -63,8 +59,7 @@ import rx.functions.Action1;
  */
 
 public class AppCMSPageActivity extends AppCompatActivity implements
-        AppCMSPageFragment.OnPageCreation,
-        GoogleApiClient.OnConnectionFailedListener {
+        AppCMSPageFragment.OnPageCreation {
     private static final String TAG = "AppCMSPageActivity";
 
     private static final int NAV_PAGE_INDEX = 0;
@@ -102,8 +97,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
     private AccessToken accessToken;
-
-    private GoogleApiClient googleApiClient;
 
     private IInAppBillingService inAppBillingService;
 
@@ -236,15 +229,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         accessToken = AccessToken.getCurrentAccessToken();
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-
         inAppBillingServiceConn = new ServiceConnection() {
             @Override
             public void onServiceDisconnected(ComponentName name) {
@@ -263,7 +247,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         bindService(serviceIntent, inAppBillingServiceConn, Context.BIND_AUTO_CREATE);
 
         if (appCMSPresenter != null) {
-            appCMSPresenter.setGoogleApiClient(googleApiClient);
             appCMSPresenter.setInAppBillingServiceConn(inAppBillingServiceConn);
         }
 
@@ -401,11 +384,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (FacebookSdk.isFacebookRequestCode(requestCode)) {
                 callbackManager.onActivityResult(requestCode, resultCode, data);
                 // Call to backend Facebook API
-            } else if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
-                GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-                if (result != null && result.isSuccess()) {
-                    // Call to backend Google SignIn API
-                }
             } else if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
                 // Call to backend subscription API
             }
@@ -849,10 +827,5 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             }
         }
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e(TAG, "Google sign in connection failed: " + connectionResult.getErrorMessage());
     }
 }

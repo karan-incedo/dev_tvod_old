@@ -37,8 +37,6 @@ import com.facebook.login.LoginManager;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.iid.InstanceID;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
@@ -154,7 +152,6 @@ public class AppCMSPresenter {
     public static final String PRESENTER_REFRESH_PAGE_ACTION = "appcms_presenter_refresh_page_action";
     public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
 
-    public static final int RC_GOOGLE_SIGN_IN = 1001;
     public static final int RC_PURCHASE_PLAY_STORE_ITEM = 1002;
 
     private static final String TAG = "AppCMSPresenter";
@@ -222,7 +219,6 @@ public class AppCMSPresenter {
     private Runnable beaconMessageThread;
     private GoogleAnalytics googleAnalytics;
     private Tracker tracker;
-    private GoogleApiClient googleApiClient;
     private ServiceConnection inAppBillingServiceConn;
 
     private String tvHomeScreenPackage = "com.viewlift.tv.views.activity.AppCmsHomeActivity";
@@ -719,13 +715,6 @@ public class AppCMSPresenter {
             appCMSResetPasswordFragment.show(((AppCompatActivity) currentActivity)
                             .getSupportFragmentManager(),
                     currentActivity.getString(R.string.app_cms_reset_password_page_tag));
-        }
-    }
-
-    public void loginGoogle(GoogleApiClient googleApiClient) {
-        if (currentActivity != null) {
-            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-            currentActivity.startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
         }
     }
 
@@ -1512,14 +1501,6 @@ public class AppCMSPresenter {
                         });
             }
         }
-    }
-
-    public GoogleApiClient getGoogleApiClient() {
-        return googleApiClient;
-    }
-
-    public void setGoogleApiClient(GoogleApiClient googleApiClient) {
-        this.googleApiClient = googleApiClient;
     }
 
     public ServiceConnection getInAppBillingServiceConn() {
