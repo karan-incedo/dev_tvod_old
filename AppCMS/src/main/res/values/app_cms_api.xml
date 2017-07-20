@@ -178,6 +178,7 @@
     <string name="app_cms_action_start_trial_key">startTrial</string>
     <string name="app_cms_action_signin_key">signIn</string>
     <string name="app_cms_action_browse_key">browse</string>
+    <string name="app_cms_action_startfreetrial_key">startTrial</string>
 
     <!-- AppCMS Data values -->
     <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true</string>
