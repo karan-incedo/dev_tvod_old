@@ -9,6 +9,34 @@ import java.util.List;
 @UseStag
 public class ContentDatum {
 
+    @SerializedName("id")
+    @Expose
+    String id;
+
+    @SerializedName("name")
+    @Expose
+    String name;
+
+    @SerializedName("identifier")
+    @Expose
+    String identifier;
+
+    @SerializedName("description")
+    @Expose
+    String description;
+
+    @SerializedName("renewalCyclePeriodMultiplier")
+    @Expose
+    int renewalCyclePeriodMultiplier;
+
+    @SerializedName("renewalCycleType")
+    @Expose
+    String renewalCycleType;
+
+    @SerializedName("planDetails")
+    @Expose
+    List<PlanDetail> planDetails;
+
     @SerializedName("gist")
     @Expose
     Gist gist;
@@ -187,5 +215,61 @@ public class ContentDatum {
 
     public void setParentalRating(String parentalRating) {
         this.parentalRating = parentalRating;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getRenewalCyclePeriodMultiplier() {
+        return renewalCyclePeriodMultiplier;
+    }
+
+    public void setRenewalCyclePeriodMultiplier(int renewalCyclePeriodMultiplier) {
+        this.renewalCyclePeriodMultiplier = renewalCyclePeriodMultiplier;
+    }
+
+    public String getRenewalCycleType() {
+        return renewalCycleType;
+    }
+
+    public void setRenewalCycleType(String renewalCycleType) {
+        this.renewalCycleType = renewalCycleType;
+    }
+
+    public List<PlanDetail> getPlanDetails() {
+        return planDetails;
+    }
+
+    public void setPlanDetails(List<PlanDetail> planDetails) {
+        this.planDetails = planDetails;
     }
 }
