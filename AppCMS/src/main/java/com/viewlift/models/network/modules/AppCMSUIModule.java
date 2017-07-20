@@ -114,6 +114,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_homescreen_key),
                 AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_subscriptionscreen_key),
+                AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_historyscreen_key),
                 AppCMSUIKeyType.ANDROID_HISTORY_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_watchlist_navigation_title),

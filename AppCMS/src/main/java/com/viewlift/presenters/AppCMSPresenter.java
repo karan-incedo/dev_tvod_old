@@ -234,6 +234,7 @@ public class AppCMSPresenter {
     private MetaPage splashPage;
     private MetaPage loginPage;
     private MetaPage homePage;
+    private MetaPage subscriptionPage;
 
     private PlatformType platformType;
     private AppCMSNavItemsFragment appCMSNavItemsFragment;
@@ -496,6 +497,7 @@ public class AppCMSPresenter {
                 signup(extraData[0], extraData[1]);
             } else if (actionType == AppCMSActionType.START_TRIAL) {
                 Log.d(TAG, "Start Trial selected");
+
             } else if (actionType == AppCMSActionType.HOME_PAGE) {
                 navigateToPage(homePage.getPageId(),
                         homePage.getPageName(),
@@ -2511,9 +2513,14 @@ public class AppCMSPresenter {
             if (homePageIndex >= 0) {
                 homePage = metaPageList.get(homePageIndex);
             }
+            int subscriptionPageIndex = getSubscriptionPage(metaPageList);
+            if (subscriptionPageIndex >= 0) {
+                subscriptionPage = metaPageList.get(subscriptionPageIndex);
+            }
             int pageToQueueIndex = -1;
             if (jsonValueKeyMap.get(appCMSMain.getServiceType()) ==
-                    AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE) {
+                    AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE &&
+                    !isUserLoggedIn(currentActivity)) {
                 pageToQueueIndex = getSplashPage(metaPageList);
                 if (pageToQueueIndex >= 0) {
                     splashPage = metaPageList.get(pageToQueueIndex);
@@ -2602,6 +2609,16 @@ public class AppCMSPresenter {
         for (int i = 0; i < metaPageList.size(); i++) {
             if (jsonValueKeyMap.get(metaPageList.get(i).getPageName()) ==
                     AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int getSubscriptionPage(List<MetaPage> metaPageList) {
+        for (int i = 0; i < metaPageList.size(); i++) {
+            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName()) ==
+                    AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY) {
                 return i;
             }
         }
