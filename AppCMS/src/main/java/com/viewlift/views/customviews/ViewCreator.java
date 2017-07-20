@@ -480,10 +480,22 @@ public class ViewCreator {
 
             case PAGE_COLLECTIONGRID_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
-                ((RecyclerView) componentViewResult.componentView)
-                        .setLayoutManager(new LinearLayoutManager(context,
-                                LinearLayoutManager.HORIZONTAL,
-                                false));
+
+                AppCMSUIKeyType moduleType = jsonValueKeyMap.get(viewType);
+                if (moduleType == null) {
+                    moduleType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                }
+                if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
+                    ((RecyclerView) componentViewResult.componentView)
+                            .setLayoutManager(new LinearLayoutManager(context,
+                                    LinearLayoutManager.VERTICAL,
+                                    false));
+                } else {
+                    ((RecyclerView) componentViewResult.componentView)
+                            .setLayoutManager(new LinearLayoutManager(context,
+                                    LinearLayoutManager.HORIZONTAL,
+                                    false));
+                }
 
                 AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
                         this,
