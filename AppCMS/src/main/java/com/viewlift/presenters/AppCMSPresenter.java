@@ -84,6 +84,7 @@ import com.viewlift.models.network.modules.AppCMSAPIModule;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
+import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
@@ -98,6 +99,7 @@ import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionCall;
+import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
 import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
@@ -194,6 +196,8 @@ public class AppCMSPresenter {
     private final AppCMSDeleteHistoryCall appCMSDeleteHistoryCall;
 
     private final AppCMSSubscriptionCall appCMSSubscriptionCall;
+    private final AppCMSSubscriptionPlanCall appCMSSubscriptionPlanCall;
+    private final AppCMSAnonymousAuthTokenCall appCMSAnonymousAuthTokenCall;
 
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
@@ -246,6 +250,8 @@ public class AppCMSPresenter {
                            AppCMSDeleteHistoryCall appCMSDeleteHistoryCall,
 
                            AppCMSSubscriptionCall appCMSSubscriptionCall,
+                           AppCMSSubscriptionPlanCall appCMSSubscriptionPlanCall,
+                           AppCMSAnonymousAuthTokenCall appCMSAnonymousAuthTokenCall,
 
                            AppCMSBeaconRest appCMSBeaconRest,
                            AppCMSSignInCall appCMSSignInCall,
@@ -289,6 +295,8 @@ public class AppCMSPresenter {
         this.appCMSDeleteHistoryCall = appCMSDeleteHistoryCall;
 
         this.appCMSSubscriptionCall = appCMSSubscriptionCall;
+        this.appCMSSubscriptionPlanCall = appCMSSubscriptionPlanCall;
+        this.appCMSAnonymousAuthTokenCall = appCMSAnonymousAuthTokenCall;
 
         this.loadingPage = false;
         this.navigationPages = new HashMap<>();

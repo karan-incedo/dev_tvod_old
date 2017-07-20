@@ -219,6 +219,9 @@
     <string name="app_cms_movies_label">Movies</string>
     <string name="app_cms_search_icon_name">search_</string>
 
+    <!--AppCMS AnonymousAuthToken API -->
+    <string name="app_cms_anonymous_auth_token_api_url">%1$s/identity/anonymous-token?site=%2$s</string>
+
     <!-- AppCMS Image with Resize Query -->
     <string name="app_cms_image_with_resize_query">%1$s?impolicy=resize&amp;w=%2$d&amp;h=%3$d</string>
 </resources>

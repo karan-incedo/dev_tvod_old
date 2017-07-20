@@ -16,6 +16,8 @@ import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAddToWatchlistRest;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
+import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
+import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenRest;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryRest;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
@@ -476,6 +478,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSAnonymousAuthTokenRest providesAppCMSAnonymousAuthTokenRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSAnonymousAuthTokenRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -565,6 +573,13 @@ public class AppCMSUIModule {
     public AppCMSSubscriptionPlanCall appCMSSubscriptionPlanCall(AppCMSSubscriptionPlanRest appCMSSubscriptionPlanRest,
                                                                  Gson gson) {
         return new AppCMSSubscriptionPlanCall(appCMSSubscriptionPlanRest, gson);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSAnonymousAuthTokenCall appCMSAnonymousAuthTokenCall(AppCMSAnonymousAuthTokenRest appCMSAnonymousAuthTokenRest,
+                                                                     Gson gson) {
+        return new AppCMSAnonymousAuthTokenCall(appCMSAnonymousAuthTokenRest, gson);
     }
 
     @Provides

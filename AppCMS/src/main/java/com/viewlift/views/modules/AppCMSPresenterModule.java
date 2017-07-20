@@ -6,6 +6,7 @@ import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.modules.AppCMSSearchModule;
 import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
+import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
@@ -18,6 +19,7 @@ import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionCall;
+import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
 import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
@@ -53,6 +55,8 @@ public class AppCMSPresenterModule {
                                                    AppCMSDeleteHistoryCall appCMSDeleteHistoryCall,
 
                                                    AppCMSSubscriptionCall appCMSSubscriptionCall,
+                                                   AppCMSSubscriptionPlanCall appCMSSubscriptionPlanCall,
+                                                   AppCMSAnonymousAuthTokenCall appCMSAnonymousAuthTokenCall,
 
                                                    AppCMSBeaconRest appCMSBeaconRest,
                                                    AppCMSSignInCall appCMSSignInCall,
@@ -80,7 +84,10 @@ public class AppCMSPresenterModule {
                 appCMSHistoryCall,
 
                 appCMSDeleteHistoryCall,
+
                 appCMSSubscriptionCall,
+                appCMSSubscriptionPlanCall,
+                appCMSAnonymousAuthTokenCall,
 
                 appCMSBeaconRest,
                 appCMSSignInCall,
