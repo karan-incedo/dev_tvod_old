@@ -117,8 +117,6 @@ import com.viewlift.views.fragments.AppCMSResetPasswordFragment;
 import com.viewlift.views.fragments.AppCMSSearchFragment;
 import com.viewlift.views.fragments.AppCMSSettingsFragment;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -497,7 +495,7 @@ public class AppCMSPresenter {
                 signup(extraData[0], extraData[1]);
             } else if (actionType == AppCMSActionType.START_TRIAL) {
                 Log.d(TAG, "Start Trial selected");
-
+                navigateToTrialPage();
             } else if (actionType == AppCMSActionType.HOME_PAGE) {
                 navigateToPage(homePage.getPageId(),
                         homePage.getPageName(),
@@ -1352,6 +1350,24 @@ public class AppCMSPresenter {
                     }
                 }
             });
+        }
+    }
+
+    public void navigateToTrialPage() {
+        if (subscriptionPage != null) {
+            boolean launchSuccess = navigateToPage(subscriptionPage.getPageId(),
+                    subscriptionPage.getPageName(),
+                    subscriptionPage.getPageUI(),
+                    false,
+                    false,
+                    true,
+                    false,
+                    false,
+                    deeplinkSearchQuery);
+            if (!launchSuccess) {
+                Log.e(TAG, "Failed to launch page: " + subscriptionPage.getPageName());
+                launchErrorActivity(currentActivity, platformType);
+            }
         }
     }
 
