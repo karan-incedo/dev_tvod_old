@@ -2023,7 +2023,9 @@ public class AppCMSPresenter {
     }
 
     public boolean isPageSplashPage(String pageId) {
-        if (!TextUtils.isEmpty(pageId) && !TextUtils.isEmpty(splashPage.getPageId())) {
+        if (splashPage != null &&
+                !TextUtils.isEmpty(pageId) &&
+                !TextUtils.isEmpty(splashPage.getPageId())) {
             return splashPage.getPageId().equals(pageId);
         }
         return false;
