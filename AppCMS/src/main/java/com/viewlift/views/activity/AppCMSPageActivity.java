@@ -522,7 +522,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private boolean shouldPopStack() {
         return appCMSBinderStack.size() > 0 &&
                 (!appCMSPresenter.isPagePrimary(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
-                !appCMSPresenter.isPageSplashPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()));
+                        (!appCMSPresenter.isPageSplashPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
+                        !appCMSPresenter.isUserLoggedIn(this)));
     }
 
     private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder) {
