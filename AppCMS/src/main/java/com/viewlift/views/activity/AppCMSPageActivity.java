@@ -30,7 +30,7 @@ import com.android.vending.billing.IInAppBillingService;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
-import com.google.android.gms.common.ConnectionResult;
+import com.facebook.login.LoginManager;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.facebook.FacebookSdk;
@@ -220,9 +220,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     AccessToken oldAccessToken,
                     AccessToken currentAccessToken) {
                 AppCMSPageActivity.this.accessToken = currentAccessToken;
-                if (appCMSPresenter != null) {
+                if (appCMSPresenter != null && currentAccessToken != null) {
                     appCMSPresenter.setFacebookAccessToken(AppCMSPageActivity.this,
-                            currentAccessToken.getToken());
+                            currentAccessToken.getToken(),
+                            currentAccessToken.getUserId());
                 }
             }
         };

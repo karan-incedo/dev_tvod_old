@@ -27,9 +27,11 @@ public class AppCMSFacebookLoginCall {
 
     public void call(String url,
                      String facebookAccessToken,
+                     String userId,
                      final Action1<FacebookLoginResponse> readyAction) {
         FacebookLoginRequest facebookLoginRequest = new FacebookLoginRequest();
         facebookLoginRequest.setAccessToken(facebookAccessToken);
+        facebookLoginRequest.setUserId(userId);
         appCMSFacebookLoginRest.login(url, facebookLoginRequest).enqueue(new Callback<FacebookLoginResponse>() {
             @Override
             public void onResponse(Call<FacebookLoginResponse> call, Response<FacebookLoginResponse> response) {

@@ -19,6 +19,22 @@ public class FacebookLoginResponse {
     @Expose
     String refreshToken;
 
+    @SerializedName("userId")
+    @Expose
+    String userId;
+
+    @SerializedName("name")
+    @Expose
+    String name;
+
+    @SerializedName("picture")
+    @Expose
+    String picture;
+
+    @SerializedName("isSubscribed")
+    @Expose
+    boolean isSubscribed;
+
     public String getAuthorizationToken() {
         return authorizationToken;
     }
@@ -33,5 +49,37 @@ public class FacebookLoginResponse {
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
+
+    public boolean isSubscribed() {
+        return isSubscribed;
+    }
+
+    public void setSubscribed(boolean subscribed) {
+        isSubscribed = subscribed;
     }
 }

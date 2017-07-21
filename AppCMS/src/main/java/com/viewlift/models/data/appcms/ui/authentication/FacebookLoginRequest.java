@@ -14,11 +14,23 @@ public class FacebookLoginRequest {
     @Expose
     String accessToken;
 
+    @SerializedName("userId")
+    @Expose
+    String userId;
+
     public String getAccessToken() {
         return accessToken;
     }
 
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

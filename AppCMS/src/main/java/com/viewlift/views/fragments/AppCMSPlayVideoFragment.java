@@ -220,7 +220,12 @@ public class AppCMSPlayVideoFragment extends Fragment
                     if (shouldRequestAds) {
                         requestAds(adsUrl);
                     } else {
-                        videoPlayerView.resumePlayer();
+                        if (beaconMessageThread != null) {
+                            beaconMessageThread.sendBeaconPing = true;
+                            if (!beaconMessageThread.isAlive()) {
+                                beaconMessageThread.start();
+                            }
+                        }
                     }
                 } else if (playerState.getPlaybackState() == ExoPlayer.STATE_ENDED) {
                     Log.d(TAG, "Video ended");

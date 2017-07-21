@@ -761,9 +761,6 @@ public class AppCMSPresenter {
     }
 
     public void initiateItemPurchase() {
-        if (launchType == LaunchType.SUBSCRIBE) {
-            launchType = LaunchType.LOGIN;
-        }
         if (currentActivity != null &&
                 inAppBillingService != null &&
                 getActiveSubscriptionSku(currentActivity) != null) {
@@ -1387,8 +1384,8 @@ public class AppCMSPresenter {
                     subscriptionPage.getPageName(),
                     subscriptionPage.getPageUI(),
                     false,
-                    false,
                     true,
+                    false,
                     false,
                     false,
                     deeplinkSearchQuery);
@@ -1405,8 +1402,8 @@ public class AppCMSPresenter {
                     loginPage.getPageName(),
                     loginPage.getPageUI(),
                     false,
-                    false,
                     true,
+                    false,
                     false,
                     false,
                     deeplinkSearchQuery);
@@ -1734,6 +1731,7 @@ public class AppCMSPresenter {
                 .endpoint(endPoint)
                 .siteId(siteId)
                 .authToken(getAuthToken(currentActivity))
+                .userId(getLoggedInUser(currentActivity))
                 .usePageIdQueryParam(usePageIdQueryParam)
                 .pageId(pageId)
                 .build();
@@ -1826,18 +1824,34 @@ public class AppCMSPresenter {
         return null;
     }
 
-    public boolean setFacebookAccessToken(Context context, String facebookAccessToken) {
+    public boolean setFacebookAccessToken(Context context,
+                                          final String facebookAccessToken,
+                                          final String facebookUserId) {
         if (context != null) {
             String url = currentActivity.getString(R.string.app_cms_facebook_login_api_url,
                     appCMSMain.getApiBaseUrl(),
                     appCMSMain.getInternalName());
             appCMSFacebookLoginCall.call(url,
-                    getFacebookAccessToken(currentActivity),
+                    facebookAccessToken,
+                    facebookUserId,
                     new Action1<FacebookLoginResponse>() {
                         @Override
                         public void call(FacebookLoginResponse facebookLoginResponse) {
                             if (facebookLoginResponse != null) {
-
+                                setAuthToken(currentActivity, facebookLoginResponse.getAuthorizationToken());
+                                setRefreshToken(currentActivity, facebookLoginResponse.getRefreshToken());
+                                NavigationPrimary homePageNavItem = findHomePageNavItem();
+                                if (homePageNavItem != null) {
+                                    navigateToPage(homePageNavItem.getPageId(),
+                                            homePageNavItem.getTitle(),
+                                            homePageNavItem.getUrl(),
+                                            false,
+                                            true,
+                                            false,
+                                            true,
+                                            false,
+                                            deeplinkSearchQuery);
+                                }
                             }
                         }
                     });
@@ -1868,17 +1882,34 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             SharedPreferences sharedPrefs = currentActivity.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
             sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, null).apply();
-            NavigationPrimary homePageNavItem = findHomePageNavItem();
-            if (homePageNavItem != null) {
-                navigateToPage(homePageNavItem.getPageId(),
-                        homePageNavItem.getTitle(),
-                        homePageNavItem.getUrl(),
-                        false,
-                        true,
-                        false,
-                        true,
-                        false,
-                        deeplinkSearchQuery);
+            if (jsonValueKeyMap.get(appCMSMain.getServiceType()) ==
+                    AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE &&
+                    !isUserLoggedIn(currentActivity)) {
+                launchType = LaunchType.LOGIN;
+                if (splashPage != null) {
+                    navigateToPage(splashPage.getPageId(),
+                            splashPage.getPageName(),
+                            splashPage.getPageUI(),
+                            false,
+                            true,
+                            false,
+                            true,
+                            false,
+                            deeplinkSearchQuery);
+                }
+            } else {
+                launchType = LaunchType.LOGIN_AND_SIGNUP;
+                if (homePage != null) {
+                    navigateToPage(homePage.getPageId(),
+                            homePage.getPageName(),
+                            homePage.getPageUI(),
+                            false,
+                            true,
+                            false,
+                            true,
+                            false,
+                            deeplinkSearchQuery);
+                }
             }
         }
     }
@@ -2261,6 +2292,9 @@ public class AppCMSPresenter {
 
     public void reinitiateSignup() {
         // Call to backend subscription API
+        if (launchType == LaunchType.SUBSCRIBE) {
+            launchType = LaunchType.LOGIN;
+        }
         signup(subscriptionUserEmail, subscriptionUserPassword);
         subscriptionUserEmail = null;
         subscriptionUserPassword = null;
@@ -2595,15 +2629,16 @@ public class AppCMSPresenter {
             if (subscriptionPageIndex >= 0) {
                 subscriptionPage = metaPageList.get(subscriptionPageIndex);
             }
+            int splashScreenIndex = getSplashPage(metaPageList);
+            if (splashScreenIndex >= 0) {
+                splashPage = metaPageList.get(splashScreenIndex);
+            }
             int pageToQueueIndex = -1;
             if (jsonValueKeyMap.get(appCMSMain.getServiceType()) ==
                     AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE &&
                     !isUserLoggedIn(currentActivity)) {
-                pageToQueueIndex = getSplashPage(metaPageList);
-                if (pageToQueueIndex >= 0) {
-                    splashPage = metaPageList.get(pageToQueueIndex);
-                    launchType = LaunchType.LOGIN;
-                }
+                pageToQueueIndex = splashScreenIndex;
+                launchType = LaunchType.LOGIN;
             }
             if (pageToQueueIndex == -1) {
                 pageToQueueIndex = homePageIndex;
