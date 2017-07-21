@@ -48,6 +48,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     protected String defaultAction;
     protected String viewType;
     protected AppCMSUIKeyType viewTypeKey;
+    protected boolean isSelected;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -83,6 +84,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         if (this.viewTypeKey == null) {
             this.viewTypeKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
+        this.isSelected = false;
     }
 
     @Override
@@ -101,7 +103,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 true,
                 this.viewType);
 
-        if (viewTypeKey  == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
+        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
             GradientDrawable planBorder = new GradientDrawable();
             planBorder.setShape(GradientDrawable.RECTANGLE);
             planBorder.setStroke(1, ContextCompat.getColor(view.getContext(), android.R.color.white));

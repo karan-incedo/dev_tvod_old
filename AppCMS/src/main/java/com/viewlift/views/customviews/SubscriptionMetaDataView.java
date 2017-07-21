@@ -108,13 +108,22 @@ public class SubscriptionMetaDataView extends LinearLayout {
             if (devicesSupportedComponent != null &&
                     devicesSupportedComponentIndex > 0 &&
                     devicesSupportedFeatureIndex > 0) {
-                int numDevicesSupported =
-                        moduleAPI.getContentData()
-                                .get(planDetailsIndex)
-                                .getPlanDetails()
-                                .get(0)
-                                .getSupportedDevices()
-                                .size();
+                int numDevicesSupported = -1;
+                if (!TextUtils.isEmpty(moduleAPI.getContentData()
+                        .get(planDetailsIndex)
+                        .getPlanDetails()
+                        .get(0)
+                        .getFeatureDetails()
+                        .get(devicesSupportedFeatureIndex)
+                        .getValue())) {
+                    numDevicesSupported = Integer.valueOf(moduleAPI.getContentData()
+                            .get(planDetailsIndex)
+                            .getPlanDetails()
+                            .get(0)
+                            .getFeatureDetails()
+                            .get(devicesSupportedFeatureIndex)
+                            .getValue());
+                }
                 createDevicesSupportedComponent(devicesSupportedComponent, numDevicesSupported);
             }
         }
@@ -173,26 +182,28 @@ public class SubscriptionMetaDataView extends LinearLayout {
             planLayout.addView(componentViewResult.componentView);
         }
 
-        gridLayoutParams = new GridLayout.LayoutParams();
-        gridLayoutParams.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
-        viewCreator.createComponentView(getContext(),
-                devicesSupportedComponent,
-                devicesSupportedComponent.getLayout(),
-                moduleAPI,
-                null,
-                moduleSettings,
-                jsonValueKeyMap,
-                appCMSPresenter,
-                false,
-                "");
-        if (componentViewResult.componentView instanceof TextView) {
-            ((TextView) componentViewResult.componentView).setText(String.valueOf(numSupportedDevices));
-            componentViewResult.componentView.setLayoutParams(gridLayoutParams);
-            gridLayoutParams.setGravity(Gravity.END);
-            gridLayoutParams.setMarginEnd((int) getContext().getResources().getDimension(R.dimen.app_cms_planmetapage_end_margin));
-            ((TextView) componentViewResult.componentView)
-                    .setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
-            planLayout.addView(componentViewResult.componentView);
+        if (numSupportedDevices != -1) {
+            gridLayoutParams = new GridLayout.LayoutParams();
+            gridLayoutParams.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+            viewCreator.createComponentView(getContext(),
+                    devicesSupportedComponent,
+                    devicesSupportedComponent.getLayout(),
+                    moduleAPI,
+                    null,
+                    moduleSettings,
+                    jsonValueKeyMap,
+                    appCMSPresenter,
+                    false,
+                    "");
+            if (componentViewResult.componentView instanceof TextView) {
+                ((TextView) componentViewResult.componentView).setText(String.valueOf(numSupportedDevices));
+                componentViewResult.componentView.setLayoutParams(gridLayoutParams);
+                gridLayoutParams.setGravity(Gravity.END);
+                gridLayoutParams.setMarginEnd((int) getContext().getResources().getDimension(R.dimen.app_cms_planmetapage_end_margin));
+                ((TextView) componentViewResult.componentView)
+                        .setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+                planLayout.addView(componentViewResult.componentView);
+            }
         }
 
         addView(planLayout);

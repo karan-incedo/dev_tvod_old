@@ -31,6 +31,7 @@ public class GetAppCMSAPIAsyncTask extends AsyncTask<GetAppCMSAPIAsyncTask.Param
         String userId;
         boolean usePageIdQueryParam;
         String pageId;
+        boolean viewPlansPage;
         public static class Builder {
             private Params params;
             public Builder() {
@@ -68,6 +69,10 @@ public class GetAppCMSAPIAsyncTask extends AsyncTask<GetAppCMSAPIAsyncTask.Param
                 params.userId = userId;
                 return this;
             }
+            public Builder viewPlansPage(boolean viewPlansPage) {
+                params.viewPlansPage = viewPlansPage;
+                return this;
+            }
             public Params build() {
                 return params;
             }
@@ -90,7 +95,8 @@ public class GetAppCMSAPIAsyncTask extends AsyncTask<GetAppCMSAPIAsyncTask.Param
                         params[0].authToken,
                         params[0].userId,
                         params[0].usePageIdQueryParam,
-                        params[0].pageId);
+                        params[0].pageId,
+                        params[0].viewPlansPage);
             } catch (IOException e) {
                 Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
             }

@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:alpha="0.6">
+    android:background="#aa000000">
 
     <ImageButton
         android:id="@+id/app_cms_close_button"
@@ -14,6 +14,7 @@
         android:background="@android:color/transparent"
         android:scaleType="fitCenter"
         android:src="@drawable/cancel"
+        android:alpha="1.0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -21,6 +22,7 @@
         android:id="@+id/app_cms_more_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:alpha="1.0"
         android:padding="@dimen/app_cms_account_padding"
         app:layout_constraintTop_toBottomOf="@id/app_cms_close_button" />
 

@@ -42,13 +42,15 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                                                      AppCMSBinder appCMSBinder,
                                                      int textColor,
                                                      int bgColor,
-                                                     int borderColor) {
+                                                     int borderColor,
+                                                     int buttonColor) {
         AppCMSNavItemsFragment fragment = new AppCMSNavItemsFragment();
         Bundle args = new Bundle();
         args.putBinder(context.getString(R.string.fragment_page_bundle_key), appCMSBinder);
         args.putInt(context.getString(R.string.app_cms_text_color_key), textColor);
         args.putInt(context.getString(R.string.app_cms_bg_color_key), bgColor);
         args.putInt(context.getString(R.string.app_cms_border_color_key), borderColor);
+        args.putInt(context.getString(R.string.app_cms_button_color_key), buttonColor);
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,6 +65,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
         int textColor = args.getInt(getContext().getString(R.string.app_cms_text_color_key));
         int bgColor = args.getInt(getContext().getString(R.string.app_cms_bg_color_key));
         int borderColor = args.getInt(getContext().getString(R.string.app_cms_border_color_key));
+        int buttonColor = args.getInt(getContext().getString(R.string.app_cms_button_color_key));
 
         appCMSBinder =
                 ((AppCMSBinder) args.getBinder(getContext().getString(R.string.fragment_page_bundle_key)));
@@ -108,6 +111,21 @@ public class AppCMSNavItemsFragment extends DialogFragment {
             loginBorder.setStroke(getContext().getResources().getInteger(R.integer.app_cms_border_stroke_width), borderColor);
             loginBorder.setColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
             appCMSNavLoginButton.setBackground(loginBorder);
+
+            Button appCMSNavFreeTrialButton = (Button) view.findViewById(R.id.app_cms_nav_free_trial_button);
+            appCMSNavFreeTrialButton.setTextColor(textColor);
+            appCMSNavFreeTrialButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dismiss();
+                    if (appCMSPresenter != null) {
+                        appCMSPresenter.showMainFragmentView(true);
+                        appCMSPresenter.setNavItemToCurrentAction(getActivity());
+                        appCMSPresenter.navigateToTrialPage();
+                    }
+                }
+            });
+            appCMSNavFreeTrialButton.setBackgroundColor(buttonColor);
         }
 
         ImageButton closeButton = (ImageButton) view.findViewById(R.id.app_cms_close_button);

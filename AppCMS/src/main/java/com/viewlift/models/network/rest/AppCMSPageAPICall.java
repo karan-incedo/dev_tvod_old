@@ -53,17 +53,26 @@ public class AppCMSPageAPICall {
                               String authToken,
                               String userId,
                               boolean usePageIdQueryParam,
-                              String pageId) throws IOException {
+                              String pageId,
+                              boolean viewPlansPage) throws IOException {
         String urlWithContent;
         if (usePageIdQueryParam) {
-            urlWithContent =
-                    context.getString(R.string.app_cms_page_api_url,
-                            baseUrl,
-                            endpoint,
-                            siteId,
-                            context.getString(R.string.app_cms_page_id_query_parameter),
-                            pageId,
-                            userId);
+            if (viewPlansPage) {
+                urlWithContent =
+                        context.getString(R.string.app_cms_page_api_view_plans_url,
+                                baseUrl,
+                                endpoint,
+                                siteId);
+            } else {
+                urlWithContent =
+                        context.getString(R.string.app_cms_page_api_url,
+                                baseUrl,
+                                endpoint,
+                                siteId,
+                                context.getString(R.string.app_cms_page_id_query_parameter),
+                                pageId,
+                                userId);
+            }
         } else {
             urlWithContent =
                     context.getString(R.string.app_cms_page_api_url,

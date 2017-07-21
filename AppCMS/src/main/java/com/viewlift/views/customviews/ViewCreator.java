@@ -645,8 +645,7 @@ public class ViewCreator {
                 }
 
                 if (appCMSPresenter.isActionFacebook(component.getAction())) {
-                    ((TextView) componentViewResult.componentView).setBackgroundColor(
-                            ContextCompat.getColor(context, R.color.facebookBlue));
+                    applyBorderToComponent(context, componentViewResult.componentView, component, ContextCompat.getColor(context, R.color.facebookBlue));
                 } else {
                     if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                             .getBlockTitleColor())) {
@@ -654,7 +653,7 @@ public class ViewCreator {
                                 getColor(context, appCMSPresenter.getAppCMSMain().getBrand()
                                         .getGeneral().getBlockTitleColor())));
                     } else {
-                        applyBorderToComponent(context, componentViewResult.componentView, component);
+                        applyBorderToComponent(context, componentViewResult.componentView, component, -1);
                     }
                 }
 
@@ -1035,7 +1034,8 @@ public class ViewCreator {
                                 ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
                                 applyBorderToComponent(context,
                                         componentViewResult.componentView,
-                                        component);
+                                        component,
+                                        -1);
                             }
                             break;
 
@@ -1358,15 +1358,19 @@ public class ViewCreator {
         return null;
     }
 
-    private void applyBorderToComponent(Context context, View view, Component component) {
+    private void applyBorderToComponent(Context context, View view, Component component, int forcedColor) {
         if (component.getBorderWidth() != 0 && component.getBorderColor() != null) {
             if (component.getBorderWidth() > 0 && !TextUtils.isEmpty(component.getBorderColor())) {
-                GradientDrawable ageBorder = new GradientDrawable();
-                ageBorder.setShape(GradientDrawable.RECTANGLE);
-                ageBorder.setStroke(component.getBorderWidth(),
-                        Color.parseColor(getColor(context, component.getBorderColor())));
-                ageBorder.setColor(ContextCompat.getColor(context, android.R.color.transparent));
-                view.setBackground(ageBorder);
+                GradientDrawable viewBorder = new GradientDrawable();
+                viewBorder.setShape(GradientDrawable.RECTANGLE);
+                if (forcedColor == -1) {
+                    viewBorder.setStroke(component.getBorderWidth(),
+                            Color.parseColor(getColor(context, component.getBorderColor())));
+                } else {
+                    viewBorder.setStroke(4, forcedColor);
+                }
+                viewBorder.setColor(ContextCompat.getColor(context, android.R.color.transparent));
+                view.setBackground(viewBorder);
             }
         }
     }

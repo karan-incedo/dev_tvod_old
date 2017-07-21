@@ -118,6 +118,8 @@ import com.viewlift.views.fragments.AppCMSResetPasswordFragment;
 import com.viewlift.views.fragments.AppCMSSearchFragment;
 import com.viewlift.views.fragments.AppCMSSettingsFragment;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -551,7 +553,7 @@ public class AppCMSPresenter {
                         navbarPresent = false;
                         break;
                     case VIDEO_PAGE:
-                        appbarPresent = true;
+                        appbarPresent = false;
                         fullscreenEnabled = false;
                         navbarPresent = false;
                         screenName.append(currentActivity.getString(
@@ -644,7 +646,8 @@ public class AppCMSPresenter {
                                 null),
                         Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor()),
                         Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor()),
-                        Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()));
+                        Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor()),
+                        Color.parseColor(appCMSMain.getBrand().getGeneral().getBlockTitleColor()));
 
         navItemsFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
                 currentActivity.getString(R.string.app_cms_navigation_page_tag));
@@ -1735,6 +1738,10 @@ public class AppCMSPresenter {
                                  boolean usePageIdQueryParam,
                                  String pageId,
                                  Action1<AppCMSPageAPI> readyAction) {
+        String pageName = pageIdToPageNameMap.get(pageId);
+        boolean viewPlans = !TextUtils.isEmpty(pageName) &&
+                pageName.equals(currentActivity.getString(R.string.app_cms_page_subscription_page_name_key));
+
         GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .baseUrl(baseUrl)
@@ -1744,6 +1751,7 @@ public class AppCMSPresenter {
                 .userId(getLoggedInUser(currentActivity))
                 .usePageIdQueryParam(usePageIdQueryParam)
                 .pageId(pageId)
+                .viewPlansPage(viewPlans)
                 .build();
         new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
     }
@@ -2725,9 +2733,13 @@ public class AppCMSPresenter {
                 splashPage = metaPageList.get(splashScreenIndex);
             }
             int pageToQueueIndex = -1;
-            if (appCMSMain.isForceLogin()) {
-                pageToQueueIndex = splashScreenIndex;
+            if (jsonValueKeyMap.get(appCMSMain.getServiceType()) ==
+                    AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE &&
+                    !isUserLoggedIn(currentActivity)) {
                 launchType = LaunchType.LOGIN;
+                if (appCMSMain.isForceLogin()) {
+                    pageToQueueIndex = splashScreenIndex;
+                }
             }
             if (pageToQueueIndex == -1) {
                 pageToQueueIndex = homePageIndex;

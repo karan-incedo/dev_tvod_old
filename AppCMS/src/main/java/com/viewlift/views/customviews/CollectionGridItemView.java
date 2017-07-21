@@ -313,14 +313,18 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setTextColor(Color.parseColor(
                                 childComponent.getTextColor()));
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY) {
-
-                        if (data.getPlanDetails().get(0).getDiscountedPrice() != 0) {
+                        int planIndex = 0;
+                        for (int i = 0; i < data.getPlanDetails().size(); i++) {
+                            if (data.getPlanDetails().get(i).getIsDefault()) {
+                                planIndex = i;
+                            }
+                        }
+                        if (data.getPlanDetails().get(planIndex).getDiscountedPrice() != 0) {
                             StringBuilder stringBuilder = new StringBuilder(String.valueOf(data.getPlanDetails()
-                                    .get(0).getRecurringPaymentAmount()));
+                                    .get(planIndex).getRecurringPaymentAmount()));
 
                             int strikeThroughLength = stringBuilder.length();
                             stringBuilder.append("     ").append(String.valueOf(data.getPlanDetails().get(0).getDiscountedPrice()));
-
 
                             SpannableString spannableString =
                                     new SpannableString(stringBuilder.toString());

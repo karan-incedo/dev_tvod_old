@@ -102,6 +102,7 @@
 
     <!-- AppCMS Login values -->
     <string name="app_cms_log_in_pager_title">LOG IN</string>
+    <string name="app_cms_start_free_trial_title">START YOUR FREE TRIAL</string>
     <string name="app_cms_sign_up_pager_title">SIGN UP</string>
     <string name="app_cms_video_page_page_name">Video Page</string>
     <string name="app_cms_watchlist_navigation_title">Watchlist</string>
@@ -116,4 +117,5 @@
 
     <!-- AppCMS Apptentive API -->
     <string name="app_cms_apptentive_api_key">dfde9505539f2dc1d24700c09fb096b5280ed4cbed0828084540ada79a2b00f7</string>
+    <string name="app_cms_button_color_key">app_cms_button_color</string>
 </resources>
