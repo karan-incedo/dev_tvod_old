@@ -144,6 +144,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_CAROUSEL_ADD_TO_WATCHLIST_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_add_to_watchlist_key),
                 AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_actionlabel_key),
+                AppCMSUIKeyType.PAGE_ACTIONLABEL_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_page_control_key),
                 AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_seperator_key),
@@ -206,6 +208,13 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_description_key),
                 AppCMSUIKeyType.PAGE_API_DESCRIPTION);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_planmetadatatitle_key),
+                AppCMSUIKeyType.PAGE_PLANMETADATATILE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_planmetadataimage_key),
+                AppCMSUIKeyType.PAGE_PLANMETADDATAIMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_planmetadatadevicecount_key),
+                AppCMSUIKeyType.PAGE_PLANMETADATADEVICECOUNT_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_title_key),
                 AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY);

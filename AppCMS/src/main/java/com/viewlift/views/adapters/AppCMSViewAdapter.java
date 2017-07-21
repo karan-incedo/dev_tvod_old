@@ -1,6 +1,8 @@
 package com.viewlift.views.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -98,6 +100,15 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 useMarginsAsPercentages,
                 true,
                 this.viewType);
+
+        if (viewTypeKey  == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
+            GradientDrawable planBorder = new GradientDrawable();
+            planBorder.setShape(GradientDrawable.RECTANGLE);
+            planBorder.setStroke(1, ContextCompat.getColor(view.getContext(), android.R.color.white));
+            planBorder.setColor(ContextCompat.getColor(view.getContext(), android.R.color.transparent));
+            view.setBackground(planBorder);
+        }
+
         return new ViewHolder(view);
     }
 

@@ -84,6 +84,7 @@
     <string name="app_cms_page_carousel_info_key">carouselInfo</string>
     <string name="app_cms_page_carousel_image_key">carouselImage</string>
     <string name="app_cms_page_carousel_add_to_watchlist_key">addToWatchlist</string>
+    <string name="app_cms_page_actionlabel_key">actionLabel</string>
     <string name="app_cms_page_add_to_watchlist_key">watchlistButton</string>
     <string name="app_cms_page_font_bold_key">Bold</string>
     <string name="app_cms_page_font_semibold_key">Semibold</string>
@@ -101,6 +102,9 @@
     <string name="app_cms_page_login_component_key">AC Login Component</string>
     <string name="app_cms_page_signup_component_key">AC SignUp Component</string>
     <string name="app_cms_page_removeall_key">removeAll</string>
+    <string name="app_cms_page_planmetadatatitle_key">planMetaDataTitle</string>
+    <string name="app_cms_page_planmetadataimage_key">planMetaDataImage</string>
+    <string name="app_cms_page_planmetadatadevicecount_key">planMetaDataDeviceCount</string>
 
     <string name="app_cms_page_history_module_key">AC History 01</string>
     <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>

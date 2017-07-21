@@ -485,30 +485,52 @@ public class ViewCreator {
                 if (moduleType == null) {
                     moduleType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
                 }
-                if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
-                    ((RecyclerView) componentViewResult.componentView)
-                            .setLayoutManager(new LinearLayoutManager(context,
-                                    LinearLayoutManager.VERTICAL,
-                                    false));
+                AppCMSViewAdapter appCMSViewAdapter;
+                if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY ) {
+                    if (!BaseView.isTablet(context)) {
+                        ((RecyclerView) componentViewResult.componentView)
+                                .setLayoutManager(new LinearLayoutManager(context,
+                                        LinearLayoutManager.VERTICAL,
+                                        false));
+                    } else {
+                        ((RecyclerView) componentViewResult.componentView)
+                                .setLayoutManager(new LinearLayoutManager(context,
+                                        LinearLayoutManager.HORIZONTAL,
+                                        false));
+                    }
+
+                    appCMSViewAdapter = new AppCMSViewAdapter(context,
+                            this,
+                            appCMSPresenter,
+                            settings,
+                            component.getLayout(),
+                            false,
+                            component,
+                            jsonValueKeyMap,
+                            moduleAPI,
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            viewType);
                 } else {
                     ((RecyclerView) componentViewResult.componentView)
                             .setLayoutManager(new LinearLayoutManager(context,
                                     LinearLayoutManager.HORIZONTAL,
                                     false));
+                    appCMSViewAdapter = new AppCMSViewAdapter(context,
+                            this,
+                            appCMSPresenter,
+                            settings,
+                            parentLayout,
+                            false,
+                            component,
+                            jsonValueKeyMap,
+                            moduleAPI,
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            viewType);
+                    componentViewResult.useWidthOfScreen = true;
                 }
 
-                AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
-                        this,
-                        appCMSPresenter,
-                        settings,
-                        parentLayout,
-                        false,
-                        component,
-                        jsonValueKeyMap,
-                        moduleAPI,
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        viewType);
                 ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
 
                 if (pageView != null) {
@@ -517,7 +539,6 @@ public class ViewCreator {
                             .listview((RecyclerView) componentViewResult.componentView)
                             .build());
                 }
-                componentViewResult.useWidthOfScreen = true;
 
                 if (moduleAPI.getContentData() == null ||
                         moduleAPI.getContentData().size() == 0) {
@@ -998,6 +1019,10 @@ public class ViewCreator {
                                         component);
                             }
                             break;
+
+                        case PAGE_ACTIONLABEL_KEY:
+                            break;
+
                         default:
                             if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText());
@@ -1263,7 +1288,14 @@ public class ViewCreator {
                         starRating);
                 break;
             case PAGE_PLAN_META_DATA_VIEW_KEY:
-                componentViewResult.componentView = new FrameLayout(context);
+                componentViewResult.componentView = new SubscriptionMetaDataView(context,
+                        component,
+                        component.getLayout(),
+                        this,
+                        moduleAPI,
+                        jsonValueKeyMap,
+                        appCMSPresenter,
+                        settings);
 
                 break;
 
