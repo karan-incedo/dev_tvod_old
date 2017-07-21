@@ -191,7 +191,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
             ((TextView) componentViewResult.componentView).setText(String.valueOf(numSupportedDevices));
             componentViewResult.componentView.setLayoutParams(gridLayoutParams);
             gridLayoutParams.setGravity(Gravity.END);
-            gridLayoutParams.setMarginEnd((int) getContext().getResources().getDimension(R.dimen.close_button_margin));
+            gridLayoutParams.setMarginEnd((int) getContext().getResources().getDimension(R.dimen.app_cms_planmetapage_end_margin));
             ((TextView) componentViewResult.componentView)
                     .setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
             planLayout.addView(componentViewResult.componentView);
@@ -241,7 +241,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
                             ((ImageView) componentView).setImageResource(R.drawable.crossicon);
                         }
                         gridLayoutParams.setGravity(Gravity.END);
-                        gridLayoutParams.setMarginEnd((int) getContext().getResources().getDimension(R.dimen.close_button_margin));
+                        gridLayoutParams.setMarginEnd((int) getContext().getResources().getDimension(R.dimen.app_cms_planmetapage_end_margin));
                         componentView.setLayoutParams(gridLayoutParams);
                     }
                     break;

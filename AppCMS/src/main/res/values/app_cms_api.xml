@@ -142,6 +142,7 @@
 
     <!-- Subscription Keys -->
     <string name="app_cms_page_subscription_selectionplan_key">AC SelectPlan 01</string>
+    <string name="app_cms_page_subscription_imagetextrow_key">AC ImageTextRow 01</string>
     <string name="app_cms_plan_title_key">planTitle</string>
     <string name="app_cms_plan_priceinfo_key">planPriceInfo</string>
     <string name="app_cms_plan_bestvalue_key">planBestValueLabel</string>

@@ -479,70 +479,80 @@ public class ViewCreator {
                 break;
 
             case PAGE_COLLECTIONGRID_KEY:
-                componentViewResult.componentView = new RecyclerView(context);
-
                 AppCMSUIKeyType moduleType = jsonValueKeyMap.get(viewType);
                 if (moduleType == null) {
                     moduleType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
                 }
-                AppCMSViewAdapter appCMSViewAdapter;
-                if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY ) {
-                    if (!BaseView.isTablet(context)) {
-                        ((RecyclerView) componentViewResult.componentView)
-                                .setLayoutManager(new LinearLayoutManager(context,
-                                        LinearLayoutManager.VERTICAL,
-                                        false));
+
+                if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_IMAGEROW_KEY) {
+                    componentViewResult.componentView = new ImageView(context);
+                    if (BaseView.isTablet(context)) {
+                        ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.features_tablet);
+                    } else {
+                        ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.features_mobile);
+                    }
+                } else {
+                    componentViewResult.componentView = new RecyclerView(context);
+
+                    AppCMSViewAdapter appCMSViewAdapter;
+                    if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
+                        if (!BaseView.isTablet(context)) {
+                            ((RecyclerView) componentViewResult.componentView)
+                                    .setLayoutManager(new LinearLayoutManager(context,
+                                            LinearLayoutManager.VERTICAL,
+                                            false));
+                        } else {
+                            ((RecyclerView) componentViewResult.componentView)
+                                    .setLayoutManager(new LinearLayoutManager(context,
+                                            LinearLayoutManager.HORIZONTAL,
+                                            false));
+                        }
+
+                        appCMSViewAdapter = new AppCMSViewAdapter(context,
+                                this,
+                                appCMSPresenter,
+                                settings,
+                                component.getLayout(),
+                                false,
+                                component,
+                                jsonValueKeyMap,
+                                moduleAPI,
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                viewType);
                     } else {
                         ((RecyclerView) componentViewResult.componentView)
                                 .setLayoutManager(new LinearLayoutManager(context,
                                         LinearLayoutManager.HORIZONTAL,
                                         false));
+                        appCMSViewAdapter = new AppCMSViewAdapter(context,
+                                this,
+                                appCMSPresenter,
+                                settings,
+                                parentLayout,
+                                false,
+                                component,
+                                jsonValueKeyMap,
+                                moduleAPI,
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                viewType);
+                        componentViewResult.useWidthOfScreen = true;
                     }
 
-                    appCMSViewAdapter = new AppCMSViewAdapter(context,
-                            this,
-                            appCMSPresenter,
-                            settings,
-                            component.getLayout(),
-                            false,
-                            component,
-                            jsonValueKeyMap,
-                            moduleAPI,
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            viewType);
-                } else {
-                    ((RecyclerView) componentViewResult.componentView)
-                            .setLayoutManager(new LinearLayoutManager(context,
-                                    LinearLayoutManager.HORIZONTAL,
-                                    false));
-                    appCMSViewAdapter = new AppCMSViewAdapter(context,
-                            this,
-                            appCMSPresenter,
-                            settings,
-                            parentLayout,
-                            false,
-                            component,
-                            jsonValueKeyMap,
-                            moduleAPI,
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            viewType);
-                    componentViewResult.useWidthOfScreen = true;
-                }
+                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
 
-                ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
+                    if (pageView != null) {
+                        pageView.addListWithAdapter(new ListWithAdapter.Builder()
+                                .adapter(appCMSViewAdapter)
+                                .listview((RecyclerView) componentViewResult.componentView)
+                                .build());
+                    }
 
-                if (pageView != null) {
-                    pageView.addListWithAdapter(new ListWithAdapter.Builder()
-                            .adapter(appCMSViewAdapter)
-                            .listview((RecyclerView) componentViewResult.componentView)
-                            .build());
-                }
-
-                if (moduleAPI.getContentData() == null ||
-                        moduleAPI.getContentData().size() == 0) {
-                    componentViewResult.shouldHideModule = true;
+                    if (moduleAPI.getContentData() == null ||
+                            moduleAPI.getContentData().size() == 0) {
+                        componentViewResult.shouldHideModule = true;
+                    }
                 }
 
                 break;
