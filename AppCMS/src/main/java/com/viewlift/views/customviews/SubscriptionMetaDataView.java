@@ -2,8 +2,6 @@ package com.viewlift.views.customviews;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -228,6 +226,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
                 case PAGE_PLANMETADATATILE_KEY:
                     if (componentView instanceof  TextView) {
                         ((TextView) componentView).setText(featureDetail.getTextToDisplay());
+                        ((TextView) componentView).setEllipsize(TextUtils.TruncateAt.END);
                         componentView.setLayoutParams(gridLayoutParams);
                     }
                     break;
@@ -241,7 +240,6 @@ public class SubscriptionMetaDataView extends LinearLayout {
                             ((ImageView) componentView).setImageResource(R.drawable.crossicon);
                         }
                         gridLayoutParams.setGravity(Gravity.END);
-                        gridLayoutParams.setMarginEnd((int) getContext().getResources().getDimension(R.dimen.app_cms_planmetapage_end_margin));
                         componentView.setLayoutParams(gridLayoutParams);
                     }
                     break;
