@@ -1891,9 +1891,9 @@ public class AppCMSPresenter {
                             splashPage.getPageName(),
                             splashPage.getPageUI(),
                             false,
-                            true,
                             false,
                             true,
+                            false,
                             false,
                             deeplinkSearchQuery);
                 }

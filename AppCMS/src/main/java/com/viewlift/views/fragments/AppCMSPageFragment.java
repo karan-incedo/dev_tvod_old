@@ -15,6 +15,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
 import com.viewlift.views.components.DaggerAppCMSViewComponent;
+import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.modules.AppCMSPageViewModule;
@@ -94,7 +95,7 @@ public class AppCMSPageFragment extends Fragment {
             if (pageView.getParent() != null) {
                 ((ViewGroup) pageView.getParent()).removeAllViews();
             }
-            if (!pageView.isTablet(getContext()) && !appCMSBinder.isFullScreenEnabled()) {
+            if (!BaseView.isTablet(getContext())) {
                 appCMSPresenter.restrictPortraitOnly();
             } else {
                 appCMSPresenter.unrestrictPortraitOnly();

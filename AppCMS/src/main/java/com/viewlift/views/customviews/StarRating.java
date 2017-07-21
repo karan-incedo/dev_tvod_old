@@ -59,27 +59,30 @@ public class StarRating extends LinearLayout {
             int drawableWidth = starDrawable.getIntrinsicWidth();
             int drawableHeight = starDrawable.getIntrinsicHeight();
 
-            Bitmap starViewCropped = Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(starViewCropped);
-            starDrawable.setBounds(0, 0, imageWidth, imageHeight);
-            starDrawable.setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
-            starDrawable.draw(canvas);
+            if (imageHeight > 0 && imageWidth > 0) {
 
-            Paint paint = new Paint();
-            paint.setColor(borderColor);
-            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-            Rect starFilledCroppedRect = new Rect((int) (drawableWidth * percentageToFill),
-                    0,
-                    drawableWidth,
-                    drawableHeight);
-            canvas.drawRect(starFilledCroppedRect, paint);
-            paint = null;
+                Bitmap starViewCropped = Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(starViewCropped);
+                starDrawable.setBounds(0, 0, imageWidth, imageHeight);
+                starDrawable.setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
+                starDrawable.draw(canvas);
 
-            starDrawableNoFill.setBounds(0, 0, imageWidth, imageHeight);
-            starDrawableNoFill.setColorFilter(new PorterDuffColorFilter(borderColor, PorterDuff.Mode.MULTIPLY));
-            starDrawableNoFill.draw(canvas);
+                Paint paint = new Paint();
+                paint.setColor(borderColor);
+                paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+                Rect starFilledCroppedRect = new Rect((int) (drawableWidth * percentageToFill),
+                        0,
+                        drawableWidth,
+                        drawableHeight);
+                canvas.drawRect(starFilledCroppedRect, paint);
+                paint = null;
 
-            imageToFill.setImageDrawable(new BitmapDrawable(imageToFill.getContext().getResources(), starViewCropped));
+                starDrawableNoFill.setBounds(0, 0, imageWidth, imageHeight);
+                starDrawableNoFill.setColorFilter(new PorterDuffColorFilter(borderColor, PorterDuff.Mode.MULTIPLY));
+                starDrawableNoFill.draw(canvas);
+
+                imageToFill.setImageDrawable(new BitmapDrawable(imageToFill.getContext().getResources(), starViewCropped));
+            }
         }
     }
 

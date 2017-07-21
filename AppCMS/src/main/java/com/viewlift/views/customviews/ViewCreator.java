@@ -520,6 +520,10 @@ public class ViewCreator {
                                 ViewGroup.LayoutParams.MATCH_PARENT,
                                 ViewGroup.LayoutParams.WRAP_CONTENT,
                                 viewType);
+
+                        if (!BaseView.isTablet(context)) {
+                            componentViewResult.useWidthOfScreen = true;
+                        }
                     } else {
                         ((RecyclerView) componentViewResult.componentView)
                                 .setLayoutManager(new LinearLayoutManager(context,
