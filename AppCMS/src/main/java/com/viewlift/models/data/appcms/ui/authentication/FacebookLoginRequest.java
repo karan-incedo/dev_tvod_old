@@ -10,7 +10,7 @@ import com.vimeo.stag.UseStag;
 
 @UseStag
 public class FacebookLoginRequest {
-    @SerializedName("accessToken")
+    @SerializedName("facebookToken")
     @Expose
     String accessToken;
 
