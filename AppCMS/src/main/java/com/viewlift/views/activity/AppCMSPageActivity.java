@@ -523,7 +523,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         return appCMSBinderStack.size() > 0 &&
                 (!appCMSPresenter.isPagePrimary(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
                         (!appCMSPresenter.isPageSplashPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
-                        !appCMSPresenter.isUserLoggedIn(this)));
+                        !appCMSPresenter.isUserLoggedIn(this)) &&
+                        !appCMSPresenter.isViewPlanPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()));
     }
 
     private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder) {

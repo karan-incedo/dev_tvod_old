@@ -778,6 +778,7 @@ public class AppCMSPresenter {
                 inAppBillingService != null &&
                 getActiveSubscriptionSku(currentActivity) != null) {
             try {
+                sendCloseOthersAction(null, true);
                 Bundle buyIntentBundle = inAppBillingService.getBuyIntent(3,
                         currentActivity.getPackageName(),
                         getActiveSubscriptionSku(currentActivity),
@@ -1738,9 +1739,7 @@ public class AppCMSPresenter {
                                  boolean usePageIdQueryParam,
                                  String pageId,
                                  Action1<AppCMSPageAPI> readyAction) {
-        String pageName = pageIdToPageNameMap.get(pageId);
-        boolean viewPlans = !TextUtils.isEmpty(pageName) &&
-                pageName.equals(currentActivity.getString(R.string.app_cms_page_subscription_page_name_key));
+        boolean viewPlans = isViewPlanPage(pageId);
 
         GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
                 .context(currentActivity)
@@ -1754,6 +1753,12 @@ public class AppCMSPresenter {
                 .viewPlansPage(viewPlans)
                 .build();
         new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
+    }
+
+    public boolean isViewPlanPage(String pageId) {
+        String pageName = pageIdToPageNameMap.get(pageId);
+        return (!TextUtils.isEmpty(pageName) &&
+                pageName.equals(currentActivity.getString(R.string.app_cms_page_subscription_page_name_key)));
     }
 
     public String getPageIdToPageAPIUrl(String pageId) {
