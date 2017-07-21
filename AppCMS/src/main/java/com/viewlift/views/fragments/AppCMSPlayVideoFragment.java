@@ -160,7 +160,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             hlsUrl = args.getString(getContext().getString(R.string.video_player_hls_url_key));
             filmId = args.getString(getContext().getString(R.string.video_layer_film_id_key));
             adsUrl = args.getString(getContext().getString(R.string.video_player_ads_url_key));
-            shouldRequestAds = args.getBoolean(getContext().getString(R.string.video_player_request_ads_key));
+            shouldRequestAds = false;
             watchedTime = args.getInt(getContext().getString(R.string.watched_time_key));
         }
 
