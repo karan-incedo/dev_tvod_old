@@ -2725,9 +2725,7 @@ public class AppCMSPresenter {
                 splashPage = metaPageList.get(splashScreenIndex);
             }
             int pageToQueueIndex = -1;
-            if (jsonValueKeyMap.get(appCMSMain.getServiceType()) ==
-                    AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE &&
-                    !isUserLoggedIn(currentActivity)) {
+            if (appCMSMain.isForceLogin()) {
                 pageToQueueIndex = splashScreenIndex;
                 launchType = LaunchType.LOGIN;
             }
