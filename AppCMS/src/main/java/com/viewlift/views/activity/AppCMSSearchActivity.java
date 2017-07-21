@@ -159,26 +159,42 @@ public class AppCMSSearchActivity extends AppCompatActivity {
 
             if (Intent.ACTION_VIEW.equals(intent.getAction())) {
                 String[] searchHintResult = intent.getDataString().split(",");
-                queryTerm = searchHintResult[0];
-                searchTerm = searchHintResult[1];
+
+                String permalink = searchHintResult[2];
+                String action = getString(R.string.app_cms_action_videopage_key);
+                String title = searchHintResult[0];
+                Log.d(TAG, "Launching " + permalink + ":" + action);
+                if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                        action,
+                        title,
+                        null,
+                        null,
+                        true)) {
+                    Log.e(TAG, "Could not launch action: " +
+                            " permalink: " +
+                            permalink +
+                            " action: " +
+                            action);
+                }
+
             } else {
                 queryTerm = intent.getStringExtra(SearchManager.QUERY);
                 searchTerm = queryTerm;
-            }
-            if (!TextUtils.isEmpty(searchTerm)) {
-                appCMSSearchView.setQuery(queryTerm, false);
-                final String url = getString(R.string.app_cms_search_api_url,
-                        appCMSSearchUrlData.getBaseUrl(),
-                        appCMSSearchUrlData.getSiteName(),
-                        searchTerm);
-                Log.d(TAG, "Search URL: " + url);
-                new SearchAsyncTask(new Action1<List<AppCMSSearchResult>>() {
-                    @Override
-                    public void call(List<AppCMSSearchResult> data) {
-                        appCMSSearchItemAdapter.setData(data);
-                        updateNoResultsDisplay(appCMSPresenter, data);
-                    }
-                }, appCMSSearchCall).execute(url);
+                if (!TextUtils.isEmpty(searchTerm)) {
+                    appCMSSearchView.setQuery(queryTerm, false);
+                    final String url = getString(R.string.app_cms_search_api_url,
+                            appCMSSearchUrlData.getBaseUrl(),
+                            appCMSSearchUrlData.getSiteName(),
+                            searchTerm);
+                    Log.d(TAG, "Search URL: " + url);
+                    new SearchAsyncTask(new Action1<List<AppCMSSearchResult>>() {
+                        @Override
+                        public void call(List<AppCMSSearchResult> data) {
+                            appCMSSearchItemAdapter.setData(data);
+                            updateNoResultsDisplay(appCMSPresenter, data);
+                        }
+                    }, appCMSSearchCall).execute(url);
+                }
             }
         }
     }
