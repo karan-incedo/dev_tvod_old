@@ -104,7 +104,7 @@ public class AppCMSUIModule {
                 context.getResources().getInteger(R.integer.app_cms_default_read_timeout_msec);
 
         this.unknownHostExceptionTimeout =
-                context.getResources().getInteger(R.integer.app_cms_unknownhostexception_connection_timeout_msec);
+                context.getResources().getInteger(R.integer.app_cms_unknown_host_exception_connection_timeout_msec);
     }
 
     private void createJsonValueKeyMap(Context context) {
