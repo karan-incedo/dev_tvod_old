@@ -106,7 +106,9 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                                 String filmUri = permalinkUri.getLastPathSegment();
                                 String searchHintResult = searchResultList.get(i).getTitle() +
                                         "," +
-                                        filmUri;
+                                        filmUri +
+                                        "," +
+                                        permalinkUri;
                                 Object[] rowResult = { i,
                                     searchResultList.get(i).getTitle(),
                                     searchHintResult };
