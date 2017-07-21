@@ -417,6 +417,7 @@ public abstract class BaseView extends FrameLayout {
                 jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
             layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
             layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            layoutParams.setMargins(0, tm, 0, bm);
         }
 
         view.setLayoutParams(layoutParams);
