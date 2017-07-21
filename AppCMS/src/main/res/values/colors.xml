@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#E80B0F</color>
     <color name="colorNavBarText">#FFFFFF</color>
+    <color name="facebookBlue">#3b5998</color>
 </resources>

@@ -52,6 +52,7 @@ import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
 import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
+import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionResult;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
@@ -166,7 +167,9 @@ public class AppCMSPresenter {
     private static final String REFRESH_TOKEN_SHARED_PREF_NAME = "refresh_token_pref";
     private static final String USER_LOGGED_IN_TIME_PREF_NAME = "user_loggedin_time_pref";
     private static final String FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME = "facebook_access_token_shared_pref_name";
-    private static final String ACTIVE_SUBSCRIPTION_SKU = "active_subscription_sku_key";
+    private static final String ACTIVE_SUBSCRIPTION_SKU = "active_subscription_sku_pref_key";
+    private static final String ACTIVE_SUBSCRIPTION_ID = "active_subscription_id_pref_key";
+    private static final String ACTIVE_SUBSCRIPTION_CURRENCY = "active_subscription_currency_pref_key";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
 
@@ -246,6 +249,7 @@ public class AppCMSPresenter {
     private IInAppBillingService inAppBillingService;
     private String subscriptionUserEmail;
     private String subscriptionUserPassword;
+    private boolean signupFromFacebook;
 
     @Inject
     public AppCMSPresenter(AppCMSMainUICall appCMSMainUICall,
@@ -506,7 +510,10 @@ public class AppCMSPresenter {
                 closeSoftKeyboard();
                 launchResetPasswordPage(extraData[0]);
             } else if (actionType == AppCMSActionType.LOGIN_FACEBOOK) {
-                Log.d(TAG, "Login Facebook selected");
+                Log.d(TAG, "Facebook Login selected");
+                loginFacebook();
+            } else if (actionType == AppCMSActionType.SIGNUP_FACEBOOK) {
+                Log.d(TAG, "Facebook Signup selected");
                 loginFacebook();
             } else if (actionType == AppCMSActionType.SIGNUP) {
                 Log.d(TAG, "Sign-Up selected: " + extraData[0]);
@@ -743,6 +750,7 @@ public class AppCMSPresenter {
 
     public void loginFacebook() {
         if (currentActivity != null) {
+            signupFromFacebook = true;
             LoginManager.getInstance().logInWithReadPermissions(currentActivity,
                     Arrays.asList("public_profile", "user_friends"));
         }
@@ -752,10 +760,12 @@ public class AppCMSPresenter {
         this.inAppBillingService = inAppBillingService;
     }
 
-    public void initiateSignUpAndSubscription(String sku) {
+    public void initiateSignUpAndSubscription(String sku, String planId, String currency) {
         if (currentActivity != null) {
             launchType = LaunchType.SUBSCRIBE;
             setActiveSubscriptionSku(currentActivity, sku);
+            setActiveSubscriptionId(currentActivity, planId);
+            setActiveSubscriptionCurrency(currentActivity, currency);
             navigateToLoginPage();
         }
     }
@@ -1840,17 +1850,22 @@ public class AppCMSPresenter {
                             if (facebookLoginResponse != null) {
                                 setAuthToken(currentActivity, facebookLoginResponse.getAuthorizationToken());
                                 setRefreshToken(currentActivity, facebookLoginResponse.getRefreshToken());
-                                NavigationPrimary homePageNavItem = findHomePageNavItem();
-                                if (homePageNavItem != null) {
-                                    navigateToPage(homePageNavItem.getPageId(),
-                                            homePageNavItem.getTitle(),
-                                            homePageNavItem.getUrl(),
-                                            false,
-                                            true,
-                                            false,
-                                            true,
-                                            false,
-                                            deeplinkSearchQuery);
+                                setLoggedInUser(currentActivity, facebookUserId);
+                                if (launchType == LaunchType.SUBSCRIBE) {
+                                    initiateItemPurchase();
+                                } else {
+                                    NavigationPrimary homePageNavItem = findHomePageNavItem();
+                                    if (homePageNavItem != null) {
+                                        navigateToPage(homePageNavItem.getPageId(),
+                                                homePageNavItem.getTitle(),
+                                                homePageNavItem.getUrl(),
+                                                false,
+                                                true,
+                                                false,
+                                                true,
+                                                false,
+                                                deeplinkSearchQuery);
+                                    }
                                 }
                             }
                         }
@@ -1874,6 +1889,38 @@ public class AppCMSPresenter {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(ACTIVE_SUBSCRIPTION_SKU, 0);
             return sharedPrefs.edit().putString(ACTIVE_SUBSCRIPTION_SKU, subscriptionSku).commit();
+        }
+        return false;
+    }
+
+    public String getActiveSubscriptionId(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(ACTIVE_SUBSCRIPTION_ID, 0);
+            return sharedPrefs.getString(ACTIVE_SUBSCRIPTION_ID, null);
+        }
+        return null;
+    }
+
+    public boolean setActiveSubscriptionId(Context context, String subscriptionId) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(ACTIVE_SUBSCRIPTION_ID, 0);
+            return sharedPrefs.edit().putString(ACTIVE_SUBSCRIPTION_ID, subscriptionId).commit();
+        }
+        return false;
+    }
+
+    public String getActiveSubscriptionCurrency(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(ACTIVE_SUBSCRIPTION_CURRENCY, 0);
+            return sharedPrefs.getString(ACTIVE_SUBSCRIPTION_CURRENCY, null);
+        }
+        return null;
+    }
+
+    public boolean setActiveSubscriptionCurrency(Context context, String subscriptionCurrency) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(ACTIVE_SUBSCRIPTION_CURRENCY, 0);
+            return sharedPrefs.edit().putString(ACTIVE_SUBSCRIPTION_CURRENCY, subscriptionCurrency).commit();
         }
         return false;
     }
@@ -2290,14 +2337,57 @@ public class AppCMSPresenter {
         }
     }
 
-    public void reinitiateSignup() {
-        // Call to backend subscription API
+    public void reinitiateSignup(String receiptData) {
+        SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
+        subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
+        subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
+        subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
+        subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency(currentActivity));
+        subscriptionRequest.setPlanId(getActiveSubscriptionId(currentActivity));
+        subscriptionRequest.setUserId(getLoggedInUser(currentActivity));
+        subscriptionRequest.setReceipt(receiptData);
+        try {
+            appCMSSubscriptionPlanCall.call(
+                    currentActivity.getString(R.string.app_cms_register_subscription_api_url,
+                            appCMSMain.getApiBaseUrl(),
+                            appCMSMain.getInternalName(),
+                            currentActivity.getString(R.string.app_cms_subscription_platform_key)),
+                    R.string.app_cms_subscription_plan_create_key,
+                    subscriptionRequest,
+                    new Action1<List<AppCMSSubscriptionPlanResult>>() {
+                        @Override
+                        public void call(List<AppCMSSubscriptionPlanResult> result) {
+
+                        }
+                    },
+                    new Action1<AppCMSSubscriptionPlanResult>() {
+                        @Override
+                        public void call(AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResults) {
+
+                        }
+                    });
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to update user subscription status");
+        }
         if (launchType == LaunchType.SUBSCRIBE) {
             launchType = LaunchType.LOGIN;
         }
-        signup(subscriptionUserEmail, subscriptionUserPassword);
+        if (!signupFromFacebook) {
+            signup(subscriptionUserEmail, subscriptionUserPassword);
+        }
         subscriptionUserEmail = null;
         subscriptionUserPassword = null;
+    }
+
+    public boolean isActionFacebook(String action) {
+        if (!TextUtils.isEmpty(action)) {
+            if (actionToActionTypeMap.get(action) == AppCMSActionType.LOGIN_FACEBOOK ||
+                    actionToActionTypeMap.get(action) == AppCMSActionType.SIGNUP_FACEBOOK) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void signup(String email, String password) {
@@ -2309,6 +2399,7 @@ public class AppCMSPresenter {
                         appCMSMain.getInternalName());
                 startLoginAsyncTask(url, email, password);
             } else {
+                signupFromFacebook = false;
                 subscriptionUserEmail = email;
                 subscriptionUserPassword = password;
                 initiateItemPurchase();

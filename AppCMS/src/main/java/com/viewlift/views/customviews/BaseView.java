@@ -16,6 +16,7 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Mobile;
 import com.viewlift.models.data.appcms.ui.page.TabletLandscape;
 import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
+import com.viewlift.presenters.AppCMSActionType;
 
 import java.util.Map;
 
@@ -413,11 +414,15 @@ public abstract class BaseView extends FrameLayout {
             layoutParams.gravity = gravity;
         }
 
-        if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY &&
-                jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
-            layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-            layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            layoutParams.setMargins(0, tm, 0, bm);
+        if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {
+            if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
+                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                layoutParams.setMargins(0, tm, 0, bm);
+            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY) {
+                tm  *= +1.6;
+                layoutParams.setMargins(lm, tm, rm, bm);
+            }
         }
 
         view.setLayoutParams(layoutParams);

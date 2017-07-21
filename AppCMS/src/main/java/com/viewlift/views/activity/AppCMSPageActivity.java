@@ -392,7 +392,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 callbackManager.onActivityResult(requestCode, resultCode, data);
                 // Call to backend Facebook API
             } else if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
-                appCMSPresenter.reinitiateSignup();
+                appCMSPresenter.reinitiateSignup(data.getStringExtra("INAPP_PURCHASE_DATA"));
             }
         } else if (resultCode == RESULT_CANCELED) {
             if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {

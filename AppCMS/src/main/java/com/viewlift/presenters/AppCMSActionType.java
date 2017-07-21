@@ -18,6 +18,7 @@ public enum AppCMSActionType {
     FORGOT_PASSWORD,
     LOGIN_GOOGLE,
     LOGIN_FACEBOOK,
+    SIGNUP_FACEBOOK,
     SIGNUP,
     LOGOUT,
     START_TRIAL,

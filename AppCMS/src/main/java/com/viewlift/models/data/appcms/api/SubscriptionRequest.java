@@ -43,6 +43,26 @@ public class SubscriptionRequest {
     @Expose
     String stripeToken;
 
+    @SerializedName("currencyCode")
+    @Expose
+    String currencyCode;
+
+    @SerializedName("retryCount")
+    @Expose
+    int retryCount;
+
+    @SerializedName("nextBillingDate")
+    @Expose
+    String nextBillingDate;
+
+    @SerializedName("zip")
+    @Expose
+    String zip;
+
+    @SerializedName("receipt")
+    @Expose
+    String receipt;
+
     public String getSiteInternalName() {
         return siteInternalName;
     }
@@ -105,5 +125,45 @@ public class SubscriptionRequest {
 
     public void setStripeToken(String stripeToken) {
         this.stripeToken = stripeToken;
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
+    }
+
+    public int getRetryCount() {
+        return retryCount;
+    }
+
+    public void setRetryCount(int retryCount) {
+        this.retryCount = retryCount;
+    }
+
+    public String getNextBillingDate() {
+        return nextBillingDate;
+    }
+
+    public void setNextBillingDate(String nextBillingDate) {
+        this.nextBillingDate = nextBillingDate;
+    }
+
+    public String getZip() {
+        return zip;
+    }
+
+    public void setZip(String zip) {
+        this.zip = zip;
+    }
+
+    public String getReceipt() {
+        return receipt;
+    }
+
+    public void setReceipt(String receipt) {
+        this.receipt = receipt;
     }
 }

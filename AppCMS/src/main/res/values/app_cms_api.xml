@@ -185,6 +185,7 @@
     <string name="app_cms_action_forgotpassword_key">forgotPassword</string>
     <string name="app_cms_action_logingoogle_key">loginGoogle</string>
     <string name="app_cms_action_loginfacebook_key">loginFacebook</string>
+    <string name="app_cms_action_signupfacebook_key">signupfacebook</string>
     <string name="app_cms_action_signup_key">signup</string>
     <string name="app_cms_action_logout_key">logout</string>
     <string name="app_cms_action_qualifier_watchvideo_key">trailer</string>
@@ -221,6 +222,9 @@
     <string name="app_cms_subscription_plan_list_key">list</string>
     <string name="app_cms_subscription_plan_create_key">create</string>
     <string name="app_cms_subscription_plan_update_key">update</string>
+
+    <!-- AppCMS Register Subscription API -->
+    <string name="app_cms_register_subscription_api_url">%1$s/subscription/subscribe?site=%2$s&amp;platform=%3$s</string>
 
     <!-- AppCMS Navigation menu -->
     <string name="app_cms_menu_icon_name">menu_</string>

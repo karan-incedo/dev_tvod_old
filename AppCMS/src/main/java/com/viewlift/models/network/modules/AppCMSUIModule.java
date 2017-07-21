@@ -355,6 +355,8 @@ public class AppCMSUIModule {
                 AppCMSActionType.LOGIN_GOOGLE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_loginfacebook_key),
                 AppCMSActionType.LOGIN_FACEBOOK);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_signupfacebook_key),
+                AppCMSActionType.SIGNUP_FACEBOOK);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_signup_key),
                 AppCMSActionType.SIGNUP);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_logout_key),

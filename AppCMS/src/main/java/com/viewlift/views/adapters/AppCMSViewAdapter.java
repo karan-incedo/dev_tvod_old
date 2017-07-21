@@ -154,7 +154,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
                     @Override
                     public void click(Component childComponent, ContentDatum data) {
-                        appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier());
+                        appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
+                                data.getPlanDetails().get(0).getFeaturePlanIdentifier(),
+                                data.getPlanDetails().get(0).getCountryCode());
                     }
 
                     @Override

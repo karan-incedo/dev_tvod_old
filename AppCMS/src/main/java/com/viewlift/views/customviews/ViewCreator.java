@@ -638,19 +638,24 @@ public class ViewCreator {
                 if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand()
                         .getGeneral().getTextColor())) {
                     if (componentViewResult.componentView instanceof TextView) {
-                        ((TextView) componentViewResult.componentView).setTextColor(
-                                Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain()
-                                        .getBrand().getGeneral().getTextColor())));
+                            ((TextView) componentViewResult.componentView).setTextColor(
+                                    Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain()
+                                            .getBrand().getGeneral().getTextColor())));
                     }
                 }
 
-                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
-                        .getBlockTitleColor())) {
-                    componentViewResult.componentView.setBackgroundColor(Color.parseColor(
-                            getColor(context, appCMSPresenter.getAppCMSMain().getBrand()
-                                    .getGeneral().getBlockTitleColor())));
+                if (appCMSPresenter.isActionFacebook(component.getAction())) {
+                    ((TextView) componentViewResult.componentView).setBackgroundColor(
+                            ContextCompat.getColor(context, R.color.facebookBlue));
                 } else {
-                    applyBorderToComponent(context, componentViewResult.componentView, component);
+                    if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
+                            .getBlockTitleColor())) {
+                        componentViewResult.componentView.setBackgroundColor(Color.parseColor(
+                                getColor(context, appCMSPresenter.getAppCMSMain().getBrand()
+                                        .getGeneral().getBlockTitleColor())));
+                    } else {
+                        applyBorderToComponent(context, componentViewResult.componentView, component);
+                    }
                 }
 
                 int tintColor = Color.parseColor(getColor(context,
