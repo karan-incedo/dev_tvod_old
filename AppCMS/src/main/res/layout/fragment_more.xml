@@ -1,36 +1,8 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <TextView
-        android:id="@+id/app_cms_settings_page_title"
-        android:layout_width="336dp"
-        android:layout_height="24dp"
-        android:layout_alignEnd="@id/app_cms_close_button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="8dp"
-        android:ellipsize="end"
-        android:lines="1"
-        android:singleLine="true"
-        android:textSize="@dimen/app_cms_settings_page_title_textsize"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@id/app_cms_close_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageButton
-        android:id="@+id/app_cms_close_button"
-        android:layout_width="@dimen/close_button_size"
-        android:layout_height="@dimen/close_button_size"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_margin="@dimen/close_button_margin"
-        android:background="@android:color/transparent"
-        android:scaleType="fitCenter"
-        android:src="@drawable/cancel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    android:layout_height="match_parent"
+    android:alpha="0.6">
 
     <View
         android:id="@+id/app_cms_settings_separator_view"

@@ -39,12 +39,6 @@ public class AppCMSMoreFragment extends DialogFragment {
         return fragment;
     }
 
-    @BindView(R.id.app_cms_settings_page_title)
-    TextView appCMSSettingsPageTitle;
-
-    @BindView(R.id.app_cms_settings_separator_view)
-    View appCMSettingsSeparatorView;
-
     @BindView(R.id.app_cms_close_button)
     ImageButton appCMSCloseButton;
 
@@ -67,14 +61,6 @@ public class AppCMSMoreFragment extends DialogFragment {
                 .appCMSPresenter();
 
         String textColor = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor();
-
-        appCMSSettingsPageTitle.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                .getBrand().getGeneral().getTextColor()));
-        appCMSSettingsPageTitle.setText(Html.fromHtml(getContext().getString(R.string.text_with_color,
-                Integer.toHexString(Color.parseColor(textColor)).substring(2),
-                args.getString(getContext().getString(R.string.app_cms_more_title_key)))));
-
-        appCMSettingsSeparatorView.setBackgroundColor(Color.parseColor(textColor));
 
         appCMSCloseButton.setOnClickListener(new View.OnClickListener() {
             @Override
