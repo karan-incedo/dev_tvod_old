@@ -681,6 +681,7 @@ public class AppCMSPresenter {
             if (mainFragmentView != null) {
                 if (show) {
                     mainFragmentView.setVisibility(View.VISIBLE);
+                    mainFragmentView.setAlpha(1.0f);
                     FrameLayout addOnFragment =
                             (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
                     if (addOnFragment != null) {
@@ -693,13 +694,25 @@ public class AppCMSPresenter {
         }
     }
 
-    public void showAddOnFragment() {
+    public void setMainFragmentTransparency(float transparency) {
+        if (currentActivity != null) {
+            FrameLayout mainFragmentView =
+                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_fragment);
+            if (mainFragmentView != null) {
+                mainFragmentView.setAlpha(transparency);
+            }
+        }
+    }
+
+    public void showAddOnFragment(boolean showMainFragment, float mainFragmentTransparency) {
+        showMainFragmentView(showMainFragment);
+        setMainFragmentTransparency(mainFragmentTransparency);
         FrameLayout addOnFragment =
                 (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
         if (addOnFragment != null) {
             addOnFragment.setVisibility(View.VISIBLE);
+            addOnFragment.bringToFront();
         }
-        showMainFragmentView(false);
     }
 
     public boolean isAdditionalFragmentViewAvailable() {
@@ -1441,7 +1454,7 @@ public class AppCMSPresenter {
             transaction.add(R.id.app_cms_addon_fragment,
                     appCMSSettingsFragment,
                     currentActivity.getString(R.string.app_cms_settings_page_tag)).commit();
-            showAddOnFragment();
+            showAddOnFragment(false, 0.0f);
             setNavItemToCurrentAction(currentActivity);
         }
     }
@@ -2142,7 +2155,7 @@ public class AppCMSPresenter {
             transaction.add(R.id.app_cms_addon_fragment,
                     appCMSMoreFragment,
                     currentActivity.getString(R.string.app_cms_more_page_tag)).commit();
-            showAddOnFragment();
+            showAddOnFragment(true, 0.2f);
             setNavItemToCurrentAction(currentActivity);
         }
     }
