@@ -254,6 +254,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.setInAppBillingServiceConn(inAppBillingServiceConn);
         }
 
+        appCMSParentView.setBackgroundColor(Color.parseColor(updatedAppCMSBinder.getAppCMSMain()
+                .getBrand()
+                .getGeneral()
+                .getBackgroundColor()));
+
+        createMenuNavItem();
+        createHomeNavItem(appCMSPresenter.findHomePageNavItem());
+        createMoviesNavItem(appCMSPresenter.findMoviesPageNavItem());
+        createSearchNavItem();
+
         Log.d(TAG, "onCreate()");
     }
 
@@ -531,16 +541,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         Log.d(TAG, "Handling new AppCMSBinder: " + appCMSBinder.getPageName());
 
         pageLoading(false);
-
-        appCMSParentView.setBackgroundColor(Color.parseColor(appCMSBinder.getAppCMSMain()
-                .getBrand()
-                .getGeneral()
-                .getBackgroundColor()));
-
-        createMenuNavItem();
-        createHomeNavItem(appCMSPresenter.findHomePageNavItem());
-        createMoviesNavItem(appCMSPresenter.findMoviesPageNavItem());
-        createSearchNavItem();
 
         Log.d(TAG, "createScreenFromAppCMSBinder() - Handling Navbar");
         handleNavbar(appCMSBinder);
