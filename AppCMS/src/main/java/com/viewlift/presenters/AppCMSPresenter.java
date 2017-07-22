@@ -688,6 +688,7 @@ public class AppCMSPresenter {
                         addOnFragment.setVisibility(View.GONE);
                     }
                 } else {
+                    mainFragmentView.setAlpha(0.0f);
                     mainFragmentView.setVisibility(View.GONE);
                 }
             }

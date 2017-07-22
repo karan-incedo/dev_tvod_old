@@ -660,16 +660,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
         int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
         Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
-        if (0 < distanceFromStackTop) {
-            for (int i = 0; i < distanceFromStackTop; i++) {
-                Log.d(TAG, "Popping stack to getList to page item");
-                try {
-                    getSupportFragmentManager().popBackStack();
-                } catch (IllegalStateException e) {
-                    Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
-                }
-                handleBack(true, false, false);
+        int i = 0;
+        while (i < distanceFromStackTop || shouldPopStack()) {
+            Log.d(TAG, "Popping stack to getList to page item");
+            try {
+                getSupportFragmentManager().popBackStack();
+            } catch (IllegalStateException e) {
+                Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
             }
+            handleBack(true, false, false);
+            i++;
         }
         appCMSBinderStack.push(appCMSBinder.getPageId());
         appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
