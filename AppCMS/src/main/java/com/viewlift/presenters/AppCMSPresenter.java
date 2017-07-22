@@ -252,6 +252,8 @@ public class AppCMSPresenter {
     private String subscriptionUserEmail;
     private String subscriptionUserPassword;
     private boolean signupFromFacebook;
+    private String facebookAccessToken;
+    private String facebookUserId;
 
     @Inject
     public AppCMSPresenter(AppCMSMainUICall appCMSMainUICall,
@@ -1864,7 +1866,11 @@ public class AppCMSPresenter {
     public boolean setFacebookAccessToken(Context context,
                                           final String facebookAccessToken,
                                           final String facebookUserId) {
-        if (context != null) {
+        if (launchType == LaunchType.SUBSCRIBE) {
+            this.facebookAccessToken = facebookAccessToken;
+            this.facebookUserId = facebookUserId;
+            initiateItemPurchase();
+        } else if (context != null) {
             String url = currentActivity.getString(R.string.app_cms_facebook_login_api_url,
                     appCMSMain.getApiBaseUrl(),
                     appCMSMain.getInternalName());
@@ -1878,21 +1884,17 @@ public class AppCMSPresenter {
                                 setAuthToken(currentActivity, facebookLoginResponse.getAuthorizationToken());
                                 setRefreshToken(currentActivity, facebookLoginResponse.getRefreshToken());
                                 setLoggedInUser(currentActivity, facebookUserId);
-                                if (launchType == LaunchType.SUBSCRIBE) {
-                                    initiateItemPurchase();
-                                } else {
-                                    NavigationPrimary homePageNavItem = findHomePageNavItem();
-                                    if (homePageNavItem != null) {
-                                        navigateToPage(homePageNavItem.getPageId(),
-                                                homePageNavItem.getTitle(),
-                                                homePageNavItem.getUrl(),
-                                                false,
-                                                true,
-                                                false,
-                                                true,
-                                                false,
-                                                deeplinkSearchQuery);
-                                    }
+                                NavigationPrimary homePageNavItem = findHomePageNavItem();
+                                if (homePageNavItem != null) {
+                                    navigateToPage(homePageNavItem.getPageId(),
+                                            homePageNavItem.getTitle(),
+                                            homePageNavItem.getUrl(),
+                                            false,
+                                            true,
+                                            false,
+                                            true,
+                                            false,
+                                            deeplinkSearchQuery);
                                 }
                             }
                         }
@@ -2399,11 +2401,15 @@ public class AppCMSPresenter {
         if (launchType == LaunchType.SUBSCRIBE) {
             launchType = LaunchType.LOGIN;
         }
-        if (!signupFromFacebook) {
+        if (signupFromFacebook) {
+            setFacebookAccessToken(currentActivity, facebookAccessToken, facebookUserId);
+        } else {
             signup(subscriptionUserEmail, subscriptionUserPassword);
         }
         subscriptionUserEmail = null;
         subscriptionUserPassword = null;
+        facebookAccessToken = null;
+        facebookUserId = null;
     }
 
     public boolean isActionFacebook(String action) {
