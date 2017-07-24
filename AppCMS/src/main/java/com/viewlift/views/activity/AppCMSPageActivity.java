@@ -415,7 +415,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
         if (resultCode == Activity.RESULT_OK) {
             if (result != null && result.isSuccess()) {
-                result.getSignInAccount().getIdToken();
+                appCMSPresenter.setGoogleAccessToken(this, result.getSignInAccount().getIdToken(),
+                        result.getSignInAccount().getId());
             }
 
             if (FacebookSdk.isFacebookRequestCode(requestCode)) {
