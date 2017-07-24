@@ -1,6 +1,5 @@
 package com.viewlift;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.TextUtils;
 
@@ -50,7 +49,7 @@ public class RESTUnitTest {
     private AppCMSAPIComponent appCMSAPIComponent;
     private Context context = mock(Context.class);
 
-    @SuppressLint("StringFormatMatches")
+    //    @SuppressLint("StringFormatMatches")
     @Before
     public void initialize() {
         when(context.getPackageName()).thenReturn("myPackage");
@@ -60,7 +59,8 @@ public class RESTUnitTest {
                 .thenReturn(new File(""));
         when(context.getString(R.string.app_cms_main_url,
                 context.getString(R.string.app_cms_baseurl),
-                APP_CMS_APP_NAME))
+                APP_CMS_APP_NAME,
+                123454321))
                 .thenReturn(String.format(APP_CMS_MAIN_URL,
                         BASEURL,
                         APP_CMS_APP_NAME));
