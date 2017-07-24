@@ -365,6 +365,8 @@ public class LoginModule extends ModuleView {
                                 default:
                             }
                             break;
+                        case PAGE_SEPARATOR_VIEW_KEY:
+                            break;
                         default:
                             componentView.setBackgroundColor(bgColor);
                     }
