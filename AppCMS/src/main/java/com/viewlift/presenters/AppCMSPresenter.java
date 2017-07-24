@@ -28,6 +28,7 @@ import android.os.Environment;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -46,6 +47,9 @@ import com.facebook.login.LoginManager;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.iid.InstanceID;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
@@ -105,6 +109,7 @@ import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
+import com.viewlift.models.network.rest.AppCMSGoogleLoginCall;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
@@ -177,23 +182,19 @@ public class AppCMSPresenter {
     public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
 
     public static final int RC_PURCHASE_PLAY_STORE_ITEM = 1002;
-
-    public enum LaunchType {
-        LOGIN, SUBSCRIBE, LOGIN_AND_SIGNUP
-    }
-
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
     private static final String REFRESH_TOKEN_SHARED_PREF_NAME = "refresh_token_pref";
     private static final String USER_LOGGED_IN_TIME_PREF_NAME = "user_loggedin_time_pref";
     private static final String FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME = "facebook_access_token_shared_pref_name";
+
+    private static final String GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME = "google_access_token_shared_pref_name";
+
     private static final String ACTIVE_SUBSCRIPTION_SKU = "active_subscription_sku_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_ID = "active_subscription_id_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_CURRENCY = "active_subscription_currency_pref_key";
-
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
-
     public static final String PRESENTER_DIALOG_ACTION = "appcms_presenter_dialog_action";
 
     private static final long MILLISECONDS_PER_SECOND = 1000L;
@@ -202,8 +203,7 @@ public class AppCMSPresenter {
     private static final String MEDIA_SURFIX_MP4 = ".mp4";
     private static final String MEDIA_SURFIX_PNG = ".png";
     private static final String MEDIA_SURFIX_JPG = ".jpg";
-
-
+    private static final int RC_GOOGLE_SIGN_IN = 1001;
     private final AppCMSMainUICall appCMSMainUICall;
     private final AppCMSAndroidUICall appCMSAndroidUICall;
     private final AppCMSPageUICall appCMSPageUICall;
@@ -213,10 +213,11 @@ public class AppCMSPresenter {
     private final AppCMSRefreshIdentityCall appCMSRefreshIdentityCall;
     private final AppCMSResetPasswordCall appCMSResetPasswordCall;
     private final AppCMSFacebookLoginCall appCMSFacebookLoginCall;
+
+    private final AppCMSGoogleLoginCall appCMSGoogleLoginCall;
+
     private final AppCMSUserIdentityCall appCMSUserIdentityCall;
-
     private final AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall;
-
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final Map<String, String> pageNameToActionMap;
     private final Map<String, AppCMSPageUI> actionToPageMap;
@@ -232,13 +233,10 @@ public class AppCMSPresenter {
 
     private final AppCMSUserVideoStatusCall appCMSUserVideoStatusCall;
     private final AppCMSAddToWatchlistCall appCMSAddToWatchlistCall;
-
     private final AppCMSDeleteHistoryCall appCMSDeleteHistoryCall;
-
     private final AppCMSSubscriptionCall appCMSSubscriptionCall;
     private final AppCMSSubscriptionPlanCall appCMSSubscriptionPlanCall;
     private final AppCMSAnonymousAuthTokenCall appCMSAnonymousAuthTokenCall;
-
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private Activity currentActivity;
@@ -267,7 +265,6 @@ public class AppCMSPresenter {
     private GoogleAnalytics googleAnalytics;
     private Tracker tracker;
     private ServiceConnection inAppBillingServiceConn;
-
     private String tvHomeScreenPackage = "com.viewlift.tv.views.activity.AppCmsHomeActivity";
     private String tvErrorScreenPackage = "com.viewlift.tv.views.activity.AppCmsTvErrorActivity";
     private String tvVideoPlayerPackage = "com.viewlift.tv.views.activity.AppCMSTVPlayVideoActivity";
@@ -277,17 +274,19 @@ public class AppCMSPresenter {
     private MetaPage loginPage;
     private MetaPage homePage;
     private MetaPage subscriptionPage;
-
     private PlatformType platformType;
     private AppCMSNavItemsFragment appCMSNavItemsFragment;
-
     private LaunchType launchType;
     private IInAppBillingService inAppBillingService;
     private String subscriptionUserEmail;
     private String subscriptionUserPassword;
     private boolean signupFromFacebook;
+    private boolean isSgnupFromGoogle;
     private String facebookAccessToken;
     private String facebookUserId;
+
+    private String googleAccessToken;
+    private String googleUserId;
 
     private long downloaded = 0L;
 
@@ -327,7 +326,10 @@ public class AppCMSPresenter {
                            AppCMSSignInCall appCMSSignInCall,
                            AppCMSRefreshIdentityCall appCMSRefreshIdentityCall,
                            AppCMSResetPasswordCall appCMSResetPasswordCall,
+
                            AppCMSFacebookLoginCall appCMSFacebookLoginCall,
+                           AppCMSGoogleLoginCall appCMSGoogleLoginCall,
+
                            AppCMSUserIdentityCall appCMSUserIdentityCall,
 
                            AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall,
@@ -349,7 +351,10 @@ public class AppCMSPresenter {
         this.appCMSSignInCall = appCMSSignInCall;
         this.appCMSRefreshIdentityCall = appCMSRefreshIdentityCall;
         this.appCMSResetPasswordCall = appCMSResetPasswordCall;
+
         this.appCMSFacebookLoginCall = appCMSFacebookLoginCall;
+        this.appCMSGoogleLoginCall = appCMSGoogleLoginCall;
+
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.pageNameToActionMap = pageNameToActionMap;
         this.actionToPageMap = actionToPageMap;
@@ -590,109 +595,117 @@ public class AppCMSPresenter {
             } else if (actionType == AppCMSActionType.SIGNUP_FACEBOOK) {
                 Log.d(TAG, "Facebook Signup selected");
                 loginFacebook();
-            } else if (actionType == AppCMSActionType.SIGNUP) {
-                Log.d(TAG, "Sign-Up selected: " + extraData[0]);
-                closeSoftKeyboard();
-                signup(extraData[0], extraData[1]);
-            } else if (actionType == AppCMSActionType.START_TRIAL) {
-                Log.d(TAG, "Start Trial selected");
-                navigateToTrialPage();
-            } else if (actionType == AppCMSActionType.HOME_PAGE) {
-                navigateToPage(homePage.getPageId(),
-                        homePage.getPageName(),
-                        homePage.getPageUI(),
-                        true,
-                        true,
-                        false,
-                        true,
-                        false,
-                        deeplinkSearchQuery);
-            } else if (actionType == AppCMSActionType.SIGNIN) {
-                navigateToLoginPage();
+            } else if (actionType == AppCMSActionType.LOGIN_GOOGLE) {
+                Log.d(TAG, "Google Login selected");
+                loginGoogle();
+            } else if (actionType == AppCMSActionType.SIGNUP_GOOGLE) {
+                Log.d(TAG, "Google signup selected");
+                loginGoogle();
             } else {
-                showMainFragmentView(false);
-                boolean appbarPresent = true;
-                boolean fullscreenEnabled = false;
-                boolean navbarPresent = true;
-                final StringBuffer screenName = new StringBuffer();
-                if (!TextUtils.isEmpty(actionToPageNameMap.get(action))) {
-                    screenName.append(actionToPageNameMap.get(action));
-                }
-                loadingPage = true;
-                switch (actionType) {
-                    case AUTH_PAGE:
-                        appbarPresent = false;
-                        fullscreenEnabled = false;
-                        navbarPresent = false;
-                        break;
-                    case VIDEO_PAGE:
-                        appbarPresent = false;
-                        fullscreenEnabled = false;
-                        navbarPresent = false;
-                        screenName.append(currentActivity.getString(
-                                R.string.app_cms_template_page_separator));
-                        screenName.append(filmTitle);
-                        break;
-                    case PLAY_VIDEO_PAGE:
-                        appbarPresent = false;
-                        fullscreenEnabled = false;
-                        navbarPresent = false;
-                        break;
-                    case HOME_PAGE:
-                    default:
-                        break;
-                }
-                currentActivity.sendBroadcast(new Intent(
-                        AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-                AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
-                getPageIdContent(appCMSMain.getApiBaseUrl(),
-                        actionToPageAPIUrlMap.get(action),
-                        appCMSMain.getInternalName(),
-                        false,
-                        pagePath,
-                        new AppCMSPageAPIAction(appbarPresent,
-                                fullscreenEnabled,
-                                navbarPresent,
-                                appCMSPageUI,
-                                action,
-                                getPageId(appCMSPageUI),
-                                filmTitle,
-                                pagePath,
-                                false,
-                                closeLauncher,
-                                null) {
-                            @Override
-                            public void call(final AppCMSPageAPI appCMSPageAPI) {
-                                if (appCMSPageAPI != null) {
-                                    cancelInternalEvents();
-                                    pushActionInternalEvents(this.action
-                                            + BaseView.isLandscape(currentActivity));
-                                    Bundle args = getPageActivityBundle(currentActivity,
-                                            this.appCMSPageUI,
-                                            appCMSPageAPI,
-                                            this.pageId,
-                                            appCMSPageAPI.getTitle(),
-                                            this.pagePath,
-                                            screenName.toString(),
-                                            loadFromFile,
-                                            this.appbarPresent,
-                                            this.fullscreenEnabled,
-                                            this.navbarPresent,
-                                            this.sendCloseAction,
-                                            this.searchQuery);
-                                    Intent updatePageIntent =
-                                            new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                    updatePageIntent.putExtra(
-                                            currentActivity.getString(R.string.app_cms_bundle_key),
-                                            args);
-                                    currentActivity.sendBroadcast(updatePageIntent);
-                                } else {
-                                    sendStopLoadingPageAction();
-                                    setNavItemToCurrentAction(currentActivity);
+                if (actionType == AppCMSActionType.SIGNUP) {
+                    Log.d(TAG, "Sign-Up selected: " + extraData[0]);
+                    closeSoftKeyboard();
+                    signup(extraData[0], extraData[1]);
+                } else if (actionType == AppCMSActionType.START_TRIAL) {
+                    Log.d(TAG, "Start Trial selected");
+                    navigateToTrialPage();
+                } else if (actionType == AppCMSActionType.HOME_PAGE) {
+                    navigateToPage(homePage.getPageId(),
+                            homePage.getPageName(),
+                            homePage.getPageUI(),
+                            true,
+                            true,
+                            false,
+                            true,
+                            false,
+                            deeplinkSearchQuery);
+                } else if (actionType == AppCMSActionType.SIGNIN) {
+                    navigateToLoginPage();
+                } else {
+                    showMainFragmentView(false);
+                    boolean appbarPresent = true;
+                    boolean fullscreenEnabled = false;
+                    boolean navbarPresent = true;
+                    final StringBuffer screenName = new StringBuffer();
+                    if (!TextUtils.isEmpty(actionToPageNameMap.get(action))) {
+                        screenName.append(actionToPageNameMap.get(action));
+                    }
+                    loadingPage = true;
+                    switch (actionType) {
+                        case AUTH_PAGE:
+                            appbarPresent = false;
+                            fullscreenEnabled = false;
+                            navbarPresent = false;
+                            break;
+                        case VIDEO_PAGE:
+                            appbarPresent = false;
+                            fullscreenEnabled = false;
+                            navbarPresent = false;
+                            screenName.append(currentActivity.getString(
+                                    R.string.app_cms_template_page_separator));
+                            screenName.append(filmTitle);
+                            break;
+                        case PLAY_VIDEO_PAGE:
+                            appbarPresent = false;
+                            fullscreenEnabled = false;
+                            navbarPresent = false;
+                            break;
+                        case HOME_PAGE:
+                        default:
+                            break;
+                    }
+                    currentActivity.sendBroadcast(new Intent(
+                            AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                    AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
+                    getPageIdContent(appCMSMain.getApiBaseUrl(),
+                            actionToPageAPIUrlMap.get(action),
+                            appCMSMain.getInternalName(),
+                            false,
+                            pagePath,
+                            new AppCMSPageAPIAction(appbarPresent,
+                                    fullscreenEnabled,
+                                    navbarPresent,
+                                    appCMSPageUI,
+                                    action,
+                                    getPageId(appCMSPageUI),
+                                    filmTitle,
+                                    pagePath,
+                                    false,
+                                    closeLauncher,
+                                    null) {
+                                @Override
+                                public void call(final AppCMSPageAPI appCMSPageAPI) {
+                                    if (appCMSPageAPI != null) {
+                                        cancelInternalEvents();
+                                        pushActionInternalEvents(this.action
+                                                + BaseView.isLandscape(currentActivity));
+                                        Bundle args = getPageActivityBundle(currentActivity,
+                                                this.appCMSPageUI,
+                                                appCMSPageAPI,
+                                                this.pageId,
+                                                appCMSPageAPI.getTitle(),
+                                                this.pagePath,
+                                                screenName.toString(),
+                                                loadFromFile,
+                                                this.appbarPresent,
+                                                this.fullscreenEnabled,
+                                                this.navbarPresent,
+                                                this.sendCloseAction,
+                                                this.searchQuery);
+                                        Intent updatePageIntent =
+                                                new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                        updatePageIntent.putExtra(
+                                                currentActivity.getString(R.string.app_cms_bundle_key),
+                                                args);
+                                        currentActivity.sendBroadcast(updatePageIntent);
+                                    } else {
+                                        sendStopLoadingPageAction();
+                                        setNavItemToCurrentAction(currentActivity);
+                                    }
+                                    loadingPage = false;
                                 }
-                                loadingPage = false;
-                            }
-                        });
+                            });
+                }
             }
         }
         return result;
@@ -846,6 +859,30 @@ public class AppCMSPresenter {
         }
     }
 
+    public void loginGoogle() {
+        if (currentActivity != null) {
+            isSgnupFromGoogle = true;
+
+            GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions
+                    .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .requestIdToken(currentActivity.getString(R.string.default_web_client_id))
+                    .build();
+
+            Intent googleIntent = Auth.GoogleSignInApi
+                    .getSignInIntent(getGoogleApiClient(googleSignInOptions));
+            currentActivity.startActivityForResult(googleIntent, RC_GOOGLE_SIGN_IN);
+        }
+    }
+
+    private GoogleApiClient getGoogleApiClient(GoogleSignInOptions googleSignInOptions) {
+        return new GoogleApiClient.Builder(currentActivity)
+                .enableAutoManage((FragmentActivity) currentActivity,
+                        (GoogleApiClient.OnConnectionFailedListener) currentActivity)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, googleSignInOptions)
+                .build();
+    }
+
     public void setInAppBillingService(IInAppBillingService inAppBillingService) {
         this.inAppBillingService = inAppBillingService;
     }
@@ -879,7 +916,8 @@ public class AppCMSPresenter {
                         0,
                         0);
             } catch (RemoteException | IntentSender.SendIntentException e) {
-                Log.e(TAG, "Failed to purchase item with sku: " + getActiveSubscriptionSku(currentActivity));
+                Log.e(TAG, "Failed to purchase item with sku: "
+                        + getActiveSubscriptionSku(currentActivity));
             }
         }
     }
@@ -2241,6 +2279,14 @@ public class AppCMSPresenter {
         return null;
     }
 
+    public String getGoogleAccessToken(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPreferences = context.getSharedPreferences(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME, 0);
+            return sharedPreferences.getString(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME, null);
+        }
+        return null;
+    }
+
     public boolean setFacebookAccessToken(Context context,
                                           final String facebookAccessToken,
                                           final String facebookUserId) {
@@ -2280,6 +2326,26 @@ public class AppCMSPresenter {
 
             SharedPreferences sharedPreferences = context.getSharedPreferences(FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME, 0);
             return sharedPreferences.edit().putString(FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME, facebookAccessToken).commit();
+        }
+        return false;
+    }
+
+    public boolean setGoogleAccessToken(Context context,
+                                        final String googleAccessToken,
+                                        final String googleUserId) {
+        if (launchType == LaunchType.SUBSCRIBE) {
+            this.googleAccessToken = googleAccessToken;
+            this.googleUserId = googleUserId;
+            initiateItemPurchase();
+        } else if (context != null) {
+            String url = currentActivity.getString(R.string.app_cms_google_login_api_url,
+                    appCMSMain.getApiBaseUrl());
+
+            //
+
+            SharedPreferences sharedPreferences = context.getSharedPreferences(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME, 0);
+            return sharedPreferences.edit().putString(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME, googleAccessToken).commit();
+
         }
         return false;
     }
@@ -2791,6 +2857,8 @@ public class AppCMSPresenter {
         }
         if (signupFromFacebook) {
             setFacebookAccessToken(currentActivity, facebookAccessToken, facebookUserId);
+        } else if (isSgnupFromGoogle) {
+            setGoogleAccessToken(currentActivity, googleAccessToken, googleUserId);
         } else {
             signup(subscriptionUserEmail, subscriptionUserPassword);
         }
@@ -2798,12 +2866,26 @@ public class AppCMSPresenter {
         subscriptionUserPassword = null;
         facebookAccessToken = null;
         facebookUserId = null;
+
+        googleAccessToken = null;
+        googleUserId = null;
     }
 
     public boolean isActionFacebook(String action) {
         if (!TextUtils.isEmpty(action)) {
             if (actionToActionTypeMap.get(action) == AppCMSActionType.LOGIN_FACEBOOK ||
                     actionToActionTypeMap.get(action) == AppCMSActionType.SIGNUP_FACEBOOK) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isActionGoogle(String action) {
+        if (!TextUtils.isEmpty(action)) {
+            if (actionToActionTypeMap.get(action) == AppCMSActionType.LOGIN_GOOGLE ||
+                    actionToActionTypeMap.get(action) == AppCMSActionType.SIGNUP_GOOGLE) {
                 return true;
             }
         }
@@ -2821,6 +2903,7 @@ public class AppCMSPresenter {
                 startLoginAsyncTask(url, email, password);
             } else {
                 signupFromFacebook = false;
+                isSgnupFromGoogle = false;
                 subscriptionUserEmail = email;
                 subscriptionUserPassword = password;
                 initiateItemPurchase();
@@ -3508,6 +3591,10 @@ public class AppCMSPresenter {
         return jsonValueKeyMap;
     }
 
+    public enum LaunchType {
+        LOGIN, SUBSCRIBE, LOGIN_AND_SIGNUP
+    }
+
     public enum PlatformType {
         ANDROID, TV
     }
@@ -3689,7 +3776,7 @@ public class AppCMSPresenter {
             this.searchQuery = searchQuery;
         }
     }
-	
+
 	public boolean launchTVButtonSelectedAction(String pagePath,
                                               String action,
                                               String filmTitle,

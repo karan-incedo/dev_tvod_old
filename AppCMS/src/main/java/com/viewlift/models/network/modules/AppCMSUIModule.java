@@ -22,6 +22,8 @@ import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryRest;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginRest;
+import com.viewlift.models.network.rest.AppCMSGoogleLoginCall;
+import com.viewlift.models.network.rest.AppCMSGoogleLoginRest;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSHistoryRest;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
@@ -346,40 +348,61 @@ public class AppCMSUIModule {
     private void createActionToActionTypeMap(Context context) {
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_authpage_key),
                 AppCMSActionType.SPLASH_PAGE);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_authpage_key),
                 AppCMSActionType.AUTH_PAGE);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_pagename_homescreen_key),
                 AppCMSActionType.HOME_PAGE);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_browse_key),
                 AppCMSActionType.HOME_PAGE);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_historypage_key),
                 AppCMSActionType.HISTORY_PAGE);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_videopage_key),
                 AppCMSActionType.VIDEO_PAGE);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_watchvideo_key),
                 AppCMSActionType.PLAY_VIDEO_PAGE);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_watchtrailervideo_key),
                 AppCMSActionType.WATCH_TRAILER);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_share_key),
                 AppCMSActionType.SHARE);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_close_key),
                 AppCMSActionType.CLOSE);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_login_key),
                 AppCMSActionType.LOGIN);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_signin_key),
                 AppCMSActionType.SIGNIN);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_forgotpassword_key),
                 AppCMSActionType.FORGOT_PASSWORD);
-        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_forgotpassword_key),
-                AppCMSActionType.LOGIN_GOOGLE);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_loginfacebook_key),
                 AppCMSActionType.LOGIN_FACEBOOK);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_signupfacebook_key),
                 AppCMSActionType.SIGNUP_FACEBOOK);
+
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_logingoogle_key),
+                AppCMSActionType.LOGIN_GOOGLE);
+
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_signupgoogle_key),
+                AppCMSActionType.SIGNUP_GOOGLE);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_signup_key),
                 AppCMSActionType.SIGNUP);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_logout_key),
                 AppCMSActionType.LOGOUT);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_startfreetrial_key),
                 AppCMSActionType.START_TRIAL);
     }
@@ -475,6 +498,12 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSFacebookLoginRest providesAppCMSFacebookLoginRest(Retrofit retrofit) {
         return retrofit.create(AppCMSFacebookLoginRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSGoogleLoginRest providesAppCMSGoogleLoginRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSGoogleLoginRest.class);
     }
 
     @Provides
@@ -584,6 +613,12 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSFacebookLoginCall providesAppCMSFacebookLoginCall(AppCMSFacebookLoginRest appCMSFacebookLoginRest) {
         return new AppCMSFacebookLoginCall(appCMSFacebookLoginRest);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSGoogleLoginCall providesAppCMSGoogleLoginCall(AppCMSGoogleLoginRest appCMSGoogleLoginRest) {
+        return new AppCMSGoogleLoginCall(appCMSGoogleLoginRest);
     }
 
     @Provides

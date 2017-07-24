@@ -44,6 +44,9 @@
     <!-- AppCMS Facebook Login API -->
     <string name="app_cms_facebook_login_api_url">%1$s/identity/signin/facebook?site=%2$s</string>
 
+    <!--AppCMS Google Login API-->
+    <string name="app_cms_google_login_api_url">%1$s/identity/signin/google</string>
+
     <!-- AppCMS User Identity API -->
     <string name="app_cms_user_identity_api_url">%1$s/identity/user?site=%2$s</string>
 
@@ -191,9 +194,12 @@
     <string name="app_cms_action_search_key">search</string>
     <string name="app_cms_action_login_key">login</string>
     <string name="app_cms_action_forgotpassword_key">forgotPassword</string>
-    <string name="app_cms_action_logingoogle_key">loginGoogle</string>
     <string name="app_cms_action_loginfacebook_key">loginFacebook</string>
     <string name="app_cms_action_signupfacebook_key">signupfacebook</string>
+
+    <string name="app_cms_action_logingoogle_key">logingoogle</string>
+    <string name="app_cms_action_signupgoogle_key">signupgoogle</string>
+
     <string name="app_cms_action_signup_key">signup</string>
     <string name="app_cms_action_logout_key">logout</string>
     <string name="app_cms_action_qualifier_watchvideo_key">trailer</string>

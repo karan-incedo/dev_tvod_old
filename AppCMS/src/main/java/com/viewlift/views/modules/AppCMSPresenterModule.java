@@ -10,6 +10,7 @@ import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
+import com.viewlift.models.network.rest.AppCMSGoogleLoginCall;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
@@ -63,7 +64,10 @@ public class AppCMSPresenterModule {
                                                    AppCMSSignInCall appCMSSignInCall,
                                                    AppCMSRefreshIdentityCall appCMSRefreshIdentityCall,
                                                    AppCMSResetPasswordCall appCMSResetPasswordCall,
+
                                                    AppCMSFacebookLoginCall appCMSFacebookLoginCall,
+                                                   AppCMSGoogleLoginCall appCMSGoogleLoginCall,
+
                                                    AppCMSUserIdentityCall appCMSUserIdentityCall,
                                                    AppCMSAddToWatchlistCall appCMSAddToWatchlistCall,
 
@@ -96,7 +100,10 @@ public class AppCMSPresenterModule {
                 appCMSSignInCall,
                 appCMSRefreshIdentityCall,
                 appCMSResetPasswordCall,
+
                 appCMSFacebookLoginCall,
+                appCMSGoogleLoginCall,
+
                 appCMSUserIdentityCall,
 
                 appCMSUpdateWatchHistoryCall,

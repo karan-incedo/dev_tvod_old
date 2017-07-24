@@ -19,7 +19,6 @@ import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
-import android.util.LruCache;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +31,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
@@ -58,7 +58,6 @@ import java.util.List;
 import java.util.Map;
 
 import rx.functions.Action1;
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -66,7 +65,6 @@ import com.viewlift.R;
 
 public class ViewCreator {
     private static final String TAG = "ViewCreator";
-
     ComponentViewResult componentViewResult;
 
     public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
@@ -717,7 +715,11 @@ public class ViewCreator {
                 }
 
                 if (appCMSPresenter.isActionFacebook(component.getAction())) {
-                    applyBorderToComponent(context, componentViewResult.componentView, component, ContextCompat.getColor(context, R.color.facebookBlue));
+                    applyBorderToComponent(context, componentViewResult.componentView, component,
+                            ContextCompat.getColor(context, R.color.facebookBlue));
+                } else if (appCMSPresenter.isActionGoogle(component.getAction())) {
+                    applyBorderToComponent(context, componentViewResult.componentView, component,
+                            ContextCompat.getColor(context, R.color.googleRed));
                 } else {
                     if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                             .getBlockTitleColor())) {
