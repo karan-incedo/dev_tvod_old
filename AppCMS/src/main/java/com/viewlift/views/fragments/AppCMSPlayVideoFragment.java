@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
@@ -312,7 +311,9 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         switch (adEvent.getType()) {
             case LOADED:
-                adsManager.start();
+                if (adsManager != null) {
+                    adsManager.start();
+                }
                 break;
             case CONTENT_PAUSE_REQUESTED:
                 isAdDisplayed = true;

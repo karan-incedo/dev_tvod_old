@@ -39,6 +39,7 @@ import com.viewlift.models.network.rest.AppCMSSubscriptionPlanRest;
 import com.viewlift.models.network.rest.AppCMSSubscriptionRest;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryRest;
+import com.viewlift.models.network.rest.AppCMSUserDownloadVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityRest;
 import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
@@ -122,6 +123,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_HISTORY_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_watchlist_navigation_title),
                 AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_download_page_title),
+                AppCMSUIKeyType.ANDROID_DOWNLOAD_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_history_navigation_title),
                 AppCMSUIKeyType.ANDROID_HISTORY_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_settings_page_title_text),
@@ -144,8 +147,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_CAROUSEL_ADD_TO_WATCHLIST_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_add_to_watchlist_key),
                 AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY);
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_actionlabel_key),
-                AppCMSUIKeyType.PAGE_ACTIONLABEL_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_download_button_key),
+                AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_page_control_key),
                 AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_seperator_key),
@@ -176,6 +179,12 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_text_alignment_center_key),
                 AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_text_alignment_key),
+                AppCMSUIKeyType.PAGE_TEXTALIGNMENT_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_text_alignment_left_key),
+                AppCMSUIKeyType.PAGE_TEXTALIGNMENT_LEFT_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_text_alignment_right_key),
+                AppCMSUIKeyType.PAGE_TEXTALIGNMENT_RIGHT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_title_key),
                 AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_info_key),
@@ -231,6 +240,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_module_key),
                 AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_module_key),
+                AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_continue_watching_module_key),
                 AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY);
 
@@ -297,6 +308,11 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_API_DESCRIPTION);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_thumbnail_url_key),
                 AppCMSUIKeyType.PAGE_API_THUMBNAIL_URL);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_header_view),
+                AppCMSUIKeyType.PAGE_HEADER_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_videodetail_header_view),
+                AppCMSUIKeyType.PAGE_VIDEO_DETAIL_HEADER_KEY);
+
         jsonValueKeyMap.put("", AppCMSUIKeyType.PAGE_EMPTY_KEY);
         jsonValueKeyMap.put(null, AppCMSUIKeyType.PAGE_NULL_KEY);
     }
@@ -590,9 +606,8 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSAddToWatchlistCall providesAppCMSAddToWatchlistCall(AppCMSAddToWatchlistRest appCMSAddToWatchlistRest,
-                                                                     Gson gson) {
-        return new AppCMSAddToWatchlistCall(appCMSAddToWatchlistRest, gson);
+    public AppCMSUserDownloadVideoStatusCall providesAppCMSUserDownloadVideoStatusCall() {
+        return new AppCMSUserDownloadVideoStatusCall();
     }
 
     @Provides

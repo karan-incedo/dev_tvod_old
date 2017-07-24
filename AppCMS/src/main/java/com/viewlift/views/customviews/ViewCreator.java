@@ -37,6 +37,7 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.VideoAssets;
+import com.viewlift.models.data.appcms.downloads.UserVideoDownloadStatus;
 import com.viewlift.models.data.appcms.history.AppCMSDeleteHistoryResult;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -66,16 +67,7 @@ import com.viewlift.R;
 public class ViewCreator {
     private static final String TAG = "ViewCreator";
 
-    private LruCache<String, PageView> pageViewLruCache;
-    private static int PAGE_LRU_CACHE_SIZE = 10;
     ComponentViewResult componentViewResult;
-
-    private LruCache<String, PageView> getPageViewLruCache() {
-        if (pageViewLruCache == null) {
-            pageViewLruCache = new LruCache<>(PAGE_LRU_CACHE_SIZE);
-        }
-        return pageViewLruCache;
-    }
 
     public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
         int runtime = (data.getGist().getRuntime() / 60);
@@ -116,12 +108,6 @@ public class ViewCreator {
         return color1;
     }
 
-    public void removeLruCacheItem(Context context, String pageId) {
-        if (getPageViewLruCache().get(pageId + BaseView.isLandscape(context)) != null) {
-            getPageViewLruCache().remove(pageId + BaseView.isLandscape(context));
-        }
-    }
-
     public PageView generatePage(Context context,
                                  AppCMSPageUI appCMSPageUI,
                                  AppCMSPageAPI appCMSPageAPI,
@@ -133,10 +119,10 @@ public class ViewCreator {
             return null;
         }
 
-        PageView pageView = getPageViewLruCache().get(appCMSPageAPI.getId()
+        PageView pageView = appCMSPresenter.getPageViewLruCache().get(appCMSPageAPI.getId()
                 + BaseView.isLandscape(context));
         if (appCMSPresenter.isPageAVideoPage(screenName)) {
-            pageView = getPageViewLruCache().get(screenName + BaseView.isLandscape(context));
+            pageView = appCMSPresenter.getPageViewLruCache().get(screenName + BaseView.isLandscape(context));
         }
 
         boolean newView = false;
@@ -144,9 +130,9 @@ public class ViewCreator {
             pageView = new PageView(context, appCMSPageUI);
             pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn(context));
             if (appCMSPresenter.isPageAVideoPage(screenName)) {
-                getPageViewLruCache().put(screenName + BaseView.isLandscape(context), pageView);
+                appCMSPresenter.getPageViewLruCache().put(screenName + BaseView.isLandscape(context), pageView);
             } else {
-                getPageViewLruCache().put(appCMSPageAPI.getId()
+                appCMSPresenter.getPageViewLruCache().put(appCMSPageAPI.getId()
                         + BaseView.isLandscape(context), pageView);
             }
             newView = true;
@@ -282,6 +268,8 @@ public class ViewCreator {
             moduleView = new ModuleView<>(context, module, true);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
             boolean hideModule = false;
+            boolean modulesHasHiddenComponent = false;
+            List<HeightLayoutAdjuster> heightLayoutAdjusterList = new ArrayList<>();
             if (module.getComponents() != null) {
                 for (int i = 0; i < module.getComponents().size(); i++) {
                     Component component = module.getComponents().get(i);
@@ -304,8 +292,38 @@ public class ViewCreator {
                         appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
                     }
 
+                    if (componentViewResult.shouldHideComponent) {
+                        HeightLayoutAdjuster heightLayoutAdjuster = new HeightLayoutAdjuster();
+                        modulesHasHiddenComponent = true;
+                        if (BaseView.isTablet(context)) {
+                            if (BaseView.isLandscape(context)) {
+                                heightLayoutAdjuster.heightAdjusment =
+                                        (int) component.getLayout().getTabletLandscape().getHeight();
+                                heightLayoutAdjuster.topMargin =
+                                        (int) component.getLayout().getTabletLandscape().getTopMargin();
+                                heightLayoutAdjuster.yAxis =
+                                        (int) component.getLayout().getTabletLandscape().getYAxis();
+                            } else {
+                                heightLayoutAdjuster.heightAdjusment =
+                                        (int) component.getLayout().getTabletPortrait().getHeight();
+                                heightLayoutAdjuster.topMargin =
+                                        (int) component.getLayout().getTabletPortrait().getTopMargin();
+                                heightLayoutAdjuster.yAxis =
+                                        (int) component.getLayout().getTabletPortrait().getYAxis();
+                            }
+                        } else {
+                            heightLayoutAdjuster.heightAdjusment =
+                                    (int) component.getLayout().getMobile().getHeight();
+                            heightLayoutAdjuster.topMargin =
+                                    (int) component.getLayout().getMobile().getTopMargin();
+                            heightLayoutAdjuster.yAxis =
+                                    (int) component.getLayout().getMobile().getYAxis();
+                        }
+                        heightLayoutAdjusterList.add(heightLayoutAdjuster);
+                    }
+
                     View componentView = componentViewResult.componentView;
-                    if (componentView != null) {
+                    if (componentView != null && !componentViewResult.shouldHideComponent) {
                         if (componentViewResult.addToPageView) {
                             pageView.addView(componentView);
                         } else {
@@ -321,6 +339,7 @@ public class ViewCreator {
                                     componentViewResult.useMarginsAsPercentagesOverride,
                                     componentViewResult.useWidthOfScreen,
                                     module.getView());
+                            moduleView.addChildComponentAndView(component, componentView);
                         }
                     } else {
                         moduleView.setComponentHasView(i, false);
@@ -342,10 +361,60 @@ public class ViewCreator {
             if (hideModule) {
                 moduleView.setVisibility(View.GONE);
             }
+
+            if (modulesHasHiddenComponent) {
+                ViewGroup.LayoutParams moduleLayoutParams = moduleView.getLayoutParams();
+                for (HeightLayoutAdjuster heightLayoutAdjuster : heightLayoutAdjusterList) {
+                    moduleLayoutParams.height -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjusment, context);
+                    List<ModuleView.ChildComponentAndView> childComponentAndViewList =
+                            moduleView.getChildComponentAndViewList();
+                    for (int i = 0; i < childComponentAndViewList.size(); i++) {
+                        ModuleView.ChildComponentAndView childComponentAndView = childComponentAndViewList.get(i);
+                        ViewGroup.MarginLayoutParams childLayoutParams =
+                                (ViewGroup.MarginLayoutParams) childComponentAndView.childView.getLayoutParams();
+                        if (BaseView.isTablet(context)) {
+                            if (BaseView.isLandscape(context)) {
+                                if (childComponentAndView.component.getLayout().getTabletLandscape().getYAxis() > 0 &&
+                                        heightLayoutAdjuster.yAxis <
+                                                childComponentAndView.component.getLayout().getTabletLandscape().getYAxis()) {
+                                    childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjusment, context);
+                                }
+                                if (childComponentAndView.component.getLayout().getTabletLandscape().getTopMargin() > 0 &&
+                                        heightLayoutAdjuster.topMargin <
+                                                childComponentAndView.component.getLayout().getTabletLandscape().getTopMargin()) {
+                                    childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjusment, context);
+                                }
+                            } else {
+                                if (childComponentAndView.component.getLayout().getTabletPortrait().getYAxis() > 0 &&
+                                        heightLayoutAdjuster.yAxis <
+                                                childComponentAndView.component.getLayout().getTabletPortrait().getYAxis()) {
+                                    childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjusment, context);
+                                }
+                                if (childComponentAndView.component.getLayout().getTabletPortrait().getTopMargin() > 0 &&
+                                        heightLayoutAdjuster.topMargin <
+                                                childComponentAndView.component.getLayout().getTabletPortrait().getTopMargin()) {
+                                    childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjusment, context);
+                                }
+                            }
+                        } else {
+                            if (childComponentAndView.component.getLayout().getMobile().getYAxis() > 0 &&
+                                    heightLayoutAdjuster.yAxis <
+                                            childComponentAndView.component.getLayout().getMobile().getYAxis()) {
+                                childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjusment, context);
+                            }
+                            if (childComponentAndView.component.getLayout().getMobile().getTopMargin() > 0 &&
+                                    heightLayoutAdjuster.topMargin <
+                                            childComponentAndView.component.getLayout().getMobile().getTopMargin()) {
+                                childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjusment, context);
+                            }
+                        }
+                        childComponentAndView.childView.setLayoutParams(childLayoutParams);
+                    }
+                }
+                moduleView.setLayoutParams(moduleLayoutParams);
+            }
         }
-        if (moduleView != null) {
-            moduleView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
-        }
+        moduleView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
         return moduleView;
     }
 
@@ -435,6 +504,7 @@ public class ViewCreator {
         componentViewResult.useWidthOfScreen = false;
         componentViewResult.shouldHideModule = false;
         componentViewResult.addToPageView = false;
+        componentViewResult.shouldHideComponent = false;
 
         if (moduleAPI == null) {
             return;
@@ -612,12 +682,14 @@ public class ViewCreator {
                 break;
 
             case PAGE_BUTTON_KEY:
-                if (componentKey == AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) {
+                if (componentKey == AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY) {
                     if (!appCMSPresenter.isUserLoggedIn(context)) {
                         return;
                     }
                 }
                 if (componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY &&
+                        componentKey != AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) {
                     componentViewResult.componentView = new Button(context);
                 } else {
@@ -638,9 +710,9 @@ public class ViewCreator {
                 if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand()
                         .getGeneral().getTextColor())) {
                     if (componentViewResult.componentView instanceof TextView) {
-                            ((TextView) componentViewResult.componentView).setTextColor(
-                                    Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain()
-                                            .getBrand().getGeneral().getTextColor())));
+                        ((TextView) componentViewResult.componentView).setTextColor(
+                                Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain()
+                                        .getBrand().getGeneral().getTextColor())));
                     }
                 }
 
@@ -664,7 +736,14 @@ public class ViewCreator {
                     case PAGE_INFO_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.info_icon));
                         break;
+                    case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
+                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
 
+                        appCMSPresenter.getUserVideoDownloadStatus(
+                                moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDowloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
+                                        moduleAPI.getContentData().get(0)));
+                        break;
                     case PAGE_ADD_TO_WATCHLIST_KEY:
                         ((ImageButton) componentViewResult.componentView)
                                 .setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -709,6 +788,9 @@ public class ViewCreator {
                             });
                         } else {
                             componentViewResult.componentView = null;
+                            if (!BaseView.isLandscape(context)) {
+                                componentViewResult.shouldHideComponent = true;
+                            }
                         }
                         break;
 
@@ -948,8 +1030,8 @@ public class ViewCreator {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
                             } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
-                            } else if (!TextUtils.isEmpty(component.getText())) {
-                                ((TextView) componentViewResult.componentView).setText(component.getText());
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_download_title);
                             }
 
                             break;
@@ -973,6 +1055,8 @@ public class ViewCreator {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle().toUpperCase());
                             } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_download_title);
                             } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
                             }
@@ -980,12 +1064,17 @@ public class ViewCreator {
 
                         case PAGE_VIDEO_DESCRIPTION_KEY:
                             String videoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
+                            if (videoDescription != null) {
+                                videoDescription = videoDescription.trim();
+                            }
                             if (!TextUtils.isEmpty(videoDescription)) {
                                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                                     ((TextView) componentViewResult.componentView).setText(Html.fromHtml(videoDescription));
                                 } else {
                                     ((TextView) componentViewResult.componentView).setText(Html.fromHtml(videoDescription, Html.FROM_HTML_MODE_COMPACT));
                                 }
+                            } else if (!BaseView.isLandscape(context)) {
+                                componentViewResult.shouldHideComponent = true;
                             }
                             ViewTreeObserver textVto = componentViewResult.componentView.getViewTreeObserver();
                             ViewCreatorMultiLineLayoutListener viewCreatorLayoutListener =
@@ -1029,6 +1118,8 @@ public class ViewCreator {
                                     convertedRating = context.getString(R.string.age_rating_converted_pg);
                                 } else if (parentalRating.contains(context.getString(R.string.age_rating_fourteen))) {
                                     convertedRating = context.getString(R.string.age_rating_converted_fourteen);
+                                } else if (parentalRating.contains(context.getString(R.string.age_raging_r))) {
+                                    convertedRating = context.getString(R.string.age_rating_converted_eighteen);
                                 }
                                 ((TextView) componentViewResult.componentView).setText(convertedRating);
                                 ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
@@ -1159,6 +1250,9 @@ public class ViewCreator {
             case PAGE_CASTVIEW_VIEW_KEY:
                 if (moduleAPI.getContentData().get(0).getCreditBlocks() == null) {
                     componentViewResult.componentView = null;
+                    if (!BaseView.isLandscape(context)) {
+                        componentViewResult.shouldHideComponent = true;
+                    }
                     return;
                 }
                 String fontFamilyKey = null, fontFamilyKeyTypeParsed = null;
@@ -1235,18 +1329,24 @@ public class ViewCreator {
                     }
                 }
 
-                componentViewResult.componentView = new CreditBlocksView(context,
-                        fontFamilyKey,
-                        fontFamilyKeyType,
-                        fontFamilyValue,
-                        fontFamilyValueType,
-                        directorTitle,
-                        directorListSb.toString(),
-                        starringTitle,
-                        starringListSb.toString(),
-                        textColor,
-                        BaseView.getFontSizeKey(context, component.getLayout()),
-                        BaseView.getFontSizeValue(context, component.getLayout()));
+                if (directorListSb.length() == 0 && starringListSb.length() == 0) {
+                    if (!BaseView.isLandscape(context)) {
+                        componentViewResult.shouldHideComponent = true;
+                    }
+                } else {
+                    componentViewResult.componentView = new CreditBlocksView(context,
+                            fontFamilyKey,
+                            fontFamilyKeyType,
+                            fontFamilyValue,
+                            fontFamilyValueType,
+                            directorTitle,
+                            directorListSb.toString(),
+                            starringTitle,
+                            starringListSb.toString(),
+                            textColor,
+                            BaseView.getFontSizeKey(context, component.getLayout()),
+                            BaseView.getFontSizeValue(context, component.getLayout()));
+                }
                 break;
 
             case PAGE_TEXTFIELD_KEY:
@@ -1343,9 +1443,15 @@ public class ViewCreator {
                     return appCMSPageAPI.getModules().get(0);
                 }
             }
+            if (AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
+                if (appCMSPageAPI.getModules() != null && appCMSPageAPI.getModules().size() > 0) {
+                    return appCMSPageAPI.getModules().get(0);
+                }
+            }
 
             for (Module moduleAPI : appCMSPageAPI.getModules()) {
                 if (module.getId().equals(moduleAPI.getId())) {
+
                     return moduleAPI;
                 } else if (jsonValueKeyMap.get(module.getType()) != null &&
                         jsonValueKeyMap.get(moduleAPI.getModuleType()) != null &&
@@ -1416,6 +1522,7 @@ public class ViewCreator {
         boolean useWidthOfScreen;
         boolean shouldHideModule;
         boolean addToPageView;
+        boolean shouldHideComponent;
     }
 
     public static class UpdateImageIconAction implements Action1<UserVideoStatusResponse> {
@@ -1478,5 +1585,80 @@ public class ViewCreator {
                 imageButton.setOnClickListener(addClickListener);
             }
         }
+    }
+
+    /**
+     * This class has been created to updated the Download Image Action and Status
+     */
+    public static class UpdateDowloadImageIconAction implements Action1<UserVideoDownloadStatus> {
+        private final ImageButton imageButton;
+        private final AppCMSPresenter appCMSPresenter;
+        private final ContentDatum contentDatum;
+
+        private View.OnClickListener addClickListener;
+
+
+        public UpdateDowloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
+                                            ContentDatum contentDatum) {
+            this.imageButton = imageButton;
+            this.appCMSPresenter = presenter;
+            this.contentDatum = contentDatum;
+
+            addClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    appCMSPresenter.editDownload(UpdateDowloadImageIconAction.this.contentDatum, UpdateDowloadImageIconAction.this, true);
+                }
+            };
+        }
+
+
+        @Override
+        public void call(UserVideoDownloadStatus userVideoDownloadStatus) {
+            if (userVideoDownloadStatus != null) {
+
+                switch (userVideoDownloadStatus.getDownloadStatus()) {
+                    case STATUS_FAILED:
+
+                        break;
+                    case STATUS_PAUSED:
+
+                        break;
+                    case STATUS_PENDING:
+
+                        appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(), UpdateDowloadImageIconAction.this.imageButton, appCMSPresenter, this);
+                        imageButton.setOnClickListener(null);
+                        break;
+                    case STATUS_RUNNING:
+
+
+                        appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(), UpdateDowloadImageIconAction.this.imageButton, appCMSPresenter, this);
+                        imageButton.setOnClickListener(null);
+                        break;
+                    case STATUS_SUCCESSFUL:
+
+                        imageButton.setImageResource(R.drawable.ic_downloaded);
+                        imageButton.setOnClickListener(null);
+                        break;
+                    default:
+
+                        Log.d(TAG, "No download Status available ");
+                        break;
+
+                }
+
+            } else {
+
+                imageButton.setImageResource(R.drawable.ic_download);
+                imageButton.setOnClickListener(addClickListener);
+            }
+        }
+    }
+
+    private static class HeightLayoutAdjuster {
+        int heightAdjusment;
+        int topMargin;
+        int yAxis;
     }
 }

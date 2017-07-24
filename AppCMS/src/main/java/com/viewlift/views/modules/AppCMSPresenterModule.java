@@ -21,6 +21,7 @@ import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
+import com.viewlift.models.network.rest.AppCMSUserDownloadVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
 import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
@@ -68,6 +69,8 @@ public class AppCMSPresenterModule {
 
                                                    AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall,
                                                    AppCMSUserVideoStatusCall appCMSUserVideoStatusCall,
+                                                   AppCMSUserDownloadVideoStatusCall appCMSUserDownloadVideoStatusCall,
+
 
                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                    Map<String, String> pageNameToActionMap,
@@ -98,6 +101,8 @@ public class AppCMSPresenterModule {
 
                 appCMSUpdateWatchHistoryCall,
                 appCMSUserVideoStatusCall,
+                appCMSUserDownloadVideoStatusCall,
+
                 appCMSAddToWatchlistCall,
 
                 jsonValueKeyMap,

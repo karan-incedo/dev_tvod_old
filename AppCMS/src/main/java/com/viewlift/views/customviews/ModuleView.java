@@ -2,11 +2,15 @@ package com.viewlift.views.customviews;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Module;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by viewlift on 5/17/17.
@@ -17,9 +21,12 @@ public class ModuleView<T extends Module> extends BaseView {
 
     private final T module;
 
+    private List<ChildComponentAndView> childComponentAndViewList;
+
     public ModuleView(Context context, T module, boolean init) {
         super(context);
         this.module = module;
+        this.childComponentAndViewList = new ArrayList<>();
         if (init) {
             init();
         }
@@ -58,5 +65,21 @@ public class ModuleView<T extends Module> extends BaseView {
 
     public T getModule() {
         return module;
+    }
+
+    public void addChildComponentAndView(Component component, View childView) {
+        ChildComponentAndView childComponentAndView = new ChildComponentAndView();
+        childComponentAndView.component = component;
+        childComponentAndView.childView = childView;
+        childComponentAndViewList.add(childComponentAndView);
+    }
+
+    public List<ChildComponentAndView> getChildComponentAndViewList() {
+        return childComponentAndViewList;
+    }
+
+    public static class ChildComponentAndView {
+        Component component;
+        View childView;
     }
 }

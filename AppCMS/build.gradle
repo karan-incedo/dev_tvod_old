@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'realm-android'
 
 def final packageName = 'com.viewlift.hoichoi'
 def final customApplicationId = 'HoiChoi'
@@ -107,6 +108,10 @@ android {
         exclude 'third_party/java_src/error_prone/project/annotations/Google_internal.gwt.xml'
         exclude 'error_prone/Annotations.gwt.xml'
         exclude 'third_party/java_src/error_prone/project/annotations/Annotations.gwt.xml'
+    }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
     }
 }
 

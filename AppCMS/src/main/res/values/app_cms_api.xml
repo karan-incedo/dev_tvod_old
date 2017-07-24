@@ -80,6 +80,9 @@
     <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
     <string name="app_cms_page_thumbnail_title_key">thumbnailTitle</string>
     <string name="app_cms_page_text_alignment_center_key">center</string>
+    <string name="app_cms_page_text_alignment_key">textAlignment</string>
+    <string name="app_cms_page_text_alignment_left_key">left</string>
+    <string name="app_cms_page_text_alignment_right_key">right</string>
     <string name="app_cms_page_carousel_title_key">carouselTitle</string>
     <string name="app_cms_page_carousel_info_key">carouselInfo</string>
     <string name="app_cms_page_carousel_image_key">carouselImage</string>
@@ -108,15 +111,18 @@
 
     <string name="app_cms_page_history_module_key">AC History 01</string>
     <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>
+    <string name="app_cms_page_download_module_key">AC Downloads 01</string>
     <string name="app_cms_page_continue_watching_module_key">AC ContinueWatching 01</string>
 
     <string name="app_cms_page_history_title">History</string>
     <string name="app_cms_page_watchlist_title">WatchList</string>
+    <string name="app_cms_page_download_title">My Downloads</string>
 
     <string name="app_cms_page_watchlist_duration_key">duration</string>
     <string name="app_cms_page_watchlist_description_key">description</string>
     <string name="app_cms_page_watchlist_title_key">title</string>
 
+    <string name="app_cms_page_video_download_button_key">downloadButton</string>
     <string name="app_cms_page_video_image_key">videoImage</string>
     <string name="app_cms_page_video_play_button_key">playButton</string>
     <string name="app_cms_page_video_description_key">videoDescriptionText</string>dd
@@ -243,4 +249,9 @@
 
     <!-- AppCMS Image with Resize Query -->
     <string name="app_cms_image_with_resize_query">%1$s?impolicy=resize&amp;w=%2$d&amp;h=%3$d</string>
+
+    <!--TV Specific-->
+    <string name="app_cms_header_view">headerView</string>
+    <string name="app_cms_videodetail_header_view">videoDetailHeader</string>
+
 </resources>

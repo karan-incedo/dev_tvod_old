@@ -48,13 +48,15 @@
     <string name="age_rating_y7">Y7</string>
     <string name="age_rating_g">G</string>
     <string name="age_rating_pg">PG</string>
+    <string name="age_raging_r">R</string>
     <string name="age_rating_fourteen">14</string>
     <string name="age_rating_converted_y">2+</string>
     <string name="age_rating_converted_y7">7+</string>
     <string name="age_rating_converted_g">0+</string>
     <string name="age_rating_converted_pg">13+</string>
     <string name="age_rating_converted_fourteen">14+</string>
-    <string name="age_rating_converted_default">18+</string>
+    <string name="age_rating_converted_eighteen">18+</string>
+    <string name="age_rating_converted_default">NR</string>
     <string name="no_results">No results</string>
     <string name="opensans_bold_ttf">fonts/OpenSans-Bold.ttf</string>
     <string name="opensans_semibold_ttf">fonts/OpenSans-Semibold.ttf</string>
@@ -69,6 +71,14 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="video_player_request_ads_key">video_player_request_ads</string>
+
+
+    <string name="dialog_item_key">dialog_item</string>
+    <string name="dialog_item_title_key">title</string>
+    <string name="dialog_item_description_key">description</string>
+    <string name="dialog_item_text_color_key">text_color</string>
+
+
     <string name="app_cms_email_input_text_hint">EMAIL</string>
     <string name="please_input_your_email_address_to_send_a_reset_password_link_text">Please input your email address to send a reset password link.</string>
     <string name="empty_history_list_message">Your history is currently empty.</string>
@@ -106,6 +116,7 @@
     <string name="app_cms_sign_up_pager_title">SIGN UP</string>
     <string name="app_cms_video_page_page_name">Video Page</string>
     <string name="app_cms_watchlist_navigation_title">Watchlist</string>
+    <string name="app_cms_download_page_title">Downloads</string>
     <string name="app_cms_history_navigation_title">History</string>
     <string name="app_cms_more_text_key">app_cms_more_text</string>
     <string name="app_cms_more_title_key">app_cms_more_title</string>

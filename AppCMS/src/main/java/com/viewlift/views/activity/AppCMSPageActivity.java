@@ -19,6 +19,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -59,7 +60,8 @@ import rx.functions.Action1;
  */
 
 public class AppCMSPageActivity extends AppCompatActivity implements
-        AppCMSPageFragment.OnPageCreation {
+        AppCMSPageFragment.OnPageCreation,
+        FragmentManager.OnBackStackChangedListener {
     private static final String TAG = "AppCMSPageActivity";
 
     private static final int NAV_PAGE_INDEX = 0;
@@ -333,6 +335,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (resumeInternalEvents) {
+            appCMSPresenter.restartInternalEvents();
+            appCMSPresenter.showMainFragmentView(false);
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         resume();
@@ -368,7 +379,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
         if (updatedAppCMSBinder != null && viewCreator != null) {
-            viewCreator.removeLruCacheItem(this, updatedAppCMSBinder.getPageId());
+            appCMSPresenter.removeLruCacheItem(this, updatedAppCMSBinder.getPageId());
         }
         unregisterReceiver(presenterActionReceiver);
 
@@ -497,12 +508,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void resume() {
-        if (resumeInternalEvents) {
-            appCMSPresenter.restartInternalEvents();
-            appCMSPresenter.showMainFragmentView(false);
-            Log.d(TAG, "onResume() - Resuming internal events");
-        }
-
         if (pageViewDuringSearch != null) {
             selectNavItem(pageViewDuringSearch);
         } else {
@@ -549,6 +554,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void createFragment(AppCMSBinder appCMSBinder) {
         try {
+            getSupportFragmentManager().addOnBackStackChangedListener(this);
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             Fragment appCMSPageFragment = AppCMSPageFragment.newInstance(this, appCMSBinder);
@@ -556,14 +562,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     appCMSBinder.getPageId());
             fragmentTransaction.addToBackStack(appCMSBinder.getPageId());
             fragmentTransaction.commit();
-            getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
-                @Override
-                public void onBackStackChanged() {
-                    appCMSPresenter.dismissOpenDialogs(null);
-                    appCMSPresenter.showMainFragmentView(true);
-                    getSupportFragmentManager().removeOnBackStackChangedListener(this);
-                }
-            });
         } catch (IllegalStateException e) {
             Log.e(TAG, "Failed to add Fragment to back stack");
         }
@@ -664,7 +662,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         while (i < distanceFromStackTop || shouldPopStack()) {
             Log.d(TAG, "Popping stack to getList to page item");
             try {
-                getSupportFragmentManager().popBackStack();
+                getSupportFragmentManager().popBackStackImmediate();
             } catch (IllegalStateException e) {
                 Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
             }
@@ -718,41 +716,45 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void createHomeNavItem(final NavigationPrimary homePageNav) {
-        final NavBarItemView homeNavBarItemView =
-                (NavBarItemView) appCMSTabNavContainer.getChildAt(HOME_PAGE_INDEX);
-        int highlightColor =
-                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
-        homeNavBarItemView.setImage(getString(R.string.app_cms_home_icon_name));
-        homeNavBarItemView.setHighlightColor(highlightColor);
-        homeNavBarItemView.setLabel(homePageNav.getTitle());
-        homeNavBarItemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectNavItemAndLaunchPage(homeNavBarItemView,
-                        homePageNav.getPageId(),
-                        homePageNav.getTitle());
-            }
-        });
-        homeNavBarItemView.setTag(homePageNav.getPageId());
+        if (homePageNav != null) {
+            final NavBarItemView homeNavBarItemView =
+                    (NavBarItemView) appCMSTabNavContainer.getChildAt(HOME_PAGE_INDEX);
+            int highlightColor =
+                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+            homeNavBarItemView.setImage(getString(R.string.app_cms_home_icon_name));
+            homeNavBarItemView.setHighlightColor(highlightColor);
+            homeNavBarItemView.setLabel(homePageNav.getTitle());
+            homeNavBarItemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    selectNavItemAndLaunchPage(homeNavBarItemView,
+                            homePageNav.getPageId(),
+                            homePageNav.getTitle());
+                }
+            });
+            homeNavBarItemView.setTag(homePageNav.getPageId());
+        }
     }
 
     private void createMoviesNavItem(final NavigationPrimary moviePageNav) {
-        final NavBarItemView moviesNavBarItemView =
-                (NavBarItemView) appCMSTabNavContainer.getChildAt(MOVIES_PAGE_INDEX);
-        int highlightColor =
-                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
-        moviesNavBarItemView.setImage(getString(R.string.app_cms_movies_icon_name));
-        moviesNavBarItemView.setHighlightColor(highlightColor);
-        moviesNavBarItemView.setLabel(moviePageNav.getTitle());
-        moviesNavBarItemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectNavItemAndLaunchPage(moviesNavBarItemView,
-                        moviePageNav.getPageId(),
-                        moviePageNav.getTitle());
-            }
-        });
-        moviesNavBarItemView.setTag(moviePageNav.getPageId());
+        if (moviePageNav != null) {
+            final NavBarItemView moviesNavBarItemView =
+                    (NavBarItemView) appCMSTabNavContainer.getChildAt(MOVIES_PAGE_INDEX);
+            int highlightColor =
+                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+            moviesNavBarItemView.setImage(getString(R.string.app_cms_movies_icon_name));
+            moviesNavBarItemView.setHighlightColor(highlightColor);
+            moviesNavBarItemView.setLabel(moviePageNav.getTitle());
+            moviesNavBarItemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    selectNavItemAndLaunchPage(moviesNavBarItemView,
+                            moviePageNav.getPageId(),
+                            moviePageNav.getTitle());
+                }
+            });
+            moviesNavBarItemView.setTag(moviePageNav.getPageId());
+        }
     }
 
     private void createSearchNavItem() {
@@ -840,5 +842,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             }
         }
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        appCMSPresenter.dismissOpenDialogs(null);
+        appCMSPresenter.showMainFragmentView(true);
+        getSupportFragmentManager().removeOnBackStackChangedListener(this);
     }
 }

@@ -121,6 +121,10 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             }
                             itemSelected = true;
                             switch (titleKey) {
+                                case ANDROID_DOWNLOAD_NAV_KEY:
+                                    appCMSPresenter.navigateToDownloadPage(navigationUser.getPageId(),
+                                            navigationUser.getTitle(), navigationUser.getUrl(), false);
+                                    break;
                                 case ANDROID_WATCHLIST_NAV_KEY:
                                     appCMSPresenter.navigateToWatchlistPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);

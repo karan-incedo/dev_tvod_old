@@ -324,6 +324,7 @@ public abstract class BaseView extends FrameLayout {
 
                 case PAGE_PLAY_IMAGE_KEY:
                     if (AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY != jsonValueKeyMap.get(viewType)
+                            && AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY != jsonValueKeyMap.get(viewType)
                             && AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY != jsonValueKeyMap.get(viewType)) {
                         gravity = Gravity.CENTER;
                         tm = 0;
@@ -383,7 +384,11 @@ public abstract class BaseView extends FrameLayout {
                         lm -= viewWidth * 1.2;
                     }
                     break;
-
+                case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
+                    if (isTablet(getContext())) {
+                        lm -= viewWidth * 1.2;
+                    }
+                    break;
                 default:
             }
 
