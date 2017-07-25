@@ -97,6 +97,22 @@ public class AppCMSSubscriptionPlanCall {
                         });
                 break;
 
+            case R.string.app_cms_subscription_plan_cancel_key:
+                appCMSSubscriptionPlanRest.cancelPlan(url, request)
+                        .enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
+                            @Override
+                            public void onResponse(@NonNull Call<AppCMSSubscriptionPlanResult> call,
+                                                   @NonNull Response<AppCMSSubscriptionPlanResult> response) {
+                                Observable.just(response.body()).subscribe(resultAction1);
+                            }
+
+                            @Override
+                            public void onFailure(@NonNull Call<AppCMSSubscriptionPlanResult> call,
+                                                  @NonNull Throwable t) {
+                                Log.e(TAG, "onFailure: " + t.getMessage());
+                            }
+                        });
+
             default:
                 throw new RuntimeException("Invalid SubscriptionCallType: " + subscriptionCallType);
         }

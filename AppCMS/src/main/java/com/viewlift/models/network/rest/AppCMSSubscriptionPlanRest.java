@@ -25,4 +25,7 @@ public interface AppCMSSubscriptionPlanRest {
 
     @PUT
     Call<AppCMSSubscriptionPlanResult> updatePlan(@Url String url, @Body SubscriptionRequest request);
+
+    @PUT
+    Call<AppCMSSubscriptionPlanResult> cancelPlan(@Url String url, @Body SubscriptionRequest request);
 }

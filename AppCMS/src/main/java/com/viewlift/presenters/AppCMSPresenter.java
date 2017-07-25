@@ -293,6 +293,7 @@ public class AppCMSPresenter {
     private String skuToPurchase;
     private String planToPurchase;
     private String currencyOfPlanToPurchase;
+    private String planReceipt;
     private GoogleApiClient googleApiClient;
     private long downloaded = 0L;
     private LruCache<String, PageView> pageViewLruCache;
@@ -948,7 +949,38 @@ public class AppCMSPresenter {
                         getActiveSubscriptionToken(currentActivity));
                 googleCancelSubscriptionCall.cancelSubscription(url,
                         googleRefreshTokenResponse.getAccessToken());
-                // Call backend API to cancel subscription
+
+                SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
+                subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
+                subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
+                subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
+                subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency(currentActivity));
+                subscriptionRequest.setPlanId(getActiveSubscriptionId(currentActivity));
+                subscriptionRequest.setUserId(getLoggedInUser(currentActivity));
+                subscriptionRequest.setReceipt(getActiveSubscriptionToken(currentActivity));
+                try {
+                    appCMSSubscriptionPlanCall.call(
+                            currentActivity.getString(R.string.app_cms_cancel_subscription_api_url,
+                                    appCMSMain.getApiBaseUrl(),
+                                    appCMSMain.getInternalName(),
+                                    currentActivity.getString(R.string.app_cms_subscription_platform_key)),
+                            R.string.app_cms_subscription_plan_cancel_key,
+                            subscriptionRequest,
+                            new Action1<List<AppCMSSubscriptionPlanResult>>() {
+                                @Override
+                                public void call(List<AppCMSSubscriptionPlanResult> result) {
+
+                                }
+                            },
+                            new Action1<AppCMSSubscriptionPlanResult>() {
+                                @Override
+                                public void call(AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResults) {
+
+                                }
+                            });
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to update user subscription status");
+                }
             });
         }
     }
@@ -2910,9 +2942,9 @@ public class AppCMSPresenter {
         subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
         subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
         subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
-        subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency(currentActivity));
+        subscriptionRequest.setCurrencyCode(currencyOfPlanToPurchase);
         subscriptionRequest.setPlanId(planToPurchase);
-        subscriptionRequest.setUserId(currencyOfPlanToPurchase);
+        subscriptionRequest.setUserId(getLoggedInUser(currentActivity));
         subscriptionRequest.setReceipt(receiptData);
 
         int subscriptionCallType = R.string.app_cms_subscription_plan_create_key;
