@@ -290,6 +290,9 @@ public class AppCMSPresenter {
     private String facebookUserId;
     private String googleAccessToken;
     private String googleUserId;
+    private String skuToPurchase;
+    private String planToPurchase;
+    private String currencyOfPlanToPurchase;
     private GoogleApiClient googleApiClient;
     private long downloaded = 0L;
     private LruCache<String, PageView> pageViewLruCache;
@@ -901,9 +904,9 @@ public class AppCMSPresenter {
     public void initiateSignUpAndSubscription(String sku, String planId, String currency) {
         if (currentActivity != null) {
             launchType = LaunchType.SUBSCRIBE;
-            setActiveSubscriptionSku(currentActivity, sku);
-            setActiveSubscriptionId(currentActivity, planId);
-            setActiveSubscriptionCurrency(currentActivity, currency);
+            skuToPurchase = sku;
+            planToPurchase = planId;
+            currencyOfPlanToPurchase = currency;
             navigateToLoginPage();
         }
     }
@@ -914,9 +917,12 @@ public class AppCMSPresenter {
                 getActiveSubscriptionSku(currentActivity) != null) {
             try {
                 sendCloseOthersAction(null, true);
-                Bundle buyIntentBundle = inAppBillingService.getBuyIntent(3,
+                List<String> skusToReplace = new ArrayList<>();
+                skusToReplace.add(getActiveSubscriptionSku(currentActivity));
+                Bundle buyIntentBundle = inAppBillingService.getBuyIntentToReplaceSkus(3,
                         currentActivity.getPackageName(),
-                        getActiveSubscriptionSku(currentActivity),
+                        skusToReplace,
+                        skuToPurchase,
                         "subs",
                         null);
                 PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
@@ -2905,8 +2911,8 @@ public class AppCMSPresenter {
         subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
         subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
         subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency(currentActivity));
-        subscriptionRequest.setPlanId(getActiveSubscriptionId(currentActivity));
-        subscriptionRequest.setUserId(getLoggedInUser(currentActivity));
+        subscriptionRequest.setPlanId(planToPurchase);
+        subscriptionRequest.setUserId(currencyOfPlanToPurchase);
         subscriptionRequest.setReceipt(receiptData);
         try {
             appCMSSubscriptionPlanCall.call(
@@ -2931,6 +2937,14 @@ public class AppCMSPresenter {
         } catch (IOException e) {
             Log.e(TAG, "Failed to update user subscription status");
         }
+
+        setActiveSubscriptionSku(currentActivity, skuToPurchase);
+        setActiveSubscriptionId(currentActivity, planToPurchase);
+        setActiveSubscriptionCurrency(currentActivity, currencyOfPlanToPurchase);
+        skuToPurchase = null;
+        planToPurchase = null;
+        currencyOfPlanToPurchase = null;
+
         if (launchType == LaunchType.SUBSCRIBE) {
             launchType = LaunchType.LOGIN;
         }
