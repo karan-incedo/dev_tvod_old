@@ -133,7 +133,7 @@ import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
-import com.viewlift.utility.Utils;
+import com.viewlift.models.network.utility.MainUtils;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
@@ -3473,7 +3473,7 @@ public class AppCMSPresenter {
                 } else {
                     //TODO : change navigation object as per TV.
                     Navigation navigationTV = new GsonBuilder().create().fromJson
-                            (Utils.loadJsonFromAssets(currentActivity, "navigation.json"), Navigation.class);
+                            (MainUtils.loadJsonFromAssets(currentActivity, "navigation.json"), Navigation.class);
 
                     navigation = navigationTV; //appCMSAndroidUI.getNavigation();
                     queueMetaPages(appCMSAndroidUI.getMetaPages());

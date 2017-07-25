@@ -1,4 +1,4 @@
-package com.viewlift.utility;
+package com.viewlift.models.network.utility;
 
 import android.content.Context;
 
@@ -8,7 +8,7 @@ import java.io.InputStream;
  * Created by viewlift on 7/24/17.
  */
 
-public class Utils {
+public class MainUtils {
     public static String loadJsonFromAssets(Context context , String fileName){
         String json = null;
         try {
