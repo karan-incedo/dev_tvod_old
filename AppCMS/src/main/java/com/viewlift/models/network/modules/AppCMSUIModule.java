@@ -46,6 +46,10 @@ import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSUserVideoStatusRest;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistRest;
+import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
+import com.viewlift.models.network.rest.GoogleCancelSubscriptionRest;
+import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
+import com.viewlift.models.network.rest.GoogleRefreshTokenRest;
 import com.viewlift.presenters.AppCMSActionType;
 import com.viewlift.stag.generated.Stag;
 
@@ -527,6 +531,18 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public GoogleRefreshTokenRest providesGoogleRefreshTokenRest(Retrofit retrofit) {
+        return retrofit.create(GoogleRefreshTokenRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public GoogleCancelSubscriptionRest providesGoogleCancelSubscriptionRest(Retrofit retrofit) {
+        return retrofit.create(GoogleCancelSubscriptionRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -622,6 +638,18 @@ public class AppCMSUIModule {
     public AppCMSAnonymousAuthTokenCall appCMSAnonymousAuthTokenCall(AppCMSAnonymousAuthTokenRest appCMSAnonymousAuthTokenRest,
                                                                      Gson gson) {
         return new AppCMSAnonymousAuthTokenCall(appCMSAnonymousAuthTokenRest, gson);
+    }
+
+    @Provides
+    @Singleton
+    public GoogleRefreshTokenCall providesGoogleRefreshTokenCall(GoogleRefreshTokenRest googleRefreshTokenRest) {
+        return new GoogleRefreshTokenCall(googleRefreshTokenRest);
+    }
+
+    @Provides
+    @Singleton
+    public GoogleCancelSubscriptionCall providesGoogleCancelSubscriptionCall(GoogleCancelSubscriptionRest googleCancelSubscriptionRest) {
+        return new GoogleCancelSubscriptionCall(googleCancelSubscriptionRest);
     }
 
     @Provides

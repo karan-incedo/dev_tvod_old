@@ -19,6 +19,7 @@ import android.widget.ImageButton;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.adapters.SearchSuggestionsAdapter;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.ViewCreator;
 
@@ -67,6 +68,8 @@ public class AppCMSSearchFragment extends DialogFragment {
         appCMSSearchView.setIconifiedByDefault(false);
         appCMSSearchView.setFocusable(true);
         appCMSSearchView.requestFocus();
+//        SearchSuggestionsAdapter searchSuggestionsAdapter =
+//                new SearchSuggestionsAdapter(getContext(), appCMSSearchView);
 
         appCMSGoButton = (Button) view.findViewById(R.id.app_cms_search_button);
         appCMSGoButton.setBackgroundColor(0xff000000 + (int) buttonColor);

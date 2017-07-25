@@ -129,4 +129,14 @@
     <!-- AppCMS Apptentive API -->
     <string name="app_cms_apptentive_api_key">dfde9505539f2dc1d24700c09fb096b5280ed4cbed0828084540ada79a2b00f7</string>
     <string name="app_cms_button_color_key">app_cms_button_color</string>
+
+    <!-- Google Authentication API -->
+    <string name="google_authentication_refresh_token_api">https://accounts.google.com/o/oauth2/token</string>
+    <string name="google_authentication_refresh_token_api_grant_type">refresh_token</string>
+    <string name="google_authentication_refresh_token_api_client_id">645588968155-a4u8gq9hh99i2kirqqj7kv245n522cb4.apps.googleusercontent.com</string>
+    <string name="google_authentication_refresh_token_api_client_secret">pu8Jv5P5-S8et5cCixtkGniK</string>
+    <string name="google_authentication_refresh_token_api_refresh_token">1/OIB6BWDZ8xO4sL4BjeE-95AO68TlBlU3xlpe34nMhFE</string>
+
+    <!-- Google Cancel Subscription API -->
+    <string name="google_cancel_subscription_api">https://www.googleapis.com/androidpublisher/v2/applications/$1%s/purchases/subscriptions/$2%s/tokens/$3%s:cancel</string>
 </resources>

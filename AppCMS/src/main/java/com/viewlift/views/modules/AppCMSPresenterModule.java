@@ -1,5 +1,6 @@
 package com.viewlift.views.modules;
 
+import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -25,6 +26,10 @@ import com.viewlift.models.network.rest.AppCMSUserDownloadVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
 import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
+import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
+import com.viewlift.models.network.rest.GoogleCancelSubscriptionRest;
+import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
+import com.viewlift.models.network.rest.GoogleRefreshTokenRest;
 import com.viewlift.presenters.AppCMSActionType;
 import com.viewlift.presenters.AppCMSPresenter;
 
@@ -44,7 +49,8 @@ public class AppCMSPresenterModule {
 
     @Provides
     @Singleton
-    public AppCMSPresenter providesAppCMSPresenter(AppCMSMainUICall appCMSMainUICall,
+    public AppCMSPresenter providesAppCMSPresenter(Gson gson,
+                                                   AppCMSMainUICall appCMSMainUICall,
                                                    AppCMSAndroidUICall appCMSAndroidUICall,
                                                    AppCMSPageUICall appCMSPageUICall,
                                                    AppCMSSiteCall appCMSSiteCall,
@@ -65,19 +71,21 @@ public class AppCMSPresenterModule {
                                                    AppCMSResetPasswordCall appCMSResetPasswordCall,
                                                    AppCMSFacebookLoginCall appCMSFacebookLoginCall,
                                                    AppCMSUserIdentityCall appCMSUserIdentityCall,
+                                                   GoogleRefreshTokenCall googleRefreshTokenCall,
+                                                   GoogleCancelSubscriptionCall googleCancelSubscriptionCall,
                                                    AppCMSAddToWatchlistCall appCMSAddToWatchlistCall,
 
                                                    AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall,
                                                    AppCMSUserVideoStatusCall appCMSUserVideoStatusCall,
                                                    AppCMSUserDownloadVideoStatusCall appCMSUserDownloadVideoStatusCall,
 
-
                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                    Map<String, String> pageNameToActionMap,
                                                    Map<String, AppCMSPageUI> actionToPageMap,
                                                    Map<String, AppCMSPageAPI> actionToPageAPIMap,
                                                    Map<String, AppCMSActionType> actionToActionTypeMap) {
-        return new AppCMSPresenter(appCMSMainUICall,
+        return new AppCMSPresenter(gson,
+                appCMSMainUICall,
                 appCMSAndroidUICall,
                 appCMSPageUICall,
                 appCMSSiteCall,
@@ -98,6 +106,8 @@ public class AppCMSPresenterModule {
                 appCMSResetPasswordCall,
                 appCMSFacebookLoginCall,
                 appCMSUserIdentityCall,
+                googleRefreshTokenCall,
+                googleCancelSubscriptionCall,
 
                 appCMSUpdateWatchHistoryCall,
                 appCMSUserVideoStatusCall,

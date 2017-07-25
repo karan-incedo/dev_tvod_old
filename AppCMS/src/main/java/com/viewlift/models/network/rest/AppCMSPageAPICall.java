@@ -97,7 +97,7 @@ public class AppCMSPageAPICall {
                 appCMSPageAPI = writePageToFile(filename, appCMSPageAPI);
             }
         } catch (JsonSyntaxException e) {
-            Log.w(TAG, "DialogType trying to parse input JSON " + urlWithContent + ": " + e.toString());
+            Log.w(TAG, "Error trying to parse input JSON " + urlWithContent + ": " + e.toString());
         } catch (Exception e) {
             Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
         }

@@ -47,8 +47,12 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.iid.InstanceID;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.viewlift.R;
+import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenResponse;
+import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
@@ -122,6 +126,8 @@ import com.viewlift.models.network.rest.AppCMSUserDownloadVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
 import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
+import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
+import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
 import com.viewlift.utility.Utils;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
@@ -191,6 +197,7 @@ public class AppCMSPresenter {
     private static final String ACTIVE_SUBSCRIPTION_SKU = "active_subscription_sku_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_ID = "active_subscription_id_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_CURRENCY = "active_subscription_currency_pref_key";
+    private static final String ACTIVE_SUBSCRIPTION_TOKEN = "active_subscription_token_pref_key";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
 
@@ -203,7 +210,7 @@ public class AppCMSPresenter {
     private static final String MEDIA_SURFIX_PNG = ".png";
     private static final String MEDIA_SURFIX_JPG = ".jpg";
 
-
+    private final Gson gson;
     private final AppCMSMainUICall appCMSMainUICall;
     private final AppCMSAndroidUICall appCMSAndroidUICall;
     private final AppCMSPageUICall appCMSPageUICall;
@@ -214,6 +221,8 @@ public class AppCMSPresenter {
     private final AppCMSResetPasswordCall appCMSResetPasswordCall;
     private final AppCMSFacebookLoginCall appCMSFacebookLoginCall;
     private final AppCMSUserIdentityCall appCMSUserIdentityCall;
+    private final GoogleRefreshTokenCall googleRefreshTokenCall;
+    private final GoogleCancelSubscriptionCall googleCancelSubscriptionCall;
 
     private final AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall;
 
@@ -308,7 +317,8 @@ public class AppCMSPresenter {
     }
 
     @Inject
-    public AppCMSPresenter(AppCMSMainUICall appCMSMainUICall,
+    public AppCMSPresenter(Gson gson,
+                           AppCMSMainUICall appCMSMainUICall,
                            AppCMSAndroidUICall appCMSAndroidUICall,
                            AppCMSPageUICall appCMSPageUICall,
                            AppCMSSiteCall appCMSSiteCall,
@@ -329,6 +339,8 @@ public class AppCMSPresenter {
                            AppCMSResetPasswordCall appCMSResetPasswordCall,
                            AppCMSFacebookLoginCall appCMSFacebookLoginCall,
                            AppCMSUserIdentityCall appCMSUserIdentityCall,
+                           GoogleRefreshTokenCall googleRefreshTokenCall,
+                           GoogleCancelSubscriptionCall googleCancelSubscriptionCall,
 
                            AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall,
                            AppCMSUserVideoStatusCall appCMSUserVideoStatusCall,
@@ -341,6 +353,8 @@ public class AppCMSPresenter {
                            Map<String, AppCMSPageUI> actionToPageMap,
                            Map<String, AppCMSPageAPI> actionToPageAPIMap,
                            Map<String, AppCMSActionType> actionToActionTypeMap) {
+        this.gson = gson;
+
         this.appCMSMainUICall = appCMSMainUICall;
         this.appCMSAndroidUICall = appCMSAndroidUICall;
         this.appCMSPageUICall = appCMSPageUICall;
@@ -356,6 +370,8 @@ public class AppCMSPresenter {
         this.actionToPageAPIMap = actionToPageAPIMap;
         this.actionToActionTypeMap = actionToActionTypeMap;
         this.appCMSUserIdentityCall = appCMSUserIdentityCall;
+        this.googleRefreshTokenCall = googleRefreshTokenCall;
+        this.googleCancelSubscriptionCall = googleCancelSubscriptionCall;
 
         this.appCMSUpdateWatchHistoryCall = appCMSUpdateWatchHistoryCall;
         this.appCMSUserVideoStatusCall = appCMSUserVideoStatusCall;
@@ -881,6 +897,20 @@ public class AppCMSPresenter {
             } catch (RemoteException | IntentSender.SendIntentException e) {
                 Log.e(TAG, "Failed to purchase item with sku: " + getActiveSubscriptionSku(currentActivity));
             }
+        }
+    }
+
+    public void sendSubscriptionCancellation() {
+        if (currentActivity != null) {
+            refreshGoogleAccessToken(googleRefreshTokenResponse -> {
+                String url = currentActivity.getString(R.string.google_cancel_subscription_api,
+                        currentActivity.getString(R.string.package_name),
+                        getActiveSubscriptionSku(currentActivity),
+                        getActiveSubscriptionToken(currentActivity));
+                googleCancelSubscriptionCall.cancelSubscription(url,
+                        googleRefreshTokenResponse.getAccessToken());
+                // Call backend API to cancel subscription
+            });
         }
     }
 
@@ -2332,6 +2362,24 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public String getActiveSubscriptionToken(Context context) {
+        if (context != null) {
+            if (context != null) {
+                SharedPreferences sharedPrefs = context.getSharedPreferences(ACTIVE_SUBSCRIPTION_TOKEN, 0);
+                return sharedPrefs.getString(ACTIVE_SUBSCRIPTION_TOKEN, null);
+            }
+        }
+        return null;
+    }
+
+    public boolean setActiveSubscriptionToken(Context context, String subscriptionToken) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(ACTIVE_SUBSCRIPTION_TOKEN, 0);
+            return sharedPrefs.edit().putString(ACTIVE_SUBSCRIPTION_TOKEN, subscriptionToken).commit();
+        }
+        return false;
+    }
+
     public void logout() {
         if (currentActivity != null) {
             SharedPreferences sharedPrefs = currentActivity.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
@@ -2755,6 +2803,16 @@ public class AppCMSPresenter {
     }
 
     public void reinitiateSignup(String receiptData) {
+        InAppPurchaseData inAppPurchaseData = null;
+
+        try {
+            inAppPurchaseData = gson.fromJson(receiptData, InAppPurchaseData.class);
+            setActiveSubscriptionToken(currentActivity, inAppPurchaseData.getPurchaseToken());
+        } catch (JsonSyntaxException e) {
+            Log.e(TAG, "Error trying to parse In App Subscription data: " +
+                e.getMessage());
+        }
+
         SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
         subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
         subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
@@ -2849,6 +2907,19 @@ public class AppCMSPresenter {
 
     public void setLaunchType(LaunchType launchType) {
         this.launchType = launchType;
+    }
+
+    private void refreshGoogleAccessToken(Action1<GoogleRefreshTokenResponse> readyAction) {
+        if (currentActivity != null) {
+            googleRefreshTokenCall.refreshTokenCall(currentActivity.getString(R.string.google_authentication_refresh_token_api),
+                    currentActivity.getString(R.string.google_authentication_refresh_token_api_grant_type),
+                    currentActivity.getString(R.string.google_authentication_refresh_token_api_client_id),
+                    currentActivity.getString(R.string.google_authentication_refresh_token_api_client_secret),
+                    currentActivity.getString(R.string.google_authentication_refresh_token_api_refresh_token),
+                    googleRefreshTokenResponse -> {
+                        readyAction.call(googleRefreshTokenResponse);
+                    });
+        }
     }
 
     private void startLoginAsyncTask(String url, String email, String password) {

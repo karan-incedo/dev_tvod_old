@@ -411,7 +411,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (resultCode == RESULT_OK) {
             if (FacebookSdk.isFacebookRequestCode(requestCode)) {
                 callbackManager.onActivityResult(requestCode, resultCode, data);
-                // Call to backend Facebook API
             } else if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
                 appCMSPresenter.reinitiateSignup(data.getStringExtra("INAPP_PURCHASE_DATA"));
             }
