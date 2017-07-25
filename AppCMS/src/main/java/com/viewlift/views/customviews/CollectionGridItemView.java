@@ -30,7 +30,9 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -313,18 +315,29 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setTextColor(Color.parseColor(
                                 childComponent.getTextColor()));
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY) {
+
                         int planIndex = 0;
                         for (int i = 0; i < data.getPlanDetails().size(); i++) {
                             if (data.getPlanDetails().get(i).getIsDefault()) {
                                 planIndex = i;
                             }
                         }
+
+                        Locale locale = new Locale.Builder()
+                                .setRegion(data.getPlanDetails().get(planIndex).getCountryCode())
+                                .build();
+
+                        Currency currency = Currency.getInstance(locale);
+
                         if (data.getPlanDetails().get(planIndex).getDiscountedPrice() != 0) {
-                            StringBuilder stringBuilder = new StringBuilder(String.valueOf(data.getPlanDetails()
+                            StringBuilder stringBuilder = new StringBuilder(currency.getSymbol());
+                            stringBuilder.append(String.valueOf(data.getPlanDetails()
                                     .get(planIndex).getRecurringPaymentAmount()));
 
                             int strikeThroughLength = stringBuilder.length();
-                            stringBuilder.append("     ").append(String.valueOf(data.getPlanDetails().get(0).getDiscountedPrice()));
+                            stringBuilder.append("     ")
+                                    .append(currency.getSymbol())
+                                    .append(String.valueOf(data.getPlanDetails().get(0).getDiscountedPrice()));
 
                             SpannableString spannableString =
                                     new SpannableString(stringBuilder.toString());
