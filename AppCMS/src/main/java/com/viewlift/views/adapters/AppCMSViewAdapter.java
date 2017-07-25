@@ -1,12 +1,14 @@
 package com.viewlift.views.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -49,6 +51,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     protected String viewType;
     protected AppCMSUIKeyType viewTypeKey;
     protected boolean isSelected;
+    protected int unselectedColor;
+    protected int selectedColor;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -85,6 +89,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             this.viewTypeKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
         this.isSelected = false;
+        this.unselectedColor = ContextCompat.getColor(context, android.R.color.white);
+        this.selectedColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
     }
 
     @Override
@@ -104,11 +110,32 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 this.viewType);
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
-            GradientDrawable planBorder = new GradientDrawable();
-            planBorder.setShape(GradientDrawable.RECTANGLE);
-            planBorder.setStroke(1, ContextCompat.getColor(view.getContext(), android.R.color.white));
-            planBorder.setColor(ContextCompat.getColor(view.getContext(), android.R.color.transparent));
-            view.setBackground(planBorder);
+            setBorder(view, unselectedColor);
+
+            view.setOnClickListener(v -> {
+                for (int i = 0; i < parent.getChildCount(); i++) {
+                    View childView = parent.getChildAt(i);
+                    setBorder(childView, unselectedColor);
+                    if (childView instanceof CollectionGridItemView) {
+                        for (View collectionGridChild : ((CollectionGridItemView) childView).getViewsToUpdateOnClickEvent()) {
+                            if (collectionGridChild instanceof Button) {
+                                collectionGridChild.setEnabled(false);
+                                collectionGridChild.setBackgroundColor(ContextCompat.getColor(v.getContext(),
+                                        R.color.disabledButtonColor));
+                            }
+                        }
+                    }
+                }
+                setBorder(v, selectedColor);
+                if (v instanceof CollectionGridItemView) {
+                    for (View collectionGridChild : ((CollectionGridItemView) v).getViewsToUpdateOnClickEvent()) {
+                        if (collectionGridChild instanceof Button) {
+                            collectionGridChild.setEnabled(true);
+                            collectionGridChild.setBackgroundColor(selectedColor);
+                        }
+                    }
+                }
+            });
         }
 
         return new ViewHolder(view);
@@ -267,5 +294,14 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             super(itemView);
             this.componentView = (CollectionGridItemView) itemView;
         }
+    }
+
+    private void setBorder(View itemView,
+                           int color) {
+        GradientDrawable planBorder = new GradientDrawable();
+        planBorder.setShape(GradientDrawable.RECTANGLE);
+        planBorder.setStroke(1, color);
+        planBorder.setColor(ContextCompat.getColor(itemView.getContext(), android.R.color.transparent));
+        itemView.setBackground(planBorder);
     }
 }
