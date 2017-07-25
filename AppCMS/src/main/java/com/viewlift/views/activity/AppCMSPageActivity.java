@@ -1,5 +1,6 @@
 package com.viewlift.views.activity;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -19,7 +20,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -31,12 +31,14 @@ import com.android.vending.billing.IInAppBillingService;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
-import com.facebook.login.LoginManager;
-import com.viewlift.AppCMSApplication;
-import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.facebook.FacebookSdk;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
-
+import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
@@ -61,7 +63,8 @@ import rx.functions.Action1;
 
 public class AppCMSPageActivity extends AppCompatActivity implements
         AppCMSPageFragment.OnPageCreation,
-        FragmentManager.OnBackStackChangedListener {
+        FragmentManager.OnBackStackChangedListener,
+        GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "AppCMSPageActivity";
 
     private static final int NAV_PAGE_INDEX = 0;
@@ -405,10 +408,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
+        GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+        if (resultCode == Activity.RESULT_OK) {
+            if (result != null && result.isSuccess()) {
+                appCMSPresenter.setGoogleAccessToken(this, result.getSignInAccount().getIdToken(),
+                        result.getSignInAccount().getId());
+            }
+
             if (FacebookSdk.isFacebookRequestCode(requestCode)) {
                 callbackManager.onActivityResult(requestCode, resultCode, data);
             } else if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
@@ -537,7 +547,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         return appCMSBinderStack.size() > 0 &&
                 (!appCMSPresenter.isPagePrimary(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
                         (!appCMSPresenter.isPageSplashPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
-                        !appCMSPresenter.isUserLoggedIn(this)) &&
+                                !appCMSPresenter.isUserLoggedIn(this)) &&
                         !appCMSPresenter.isViewPlanPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()));
     }
 
@@ -848,5 +858,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.dismissOpenDialogs(null);
         appCMSPresenter.showMainFragmentView(true);
         getSupportFragmentManager().removeOnBackStackChangedListener(this);
+    }
+
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.e(TAG, "Failed to connect for Google SignIn: " + connectionResult.getErrorMessage());
     }
 }

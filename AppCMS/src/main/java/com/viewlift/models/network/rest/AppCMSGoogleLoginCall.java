@@ -1,0 +1,50 @@
+package com.viewlift.models.network.rest;
+
+/*
+ * Created by Viewlift on 7/24/17.
+ */
+
+import android.support.annotation.NonNull;
+
+import com.viewlift.models.data.appcms.ui.authentication.GoogleLoginRequest;
+import com.viewlift.models.data.appcms.ui.authentication.GoogleLoginResponse;
+
+import javax.inject.Inject;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import rx.Observable;
+import rx.functions.Action1;
+
+public class AppCMSGoogleLoginCall {
+    private static final String TAG = "AppCMSFacebookLoginTAG_";
+
+    private AppCMSGoogleLoginRest appCMSGoogleLoginRest;
+
+    @Inject
+    public AppCMSGoogleLoginCall(AppCMSGoogleLoginRest appCMSGoogleLoginRest) {
+        this.appCMSGoogleLoginRest = appCMSGoogleLoginRest;
+    }
+
+    public void call(String url,
+                     String googleAccessToken,
+                     String userId,
+                     final Action1<GoogleLoginResponse> responseAction1) {
+        GoogleLoginRequest googleLoginRequest = new GoogleLoginRequest();
+        googleLoginRequest.setAccessToken(googleAccessToken);
+
+        appCMSGoogleLoginRest.login(url, googleLoginRequest).enqueue(new Callback<GoogleLoginResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<GoogleLoginResponse> call,
+                                   @NonNull Response<GoogleLoginResponse> response) {
+                Observable.just(response.body()).subscribe(responseAction1);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<GoogleLoginResponse> call, @NonNull Throwable t) {
+                Observable.just((GoogleLoginResponse) null).subscribe(responseAction1);
+            }
+        });
+    }
+}
