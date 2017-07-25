@@ -2914,13 +2914,20 @@ public class AppCMSPresenter {
         subscriptionRequest.setPlanId(planToPurchase);
         subscriptionRequest.setUserId(currencyOfPlanToPurchase);
         subscriptionRequest.setReceipt(receiptData);
+
+        int subscriptionCallType = R.string.app_cms_subscription_plan_create_key;
+
+        if (getActiveSubscriptionSku(currentActivity) != null) {
+            subscriptionCallType = R.string.app_cms_subscription_plan_update_key;
+        }
+
         try {
             appCMSSubscriptionPlanCall.call(
                     currentActivity.getString(R.string.app_cms_register_subscription_api_url,
                             appCMSMain.getApiBaseUrl(),
                             appCMSMain.getInternalName(),
                             currentActivity.getString(R.string.app_cms_subscription_platform_key)),
-                    R.string.app_cms_subscription_plan_create_key,
+                    subscriptionCallType,
                     subscriptionRequest,
                     new Action1<List<AppCMSSubscriptionPlanResult>>() {
                         @Override
