@@ -1,13 +1,13 @@
 package com.viewlift.views.fragments;
 
 import android.app.Dialog;
-import android.content.res.Configuration;
-import android.graphics.drawable.ColorDrawable;
-import android.support.v4.app.DialogFragment;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.SearchView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -18,12 +18,11 @@ import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.SearchSuggestionsAdapter;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.ViewCreator;
-
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 6/20/17.
@@ -49,7 +48,8 @@ public class AppCMSSearchFragment extends DialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
         Bundle args = getArguments();
@@ -68,27 +68,23 @@ public class AppCMSSearchFragment extends DialogFragment {
         appCMSSearchView.setIconifiedByDefault(false);
         appCMSSearchView.setFocusable(true);
         appCMSSearchView.requestFocus();
-//        SearchSuggestionsAdapter searchSuggestionsAdapter =
-//                new SearchSuggestionsAdapter(getContext(), appCMSSearchView);
+
+        SearchSuggestionsAdapter searchSuggestionsAdapter = new SearchSuggestionsAdapter(getContext(),
+                null,
+                searchManager.getSearchableInfo(getActivity().getComponentName()),
+                true);
+
+        appCMSSearchView.setSuggestionsAdapter(searchSuggestionsAdapter);
 
         appCMSGoButton = (Button) view.findViewById(R.id.app_cms_search_button);
         appCMSGoButton.setBackgroundColor(0xff000000 + (int) buttonColor);
         appCMSGoButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor, buttonColor));
 
-        appCMSGoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                appCMSPresenter.launchSearchResultsPage(appCMSSearchView.getQuery().toString());
-            }
-        });
+        appCMSGoButton.setOnClickListener(v ->
+                appCMSPresenter.launchSearchResultsPage(appCMSSearchView.getQuery().toString()));
 
         ImageButton closeButton = (ImageButton) view.findViewById(R.id.app_cms_close_button);
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
+        closeButton.setOnClickListener(v -> dismiss());
 
         setBgColor((int) bgColor);
 
@@ -118,6 +114,7 @@ public class AppCMSSearchFragment extends DialogFragment {
         dismiss();
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void setBgColor(int bgColor) {
         Dialog dialog = getDialog();
         if (dialog != null) {
@@ -126,6 +123,7 @@ public class AppCMSSearchFragment extends DialogFragment {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void setWindow() {
         Dialog dialog = getDialog();
         if (dialog != null) {
