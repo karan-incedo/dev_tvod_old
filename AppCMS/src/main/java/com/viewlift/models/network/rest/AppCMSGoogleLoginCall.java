@@ -18,7 +18,7 @@ import rx.Observable;
 import rx.functions.Action1;
 
 public class AppCMSGoogleLoginCall {
-    private static final String TAG = "AppCMSFacebookLoginTAG_";
+    private static final String TAG = "AppCMSGoogleLoginTAG_";
 
     private AppCMSGoogleLoginRest appCMSGoogleLoginRest;
 
@@ -29,7 +29,6 @@ public class AppCMSGoogleLoginCall {
 
     public void call(String url,
                      String googleAccessToken,
-                     String userId,
                      final Action1<GoogleLoginResponse> responseAction1) {
         GoogleLoginRequest googleLoginRequest = new GoogleLoginRequest();
         googleLoginRequest.setAccessToken(googleAccessToken);
