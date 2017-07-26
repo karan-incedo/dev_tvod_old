@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -50,6 +51,8 @@ public class CollectionGridItemView extends BaseView {
     protected int defaultWidth;
     protected int defaultHeight;
     private List<ItemContainer> childItems;
+    private List<View> viewsToUpdateOnClickEvent;
+    private boolean allowClickEvents;
 
     @Inject
     public CollectionGridItemView(Context context,
@@ -64,6 +67,7 @@ public class CollectionGridItemView extends BaseView {
         this.component = component;
         this.defaultWidth = defaultWidth;
         this.defaultHeight = defaultHeight;
+        this.viewsToUpdateOnClickEvent = new ArrayList<>();
         init();
     }
 
@@ -286,6 +290,10 @@ public class CollectionGridItemView extends BaseView {
                     ((TextView) view).setText("");
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PURCHASE_BUTTON_KEY) {
                     ((TextView) view).setText(childComponent.getText());
+                    view.setEnabled(false);
+                    view.setBackgroundColor(ContextCompat.getColor(getContext(),
+                            R.color.disabledButtonColor));
+                    viewsToUpdateOnClickEvent.add(view);
                 }
                 view.setOnClickListener(new OnClickListener() {
                     @Override
@@ -376,6 +384,10 @@ public class CollectionGridItemView extends BaseView {
             }
         }
         return result;
+    }
+
+    public List<View> getViewsToUpdateOnClickEvent() {
+        return viewsToUpdateOnClickEvent;
     }
 
     public interface OnClickHandler {
