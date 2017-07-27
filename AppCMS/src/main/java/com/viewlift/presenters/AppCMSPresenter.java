@@ -60,6 +60,7 @@ import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
+import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
 import com.viewlift.models.data.appcms.api.Gist;
@@ -73,6 +74,7 @@ import com.viewlift.models.data.appcms.downloads.RealmController;
 import com.viewlift.models.data.appcms.downloads.UserVideoDownloadStatus;
 import com.viewlift.models.data.appcms.history.AppCMSDeleteHistoryResult;
 import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
+import com.viewlift.models.data.appcms.history.Record;
 import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
@@ -83,6 +85,7 @@ import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
+import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.FacebookLoginResponse;
 import com.viewlift.models.data.appcms.ui.authentication.ForgotPasswordResponse;
 import com.viewlift.models.data.appcms.ui.authentication.RefreshIdentityResponse;
@@ -100,6 +103,7 @@ import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSRefreshIdentityAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSVideoDetailAsyncTask;
 import com.viewlift.models.network.background.tasks.PostAppCMSLoginRequestAsyncTask;
 import com.viewlift.models.network.components.AppCMSAPIComponent;
 import com.viewlift.models.network.components.AppCMSSearchUrlComponent;
@@ -130,6 +134,7 @@ import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUserDownloadVideoStatusCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
 import com.viewlift.models.network.rest.AppCMSUserVideoStatusCall;
+import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
@@ -138,7 +143,9 @@ import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.activity.AppCMSSearchActivity;
+import com.viewlift.views.activity.AutoplayActivity;
 import com.viewlift.views.binders.AppCMSBinder;
+import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
@@ -246,6 +253,7 @@ public class AppCMSPresenter {
     private HashMap<String, Long> downloadImagesQueue = new HashMap<>();
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
+    private AppCMSVideoDetailCall appCMSVideoDetailCall;
     private Activity currentActivity;
     private Navigation navigation;
     private boolean loadFromFile;
@@ -425,63 +433,56 @@ public class AppCMSPresenter {
         }
     }
 
-    public boolean launchVideoPlayer(final String filmId,
-                                     final String pagePath,
-                                     final String filmTitle,
-                                     final ContentDatum contentDatum) {
+    public boolean launchVideoPlayer(final ContentDatum contentDatum,
+                                     final int currentlyPlayingIndex,
+                                     List<String> relateVideoIds) {
         boolean result = false;
         if (currentActivity != null &&
                 !loadingPage && appCMSMain != null &&
                 !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
-                !TextUtils.isEmpty(appCMSMain.getInternalName())) {
+                !TextUtils.isEmpty(appCMSMain.getSite())) {
             result = true;
             final String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
-            String url = currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
-                    appCMSMain.getApiBaseUrl(),
-                    filmId,
-                    appCMSMain.getInternalName());
-            GetAppCMSStreamingInfoAsyncTask.Params params =
-                    new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
-            new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall,
-                    new Action1<AppCMSStreamingInfo>() {
-                        @Override
-                        public void call(AppCMSStreamingInfo appCMSStreamingInfo) {
-                            String[] extraData = new String[3];
-                            if (appCMSStreamingInfo != null &&
-                                    appCMSStreamingInfo.getStreamingInfo() != null) {
-                                StreamingInfo streamingInfo = appCMSStreamingInfo.getStreamingInfo();
-                                extraData[0] = pagePath;
-                                if (streamingInfo.getVideoAssets() != null &&
-                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getHls())) {
-                                    extraData[1] = streamingInfo.getVideoAssets().getHls();
-                                } else if (streamingInfo.getVideoAssets() != null &&
-                                        streamingInfo.getVideoAssets().getMpeg() != null &&
-                                        streamingInfo.getVideoAssets().getMpeg().size() > 0 &&
-                                        streamingInfo.getVideoAssets().getMpeg().get(0) != null &&
-                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getMpeg().get(0).getUrl())) {
-                                    extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
-                                }
-                                extraData[2] = filmId;
-                                if (!TextUtils.isEmpty(extraData[1])) {
 
-                                    if (platformType == PlatformType.TV) {
-                                        launchTVButtonSelectedAction(pagePath,
-                                                action,
-                                                filmTitle,
-                                                extraData,
-                                                false);
-                                    } else {
-                                        launchButtonSelectedAction(pagePath,
-                                                action,
-                                                filmTitle,
-                                                extraData,
-                                                contentDatum,
-                                                false);
-                                    }
+            /*When content details are null that mean, video player is launch from else where
+            * other than video detail fragment*/
+            if (contentDatum.getContentDetails() == null) {
+                String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        contentDatum.getGist().getId(),
+                        appCMSMain.getSite());
+                GetAppCMSVideoDetailAsyncTask.Params params =
+                        new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url).build();
+                new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
+                        new Action1<AppCMSVideoDetail>() {
+                            @Override
+                            public void call(AppCMSVideoDetail appCMSVideoDetail) {
+                                if (appCMSVideoDetail != null &&
+                                        appCMSVideoDetail.getRecords() != null &&
+                                        appCMSVideoDetail.getRecords().get(0) != null &&
+                                        appCMSVideoDetail.getRecords().get(0).getContentDetails() != null) {
+                                    launchButtonSelectedAction(appCMSVideoDetail.getRecords().get(0).getGist().getPermalink(),
+                                            action,
+                                            appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
+                                            null,
+                                            appCMSVideoDetail.getRecords().get(0),
+                                            false,
+                                            currentlyPlayingIndex,
+                                            appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds());
                                 }
                             }
-                        }
-                    }).execute(params);
+                        }).execute(params);
+            } else {
+                launchButtonSelectedAction(
+                        contentDatum.getGist().getPermalink(),
+                        action,
+                        contentDatum.getGist().getTitle(),
+                        null,
+                        contentDatum,
+                        false,
+                        currentlyPlayingIndex,
+                        relateVideoIds);
+            }
         }
         return result;
     }
@@ -527,7 +528,9 @@ public class AppCMSPresenter {
                                               String filmTitle,
                                               String[] extraData,
                                               ContentDatum contentDatum,
-                                              final boolean closeLauncher) {
+                                              final boolean closeLauncher,
+                                              int currentlyPlayingIndex,
+                                              List<String> relateVideoIds) {
         boolean result = false;
         Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
         if (!isNetworkConnected()) {
@@ -539,11 +542,14 @@ public class AppCMSPresenter {
                 return false;
             }
             result = true;
+            boolean isTrailer = false;
             if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
                     actionType == AppCMSActionType.WATCH_TRAILER) {
                 Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
+                boolean requestAds = true;
+                String textColor;
+                String adsUrl;
                 if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE) {
-                    boolean requestAds = true;
                     if (pagePath != null && pagePath.contains(
                             currentActivity.getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
                         requestAds = false;
@@ -555,7 +561,15 @@ public class AppCMSPresenter {
                         playVideoIntent.putExtra(currentActivity.getString(R.string.watched_time_key), contentDatum.getGist().getWatchedTime());
                     }
                 } else {
-                    playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), false);
+                    requestAds = false;
+                    isTrailer = true;
+                }
+                if (contentDatum != null &&
+                        contentDatum.getGist() != null &&
+                        contentDatum.getGist().getVideoImageUrl() != null) {
+                    playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url), contentDatum.getGist().getVideoImageUrl());
+                }else {
+                    playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url), "");
                 }
 
                 playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_font_color_key),
@@ -566,18 +580,44 @@ public class AppCMSPresenter {
                         extraData);
 
                 Date now = new Date();
-                playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_ads_url_key),
-                        currentActivity.getString(R.string.app_cms_ads_api_url,
-                                getPermalinkCompletePath(pagePath),
-                                now.getTime(),
-                                appCMSMain.getInternalName()));
-                playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_bg_color_key),
-                        appCMSMain.getBrand()
-                                .getGeneral()
-                                .getBackgroundColor());
+                adsUrl = currentActivity.getString(R.string.app_cms_ads_api_url,
+                        getPermalinkCompletePath(pagePath),
+                        now.getTime(),
+                        appCMSMain.getSite());
+
+                String backgroundColor = appCMSMain.getBrand()
+                        .getGeneral()
+                        .getBackgroundColor();
+
+
+                AppCMSVideoPageBinder appCMSVideoPageBinder =
+                        getAppCMSVideoPageBinder(currentActivity,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false,
+                                requestAds,
+                                appCMSMain.getBrand().getGeneral().getTextColor(),
+                                backgroundColor,
+                                adsUrl,
+                                contentDatum,
+                                isTrailer,
+                                relateVideoIds,
+                                currentlyPlayingIndex);
                 if (closeLauncher) {
                     sendCloseOthersAction(null, true);
                 }
+
+                Bundle bundle = new Bundle();
+                bundle.putBinder(currentActivity.getString(R.string.app_cms_video_player_binder_key), appCMSVideoPageBinder);
+                playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), bundle);
+
                 currentActivity.startActivity(playVideoIntent);
             } else if (actionType == AppCMSActionType.SHARE) {
                 if (extraData != null && extraData.length > 0) {
@@ -1486,6 +1526,58 @@ public class AppCMSPresenter {
                             }
                         }
                     });
+        }
+    }
+
+    /**
+     * Method launches the autoplay screen
+     *
+     * @param pageId         pageId to get the Page UI from navigationPages
+     * @param pageTitle      pageTitle
+     * @param url            url of the API which gets the VideoDetails
+     * @param binder         binder to share data
+     */
+    public void navigateToAutoplayPage(final String pageId,
+                                       final String pageTitle,
+                                       String url,
+                                       final AppCMSVideoPageBinder binder) {
+
+        if (currentActivity != null) {
+            final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+            GetAppCMSVideoDetailAsyncTask.Params params =
+                    new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url).build();
+            new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
+                    new Action1<AppCMSVideoDetail>() {
+                        @Override
+                        public void call(AppCMSVideoDetail appCMSVideoDetail) {
+                            if (appCMSVideoDetail != null) {
+                                binder.setContentData(appCMSVideoDetail.getRecords().get(0));
+                                AppCMSPageAPI pageAPI = null;
+                                for (ModuleList moduleList :
+                                        appCMSPageUI.getModuleList()) {
+                                    if (moduleList.getType().equals(currentActivity.getString(R.string.app_cms_page_autoplay_module_key))){
+                                        pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
+                                                moduleList.getType());
+                                        break;
+                                    }
+                                }
+                                if (pageAPI != null) {
+                                    launchAutoplayActivity(currentActivity,
+                                            appCMSPageUI,
+                                            pageAPI,
+                                            pageId,
+                                            pageTitle,
+                                            pageIdToPageNameMap.get(pageId),
+                                            loadFromFile,
+                                            false,
+                                            true,
+                                            false,
+                                            false,
+                                            binder);
+                                }
+                            }
+                        }
+                    }).execute(params);
         }
     }
 
@@ -2504,7 +2596,7 @@ public class AppCMSPresenter {
                     currentActivity.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
             sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, null).apply();
 
-            if (googleApiClient.isConnected()) {
+            if (googleApiClient != null && googleApiClient.isConnected()) {
                 Auth.GoogleSignInApi.signOut(googleApiClient);
             }
 
@@ -3183,6 +3275,33 @@ public class AppCMSPresenter {
         return args;
     }
 
+    private Bundle getAutoplayActivityBundle(Activity activity,
+                                             AppCMSPageUI appCMSPageUI,
+                                             AppCMSPageAPI appCMSPageAPI,
+                                             String pageID,
+                                             String pageName,
+                                             String screenName,
+                                             boolean loadFromFile,
+                                             boolean appbarPresent,
+                                             boolean fullscreenEnabled,
+                                             boolean navbarPresent,
+                                             boolean sendCloseAction,
+                                             AppCMSVideoPageBinder binder) {
+        Bundle args = new Bundle();
+        binder.setAppCMSPageUI(appCMSPageUI);
+        binder.setAppCMSPageAPI(appCMSPageAPI);
+        binder.setPageID(pageID);
+        binder.setPageName(pageName);
+        binder.setScreenName(screenName);
+        binder.setLoadFromFile(loadFromFile);
+        binder.setAppbarPresent(appbarPresent);
+        binder.setFullscreenEnabled(fullscreenEnabled);
+        binder.setNavbarPresent(navbarPresent);
+        binder.setSendCloseAction(sendCloseAction);
+        args.putBinder(activity.getString(R.string.app_cms_video_player_binder_key), binder);
+        return args;
+    }
+
     private AppCMSBinder getAppCMSBinder(Activity activity,
                                          AppCMSPageUI appCMSPageUI,
                                          AppCMSPageAPI appCMSPageAPI,
@@ -3212,6 +3331,49 @@ public class AppCMSPresenter {
                 isUserLoggedIn(activity),
                 jsonValueKeyMap,
                 searchQuery);
+    }
+
+    private AppCMSVideoPageBinder getAppCMSVideoPageBinder(Activity activity,
+                                                           AppCMSPageUI appCMSPageUI,
+                                                           AppCMSPageAPI appCMSPageAPI,
+                                                           String pageID,
+                                                           String pageName,
+                                                           String screenName,
+                                                           boolean loadFromFile,
+                                                           boolean appbarPresent,
+                                                           boolean fullscreenEnabled,
+                                                           boolean navbarPresent,
+                                                           boolean sendCloseAction,
+                                                           boolean playAds,
+                                                           String fontColor,
+                                                           String backgroundColor,
+                                                           String adsUrl,
+                                                           ContentDatum contentDatum,
+                                                           boolean isTrailer,
+                                                           List<String> relatedVideoIds,
+                                                           int currentlyPlayingIndex) {
+
+        return new AppCMSVideoPageBinder(
+                appCMSPageUI,
+                appCMSPageAPI,
+                pageID,
+                pageName,
+                screenName,
+                loadFromFile,
+                appbarPresent,
+                fullscreenEnabled,
+                navbarPresent,
+                sendCloseAction,
+                jsonValueKeyMap,
+                playAds,
+                fontColor,
+                backgroundColor,
+                adsUrl,
+                contentDatum,
+                isTrailer,
+                isUserLoggedIn(activity),
+                relatedVideoIds,
+                currentlyPlayingIndex);
     }
 
     private void launchPageActivity(Activity activity,
@@ -3246,6 +3408,37 @@ public class AppCMSPresenter {
         activity.startActivity(appCMSIntent);
     }
 
+    private void launchAutoplayActivity(Activity activity,
+                                        AppCMSPageUI appCMSPageUI,
+                                        AppCMSPageAPI appCMSPageAPI,
+                                        String pageId,
+                                        String pageName,
+                                        String screenName,
+                                        boolean loadFromFile,
+                                        boolean appbarPresent,
+                                        boolean fullscreenEnabled,
+                                        boolean navbarPresent,
+                                        boolean sendCloseAction,
+                                        AppCMSVideoPageBinder binder) {
+
+        Bundle args = getAutoplayActivityBundle(activity,
+                appCMSPageUI,
+                appCMSPageAPI,
+                pageId,
+                pageName,
+                screenName,
+                loadFromFile,
+                appbarPresent,
+                fullscreenEnabled,
+                navbarPresent,
+                sendCloseAction,
+                binder);
+        Intent intent = new Intent(currentActivity, AutoplayActivity.class);
+        intent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), args);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        currentActivity.startActivity(intent);
+    }
+
     private void getAppCMSSite(final Activity activity,
                                final AppCMSMain main,
                                final PlatformType platformType) {
@@ -3265,6 +3458,7 @@ public class AppCMSPresenter {
                                         .build();
                                 appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
                                 appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
+                                appCMSVideoDetailCall = appCMSAPIComponent.appCMSVideoDetailCall();
                                 clearMaps();
                                 switch (platformType) {
                                     case ANDROID:
@@ -3486,6 +3680,18 @@ public class AppCMSPresenter {
             }
         }
         return -1;
+    }
+
+    private String getAutoplayPageId() {
+
+        for (Map.Entry<String, String> entry : pageIdToPageNameMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
+                return key;
+            }
+        }
+        return null;
     }
 
     private String getPageId(AppCMSPageUI appCMSPageUI) {
@@ -3732,8 +3938,61 @@ public class AppCMSPresenter {
         }
     }
 
+    public void playNextVideo(AppCMSVideoPageBinder binder, int currentlyPlayingIndex) {
+        launchVideoPlayer(binder.getContentData(),
+                currentlyPlayingIndex,
+                binder.getRelateVideoIds());
+    }
+
     public Map<String, AppCMSUIKeyType> getJsonValueKeyMap() {
         return jsonValueKeyMap;
+    }
+
+    /**
+     * Method opens the autoplay screen when one movie finishes playing
+     *
+     * @param binder binder to share data
+     */
+    public void openAutoPlayScreen(final AppCMSVideoPageBinder binder) {
+        final String filmId =
+                binder.getRelateVideoIds().get(binder.getCurrentPlayingVideoIndex() + 1);
+        if (currentActivity != null &&
+                !loadingPage && appCMSMain != null &&
+                !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
+                !TextUtils.isEmpty(appCMSMain.getSite())) {
+            String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    filmId,
+                    appCMSMain.getSite());
+
+
+            String pageId = getAutoplayPageId();
+            if (!TextUtils.isEmpty(pageId)) {
+                navigateToAutoplayPage(pageId,
+                        currentActivity.getString(R.string.app_cms_page_autoplay_key),
+                        url,
+                        binder);
+            } else {
+                Log.e(TAG, "Can't find autoplay page ui in pageIdToPageNameMap");
+            }
+        }
+    }
+
+    public void getRelatedMedia(String filmIds, final Action1<AppCMSVideoDetail> action1) {
+
+        String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
+                appCMSMain.getApiBaseUrl(),
+                filmIds.toString(),
+                appCMSMain.getSite());
+        GetAppCMSVideoDetailAsyncTask.Params params =
+                new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url).build();
+        new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
+                new Action1<AppCMSVideoDetail>() {
+                    @Override
+                    public void call(AppCMSVideoDetail appCMSVideoDetail) {
+                        action1.call(appCMSVideoDetail);
+                    }
+                }).execute(params);
     }
 
     public boolean launchTVButtonSelectedAction(String pagePath,
@@ -3795,109 +4054,109 @@ public class AppCMSPresenter {
                 }
                 currentActivity.startActivity(playVideoIntent);
             } else if (actionType == AppCMSActionType.SHARE) {
-                if (extraData != null && extraData.length > 0) {
-                    Intent sendIntent = new Intent();
-                    sendIntent.setAction(Intent.ACTION_SEND);
-                    sendIntent.putExtra(Intent.EXTRA_TEXT, extraData[0]);
-                    sendIntent.setType(currentActivity.getString(R.string.text_plain_mime_type));
-                    currentActivity.startActivity(Intent.createChooser(sendIntent,
-                            currentActivity.getResources().getText(R.string.send_to)));
-                }
-            } else if (actionType == AppCMSActionType.CLOSE) {
-                sendCloseOthersAction(null, true);
-            } else if (actionType == AppCMSActionType.LOGIN) {
-                Log.d(TAG, "Login action selected: " + extraData[0]);
-                closeSoftKeyboard();
-                login(extraData[0], extraData[1]);
-            } else if (actionType == AppCMSActionType.FORGOT_PASSWORD) {
-                Log.d(TAG, "Forgot password selected: " + extraData[0]);
-                closeSoftKeyboard();
-                launchResetPasswordPage(extraData[0]);
-            } else if (actionType == AppCMSActionType.LOGIN_FACEBOOK) {
-                Log.d(TAG, "Login Facebook selected");
-                loginFacebook();
-            } else if (actionType == AppCMSActionType.SIGNUP) {
-                Log.d(TAG, "Sign-Up selected: " + extraData[0]);
-                closeSoftKeyboard();
-                signup(extraData[0], extraData[1]);
-            } else {
-                boolean appbarPresent = true;
-                boolean fullscreenEnabled = false;
-                boolean navbarPresent = true;
-                final StringBuffer screenName = new StringBuffer();
-                if (!TextUtils.isEmpty(actionToPageNameMap.get(action))) {
-                    screenName.append(actionToPageNameMap.get(action));
-                }
-                loadingPage = true;
-                switch (actionType) {
-                    case AUTH_PAGE:
-                        appbarPresent = false;
-                        fullscreenEnabled = false;
-                        navbarPresent = false;
-                        break;
-                    case VIDEO_PAGE:
-                        appbarPresent = true;
-                        fullscreenEnabled = false;
-                        navbarPresent = false;
-                        screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
-                        screenName.append(filmTitle);
-                        break;
-                    case PLAY_VIDEO_PAGE:
-                        appbarPresent = false;
-                        fullscreenEnabled = false;
-                        navbarPresent = false;
-                        break;
-                    case HOME_PAGE:
-                    default:
-                        break;
-                }
-                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-                AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
-                getPageIdContent(appCMSMain.getApiBaseUrl(),
-                        actionToPageAPIUrlMap.get(action),
-                        appCMSMain.getSite(),
-                        false,
-                        pagePath,
-                        new AppCMSPageAPIAction(appbarPresent,
-                                fullscreenEnabled,
-                                navbarPresent,
-                                appCMSPageUI,
-                                action,
-                                getPageId(appCMSPageUI),
-                                filmTitle,
-                                pagePath,
-                                false,
-                                closeLauncher,
-                                null) {
-                            @Override
-                            public void call(AppCMSPageAPI appCMSPageAPI) {
-                                if (appCMSPageAPI != null) {
-                                    cancelInternalEvents();
-                                    pushActionInternalEvents(this.action + BaseView.isLandscape(currentActivity));
-                                    Bundle args = getPageActivityBundle(currentActivity,
-                                            this.appCMSPageUI,
-                                            appCMSPageAPI,
-                                            this.pageId,
-                                            appCMSPageAPI.getTitle(),
-                                            pagePath,
-                                            screenName.toString(),
-                                            loadFromFile,
-                                            this.appbarPresent,
-                                            this.fullscreenEnabled,
-                                            this.navbarPresent,
-                                            this.sendCloseAction,
-                                            this.searchQuery);
-                                    Intent updatePageIntent =
-                                            new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                    updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                            args);
-                                    currentActivity.sendBroadcast(updatePageIntent);
-                                } else {
-                                    sendStopLoadingPageAction();
+                    if (extraData != null && extraData.length > 0) {
+                        Intent sendIntent = new Intent();
+                        sendIntent.setAction(Intent.ACTION_SEND);
+                        sendIntent.putExtra(Intent.EXTRA_TEXT, extraData[0]);
+                        sendIntent.setType(currentActivity.getString(R.string.text_plain_mime_type));
+                        currentActivity.startActivity(Intent.createChooser(sendIntent,
+                                currentActivity.getResources().getText(R.string.send_to)));
+                    }
+                } else if (actionType == AppCMSActionType.CLOSE) {
+                    sendCloseOthersAction(null, true);
+                } else if (actionType == AppCMSActionType.LOGIN) {
+                    Log.d(TAG, "Login action selected: " + extraData[0]);
+                    closeSoftKeyboard();
+                    login(extraData[0], extraData[1]);
+                } else if (actionType == AppCMSActionType.FORGOT_PASSWORD) {
+                    Log.d(TAG, "Forgot password selected: " + extraData[0]);
+                    closeSoftKeyboard();
+                    launchResetPasswordPage(extraData[0]);
+                } else if (actionType == AppCMSActionType.LOGIN_FACEBOOK) {
+                    Log.d(TAG, "Login Facebook selected");
+                    loginFacebook();
+                } else if (actionType == AppCMSActionType.SIGNUP) {
+                    Log.d(TAG, "Sign-Up selected: " + extraData[0]);
+                    closeSoftKeyboard();
+                    signup(extraData[0], extraData[1]);
+                } else {
+                    boolean appbarPresent = true;
+                    boolean fullscreenEnabled = false;
+                    boolean navbarPresent = true;
+                    final StringBuffer screenName = new StringBuffer();
+                    if (!TextUtils.isEmpty(actionToPageNameMap.get(action))) {
+                        screenName.append(actionToPageNameMap.get(action));
+                    }
+                    loadingPage = true;
+                    switch (actionType) {
+                        case AUTH_PAGE:
+                            appbarPresent = false;
+                            fullscreenEnabled = false;
+                            navbarPresent = false;
+                            break;
+                        case VIDEO_PAGE:
+                            appbarPresent = true;
+                            fullscreenEnabled = false;
+                            navbarPresent = false;
+                            screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
+                            screenName.append(filmTitle);
+                            break;
+                        case PLAY_VIDEO_PAGE:
+                            appbarPresent = false;
+                            fullscreenEnabled = false;
+                            navbarPresent = false;
+                            break;
+                        case HOME_PAGE:
+                        default:
+                            break;
+                    }
+                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                    AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
+                    getPageIdContent(appCMSMain.getApiBaseUrl(),
+                            actionToPageAPIUrlMap.get(action),
+                            appCMSMain.getSite(),
+                            false,
+                            pagePath,
+                            new AppCMSPageAPIAction(appbarPresent,
+                                    fullscreenEnabled,
+                                    navbarPresent,
+                                    appCMSPageUI,
+                                    action,
+                                    getPageId(appCMSPageUI),
+                                    filmTitle,
+                                    pagePath,
+                                    false,
+                                    closeLauncher,
+                                    null) {
+                                @Override
+                                public void call(AppCMSPageAPI appCMSPageAPI) {
+                                    if (appCMSPageAPI != null) {
+                                        cancelInternalEvents();
+                                        pushActionInternalEvents(this.action + BaseView.isLandscape(currentActivity));
+                                        Bundle args = getPageActivityBundle(currentActivity,
+                                                this.appCMSPageUI,
+                                                appCMSPageAPI,
+                                                this.pageId,
+                                                appCMSPageAPI.getTitle(),
+                                                pagePath,
+                                                screenName.toString(),
+                                                loadFromFile,
+                                                this.appbarPresent,
+                                                this.fullscreenEnabled,
+                                                this.navbarPresent,
+                                                this.sendCloseAction,
+                                                this.searchQuery);
+                                        Intent updatePageIntent =
+                                                new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                        updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                                args);
+                                        currentActivity.sendBroadcast(updatePageIntent);
+                                    } else {
+                                        sendStopLoadingPageAction();
+                                    }
+                                    loadingPage = false;
                                 }
-                                loadingPage = false;
-                            }
-                        });
+                            });
             }
         }
         return result;

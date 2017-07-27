@@ -6,11 +6,13 @@ import java.util.List;
  * Created by viewlift on 6/29/17.
  */
 
-public interface Module {
+public interface ModuleWithComponents {
 
     List<Component> getComponents();
 
     Layout getLayout();
 
     String getView();
+
+    Settings getSettings();
 }

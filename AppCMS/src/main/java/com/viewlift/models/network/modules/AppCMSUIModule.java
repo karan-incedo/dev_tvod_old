@@ -250,6 +250,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_continue_watching_module_key),
                 AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_component_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_duration_key),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY);

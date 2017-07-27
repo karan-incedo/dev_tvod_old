@@ -17,13 +17,20 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.casting.CastHelper;
+import com.viewlift.models.data.appcms.api.Gist;
+import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
+
+import java.util.List;
 
 import com.viewlift.R;
 
 /**
  * Created by viewlift on 6/14/17.
+ * Owned by ViewLift, NYC
  */
 
 public class AppCMSPlayVideoActivity extends AppCompatActivity implements
@@ -32,6 +39,13 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
     private BroadcastReceiver handoffReceiver;
     private AppCMSPresenter appCMSPresenter;
+    private int currentlyPlayingIndex = 0;
+    private AppCMSVideoPageBinder binder;
+    private List<String> relateVideoIds;
+    private String title;
+    private String hlsUrl;
+    private String videoImageUrl;
+    private String filmId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,38 +55,91 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 (FrameLayout) findViewById(R.id.app_cms_play_video_page_container);
 
         Intent intent = getIntent();
-        String title = intent.getStringExtra(getString(R.string.video_player_title_key));
-        String fontColor = intent.getStringExtra(getString(R.string.video_player_font_color_key));
-        String[] extraData = intent.getStringArrayExtra(getString(R.string.video_player_hls_url_key));
-        String permaLink = extraData[0];
-        String hlsUrl = extraData[1];
-        String filmId = extraData[2];
-        String adsUrl = intent.getStringExtra(getString(R.string.video_player_ads_url_key));
-        String bgColor = intent.getStringExtra(getString(R.string.app_cms_bg_color_key));
-        Integer watchedTime = intent.getIntExtra(getString(R.string.watched_time_key), 0);
-        boolean playAds = intent.getBooleanExtra(getString(R.string.play_ads_key), true);
+        Bundle bundleExtra = intent.getBundleExtra(getString(R.string.app_cms_video_player_bundle_binder_key));
 
-        if (!TextUtils.isEmpty(bgColor)) {
-            appCMSPlayVideoPageContainer.setBackgroundColor(Color.parseColor(bgColor));
+        try {
+            binder = (AppCMSVideoPageBinder)
+                    bundleExtra.getBinder(getString(R.string.app_cms_video_player_binder_key));
+            if (binder != null
+                    && binder.getContentData() != null
+                    && binder.getContentData().getGist() != null) {
+                Gist gist = binder.getContentData().getGist();
+                String videoUrl = "";
+                String fontColor = binder.getFontColor();
+                 title = "";
+                if (!binder.isTrailer()) {
+                    title = gist.getTitle();
+                    if (binder.getContentData().getStreamingInfo() != null &&
+                            binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
+                        VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
+                        videoUrl = videoAssets.getHls();
+                        if (TextUtils.isEmpty(videoUrl)) {
+                            for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
+                                videoUrl = videoAssets.getMpeg().get(i).getUrl();
+                            }
+                        }
+                    }
+                } else {
+                    if (binder.getContentData().getContentDetails() != null
+                            && binder.getContentData().getContentDetails().getTrailers() != null
+                            && binder.getContentData().getContentDetails().getTrailers().get(0) != null
+                            && binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
+                        title = binder.getContentData().getContentDetails().getTrailers().get(0).getTitle();
+                        VideoAssets videoAssets = binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets();
+                        videoUrl = videoAssets.getHls();
+                        if (TextUtils.isEmpty(videoUrl)) {
+                            for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
+                                videoUrl = videoAssets.getMpeg().get(i).getUrl();
+                            }
+                        }
+                    }
+                }
+                String closedCaptionUrl = null;
+                // TODO: 7/27/2017 Implement CC for multiple languages.
+                if (binder.getContentData() != null
+                        && binder.getContentData().getContentDetails() != null
+                        && binder.getContentData().getContentDetails().getClosedCaptions() != null
+                        && binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl() != null){
+                    closedCaptionUrl = binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl();
+                }
+                String permaLink = gist.getPermalink();
+                hlsUrl = videoUrl;
+                videoImageUrl = gist.getVideoImageUrl();
+                filmId = binder.getContentData().getGist().getId();
+                String adsUrl = binder.getAdsUrl();
+                String bgColor = binder.getBgColor();
+                int watchedTime = gist.getWatchedTime();
+                boolean playAds = binder.isPlayAds();
+                relateVideoIds = binder.getRelateVideoIds();
+                currentlyPlayingIndex = binder.getCurrentPlayingVideoIndex();
+
+                if (!TextUtils.isEmpty(bgColor)) {
+                    appCMSPlayVideoPageContainer.setBackgroundColor(Color.parseColor(bgColor));
+                }
+
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                final AppCMSPlayVideoFragment appCMSPlayVideoFragment =
+                        AppCMSPlayVideoFragment.newInstance(this,
+                                fontColor,
+                                title,
+                                permaLink,
+                                hlsUrl,
+                                filmId,
+                                adsUrl,
+                                playAds,
+                                watchedTime,
+                                videoImageUrl,
+                                closedCaptionUrl);
+                fragmentTransaction.add(R.id.app_cms_play_video_page_container,
+                        appCMSPlayVideoFragment,
+                        getString(R.string.video_fragment_tag_key));
+                fragmentTransaction.addToBackStack(getString(R.string.video_fragment_tag_key));
+                fragmentTransaction.commit();
+            }
+        } catch (ClassCastException e) {
+            e.printStackTrace();
         }
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        AppCMSPlayVideoFragment appCMSPlayVideoFragment =
-                AppCMSPlayVideoFragment.newInstance(this,
-                        fontColor,
-                        title,
-                        permaLink,
-                        hlsUrl,
-                        filmId,
-                        adsUrl,
-                        playAds,
-                        watchedTime);
-        fragmentTransaction.add(R.id.app_cms_play_video_page_container,
-                appCMSPlayVideoFragment,
-                getString(R.string.video_fragment_tag_key));
-        fragmentTransaction.addToBackStack(getString(R.string.video_fragment_tag_key));
-        fragmentTransaction.commit();
 
         handoffReceiver = new BroadcastReceiver() {
             @Override
@@ -97,14 +164,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        getWindow().getDecorView()
-                .setSystemUiVisibility(
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                                | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+
         if (!appCMSPresenter.isNetworkConnected()) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                     null,
@@ -128,5 +188,41 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     @Override
     public void closePlayer() {
         finish();
+    }
+
+    @Override
+    public void onMovieFinished() {
+        // TODO: 7/12/2017 Add a check for autoplay from settings
+        if (!binder.isTrailer()
+                && relateVideoIds != null
+                && currentlyPlayingIndex != relateVideoIds.size() - 1) {
+            binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
+            appCMSPresenter.openAutoPlayScreen(binder);
+        }
+        closePlayer();
+    }
+
+    @Override
+    public void onRemotePlayback(long currentPosition) {
+        // TODO: Add a check for autoplay from settings
+        CastHelper.getInstance(getApplicationContext()).launchRemoteMedia(appCMSPresenter, relateVideoIds,filmId, currentPosition, binder);
+
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        setFullScreenFocus();
+        super.onWindowFocusChanged(hasFocus);
+    }
+
+    private void setFullScreenFocus() {
+        getWindow().getDecorView()
+                .setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                                | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
 }

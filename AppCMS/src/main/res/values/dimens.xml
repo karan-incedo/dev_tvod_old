@@ -44,6 +44,9 @@
     <dimen name="app_cms_continue_watching_play_button_height">28dp</dimen>
     <dimen name="app_cms_continue_watching_progressbar_height">5dp</dimen>
     <dimen name="app_cms_continue_watching_description_width">222dp</dimen>
+    <dimen name="app_cms_video_controller_cc_left_margin">24dp</dimen>
+    <dimen name="app_cms_video_controller_cc_width">34dp</dimen>
+    <dimen name="app_cms_video_controller_cc_height">34dp</dimen>
     <dimen name="app_cms_not_items_label_text_size">24sp</dimen>
     <dimen name="app_cms_planmetapage_end_margin">4dp</dimen>
 </resources>

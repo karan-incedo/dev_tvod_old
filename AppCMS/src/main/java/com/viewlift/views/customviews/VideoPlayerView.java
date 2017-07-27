@@ -9,18 +9,24 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
+import android.widget.ToggleButton;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.MergingMediaSource;
+import com.google.android.exoplayer2.source.SingleSampleMediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
@@ -39,6 +45,7 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
+import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 
 import rx.Observable;
@@ -51,10 +58,15 @@ import com.viewlift.R;
 
 public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListener {
     private static final String TAG = "VideoPlayerFragment";
+    private ToggleButton ccToggleButton;
 
     public static class PlayerState {
         boolean playWhenReady;
         int playbackState;
+
+        public boolean isPlayWhenReady() {
+            return playWhenReady;
+        }
 
         public int getPlaybackState() {
             return playbackState;
@@ -66,6 +78,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     private Uri uri;
     private Action1<PlayerState> onPlayerStateChanged;
     private Action1<Integer> onPlayerControlsStateChanged;
+    private Action1<Boolean> onClosedCaptionButtonClicked;
     private PlayerState playerState;
     private SimpleExoPlayer player;
     private SimpleExoPlayerView playerView;
@@ -97,13 +110,25 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     public void setOnPlayerControlsStateChanged(Action1<Integer> onPlayerControlsStateChanged) {
         this.onPlayerControlsStateChanged = onPlayerControlsStateChanged;
     }
+    public void setOnClosedCaptionButtonClicked(Action1<Boolean> onClosedCaptionButtonClicked) {
+        this.onClosedCaptionButtonClicked = onClosedCaptionButtonClicked;
+    }
 
-    public void setUri(Uri uri) {
-        this.uri = uri;
+    public void setUri(Uri videoUri, Uri closedCaptionUri) {
+        this.uri = videoUri;
         try {
-            player.prepare(buildMediaSource(uri, null));
+            player.prepare(buildMediaSource(videoUri, closedCaptionUri));
         } catch (IllegalStateException e) {
-            Log.e(TAG, "Unsupported video format for URI: " + uri.toString());
+            Log.e(TAG, "Unsupported video format for URI: " + videoUri.toString());
+        }
+        if (closedCaptionUri == null) {
+            if (ccToggleButton != null) {
+                ccToggleButton.setVisibility(GONE);
+            }
+        } else {
+            if (ccToggleButton != null) {
+                ccToggleButton.setChecked(true);
+            }
         }
     }
 
@@ -167,6 +192,10 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         }
     }
 
+    public SimpleExoPlayerView getPlayerView() {
+        return playerView;
+    }
+
     private void init(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         initializePlayer(context, attrs, defStyleAttr);
         playerState = new PlayerState();
@@ -175,9 +204,21 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     private void initializePlayer(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         resumeWindow = C.INDEX_UNSET;
         resumePosition = C.TIME_UNSET;
-        playerView = new SimpleExoPlayerView(context, attrs, defStyleAttr);
+        LayoutInflater.from(context).inflate(R.layout.video_player_view, this);
+        playerView = (SimpleExoPlayerView) findViewById(R.id.videoPlayerView);
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
+        ccToggleButton = (ToggleButton) playerView.findViewById(R.id.ccButton);
+        ccToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (onClosedCaptionButtonClicked != null) {
+                    onClosedCaptionButtonClicked.call(isChecked);
+                }
+            }
+        });
+
+
         mediaDataSourceFactory = buildDataSourceFactory(true);
 
         TrackSelection.Factory videoTrackSelectionFactory =
@@ -206,8 +247,22 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
                 },
                 AudioManager.STREAM_MUSIC,
                 AudioManager.AUDIOFOCUS_GAIN);
+    }
 
-        addView(playerView);
+    private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {
+        Format textFormat = Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP,
+                null, Format.NO_VALUE, C.SELECTION_FLAG_DEFAULT, "en", null);
+        MediaSource videoSource = buildMediaSource(uri, "");
+        if (ccFileUrl == null) {
+            return videoSource;
+        }
+        MediaSource subtitleSource = new SingleSampleMediaSource(
+                ccFileUrl,
+                mediaDataSourceFactory,
+                textFormat,
+                C.TIME_UNSET);
+        // Plays the video with the side-loaded subtitle.
+        return new MergingMediaSource(videoSource, subtitleSource);
     }
 
     private MediaSource buildMediaSource(Uri uri, String overrideExtension) {

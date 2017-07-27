@@ -191,7 +191,7 @@ public abstract class BaseView extends FrameLayout {
                         if (lmDiff < 0) {
                             lmDiff = 0;
                         }
-                        if (parentViewHeight > 0) {
+                        if (parentViewWidth > 0) {
                             lm = parentViewWidth -
                                     Math.round(DEVICE_WIDTH * (tabletPortrait.getRightMargin() / STANDARD_TABLET_WIDTH_PX)) -
                                     lmDiff;

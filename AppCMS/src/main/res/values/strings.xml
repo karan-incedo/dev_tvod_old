@@ -3,6 +3,8 @@
     <string name="error_loading_page"><![CDATA[Could not retrieve data!<br>Please try again later!]]></string>
     <string name="fragment_page_bundle_key">fragment_page</string>
     <string name="app_cms_binder_key">app_cms_binder</string>
+    <string name="app_cms_video_player_binder_key">app_cms_video_player_binder</string>
+    <string name="app_cms_video_player_bundle_binder_key">app_cms_video_player_bundle_binder</string>
     <string name="app_cms_bundle_key">app_cms_bundle</string>
     <string name="launch_binder_key">launch_binder</string>
     <string name="video_player_data_key">video_player_data</string>
@@ -24,6 +26,7 @@
     <string name="video_player_hls_url_key">video_player_hls_url</string>
     <string name="video_layer_film_id_key">film_id</string>
     <string name="video_player_ads_url_key">video_player_ads_url</string>
+    <string name="video_player_recommended_videos_key">video_player_recommended_videos_key</string>
     <string name="video_fragment_tag_key">video_fragment</string>
     <string name="app_cms_text_color_key">app_cms_text_color</string>
     <string name="app_cms_bg_color_key">app_cms_bg_color</string>
@@ -58,6 +61,10 @@
     <string name="age_rating_converted_eighteen">18+</string>
     <string name="age_rating_converted_default">NR</string>
     <string name="no_results">No results</string>
+    <string name="video_player_title_key">video_player_title</string>
+    <string name="video_player_permalink_key">video_player_permalink</string>
+    <string name="video_player_font_color_key">video_player_font_color</string>
+    <string name="video_player_closed_caption_key">video_player_closed_caption</string>
     <string name="opensans_bold_ttf">fonts/OpenSans-Bold.ttf</string>
     <string name="opensans_semibold_ttf">fonts/OpenSans-Semibold.ttf</string>
     <string name="opensans_extrabold_ttf">fonts/OpenSans-ExtraBold.ttf</string>
@@ -72,12 +79,10 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="video_player_request_ads_key">video_player_request_ads</string>
 
-
     <string name="dialog_item_key">dialog_item</string>
     <string name="dialog_item_title_key">title</string>
     <string name="dialog_item_description_key">description</string>
     <string name="dialog_item_text_color_key">text_color</string>
-
 
     <string name="app_cms_email_input_text_hint">EMAIL</string>
     <string name="please_input_your_email_address_to_send_a_reset_password_link_text">Please input your email address to send a reset password link.</string>
@@ -85,6 +90,12 @@
     <string name="empty_watchlist_message">Your watchlist is currently empty.</string>
     <string name="app_cms_currently_logged_out_message">CURRENTLY LOGGED OUT</string>
     <string name="app_cms_sign_out_label">SIGN OUT</string>
+
+    <string name="next_video_is">Next Video is:</string>
+
+    <!-- AppCMS VideoPlayer values -->
+    <string name="app_cms_user_agent">AppCMS Android</string>
+    <string name="app_cms_default_video_ext">m3u8</string>
 
     <string name="app_cms_login_again">Your session has expired.  Please login again.</string>
     <string name="app_cms_error_email_password">Email and password are not valid.</string>
@@ -99,16 +110,23 @@
     <string name="delete_history_content_type_video">video</string>
     <string name="app_cms_border_color_key">app_cms_border_color</string>
     <string name="app_cms_password_reset_email_key">app_cms_password_reset_email</string>
-    <string name="video_player_title_key">video_player_title</string>
-    <string name="video_player_permalink_key">video_player_permalink</string>
-    <string name="video_player_font_color_key">video_player_font_color</string>
     <string name="play_ads_key">play_ads</string>
     <string name="reset_password_text">RESET PASSWORD</string>
     <string name="watched_time_key">watched_time</string>
+    <string name="played_movie_image_url">played_movie_image</string>
 
-    <!-- AppCMS VideoPlayer values -->
-    <string name="app_cms_user_agent">AppCMS Android</string>
-    <string name="app_cms_default_video_ext">m3u8</string>
+    <!-- AppCMS Video Detail API -->
+    <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
+
+    <string name="media_route_menu_title">Play on&#8230;</string>
+   <string name="countdown_seconds">%d seconds</string>
+    <string name="related_movies_id_list">related_movies_id</string>
+    <string name="loading_vid_on_casting">Loading on casting device..</string>
+    <string name="app_cms_page_autoplay_key">AutoPlay Screen</string>
+    <plurals name="countdown_seconds">
+        <item quantity="one">%d second</item>
+        <item quantity="other">%d seconds</item>
+    </plurals>
 
     <!-- AppCMS Login values -->
     <string name="app_cms_log_in_pager_title">LOG IN</string>

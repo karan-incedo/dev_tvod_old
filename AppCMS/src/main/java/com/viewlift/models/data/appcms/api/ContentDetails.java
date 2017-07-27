@@ -67,12 +67,11 @@ public class ContentDetails {
 
     @SerializedName("closedCaptions")
     @Expose
-    Object closedCaptions;
+    List<ClosedCaptions> closedCaptions;
 
     @SerializedName("deviceControls")
     @Expose
     List<String> deviceControls = null;
-
     @SerializedName("status")
     @Expose
     String status;
@@ -189,11 +188,11 @@ public class ContentDetails {
         this.endDate = endDate;
     }
 
-    public Object getClosedCaptions() {
+    public List<ClosedCaptions> getClosedCaptions() {
         return closedCaptions;
     }
 
-    public void setClosedCaptions(Object closedCaptions) {
+    public void setClosedCaptions(List<ClosedCaptions> closedCaptions) {
         this.closedCaptions = closedCaptions;
     }
 
@@ -212,4 +211,10 @@ public class ContentDetails {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public boolean isAutoGenerateRelated() {
+        return autoGenerateRelated;
+    }
+
+
 }

@@ -136,7 +136,7 @@ public class AppCmsTVPageFragment extends Fragment {
 
 
         for(int i = 0 ; i <appCMSPageUI.getModuleList().size() ; i++){
-            //ModuleList is the UI of Single Module like tray module or Crausol Module.
+            //ModuleList is the UI of Single ModuleWithComponents like tray module or Crausol ModuleWithComponents.
             ModuleList module = appCMSPageUI.getModuleList().get(i);
             if(trayModuleList.contains(module.getView())){
                 BrowseCompnentModule browseCompnentModule = new BrowseCompnentModule();

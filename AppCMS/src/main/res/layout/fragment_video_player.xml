@@ -26,7 +26,7 @@
             android:layout_width="215dp"
             android:layout_height="55dp"
             app:layout_constraintStart_toEndOf="@id/app_cms_video_player_done_button"
-            app:layout_constraintEnd_toStartOf="@id/app_cms_video_title_end_placeholder"
+            app:layout_constraintEnd_toStartOf="@id/media_route_button"
             android:background="@android:color/transparent"
             android:ellipsize="marquee"
             android:fadingEdge="horizontal"
@@ -35,17 +35,28 @@
             android:textAlignment="center"
             android:textSize="@dimen/app_cms_video_player_title_view_text_size" />
 
-        <Button
-            android:id="@+id/app_cms_video_title_end_placeholder"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/ll_media_route_button"
+
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:background="@android:color/transparent"
-            android:enabled="false"
-            android:focusable="false"
-            android:padding="0dp"
-            android:text="@string/done"
-            android:textColor="@android:color/transparent" />
+            android:layout_gravity="end"
+            android:layout_alignParentEnd="true"
+            android:layout_weight="1"
+            android:gravity="end"
+
+            android:orientation="horizontal">
+            <ImageButton
+                android:id="@+id/media_route_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:layout_gravity="end"
+                android:background="#00000000"
+                android:src="@drawable/anim_cast"
+                android:visibility="gone" />
+
+        </LinearLayout>
 
     </android.support.constraint.ConstraintLayout>
 

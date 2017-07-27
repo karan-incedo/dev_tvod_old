@@ -207,13 +207,23 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         extraData[1] = hlsUrl;
                         extraData[2] = data.getGist().getId();
                         Log.d(TAG, "Launching " + permalink + ": " + action);
-
+                        List<String> relatedVideoIds = null;
+                        if (data.getContentDetails() != null &&
+                                data.getContentDetails().getRelatedVideoIds() != null) {
+                            relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
+                        }
+                        int currentPlayingIndex = -1;
+                        if (relatedVideoIds == null) {
+                            currentPlayingIndex = 0;
+                        }
                         if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                                 action,
                                 title,
                                 extraData,
                                 data,
-                                false)) {
+                                false,
+                                currentPlayingIndex,
+                                relatedVideoIds)) {
                             Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
                                     + " action: " + action + " hlsUrl: " + hlsUrl);
                         }
@@ -225,7 +235,18 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         String filmId = data.getGist().getId();
                         String permaLink = data.getGist().getPermalink();
                         String title = data.getGist().getTitle();
-                        if (!appCMSPresenter.launchVideoPlayer(filmId, permaLink, title, data)) {
+                        List<String> relatedVideoIds = null;
+                        if (data.getContentDetails() != null &&
+                                data.getContentDetails().getRelatedVideoIds() != null) {
+                            relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
+                        }
+                        int currentPlayingIndex = -1;
+                        if (relatedVideoIds == null) {
+                            currentPlayingIndex = 0;
+                        }
+                        if (!appCMSPresenter.launchVideoPlayer(data,
+                                currentPlayingIndex,
+                                relatedVideoIds)) {
                             Log.e(TAG, "Could not launch play action: " +
                                     " filmId: " +
                                     filmId +
@@ -248,12 +269,23 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     String permalink = data.getGist().getPermalink();
                     String title = data.getGist().getTitle();
                     Log.d(TAG, "Launching " + permalink + ":" + defaultAction);
+                    List<String> relatedVideoIds = null;
+                    if (data.getContentDetails() != null &&
+                            data.getContentDetails().getRelatedVideoIds() != null) {
+                        relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
+                    }
+                    int currentPlayingIndex = -1;
+                    if (relatedVideoIds == null) {
+                        currentPlayingIndex = 0;
+                    }
                     if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                             defaultAction,
                             title,
                             null,
                             null,
-                            false)) {
+                            false,
+                            currentPlayingIndex,
+                            relatedVideoIds)) {
                         Log.e(TAG, "Could not launch action: " +
                                 " permalink: " +
                                 permalink +

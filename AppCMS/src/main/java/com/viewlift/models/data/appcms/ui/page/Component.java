@@ -7,7 +7,7 @@ import com.vimeo.stag.UseStag;
 import java.util.List;
 
 @UseStag(UseStag.FieldOption.SERIALIZED_NAME)
-public class Component implements Module {
+public class Component implements ModuleWithComponents {
 
     @SerializedName("text")
     @Expose
@@ -405,6 +405,11 @@ public class Component implements Module {
 
     public String getView() {
         return view;
+    }
+
+    @Override
+    public Settings getSettings() {
+        return null;
     }
 
     public void setView(String view) {

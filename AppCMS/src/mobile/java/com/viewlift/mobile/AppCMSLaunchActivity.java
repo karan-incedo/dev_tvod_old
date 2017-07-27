@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.casting.CastHelper;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import com.viewlift.views.components.AppCMSPresenterComponent;
@@ -17,6 +18,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
 
     private Uri searchQuery;
+    private CastHelper mCastHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                 searchQuery,
                 AppCMSPresenter.PlatformType.ANDROID);
         Log.d(TAG, "onCreate()");
+        setCasting();
     }
 
     @Override
@@ -44,6 +47,15 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         handleIntent(intent);
+    }
+
+    private void setCasting() {
+        try {
+            mCastHelper = CastHelper.getInstance(getApplicationContext());
+            mCastHelper.initCastingObj();
+        } catch (Exception e) {
+            Log.e(TAG, "Error initializing casting: " + e.getMessage());
+        }
     }
 
     public void handleIntent(Intent intent) {

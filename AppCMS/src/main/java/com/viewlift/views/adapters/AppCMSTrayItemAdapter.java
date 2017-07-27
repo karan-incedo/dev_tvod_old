@@ -349,7 +349,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 title,
                 extraData,
                 data,
-                false)) {
+                false,
+                -1,
+                data.getContentDetails().getRelatedVideoIds())) {
             Log.e(TAG, "Could not launch action: " +
                     " permalink: " +
                     permalink +
@@ -365,7 +367,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         String filmId = data.getGist().getId();
         String permaLink = data.getGist().getPermalink();
         String title = data.getGist().getTitle();
-        if (!appCMSPresenter.launchVideoPlayer(filmId, permaLink, title, data)) {
+        if (!appCMSPresenter.launchVideoPlayer(data,
+                -1,
+                data.getContentDetails().getRelatedVideoIds())) {
             Log.e(TAG, "Could not launch play action: " +
                     " filmId: " +
                     filmId +

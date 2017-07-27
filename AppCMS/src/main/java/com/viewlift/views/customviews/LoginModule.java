@@ -23,6 +23,7 @@ import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
+import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.Map;
@@ -38,7 +39,7 @@ public class LoginModule extends ModuleView {
 
     private static final int NUM_CHILD_VIEWS = 2;
 
-    private final ModuleList module;
+    private final ModuleWithComponents module;
     private final Module moduleAPI;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final AppCMSPresenter appCMSPresenter;
@@ -58,7 +59,7 @@ public class LoginModule extends ModuleView {
     private ImageButton closeButton;
 
     public LoginModule(Context context,
-                       ModuleList module,
+                       ModuleWithComponents module,
                        Module moduleAPI,
                        Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                        AppCMSPresenter appCMSPresenter,
@@ -122,7 +123,9 @@ public class LoginModule extends ModuleView {
                             null,
                             null,
                             null,
-                            false)) {
+                            false,
+                            0,
+                            null)) {
                         Log.e(TAG, "Could not launch action: " +
                                 " action: " +
                                 closeAction);
@@ -333,7 +336,9 @@ public class LoginModule extends ModuleView {
                                                 null,
                                                 authData,
                                                 null,
-                                                true);
+                                                true,
+                                                0,
+                                                null);
                                     }
                                 }
                             });

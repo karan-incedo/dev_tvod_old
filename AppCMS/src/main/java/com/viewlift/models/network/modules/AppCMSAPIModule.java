@@ -8,6 +8,8 @@ import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageAPIRest;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoRest;
+import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
+import com.viewlift.models.network.rest.AppCMSVideoDetailRest;
 import com.viewlift.stag.generated.Stag;
 
 import java.io.File;
@@ -84,6 +86,12 @@ public class AppCMSAPIModule {
 
     @Provides
     @Singleton
+    public AppCMSVideoDetailRest providesAppCMSVideoDetailRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSVideoDetailRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSPageAPICall providesAppCMSPageAPICall(AppCMSPageAPIRest appCMSPageAPI,
                                                        Gson gson,
                                                        File storageDirectory) {
@@ -94,5 +102,11 @@ public class AppCMSAPIModule {
     @Singleton
     public AppCMSStreamingInfoCall providesAppCMSStreamingInfoCall(AppCMSStreamingInfoRest appCMSStreamingInfoRest) {
         return new AppCMSStreamingInfoCall(appCMSStreamingInfoRest);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSVideoDetailCall providesAppCMSVideoDetailCall(AppCMSVideoDetailRest appCMSVideoDetailRest){
+        return new AppCMSVideoDetailCall(appCMSVideoDetailRest);
     }
 }

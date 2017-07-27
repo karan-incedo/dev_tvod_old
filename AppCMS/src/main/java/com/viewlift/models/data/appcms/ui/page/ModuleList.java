@@ -8,7 +8,7 @@ import com.vimeo.stag.UseStag;
 import java.util.List;
 
 @UseStag
-public class ModuleList implements Module {
+public class ModuleList implements ModuleWithComponents {
 
     @SerializedName("id")
     @Expose

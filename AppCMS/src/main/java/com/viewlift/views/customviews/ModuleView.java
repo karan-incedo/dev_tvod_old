@@ -1,13 +1,12 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
-import com.viewlift.models.data.appcms.ui.page.Module;
+import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,7 @@ import java.util.List;
  * Created by viewlift on 5/17/17.
  */
 
-public class ModuleView<T extends Module> extends BaseView {
+public class ModuleView<T extends ModuleWithComponents> extends BaseView {
     private static final String TAG = "ModuleView";
 
     private final T module;

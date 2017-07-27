@@ -23,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -39,6 +40,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
@@ -87,6 +89,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @BindView(R.id.app_cms_tab_nav_container)
     LinearLayout appCMSTabNavContainer;
 
+    @BindView(R.id.ll_media_route_button)
+    LinearLayout ll_media_route_button;
+
+    @BindView(R.id.media_route_button)
+    ImageButton mMediaRouteButton;
+
     private AppCMSPresenter appCMSPresenter;
     private Stack<String> appCMSBinderStack;
     private Map<String, AppCMSBinder> appCMSBinderMap;
@@ -106,6 +114,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private IInAppBillingService inAppBillingService;
 
     private ServiceConnection inAppBillingServiceConn;
+
+    CastServiceProvider castProvider;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -268,6 +278,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         createHomeNavItem(appCMSPresenter.findHomePageNavItem());
         createMoviesNavItem(appCMSPresenter.findMoviesPageNavItem());
         createSearchNavItem();
+
+        setCasting();
 
         Log.d(TAG, "onCreate()");
     }
@@ -574,6 +586,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } catch (IllegalStateException e) {
             Log.e(TAG, "Failed to add Fragment to back stack");
         }
+        /**
+         * casting button will show only on home page ,movie page and player page so check which page will be open
+         */
+        setMediaRouerButtonVisibilty(appCMSBinder.getPageId());
     }
 
     private void selectNavItemAndLaunchPage(NavBarItemView v, String pageId, String pageTitle) {
@@ -820,7 +836,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 title,
                 null,
                 null,
-                false);
+                false,
+                0,
+                null);
     }
 
     private void updateData() {
@@ -862,5 +880,27 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.e(TAG, "Failed to connect for Google SignIn: " + connectionResult.getErrorMessage());
+    }
+
+    private void setMediaRouerButtonVisibilty(String pageId) {
+        if (appCMSPresenter.findHomePageNavItem().getPageId().equalsIgnoreCase(pageId) ||
+                appCMSPresenter.findMoviesPageNavItem().getPageId().equalsIgnoreCase(pageId)) {
+            ll_media_route_button.setVisibility(View.VISIBLE);
+        } else {
+            ll_media_route_button.setVisibility(View.GONE);
+        }
+        if (castProvider != null) {
+            castProvider.setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
+            castProvider.onActivityResume();
+        }
+
+    }
+
+    private void setCasting() {
+        try {
+            castProvider = CastServiceProvider.getInstance(getApplicationContext());
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
+        }
     }
 }
