@@ -157,7 +157,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     @Override
     public int getItemCount() {
-        return adapterData.size();
+        return (adapterData != null ? adapterData.size() : 0);
     }
 
     @Override
