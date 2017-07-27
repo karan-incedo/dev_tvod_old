@@ -1023,6 +1023,19 @@ public class ViewCreator {
                         });
                         break;
                     default:
+                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                appCMSPresenter.launchButtonSelectedAction(null,
+                                        component.getAction(),
+                                        null,
+                                        null,
+                                        null,
+                                        false,
+                                        0,
+                                        null);
+                            }
+                        });
                 }
 
                 break;
