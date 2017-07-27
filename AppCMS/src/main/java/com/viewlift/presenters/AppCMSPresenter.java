@@ -2407,7 +2407,15 @@ public class AppCMSPresenter {
             Intent stopLoadingPageIntent =
                     new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
             currentActivity.sendBroadcast(stopLoadingPageIntent);
-            showDialog(DialogType.NETWORK, null, false, null);
+            showDialog(DialogType.NETWORK,
+                    null,
+                    false,
+                    new Action0() {
+                        @Override
+                        public void call() {
+                            sendCloseOthersAction(null, false);
+                        }
+                    });
         }
     }
 
