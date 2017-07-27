@@ -1499,7 +1499,7 @@ public class ViewCreator {
                 break;
 
             case PAGE_VIDEO_STARRATING_KEY:
-	    case PAGE_AUTOPLAY_MOVIE_STAR_RATING_KEY:
+	        case PAGE_AUTOPLAY_MOVIE_STAR_RATING_KEY:
                 int starColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
 
                 float starRating = 0.0f;

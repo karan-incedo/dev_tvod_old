@@ -1319,31 +1319,33 @@ public class AppCMSPresenter {
     }
 
     private void circularImageBar(ImageView iv2, int i) {
+        // Bitmap b = Bitmap.createBitmap(28, 28,Bitmap.Config.ARGB_8888);
         Bitmap b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(b);
         Paint paint = new Paint();
 
-        paint.setColor(Color.DKGRAY);
+  /*      paint.setColor(Color.DKGRAY);
         paint.setStrokeWidth(3);
         paint.setStyle(Paint.Style.STROKE);
         canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 2, paint);
-
-        paint.setColor(Color.WHITE);
-        paint.setStrokeWidth(3);
+*/
+        int tintColor = Color.parseColor((this.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
+        paint.setColor(tintColor);
+        paint.setStrokeWidth(iv2.getWidth() / 7);
         paint.setStyle(Paint.Style.FILL);
         final RectF oval = new RectF();
         paint.setStyle(Paint.Style.STROKE);
         oval.set(2, 2, iv2.getWidth() - 2, iv2.getHeight() - 2);
         canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
 
-        paint.setStrokeWidth(0);
+       /* paint.setStrokeWidth(0);
         paint.setStyle(Paint.Style.FILL);
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setColor(Color.parseColor("#FFFFFF"));
         paint.setTextSize((iv2.getWidth() / 2));
 
         canvas.drawText("" + i, iv2.getWidth() / 2, ((iv2.getWidth() / 2) + (paint.getTextSize() / 3)), paint);
-
+*/
         iv2.setImageBitmap(b);
     }
 
