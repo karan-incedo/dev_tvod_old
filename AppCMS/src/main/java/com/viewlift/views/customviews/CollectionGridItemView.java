@@ -353,8 +353,10 @@ public class CollectionGridItemView extends BaseView {
                                     strikeThroughLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                             ((TextView) view).setText(spannableString);
                         } else {
-                            ((TextView) view).setText(String.valueOf(data.getPlanDetails().get(0)
-                                    .getRecurringPaymentAmount()));
+                            StringBuilder stringBuilder = new StringBuilder(currency.getSymbol());
+                            stringBuilder.append(data.getPlanDetails().get(0)
+                                    .getRecurringPaymentAmount());
+                            ((TextView) view).setText(String.valueOf(stringBuilder.toString()));
                             ((TextView) view).setPaintFlags(((TextView) view).getPaintFlags());
                         }
 
