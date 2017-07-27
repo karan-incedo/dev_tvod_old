@@ -56,6 +56,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.viewlift.R;
+import com.viewlift.casting.CastHelper;
 import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenResponse;
 import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
@@ -2752,6 +2753,7 @@ public class AppCMSPresenter {
                             deeplinkSearchQuery);
                 }
             }
+            CastHelper.getInstance(currentActivity.getApplicationContext()).castingLogout();
         }
     }
 

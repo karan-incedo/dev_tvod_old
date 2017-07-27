@@ -18,6 +18,8 @@ import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.casting.CastHelper;
+import com.viewlift.casting.CastServiceProvider;
+import com.viewlift.casting.CastingUtils;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -66,7 +68,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 Gist gist = binder.getContentData().getGist();
                 String videoUrl = "";
                 String fontColor = binder.getFontColor();
-                 title = "";
+                title = "";
                 if (!binder.isTrailer()) {
                     title = gist.getTitle();
                     if (binder.getContentData().getStreamingInfo() != null &&
@@ -203,9 +205,13 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onRemotePlayback(long currentPosition) {
+    public void onRemotePlayback(long currentPosition, int castingModeChromecast) {
         // TODO: Add a check for autoplay from settings
-        CastHelper.getInstance(getApplicationContext()).launchRemoteMedia(appCMSPresenter, relateVideoIds,filmId, currentPosition, binder);
+        if(castingModeChromecast== CastingUtils.CASTING_MODE_CHROMECAST){
+            CastHelper.getInstance(getApplicationContext()).launchRemoteMedia(appCMSPresenter, relateVideoIds,filmId, currentPosition, binder);
+        }else if(castingModeChromecast== CastingUtils.CASTING_MODE_ROKU){
+            CastServiceProvider.getInstance(getApplicationContext()).launchRokuCasting(filmId,videoImageUrl,title);
+        }
 
     }
 
