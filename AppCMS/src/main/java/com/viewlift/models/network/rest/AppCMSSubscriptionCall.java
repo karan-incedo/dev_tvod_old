@@ -23,7 +23,7 @@ import retrofit2.Response;
 import rx.Observable;
 import rx.functions.Action1;
 
-public class uAppCMSSubscriptionCall {
+public class AppCMSSubscriptionCall {
     private static final String TAG = "AppCMSSubscriptionCall";
     private final AppCMSSubscriptionRest appCMSSubscriptionRest;
 
