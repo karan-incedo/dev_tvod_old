@@ -15,20 +15,19 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.AppCMSApplication;
+import com.viewlift.BuildConfig;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
 import com.viewlift.models.network.modules.AppCMSSearchUrlData;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.presenters.AppCMSPresenter;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import okhttp3.OkHttpClient;
-import com.viewlift.BuildConfig;
-import com.viewlift.R;
 
 import static android.app.SearchManager.SUGGEST_URI_PATH_QUERY;
 
@@ -38,25 +37,25 @@ import static android.app.SearchManager.SUGGEST_URI_PATH_QUERY;
 
 public class AppCMSSearchableContentProvider extends ContentProvider {
     public static final String URI_AUTHORITY = BuildConfig.AUTHORITY;
-
     private static final String TAG = "SearchableProvider";
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-    private static final String[] SUGGESTION_COLUMN_NAMES = { BaseColumns._ID,
+    private static final String[] SUGGESTION_COLUMN_NAMES = {BaseColumns._ID,
             SearchManager.SUGGEST_COLUMN_TEXT_1,
-            SearchManager.SUGGEST_COLUMN_INTENT_DATA };
-
-    private Gson gson;
-    private OkHttpClient client;
-
-    @Inject
-    AppCMSSearchUrlData appCMSSearchUrlData;
-    @Inject
-    AppCMSSearchCall appCMSSearchCall;
+            SearchManager.SUGGEST_COLUMN_DURATION,
+            SearchManager.SUGGEST_COLUMN_INTENT_DATA};
 
     static {
         uriMatcher.addURI(URI_AUTHORITY, SUGGEST_URI_PATH_QUERY, 1);
         uriMatcher.addURI(URI_AUTHORITY, null, 2);
     }
+
+    @Inject
+    AppCMSSearchUrlData appCMSSearchUrlData;
+
+    @Inject
+    AppCMSSearchCall appCMSSearchCall;
+    private Gson gson;
+    private OkHttpClient client;
 
     @Override
     public boolean onCreate() {
@@ -71,7 +70,8 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
+                        @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         MatrixCursor cursor = null;
 
         if (getContext() instanceof AppCMSApplication && needInjection()) {
@@ -101,19 +101,28 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                         if (searchResultList != null) {
                             Log.d(TAG, "Search results received (" + searchResultList.size() + "): ");
                             cursor = new MatrixCursor(SUGGESTION_COLUMN_NAMES, searchResultList.size());
+
                             for (int i = 0; i < searchResultList.size(); i++) {
                                 Uri permalinkUri = Uri.parse(searchResultList.get(i).getPermalink());
                                 String filmUri = permalinkUri.getLastPathSegment();
+                                String runtime = String.valueOf(searchResultList.get(i).getRuntime());
                                 String searchHintResult = searchResultList.get(i).getTitle() +
+                                        "," +
+                                        runtime +
                                         "," +
                                         filmUri +
                                         "," +
                                         permalinkUri;
-                                Object[] rowResult = { i,
-                                    searchResultList.get(i).getTitle(),
-                                    searchHintResult };
+
+                                Object[] rowResult = {i,
+                                        searchResultList.get(i).getTitle(),
+                                        searchResultList.get(i).getRuntime() / 60,
+                                        searchHintResult};
+
                                 cursor.addRow(rowResult);
                                 Log.d(TAG, searchResultList.get(i).getTitle());
+                                Log.d(TAG, String.valueOf(searchResultList.get(i).getRuntime())
+                                        + " seconds");
                             }
                         } else {
                             Log.d(TAG, "No search results found");
@@ -125,6 +134,7 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                     Log.d(TAG, "Could not retrieved results - search content provider has not been injected");
                 }
                 break;
+
             default:
         }
         return cursor;
@@ -148,7 +158,8 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
     }
 
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
+    public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection,
+                      @Nullable String[] selectionArgs) {
         return 0;
     }
 

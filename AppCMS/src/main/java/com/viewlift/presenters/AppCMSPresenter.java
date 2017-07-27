@@ -215,10 +215,9 @@ public class AppCMSPresenter {
     private static final String MEDIA_SURFIX_MP4 = ".mp4";
     private static final String MEDIA_SURFIX_PNG = ".png";
     private static final String MEDIA_SURFIX_JPG = ".jpg";
-
-    private final Gson gson;
     private static final int RC_GOOGLE_SIGN_IN = 1001;
     private static int PAGE_LRU_CACHE_SIZE = 10;
+    private final Gson gson;
     private final AppCMSMainUICall appCMSMainUICall;
     private final AppCMSAndroidUICall appCMSAndroidUICall;
     private final AppCMSPageUICall appCMSPageUICall;
@@ -558,7 +557,8 @@ public class AppCMSPresenter {
                     if (contentDatum != null &&
                             contentDatum.getGist() != null &&
                             contentDatum.getGist().getWatchedTime() != 0) {
-                        playVideoIntent.putExtra(currentActivity.getString(R.string.watched_time_key), contentDatum.getGist().getWatchedTime());
+                        playVideoIntent.putExtra(currentActivity.getString(R.string.watched_time_key),
+                                contentDatum.getGist().getWatchedTime());
                     }
                 } else {
                     requestAds = false;
@@ -876,9 +876,12 @@ public class AppCMSPresenter {
     public void launchSearchPage() {
         if (currentActivity != null) {
             AppCMSSearchFragment appCMSSearchFragment = AppCMSSearchFragment.newInstance(currentActivity,
-                    Long.parseLong(appCMSMain.getBrand().getGeneral().getBackgroundColor().replace("#", ""), 16),
-                    Long.parseLong(appCMSMain.getBrand().getGeneral().getPageTitleColor().replace("#", ""), 16),
-                    Long.parseLong(appCMSMain.getBrand().getGeneral().getTextColor().replace("#", ""), 16));
+                    Long.parseLong(appCMSMain.getBrand().getGeneral().getBackgroundColor()
+                            .replace("#", ""), 16),
+                    Long.parseLong(appCMSMain.getBrand().getGeneral().getPageTitleColor()
+                            .replace("#", ""), 16),
+                    Long.parseLong(appCMSMain.getBrand().getGeneral().getTextColor()
+                            .replace("#", ""), 16));
             appCMSSearchFragment.show(((AppCompatActivity) currentActivity).getSupportFragmentManager(),
                     currentActivity.getString(R.string.app_cms_search_page_tag));
         }
@@ -1121,7 +1124,8 @@ public class AppCMSPresenter {
                     .setTitle(contentDatum.getGist().getTitle())
                     .setDescription(contentDatum.getGist().getDescription())
                     .setAllowedOverRoaming(false)
-                    .setDestinationInExternalFilesDir(currentActivity, Environment.DIRECTORY_DOWNLOADS, contentDatum.getGist().getId() + MEDIA_SURFIX_MP4)
+                    .setDestinationInExternalFilesDir(currentActivity, Environment.DIRECTORY_DOWNLOADS,
+                            contentDatum.getGist().getId() + MEDIA_SURFIX_MP4)
                     .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
@@ -1201,8 +1205,9 @@ public class AppCMSPresenter {
 
     }
 
-    public synchronized void updateDownloadingStatus(String filmId, final ImageView imageView, AppCMSPresenter presenter, final
-    Action1<UserVideoDownloadStatus> responseAction) {
+    public synchronized void updateDownloadingStatus(String filmId, final ImageView imageView,
+                                                     AppCMSPresenter presenter,
+                                                     final Action1<UserVideoDownloadStatus> responseAction) {
         long videoId = realmController.getDownloadById(filmId).getVideoId_DM();
 
         DownloadManager.Query query = new DownloadManager.Query();
@@ -1224,7 +1229,8 @@ public class AppCMSPresenter {
                     Log.d(TAG, "download progress =" + downloaded + " totel-> " + totalSize + " " + downloadPercent);
                     if (downloaded >= totalSize || downloadPercent > 100) {
                         if (currentActivity != null)
-                            currentActivity.runOnUiThread(() -> appCMSUserDownloadVideoStatusCall.call(filmId, presenter, responseAction));
+                            currentActivity.runOnUiThread(() -> appCMSUserDownloadVideoStatusCall
+                                    .call(filmId, presenter, responseAction));
                         this.cancel();
                     } else {
                         if (currentActivity != null)
@@ -2487,6 +2493,7 @@ public class AppCMSPresenter {
     public boolean setGoogleAccessToken(Context context,
                                         final String googleAccessToken,
                                         final String googleUserId) {
+
         if (launchType == LaunchType.SUBSCRIBE) {
             this.googleAccessToken = googleAccessToken;
             this.googleUserId = googleUserId;
@@ -2495,9 +2502,11 @@ public class AppCMSPresenter {
             String url = currentActivity.getString(R.string.app_cms_google_login_api_url,
                     appCMSMain.getApiBaseUrl());
 
-            appCMSGoogleLoginCall.call(url, googleAccessToken, googleUserId,
+            appCMSGoogleLoginCall.call(url, googleAccessToken,
                     googleLoginResponse -> {
                         if (googleLoginResponse != null) {
+                            setAuthToken(currentActivity, googleLoginResponse.getAuthorizationToken());
+                            setRefreshToken(currentActivity, googleLoginResponse.getRefreshToken());
                             setLoggedInUser(currentActivity, googleUserId);
                             NavigationPrimary homePageNavItem = findHomePageNavItem();
 
@@ -2519,7 +2528,6 @@ public class AppCMSPresenter {
                     context.getSharedPreferences(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME, 0);
             return sharedPreferences.edit().putString(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME,
                     googleAccessToken).commit();
-
         }
         return false;
     }
@@ -3027,7 +3035,7 @@ public class AppCMSPresenter {
             setActiveSubscriptionToken(currentActivity, inAppPurchaseData.getPurchaseToken());
         } catch (JsonSyntaxException e) {
             Log.e(TAG, "Error trying to parse In App Subscription data: " +
-                e.getMessage());
+                    e.getMessage());
         }
 
         SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
@@ -4355,5 +4363,4 @@ public class AppCMSPresenter {
             this.searchQuery = searchQuery;
         }
     }
-
 }

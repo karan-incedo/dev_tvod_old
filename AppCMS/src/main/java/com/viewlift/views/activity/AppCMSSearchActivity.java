@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.network.modules.AppCMSSearchUrlData;
@@ -32,10 +33,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.functions.Action1;
 import rx.Observable;
-
-import com.viewlift.R;
+import rx.functions.Action1;
 
 /**
  * Created by viewlift on 6/12/17.
@@ -108,12 +107,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         noResultsTextview = (TextView) findViewById(R.id.no_results_textview);
 
         ImageButton appCMSCloseButton = (ImageButton) findViewById(R.id.app_cms_close_button);
-        appCMSCloseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        appCMSCloseButton.setOnClickListener(v -> finish());
 
         handleIntent(getIntent());
     }
@@ -133,8 +127,8 @@ public class AppCMSSearchActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        final AppCMSPresenter appCMSPresenter =
-                ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
+        final AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getApplication())
+                .getAppCMSPresenterComponent().appCMSPresenter();
         appCMSPresenter.setNavItemToCurrentAction(this);
         finish();
     }
@@ -160,9 +154,10 @@ public class AppCMSSearchActivity extends AppCompatActivity {
             if (Intent.ACTION_VIEW.equals(intent.getAction())) {
                 String[] searchHintResult = intent.getDataString().split(",");
 
-                String permalink = searchHintResult[2];
+                String permalink = searchHintResult[3];
                 String action = getString(R.string.app_cms_action_videopage_key);
                 String title = searchHintResult[0];
+                String runtime = searchHintResult[1];
                 Log.d(TAG, "Launching " + permalink + ":" + action);
                 if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                         action,
@@ -201,12 +196,25 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         }
     }
 
+    private void updateNoResultsDisplay(AppCMSPresenter appCMSPresenter,
+                                        List<AppCMSSearchResult> data) {
+        if (data == null || data.size() == 0) {
+            noResultsTextview.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                    .getBrand()
+                    .getGeneral()
+                    .getTextColor()));
+            noResultsTextview.setVisibility(View.VISIBLE);
+        } else {
+            noResultsTextview.setVisibility(View.GONE);
+        }
+    }
+
     private static class SearchAsyncTask extends AsyncTask<String, Void, List<AppCMSSearchResult>> {
         final Action1<List<AppCMSSearchResult>> dataReadySubscriber;
         final AppCMSSearchCall appCMSSearchCall;
 
         SearchAsyncTask(Action1<List<AppCMSSearchResult>> dataReadySubscriber,
-                               AppCMSSearchCall appCMSSearchCall) {
+                        AppCMSSearchCall appCMSSearchCall) {
             this.dataReadySubscriber = dataReadySubscriber;
             this.appCMSSearchCall = appCMSSearchCall;
         }
@@ -226,19 +234,6 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<AppCMSSearchResult> result) {
             Observable.just(result).subscribe(dataReadySubscriber);
-        }
-    }
-
-    private void updateNoResultsDisplay(AppCMSPresenter appCMSPresenter,
-                                        List<AppCMSSearchResult> data) {
-        if (data == null || data.size() == 0) {
-            noResultsTextview.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                    .getBrand()
-                    .getGeneral()
-                    .getTextColor()));
-            noResultsTextview.setVisibility(View.VISIBLE);
-        } else {
-            noResultsTextview.setVisibility(View.GONE);
         }
     }
 }

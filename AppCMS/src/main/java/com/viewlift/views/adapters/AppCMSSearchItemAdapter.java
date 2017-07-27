@@ -14,13 +14,12 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
 
 import java.util.List;
-
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 6/12/17.
@@ -34,10 +33,6 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
 
     private static final float STANDARD_TABLET_WIDTH_PX = 768f;
     private static final float STANDARD_TABLET_HEIGHT_PX = 1024f;
-
-    private static float DEVICE_WIDTH;
-    private static int DEVICE_HEIGHT;
-
     private static final float IMAGE_WIDTH_MOBILE = 111f;
     private static final float IMAGE_HEIGHT_MOBILE = 164f;
     private static final float IMAGE_WIDTH_TABLET_LANDSCAPE = 154f;
@@ -53,17 +48,18 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
     private static final float TEXT_TOPMARGIN_MOBILE = 170f;
     private static final float TEXT_TOPMARGIN_TABLET_LANDSCAPE = 242f;
     private static final float TEXT_TOPMARGIN_TABLET_PORTRAIT = 242f;
-
+    private static float DEVICE_WIDTH;
+    private static int DEVICE_HEIGHT;
+    private final AppCMSPresenter appCMSPresenter;
     private int imageWidth = 0;
     private int imageHeight = 0;
     private int textSize = 0;
     private int textWidth = 0;
     private int textTopMargin = 0;
-
-    private final AppCMSPresenter appCMSPresenter;
     private List<AppCMSSearchResult> appCMSSearchResults;
 
-    public AppCMSSearchItemAdapter(Context context, AppCMSPresenter appCMSPresenter, List<AppCMSSearchResult> appCMSSearchResults) {
+    public AppCMSSearchItemAdapter(Context context, AppCMSPresenter appCMSPresenter,
+                                   List<AppCMSSearchResult> appCMSSearchResults) {
         this.appCMSPresenter = appCMSPresenter;
         this.appCMSSearchResults = appCMSSearchResults;
         DEVICE_WIDTH = context.getResources().getDisplayMetrics().widthPixels;
@@ -143,40 +139,6 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         return appCMSSearchResults != null ? appCMSSearchResults.size() : 0;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        View view;
-        FrameLayout parentLayout;
-        ImageView filmThumbnail;
-        TextView filmTitle;
-        public ViewHolder(View view,
-                          int imageWidth,
-                          int imageHeight,
-                          int textSize,
-                          int textWidth,
-                          int textTopMargin) {
-            super(view);
-            this.view = view;
-            this.parentLayout = (FrameLayout) view.findViewById(R.id.search_result_item_view);
-            this.filmThumbnail = new ImageView(view.getContext());
-            FrameLayout.LayoutParams filmImageThumbnailLayoutParams =
-                    new FrameLayout.LayoutParams(imageWidth, imageHeight);
-            this.filmThumbnail.setLayoutParams(filmImageThumbnailLayoutParams);
-            this.parentLayout.addView(this.filmThumbnail);
-            this.filmTitle = new TextView(view.getContext());
-            FrameLayout.LayoutParams filmTitleLayoutParams =
-                    new FrameLayout.LayoutParams(textWidth,
-                            ViewGroup.LayoutParams.WRAP_CONTENT);
-            filmTitleLayoutParams.setMargins(0, textTopMargin, 0, 0);
-            this.filmTitle.setLayoutParams(filmTitleLayoutParams);
-            this.filmTitle.setTextSize(textSize);
-            this.filmTitle.setMaxLines(1);
-            this.filmTitle.setTextColor(ContextCompat.getColor(view.getContext(),
-                    android.R.color.white));
-            this.filmTitle.setEllipsize(TextUtils.TruncateAt.END);
-            this.parentLayout.addView(this.filmTitle);
-        }
-    }
-
     public void setData(List<AppCMSSearchResult> results) {
         appCMSSearchResults = results;
         notifyDataSetChanged();
@@ -226,7 +188,6 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         return DEVICE_HEIGHT * (TEXT_TOPMARGIN_MOBILE / STANDARD_MOBILE_HEIGHT_PX);
     }
 
-
     private float getTextSize(Context context) {
         if (BaseView.isTablet(context)) {
             if (BaseView.isLandscape(context)) {
@@ -236,5 +197,43 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             }
         }
         return TEXTSIZE_MOBILE;
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        View view;
+        FrameLayout parentLayout;
+        ImageView filmThumbnail;
+        TextView filmTitle;
+
+        public ViewHolder(View view,
+                          int imageWidth,
+                          int imageHeight,
+                          int textSize,
+                          int textWidth,
+                          int textTopMargin) {
+            super(view);
+            this.view = view;
+            this.parentLayout = (FrameLayout) view.findViewById(R.id.search_result_item_view);
+
+            this.filmThumbnail = new ImageView(view.getContext());
+            FrameLayout.LayoutParams filmImageThumbnailLayoutParams =
+                    new FrameLayout.LayoutParams(imageWidth, imageHeight);
+            this.filmThumbnail.setLayoutParams(filmImageThumbnailLayoutParams);
+            this.parentLayout.addView(this.filmThumbnail);
+
+            this.filmTitle = new TextView(view.getContext());
+            FrameLayout.LayoutParams filmTitleLayoutParams =
+                    new FrameLayout.LayoutParams(textWidth,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+            filmTitleLayoutParams.setMargins(0, textTopMargin, 0, 0);
+
+            this.filmTitle.setLayoutParams(filmTitleLayoutParams);
+            this.filmTitle.setTextSize(textSize);
+            this.filmTitle.setMaxLines(1);
+            this.filmTitle.setTextColor(ContextCompat.getColor(view.getContext(),
+                    android.R.color.white));
+            this.filmTitle.setEllipsize(TextUtils.TruncateAt.END);
+            this.parentLayout.addView(this.filmTitle);
+        }
     }
 }
