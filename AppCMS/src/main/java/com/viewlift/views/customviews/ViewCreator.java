@@ -1237,6 +1237,17 @@ public class ViewCreator {
                             ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_payment_processor));
                             break;
 
+                        case PAGE_SETTINGS_TITLE_KEY:
+                            ((TextView) componentViewResult.componentView)
+                                    .setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                                            .getBrand()
+                                            .getGeneral()
+                                            .getBlockTitleColor()));
+                            if (!TextUtils.isEmpty(component.getText())) {
+                                ((TextView) componentViewResult.componentView).setText(component.getText());
+                            }
+                            break;
+
                         default:
                             if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText());
