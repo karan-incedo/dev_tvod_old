@@ -1448,6 +1448,9 @@ public class AppCMSPresenter {
                 gist.setVideoImageUrl(downloadVideoRealm.getVideoFileURL());
 
                 gist.setPermalink(downloadVideoRealm.getPermalink());
+                gist.setDownloadStatus(downloadVideoRealm.getDownloadStatus());
+                gist.setRuntime(downloadVideoRealm.getVideoDuration());
+
 
                 data.setGist(gist);
                 data.setShowQueue(true);
@@ -1455,7 +1458,6 @@ public class AppCMSPresenter {
                 data.setAddedDate(downloadVideoRealm.getDownloadDate());
 
                 contentData.add(data);
-
             }
             module.setContentData(contentData);
             module.setTitle(currentActivity.getString(R.string.app_cms_page_download_title));

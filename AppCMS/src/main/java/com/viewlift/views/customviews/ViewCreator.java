@@ -69,7 +69,7 @@ public class ViewCreator {
     ComponentViewResult componentViewResult;
 
     public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
-        int runtime = (data.getGist().getRuntime() / 60);
+        long runtime = (data.getGist().getRuntime() / 60L);
         String year = data.getGist().getYear();
         String primaryCategory =
                 data.getGist().getPrimaryCategory() != null ?

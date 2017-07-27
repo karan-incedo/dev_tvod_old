@@ -42,7 +42,7 @@ public class Gist {
 
     @SerializedName("runtime")
     @Expose
-    int runtime;
+    long runtime;
 
     @SerializedName("posterImageUrl")
     @Expose
@@ -150,11 +150,11 @@ public class Gist {
         this.publishDate = publishDate;
     }
 
-    public int getRuntime() {
+    public long getRuntime() {
         return runtime;
     }
 
-    public void setRuntime(int runtime) {
+    public void setRuntime(long runtime) {
         this.runtime = runtime;
     }
 
