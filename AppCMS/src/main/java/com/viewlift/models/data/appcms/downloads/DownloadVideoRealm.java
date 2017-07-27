@@ -12,6 +12,7 @@ public class DownloadVideoRealm extends RealmObject {
     @PrimaryKey
     private String videoId;
     private long videoId_DM;
+    private long videoThumbId_DM;
     private String videoTitle;
     private String videoDescription;
     private String downloadStatus;
@@ -22,8 +23,8 @@ public class DownloadVideoRealm extends RealmObject {
     private long video_Downloaded_so_far;
     private long downloadDate;
     private long lastWatchDate;
-    private long videoDuration;
     private long videoPlayedDuration;
+    private long videoDuration;
     private int bitRate;
     private String showId;
     private String showTitle;
@@ -47,6 +48,14 @@ public class DownloadVideoRealm extends RealmObject {
 
     public void setVideoId_DM(long videoId_DM) {
         this.videoId_DM = videoId_DM;
+    }
+
+    public long getVideoThumbId_DM() {
+        return videoThumbId_DM;
+    }
+
+    public void setVideoThumbId_DM(long videoThumbId_DM) {
+        this.videoThumbId_DM = videoThumbId_DM;
     }
 
     public String getVideoTitle() {

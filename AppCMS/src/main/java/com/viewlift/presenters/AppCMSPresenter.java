@@ -30,6 +30,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
@@ -69,12 +70,12 @@ import com.viewlift.models.data.appcms.api.Mpeg;
 import com.viewlift.models.data.appcms.api.Settings;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.api.SubscriptionRequest;
+import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
 import com.viewlift.models.data.appcms.downloads.RealmController;
 import com.viewlift.models.data.appcms.downloads.UserVideoDownloadStatus;
 import com.viewlift.models.data.appcms.history.AppCMSDeleteHistoryResult;
 import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
-import com.viewlift.models.data.appcms.history.Record;
 import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
@@ -85,7 +86,6 @@ import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
-import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.FacebookLoginResponse;
 import com.viewlift.models.data.appcms.ui.authentication.ForgotPasswordResponse;
 import com.viewlift.models.data.appcms.ui.authentication.RefreshIdentityResponse;
@@ -159,6 +159,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -179,6 +180,7 @@ import retrofit2.Response;
 import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/3/17.
@@ -195,7 +197,6 @@ public class AppCMSPresenter {
     public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
 
     public static final int RC_PURCHASE_PLAY_STORE_ITEM = 1002;
-    public static final String PRESENTER_DIALOG_ACTION = "appcms_presenter_dialog_action";
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
@@ -209,6 +210,11 @@ public class AppCMSPresenter {
     private static final String ACTIVE_SUBSCRIPTION_TOKEN = "active_subscription_token_pref_key";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
+
+    public static final String PRESENTER_DIALOG_ACTION = "appcms_presenter_dialog_action";
+
+    public static final String SEARCH_ACTION = "SEARCH_ACTION";
+
     private static final long MILLISECONDS_PER_SECOND = 1000L;
     private static final long SECONDS_PER_MINUTE = 60L;
     private static final long MAX_SESSION_DURATION_IN_MINUTES = 30L;
@@ -248,8 +254,7 @@ public class AppCMSPresenter {
     private final AppCMSSubscriptionCall appCMSSubscriptionCall;
     private final AppCMSSubscriptionPlanCall appCMSSubscriptionPlanCall;
     private final AppCMSAnonymousAuthTokenCall appCMSAnonymousAuthTokenCall;
-    // Variable declear
-    private HashMap<String, Long> downloadImagesQueue = new HashMap<>();
+
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
@@ -269,6 +274,7 @@ public class AppCMSPresenter {
     private List<Action1<Boolean>> onOrientationChangeHandlers;
     private Map<String, List<OnInternalEvent>> onActionInternalEvents;
     private Stack<String> currentActions;
+
     private AppCMSSearchUrlComponent appCMSSearchUrlComponent;
     private DownloadManager downloadManager;
     private RealmController realmController;
@@ -1082,6 +1088,23 @@ public class AppCMSPresenter {
         }
     }
 
+    public void removeDownloadedFile(String filmId, final Action1<UserVideoDownloadStatus> resultAction1) {
+        removeDownloadedFile(filmId);
+
+        appCMSUserDownloadVideoStatusCall.call(filmId, this, resultAction1);
+
+    }
+
+    public void removeDownloadedFile(String filmId) {
+        DownloadVideoRealm downloadVideoRealm = realmController.getDownloadById(filmId);
+        if (downloadVideoRealm == null)
+            return;
+        downloadManager.remove(downloadVideoRealm.getVideoId_DM());
+        downloadManager.remove(downloadVideoRealm.getVideoThumbId_DM());
+        realmController.removeFromDB(downloadVideoRealm);
+    }
+
+
     /**
      * Implementation of download manager gives us facility of Async downloading of multiple video
      * Its pre built feature of the download manager
@@ -1104,8 +1127,8 @@ public class AppCMSPresenter {
                              final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
 
         long enqueueId = 0L;
-        DownloadVideoRealm downloadVideoRealm = new DownloadVideoRealm();
-        downloadVideoImage(contentDatum.getGist().getVideoImageUrl(), contentDatum.getGist().getId());
+        long thumbEnqueueId = downloadVideoImage(contentDatum.getGist().getVideoImageUrl(), contentDatum.getGist().getId());
+
         try {
             String downloadURL = "";
 
@@ -1135,23 +1158,35 @@ public class AppCMSPresenter {
             /**
              * Inserting data in realm data object
              */
-            downloadVideoRealm.setVideoId_DM(enqueueId);
-            downloadVideoRealm.setVideoId(contentDatum.getGist().getId());
-            downloadVideoRealm.setVideoTitle(contentDatum.getGist().getTitle());
-            downloadVideoRealm.setVideoDescription(contentDatum.getGist().getDescription());
-            downloadVideoRealm.setLocalURI(getMP4VideoPath(contentDatum.getGist().getId()));
-            downloadVideoRealm.setPosterImageUrl(getPngPosterPath(contentDatum.getGist().getId()));
-            downloadVideoRealm.setVideoFileURL(getPngPosterPath(contentDatum.getGist().getId()));
-            downloadVideoRealm.setVideoWebURL(downloadURL);
-            downloadVideoRealm.setPermalink(contentDatum.getGist().getPermalink());
 
-            realmController.addDownload(downloadVideoRealm);
+            createLocalEntry(enqueueId, thumbEnqueueId, contentDatum, downloadURL);
 
             appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), this, resultAction1);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void createLocalEntry(long enqueueId, long thumbEnqueueId, ContentDatum contentDatum, String downloadURL) {
+        DownloadVideoRealm downloadVideoRealm = new DownloadVideoRealm();
+        downloadVideoRealm.setVideoThumbId_DM(thumbEnqueueId);
+        downloadVideoRealm.setVideoId_DM(enqueueId);
+        downloadVideoRealm.setVideoId(contentDatum.getGist().getId());
+        downloadVideoRealm.setVideoTitle(contentDatum.getGist().getTitle());
+        downloadVideoRealm.setVideoDescription(contentDatum.getGist().getDescription());
+        downloadVideoRealm.setLocalURI(downloadedMediaLocalURI(enqueueId));
+        downloadVideoRealm.setPosterImageUrl(getPngPosterPath(contentDatum.getGist().getId()));
+        downloadVideoRealm.setVideoFileURL(downloadedMediaLocalURI(thumbEnqueueId));
+        downloadVideoRealm.setVideoWebURL(downloadURL);
+        downloadVideoRealm.setDownloadDate(System.currentTimeMillis());
+        downloadVideoRealm.setVideoDuration(contentDatum.getGist().getRuntime());
+
+        downloadVideoRealm.setPermalink(contentDatum.getGist().getPermalink());
+        downloadVideoRealm.setDownloadStatus(DownloadStatus.STATUS_PENDING);
+
+
+        realmController.addDownload(downloadVideoRealm);
     }
 
     /**
@@ -1164,7 +1199,7 @@ public class AppCMSPresenter {
      * @param downloadURL
      * @param filename
      */
-    public void downloadVideoImage(String downloadURL, String filename) {
+    public long downloadVideoImage(String downloadURL, String filename) {
 
         long enqueueId = 0L;
         try {
@@ -1178,31 +1213,70 @@ public class AppCMSPresenter {
                     .setShowRunningNotification(true);
             enqueueId = downloadManager.enqueue(downloadRequest);
 
-            downloadImagesQueue.put(filename, enqueueId);
-
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        return enqueueId;
     }
 
-
-    public void updateDownloadedImage(String videoId) {
-
-        String uriVideoImage = null;
-        Long imageEnqueueId = downloadImagesQueue.size() > 0 ? downloadImagesQueue.get(videoId) : 0l;
+    public String downloadedMediaLocalURI(long enqueueId) {
+        String uriLocal = "file:///";
         DownloadManager.Query query = new DownloadManager.Query();
-        query.setFilterById(imageEnqueueId);
+        query.setFilterById(enqueueId);
         Cursor cursor = downloadManager.query(query);
-        if (imageEnqueueId != 0l && cursor.moveToFirst()) {
-            uriVideoImage = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
-            realmController.editDownloadVideoImageURL(realmController.getDownloadById(videoId), uriVideoImage);
+        if (enqueueId != 0l && cursor.moveToFirst()) {
+            uriLocal = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
         }
         cursor.close();
-        if (uriVideoImage != null)
-            downloadImagesQueue.remove(videoId);
+        return uriLocal == null ? "data" : uriLocal;
+    }
 
+    public String getDownloadedFileSize(String filmId) {
+
+        DownloadVideoRealm downloadVideoRealm = realmController.getDownloadById(filmId);
+        if (downloadVideoRealm == null)
+            return "";
+        return getDownloadedFileSize(downloadVideoRealm.getVideoSize());
+    }
+
+    public String getDownloadedFileSize(long size) {
+        String fileSize = "";
+        DecimalFormat dec = new DecimalFormat("0");
+
+        long sizeKB = (size / 1024);
+        double m = sizeKB / 1024.0;
+        double g = sizeKB / 1048576.0;
+        double t = sizeKB / 1073741824.0;
+        if (t > 1) {
+            fileSize = dec.format(t).concat("TB");
+        } else if (g > 1) {
+            fileSize = dec.format(g).concat("GB");
+        } else if (m > 1) {
+            fileSize = dec.format(m).concat("MB");
+        } else {
+            fileSize = dec.format(sizeKB).concat("KB");
+        }
+
+        return fileSize;
+    }
+
+    public synchronized int downloadedPercentage(long videoId) {
+        int downloadPercent = 0;
+        DownloadManager.Query query = new DownloadManager.Query();
+        query.setFilterById(videoId);
+        Cursor c = downloadManager.query(query);
+        if (c.moveToFirst()) {
+            downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+            long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+            long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+            downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
+
+        }
+
+        c.close();
+        return downloadPercent;
     }
 
     public synchronized void updateDownloadingStatus(String filmId, final ImageView imageView,
@@ -1306,6 +1380,15 @@ public class AppCMSPresenter {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void clearDownload(final Action1<UserVideoDownloadStatus> resultAction1) {
+        for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloades()) {
+
+            removeDownloadedFile(downloadVideoRealm.getVideoId());
+        }
+
+        appCMSUserDownloadVideoStatusCall.call("", this, resultAction1);
     }
 
     public void clearWatchlist(final Action1<AppCMSAddToWatchlistResult> resultAction1) {

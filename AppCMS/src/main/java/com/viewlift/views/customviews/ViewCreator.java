@@ -924,6 +924,82 @@ public class ViewCreator {
                         componentViewResult.componentView.setBackgroundColor(
                                 ContextCompat.getColor(context, android.R.color.transparent));
                         break;
+		    case PAGE_REMOVEALL_KEY:
+                        componentViewResult.addToPageView = true;
+
+                        FrameLayout.LayoutParams removeAllLayoutParams =
+                                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                        removeAllLayoutParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                        componentViewResult.componentView.setLayoutParams(removeAllLayoutParams);
+
+                        final boolean isHistoryPage = jsonValueKeyMap.get(viewType)
+                                == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY;
+
+                        componentViewResult.onInternalEvent = new OnInternalEvent() {
+                            final View removeAllButton = componentViewResult.componentView;
+                            private List<OnInternalEvent> receivers = new ArrayList<>();
+
+                            @Override
+                            public void addReceiver(OnInternalEvent e) {
+                                receivers.add(e);
+                            }
+
+                            @Override
+                            public void sendEvent(InternalEvent<?> event) {
+                                for (OnInternalEvent internalEvent : receivers) {
+                                    internalEvent.receiveEvent(null);
+                                }
+                            }
+
+                            @Override
+                            public void receiveEvent(InternalEvent<?> event) {
+                                removeAllButton.setVisibility(View.VISIBLE);
+                            }
+
+                            @Override
+                            public void cancel(boolean cancel) {
+                                //
+                            }
+                        };
+                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                            OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
+
+                            @Override
+                            public void onClick(final View v) {
+                               switch (jsonValueKeyMap.get(viewType)){
+                                   case PAGE_HISTORY_MODULE_KEY:
+                                       appCMSPresenter.clearHistory(new Action1<AppCMSDeleteHistoryResult>() {
+                                           @Override
+                                           public void call(AppCMSDeleteHistoryResult appCMSDeleteHistoryResult) {
+                                               onInternalEvent.sendEvent(null);
+                                               v.setVisibility(View.GONE);
+                                           }
+                                       });
+                                       break;
+                                   case PAGE_DOWNLOAD_MODULE_KEY:
+                                       appCMSPresenter.clearDownload(new Action1<UserVideoDownloadStatus>() {
+                                           @Override
+                                           public void call(UserVideoDownloadStatus appCMSAddToWatchlistResult) {
+                                               onInternalEvent.sendEvent(null);
+                                               v.setVisibility(View.GONE);
+                                           }
+                                       });
+                                       break;
+                                   case PAGE_WATCHLIST_MODULE_KEY:
+                                    appCMSPresenter.clearWatchlist(new Action1<AppCMSAddToWatchlistResult>() {
+                                        @Override
+                                        public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
+                                            onInternalEvent.sendEvent(null);
+                                            v.setVisibility(View.GONE);
+                                        }
+                                    });
+                                break;
+                                }
+                            }
+                        });
+
                     case PAGE_AUTOPLAY_MOVIE_PLAY_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.autoplay_play_button);
                         break;

@@ -2,6 +2,7 @@ package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.vimeo.stag.UseStag;
 
 @UseStag
@@ -82,6 +83,8 @@ public class Gist {
     @SerializedName("watchedPercentage")
     @Expose
     int watchedPercentage;
+
+    String downloadStatus;
 
     public String getId() {
         return id;
@@ -233,5 +236,13 @@ public class Gist {
 
     public void setWatchedPercentage(int watchedPercentage) {
         this.watchedPercentage = watchedPercentage;
+    }
+
+    public DownloadStatus getDownloadStatus() {
+        return DownloadStatus.valueOf(downloadStatus);
+    }
+
+    public void setDownloadStatus(DownloadStatus downloadStatus) {
+        this.downloadStatus = downloadStatus.toString();
     }
 }

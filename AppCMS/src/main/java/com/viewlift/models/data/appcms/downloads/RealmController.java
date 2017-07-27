@@ -3,8 +3,10 @@ package com.viewlift.models.data.appcms.downloads;
 import android.app.Activity;
 import android.app.Application;
 import android.support.v4.app.Fragment;
+import android.util.Size;
 
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 
 /**
@@ -21,7 +23,11 @@ public class RealmController {
 
     public RealmController(Application application) {
         Realm.init(application.getApplicationContext());
-        realm = Realm.getDefaultInstance();
+        RealmConfiguration config = new RealmConfiguration
+                .Builder()
+                .deleteRealmIfMigrationNeeded()
+                .build();
+        realm = Realm.getInstance(config);
     }
 
     public static RealmController with(Fragment fragment) {
@@ -88,54 +94,68 @@ public class RealmController {
     public void addDownload(DownloadVideoRealm downloadVideoRealm){
 
         realm.beginTransaction();
-        realm.copyToRealm(downloadVideoRealm);
+        realm.insert(downloadVideoRealm);
         realm.commitTransaction();
     }
 
-    public void editDownloadVideoImageURL(DownloadVideoRealm downloadVideoRealm, String url){
 
+    public void updateDownloadInfo(String videoId , String filmUrl, String thumbUrl,long totlsize, DownloadStatus status) {
         DownloadVideoRealm toEdit = realm.where(DownloadVideoRealm.class)
-                .equalTo("videoId", downloadVideoRealm.getVideoId()).findFirst();
+                .equalTo("videoId", videoId).findFirst();
 
         if (!realm.isInTransaction())
             realm.beginTransaction();
 
-        toEdit.setVideoId_DM(downloadVideoRealm.getVideoId_DM());
-
-        toEdit.setVideoTitle(downloadVideoRealm.getVideoTitle());
-        toEdit.setVideoDescription(downloadVideoRealm.getVideoDescription());
-        toEdit.setLocalURI(downloadVideoRealm.getLocalURI());
-        toEdit.setVideoWebURL(downloadVideoRealm.getVideoWebURL());
-        toEdit.setPermalink(downloadVideoRealm.getPermalink());
-        toEdit.setVideoFileURL(url);
-        toEdit.setPosterImageUrl(url);
+        toEdit.setVideoSize(totlsize);
+        toEdit.setVideoFileURL(thumbUrl);
+        toEdit.setPosterImageUrl(thumbUrl);
+        toEdit.setLocalURI(filmUrl);
+        toEdit.setDownloadStatus(status);
 
         realm.copyToRealmOrUpdate(toEdit);
         realm.commitTransaction();
+
     }
 
-    public void editDownloadVideoUrl(DownloadVideoRealm downloadVideoRealm, String url){
+    /**
+     * This may be usefull in future when we try to implement "downloadedSoFar" value also
+     * @param videoId
+     * @param filmUrl
+     * @param thumbUrl
+     * @param totlsize
+     * @param downloadedSoFar
+     * @param status
+     */
+    public void updateDownloadInfo(String videoId , String filmUrl, String thumbUrl,long totlsize,long downloadedSoFar, DownloadStatus status) {
         DownloadVideoRealm toEdit = realm.where(DownloadVideoRealm.class)
-                .equalTo("videoId", downloadVideoRealm.getVideoId()).findFirst();
+                .equalTo("videoId", videoId).findFirst();
 
         if (!realm.isInTransaction())
-                realm.beginTransaction();
+            realm.beginTransaction();
 
-
-
-        toEdit.setVideoId_DM(downloadVideoRealm.getVideoId_DM());
-
-        toEdit.setVideoTitle(downloadVideoRealm.getVideoTitle());
-        toEdit.setVideoDescription(downloadVideoRealm.getVideoDescription());
-
-        toEdit.setVideoWebURL(downloadVideoRealm.getVideoWebURL());
-        toEdit.setPermalink(downloadVideoRealm.getPermalink());
-        toEdit.setVideoFileURL(downloadVideoRealm.getVideoFileURL());
-        toEdit.setPosterImageUrl(downloadVideoRealm.getPosterImageUrl());
-
-        toEdit.setLocalURI(url);
+        toEdit.setVideoSize(totlsize);
+        toEdit.setVideo_Downloaded_so_far(downloadedSoFar);
+        toEdit.setVideoFileURL(thumbUrl);
+        toEdit.setPosterImageUrl(thumbUrl);
+        toEdit.setLocalURI(filmUrl);
+        toEdit.setDownloadStatus(status);
 
         realm.copyToRealmOrUpdate(toEdit);
         realm.commitTransaction();
+
+    }
+
+    public void removeFromDB(DownloadVideoRealm downloadVideoRealm){
+
+        DownloadVideoRealm toEdit = realm.where(DownloadVideoRealm.class)
+            .equalTo("videoId", downloadVideoRealm.getVideoId()).findFirst();
+
+        if (!realm.isInTransaction())
+            realm.beginTransaction();
+
+        toEdit.deleteFromRealm();
+
+        realm.commitTransaction();
+
     }
 }

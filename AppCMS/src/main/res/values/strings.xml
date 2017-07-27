@@ -88,6 +88,7 @@
     <string name="please_input_your_email_address_to_send_a_reset_password_link_text">Please input your email address to send a reset password link.</string>
     <string name="empty_history_list_message">Your history is currently empty.</string>
     <string name="empty_watchlist_message">Your watchlist is currently empty.</string>
+    <string name="empty_download_message">Your download is currently empty.</string>
     <string name="app_cms_currently_logged_out_message">CURRENTLY LOGGED OUT</string>
     <string name="app_cms_sign_out_label">SIGN OUT</string>
 
