@@ -124,6 +124,7 @@ public class AppCMSSubscriptionPlanCall {
                             public void onFailure(@NonNull Call<AppCMSSubscriptionPlanResult> call,
                                                   @NonNull Throwable t) {
                                 Log.e(TAG, "onFailure: " + t.getMessage());
+                                Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                             }
                         });
                 break;

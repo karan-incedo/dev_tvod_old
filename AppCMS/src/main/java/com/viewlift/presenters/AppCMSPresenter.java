@@ -673,15 +673,22 @@ public class AppCMSPresenter {
                     if (extraData != null && extraData.length > 0) {
                         String key = extraData[0];
                         if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                            showDialog(DialogType.CANCEL_SUBSCRIPTION,
-                                    currentActivity.getString(R.string.app_cms_cancel_subscription_confirmation_message),
-                                    true,
-                                    new Action0() {
-                                        @Override
-                                        public void call() {
-                                            sendSubscriptionCancellation();
-                                        }
-                                    });
+                            if (!TextUtils.isEmpty(getActiveSubscriptionSku(currentActivity))) {
+                                showDialog(DialogType.CANCEL_SUBSCRIPTION,
+                                        currentActivity.getString(R.string.app_cms_cancel_subscription_ask_for_confirmation_message),
+                                        true,
+                                        new Action0() {
+                                            @Override
+                                            public void call() {
+                                                sendSubscriptionCancellation();
+                                            }
+                                        });
+                            } else {
+                                showDialog(DialogType.CANCEL_SUBSCRIPTION,
+                                        currentActivity.getString(R.string.app_cms_cancel_subscription_not_subscribed_message),
+                                        false,
+                                        null);
+                            }
                         } else if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
                             navigateToSubscriptionPlansPage();
                         }
@@ -1034,38 +1041,43 @@ public class AppCMSPresenter {
 
     public void sendSubscriptionCancellation() {
         if (currentActivity != null) {
-            SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
-            subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
-            subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
-            subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
-            subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency(currentActivity));
-            subscriptionRequest.setPlanIdentifier(getActiveSubscriptionSku(currentActivity));
-            subscriptionRequest.setPlanId(getActiveSubscriptionId(currentActivity));
-            subscriptionRequest.setUserId(getLoggedInUser(currentActivity));
-            subscriptionRequest.setReceipt(getActiveSubscriptionReceipt(currentActivity));
+            if (!TextUtils.isEmpty(getActiveSubscriptionSku(currentActivity))) {
+                SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
+                subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
+                subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
+                subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
+                subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency(currentActivity));
+                subscriptionRequest.setPlanIdentifier(getActiveSubscriptionSku(currentActivity));
+                subscriptionRequest.setPlanId(getActiveSubscriptionId(currentActivity));
+                subscriptionRequest.setUserId(getLoggedInUser(currentActivity));
+                subscriptionRequest.setReceipt(getActiveSubscriptionReceipt(currentActivity));
 
-            try {
-                appCMSSubscriptionPlanCall.call(
-                        currentActivity.getString(R.string.app_cms_cancel_subscription_api_url,
-                                appCMSMain.getApiBaseUrl(),
-                                appCMSMain.getInternalName(),
-                                currentActivity.getString(R.string.app_cms_subscription_platform_key)),
-                        R.string.app_cms_subscription_plan_cancel_key,
-                        subscriptionRequest,
-                        new Action1<List<AppCMSSubscriptionPlanResult>>() {
-                            @Override
-                            public void call(List<AppCMSSubscriptionPlanResult> result) {
-
-                            }
-                        },
-                        new Action1<AppCMSSubscriptionPlanResult>() {
-                            @Override
-                            public void call(AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResults) {
-                                sendCloseOthersAction(null, false);
-                            }
-                        });
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to update user subscription status");
+                try {
+                    appCMSSubscriptionPlanCall.call(
+                            currentActivity.getString(R.string.app_cms_cancel_subscription_api_url,
+                                    appCMSMain.getApiBaseUrl(),
+                                    appCMSMain.getInternalName(),
+                                    currentActivity.getString(R.string.app_cms_subscription_platform_key)),
+                            R.string.app_cms_subscription_plan_cancel_key,
+                            subscriptionRequest,
+                            new Action1<List<AppCMSSubscriptionPlanResult>>() {
+                                @Override
+                                public void call(List<AppCMSSubscriptionPlanResult> result) {
+                                }
+                            },
+                            new Action1<AppCMSSubscriptionPlanResult>() {
+                                @Override
+                                public void call(AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResults) {
+                                    sendCloseOthersAction(null, false);
+                                    showDialog(DialogType.CANCEL_SUBSCRIPTION,
+                                            currentActivity.getString(R.string.app_cms_cancel_subscription_confirmation_message),
+                                            false,
+                                            null);
+                                }
+                            });
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to update user subscription status");
+                }
             }
         }
     }

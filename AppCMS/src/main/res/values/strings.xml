@@ -41,7 +41,7 @@
     <string name="app_cms_signin_error_title">Sign In</string>
     <string name="app_cms_reset_password_title">Reset Password</string>
     <string name="app_cms_reset_password_success_description">Please check %1$s for a reset password link.</string>
-    <string name="app_cms_cancel_subscription_confirmation_message">Are you sure you wish to cancel your subscription?</string>
+    <string name="app_cms_cancel_subscription_ask_for_confirmation_message">Are you sure you wish to cancel your subscription?</string>
     <string name="app_cms_data_error_title">Could Not Access Data</string>
     <string name="app_cms_data_error_message">Data is currently unavailable.  Please try again later.</string>
     <string name="app_cms_close_alert_dialog_button_text">CLOSE</string>
@@ -168,4 +168,6 @@
     <string name="app_cms_cancel_subscription_title">Cancel Subscription</string>
     <string name="app_cms_confirm_alert_dialog_button_text">OK</string>
     <string name="app_cms_cancel_alert_dialog_button_text">CANCEL</string>
+    <string name="app_cms_cancel_subscription_confirmation_message">You have cancelled your subscription.</string>
+    <string name="app_cms_cancel_subscription_not_subscribed_message">You are currently not subscribed to any plans.</string>
 </resources>
