@@ -320,6 +320,47 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_HEADER_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_videodetail_header_view),
                 AppCMSUIKeyType.PAGE_VIDEO_DETAIL_HEADER_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_autoplay_module_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_back_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_BACK_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_finished_up_title_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_FINISHED_UP_TITLE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_movie_title_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_TITLE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_movie_subheading_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_SUBHEADING_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_movie_description_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_DISCRIPTION_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_movie_star_rating_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_STAR_RATING_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_movie_director_label_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_DIRECTOR_LABEL_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_movie_sub_director_label_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_SUB_DIRECTOR_LABEL_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_movie_image_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_IMAGE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_play_button_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_PLAY_BUTTON_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_cancel_button_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_playing_in_label_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_PLAYING_IN_LABEL_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_timer_label_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_TIMER_LABEL_KEY);
 
         jsonValueKeyMap.put("", AppCMSUIKeyType.PAGE_EMPTY_KEY);
         jsonValueKeyMap.put(null, AppCMSUIKeyType.PAGE_NULL_KEY);

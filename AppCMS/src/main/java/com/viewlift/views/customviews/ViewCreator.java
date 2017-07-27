@@ -721,6 +721,13 @@ public class ViewCreator {
                 } else if (appCMSPresenter.isActionGoogle(component.getAction())) {
                     applyBorderToComponent(context, componentViewResult.componentView, component,
                             ContextCompat.getColor(context, R.color.googleRed));
+                } else if(componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY
+                    && component.getBorderWidth() != 0){
+                    applyBorderToComponent(
+                            context,
+                            componentViewResult.componentView,
+                            component,
+                            -1);
                 } else {
                     if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                             .getBlockTitleColor())) {
@@ -1113,7 +1120,7 @@ public class ViewCreator {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
                             }
                             break;
-
+                        case PAGE_AUTOPLAY_MOVIE_DISCRIPTION_KEY:
                         case PAGE_VIDEO_DESCRIPTION_KEY:
                             String videoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
                             if (videoDescription != null) {
@@ -1424,9 +1431,11 @@ public class ViewCreator {
                         }
                         if (creditBlock != null && creditBlock.getCredits() != null) {
                             for (int i = 0; i < creditBlock.getCredits().size(); i++) {
-                                starringListSb.append(creditBlock.getCredits().get(i).getTitle());
-                                if (i < creditBlock.getCredits().size() - 1) {
-                                    starringListSb.append(", ");
+                                if (!TextUtils.isEmpty(creditBlock.getCredits().get(i).getTitle())) {
+                                    starringListSb.append(creditBlock.getCredits().get(i).getTitle());
+                                    if (i < creditBlock.getCredits().size() - 1) {
+                                        starringListSb.append(", ");
+                                    }
                                 }
                             }
                         }

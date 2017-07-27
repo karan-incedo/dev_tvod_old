@@ -7,7 +7,14 @@
     tools:context="com.viewlift.views.activity.AutoplayActivity">
 
     <FrameLayout
-        android:id="@+id/content_frame"
+        android:id="@+id/app_cms_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <FrameLayout
+        android:id="@+id/app_cms_addon_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="1"
+        android:visibility="invisible" />
 </RelativeLayout>
