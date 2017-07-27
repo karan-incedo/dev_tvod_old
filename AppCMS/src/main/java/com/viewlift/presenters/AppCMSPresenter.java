@@ -200,6 +200,8 @@ public class AppCMSPresenter {
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
+    private static final String USER_NAME_SHARED_PREF_NAME = "user_name_pref";
+    private static final String USER_EMAIL_SHARED_PREF_NAME = "user_email_pref";
     private static final String REFRESH_TOKEN_SHARED_PREF_NAME = "refresh_token_pref";
     private static final String USER_LOGGED_IN_TIME_PREF_NAME = "user_loggedin_time_pref";
     private static final String FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME = "facebook_access_token_shared_pref_name";
@@ -957,6 +959,7 @@ public class AppCMSPresenter {
             skuToPurchase = sku;
             planToPurchase = planId;
             currencyOfPlanToPurchase = currency;
+
             navigateToLoginPage();
         }
     }
@@ -991,46 +994,38 @@ public class AppCMSPresenter {
 
     public void sendSubscriptionCancellation() {
         if (currentActivity != null) {
-            refreshGoogleAccessToken(googleRefreshTokenResponse -> {
-                String url = currentActivity.getString(R.string.google_cancel_subscription_api,
-                        currentActivity.getString(R.string.package_name),
-                        getActiveSubscriptionSku(currentActivity),
-                        getActiveSubscriptionToken(currentActivity));
-                googleCancelSubscriptionCall.cancelSubscription(url,
-                        googleRefreshTokenResponse.getAccessToken());
+            SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
+            subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
+            subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
+            subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
+            subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency(currentActivity));
+            subscriptionRequest.setPlanIdentifier(getActiveSubscriptionSku(currentActivity));
+            subscriptionRequest.setPlanId(getActiveSubscriptionId(currentActivity));
+            subscriptionRequest.setUserId(getLoggedInUser(currentActivity));
+            subscriptionRequest.setReceipt(getActiveSubscriptionToken(currentActivity));
+            try {
+                appCMSSubscriptionPlanCall.call(
+                        currentActivity.getString(R.string.app_cms_cancel_subscription_api_url,
+                                appCMSMain.getApiBaseUrl(),
+                                appCMSMain.getInternalName(),
+                                currentActivity.getString(R.string.app_cms_subscription_platform_key)),
+                        R.string.app_cms_subscription_plan_cancel_key,
+                        subscriptionRequest,
+                        new Action1<List<AppCMSSubscriptionPlanResult>>() {
+                            @Override
+                            public void call(List<AppCMSSubscriptionPlanResult> result) {
 
-                SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
-                subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
-                subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
-                subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
-                subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency(currentActivity));
-                subscriptionRequest.setPlanId(getActiveSubscriptionId(currentActivity));
-                subscriptionRequest.setUserId(getLoggedInUser(currentActivity));
-                subscriptionRequest.setReceipt(getActiveSubscriptionToken(currentActivity));
-                try {
-                    appCMSSubscriptionPlanCall.call(
-                            currentActivity.getString(R.string.app_cms_cancel_subscription_api_url,
-                                    appCMSMain.getApiBaseUrl(),
-                                    appCMSMain.getInternalName(),
-                                    currentActivity.getString(R.string.app_cms_subscription_platform_key)),
-                            R.string.app_cms_subscription_plan_cancel_key,
-                            subscriptionRequest,
-                            new Action1<List<AppCMSSubscriptionPlanResult>>() {
-                                @Override
-                                public void call(List<AppCMSSubscriptionPlanResult> result) {
+                            }
+                        },
+                        new Action1<AppCMSSubscriptionPlanResult>() {
+                            @Override
+                            public void call(AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResults) {
 
-                                }
-                            },
-                            new Action1<AppCMSSubscriptionPlanResult>() {
-                                @Override
-                                public void call(AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResults) {
-
-                                }
-                            });
-                } catch (IOException e) {
-                    Log.e(TAG, "Failed to update user subscription status");
-                }
-            });
+                            }
+                        });
+            } catch (IOException e) {
+                Log.e(TAG, "Failed to update user subscription status");
+            }
         }
     }
 
@@ -2458,6 +2453,38 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public String getLoggedInUserName(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_NAME_SHARED_PREF_NAME, 0);
+            return sharedPrefs.getString(USER_NAME_SHARED_PREF_NAME, null);
+        }
+        return null;
+    }
+
+    public boolean setLoggedInUserName(Context context, String userName) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_NAME_SHARED_PREF_NAME, 0);
+            return sharedPrefs.edit().putString(USER_NAME_SHARED_PREF_NAME, userName).commit();
+        }
+        return false;
+    }
+
+    public String getLoggedInUserEmail(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_EMAIL_SHARED_PREF_NAME, 0);
+            return sharedPrefs.getString(USER_EMAIL_SHARED_PREF_NAME, null);
+        }
+        return null;
+    }
+
+    public boolean setLoggedInUserEmail(Context context, String userEmail) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_EMAIL_SHARED_PREF_NAME, 0);
+            return sharedPrefs.edit().putString(USER_EMAIL_SHARED_PREF_NAME, userEmail).commit();
+        }
+        return false;
+    }
+
     public long getLoggedInTime(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_LOGGED_IN_TIME_PREF_NAME, 0);
@@ -3131,6 +3158,7 @@ public class AppCMSPresenter {
         subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
         subscriptionRequest.setCurrencyCode(currencyOfPlanToPurchase);
         subscriptionRequest.setPlanId(planToPurchase);
+        subscriptionRequest.setPlanIdentifier(skuToPurchase);
         subscriptionRequest.setUserId(getLoggedInUser(currentActivity));
         subscriptionRequest.setReceipt(receiptData);
 
@@ -3287,6 +3315,9 @@ public class AppCMSPresenter {
                             setRefreshToken(currentActivity, signInResponse.getRefreshToken());
                             setAuthToken(currentActivity, signInResponse.getAuthorizationToken());
                             setLoggedInUser(currentActivity, signInResponse.getUserId());
+                            setLoggedInUserEmail(currentActivity, signInResponse.getName());
+                            setLoggedInUserEmail(currentActivity, signInResponse.getEmail());
+
                             NavigationPrimary homePageNavItem = findHomePageNavItem();
                             if (homePageNavItem != null) {
                                 navigateToPage(homePageNavItem.getPageId(),

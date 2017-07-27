@@ -63,6 +63,20 @@ public class AppCMSSubscriptionPlanCall {
                         });
                 break;
 
+            case R.string.app_cms_subscription_subscribed_plan_key:
+                appCMSSubscriptionPlanRest.getSubscribedPlan(url).enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
+                    @Override
+                    public void onResponse(Call<AppCMSSubscriptionPlanResult> call, Response<AppCMSSubscriptionPlanResult> response) {
+                        Observable.just(response.body()).subscribe(resultAction1);
+                    }
+
+                    @Override
+                    public void onFailure(Call<AppCMSSubscriptionPlanResult> call, Throwable t) {
+                        Log.e(TAG, "onFailure: " + t.getMessage());
+                    }
+                });
+                break;
+
             case R.string.app_cms_subscription_plan_create_key:
                 appCMSSubscriptionPlanRest.createPlan(url, request)
                         .enqueue(new Callback<AppCMSSubscriptionPlanResult>() {

@@ -237,6 +237,7 @@
     <string name="app_cms_subscription_plan_api_url">%1$s/subscription/plan?site=%2$s</string>
     <string name="app_cms_subscription_plan_list_api_url">%1$s/subscription/plans?site=%2$s</string>
     <string name="app_cms_subscription_plan_list_key">list</string>
+    <string name="app_cms_subscription_subscribed_plan_key">subscribed_plan</string>
     <string name="app_cms_subscription_plan_create_key">create</string>
     <string name="app_cms_subscription_plan_update_key">update</string>
     <string name="app_cms_subscription_plan_cancel_key">cancel</string>
@@ -246,6 +247,9 @@
 
     <!-- AppCMS Cancel Subscription API -->
     <string name="app_cms_cancel_subscription_api_url">%1$s/subscription/cancel?site=%2$s&amp;platform=%3$s</string>
+
+    <!-- AppCMS Get Current Subscription API -->
+    <string name="app_cms_get_current_subscription_api_url">%1$s/subscription/user?userId=%2$s&amp;site=%3$s</string>
 
     <!-- AppCMS Navigation menu -->
     <string name="app_cms_menu_icon_name">menu_</string>
