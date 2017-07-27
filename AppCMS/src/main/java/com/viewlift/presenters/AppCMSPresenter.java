@@ -996,7 +996,11 @@ public class AppCMSPresenter {
             currencyOfPlanToPurchase = currency;
             planToPurchasePrice = planPrice;
 
-            navigateToLoginPage();
+            if (isUserLoggedIn(currentActivity)) {
+                initiateItemPurchase();
+            } else {
+                navigateToLoginPage();
+            }
         }
     }
 
@@ -1057,7 +1061,7 @@ public class AppCMSPresenter {
                         new Action1<AppCMSSubscriptionPlanResult>() {
                             @Override
                             public void call(AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResults) {
-
+                                sendCloseOthersAction(null, false);
                             }
                         });
             } catch (IOException e) {

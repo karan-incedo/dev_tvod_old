@@ -126,6 +126,7 @@ public class AppCMSSubscriptionPlanCall {
                                 Log.e(TAG, "onFailure: " + t.getMessage());
                             }
                         });
+                break;
 
             default:
                 throw new RuntimeException("Invalid SubscriptionCallType: " + subscriptionCallType);
