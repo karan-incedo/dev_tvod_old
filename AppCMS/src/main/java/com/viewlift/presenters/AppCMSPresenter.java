@@ -2642,6 +2642,9 @@ public class AppCMSPresenter {
                                 setAuthToken(currentActivity, facebookLoginResponse.getAuthorizationToken());
                                 setRefreshToken(currentActivity, facebookLoginResponse.getRefreshToken());
                                 setLoggedInUser(currentActivity, facebookUserId);
+
+                                refreshSubscriptionData();
+
                                 NavigationPrimary homePageNavItem = findHomePageNavItem();
                                 if (homePageNavItem != null) {
                                     navigateToPage(homePageNavItem.getPageId(),
@@ -2684,6 +2687,9 @@ public class AppCMSPresenter {
                             setAuthToken(currentActivity, googleLoginResponse.getAuthorizationToken());
                             setRefreshToken(currentActivity, googleLoginResponse.getRefreshToken());
                             setLoggedInUser(currentActivity, googleUserId);
+
+                            refreshSubscriptionData();
+
                             NavigationPrimary homePageNavItem = findHomePageNavItem();
 
                             if (homePageNavItem != null) {
@@ -3373,6 +3379,45 @@ public class AppCMSPresenter {
         }
     }
 
+    public void refreshSubscriptionData() {
+        if (currentActivity != null && isUserLoggedIn(currentActivity)) {
+            try {
+                appCMSSubscriptionPlanCall.call(
+                        currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
+                                appCMSMain.getApiBaseUrl(),
+                                getLoggedInUser(currentActivity),
+                                appCMSMain.getInternalName()),
+                        R.string.app_cms_subscription_subscribed_plan_key,
+                        null,
+                        new Action1<List<AppCMSSubscriptionPlanResult>>() {
+                            @Override
+                            public void call(List<AppCMSSubscriptionPlanResult> result) {
+                            }
+                        },
+                        new Action1<AppCMSSubscriptionPlanResult>() {
+                            @Override
+                            public void call(AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResult) {
+                                if (appCMSSubscriptionPlanResult != null &&
+                                        appCMSSubscriptionPlanResult.getPlanDetails() != null) {
+                                    setActiveSubscriptionSku(currentActivity,
+                                            appCMSSubscriptionPlanResult.getIdentifier());
+                                    setActiveSubscriptionId(currentActivity,
+                                            appCMSSubscriptionPlanResult.getId());
+                                    setActiveSubscriptionCurrency(currentActivity,
+                                            appCMSSubscriptionPlanResult.getPlanDetails().get(0).getRecurringPaymentCurrencyCode());
+                                    setActiveSubscriptionPlanName(currentActivity,
+                                            appCMSSubscriptionPlanResult.getName());
+                                    setActiveSubscriptionPrice(currentActivity, (float)
+                                            appCMSSubscriptionPlanResult.getPlanDetails().get(0).getRecurringPaymentAmount());
+                                }
+                            }
+                        });
+            } catch (Exception e) {
+                Log.e(TAG, "getSubscriptionPageContent: " + e.toString());
+            }
+        }
+    }
+
     public void login(String email, String password) {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_signin_api_url,
@@ -3432,6 +3477,8 @@ public class AppCMSPresenter {
                             setLoggedInUser(currentActivity, signInResponse.getUserId());
                             setLoggedInUserEmail(currentActivity, signInResponse.getName());
                             setLoggedInUserEmail(currentActivity, signInResponse.getEmail());
+
+                            refreshSubscriptionData();
 
                             NavigationPrimary homePageNavItem = findHomePageNavItem();
                             if (homePageNavItem != null) {
