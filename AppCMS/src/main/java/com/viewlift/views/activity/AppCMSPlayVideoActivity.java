@@ -168,6 +168,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         if (!appCMSPresenter.isNetworkConnected()) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                     null,
+                    false,
                     null);
             finish();
         }

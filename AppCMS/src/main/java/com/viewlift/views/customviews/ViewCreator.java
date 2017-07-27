@@ -1026,16 +1026,30 @@ public class ViewCreator {
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                String[] extraData = new String[1];
+                                extraData[0] = component.getKey();
                                 appCMSPresenter.launchButtonSelectedAction(null,
                                         component.getAction(),
                                         null,
-                                        null,
+                                        extraData,
                                         null,
                                         false,
                                         0,
                                         null);
                             }
                         });
+                }
+
+                if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SETTINGS_KEY) {
+                    componentViewResult.componentView.setBackgroundColor(
+                            ContextCompat.getColor(context, android.R.color.transparent));
+                    if (componentViewResult.componentView instanceof Button) {
+                        ((Button) componentViewResult.componentView)
+                                .setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                                        .getBrand()
+                                        .getGeneral()
+                                        .getBlockTitleColor()));
+                    }
                 }
 
                 break;
@@ -1206,6 +1220,21 @@ public class ViewCreator {
                                                     component.getTextColor())));
                             break;
                         case PAGE_ACTIONLABEL_KEY:
+
+                        case PAGE_SETTINGS_NAME_VALUE_KEY:
+                            ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserName(context));
+                            break;
+
+                        case PAGE_SETTINGS_EMAIL_VALUE_KEY:
+                            ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserEmail(context));
+                            break;
+
+                        case PAGE_SETTINGS_PLAN_VALUE_KEY:
+                            ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getActiveSubscriptionPlanName(context));
+                            break;
+
+                        case PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY:
+                            ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_payment_processor));
                             break;
 
                         default:

@@ -12,7 +12,6 @@ import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
-import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAddToWatchlistRest;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
@@ -231,6 +230,23 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_planmetadatadevicecount_key),
                 AppCMSUIKeyType.PAGE_PLANMETADATADEVICECOUNT_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_title_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_name_value_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_NAME_VALUE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_email_value_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_VALUE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_plan_value_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_PLAN_VALUE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_plan_processor_value_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_edit_profile_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_EDIT_PROFILE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_cancel_subscription_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_upgrade_subscription_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_title_key),
                 AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_priceinfo_key),
@@ -411,6 +427,12 @@ public class AppCMSUIModule {
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_startfreetrial_key),
                 AppCMSActionType.START_TRIAL);
+
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_editprofile_key),
+                AppCMSActionType.EDIT_PROFILE);
+
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_managesubscription_key),
+                AppCMSActionType.MANAGE_SUBSCRIPTION);
     }
 
     @Provides

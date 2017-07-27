@@ -121,7 +121,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                     if (appCMSPresenter != null) {
                         appCMSPresenter.showMainFragmentView(true);
                         appCMSPresenter.setNavItemToCurrentAction(getActivity());
-                        appCMSPresenter.navigateToTrialPage();
+                        appCMSPresenter.navigateToSubscriptionPlansPage();
                     }
                 }
             });

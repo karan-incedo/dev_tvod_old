@@ -23,5 +23,7 @@ public enum AppCMSActionType {
     SIGNUP,
     LOGOUT,
     START_TRIAL,
-    SIGNIN
+    SIGNIN,
+    EDIT_PROFILE,
+    MANAGE_SUBSCRIPTION,
 }
