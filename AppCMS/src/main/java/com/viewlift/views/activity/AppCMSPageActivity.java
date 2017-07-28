@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -115,6 +116,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private AccessToken accessToken;
     private IInAppBillingService inAppBillingService;
     private ServiceConnection inAppBillingServiceConn;
+
+    private CastServiceProvider castProvider;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -385,6 +388,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         super.onResume();
         resume();
         Log.d(TAG, "onResume()");
+
     }
 
     @Override
@@ -521,7 +525,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSFragment.setEnabled(true);
             appCMSTabNavContainer.setEnabled(true);
             loadingProgressBar.setVisibility(View.GONE);
-
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 appCMSTabNavContainer.getChildAt(i).setEnabled(true);
             }
@@ -577,6 +580,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         registerReceiver(presenterCloseActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
+
+
     }
 
     private boolean shouldPopStack() {
@@ -913,16 +918,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } else {
             ll_media_route_button.setVisibility(View.GONE);
         }
-        if (castProvider != null) {
-            castProvider.setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
-            castProvider.onActivityResume();
-        }
+
+        CastServiceProvider.getInstance(getApplicationContext()).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
+        CastServiceProvider.getInstance(getApplicationContext()).onActivityResume();
 
     }
 
     private void setCasting() {
         try {
             castProvider = CastServiceProvider.getInstance(getApplicationContext());
+
         } catch (Exception e) {
             Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
         }

@@ -54,6 +54,7 @@ import com.google.android.gms.iid.InstanceID;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
+import com.viewlift.casting.CastHelper;
 import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenResponse;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -2877,6 +2878,7 @@ public class AppCMSPresenter {
                             deeplinkSearchQuery);
                 }
             }
+            CastHelper.getInstance(currentActivity.getApplicationContext()).castingLogout();
         }
     }
 

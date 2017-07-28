@@ -281,4 +281,18 @@
     <string name="app_cms_header_view">headerView</string>
     <string name="app_cms_videodetail_header_view">videoDetailHeader</string>
 
+
+    <string name="app_cms_autoplay_back_key">backButton</string>
+    <string name="app_cms_autoplay_finished_up_title_key">finishedUptitle</string>
+    <string name="app_cms_autoplay_movie_title_key">movieNameTitle</string>
+    <string name="app_cms_autoplay_movie_subheading_key">movieNameSubheading</string>
+    <string name="app_cms_autoplay_movie_description_key">movieDescription</string>
+    <string name="app_cms_autoplay_movie_star_rating_key">starRating</string>
+    <string name="app_cms_autoplay_movie_director_label_key">directorLabel</string>
+    <string name="app_cms_autoplay_movie_sub_director_label_key">subDirectorLabel</string>
+    <string name="app_cms_autoplay_movie_image_key">movieImage</string>
+    <string name="app_cms_autoplay_play_button_key">playButtonAutoplay</string>
+    <string name="app_cms_autoplay_cancel_button_key">cancelButton</string>
+    <string name="app_cms_autoplay_playing_in_label_key">playInLabel</string>
+    <string name="app_cms_autoplay_timer_label_key">timerLabel</string>
 </resources>
