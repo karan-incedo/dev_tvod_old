@@ -37,6 +37,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -871,11 +872,32 @@ public class AppCMSPresenter {
                     if (addOnFragment != null) {
                         addOnFragment.setVisibility(View.GONE);
                     }
+                    setMainFragmentEnabled(true);
                 } else {
                     mainFragmentView.setAlpha(0.0f);
                     mainFragmentView.setVisibility(View.GONE);
-                    mainFragmentView.setEnabled(false);
                 }
+            }
+        }
+    }
+
+    private void setMainFragmentEnabled(boolean isEnabled) {
+        FrameLayout mainFragmentView =
+                (FrameLayout) currentActivity.findViewById(R.id.app_cms_fragment);
+        if (mainFragmentView != null) {
+            setAllChildrenEnabled(isEnabled, mainFragmentView);
+        }
+    }
+
+    private void setAllChildrenEnabled(boolean isEnabled, ViewGroup viewGroup) {
+        viewGroup.setEnabled(isEnabled);
+        viewGroup.setClickable(isEnabled);
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            if (viewGroup.getChildAt(i) instanceof ViewGroup) {
+                setAllChildrenEnabled(isEnabled, (ViewGroup) viewGroup.getChildAt(i));
+            } else {
+                viewGroup.getChildAt(i).setEnabled(isEnabled);
+                viewGroup.getChildAt(i).setClickable(isEnabled);
             }
         }
     }
@@ -899,6 +921,7 @@ public class AppCMSPresenter {
             addOnFragment.setVisibility(View.VISIBLE);
             addOnFragment.bringToFront();
         }
+        setMainFragmentEnabled(false);
     }
 
     public boolean isAdditionalFragmentViewAvailable() {
