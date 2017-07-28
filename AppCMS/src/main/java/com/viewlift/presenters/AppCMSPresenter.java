@@ -1109,23 +1109,11 @@ public class AppCMSPresenter {
                 inAppBillingService != null) {
             try {
                 String activeSubscription = getActiveSubscriptionSku(currentActivity);
-                Bundle buyIntentBundle;
-                if (!TextUtils.isEmpty(activeSubscription)) {
-                    List<String> skusToReplace = new ArrayList<>();
-                    skusToReplace.add(activeSubscription);
-                    buyIntentBundle = inAppBillingService.getBuyIntentToReplaceSkus(3,
-                            currentActivity.getPackageName(),
-                            skusToReplace,
-                            skuToPurchase,
-                            "subs",
-                            null);
-                } else {
-                    buyIntentBundle = inAppBillingService.getBuyIntent(3,
-                            currentActivity.getPackageName(),
-                            skuToPurchase,
-                            "subs",
-                            null);
-                }
+                Bundle buyIntentBundle = inAppBillingService.getBuyIntent(3,
+                        currentActivity.getPackageName(),
+                        skuToPurchase,
+                        "subs",
+                        null);
                 PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
                 if (pendingIntent != null) {
                     currentActivity.startIntentSenderForResult(pendingIntent.getIntentSender(),
