@@ -153,6 +153,8 @@ public class CastChooserDialog extends Dialog {
 
                 MediaRouter.RouteInfo route = (MediaRouter.RouteInfo) mAdapter.getItem(position);
                 if (route.isEnabled()) {
+                    callBackCastChoose.onChromeCastDeviceSelect();
+
                     route.select();
                     dismiss();
                 }
@@ -168,5 +170,7 @@ public class CastChooserDialog extends Dialog {
 
     public interface CastChooserDialogEventListener {
         void onRokuDeviceSelected(RokuDevice selectedRokuDevice);
+        void onChromeCastDeviceSelect();
+
     }
 }
