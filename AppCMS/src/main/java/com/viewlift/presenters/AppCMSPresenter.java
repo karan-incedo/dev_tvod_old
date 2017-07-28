@@ -32,6 +32,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -55,7 +56,6 @@ import com.google.android.gms.iid.InstanceID;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
-import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenResponse;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
@@ -140,6 +140,7 @@ import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.activity.AppCMSSearchActivity;
 import com.viewlift.views.activity.AutoplayActivity;
+import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.customviews.BaseView;
@@ -894,7 +895,16 @@ public class AppCMSPresenter {
         viewGroup.setClickable(isEnabled);
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             if (viewGroup.getChildAt(i) instanceof ViewGroup) {
-                setAllChildrenEnabled(isEnabled, (ViewGroup) viewGroup.getChildAt(i));
+                if (viewGroup instanceof RecyclerView) {
+                    ((RecyclerView) viewGroup).setLayoutFrozen(isEnabled);
+                    if (((RecyclerView) viewGroup).getAdapter() instanceof AppCMSViewAdapter) {
+                        AppCMSViewAdapter appCMSViewAdapter =
+                                (AppCMSViewAdapter) ((RecyclerView) viewGroup).getAdapter();
+                        appCMSViewAdapter.setClickable(isEnabled);
+                    }
+                } else {
+                    setAllChildrenEnabled(isEnabled, (ViewGroup) viewGroup.getChildAt(i));
+                }
             } else {
                 viewGroup.getChildAt(i).setEnabled(isEnabled);
                 viewGroup.getChildAt(i).setClickable(isEnabled);
@@ -2926,7 +2936,6 @@ public class AppCMSPresenter {
 
     public void logout() {
         if (currentActivity != null) {
-            AppsFlyerUtils.appsFlyerLogoutEvent(currentActivity,getLoggedInUser(currentActivity));
             SharedPreferences sharedPrefs =
                     currentActivity.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
             sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, null).apply();
@@ -3494,7 +3503,7 @@ public class AppCMSPresenter {
                 String url = currentActivity.getString(R.string.app_cms_signup_api_url,
                         appCMSMain.getApiBaseUrl(),
                         appCMSMain.getInternalName());
-                startLoginAsyncTask(url, email, password, false);
+                startLoginAsyncTask(url, email, password);
             } else {
                 signupFromFacebook = false;
                 isSgnupFromGoogle = false;
@@ -3550,7 +3559,7 @@ public class AppCMSPresenter {
             String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                     appCMSMain.getApiBaseUrl(),
                     appCMSMain.getInternalName());
-            startLoginAsyncTask(url, email, password, true);
+            startLoginAsyncTask(url, email, password);
         }
     }
 
@@ -3581,7 +3590,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private void startLoginAsyncTask(String url, String email, String password, boolean isSignin) {
+    private void startLoginAsyncTask(String url, String email, String password) {
         PostAppCMSLoginRequestAsyncTask.Params params = new PostAppCMSLoginRequestAsyncTask.Params
                 .Builder()
                 .url(url)
@@ -3592,7 +3601,6 @@ public class AppCMSPresenter {
                 new Action1<SignInResponse>() {
                     @Override
                     public void call(SignInResponse signInResponse) {
-                        Log.v("printingurl",url) ;
                         if (signInResponse == null) {
                             // Show log error
                             Log.e(TAG, "Email and password are not valid.");
@@ -3620,7 +3628,6 @@ public class AppCMSPresenter {
                                         false,
                                         deeplinkSearchQuery);
                             }
-                            AppsFlyerUtils.appsFlyerLoginEvent(currentActivity,isSignin,signInResponse.getUserId()) ;
                         }
                     }
 

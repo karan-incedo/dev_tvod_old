@@ -53,6 +53,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     protected boolean isSelected;
     protected int unselectedColor;
     protected int selectedColor;
+    protected boolean isClickable;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -91,6 +92,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.isSelected = false;
         this.unselectedColor = ContextCompat.getColor(context, android.R.color.white);
         this.selectedColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+        this.isClickable = true;
 
         cullData(context);
     }
@@ -185,11 +187,13 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
                     @Override
                     public void click(Component childComponent, ContentDatum data) {
-                        appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
-                                data.getId(),
-                                data.getPlanDetails().get(0).getCountryCode(),
-                                data.getName(),
-                                (float) data.getPlanDetails().get(0).getRecurringPaymentAmount());
+                        if (isClickable) {
+                            appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
+                                    data.getId(),
+                                    data.getPlanDetails().get(0).getCountryCode(),
+                                    data.getName(),
+                                    (float) data.getPlanDetails().get(0).getRecurringPaymentAmount());
+                        }
                     }
 
                     @Override
@@ -201,63 +205,67 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
                     public void click(Component childComponent, ContentDatum data) {
-                        Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
-                        String permalink = data.getGist().getPermalink();
-                        String action = defaultAction;
-                        String title = data.getGist().getTitle();
-                        String hlsUrl = getHlsUrl(data);
-                        String[] extraData = new String[3];
-                        extraData[0] = permalink;
-                        extraData[1] = hlsUrl;
-                        extraData[2] = data.getGist().getId();
-                        Log.d(TAG, "Launching " + permalink + ": " + action);
-                        List<String> relatedVideoIds = null;
-                        if (data.getContentDetails() != null &&
-                                data.getContentDetails().getRelatedVideoIds() != null) {
-                            relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
-                        }
-                        int currentPlayingIndex = -1;
-                        if (relatedVideoIds == null) {
-                            currentPlayingIndex = 0;
-                        }
-                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                action,
-                                title,
-                                extraData,
-                                data,
-                                false,
-                                currentPlayingIndex,
-                                relatedVideoIds)) {
-                            Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
-                                    + " action: " + action + " hlsUrl: " + hlsUrl);
+                        if (isClickable) {
+                            Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
+                            String permalink = data.getGist().getPermalink();
+                            String action = defaultAction;
+                            String title = data.getGist().getTitle();
+                            String hlsUrl = getHlsUrl(data);
+                            String[] extraData = new String[3];
+                            extraData[0] = permalink;
+                            extraData[1] = hlsUrl;
+                            extraData[2] = data.getGist().getId();
+                            Log.d(TAG, "Launching " + permalink + ": " + action);
+                            List<String> relatedVideoIds = null;
+                            if (data.getContentDetails() != null &&
+                                    data.getContentDetails().getRelatedVideoIds() != null) {
+                                relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
+                            }
+                            int currentPlayingIndex = -1;
+                            if (relatedVideoIds == null) {
+                                currentPlayingIndex = 0;
+                            }
+                            if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                    action,
+                                    title,
+                                    extraData,
+                                    data,
+                                    false,
+                                    currentPlayingIndex,
+                                    relatedVideoIds)) {
+                                Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
+                                        + " action: " + action + " hlsUrl: " + hlsUrl);
+                            }
                         }
                     }
 
                     @Override
                     public void play(Component childComponent, ContentDatum data) {
-                        Log.d(TAG, "Playing item: " + data.getGist().getTitle());
-                        String filmId = data.getGist().getId();
-                        String permaLink = data.getGist().getPermalink();
-                        String title = data.getGist().getTitle();
-                        List<String> relatedVideoIds = null;
-                        if (data.getContentDetails() != null &&
-                                data.getContentDetails().getRelatedVideoIds() != null) {
-                            relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
-                        }
-                        int currentPlayingIndex = -1;
-                        if (relatedVideoIds == null) {
-                            currentPlayingIndex = 0;
-                        }
-                        if (!appCMSPresenter.launchVideoPlayer(data,
-                                currentPlayingIndex,
-                                relatedVideoIds)) {
-                            Log.e(TAG, "Could not launch play action: " +
-                                    " filmId: " +
-                                    filmId +
-                                    " permaLink: " +
-                                    permaLink +
-                                    " title: " +
-                                    title);
+                        if (isClickable) {
+                            Log.d(TAG, "Playing item: " + data.getGist().getTitle());
+                            String filmId = data.getGist().getId();
+                            String permaLink = data.getGist().getPermalink();
+                            String title = data.getGist().getTitle();
+                            List<String> relatedVideoIds = null;
+                            if (data.getContentDetails() != null &&
+                                    data.getContentDetails().getRelatedVideoIds() != null) {
+                                relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
+                            }
+                            int currentPlayingIndex = -1;
+                            if (relatedVideoIds == null) {
+                                currentPlayingIndex = 0;
+                            }
+                            if (!appCMSPresenter.launchVideoPlayer(data,
+                                    currentPlayingIndex,
+                                    relatedVideoIds)) {
+                                Log.e(TAG, "Could not launch play action: " +
+                                        " filmId: " +
+                                        filmId +
+                                        " permaLink: " +
+                                        permaLink +
+                                        " title: " +
+                                        title);
+                            }
                         }
                     }
                 };
@@ -270,31 +278,33 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String permalink = data.getGist().getPermalink();
-                    String title = data.getGist().getTitle();
-                    Log.d(TAG, "Launching " + permalink + ":" + defaultAction);
-                    List<String> relatedVideoIds = null;
-                    if (data.getContentDetails() != null &&
-                            data.getContentDetails().getRelatedVideoIds() != null) {
-                        relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
-                    }
-                    int currentPlayingIndex = -1;
-                    if (relatedVideoIds == null) {
-                        currentPlayingIndex = 0;
-                    }
-                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                            defaultAction,
-                            title,
-                            null,
-                            null,
-                            false,
-                            currentPlayingIndex,
-                            relatedVideoIds)) {
-                        Log.e(TAG, "Could not launch action: " +
-                                " permalink: " +
-                                permalink +
-                                " action: " +
-                                defaultAction);
+                    if (isClickable) {
+                        String permalink = data.getGist().getPermalink();
+                        String title = data.getGist().getTitle();
+                        Log.d(TAG, "Launching " + permalink + ":" + defaultAction);
+                        List<String> relatedVideoIds = null;
+                        if (data.getContentDetails() != null &&
+                                data.getContentDetails().getRelatedVideoIds() != null) {
+                            relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
+                        }
+                        int currentPlayingIndex = -1;
+                        if (relatedVideoIds == null) {
+                            currentPlayingIndex = 0;
+                        }
+                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                defaultAction,
+                                title,
+                                null,
+                                null,
+                                false,
+                                currentPlayingIndex,
+                                relatedVideoIds)) {
+                            Log.e(TAG, "Could not launch action: " +
+                                    " permalink: " +
+                                    permalink +
+                                    " action: " +
+                                    defaultAction);
+                        }
                     }
                 }
             });
@@ -308,6 +318,14 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     onClickHandler,
                     viewTypeKey);
         }
+    }
+
+    public boolean isClickable() {
+        return isClickable;
+    }
+
+    public void setClickable(boolean clickable) {
+        isClickable = clickable;
     }
 
     private String getDefaultAction(Context context) {
