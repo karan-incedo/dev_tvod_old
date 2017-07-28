@@ -79,12 +79,6 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
     };
     private boolean isAdDisplayed;
-    CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = new CastServiceProvider.ILaunchRemoteMedia() {
-        @Override
-        public void setRemotePlayBack() {
-            launchRemoteMedia();
-        }
-    };
     private int watchedTime;
     private ImageButton mMediaRouteButton;
     private CastServiceProvider castProvider;
@@ -447,14 +441,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                 pauseVideo();
                 onClosePlayerEvent.onRemotePlayback(videoPlayerView.getCurrentPosition(), castingModeChromecast);
             }
-    }
-
-    private void launchRemoteMedia() {
-        if (onClosePlayerEvent != null) {
-            pauseVideo();
-            onClosePlayerEvent.onRemotePlayback(videoPlayerView.getCurrentPosition());
         }
-    }
+    };
 
     public interface OnClosePlayerEvent {
         void closePlayer();
@@ -465,7 +453,7 @@ public class AppCMSPlayVideoFragment extends Fragment
          */
         void onMovieFinished();
 
-        void onRemotePlayback(long currentPosition);
+        void onRemotePlayback(long currentPosition, int castingMode);
     }
 
     private static class BeaconPingThread extends Thread {
@@ -513,6 +501,4 @@ public class AppCMSPlayVideoFragment extends Fragment
             }
         }
     }
-
-
 }

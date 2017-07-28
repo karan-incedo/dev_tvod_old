@@ -1,5 +1,6 @@
 package com.viewlift.casting.roku.dialog;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -30,23 +31,22 @@ import com.viewlift.R;
 
 import static android.support.v7.media.MediaRouter.RouteInfo.CONNECTION_STATE_CONNECTED;
 import static android.support.v7.media.MediaRouter.RouteInfo.CONNECTION_STATE_CONNECTING;
-import static com.google.android.gms.internal.zzagy.runOnUiThread;
 
 public class CastChooserDialog extends Dialog {
-    private Context context;
+    private Activity activity;
     private ListView mListView;
     private RouteAdapter mAdapter;
     private List<Object> routes = new ArrayList<>();
     private String TAG = "CastChooserDialog";
     CastChooserDialogEventListener callBackCastChoose;
 
-    public CastChooserDialog(@NonNull Context context, CastChooserDialogEventListener callBackCastChoose) {
-        super(context, android.R.style.Theme_Material_Light_Dialog_NoActionBar);
-        this.context = context;
+    public CastChooserDialog(@NonNull Activity activity, CastChooserDialogEventListener callBackCastChoose) {
+        super(activity, android.R.style.Theme_Material_Light_Dialog_NoActionBar);
+        this.activity = activity;
         this.callBackCastChoose = callBackCastChoose;
     }
-    public void setInstance(@NonNull Context context) {
-        this.context = context;
+    public void setInstance(@NonNull Activity activity) {
+        this.activity = activity;
     }
     public CastChooserDialog(@NonNull Context context,
                              @StyleRes int themeResId) {
@@ -69,7 +69,7 @@ public class CastChooserDialog extends Dialog {
                 Log.d(TAG, ((MediaRouter.RouteInfo) obj).getName());
         }
         if (mAdapter != null) {
-            runOnUiThread(new Runnable(){
+            activity.runOnUiThread(new Runnable(){
                 public void run() {
                     mAdapter.notifyDataSetChanged();
                 }
@@ -149,7 +149,7 @@ public class CastChooserDialog extends Dialog {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (mAdapter.getItem(position) instanceof MediaRouter.RouteInfo) {
-                CastContext.getSharedInstance(context).getSessionManager().endCurrentSession(true);
+                CastContext.getSharedInstance(activity).getSessionManager().endCurrentSession(true);
 
                 MediaRouter.RouteInfo route = (MediaRouter.RouteInfo) mAdapter.getItem(position);
                 if (route.isEnabled()) {

@@ -117,8 +117,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private IInAppBillingService inAppBillingService;
     private ServiceConnection inAppBillingServiceConn;
 
-    private CastServiceProvider castProvider;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
