@@ -55,11 +55,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.viewlift.R;
+import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenResponse;
 import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
-import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
@@ -67,14 +67,12 @@ import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Mpeg;
 import com.viewlift.models.data.appcms.api.Settings;
-import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.api.SubscriptionRequest;
 import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
 import com.viewlift.models.data.appcms.downloads.RealmController;
 import com.viewlift.models.data.appcms.downloads.UserVideoDownloadStatus;
 import com.viewlift.models.data.appcms.history.AppCMSDeleteHistoryResult;
 import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
-import com.viewlift.models.data.appcms.history.Record;
 import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
@@ -85,7 +83,6 @@ import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
-import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.FacebookLoginResponse;
 import com.viewlift.models.data.appcms.ui.authentication.ForgotPasswordResponse;
 import com.viewlift.models.data.appcms.ui.authentication.RefreshIdentityResponse;
@@ -102,7 +99,6 @@ import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSRefreshIdentityAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
-import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSVideoDetailAsyncTask;
 import com.viewlift.models.network.background.tasks.PostAppCMSLoginRequestAsyncTask;
 import com.viewlift.models.network.components.AppCMSAPIComponent;
@@ -2600,6 +2596,7 @@ public class AppCMSPresenter {
 
     public void logout() {
         if (currentActivity != null) {
+            AppsFlyerUtils.appsFlyerLogoutEvent(currentActivity,getLoggedInUser(currentActivity));
             SharedPreferences sharedPrefs =
                     currentActivity.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
             sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, null).apply();
@@ -3132,7 +3129,7 @@ public class AppCMSPresenter {
                 String url = currentActivity.getString(R.string.app_cms_signup_api_url,
                         appCMSMain.getApiBaseUrl(),
                         appCMSMain.getInternalName());
-                startLoginAsyncTask(url, email, password);
+                startLoginAsyncTask(url, email, password, false);
             } else {
                 signupFromFacebook = false;
                 isSgnupFromGoogle = false;
@@ -3148,7 +3145,7 @@ public class AppCMSPresenter {
             String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                     appCMSMain.getApiBaseUrl(),
                     appCMSMain.getInternalName());
-            startLoginAsyncTask(url, email, password);
+            startLoginAsyncTask(url, email, password, true);
         }
     }
 
@@ -3179,7 +3176,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private void startLoginAsyncTask(String url, String email, String password) {
+    private void startLoginAsyncTask(String url, String email, String password, boolean isSignin) {
         PostAppCMSLoginRequestAsyncTask.Params params = new PostAppCMSLoginRequestAsyncTask.Params
                 .Builder()
                 .url(url)
@@ -3190,6 +3187,7 @@ public class AppCMSPresenter {
                 new Action1<SignInResponse>() {
                     @Override
                     public void call(SignInResponse signInResponse) {
+                        Log.v("printingurl",url) ;
                         if (signInResponse == null) {
                             // Show log error
                             Log.e(TAG, "Email and password are not valid.");
@@ -3212,6 +3210,7 @@ public class AppCMSPresenter {
                                         false,
                                         deeplinkSearchQuery);
                             }
+                            AppsFlyerUtils.appsFlyerLoginEvent(currentActivity,isSignin,signInResponse.getUserId()) ;
                         }
                     }
 

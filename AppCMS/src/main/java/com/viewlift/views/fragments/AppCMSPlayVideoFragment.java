@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
@@ -30,15 +29,14 @@ import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.gms.cast.framework.CastSession;
 import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
+import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
-
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.VideoPlayerView;
 
 import rx.functions.Action1;
-
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 6/14/17.
@@ -204,6 +202,9 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         parentScreenName = getContext().getString(R.string.app_cms_beacon_video_player_parent_screen_name);
         setRetainInstance(true);
+
+        AppsFlyerUtils.appsFlyerPlayEvent(getContext(),filmId, appCMSPresenter);
+
     }
 
 

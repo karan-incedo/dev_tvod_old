@@ -16,7 +16,6 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Mobile;
 import com.viewlift.models.data.appcms.ui.page.TabletLandscape;
 import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
-import com.viewlift.presenters.AppCMSActionType;
 
 import java.util.Map;
 
@@ -1001,4 +1000,5 @@ public abstract class BaseView extends FrameLayout {
         }
         return -1.0f;
     }
+
 }

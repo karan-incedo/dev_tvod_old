@@ -158,4 +158,29 @@
     <!-- Google Cancel Subscription API -->
     <string name="google_cancel_subscription_api">https://www.googleapis.com/androidpublisher/v2/applications/$1%s/purchases/subscriptions/$2%s/tokens/$3%s:cancel</string>
     <string name="minutes_for_runtime">MINS</string>
+
+    <!-- apps flyer keys -->
+    <string name="app_cms_appsflyer_dev_key">5qcxTGtWfXSo746pkCDawf</string>
+    <string name="app_cms_appsflyer_login_status">af_login_status</string>
+    <string name="app_cms_appsflyer_film_id">af_film_id</string>
+    <string name="app_cms_appsflyer_course_id">af_course_id</string>
+    <string name="app_cms_appsflyer_sub_category">af_film_sub_category</string>
+    <string name="app_cms_appsflyer_video_view">af_video_view</string>
+    <string name="app_cms_appsflyer_login_success">Login Success</string>
+    <string name="app_cms_appsflyer_signup_success">signUpSuccess</string>
+    <string name="app_cms_login">Login</string>
+    <string name="app_cms_registered_state">Registered state</string>
+    <string name="app_cms_appsflyer_event_type_logout">Logout</string>
+    <string name="app_cms_appsflyer_entitled_state">Entitled state</string>
+    <string name="app_cms_appsflyer_registered_state">Registered state</string>
+    <string name="app_cms_appsflyer_subscription">Subscription</string>
+    <string name="app_cms_appsflyer_cancel_subscription">Cancel Payment</string>
+    <string name="app_cms_appsflyer_order_id">af_order_id</string>
+    <string name="app_cms_appsflyer_product_id">af_product_id</string>
+    <string name="app_cms_user_cancel_payment">User Cancel Payment</string>
+    <string name="app_cms_plan_type">af_plan_type</string>
+
+
+    <string name="GCM_SENDER_ID_APPFLYERS">796935694522</string>
+
 </resources>
