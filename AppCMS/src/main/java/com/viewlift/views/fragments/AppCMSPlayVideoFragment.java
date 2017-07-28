@@ -30,6 +30,7 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.gms.cast.framework.CastSession;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -151,6 +152,9 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         parentScreenName = getContext().getString(R.string.app_cms_beacon_video_player_parent_screen_name);
         setRetainInstance(true);
+
+        AppsFlyerUtils.appsFlyerPlayEvent(getContext(),filmId, appCMSPresenter);
+
     }
 
 
