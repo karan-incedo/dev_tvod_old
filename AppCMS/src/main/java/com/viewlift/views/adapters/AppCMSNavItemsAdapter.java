@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationFooter;
@@ -16,8 +17,6 @@ import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.Map;
-
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/30/17.
@@ -67,26 +66,28 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                         (!userLoggedIn && navigationPrimary.getAccessLevels().getLoggedOut())) {
                     viewHolder.navItemLabel.setText(navigationPrimary.getTitle().toUpperCase());
                     viewHolder.navItemLabel.setTextColor(textColor);
-                    viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Log.d(TAG, "Navigating to page with Title: " + navigationPrimary.getTitle());
-                            if (!appCMSPresenter.navigateToPage(navigationPrimary.getPageId(),
-                                    navigationPrimary.getTitle(),
-                                    navigationPrimary.getUrl(),
-                                    false,
-                                    true,
-                                    false,
-                                    true,
-                                    true,
-                                    null)) {
-                                Log.e(TAG, "Could not navigate to page with Title: " +
-                                        navigationPrimary.getTitle() +
-                                        " Id: " +
-                                        navigationPrimary.getPageId());
-                            } else {
-                                itemSelected = true;
-                            }
+
+                    if (navigationPrimary.getItems().size() > 0) {
+                        // TODO: 7/27/17 Implement Expandable Listview.
+                    }
+
+                    viewHolder.itemView.setOnClickListener(v -> {
+                        Log.d(TAG, "Navigating to page with Title: " + navigationPrimary.getTitle());
+                        if (!appCMSPresenter.navigateToPage(navigationPrimary.getPageId(),
+                                navigationPrimary.getTitle(),
+                                navigationPrimary.getUrl(),
+                                false,
+                                true,
+                                false,
+                                true,
+                                true,
+                                null)) {
+                            Log.e(TAG, "Could not navigate to page with Title: " +
+                                    navigationPrimary.getTitle() +
+                                    " Id: " +
+                                    navigationPrimary.getPageId());
+                        } else {
+                            itemSelected = true;
                         }
                     });
                 }
@@ -112,43 +113,40 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 if (navigationUser.getAccessLevels() != null && navigationUser.getAccessLevels().getLoggedIn()) {
                     viewHolder.navItemLabel.setText(navigationUser.getTitle().toUpperCase());
                     viewHolder.navItemLabel.setTextColor(textColor);
-                    viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            AppCMSUIKeyType titleKey = jsonValueKeyMap.get(navigationUser.getTitle());
-                            if (titleKey == null) {
-                                titleKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
-                            }
-                            itemSelected = true;
-                            switch (titleKey) {
-                                case ANDROID_DOWNLOAD_NAV_KEY:
-                                    appCMSPresenter.navigateToDownloadPage(navigationUser.getPageId(),
-                                            navigationUser.getTitle(), navigationUser.getUrl(), false);
-                                    break;
-                                case ANDROID_WATCHLIST_NAV_KEY:
-                                    appCMSPresenter.navigateToWatchlistPage(navigationUser.getPageId(),
-                                            navigationUser.getTitle(), navigationUser.getUrl(), false);
-                                    break;
+                    viewHolder.itemView.setOnClickListener(v -> {
+                        AppCMSUIKeyType titleKey = jsonValueKeyMap.get(navigationUser.getTitle());
+                        if (titleKey == null) {
+                            titleKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                        }
+                        itemSelected = true;
+                        switch (titleKey) {
+                            case ANDROID_DOWNLOAD_NAV_KEY:
+                                appCMSPresenter.navigateToDownloadPage(navigationUser.getPageId(),
+                                        navigationUser.getTitle(), navigationUser.getUrl(), false);
+                                break;
+                            case ANDROID_WATCHLIST_NAV_KEY:
+                                appCMSPresenter.navigateToWatchlistPage(navigationUser.getPageId(),
+                                        navigationUser.getTitle(), navigationUser.getUrl(), false);
+                                break;
 
-                                case ANDROID_HISTORY_NAV_KEY:
-                                    appCMSPresenter.navigateToHistoryPage(navigationUser.getPageId(),
-                                            navigationUser.getTitle(), navigationUser.getUrl(), false);
-                                    break;
+                            case ANDROID_HISTORY_NAV_KEY:
+                                appCMSPresenter.navigateToHistoryPage(navigationUser.getPageId(),
+                                        navigationUser.getTitle(), navigationUser.getUrl(), false);
+                                break;
 
-                                default:
-                                    if (!appCMSPresenter.navigateToPage(navigationUser.getPageId(),
-                                            navigationUser.getTitle(),
-                                            navigationUser.getUrl(),
-                                            false,
-                                            true,
-                                            false,
-                                            true,
-                                            true,
-                                            null)) {
-                                        Log.e(TAG, "Could not navigate to page with Title: "
-                                                + navigationUser.getTitle() + " Id: " + navigationUser.getPageId());
-                                    }
-                            }
+                            default:
+                                if (!appCMSPresenter.navigateToPage(navigationUser.getPageId(),
+                                        navigationUser.getTitle(),
+                                        navigationUser.getUrl(),
+                                        false,
+                                        true,
+                                        false,
+                                        true,
+                                        true,
+                                        null)) {
+                                    Log.e(TAG, "Could not navigate to page with Title: "
+                                            + navigationUser.getTitle() + " Id: " + navigationUser.getPageId());
+                                }
                         }
                     });
                 }
@@ -176,24 +174,21 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             (!userLoggedIn && navigationFooter.getAccessLevels().getLoggedOut())) {
                         viewHolder.navItemLabel.setText(navigationFooter.getTitle().toUpperCase());
                         viewHolder.navItemLabel.setTextColor(textColor);
-                        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                itemSelected = true;
-                                if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
-                                        navigationFooter.getTitle(),
-                                        navigationFooter.getUrl(),
-                                        false,
-                                        true,
-                                        false,
-                                        true,
-                                        false,
-                                        null)) {
-                                    Log.e(TAG, "Could not navigate to page with Title: " +
-                                            navigationFooter.getTitle() +
-                                            " Id: " +
-                                            navigationFooter.getPageId());
-                                }
+                        viewHolder.itemView.setOnClickListener(v -> {
+                            itemSelected = true;
+                            if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
+                                    navigationFooter.getTitle(),
+                                    navigationFooter.getUrl(),
+                                    false,
+                                    true,
+                                    false,
+                                    true,
+                                    false,
+                                    null)) {
+                                Log.e(TAG, "Could not navigate to page with Title: " +
+                                        navigationFooter.getTitle() +
+                                        " Id: " +
+                                        navigationFooter.getPageId());
                             }
                         });
                     }
@@ -205,12 +200,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             if (0 <= (i - indexOffset) && userLoggedIn) {
                 viewHolder.navItemLabel.setText(R.string.app_cms_sign_out_label);
                 viewHolder.navItemLabel.setTextColor(textColor);
-                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        appCMSPresenter.logout();
-                    }
-                });
+                viewHolder.itemView.setOnClickListener(v -> appCMSPresenter.logout());
             }
         }
     }
