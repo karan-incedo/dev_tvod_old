@@ -86,6 +86,11 @@ public class Gist {
 
     String downloadStatus;
 
+    /**
+     * This is to store the url of the downloaded file
+     */
+    String localFileUrl;
+
     public String getId() {
         return id;
     }
@@ -244,5 +249,13 @@ public class Gist {
 
     public void setDownloadStatus(DownloadStatus downloadStatus) {
         this.downloadStatus = downloadStatus.toString();
+    }
+
+    public String getLocalFileUrl() {
+        return localFileUrl;
+    }
+
+    public void setLocalFileUrl(String localFileUrl) {
+        this.localFileUrl = localFileUrl;
     }
 }

@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @UseStag
@@ -271,5 +272,18 @@ public class ContentDatum {
 
     public void setPlanDetails(List<PlanDetail> planDetails) {
         this.planDetails = planDetails;
+    }
+
+    public AppCMSPageAPI convertToAppCMSPageAPI() {
+        AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
+        Module module = new Module();
+        List<ContentDatum> data = new ArrayList<>();
+        data.add(this);
+        module.setContentData(data);
+        appCMSPageAPI.setId(id);
+        List<Module> moduleList = new ArrayList<>();
+        moduleList.add(module);
+        appCMSPageAPI.setModules(moduleList);
+        return appCMSPageAPI;
     }
 }

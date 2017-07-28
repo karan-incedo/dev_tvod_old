@@ -181,6 +181,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             }
             loadImage(holder.itemView.getContext(), imageUrl.toString(), holder.appCMSContinueWatchingVideoImage);
 
+            holder.itemView.setOnClickListener(v -> {
+//                click(contentDatum, holder.itemView.getContext());
+                play(contentDatum,
+                        holder.itemView.getContext(),
+                        /*getNextContentDatum(position)*/ null);
+            });
+
 
             holder.appCMSContinueWatchingVideoImage.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -222,12 +229,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 }
             });
 
-            holder.appCMSContinueWatchingDescription.setOnClickListener(new View.OnClickListener() {
+            /*holder.appCMSContinueWatchingDescription.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    click(contentDatum);
+
                 }
-            });
+            });*/
 
             holder.appCMSContinueWatchingDuration.setText(String.valueOf(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
                     + " " + String.valueOf(holder.itemView.getContext().getString(R.string.mins_abbreviation)));
@@ -252,6 +259,55 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             holder.appCMSContinueWatchingDuration.setVisibility(View.GONE);
             holder.appCMSContinueWatchingSize.setVisibility(View.GONE);
             holder.appCMSContinueWatchingSeparatorView.setVisibility(View.GONE);
+        }
+    }
+
+    private ContentDatum getNextContentDatum(int position) {
+        if(position + 1 == adapterData.size()){
+            return null;
+        }
+        ContentDatum contentDatum = adapterData.get(++position);
+        if (!contentDatum.getGist().getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
+            getNextContentDatum(position);
+        }
+        return contentDatum;
+    }
+
+    private void play(ContentDatum data, Context context, ContentDatum nextContentDatum) {
+        if (isDownload) {
+            Log.d(TAG, " Ofline play is under process ... ");
+            String permalink = data.getGist().getPermalink();
+            String action = context.getString(R.string.app_cms_action_watchvideo_key);
+            String title = data.getGist().getTitle();
+            String hlsUrl = data.getGist().getLocalFileUrl();
+            String[] extraData = new String[4];
+            extraData[0] = permalink;
+            extraData[1] = hlsUrl;
+            extraData[2] = data.getGist().getId();
+            extraData[3] = "true"; // to know that this is an offline video
+            Log.d(TAG, "Launching " + permalink + ": " + action);
+            ArrayList<String> relateVideoIds = null;
+            if (nextContentDatum != null) {
+                relateVideoIds = new ArrayList<>();
+                relateVideoIds.add(nextContentDatum.getGist().getId());
+            }
+            if (!appCMSPresenter.launchButtonSelectedAction(
+                    permalink,
+                    action,
+                    title,
+                    extraData,
+                    data,
+                    false,
+                    -1,
+                    relateVideoIds)) {
+                Log.e(TAG, "Could not launch action: " +
+                        " permalink: " +
+                        permalink +
+                        " action: " +
+                        action +
+                        " hlsUrl: " +
+                        hlsUrl);
+            }
         }
     }
 

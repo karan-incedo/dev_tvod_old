@@ -603,6 +603,12 @@ public class AppCMSPresenter {
                         .getBackgroundColor();
 
 
+                boolean isOffline = false;
+                try {
+                    isOffline = Boolean.parseBoolean(extraData[3]);
+                } catch (Exception e) {
+                    Log.e(TAG, e.getLocalizedMessage());
+                }
                 AppCMSVideoPageBinder appCMSVideoPageBinder =
                         getAppCMSVideoPageBinder(currentActivity,
                                 null,
@@ -622,7 +628,8 @@ public class AppCMSPresenter {
                                 contentDatum,
                                 isTrailer,
                                 relateVideoIds,
-                                currentlyPlayingIndex);
+                                currentlyPlayingIndex,
+                                isOffline);
                 if (closeLauncher) {
                     sendCloseOthersAction(null, true);
                 }
@@ -1503,23 +1510,7 @@ public class AppCMSPresenter {
 
             List<ContentDatum> contentData = new ArrayList<>();
             for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloades()) {
-                ContentDatum data = new ContentDatum();
-                Gist gist = new Gist();
-                gist.setId(downloadVideoRealm.getVideoId());
-                gist.setTitle(downloadVideoRealm.getVideoTitle());
-                gist.setDescription(downloadVideoRealm.getVideoDescription());
-                gist.setPosterImageUrl(downloadVideoRealm.getVideoFileURL());
-                gist.setVideoImageUrl(downloadVideoRealm.getVideoFileURL());
-
-                gist.setPermalink(downloadVideoRealm.getPermalink());
-                gist.setDownloadStatus(downloadVideoRealm.getDownloadStatus());
-                gist.setRuntime(downloadVideoRealm.getVideoDuration());
-
-
-                data.setGist(gist);
-                data.setShowQueue(true);
-                data.setUserId(getLoggedInUser(currentActivity));
-                data.setAddedDate(downloadVideoRealm.getDownloadDate());
+                ContentDatum data = createContentDatum(downloadVideoRealm);
 
                 contentData.add(data);
             }
@@ -1569,6 +1560,29 @@ public class AppCMSPresenter {
                 currentActivity.sendBroadcast(downloadPageIntent);
             }
         }
+    }
+
+    @NonNull
+    private ContentDatum createContentDatum(DownloadVideoRealm downloadVideoRealm) {
+        ContentDatum data = new ContentDatum();
+        Gist gist = new Gist();
+        gist.setId(downloadVideoRealm.getVideoId());
+        gist.setTitle(downloadVideoRealm.getVideoTitle());
+        gist.setDescription(downloadVideoRealm.getVideoDescription());
+        gist.setPosterImageUrl(downloadVideoRealm.getVideoFileURL());
+        gist.setVideoImageUrl(downloadVideoRealm.getVideoFileURL());
+        gist.setLocalFileUrl(downloadVideoRealm.getLocalURI());
+
+        gist.setPermalink(downloadVideoRealm.getPermalink());
+        gist.setDownloadStatus(downloadVideoRealm.getDownloadStatus());
+        gist.setRuntime(downloadVideoRealm.getVideoDuration());
+
+
+        data.setGist(gist);
+        data.setShowQueue(true);
+        data.setUserId(getLoggedInUser(currentActivity));
+        data.setAddedDate(downloadVideoRealm.getDownloadDate());
+        return data;
     }
 
     public void clearHistory(final Action1<AppCMSDeleteHistoryResult> resultAction1) {
@@ -1701,38 +1715,57 @@ public class AppCMSPresenter {
             final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
             GetAppCMSVideoDetailAsyncTask.Params params =
                     new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url).build();
-            new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
-                    new Action1<AppCMSVideoDetail>() {
-                        @Override
-                        public void call(AppCMSVideoDetail appCMSVideoDetail) {
-                            if (appCMSVideoDetail != null) {
-                                binder.setContentData(appCMSVideoDetail.getRecords().get(0));
-                                AppCMSPageAPI pageAPI = null;
-                                for (ModuleList moduleList :
-                                        appCMSPageUI.getModuleList()) {
-                                    if (moduleList.getType().equals(currentActivity.getString(R.string.app_cms_page_autoplay_module_key))){
-                                        pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
-                                                moduleList.getType());
-                                        break;
+            if (!binder.isOffline()) {
+                new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
+                        new Action1<AppCMSVideoDetail>() {
+                            @Override
+                            public void call(AppCMSVideoDetail appCMSVideoDetail) {
+                                if (appCMSVideoDetail != null) {
+                                    binder.setContentData(appCMSVideoDetail.getRecords().get(0));
+                                    AppCMSPageAPI pageAPI = null;
+                                    for (ModuleList moduleList :
+                                            appCMSPageUI.getModuleList()) {
+                                        if (moduleList.getType().equals(currentActivity.getString(R.string.app_cms_page_autoplay_module_key))){
+                                            pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
+                                                    moduleList.getType());
+                                            break;
+                                        }
+                                    }
+                                    if (pageAPI != null) {
+                                        launchAutoplayActivity(currentActivity,
+                                                appCMSPageUI,
+                                                pageAPI,
+                                                pageId,
+                                                pageTitle,
+                                                pageIdToPageNameMap.get(pageId),
+                                                loadFromFile,
+                                                false,
+                                                true,
+                                                false,
+                                                false,
+                                                binder);
                                     }
                                 }
-                                if (pageAPI != null) {
-                                    launchAutoplayActivity(currentActivity,
-                                            appCMSPageUI,
-                                            pageAPI,
-                                            pageId,
-                                            pageTitle,
-                                            pageIdToPageNameMap.get(pageId),
-                                            loadFromFile,
-                                            false,
-                                            true,
-                                            false,
-                                            false,
-                                            binder);
-                                }
                             }
-                        }
-                    }).execute(params);
+                        }).execute(params);
+            } else {
+                AppCMSPageAPI pageAPI = binder.getContentData().convertToAppCMSPageAPI();
+
+                if (pageAPI != null) {
+                    launchAutoplayActivity(currentActivity,
+                            appCMSPageUI,
+                            pageAPI,
+                            pageId,
+                            pageTitle,
+                            pageIdToPageNameMap.get(pageId),
+                            loadFromFile,
+                            false,
+                            true,
+                            false,
+                            false,
+                            binder);
+                }
+            }
         }
     }
 
@@ -3708,7 +3741,8 @@ public class AppCMSPresenter {
                                                            ContentDatum contentDatum,
                                                            boolean isTrailer,
                                                            List<String> relatedVideoIds,
-                                                           int currentlyPlayingIndex) {
+                                                           int currentlyPlayingIndex,
+                                                           boolean isOffline) {
 
         return new AppCMSVideoPageBinder(
                 appCMSPageUI,
@@ -3730,7 +3764,8 @@ public class AppCMSPresenter {
                 isTrailer,
                 isUserLoggedIn(activity),
                 relatedVideoIds,
-                currentlyPlayingIndex);
+                currentlyPlayingIndex,
+                isOffline);
     }
 
     private void launchPageActivity(Activity activity,
@@ -4311,27 +4346,32 @@ public class AppCMSPresenter {
      * @param binder binder to share data
      */
     public void openAutoPlayScreen(final AppCMSVideoPageBinder binder) {
-        final String filmId =
-                binder.getRelateVideoIds().get(binder.getCurrentPlayingVideoIndex() + 1);
-        if (currentActivity != null &&
-                !loadingPage && appCMSMain != null &&
-                !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
-                !TextUtils.isEmpty(appCMSMain.getSite())) {
-            String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
-                    appCMSMain.getApiBaseUrl(),
-                    filmId,
-                    appCMSMain.getSite());
-
-
-            String pageId = getAutoplayPageId();
-            if (!TextUtils.isEmpty(pageId)) {
-                navigateToAutoplayPage(pageId,
-                        currentActivity.getString(R.string.app_cms_page_autoplay_key),
-                        url,
-                        binder);
-            } else {
-                Log.e(TAG, "Can't find autoplay page ui in pageIdToPageNameMap");
+        String url = null;
+        if (!binder.isOffline()) {
+            final String filmId =
+                    binder.getRelateVideoIds().get(binder.getCurrentPlayingVideoIndex() + 1);
+            if (currentActivity != null &&
+                    !loadingPage && appCMSMain != null &&
+                    !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
+                    !TextUtils.isEmpty(appCMSMain.getSite())) {
+                url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        filmId,
+                        appCMSMain.getSite());
             }
+        } else {
+            ContentDatum contentDatum =
+                    createContentDatum(realmController.getDownloadById(binder.getRelateVideoIds().get(0)));
+            binder.setContentData(contentDatum);
+        }
+        String pageId = getAutoplayPageId();
+        if (!TextUtils.isEmpty(pageId)) {
+            navigateToAutoplayPage(pageId,
+                    currentActivity.getString(R.string.app_cms_page_autoplay_key),
+                    url,
+                    binder);
+        } else {
+            Log.e(TAG, "Can't find autoplay page ui in pageIdToPageNameMap");
         }
     }
 
