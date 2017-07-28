@@ -20,6 +20,7 @@ import com.viewlift.casting.roku.RokuLaunchThreadParams;
 import com.viewlift.casting.roku.RokuWrapper;
 import com.viewlift.casting.roku.dialog.CastChooserDialog;
 import com.viewlift.casting.roku.dialog.CastDisconnectDialog;
+import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 
 import java.util.List;
@@ -101,6 +102,7 @@ public class CastServiceProvider {
         }
 
         createMediaChooserDialog();
+        mCastHelper. setCastDiscovery();
 
         if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().isDefault()) {
             Log.d(this.getClass().getName(), "This is a default route");
@@ -119,6 +121,7 @@ public class CastServiceProvider {
     public boolean playChromeCastPlaybackIfCastConnected() {
         boolean isConnected = false;
         if (mCastHelper.isRemoteDeviceConnected()) {
+
             mCastHelper.openRemoteController();
             launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
             isConnected = true;
@@ -131,8 +134,6 @@ public class CastServiceProvider {
         boolean isConnected = false;
         if (rokuWrapper.isRokuConnected()) {
             launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_ROKU);
-//            launchRokuPlaybackLocation();
-//            setRokuPlayScreen();
             isConnected = true;
         }
         return isConnected;
@@ -268,6 +269,12 @@ public class CastServiceProvider {
             rokuWrapper.setSelectedRokuDevice(selectedRokuDevice);
             if (mActivity != null)
                 launchRokuPlaybackLocation();
+        }
+
+        @Override
+        public void onChromeCastDeviceSelect() {
+            mMediaRouteButton.setOnClickListener(null);
+            castAnimDrawable.start();
         }
     };
 

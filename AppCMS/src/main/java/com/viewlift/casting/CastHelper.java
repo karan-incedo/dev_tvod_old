@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.MediaRouteDiscoveryFragment;
 import android.support.v7.media.MediaRouteSelector;
 import android.support.v7.media.MediaRouter;
 import android.text.TextUtils;
@@ -23,6 +25,7 @@ import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 
@@ -63,6 +66,7 @@ public class CastHelper {
     private int currentPlayingIndex = 0;
     public int playIndexPosition = 0;
     long castCurrentDuration;
+    private static final String DISCOVERY_FRAGMENT_TAG = "DiscoveryFragment";
 
     private CastHelper(Context mContext) {
         mAppContext = mContext.getApplicationContext();
@@ -74,12 +78,20 @@ public class CastHelper {
         mMediaRouterCallback = new MyMediaRouterCallback();
         routerCall = new MyMediaRouterCallback();
 
+        setCastDiscovery();
 
+    }
+
+
+    public void setCastDiscovery() {
         if (CastingUtils.IS_CHROMECAST_ENABLE) {
             mMediaRouter = MediaRouter.getInstance(mAppContext);
             mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback,
-                    MediaRouter.CALLBACK_FLAG_FORCE_DISCOVERY);
+                    MediaRouter.CALLBACK_FLAG_PERFORM_ACTIVE_SCAN);
+            if (mActivity instanceof AppCMSPageActivity)
+                addMediaRouterDiscoveryFragment();
         }
+
     }
 
     public static synchronized CastHelper getInstance(Context context) {
@@ -132,6 +144,47 @@ public class CastHelper {
             mMediaRouter.removeCallback(mMediaRouterCallback);
     }
 
+    private void addMediaRouterDiscoveryFragment() {
+        FragmentManager fm = mActivity.getSupportFragmentManager();
+        DiscoveryFragment fragment =
+                (DiscoveryFragment) fm.findFragmentByTag(DISCOVERY_FRAGMENT_TAG);
+        if (fragment == null) {
+            fragment = new DiscoveryFragment();
+            fragment.setCallback(mMediaRouterCallback);
+            fragment.setRouteSelector(mMediaRouteSelector);
+            fm.beginTransaction().add(fragment, DISCOVERY_FRAGMENT_TAG).commit();
+        } else {
+            fragment.setCallback(mMediaRouterCallback);
+            fragment.setRouteSelector(mMediaRouteSelector);
+        }
+    }
+
+    public static final class DiscoveryFragment extends MediaRouteDiscoveryFragment {
+        private static final String TAG = "DiscoveryFragment";
+        private MediaRouter.Callback mCallback;
+
+        public DiscoveryFragment() {
+            mCallback = null;
+        }
+
+        public void setCallback(MediaRouter.Callback cb) {
+            mCallback = cb;
+        }
+
+        @Override
+        public MediaRouter.Callback onCreateCallback() {
+            return mCallback;
+        }
+
+        @Override
+        public int onPrepareCallbackFlags() {
+            // Add the CALLBACK_FLAG_UNFILTERED_EVENTS flag to ensure that we will
+            // observe and log all route events including those that are for routes
+            // that do not match our selector.  This is only for demonstration purposes
+            // and should not be needed by most applications.
+            return super.onPrepareCallbackFlags() | MediaRouter.CALLBACK_FLAG_UNFILTERED_EVENTS;
+        }
+    }
 
     public interface Callback {
         void onApplicationConnected();
@@ -449,9 +502,7 @@ public class CastHelper {
             getRemoteMediaClient().queueLoad(queueItemsArray, currentPlayingIndex,
                     MediaStatus.REPEAT_MODE_REPEAT_OFF, currentMediaPosition, null);
             getRemoteMediaClient().addListener(remoteListener);
-            getRemoteMediaClient().addProgressListener(progressListener, 100);
-
-
+            getRemoteMediaClient().addProgressListener(progressListener, 1000);
         }
     }
 
