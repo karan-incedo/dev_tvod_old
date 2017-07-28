@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_text_overlay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dialog_bg_color"
+    android:clickable="true"
+    android:focusable="true"
+    android:layout_gravity="center"
+    android:focusableInTouchMode="true"
+    tools:context="com.viewlift.tv.views.fragment.TextOverlayDialogFragment">
+
+    <RelativeLayout
+        android:id="@+id/top_layout"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="20dp"
+        >
+
+        <TextView
+            android:id="@+id/text_overlay_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:text="TextView"
+            android:maxLines="1"
+            android:gravity="center"
+            android:focusable="false"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone"/>
+        <ScrollView
+            android:id="@+id/scrollview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/text_overlay_title"
+            android:focusable="true"
+            android:layout_marginTop="5dp">
+            <TextView
+                android:id="@+id/text_overlay_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:textSize="15sp"
+                android:textColor="#ffffff"
+                android:lineSpacingExtra="4.3sp"
+                android:layout_marginLeft="28dp"
+                android:layout_marginRight="28dp"
+                android:text=""
+                android:focusable="true"
+                android:nextFocusDown="@+id/btn_close"
+                android:nextFocusLeft="@null"
+                android:nextFocusRight="@null"
+                android:nextFocusUp="@null"
+                android:layout_marginBottom="100dp"/>
+        </ScrollView>
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btn_close"
+        android:layout_width="85dp"
+        android:layout_height="20dp"
+        android:layout_below="@+id/top_layout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="30dp"
+        android:layout_alignParentBottom="true"
+        android:textSize="12sp"
+        android:textColor="#ffffff"
+        android:text="Close"
+        android:gravity="center"
+        android:background="@color/heighlight_color"
+        android:nextFocusDown="@null"
+        android:nextFocusLeft="@null"
+        android:nextFocusRight="@null"
+        android:nextFocusUp="@+id/text_overlay_description" />
+
+</RelativeLayout>

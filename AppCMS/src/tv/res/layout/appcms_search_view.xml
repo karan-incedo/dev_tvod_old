@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="2">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight=".8">
+
+        <EditText
+            android:id="@+id/appcms_et_search"
+            android:layout_width="330dp"
+            android:layout_height="37dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/appcms_edittext_background"
+            android:drawablePadding="10dp"
+            android:drawableStart="@drawable/search_icon"
+            android:focusable="true"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
+            android:textColor="@android:color/black"
+            />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/appcms_et_search"
+            android:layout_margin="30dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            >
+            
+            <TextView
+                android:id="@+id/search_history_one"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:text="PREVIOUS SEARCHES:"
+                android:focusable="false"
+                />
+
+            <TextView
+                android:id="@+id/search_history_two"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:text="ABC"
+                android:nextFocusLeft="@id/appcms_et_search"
+                android:nextFocusRight="@+id/search_history_three"
+                />
+
+            <TextView
+                android:id="@+id/search_history_three"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:text="XYZ"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:nextFocusLeft="@id/search_history_two"
+                android:nextFocusRight="@+id/search_history_four"
+                />
+
+            <TextView
+                android:id="@+id/search_history_four"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:text="ABCSDJNKNKNABCSDJNKNKABCSDJNKNKNN"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:nextFocusLeft="@id/search_history_three"
+                android:nextFocusRight="@+id/btn_clear_history"
+                />
+
+            <Button
+                android:id="@+id/btn_clear_history"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CLEAR HISTORY"
+                android:nextFocusLeft="@id/search_history_four"
+
+                />
+
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+
+    <FrameLayout
+        android:id="@+id/appcms_search_results_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.2">
+
+    </FrameLayout>
+</LinearLayout>
