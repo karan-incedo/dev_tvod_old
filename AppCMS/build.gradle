@@ -158,6 +158,8 @@ dependencies {
         transitive = true
     }
 
+    compile "com.urbanairship.android:urbanairship-sdk:$rootProject.ext.urbanAirshipVersion"
+
     compile "com.jakewharton:butterknife:$rootProject.ext.butterknifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.ext.butterknifeVersion"
 
