@@ -67,12 +67,17 @@ public class AppCMSSubscriptionPlanCall {
                 appCMSSubscriptionPlanRest.getSubscribedPlan(url).enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
                     @Override
                     public void onResponse(Call<AppCMSSubscriptionPlanResult> call, Response<AppCMSSubscriptionPlanResult> response) {
-                        Observable.just(response.body()).subscribe(resultAction1);
+                        if (response != null) {
+                            Observable.just(response.body()).subscribe(resultAction1);
+                        } else {
+                            Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<AppCMSSubscriptionPlanResult> call, Throwable t) {
                         Log.e(TAG, "onFailure: " + t.getMessage());
+                        Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                     }
                 });
                 break;
@@ -124,8 +129,10 @@ public class AppCMSSubscriptionPlanCall {
                             public void onFailure(@NonNull Call<AppCMSSubscriptionPlanResult> call,
                                                   @NonNull Throwable t) {
                                 Log.e(TAG, "onFailure: " + t.getMessage());
+                                Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                             }
                         });
+                break;
 
             default:
                 throw new RuntimeException("Invalid SubscriptionCallType: " + subscriptionCallType);

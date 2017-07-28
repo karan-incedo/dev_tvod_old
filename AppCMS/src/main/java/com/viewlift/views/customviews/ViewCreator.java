@@ -296,14 +296,14 @@ public class ViewCreator {
                         modulesHasHiddenComponent = true;
                         if (BaseView.isTablet(context)) {
                             if (BaseView.isLandscape(context)) {
-                                heightLayoutAdjuster.heightAdjusment =
+                                heightLayoutAdjuster.heightAdjustment =
                                         (int) component.getLayout().getTabletLandscape().getHeight();
                                 heightLayoutAdjuster.topMargin =
                                         (int) component.getLayout().getTabletLandscape().getTopMargin();
                                 heightLayoutAdjuster.yAxis =
                                         (int) component.getLayout().getTabletLandscape().getYAxis();
                             } else {
-                                heightLayoutAdjuster.heightAdjusment =
+                                heightLayoutAdjuster.heightAdjustment =
                                         (int) component.getLayout().getTabletPortrait().getHeight();
                                 heightLayoutAdjuster.topMargin =
                                         (int) component.getLayout().getTabletPortrait().getTopMargin();
@@ -311,7 +311,7 @@ public class ViewCreator {
                                         (int) component.getLayout().getTabletPortrait().getYAxis();
                             }
                         } else {
-                            heightLayoutAdjuster.heightAdjusment =
+                            heightLayoutAdjuster.heightAdjustment =
                                     (int) component.getLayout().getMobile().getHeight();
                             heightLayoutAdjuster.topMargin =
                                     (int) component.getLayout().getMobile().getTopMargin();
@@ -362,9 +362,14 @@ public class ViewCreator {
             }
 
             if (modulesHasHiddenComponent) {
+                for (int i = 0; i < module.getComponents().size(); i++) {
+                    Component childComponent = module.getComponents().get(i);
+
+                }
+
                 ViewGroup.LayoutParams moduleLayoutParams = moduleView.getLayoutParams();
                 for (HeightLayoutAdjuster heightLayoutAdjuster : heightLayoutAdjusterList) {
-                    moduleLayoutParams.height -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjusment, context);
+                    moduleLayoutParams.height -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
                     List<ModuleView.ChildComponentAndView> childComponentAndViewList =
                             moduleView.getChildComponentAndViewList();
                     for (int i = 0; i < childComponentAndViewList.size(); i++) {
@@ -376,35 +381,35 @@ public class ViewCreator {
                                 if (childComponentAndView.component.getLayout().getTabletLandscape().getYAxis() > 0 &&
                                         heightLayoutAdjuster.yAxis <
                                                 childComponentAndView.component.getLayout().getTabletLandscape().getYAxis()) {
-                                    childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjusment, context);
+                                    childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
                                 }
                                 if (childComponentAndView.component.getLayout().getTabletLandscape().getTopMargin() > 0 &&
                                         heightLayoutAdjuster.topMargin <
                                                 childComponentAndView.component.getLayout().getTabletLandscape().getTopMargin()) {
-                                    childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjusment, context);
+                                    childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
                                 }
                             } else {
                                 if (childComponentAndView.component.getLayout().getTabletPortrait().getYAxis() > 0 &&
                                         heightLayoutAdjuster.yAxis <
                                                 childComponentAndView.component.getLayout().getTabletPortrait().getYAxis()) {
-                                    childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjusment, context);
+                                    childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
                                 }
                                 if (childComponentAndView.component.getLayout().getTabletPortrait().getTopMargin() > 0 &&
                                         heightLayoutAdjuster.topMargin <
                                                 childComponentAndView.component.getLayout().getTabletPortrait().getTopMargin()) {
-                                    childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjusment, context);
+                                    childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
                                 }
                             }
                         } else {
                             if (childComponentAndView.component.getLayout().getMobile().getYAxis() > 0 &&
                                     heightLayoutAdjuster.yAxis <
                                             childComponentAndView.component.getLayout().getMobile().getYAxis()) {
-                                childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjusment, context);
+                                childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
                             }
                             if (childComponentAndView.component.getLayout().getMobile().getTopMargin() > 0 &&
                                     heightLayoutAdjuster.topMargin <
                                             childComponentAndView.component.getLayout().getMobile().getTopMargin()) {
-                                childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjusment, context);
+                                childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
                             }
                         }
                         childComponentAndView.childView.setLayoutParams(childLayoutParams);
@@ -721,6 +726,13 @@ public class ViewCreator {
                 } else if (appCMSPresenter.isActionGoogle(component.getAction())) {
                     applyBorderToComponent(context, componentViewResult.componentView, component,
                             ContextCompat.getColor(context, R.color.googleRed));
+                } else if(componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY
+                    && component.getBorderWidth() != 0){
+                    applyBorderToComponent(
+                            context,
+                            componentViewResult.componentView,
+                            component,
+                            -1);
                 } else {
                     if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                             .getBlockTitleColor())) {
@@ -1026,16 +1038,30 @@ public class ViewCreator {
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                String[] extraData = new String[1];
+                                extraData[0] = component.getKey();
                                 appCMSPresenter.launchButtonSelectedAction(null,
                                         component.getAction(),
                                         null,
-                                        null,
+                                        extraData,
                                         null,
                                         false,
                                         0,
                                         null);
                             }
                         });
+                }
+
+                if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SETTINGS_KEY) {
+                    componentViewResult.componentView.setBackgroundColor(
+                            ContextCompat.getColor(context, android.R.color.transparent));
+                    if (componentViewResult.componentView instanceof Button) {
+                        ((Button) componentViewResult.componentView)
+                                .setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                                        .getBrand()
+                                        .getGeneral()
+                                        .getBlockTitleColor()));
+                    }
                 }
 
                 break;
@@ -1113,7 +1139,7 @@ public class ViewCreator {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
                             }
                             break;
-
+                        case PAGE_AUTOPLAY_MOVIE_DISCRIPTION_KEY:
                         case PAGE_VIDEO_DESCRIPTION_KEY:
                             String videoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
                             if (videoDescription != null) {
@@ -1206,6 +1232,32 @@ public class ViewCreator {
                                                     component.getTextColor())));
                             break;
                         case PAGE_ACTIONLABEL_KEY:
+
+                        case PAGE_SETTINGS_NAME_VALUE_KEY:
+                            ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserName(context));
+                            break;
+
+                        case PAGE_SETTINGS_EMAIL_VALUE_KEY:
+                            ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserEmail(context));
+                            break;
+
+                        case PAGE_SETTINGS_PLAN_VALUE_KEY:
+                            ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getActiveSubscriptionPlanName(context));
+                            break;
+
+                        case PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY:
+                            ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_payment_processor));
+                            break;
+
+                        case PAGE_SETTINGS_TITLE_KEY:
+                            ((TextView) componentViewResult.componentView)
+                                    .setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                                            .getBrand()
+                                            .getGeneral()
+                                            .getBlockTitleColor()));
+                            if (!TextUtils.isEmpty(component.getText())) {
+                                ((TextView) componentViewResult.componentView).setText(component.getText());
+                            }
                             break;
 
                         default:
@@ -1424,9 +1476,11 @@ public class ViewCreator {
                         }
                         if (creditBlock != null && creditBlock.getCredits() != null) {
                             for (int i = 0; i < creditBlock.getCredits().size(); i++) {
-                                starringListSb.append(creditBlock.getCredits().get(i).getTitle());
-                                if (i < creditBlock.getCredits().size() - 1) {
-                                    starringListSb.append(", ");
+                                if (!TextUtils.isEmpty(creditBlock.getCredits().get(i).getTitle())) {
+                                    starringListSb.append(creditBlock.getCredits().get(i).getTitle());
+                                    if (i < creditBlock.getCredits().size() - 1) {
+                                        starringListSb.append(", ");
+                                    }
                                 }
                             }
                         }
@@ -1779,7 +1833,7 @@ public class ViewCreator {
     }
 
     private static class HeightLayoutAdjuster {
-        int heightAdjusment;
+        int heightAdjustment;
         int topMargin;
         int yAxis;
     }

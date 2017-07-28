@@ -17,6 +17,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.casting.CastingUtils;
@@ -27,8 +28,6 @@ import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 
 import java.util.List;
-
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 6/14/17.
@@ -69,6 +68,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 String videoUrl = "";
                 String fontColor = binder.getFontColor();
                 title = "";
+
+                String closedCaptionUrl = null;
                 if (!binder.isTrailer()) {
                     title = gist.getTitle();
                     if (binder.getContentData().getStreamingInfo() != null &&
@@ -80,6 +81,14 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 videoUrl = videoAssets.getMpeg().get(i).getUrl();
                             }
                         }
+                    }
+
+                    // TODO: 7/27/2017 Implement CC for multiple languages.
+                    if (binder.getContentData() != null
+                            && binder.getContentData().getContentDetails() != null
+                            && binder.getContentData().getContentDetails().getClosedCaptions() != null
+                            && binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl() != null){
+                        closedCaptionUrl = binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl();
                     }
                 } else {
                     if (binder.getContentData().getContentDetails() != null
@@ -95,14 +104,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             }
                         }
                     }
-                }
-                String closedCaptionUrl = null;
-                // TODO: 7/27/2017 Implement CC for multiple languages.
-                if (binder.getContentData() != null
-                        && binder.getContentData().getContentDetails() != null
-                        && binder.getContentData().getContentDetails().getClosedCaptions() != null
-                        && binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl() != null){
-                    closedCaptionUrl = binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl();
                 }
                 String permaLink = gist.getPermalink();
                 hlsUrl = videoUrl;
@@ -170,6 +171,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         if (!appCMSPresenter.isNetworkConnected()) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                     null,
+                    false,
                     null);
             finish();
         }

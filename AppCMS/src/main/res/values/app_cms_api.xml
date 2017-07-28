@@ -110,8 +110,16 @@
     <string name="app_cms_page_settings_component_key">AC Settings Account 01</string>
     <string name="app_cms_page_removeall_key">removeAll</string>
     <string name="app_cms_page_planmetadatatitle_key">planMetaDataTitle</string>
-    <string name="app_cms_page_planmetadataimage_key">planMetaDataImage</string>
+    <string name="app_cms_page_planmetadataimage_key">planMetaDaname="app_cms_taImage</string>
     <string name="app_cms_page_planmetadatadevicecount_key">planMetaDataDeviceCount</string>
+    <string name="app_cms_page_settings_title_key">settingsTitle</string>
+    <string name="app_cms_page_settings_name_value_key">nameValue</string>
+    <string name="app_cms_page_settings_email_value_key">emailValue</string>
+    <string name="app_cms_page_settings_plan_value_key">planValue</string>
+    <string name="app_cms_page_settings_plan_processor_value_key">paymentProcessorValue</string>
+    <string name="app_cms_page_edit_profile_key">Edit Profile</string>
+    <string name="app_cms_page_cancel_subscription_key">Cancel Subscription</string>
+    <string name="app_cms_page_upgrade_subscription_key">Upgrade Subscription</string>
 
     <string name="app_cms_page_history_module_key">AC History 01</string>
     <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>
@@ -166,6 +174,7 @@
     <string name="app_cms_search_page_tag">search</string>
     <string name="app_cms_video_page_tag">video</string>
     <string name="app_cms_main_page_tag">main</string>
+    <string name="app_cms_edit_profile_page_tag">edit_profile</string>
     <string name="app_cms_reset_password_page_tag">reset_password</string>
     <string name="app_cms_settings_page_tag">settings</string>
     <string name="app_cms_more_page_tag">more</string>
@@ -198,6 +207,8 @@
     <string name="app_cms_action_forgotpassword_key">forgotPassword</string>
     <string name="app_cms_action_loginfacebook_key">loginFacebook</string>
     <string name="app_cms_action_signupfacebook_key">signupfacebook</string>
+    <string name="app_cms_action_editprofile_key">editProfile</string>
+    <string name="app_cms_action_managesubscription_key">manageSubscription</string>
 
     <string name="app_cms_action_logingoogle_key">logingoogle</string>
     <string name="app_cms_action_signupgoogle_key">signupgoogle</string>
@@ -270,4 +281,18 @@
     <string name="app_cms_header_view">headerView</string>
     <string name="app_cms_videodetail_header_view">videoDetailHeader</string>
 
+
+    <string name="app_cms_autoplay_back_key">backButton</string>
+    <string name="app_cms_autoplay_finished_up_title_key">finishedUptitle</string>
+    <string name="app_cms_autoplay_movie_title_key">movieNameTitle</string>
+    <string name="app_cms_autoplay_movie_subheading_key">movieNameSubheading</string>
+    <string name="app_cms_autoplay_movie_description_key">movieDescription</string>
+    <string name="app_cms_autoplay_movie_star_rating_key">starRating</string>
+    <string name="app_cms_autoplay_movie_director_label_key">directorLabel</string>
+    <string name="app_cms_autoplay_movie_sub_director_label_key">subDirectorLabel</string>
+    <string name="app_cms_autoplay_movie_image_key">movieImage</string>
+    <string name="app_cms_autoplay_play_button_key">playButtonAutoplay</string>
+    <string name="app_cms_autoplay_cancel_button_key">cancelButton</string>
+    <string name="app_cms_autoplay_playing_in_label_key">playInLabel</string>
+    <string name="app_cms_autoplay_timer_label_key">timerLabel</string>
 </resources>

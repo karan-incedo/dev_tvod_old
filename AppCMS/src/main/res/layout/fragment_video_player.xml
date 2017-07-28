@@ -1,85 +1,71 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.constraint.ConstraintLayout
+    <LinearLayout
         android:id="@+id/app_cms_video_player_info_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal">
+      
+        <Button
+            android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:orientation="horizontal"
-            android:weightSum="10">
+            android:layout_gravity="center"
+            android:enabled="false"
+            android:visibility="invisible" />
 
-            <Button
-                android:id="@+id/app_cms_video_player_done_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.4"
-                android:background="@android:color/transparent"
-                android:focusable="false"
-                android:padding="0dp"
-                android:text="@string/done"
-                android:textColor="@color/colorAccent" />
+        <com.viewlift.views.customviews.AlwaysSelectedTextView
+            android:id="@+id/app_cms_video_player_title_view"
+            android:layout_width="352dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            android:layout_weight="10"
+            android:background="@android:color/transparent"
+            android:ellipsize="marquee"
+            android:fadingEdge="horizontal"
+            android:gravity="center"
+            android:padding="12dp"
+            android:singleLine="true"
+            android:textAlignment="center"
+            android:textSize="@dimen/app_cms_video_player_title_view_text_size" />
 
-            <com.viewlift.views.customviews.AlwaysSelectedTextView
-                android:id="@+id/app_cms_video_player_title_view"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top"
-                android:layout_weight="7.6"
-                android:background="@android:color/transparent"
-                android:ellipsize="marquee"
-                android:fadingEdge="horizontal"
-                android:padding="0dp"
-                android:singleLine="true"
-                android:textAlignment="center"
-                android:textColor="@color/colorAccent"
-                android:textSize="@dimen/app_cms_video_player_title_view_text_size" />
+        <ImageButton
+            android:id="@+id/media_route_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            android:layout_weight="1"
+            android:background="#00000000"
+            android:padding="4dp"
+            android:scaleType="center"
+            android:src="@drawable/anim_cast" />
 
+        <ImageButton
+            android:id="@+id/app_cms_video_player_done_button"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            android:layout_weight="0.1"
+            android:background="@android:color/transparent"
+            android:focusable="false"
+            android:padding="4dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/cancel" />
+    </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/ll_media_route_button"
-
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_gravity="end"
-                android:layout_weight="1"
-                android:gravity="end"
-
-                android:orientation="horizontal">
-
-                <ImageButton
-                    android:id="@+id/media_route_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:background="#00000000"
-                    android:padding="5dp"
-                    android:src="@drawable/anim_cast"
-                    android:visibility="gone" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </android.support.constraint.ConstraintLayout>
 
     <com.viewlift.views.customviews.VideoPlayerView
         android:id="@+id/app_cms_video_player_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:focusable="false">
-
-    </com.viewlift.views.customviews.VideoPlayerView>
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:focusable="false" />
 
 </RelativeLayout>

@@ -91,6 +91,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.isSelected = false;
         this.unselectedColor = ContextCompat.getColor(context, android.R.color.white);
         this.selectedColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+
+        cullData(context);
     }
 
     @Override
@@ -155,7 +157,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     @Override
     public int getItemCount() {
-        return adapterData.size();
+        return (adapterData != null ? adapterData.size() : 0);
     }
 
     @Override
@@ -185,7 +187,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     public void click(Component childComponent, ContentDatum data) {
                         appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
                                 data.getId(),
-                                data.getPlanDetails().get(0).getCountryCode());
+                                data.getPlanDetails().get(0).getCountryCode(),
+                                data.getName(),
+                                (float) data.getPlanDetails().get(0).getRecurringPaymentAmount());
                     }
 
                     @Override
@@ -335,5 +339,25 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         planBorder.setStroke(1, color);
         planBorder.setColor(ContextCompat.getColor(itemView.getContext(), android.R.color.transparent));
         itemView.setBackground(planBorder);
+    }
+
+    private void cullData(Context context) {
+        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY &&
+                adapterData != null) {
+            String currentSubscriptionSku = appCMSPresenter.getActiveSubscriptionSku(context);
+            float currentSubscriptionPrice = appCMSPresenter.getActiveSubscriptionPrice(context);
+            List<Integer> elementIndicesToCull = new ArrayList<>();
+            for (int i = 0; i < adapterData.size(); i++) {
+                if (adapterData.get(i).getId().equals(currentSubscriptionSku)) {
+                    elementIndicesToCull.add(i);
+                } else if ((float) adapterData.get(0).getPlanDetails().get(0).getRecurringPaymentAmount() <=
+                        currentSubscriptionPrice) {
+                    elementIndicesToCull.add(i);
+                }
+            }
+            for (int i = 0; i < elementIndicesToCull.size(); i++) {
+                adapterData.remove((int) elementIndicesToCull.get(i));
+            }
+        }
     }
 }

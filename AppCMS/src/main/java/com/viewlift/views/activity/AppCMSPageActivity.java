@@ -40,8 +40,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
-import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.casting.CastServiceProvider;
+import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
@@ -95,25 +95,21 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @BindView(R.id.media_route_button)
     ImageButton mMediaRouteButton;
-
+    CastServiceProvider castProvider;
     private AppCMSPresenter appCMSPresenter;
     private Stack<String> appCMSBinderStack;
     private Map<String, AppCMSBinder> appCMSBinderMap;
     private BroadcastReceiver presenterActionReceiver;
     private BroadcastReceiver presenterCloseActionReceiver;
-
     private NavBarItemView pageViewDuringSearch;
     private boolean resumeInternalEvents;
     private boolean isActive;
     private boolean shouldSendCloseOthersAction;
     private AppCMSBinder updatedAppCMSBinder;
-
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
     private AccessToken accessToken;
-
     private IInAppBillingService inAppBillingService;
-
     private ServiceConnection inAppBillingServiceConn;
 
     private CastServiceProvider castProvider;
@@ -592,7 +588,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         /**
          * casting button will show only on home page ,movie page and player page so check which page will be open
          */
-        setMediaRouerButtonVisibilty(appCMSBinder.getPageId());
+        setMediaRouterButtonVisibilty(appCMSBinder.getPageId());
     }
 
     private void selectNavItemAndLaunchPage(NavBarItemView v, String pageId, String pageTitle) {
@@ -885,7 +881,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         Log.e(TAG, "Failed to connect for Google SignIn: " + connectionResult.getErrorMessage());
     }
 
-    private void setMediaRouerButtonVisibilty(String pageId) {
+    private void setMediaRouterButtonVisibilty(String pageId) {
         if (appCMSPresenter.findHomePageNavItem().getPageId().equalsIgnoreCase(pageId) ||
                 appCMSPresenter.findMoviesPageNavItem().getPageId().equalsIgnoreCase(pageId)) {
             ll_media_route_button.setVisibility(View.VISIBLE);
