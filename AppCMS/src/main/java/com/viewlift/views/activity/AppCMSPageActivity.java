@@ -33,6 +33,8 @@ import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
@@ -49,6 +51,9 @@ import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.NavBarItemView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSPageFragment;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.HashMap;
@@ -223,16 +228,39 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         callbackManager = CallbackManager.Factory.create();
 
-        accessTokenTracker = new AccessTokenTracker() {
+            accessTokenTracker = new AccessTokenTracker() {
             @Override
             protected void onCurrentAccessTokenChanged(
                     AccessToken oldAccessToken,
                     AccessToken currentAccessToken) {
                 AppCMSPageActivity.this.accessToken = currentAccessToken;
                 if (appCMSPresenter != null && currentAccessToken != null) {
-                    appCMSPresenter.setFacebookAccessToken(AppCMSPageActivity.this,
-                            currentAccessToken.getToken(),
-                            currentAccessToken.getUserId());
+                    GraphRequest request = GraphRequest.newMeRequest(
+                            currentAccessToken,
+                            new GraphRequest.GraphJSONObjectCallback() {
+                                @Override
+                                public void onCompleted(
+                                        JSONObject user,
+                                        GraphResponse response) {
+                                    String username = null;
+                                    String email = null;
+                                    try {
+                                        username = user.getString("name");
+                                        email = user.getString("email");
+                                    } catch (JSONException e) {
+                                        Log.e(TAG, "Error parsing Facebook Graph JSON: " + e.getMessage());
+                                    }
+                                    appCMSPresenter.setFacebookAccessToken(AppCMSPageActivity.this,
+                                            currentAccessToken.getToken(),
+                                            currentAccessToken.getUserId(),
+                                            username,
+                                            email);
+                                }
+                            });
+                    Bundle parameters = new Bundle();
+                    parameters.putString("fields", "id,name,email");
+                    request.setParameters(parameters);
+                    request.executeAsync();
                 }
             }
         };
@@ -422,7 +450,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (resultCode == Activity.RESULT_OK) {
             if (result != null && result.isSuccess()) {
                 appCMSPresenter.setGoogleAccessToken(this, result.getSignInAccount().getIdToken(),
-                        result.getSignInAccount().getId());
+                        result.getSignInAccount().getId(),
+                        result.getSignInAccount().getDisplayName(),
+                        result.getSignInAccount().getEmail());
             }
 
             if (FacebookSdk.isFacebookRequestCode(requestCode)) {

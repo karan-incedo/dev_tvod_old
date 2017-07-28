@@ -170,4 +170,6 @@
     <string name="app_cms_cancel_alert_dialog_button_text">CANCEL</string>
     <string name="app_cms_cancel_subscription_confirmation_message">You have cancelled your subscription.</string>
     <string name="app_cms_cancel_subscription_not_subscribed_message">You are currently not subscribed to any plans.</string>
+    <string name="app_cms_cancel_subscription_subscription_not_valid_message">Subscription is not valid.</string>
+    <string name="app_cms_subscribtion_title">Subscription</string>
 </resources>

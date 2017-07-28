@@ -299,8 +299,12 @@ public class AppCMSPresenter {
     private boolean isSgnupFromGoogle;
     private String facebookAccessToken;
     private String facebookUserId;
+    private String facebookUsername;
+    private String facebookEmail;
     private String googleAccessToken;
     private String googleUserId;
+    private String googleUsername;
+    private String googleEmail;
     private String skuToPurchase;
     private String planToPurchase;
     private String currencyOfPlanToPurchase;
@@ -1026,12 +1030,19 @@ public class AppCMSPresenter {
                         "subs",
                         null);
                 PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
-                currentActivity.startIntentSenderForResult(pendingIntent.getIntentSender(),
-                        RC_PURCHASE_PLAY_STORE_ITEM,
-                        new Intent(),
-                        0,
-                        0,
-                        0);
+                if (pendingIntent != null) {
+                    currentActivity.startIntentSenderForResult(pendingIntent.getIntentSender(),
+                            RC_PURCHASE_PLAY_STORE_ITEM,
+                            new Intent(),
+                            0,
+                            0,
+                            0);
+                } else {
+                    showDialog(DialogType.SUBSCRIBE,
+                            currentActivity.getString(R.string.app_cms_cancel_subscription_subscription_not_valid_message),
+                            false,
+                            null);
+                }
             } catch (RemoteException | IntentSender.SendIntentException e) {
                 Log.e(TAG, "Failed to purchase item with sku: "
                         + getActiveSubscriptionSku(currentActivity));
@@ -2219,6 +2230,7 @@ public class AppCMSPresenter {
                         UserIdentity userIdentity = new UserIdentity();
                         userIdentity.setName(username);
                         userIdentity.setEmail(email);
+                        userIdentity.setId(getLoggedInUser(currentActivity));
                         appCMSUserIdentityCall.callPost(url,
                                 getAuthToken(currentActivity),
                                 userIdentity,
@@ -2237,6 +2249,7 @@ public class AppCMSPresenter {
                 UserIdentity userIdentity = new UserIdentity();
                 userIdentity.setName(username);
                 userIdentity.setEmail(email);
+                userIdentity.setId(getLoggedInUser(currentActivity));
                 appCMSUserIdentityCall.callPost(url,
                         getAuthToken(currentActivity),
                         userIdentity,
@@ -2623,10 +2636,14 @@ public class AppCMSPresenter {
 
     public boolean setFacebookAccessToken(Context context,
                                           final String facebookAccessToken,
-                                          final String facebookUserId) {
+                                          final String facebookUserId,
+                                          final String username,
+                                          final String email) {
         if (launchType == LaunchType.SUBSCRIBE) {
             this.facebookAccessToken = facebookAccessToken;
             this.facebookUserId = facebookUserId;
+            this.facebookUsername = username;
+            this.facebookEmail = email;
             initiateItemPurchase();
         } else if (context != null) {
             String url = currentActivity.getString(R.string.app_cms_facebook_login_api_url,
@@ -2642,6 +2659,8 @@ public class AppCMSPresenter {
                                 setAuthToken(currentActivity, facebookLoginResponse.getAuthorizationToken());
                                 setRefreshToken(currentActivity, facebookLoginResponse.getRefreshToken());
                                 setLoggedInUser(currentActivity, facebookUserId);
+                                setLoggedInUserName(currentActivity, username);
+                                setLoggedInUserEmail(currentActivity, email);
 
                                 refreshSubscriptionData();
 
@@ -2671,11 +2690,15 @@ public class AppCMSPresenter {
 
     public boolean setGoogleAccessToken(Context context,
                                         final String googleAccessToken,
-                                        final String googleUserId) {
+                                        final String googleUserId,
+                                        final String googleUsername,
+                                        final String googleEmail) {
 
         if (launchType == LaunchType.SUBSCRIBE) {
             this.googleAccessToken = googleAccessToken;
             this.googleUserId = googleUserId;
+            this.googleUsername = googleUsername;
+            this.googleEmail = googleEmail;
             initiateItemPurchase();
         } else if (context != null) {
             String url = currentActivity.getString(R.string.app_cms_google_login_api_url,
@@ -2687,6 +2710,8 @@ public class AppCMSPresenter {
                             setAuthToken(currentActivity, googleLoginResponse.getAuthorizationToken());
                             setRefreshToken(currentActivity, googleLoginResponse.getRefreshToken());
                             setLoggedInUser(currentActivity, googleUserId);
+                            setLoggedInUserName(currentActivity, googleUsername);
+                            setLoggedInUserEmail(currentActivity, googleEmail);
 
                             refreshSubscriptionData();
 
@@ -3075,6 +3100,10 @@ public class AppCMSPresenter {
                     title = currentActivity.getString(R.string.app_cms_cancel_subscription_title);
                     message = optionalMessage;
                     break;
+                case SUBSCRIBE:
+                    title = currentActivity.getString(R.string.app_cms_subscribtion_title);
+                    message = optionalMessage;
+                    break;
                 default:
                     title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
                     message = currentActivity.getString(R.string.app_cms_network_connectivity_error_message);
@@ -3324,9 +3353,17 @@ public class AppCMSPresenter {
             launchType = LaunchType.LOGIN;
         }
         if (signupFromFacebook) {
-            setFacebookAccessToken(currentActivity, facebookAccessToken, facebookUserId);
+            setFacebookAccessToken(currentActivity,
+                    facebookAccessToken,
+                    facebookUserId,
+                    facebookUsername,
+                    facebookEmail);
         } else if (isSgnupFromGoogle) {
-            setGoogleAccessToken(currentActivity, googleAccessToken, googleUserId);
+            setGoogleAccessToken(currentActivity,
+                    googleAccessToken,
+                    googleUserId,
+                    googleUsername,
+                    googleEmail);
         } else {
             signup(subscriptionUserEmail, subscriptionUserPassword);
         }
@@ -3475,7 +3512,7 @@ public class AppCMSPresenter {
                             setRefreshToken(currentActivity, signInResponse.getRefreshToken());
                             setAuthToken(currentActivity, signInResponse.getAuthorizationToken());
                             setLoggedInUser(currentActivity, signInResponse.getUserId());
-                            setLoggedInUserEmail(currentActivity, signInResponse.getName());
+                            setLoggedInUserName(currentActivity, signInResponse.getName());
                             setLoggedInUserEmail(currentActivity, signInResponse.getEmail());
 
                             refreshSubscriptionData();
@@ -4471,7 +4508,7 @@ public class AppCMSPresenter {
     }
 
     public enum DialogType {
-        NETWORK, SIGNIN, RESET_PASSWORD, CANCEL_SUBSCRIPTION
+        NETWORK, SIGNIN, RESET_PASSWORD, CANCEL_SUBSCRIPTION, SUBSCRIBE
     }
 
     private static class BeaconRunnable implements Runnable {
