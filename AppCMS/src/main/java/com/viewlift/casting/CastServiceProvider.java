@@ -112,9 +112,6 @@ public class CastServiceProvider {
             mCastHelper.isCastDeviceAvailable = true;
             mCastHelper.mSelectedDevice = CastDevice.getFromBundle(mCastHelper.mMediaRouter.getSelectedRoute().getExtras());
         }
-
-        startRokuDiscovery();
-
     }
 
     //if user comes from player screen and Remote devices already connected launch remote playback
@@ -202,7 +199,6 @@ public class CastServiceProvider {
 
         @Override
         public void onApplicationDisconnected() {
-            startRokuDiscovery();
         }
 
         @Override
@@ -252,7 +248,6 @@ public class CastServiceProvider {
             mCastHelper.mSelectedDevice = null;
             refreshCastMediaIcon();
             if (!rokuWrapper.isRokuDiscoveryTimerRunning()) {
-                startRokuDiscovery();
             }
         }
     };
@@ -338,7 +333,6 @@ public class CastServiceProvider {
             refreshCastMediaIcon();
 
             if (!rokuWrapper.isRokuDiscoveryTimerRunning()) {
-                startRokuDiscovery();
             }
         }
 
@@ -383,8 +377,6 @@ public class CastServiceProvider {
                 castDisconnectDialog = new CastDisconnectDialog(mActivity, callBackRokuDiscoveredDevices);
 
                 if (mCastHelper.mSelectedDevice == null && !rokuWrapper.isRokuConnected()) {
-                    startRokuDiscovery();
-
                     castChooserDialog.setRoutes(mCastHelper.routes);
                     castChooserDialog.show();
                 } else if (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null) {
