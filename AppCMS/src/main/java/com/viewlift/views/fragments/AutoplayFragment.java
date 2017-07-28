@@ -106,7 +106,7 @@ public class AutoplayFragment extends Fragment {
                 ((ViewGroup) pageView.getParent()).removeAllViews();
             }
             if (!BaseView.isTablet(getContext())) {
-                appCMSPresenter.restrictPortraitOnly();
+                appCMSPresenter .restrictPortraitOnly();
             } else {
                 appCMSPresenter.unrestrictPortraitOnly();
             }
@@ -120,14 +120,16 @@ public class AutoplayFragment extends Fragment {
             tvCountdown = (TextView) pageView.findViewById(R.id.countdown_id);
             Button playButton = (Button) pageView.findViewById(R.id.autoplay_play_button);
 
-            playButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (isAdded() && isVisible()) {
-                        fragmentInteractionListener.onCountdownFinished();
+            if (playButton != null) {
+                playButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (isAdded() && isVisible()) {
+                            fragmentInteractionListener.onCountdownFinished();
+                        }
                     }
-                }
-            });
+                });
+            }
             if (pageView.getChildAt(0) != null) {
                 pageView.getChildAt(0)
                         .setBackgroundColor(Color.parseColor(
@@ -169,7 +171,7 @@ public class AutoplayFragment extends Fragment {
 
             @Override
             public void onTick(long millisUntilFinished) {
-                if (isAdded() && isVisible()) {
+                if (isAdded() && isVisible() && tvCountdown != null) {
                     int quantity = (int) (millisUntilFinished / 1000) - 1;
                     tvCountdown.setText(getResources().getQuantityString(R.plurals.countdown_seconds,
                             quantity, quantity));
