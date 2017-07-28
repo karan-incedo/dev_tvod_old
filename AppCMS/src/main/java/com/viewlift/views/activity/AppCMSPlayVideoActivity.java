@@ -228,7 +228,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         if(castingModeChromecast== CastingUtils.CASTING_MODE_CHROMECAST){
             CastHelper.getInstance(getApplicationContext()).launchRemoteMedia(appCMSPresenter, relateVideoIds,filmId, currentPosition, binder);
         }else if(castingModeChromecast== CastingUtils.CASTING_MODE_ROKU){
-            CastServiceProvider.getInstance(getApplicationContext()).launchRokuCasting(filmId,videoImageUrl,title);
+            CastServiceProvider.getInstance(this).launchRokuCasting(filmId,videoImageUrl,title);
         }
 
     }

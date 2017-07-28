@@ -271,7 +271,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     private void setCasting() {
         try {
-            castProvider = CastServiceProvider.getInstance(getActivity().getApplicationContext());
+            castProvider = CastServiceProvider.getInstance(getActivity());
             castProvider.setRemotePlaybackCallback(callBackRemotePlayback);
             isCastConnected = castProvider.playChromeCastPlaybackIfCastConnected();
             if (isCastConnected) {

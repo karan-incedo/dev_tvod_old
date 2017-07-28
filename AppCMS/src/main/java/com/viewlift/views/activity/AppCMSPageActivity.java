@@ -905,14 +905,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             ll_media_route_button.setVisibility(View.GONE);
         }
 
-        CastServiceProvider.getInstance(getApplicationContext()).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
-        CastServiceProvider.getInstance(getApplicationContext()).onActivityResume();
+        CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
+        CastServiceProvider.getInstance(this).onActivityResume();
 
     }
 
     private void setCasting() {
         try {
-            castProvider = CastServiceProvider.getInstance(getApplicationContext());
+            castProvider = CastServiceProvider.getInstance(this);
 
         } catch (Exception e) {
             Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
