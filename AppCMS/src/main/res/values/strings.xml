@@ -80,6 +80,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="video_player_request_ads_key">video_player_request_ads</string>
 
+
     <string name="dialog_item_key">dialog_item</string>
     <string name="dialog_item_title_key">title</string>
     <string name="dialog_item_description_key">description</string>
@@ -193,5 +194,11 @@
     <string name="app_cms_cancel_subscription_confirmation_message">You have cancelled your subscription.</string>
     <string name="app_cms_cancel_subscription_not_subscribed_message">You are currently not subscribed to any plans.</string>
     <string name="app_cms_cancel_subscription_subscription_not_valid_message">Subscription is not valid.</string>
-    <string name="app_cms_subscribtion_title">Subscription</string>
+    <string name="app_cms_subscription_title">Subscription</string>
+    <string name="app_cms_login_required_title">Subscription Required</string>
+    <string name="app_cms_login_required_message">Please login to continue</string>
+    <string name="app_cms_login_and_subscription_required_title">Login and Subscription Required</string>
+    <string name="app_cms_login_and_subscription_required_message">Please login or subscribe to continue.</string>
+    <string name="app_cms_login_button_text">LOGIN</string>
+    <string name="app_cms_subscription_button_text">SUBSCRIBE</string>
 </resources>
