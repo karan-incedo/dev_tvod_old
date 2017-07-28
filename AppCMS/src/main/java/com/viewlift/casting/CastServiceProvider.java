@@ -1,8 +1,13 @@
 package com.viewlift.casting;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.media.MediaRouter;
 import android.text.TextUtils;
@@ -13,6 +18,7 @@ import android.widget.ImageButton;
 import com.google.android.gms.cast.CastDevice;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
+import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.roku.RokuCastingOverlay;
 import com.viewlift.casting.roku.RokuDevice;
@@ -44,15 +50,20 @@ public class CastServiceProvider {
     private ILaunchRemoteMedia callRemoteMediaPlayback;
     private static CastServiceProvider objMain;
     private Context mContext;
+    private AppCMSPresenter appCMSPresenter;
 
-    public CastServiceProvider(Context context) {
-        this.mContext = context;
+    public CastServiceProvider(Activity activity) {
+        this.mContext = activity;
         setCasting();
+
+        appCMSPresenter = ((AppCMSApplication) activity.getApplication())
+                .getAppCMSPresenterComponent()
+                .appCMSPresenter();
     }
 
-    public static synchronized CastServiceProvider getInstance(Context context) {
+    public static synchronized CastServiceProvider getInstance(Activity activity) {
         if (objMain == null) {
-            objMain = new CastServiceProvider(context);
+            objMain = new CastServiceProvider(activity);
         }
         return objMain;
     }

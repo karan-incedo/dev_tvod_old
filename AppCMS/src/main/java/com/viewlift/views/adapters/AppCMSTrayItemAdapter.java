@@ -529,6 +529,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             extraData[0] = permalink;
             extraData[1] = hlsUrl;
             extraData[2] = data.getGist().getId();
+            List<String> relatedVideos = null;
+            if (data.getContentDetails() != null &&
+                    data.getContentDetails().getRelatedVideoIds() != null) {
+                relatedVideos = data.getContentDetails().getRelatedVideoIds();
+            }
             Log.d(TAG, "Launching " + permalink + ": " + action);
             if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                     action,
@@ -537,7 +542,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     data,
                     false,
                     -1,
-                    data.getContentDetails().getRelatedVideoIds())) {
+                    relatedVideos)) {
                 Log.e(TAG, "Could not launch action: " +
                         " permalink: " +
                         permalink +
