@@ -23,6 +23,7 @@ import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.casting.CastingUtils;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.VideoAssets;
+import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
@@ -57,6 +58,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
         Intent intent = getIntent();
         Bundle bundleExtra = intent.getBundleExtra(getString(R.string.app_cms_video_player_bundle_binder_key));
+        String[] extra = intent.getStringArrayExtra(getString(R.string.video_player_hls_url_key));
+
 
         try {
             binder = (AppCMSVideoPageBinder)
@@ -72,7 +75,13 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 String closedCaptionUrl = null;
                 if (!binder.isTrailer()) {
                     title = gist.getTitle();
-                    if (binder.getContentData().getStreamingInfo() != null &&
+                    if (binder.isOffline()
+                            && extra != null
+                            && extra.length >= 2
+                            && extra[1] != null
+                            && gist.getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
+                        videoUrl = !TextUtils.isEmpty(extra[1]) ? extra[1] : "";
+                    } else if (binder.getContentData().getStreamingInfo() != null &&
                             binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
                         VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
                         videoUrl = videoAssets.getHls();
@@ -197,11 +206,18 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     @Override
     public void onMovieFinished() {
         // TODO: 7/12/2017 Add a check for autoplay from settings
-        if (!binder.isTrailer()
-                && relateVideoIds != null
-                && currentlyPlayingIndex != relateVideoIds.size() - 1) {
-            binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
-            appCMSPresenter.openAutoPlayScreen(binder);
+        if (!binder.isOffline()) {
+            if (!binder.isTrailer()
+                    && relateVideoIds != null
+                    && currentlyPlayingIndex != relateVideoIds.size() - 1) {
+                binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
+                appCMSPresenter.openAutoPlayScreen(binder);
+            }
+        } else {
+            // TODO: 7/28/2017 Open autoplay screen for offline videos
+            /*if (binder.getRelateVideoIds() != null) {
+                appCMSPresenter.openAutoPlayScreen(binder);
+            }*/
         }
         closePlayer();
     }

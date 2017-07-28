@@ -199,6 +199,8 @@ public class AppCMSPresenter {
     private static final String USER_EMAIL_SHARED_PREF_NAME = "user_email_pref";
     private static final String REFRESH_TOKEN_SHARED_PREF_NAME = "refresh_token_pref";
     private static final String USER_LOGGED_IN_TIME_PREF_NAME = "user_loggedin_time_pref";
+    private static final String USER_SETTINGS_PREF_NAME = "user_settings_pref";
+    private static final String USER_CLOSED_CAPTION_PREF_KEY = "user_closed_caption_pref_key";
     private static final String FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME = "facebook_access_token_shared_pref_name";
     private static final String GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME = "google_access_token_shared_pref_name";
     private static final String ACTIVE_SUBSCRIPTION_SKU = "active_subscription_sku_pref_key";
@@ -601,6 +603,12 @@ public class AppCMSPresenter {
                         .getBackgroundColor();
 
 
+                boolean isOffline = false;
+                try {
+                    isOffline = Boolean.parseBoolean(extraData[3]);
+                } catch (Exception e) {
+                    Log.e(TAG, e.getLocalizedMessage());
+                }
                 AppCMSVideoPageBinder appCMSVideoPageBinder =
                         getAppCMSVideoPageBinder(currentActivity,
                                 null,
@@ -620,7 +628,8 @@ public class AppCMSPresenter {
                                 contentDatum,
                                 isTrailer,
                                 relateVideoIds,
-                                currentlyPlayingIndex);
+                                currentlyPlayingIndex,
+                                isOffline);
                 if (closeLauncher) {
                     sendCloseOthersAction(null, true);
                 }
@@ -1509,23 +1518,7 @@ public class AppCMSPresenter {
 
             List<ContentDatum> contentData = new ArrayList<>();
             for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloades()) {
-                ContentDatum data = new ContentDatum();
-                Gist gist = new Gist();
-                gist.setId(downloadVideoRealm.getVideoId());
-                gist.setTitle(downloadVideoRealm.getVideoTitle());
-                gist.setDescription(downloadVideoRealm.getVideoDescription());
-                gist.setPosterImageUrl(downloadVideoRealm.getVideoFileURL());
-                gist.setVideoImageUrl(downloadVideoRealm.getVideoFileURL());
-
-                gist.setPermalink(downloadVideoRealm.getPermalink());
-                gist.setDownloadStatus(downloadVideoRealm.getDownloadStatus());
-                gist.setRuntime(downloadVideoRealm.getVideoDuration());
-
-
-                data.setGist(gist);
-                data.setShowQueue(true);
-                data.setUserId(getLoggedInUser(currentActivity));
-                data.setAddedDate(downloadVideoRealm.getDownloadDate());
+                ContentDatum data = createContentDatum(downloadVideoRealm);
 
                 contentData.add(data);
             }
@@ -1575,6 +1568,29 @@ public class AppCMSPresenter {
                 currentActivity.sendBroadcast(downloadPageIntent);
             }
         }
+    }
+
+    @NonNull
+    private ContentDatum createContentDatum(DownloadVideoRealm downloadVideoRealm) {
+        ContentDatum data = new ContentDatum();
+        Gist gist = new Gist();
+        gist.setId(downloadVideoRealm.getVideoId());
+        gist.setTitle(downloadVideoRealm.getVideoTitle());
+        gist.setDescription(downloadVideoRealm.getVideoDescription());
+        gist.setPosterImageUrl(downloadVideoRealm.getVideoFileURL());
+        gist.setVideoImageUrl(downloadVideoRealm.getVideoFileURL());
+        gist.setLocalFileUrl(downloadVideoRealm.getLocalURI());
+
+        gist.setPermalink(downloadVideoRealm.getPermalink());
+        gist.setDownloadStatus(downloadVideoRealm.getDownloadStatus());
+        gist.setRuntime(downloadVideoRealm.getVideoDuration());
+
+
+        data.setGist(gist);
+        data.setShowQueue(true);
+        data.setUserId(getLoggedInUser(currentActivity));
+        data.setAddedDate(downloadVideoRealm.getDownloadDate());
+        return data;
     }
 
     public void clearHistory(final Action1<AppCMSDeleteHistoryResult> resultAction1) {
@@ -1707,38 +1723,57 @@ public class AppCMSPresenter {
             final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
             GetAppCMSVideoDetailAsyncTask.Params params =
                     new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url).build();
-            new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
-                    new Action1<AppCMSVideoDetail>() {
-                        @Override
-                        public void call(AppCMSVideoDetail appCMSVideoDetail) {
-                            if (appCMSVideoDetail != null) {
-                                binder.setContentData(appCMSVideoDetail.getRecords().get(0));
-                                AppCMSPageAPI pageAPI = null;
-                                for (ModuleList moduleList :
-                                        appCMSPageUI.getModuleList()) {
-                                    if (moduleList.getType().equals(currentActivity.getString(R.string.app_cms_page_autoplay_module_key))){
-                                        pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
-                                                moduleList.getType());
-                                        break;
+            if (!binder.isOffline()) {
+                new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
+                        new Action1<AppCMSVideoDetail>() {
+                            @Override
+                            public void call(AppCMSVideoDetail appCMSVideoDetail) {
+                                if (appCMSVideoDetail != null) {
+                                    binder.setContentData(appCMSVideoDetail.getRecords().get(0));
+                                    AppCMSPageAPI pageAPI = null;
+                                    for (ModuleList moduleList :
+                                            appCMSPageUI.getModuleList()) {
+                                        if (moduleList.getType().equals(currentActivity.getString(R.string.app_cms_page_autoplay_module_key))){
+                                            pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
+                                                    moduleList.getType());
+                                            break;
+                                        }
+                                    }
+                                    if (pageAPI != null) {
+                                        launchAutoplayActivity(currentActivity,
+                                                appCMSPageUI,
+                                                pageAPI,
+                                                pageId,
+                                                pageTitle,
+                                                pageIdToPageNameMap.get(pageId),
+                                                loadFromFile,
+                                                false,
+                                                true,
+                                                false,
+                                                false,
+                                                binder);
                                     }
                                 }
-                                if (pageAPI != null) {
-                                    launchAutoplayActivity(currentActivity,
-                                            appCMSPageUI,
-                                            pageAPI,
-                                            pageId,
-                                            pageTitle,
-                                            pageIdToPageNameMap.get(pageId),
-                                            loadFromFile,
-                                            false,
-                                            true,
-                                            false,
-                                            false,
-                                            binder);
-                                }
                             }
-                        }
-                    }).execute(params);
+                        }).execute(params);
+            } else {
+                AppCMSPageAPI pageAPI = binder.getContentData().convertToAppCMSPageAPI();
+
+                if (pageAPI != null) {
+                    launchAutoplayActivity(currentActivity,
+                            appCMSPageUI,
+                            pageAPI,
+                            pageId,
+                            pageTitle,
+                            pageIdToPageNameMap.get(pageId),
+                            loadFromFile,
+                            false,
+                            true,
+                            false,
+                            false,
+                            binder);
+                }
+            }
         }
     }
 
@@ -2533,6 +2568,34 @@ public class AppCMSPresenter {
             SharedPreferences sharedPrefs = context.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
             return sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, userId).commit() &&
                     setLoggedInTime(context);
+        }
+        return false;
+    }
+
+    /**
+     * Method is used to get the user preference with regard to Closed caption
+     *
+     * @param context current context of Activity/Application
+     * @return true/false based upon the user preference
+     */
+    public boolean getClosedCaptionPreference(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_SETTINGS_PREF_NAME, 0);
+            return sharedPrefs.getBoolean(USER_CLOSED_CAPTION_PREF_KEY, false);
+        }
+        return false;
+    }
+
+    /**
+     * Method is used to set the user preference with regard to Closed caption
+     *
+     * @param context current context of Activity/Application
+     * @return true/false if the set operation was successful
+     */
+    public boolean setClosedCaptionPreference(Context context, boolean ccPref) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_SETTINGS_PREF_NAME, 0);
+            return sharedPrefs.edit().putBoolean(USER_CLOSED_CAPTION_PREF_KEY, ccPref).commit();
         }
         return false;
     }
@@ -3687,7 +3750,8 @@ public class AppCMSPresenter {
                                                            ContentDatum contentDatum,
                                                            boolean isTrailer,
                                                            List<String> relatedVideoIds,
-                                                           int currentlyPlayingIndex) {
+                                                           int currentlyPlayingIndex,
+                                                           boolean isOffline) {
 
         return new AppCMSVideoPageBinder(
                 appCMSPageUI,
@@ -3709,7 +3773,8 @@ public class AppCMSPresenter {
                 isTrailer,
                 isUserLoggedIn(activity),
                 relatedVideoIds,
-                currentlyPlayingIndex);
+                currentlyPlayingIndex,
+                isOffline);
     }
 
     private void launchPageActivity(Activity activity,
@@ -4290,27 +4355,32 @@ public class AppCMSPresenter {
      * @param binder binder to share data
      */
     public void openAutoPlayScreen(final AppCMSVideoPageBinder binder) {
-        final String filmId =
-                binder.getRelateVideoIds().get(binder.getCurrentPlayingVideoIndex() + 1);
-        if (currentActivity != null &&
-                !loadingPage && appCMSMain != null &&
-                !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
-                !TextUtils.isEmpty(appCMSMain.getSite())) {
-            String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
-                    appCMSMain.getApiBaseUrl(),
-                    filmId,
-                    appCMSMain.getSite());
-
-
-            String pageId = getAutoplayPageId();
-            if (!TextUtils.isEmpty(pageId)) {
-                navigateToAutoplayPage(pageId,
-                        currentActivity.getString(R.string.app_cms_page_autoplay_key),
-                        url,
-                        binder);
-            } else {
-                Log.e(TAG, "Can't find autoplay page ui in pageIdToPageNameMap");
+        String url = null;
+        if (!binder.isOffline()) {
+            final String filmId =
+                    binder.getRelateVideoIds().get(binder.getCurrentPlayingVideoIndex() + 1);
+            if (currentActivity != null &&
+                    !loadingPage && appCMSMain != null &&
+                    !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
+                    !TextUtils.isEmpty(appCMSMain.getSite())) {
+                url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        filmId,
+                        appCMSMain.getSite());
             }
+        } else {
+            ContentDatum contentDatum =
+                    createContentDatum(realmController.getDownloadById(binder.getRelateVideoIds().get(0)));
+            binder.setContentData(contentDatum);
+        }
+        String pageId = getAutoplayPageId();
+        if (!TextUtils.isEmpty(pageId)) {
+            navigateToAutoplayPage(pageId,
+                    currentActivity.getString(R.string.app_cms_page_autoplay_key),
+                    url,
+                    binder);
+        } else {
+            Log.e(TAG, "Can't find autoplay page ui in pageIdToPageNameMap");
         }
     }
 

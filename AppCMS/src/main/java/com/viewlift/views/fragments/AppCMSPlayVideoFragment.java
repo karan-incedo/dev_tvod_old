@@ -193,6 +193,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         setCasting();
 
         if (!TextUtils.isEmpty(hlsUrl)) {
+            videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference(getContext()));
             videoPlayerView.setUri(Uri.parse(hlsUrl),
                     !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
             Log.i(TAG, "Playing video: " + hlsUrl);
@@ -246,6 +247,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             public void call(Boolean isChecked) {
                 videoPlayerView.getPlayerView().getSubtitleView()
                         .setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                appCMSPresenter.setClosedCaptionPreference(getContext(), isChecked);
             }
         });
         if (!shouldRequestAds) {
