@@ -66,7 +66,7 @@ public class AutoplayActivity
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             autoplayFragment = AutoplayFragment.newInstance(this, appCMSBinder);
-            fragmentTransaction.replace(R.id.content_frame, autoplayFragment, appCMSBinder.getContentData().getGist().getId());
+            fragmentTransaction.replace(R.id.app_cms_fragment, autoplayFragment, appCMSBinder.getContentData().getGist().getId());
             fragmentTransaction.addToBackStack(appCMSBinder.getContentData().getGist().getId());
             fragmentTransaction.commit();
         } catch (IllegalStateException e) {

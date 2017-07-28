@@ -152,8 +152,10 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                                 if (childLocation[0] <= eventX && eventX <= childLocation[0] + childWidth) {
                                     if (childLocation[1] <= eventY && eventY <= childLocation[1] + childHeight) {
                                         if (adapterData.size() != 0) {
-                                            onClickHandler.play(collectionGridItemView.matchComponentToView(gridItemChildView),
-                                                    adapterData.get(i % adapterData.size()));
+                                            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                                                onClickHandler.play(collectionGridItemView.matchComponentToView(gridItemChildView),
+                                                        adapterData.get(i % adapterData.size()));
+                                            }
                                         }
                                         return true;
                                     }
