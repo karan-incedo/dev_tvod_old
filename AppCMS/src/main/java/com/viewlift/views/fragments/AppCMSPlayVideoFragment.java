@@ -2,6 +2,7 @@ package com.viewlift.views.fragments;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -210,12 +211,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     if (shouldRequestAds && !isAdDisplayed) {
                         requestAds(adsUrl);
                     } else {
-                        if (beaconMessageThread != null) {
-                            beaconMessageThread.sendBeaconPing = true;
-                            if (!beaconMessageThread.isAlive()) {
-                                beaconMessageThread.start();
-                            }
-                        }
+                        videoPlayerView.resumePlayer();
                     }
 
                 } else if (playerState.getPlaybackState() == ExoPlayer.STATE_ENDED) {
@@ -277,10 +273,12 @@ public class AppCMSPlayVideoFragment extends Fragment
         try {
             castProvider = CastServiceProvider.getInstance(getActivity().getApplicationContext());
             castProvider.setRemotePlaybackCallback(callBackRemotePlayback);
-            castProvider.setActivityInstance(getActivity(), mMediaRouteButton);
-            isCastConnected = castProvider.playRemotePlaybackIfCastConnected();
+            isCastConnected = castProvider.playChromeCastPlaybackIfCastConnected();
             if (isCastConnected) {
                 getActivity().finish();
+            } else {
+                castProvider.setActivityInstance(getActivity(), mMediaRouteButton);
+                castProvider.playRokuCastPlaybackIfCastConnected();
             }
         } catch (Exception e) {
             Log.e(TAG, "Error initializing cast provider: " + e.getMessage());
@@ -331,6 +329,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             castProvider.onActivityResume();
         }
     }
+
 
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
@@ -440,13 +439,22 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
     }
 
+
+    CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = new CastServiceProvider.ILaunchRemoteMedia() {
+        @Override
+        public void setRemotePlayBack(int castingModeChromecast) {
+            if (onClosePlayerEvent != null) {
+                pauseVideo();
+                onClosePlayerEvent.onRemotePlayback(videoPlayerView.getCurrentPosition(), castingModeChromecast);
+            }
+    }
+
     private void launchRemoteMedia() {
         if (onClosePlayerEvent != null) {
             pauseVideo();
             onClosePlayerEvent.onRemotePlayback(videoPlayerView.getCurrentPosition());
         }
     }
-
 
     public interface OnClosePlayerEvent {
         void closePlayer();

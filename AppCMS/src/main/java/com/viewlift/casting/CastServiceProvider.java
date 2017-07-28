@@ -13,16 +13,14 @@ import android.widget.ImageButton;
 import com.google.android.gms.cast.CastDevice;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
+import com.viewlift.R;
 import com.viewlift.casting.roku.RokuCastingOverlay;
 import com.viewlift.casting.roku.RokuDevice;
 import com.viewlift.casting.roku.RokuLaunchThreadParams;
 import com.viewlift.casting.roku.RokuWrapper;
 import com.viewlift.casting.roku.dialog.CastChooserDialog;
 import com.viewlift.casting.roku.dialog.CastDisconnectDialog;
-import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
-import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
-import com.viewlift.views.binders.AppCMSVideoPageBinder;
 
 import java.util.List;
 
@@ -34,14 +32,14 @@ import java.util.List;
 
 public class CastServiceProvider {
     private String TAG = "CastServiceProvider";
-    static FragmentActivity mActivity;
-    static ImageButton mMediaRouteButton;
-    public static CastHelper mCastHelper;
+    private FragmentActivity mActivity;
+    private ImageButton mMediaRouteButton;
+    private CastHelper mCastHelper;
     private RokuWrapper rokuWrapper;
-    static CastChooserDialog castChooserDialog;
+    private CastChooserDialog castChooserDialog;
     private CastSession mCastSession;
-    static AnimationDrawable castAnimDrawable;
-    static CastDisconnectDialog castDisconnectDialog;
+    private AnimationDrawable castAnimDrawable;
+    private CastDisconnectDialog castDisconnectDialog;
     private ILaunchRemoteMedia callRemoteMediaPlayback;
     private static CastServiceProvider objMain;
     private Context mContext;
@@ -83,18 +81,19 @@ public class CastServiceProvider {
 
     /*
     set the image button for chromecastmedia view and current activity instance
-    onLaunchRemotePLayback get from player screen as media need to play on player screen only
+    onLaunchRemotePlayback get from player screen as media need to play on player screen only
     */
     public void setActivityInstance(FragmentActivity mActivity, ImageButton mediaRouterView) {
         this.mActivity = mActivity;
         this.mMediaRouteButton = mediaRouterView;
         mCastHelper.setInstance(mActivity);
+        mMediaRouteButton.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.anim_cast, null));
+        castAnimDrawable = (AnimationDrawable) mMediaRouteButton.getDrawable();
+        castAnimDrawable.start();
     }
 
     public void onActivityResume() {
 
-        castAnimDrawable = (AnimationDrawable) mMediaRouteButton.getDrawable();
-        castAnimDrawable.start();
         refreshCastMediaIcon();
         if (mCastSession == null) {
             mCastSession = CastContext.getSharedInstance(mActivity).getSessionManager()
@@ -113,28 +112,39 @@ public class CastServiceProvider {
         }
 
         startRokuDiscovery();
-        refreshCastMediaIcon();
+
     }
 
     //if user comes from player screen and Remote devices already connected launch remote playback
-    public boolean playRemotePlaybackIfCastConnected() {
+    public boolean playChromeCastPlaybackIfCastConnected() {
         boolean isConnected = false;
-        if (mCastHelper.isRemoteDeviceConnected() && mActivity instanceof AppCMSPlayVideoActivity) {
+        if (mCastHelper.isRemoteDeviceConnected()) {
             mCastHelper.openRemoteController();
-            launchChromecastRemotePlayback();
+            launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
             isConnected = true;
             stopRokuDiscovery();
-        } else if (rokuWrapper.isRokuConnected() && mActivity instanceof AppCMSPlayVideoActivity) {
-            launchRokuPlaybackLocation();
-            setRokuPlayScreen();
+        }
+        return isConnected;
+    }
+
+    public boolean playRokuCastPlaybackIfCastConnected() {
+        boolean isConnected = false;
+        if (rokuWrapper.isRokuConnected()) {
+            launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_ROKU);
+//            launchRokuPlaybackLocation();
+//            setRokuPlayScreen();
             isConnected = true;
         }
         return isConnected;
     }
 
+    public void launchRokuCasting(String filmId, String videoImageUrl, String title) {
+        launchRokuPlaybackLocation();
+    }
+
     public boolean isCastingConnected() {
         boolean isConnected = false;
-        if (mCastHelper.isRemoteDeviceConnected() && rokuWrapper.isRokuConnected()) {
+        if (mCastHelper.isCastDeviceAvailable && rokuWrapper.isRokuConnected() || mCastHelper.isRemoteDeviceConnected() || (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null)) {
             isConnected = true;
         }
         return isConnected;
@@ -171,9 +181,9 @@ public class CastServiceProvider {
     }
 
 
-    public void launchChromecastRemotePlayback() {
+    public void launchChromecastRemotePlayback(int castingModeChromecast) {
         if (callRemoteMediaPlayback != null) {
-            callRemoteMediaPlayback.setRemotePlayBack();
+            callRemoteMediaPlayback.setRemotePlayBack(castingModeChromecast);
         }
     }
 
@@ -184,7 +194,7 @@ public class CastServiceProvider {
         @Override
         public void onApplicationConnected() {
             if (mActivity != null && mActivity instanceof AppCMSPlayVideoActivity) {
-                launchChromecastRemotePlayback();
+                launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
             }
             stopRokuDiscovery();
         }
@@ -349,13 +359,14 @@ public class CastServiceProvider {
         if (!mCastHelper.isCastDeviceAvailable && castChooserDialog != null && castChooserDialog.isShowing()) {
             castChooserDialog.dismiss();
         }
+
         if (mCastHelper.isCastDeviceAvailable) {
             if (rokuWrapper.isRokuConnected() || mCastHelper.isRemoteDeviceConnected() || (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null)) {
                 castAnimDrawable.stop();
-                castAnimDrawable.selectDrawable(4);
+                mMediaRouteButton.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.toolbar_cast_connected, null));
             } else {
                 castAnimDrawable.stop();
-                castAnimDrawable.selectDrawable(0);
+                mMediaRouteButton.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.toolbar_cast_disconnected, null));
             }
         }
 
@@ -387,7 +398,7 @@ public class CastServiceProvider {
 
     public interface ILaunchRemoteMedia {
 
-        void setRemotePlayBack();
+        void setRemotePlayBack(int castingModeChromecast);
 
     }
 
