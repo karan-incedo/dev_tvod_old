@@ -9,7 +9,6 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -188,22 +187,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
-                    Log.d(TAG, "Received Presenter Close Action: fragment count = "
-                            + getSupportFragmentManager().getBackStackEntryCount());
-                    if (appCMSBinderStack.size() > 1) {
-                        try {
-                            getSupportFragmentManager().popBackStack();
-                        } catch (IllegalStateException e) {
-                            Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
-                        }
-                        handleBack(true, false, true);
-                        if (appCMSBinderStack.size() > 0) {
-                            AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                            handleBack(true, appCMSBinderStack.size() < 2, false);
-                            handleLaunchPageAction(appCMSBinder);
-                        }
-                        isActive = true;
-                    }
+                    handleCloseAction();
                 }
             }
         };
@@ -250,6 +234,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         email = user.getString("email");
                                     } catch (JSONException e) {
                                         Log.e(TAG, "Error parsing Facebook Graph JSON: " + e.getMessage());
+                                    }
+                                    if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+                                        handleCloseAction();
                                     }
                                     appCMSPresenter.setFacebookAccessToken(AppCMSPageActivity.this,
                                             currentAccessToken.getToken(),
@@ -451,6 +438,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
         if (resultCode == Activity.RESULT_OK) {
             if (result != null && result.isSuccess()) {
+                if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+                    handleCloseAction();
+                }
                 appCMSPresenter.setGoogleAccessToken(this, result.getSignInAccount().getIdToken(),
                         result.getSignInAccount().getId(),
                         result.getSignInAccount().getDisplayName(),
@@ -578,8 +568,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         registerReceiver(presenterCloseActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
-
-
     }
 
     private boolean shouldPopStack() {
@@ -928,6 +916,25 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         } catch (Exception e) {
             Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
+        }
+    }
+
+    private void handleCloseAction() {
+        Log.d(TAG, "Received Presenter Close Action: fragment count = "
+                + getSupportFragmentManager().getBackStackEntryCount());
+        if (appCMSBinderStack.size() > 1) {
+            try {
+                getSupportFragmentManager().popBackStack();
+            } catch (IllegalStateException e) {
+                Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
+            }
+            handleBack(true, false, true);
+            if (appCMSBinderStack.size() > 0) {
+                AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                handleBack(true, appCMSBinderStack.size() < 2, false);
+                handleLaunchPageAction(appCMSBinder);
+            }
+            isActive = true;
         }
     }
 }

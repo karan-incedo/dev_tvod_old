@@ -1020,7 +1020,6 @@ public class AppCMSPresenter {
         if (currentActivity != null &&
                 inAppBillingService != null) {
             try {
-                sendCloseOthersAction(null, true);
                 String activeSubscription = getActiveSubscriptionSku(currentActivity);
                 Bundle buyIntentBundle;
                 if (!TextUtils.isEmpty(activeSubscription)) {
@@ -2115,8 +2114,8 @@ public class AppCMSPresenter {
                     subscriptionPage.getPageName(),
                     subscriptionPage.getPageUI(),
                     false,
-                    true,
                     false,
+                    true,
                     false,
                     false,
                     deeplinkSearchQuery);
@@ -3422,6 +3421,7 @@ public class AppCMSPresenter {
                 isSgnupFromGoogle = false;
                 subscriptionUserEmail = email;
                 subscriptionUserPassword = password;
+                sendCloseOthersAction(null, true);
                 initiateItemPurchase();
             }
         }
