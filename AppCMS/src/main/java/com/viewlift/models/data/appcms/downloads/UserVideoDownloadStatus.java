@@ -10,6 +10,11 @@ public class UserVideoDownloadStatus {
     private String downloadStatus;
     private long videoId_DM;
 
+    private String videoUri;
+    private String thumbUri;
+    private long videoSize;
+
+
     public String getVideoId() {
         return videoId;
     }
@@ -32,5 +37,29 @@ public class UserVideoDownloadStatus {
 
     public void setVideoId_DM(long videoId_DM) {
         this.videoId_DM = videoId_DM;
+    }
+
+    public String getThumbUri() {
+        return thumbUri;
+    }
+
+    public void setThumbUri(String thumbUri) {
+        this.thumbUri = thumbUri;
+    }
+
+    public String getVideoUri() {
+        return videoUri;
+    }
+
+    public void setVideoUri(String videoUri) {
+        this.videoUri = videoUri;
+    }
+
+    public long getVideoSize() {
+        return videoSize;
+    }
+
+    public void setVideoSize(long videoSize) {
+        this.videoSize = videoSize;
     }
 }

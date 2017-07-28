@@ -40,7 +40,8 @@
     <string name="app_cms_network_connectivity_error_message">Please connect your device to a network and try again.</string>
     <string name="app_cms_signin_error_title">Sign In</string>
     <string name="app_cms_reset_password_title">Reset Password</string>
-    <string name="app_cms_reset_password_success_description">Please check %1$s for a reset a password link.</string>
+    <string name="app_cms_reset_password_success_description">Please check %1$s for a reset password link.</string>
+    <string name="app_cms_cancel_subscription_ask_for_confirmation_message">Are you sure you wish to cancel your subscription?</string>
     <string name="app_cms_data_error_title">Could Not Access Data</string>
     <string name="app_cms_data_error_message">Data is currently unavailable.  Please try again later.</string>
     <string name="app_cms_close_alert_dialog_button_text">CLOSE</string>
@@ -84,10 +85,13 @@
     <string name="dialog_item_description_key">description</string>
     <string name="dialog_item_text_color_key">text_color</string>
 
+    <string name="app_cms_username_input_text_hint">NAME</string>
     <string name="app_cms_email_input_text_hint">EMAIL</string>
     <string name="please_input_your_email_address_to_send_a_reset_password_link_text">Please input your email address to send a reset password link.</string>
+    <string name="edit_profile_confirm_change_button_text">OK</string>
     <string name="empty_history_list_message">Your history is currently empty.</string>
     <string name="empty_watchlist_message">Your watchlist is currently empty.</string>
+    <string name="empty_download_message">Your download is currently empty.</string>
     <string name="app_cms_currently_logged_out_message">CURRENTLY LOGGED OUT</string>
     <string name="app_cms_sign_out_label">SIGN OUT</string>
 
@@ -104,16 +108,19 @@
     <string name="app_cms_account_title_text">ACCOUNT</string>
     <string name="app_cms_account_email_title_text">Email:</string>
     <string name="app_cms_settings_page_title_text">Settings</string>
+    <string name="app_cms_edit_profile_dialog_title">Edit Profile</string>
     <string name="app_cms_update_username_dialog_title">Update Username</string>
     <string name="app_cms_update_email_dialog_title">Update Email</string>
     <string name="add_to_watchlist_content_type_video">video</string>
     <string name="delete_history_content_type_video">video</string>
     <string name="app_cms_border_color_key">app_cms_border_color</string>
+    <string name="app_cms_edit_profile_username_key">app_cms_edit_profile_username_key</string>
     <string name="app_cms_password_reset_email_key">app_cms_password_reset_email</string>
     <string name="play_ads_key">play_ads</string>
     <string name="reset_password_text">RESET PASSWORD</string>
     <string name="watched_time_key">watched_time</string>
     <string name="played_movie_image_url">played_movie_image</string>
+    <string name="subscription_payment_processor">Android</string>
 
     <!-- AppCMS Video Detail API -->
     <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
@@ -179,8 +186,12 @@
     <string name="app_cms_appsflyer_product_id">af_product_id</string>
     <string name="app_cms_user_cancel_payment">User Cancel Payment</string>
     <string name="app_cms_plan_type">af_plan_type</string>
-
-
     <string name="GCM_SENDER_ID_APPFLYERS">525148171038</string>
-
+    <string name="app_cms_cancel_subscription_title">Cancel Subscription</string>
+    <string name="app_cms_confirm_alert_dialog_button_text">OK</string>
+    <string name="app_cms_cancel_alert_dialog_button_text">CANCEL</string>
+    <string name="app_cms_cancel_subscription_confirmation_message">You have cancelled your subscription.</string>
+    <string name="app_cms_cancel_subscription_not_subscribed_message">You are currently not subscribed to any plans.</string>
+    <string name="app_cms_cancel_subscription_subscription_not_valid_message">Subscription is not valid.</string>
+    <string name="app_cms_subscribtion_title">Subscription</string>
 </resources>

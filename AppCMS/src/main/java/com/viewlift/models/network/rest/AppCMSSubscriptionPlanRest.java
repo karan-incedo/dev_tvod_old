@@ -20,6 +20,9 @@ public interface AppCMSSubscriptionPlanRest {
     @GET
     Call<List<AppCMSSubscriptionPlanResult>> getPlanList(@Url String url);
 
+    @GET
+    Call<AppCMSSubscriptionPlanResult> getSubscribedPlan(@Url String url);
+
     @POST
     Call<AppCMSSubscriptionPlanResult> createPlan(@Url String url, @Body SubscriptionRequest request);
 

@@ -24,6 +24,8 @@ public class CastingUtils {
     public static boolean isMediaQueueLoaded = true;
     public static String castingMediaId = "";
 
+    public static int CASTING_MODE_CHROMECAST = 1;
+    public static int CASTING_MODE_ROKU = 2;
 
     public static int routerDevices = 0;
     private static final int PRELOAD_TIME_S = 20;
@@ -47,10 +49,10 @@ public class CastingUtils {
                     e.printStackTrace();
                 }
 
-                if(getPlayingUrl(detailsRelatedVideoData.get(i))!=null && !TextUtils.isEmpty(getPlayingUrl(detailsRelatedVideoData.get(i)))){
-                   int currentPlayingIndex=listCompareRelatedVideosId.indexOf(detailsRelatedVideoData.get(i).getGist().getId());
+                if (getPlayingUrl(detailsRelatedVideoData.get(i)) != null && !TextUtils.isEmpty(getPlayingUrl(detailsRelatedVideoData.get(i)))) {
+                    int currentPlayingIndex = listCompareRelatedVideosId.indexOf(detailsRelatedVideoData.get(i).getGist().getId());
 
-                    queueItemsArray[currentPlayingIndex] = new MediaQueueItem.Builder(buildMediaInfoFromList(detailsRelatedVideoData.get(i),appName))
+                    queueItemsArray[currentPlayingIndex] = new MediaQueueItem.Builder(buildMediaInfoFromList(detailsRelatedVideoData.get(i), appName))
                             .setAutoplay(true)
                             .setPreloadTime(PRELOAD_TIME_S)
                             .setCustomData(seasonObj)
@@ -65,7 +67,7 @@ public class CastingUtils {
         return null;
     }
 
-    public static MediaInfo buildMediaInfoFromList(ContentDatum contentData,String appName) {
+    public static MediaInfo buildMediaInfoFromList(ContentDatum contentData, String appName) {
         String titleMediaInfo = "";
         String subTitleMediaInfo = "";
         String imageMediaInfo = "";
@@ -92,12 +94,13 @@ public class CastingUtils {
         String playUrl = "";
         if (contentData.getStreamingInfo() != null && contentData.getStreamingInfo().getVideoAssets() != null) {
 
-            if(contentData.getStreamingInfo().getVideoAssets().getHls()!=null && !TextUtils.isEmpty(contentData.getStreamingInfo().getVideoAssets().getHls())){
-                playUrl=contentData.getStreamingInfo().getVideoAssets().getHls();
-            }else if(contentData.getStreamingInfo().getVideoAssets().getMpeg()!=null && contentData.getStreamingInfo().getVideoAssets().getMpeg().size()>0){
 
-                if(contentData.getStreamingInfo().getVideoAssets().getMpeg().get(contentData.getStreamingInfo().getVideoAssets().getMpeg().size()-1).getUrl()!=null)
-                playUrl=contentData.getStreamingInfo().getVideoAssets().getMpeg().get(contentData.getStreamingInfo().getVideoAssets().getMpeg().size()-1).getUrl();
+            if (contentData.getStreamingInfo().getVideoAssets().getMpeg() != null && contentData.getStreamingInfo().getVideoAssets().getMpeg().size() > 0) {
+
+                if (contentData.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl() != null)
+                    playUrl = contentData.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+            } else if (contentData.getStreamingInfo().getVideoAssets().getHls() != null && !TextUtils.isEmpty(contentData.getStreamingInfo().getVideoAssets().getHls())) {
+                playUrl = contentData.getStreamingInfo().getVideoAssets().getHls();
             }
         }
 

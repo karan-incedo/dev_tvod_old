@@ -44,8 +44,7 @@
 
         <activity
             android:name="com.viewlift.views.activity.AppCMSSearchActivity"
-            android:launchMode="singleTask"
-            android:theme="@style/CastExpandedController">
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
                 <action android:name="android.intent.action.VIEW" />

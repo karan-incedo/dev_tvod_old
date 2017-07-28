@@ -2,18 +2,18 @@ package com.viewlift.views.fragments;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
@@ -59,8 +59,8 @@ public class AppCMSPlayVideoFragment extends Fragment
     private String parentScreenName;
     private String adsUrl;
     private boolean shouldRequestAds;
-    private ConstraintLayout videoPlayerInfoContainer;
-    private Button videoPlayerViewDoneButton;
+    private LinearLayout videoPlayerInfoContainer;
+    private ImageButton videoPlayerViewDoneButton;
     private TextView videoPlayerTitleView;
     private VideoPlayerView videoPlayerView;
     private OnClosePlayerEvent onClosePlayerEvent;
@@ -70,73 +70,23 @@ public class AppCMSPlayVideoFragment extends Fragment
     private ImaSdkFactory sdkFactory;
     private AdsLoader adsLoader;
     private AdsManager adsManager;
+    AdsLoader.AdsLoadedListener listenerAdsLoaded = new AdsLoader.AdsLoadedListener() {
+        @Override
+        public void onAdsManagerLoaded(AdsManagerLoadedEvent adsManagerLoadedEvent) {
+            adsManager = adsManagerLoadedEvent.getAdsManager();
+            adsManager.addAdErrorListener(AppCMSPlayVideoFragment.this);
+            adsManager.addAdEventListener(AppCMSPlayVideoFragment.this);
+            adsManager.init();
+        }
+    };
     private boolean isAdDisplayed;
     private int watchedTime;
-
     private ImageButton mMediaRouteButton;
     private CastServiceProvider castProvider;
     private CastSession mCastSession;
     private CastHelper mCastHelper;
     private String closedCaptionUrl;
     private boolean isCastConnected;
-
-    public interface OnClosePlayerEvent {
-        void closePlayer();
-
-        /**
-         * Method is to be called by the fragment to tell the activity that a movie is finished
-         * playing. Primarily in the {@link ExoPlayer#STATE_ENDED}
-         */
-        void onMovieFinished();
-
-        void onRemotePlayback(long currentPosition);
-    }
-
-    private static class BeaconPingThread extends Thread {
-        final long beaconMsgTimeoutMsec;
-        final AppCMSPresenter appCMSPresenter;
-        final String filmId;
-        final String permaLink;
-        final String parentScreenName;
-        VideoPlayerView videoPlayerView;
-        boolean runBeaconPing;
-        boolean sendBeaconPing;
-
-        public BeaconPingThread(long beaconMsgTimeoutMsec,
-                                AppCMSPresenter appCMSPresenter,
-                                String filmId,
-                                String permaLink,
-                                String parentScreenName,
-                                VideoPlayerView videoPlayerView) {
-            this.beaconMsgTimeoutMsec = beaconMsgTimeoutMsec;
-            this.appCMSPresenter = appCMSPresenter;
-            this.filmId = filmId;
-            this.permaLink = permaLink;
-            this.parentScreenName = parentScreenName;
-            this.videoPlayerView = videoPlayerView;
-        }
-
-        public void run() {
-            runBeaconPing = true;
-            while (runBeaconPing) {
-                try {
-                    Thread.sleep(beaconMsgTimeoutMsec);
-                    if (sendBeaconPing) {
-                        if (appCMSPresenter != null && videoPlayerView != null) {
-                            appCMSPresenter.sendBeaconPingMessage(filmId,
-                                    permaLink,
-                                    parentScreenName,
-                                    videoPlayerView.getCurrentPosition());
-                            appCMSPresenter.updateWatchedTime(filmId,
-                                    videoPlayerView.getCurrentPosition() / 1000);
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    Log.e(TAG, "BeaconPingThread sleep interrupted");
-                }
-            }
-        }
-    }
 
     public static AppCMSPlayVideoFragment newInstance(Context context,
                                                       String fontColor,
@@ -214,7 +164,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         View rootView = inflater.inflate(R.layout.fragment_video_player, container, false);
 
         videoPlayerInfoContainer =
-                (ConstraintLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
+                (LinearLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
 
         mMediaRouteButton = (ImageButton) rootView.findViewById(R.id.media_route_button);
 
@@ -228,7 +178,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             videoPlayerTitleView.setTextColor(Color.parseColor(fontColor));
         }
 
-        videoPlayerViewDoneButton = (Button) rootView.findViewById(R.id.app_cms_video_player_done_button);
+        videoPlayerViewDoneButton = (ImageButton) rootView.findViewById(R.id.app_cms_video_player_done_button);
         videoPlayerViewDoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -238,7 +188,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 }
             }
         });
-        videoPlayerViewDoneButton.setTextColor(Color.parseColor(fontColor));
+        videoPlayerViewDoneButton.setColorFilter(Color.parseColor(fontColor));
 
         videoPlayerInfoContainer.bringToFront();
 
@@ -247,6 +197,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         setCasting();
 
         if (!TextUtils.isEmpty(hlsUrl)) {
+            videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference(getContext()));
             videoPlayerView.setUri(Uri.parse(hlsUrl),
                     !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
             Log.i(TAG, "Playing video: " + hlsUrl);
@@ -300,6 +251,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             public void call(Boolean isChecked) {
                 videoPlayerView.getPlayerView().getSubtitleView()
                         .setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                appCMSPresenter.setClosedCaptionPreference(getContext(), isChecked);
             }
         });
         if (!shouldRequestAds) {
@@ -321,10 +273,12 @@ public class AppCMSPlayVideoFragment extends Fragment
         try {
             castProvider = CastServiceProvider.getInstance(getActivity().getApplicationContext());
             castProvider.setRemotePlaybackCallback(callBackRemotePlayback);
-            castProvider.setActivityInstance(getActivity(), mMediaRouteButton);
-            isCastConnected = castProvider.playRemotePlaybackIfCastConnected();
+            isCastConnected = castProvider.playChromeCastPlaybackIfCastConnected();
             if (isCastConnected) {
                 getActivity().finish();
+            } else {
+                castProvider.setActivityInstance(getActivity(), mMediaRouteButton);
+                castProvider.playRokuCastPlaybackIfCastConnected();
             }
         } catch (Exception e) {
             Log.e(TAG, "Error initializing cast provider: " + e.getMessage());
@@ -341,16 +295,6 @@ public class AppCMSPlayVideoFragment extends Fragment
         adsLoader.addAdsLoadedListener(listenerAdsLoaded);
     }
 
-    AdsLoader.AdsLoadedListener listenerAdsLoaded = new AdsLoader.AdsLoadedListener() {
-        @Override
-        public void onAdsManagerLoaded(AdsManagerLoadedEvent adsManagerLoadedEvent) {
-            adsManager = adsManagerLoadedEvent.getAdsManager();
-            adsManager.addAdErrorListener(AppCMSPlayVideoFragment.this);
-            adsManager.addAdEventListener(AppCMSPlayVideoFragment.this);
-            adsManager.init();
-        }
-    };
-
     @Override
     public void onResume() {
         resumeVideo();
@@ -362,7 +306,6 @@ public class AppCMSPlayVideoFragment extends Fragment
         pauseVideo();
         super.onPause();
     }
-
 
     private void pauseVideo() {
         if (shouldRequestAds && adsManager != null && isAdDisplayed) {
@@ -386,6 +329,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             castProvider.onActivityResume();
         }
     }
+
 
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
@@ -496,20 +440,71 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
 
-    private void launchRemoteMedia() {
-        if (onClosePlayerEvent != null) {
-            pauseVideo();
-            onClosePlayerEvent.onRemotePlayback(videoPlayerView.getCurrentPosition());
-        }
-    }
-
-
     CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = new CastServiceProvider.ILaunchRemoteMedia() {
         @Override
-        public void setRemotePlayBack() {
-            launchRemoteMedia();
+        public void setRemotePlayBack(int castingModeChromecast) {
+            if (onClosePlayerEvent != null) {
+                pauseVideo();
+                onClosePlayerEvent.onRemotePlayback(videoPlayerView.getCurrentPosition(), castingModeChromecast);
+            }
         }
     };
 
+    public interface OnClosePlayerEvent {
+        void closePlayer();
 
+        /**
+         * Method is to be called by the fragment to tell the activity that a movie is finished
+         * playing. Primarily in the {@link ExoPlayer#STATE_ENDED}
+         */
+        void onMovieFinished();
+
+        void onRemotePlayback(long currentPosition, int castingMode);
+    }
+
+    private static class BeaconPingThread extends Thread {
+        final long beaconMsgTimeoutMsec;
+        final AppCMSPresenter appCMSPresenter;
+        final String filmId;
+        final String permaLink;
+        final String parentScreenName;
+        VideoPlayerView videoPlayerView;
+        boolean runBeaconPing;
+        boolean sendBeaconPing;
+
+        public BeaconPingThread(long beaconMsgTimeoutMsec,
+                                AppCMSPresenter appCMSPresenter,
+                                String filmId,
+                                String permaLink,
+                                String parentScreenName,
+                                VideoPlayerView videoPlayerView) {
+            this.beaconMsgTimeoutMsec = beaconMsgTimeoutMsec;
+            this.appCMSPresenter = appCMSPresenter;
+            this.filmId = filmId;
+            this.permaLink = permaLink;
+            this.parentScreenName = parentScreenName;
+            this.videoPlayerView = videoPlayerView;
+        }
+
+        public void run() {
+            runBeaconPing = true;
+            while (runBeaconPing) {
+                try {
+                    Thread.sleep(beaconMsgTimeoutMsec);
+                    if (sendBeaconPing) {
+                        if (appCMSPresenter != null && videoPlayerView != null) {
+                            appCMSPresenter.sendBeaconPingMessage(filmId,
+                                    permaLink,
+                                    parentScreenName,
+                                    videoPlayerView.getCurrentPosition());
+                            appCMSPresenter.updateWatchedTime(filmId,
+                                    videoPlayerView.getCurrentPosition() / 1000);
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    Log.e(TAG, "BeaconPingThread sleep interrupted");
+                }
+            }
+        }
+    }
 }

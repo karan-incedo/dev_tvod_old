@@ -1,9 +1,12 @@
 package com.viewlift.casting;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.MediaRouteDiscoveryFragment;
 import android.support.v7.media.MediaRouteSelector;
 import android.support.v7.media.MediaRouter;
 import android.text.TextUtils;
@@ -18,9 +21,11 @@ import com.google.android.gms.cast.framework.CastSession;
 
 import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 
@@ -31,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.functions.Action1;
-import com.viewlift.R;
 
 
 public class CastHelper {
@@ -42,7 +46,7 @@ public class CastHelper {
     public MediaRouter mMediaRouter;
     private SessionManagerListener<CastSession> mSessionManagerListener;
     private Callback callBackRemoteListener;
-    static FragmentActivity mActivity;
+    private FragmentActivity mActivity;
     private final Context mAppContext;
     private RemoteMediaClient.Listener remoteListener;
     private RemoteMediaClient.ProgressListener progressListener;
@@ -59,9 +63,10 @@ public class CastHelper {
     public boolean isCastDeviceConnected = false;
     public boolean chromeCastConnecting = false;
     public CastDevice mSelectedDevice;
-    public int currentPlayingIndex = 0;
+    private int currentPlayingIndex = 0;
     public int playIndexPosition = 0;
     long castCurrentDuration;
+    private static final String DISCOVERY_FRAGMENT_TAG = "DiscoveryFragment";
 
     private CastHelper(Context mContext) {
         mAppContext = mContext.getApplicationContext();
@@ -73,12 +78,20 @@ public class CastHelper {
         mMediaRouterCallback = new MyMediaRouterCallback();
         routerCall = new MyMediaRouterCallback();
 
+        setCastDiscovery();
 
+    }
+
+
+    public void setCastDiscovery() {
         if (CastingUtils.IS_CHROMECAST_ENABLE) {
             mMediaRouter = MediaRouter.getInstance(mAppContext);
             mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback,
-                    MediaRouter.CALLBACK_FLAG_FORCE_DISCOVERY);
+                    MediaRouter.CALLBACK_FLAG_PERFORM_ACTIVE_SCAN);
+            if (mActivity instanceof AppCMSPageActivity)
+                addMediaRouterDiscoveryFragment();
         }
+
     }
 
     public static synchronized CastHelper getInstance(Context context) {
@@ -131,6 +144,48 @@ public class CastHelper {
             mMediaRouter.removeCallback(mMediaRouterCallback);
     }
 
+    private void addMediaRouterDiscoveryFragment() {
+        FragmentManager fm = mActivity.getSupportFragmentManager();
+        DiscoveryFragment fragment =
+                (DiscoveryFragment) fm.findFragmentByTag(DISCOVERY_FRAGMENT_TAG);
+        if (fragment == null) {
+            fragment = new DiscoveryFragment();
+            fragment.setCallback(mMediaRouterCallback);
+            fragment.setRouteSelector(mMediaRouteSelector);
+            fm.beginTransaction().add(fragment, DISCOVERY_FRAGMENT_TAG).commit();
+        } else {
+            fragment.setCallback(mMediaRouterCallback);
+            fragment.setRouteSelector(mMediaRouteSelector);
+        }
+    }
+
+    public static final class DiscoveryFragment extends MediaRouteDiscoveryFragment {
+        private static final String TAG = "DiscoveryFragment";
+        private MediaRouter.Callback mCallback;
+
+        public DiscoveryFragment() {
+            mCallback = null;
+        }
+
+        public void setCallback(MediaRouter.Callback cb) {
+            mCallback = cb;
+        }
+
+        @Override
+        public MediaRouter.Callback onCreateCallback() {
+            return mCallback;
+        }
+
+        @Override
+        public int onPrepareCallbackFlags() {
+            // Add the CALLBACK_FLAG_UNFILTERED_EVENTS flag to ensure that we will
+            // observe and log all route events including those that are for routes
+            // that do not match our selector.  This is only for demonstration purposes
+            // and should not be needed by most applications.
+            return super.onPrepareCallbackFlags() | MediaRouter.CALLBACK_FLAG_UNFILTERED_EVENTS;
+        }
+    }
+
     public interface Callback {
         void onApplicationConnected();
 
@@ -171,17 +226,17 @@ public class CastHelper {
     }
 
     private AppCMSVideoPageBinder binderPlayScreen;
-    private boolean isMainMediaId=false;
-    private long currentMediaPosition=0;
-    private String startingFilmId="";
+    private boolean isMainMediaId = false;
+    private long currentMediaPosition = 0;
+    private String startingFilmId = "";
 
     public void launchRemoteMedia(AppCMSPresenter appCMSPresenter, List<String> relateVideoId, String filmId, long currentPosition, AppCMSVideoPageBinder binder) {
         if (mActivity != null && CastingUtils.isMediaQueueLoaded) {
             Toast.makeText(mAppContext, mAppContext.getString(R.string.loading_vid_on_casting), Toast.LENGTH_SHORT).show();
 
             CastingUtils.isRemoteMediaControllerOpen = false;
-            currentMediaPosition=currentPosition;
-            startingFilmId=filmId;
+            currentMediaPosition = currentPosition;
+            startingFilmId = filmId;
             if (getRemoteMediaClient() == null) {
                 return;
             }
@@ -197,6 +252,7 @@ public class CastHelper {
             if (!relateVideoId.contains(filmId)) {
                 isMainMediaId = true;
                 listRelatedVideosId.add(filmId);
+                currentPlayingIndex = 0;
             } else {
                 currentPlayingIndex = relateVideoId.indexOf(filmId);
             }
@@ -348,30 +404,39 @@ public class CastHelper {
                     getRemoteMediaClient().removeListener(remoteListener);
                     getRemoteMediaClient().removeProgressListener(progressListener);
                 }
-                CastingUtils.isMediaQueueLoaded=true;
-                if (callBackRemoteListener != null && mActivity instanceof AppCMSPlayVideoActivity) {
+                CastingUtils.isMediaQueueLoaded = true;
+                if (callBackRemoteListener != null && mActivity instanceof AppCMSPlayVideoActivity && binderPlayScreen != null) {
                     mActivity.finish();
                     //if casted from local play screen from first video than this video will not in related video list  so set -1 index position to play on local player
+
+                    if (CastingUtils.castingMediaId == null || TextUtils.isEmpty(CastingUtils.castingMediaId)) {
+                        CastingUtils.castingMediaId = startingFilmId;
+                    }
                     if (isMainMediaId) {
                         playIndexPosition--;
+                    } else {
+                        playIndexPosition = listCompareRelatedVideosId.indexOf(CastingUtils.castingMediaId);
                     }
-                    if(CastingUtils.castingMediaId==null || TextUtils.isEmpty(CastingUtils.castingMediaId)){
-                        CastingUtils.castingMediaId=startingFilmId;
-                    }
-                    if(listRelatedVideosDetails!=null && listRelatedVideosDetails.size()>0) {
+
+                    Log.d(TAG, "Cast Index " + playIndexPosition);
+                    if (listRelatedVideosDetails != null && listRelatedVideosDetails.size() > 0) {
                         int currentVideoDetailIndex = getCurrentIndex(listRelatedVideosDetails, CastingUtils.castingMediaId);
-                        binderPlayScreen.setContentData(listRelatedVideosDetails.get(currentVideoDetailIndex));
+                        if (currentVideoDetailIndex < listRelatedVideosDetails.size())
+                            binderPlayScreen.setContentData(listRelatedVideosDetails.get(currentVideoDetailIndex));
                     }
 
                     binderPlayScreen.setCurrentPlayingVideoIndex(playIndexPosition);
-                    appCMSPresenterComponenet.playNextVideo(binderPlayScreen,
-                            binderPlayScreen.getCurrentPlayingVideoIndex() + 1);
+                    if (playIndexPosition < listCompareRelatedVideosId.size()) {
+                        appCMSPresenterComponenet.playNextVideo(binderPlayScreen,
+                                binderPlayScreen.getCurrentPlayingVideoIndex());
+                    }
 
-                    CastingUtils.castingMediaId="";
+                    CastingUtils.castingMediaId = "";
 
                     if (callBackRemoteListener != null)
                         callBackRemoteListener.onApplicationDisconnected();
                 }
+
             }
         };
     }
@@ -437,9 +502,7 @@ public class CastHelper {
             getRemoteMediaClient().queueLoad(queueItemsArray, currentPlayingIndex,
                     MediaStatus.REPEAT_MODE_REPEAT_OFF, currentMediaPosition, null);
             getRemoteMediaClient().addListener(remoteListener);
-            getRemoteMediaClient().addProgressListener(progressListener, 100);
-
-
+            getRemoteMediaClient().addProgressListener(progressListener, 1000);
         }
     }
 
@@ -490,7 +553,7 @@ public class CastHelper {
             isCastDeviceConnected = false;
             if (callBackRemoteListener != null)
                 callBackRemoteListener.onRouterUnselected(mMediaRouter, info);
-            CastingUtils.isMediaQueueLoaded=true;
+            CastingUtils.isMediaQueueLoaded = true;
         }
     }
 
@@ -535,6 +598,7 @@ public class CastHelper {
      * @param route The route to consider, never null.
      * @return True if the route should be included in the chooser dialog.
      */
+    @SuppressLint("RestrictedApi")
     public boolean onFilterRoute(@NonNull MediaRouter.RouteInfo route) {
         return !route.isDefaultOrBluetooth() && route.isEnabled()
                 && route.matchesSelector(mMediaRouteSelector);
@@ -550,6 +614,22 @@ public class CastHelper {
         return i;
     }
 
+    public void castingLogout() {
+        if (CastContext.getSharedInstance(mAppContext).getSessionManager() != null) {
+
+            try {
+                if (CastContext.getSharedInstance(mAppContext).getSessionManager() != null)
+                    CastContext.getSharedInstance(mAppContext).getSessionManager().removeSessionManagerListener(mSessionManagerListener, CastSession.class);
+
+                CastContext.getSharedInstance(mAppContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().removeListener(remoteListener);
+
+                mSessionManagerListener = null;
+                CastContext.getSharedInstance(mAppContext).getSessionManager().endCurrentSession(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
 
 

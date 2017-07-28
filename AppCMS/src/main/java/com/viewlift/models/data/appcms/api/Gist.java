@@ -2,6 +2,7 @@ package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.vimeo.stag.UseStag;
 
 @UseStag
@@ -41,7 +42,7 @@ public class Gist {
 
     @SerializedName("runtime")
     @Expose
-    int runtime;
+    long runtime;
 
     @SerializedName("posterImageUrl")
     @Expose
@@ -82,6 +83,13 @@ public class Gist {
     @SerializedName("watchedPercentage")
     @Expose
     int watchedPercentage;
+
+    String downloadStatus;
+
+    /**
+     * This is to store the url of the downloaded file
+     */
+    String localFileUrl;
 
     public String getId() {
         return id;
@@ -147,11 +155,11 @@ public class Gist {
         this.publishDate = publishDate;
     }
 
-    public int getRuntime() {
+    public long getRuntime() {
         return runtime;
     }
 
-    public void setRuntime(int runtime) {
+    public void setRuntime(long runtime) {
         this.runtime = runtime;
     }
 
@@ -233,5 +241,21 @@ public class Gist {
 
     public void setWatchedPercentage(int watchedPercentage) {
         this.watchedPercentage = watchedPercentage;
+    }
+
+    public DownloadStatus getDownloadStatus() {
+        return DownloadStatus.valueOf(downloadStatus);
+    }
+
+    public void setDownloadStatus(DownloadStatus downloadStatus) {
+        this.downloadStatus = downloadStatus.toString();
+    }
+
+    public String getLocalFileUrl() {
+        return localFileUrl;
+    }
+
+    public void setLocalFileUrl(String localFileUrl) {
+        this.localFileUrl = localFileUrl;
     }
 }

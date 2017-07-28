@@ -3,6 +3,10 @@ package com.viewlift.views.fragments;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
@@ -14,6 +18,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
@@ -100,7 +106,7 @@ public class AutoplayFragment extends Fragment {
                 ((ViewGroup) pageView.getParent()).removeAllViews();
             }
             if (!BaseView.isTablet(getContext())) {
-                appCMSPresenter.restrictPortraitOnly();
+                appCMSPresenter .restrictPortraitOnly();
             } else {
                 appCMSPresenter.unrestrictPortraitOnly();
             }
@@ -114,13 +120,48 @@ public class AutoplayFragment extends Fragment {
             tvCountdown = (TextView) pageView.findViewById(R.id.countdown_id);
             Button playButton = (Button) pageView.findViewById(R.id.autoplay_play_button);
 
-            playButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (isAdded() && isVisible())
-                        fragmentInteractionListener.onCountdownFinished();
-                }
-            });
+            if (playButton != null) {
+                playButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (isAdded() && isVisible()) {
+                            fragmentInteractionListener.onCountdownFinished();
+                        }
+                    }
+                });
+            }
+            if (pageView.getChildAt(0) != null) {
+                pageView.getChildAt(0)
+                        .setBackgroundColor(Color.parseColor(
+                                appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
+                                        .getBackgroundColor().replace("#", "#DD")));
+            }
+            String imageUrl = "";
+            if (BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext())) {
+                imageUrl = binder.getContentData().getGist().getVideoImageUrl();
+            } else {
+                imageUrl = binder.getContentData().getGist().getPosterImageUrl();
+            }
+            Picasso.with(getContext())
+                    .load(imageUrl)
+//                        .resize(pageView.getWidth(), pageView.getHeight())
+//                        .centerCrop()
+                    .into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            pageView.setBackground(new BitmapDrawable(getResources(), bitmap));
+                        }
+
+                        @Override
+                        public void onBitmapFailed(Drawable errorDrawable) {
+
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                        }
+                    });
         }
         return pageView;
     }
@@ -130,7 +171,7 @@ public class AutoplayFragment extends Fragment {
 
             @Override
             public void onTick(long millisUntilFinished) {
-                if (isAdded() && isVisible()) {
+                if (isAdded() && isVisible() && tvCountdown != null) {
                     int quantity = (int) (millisUntilFinished / 1000) - 1;
                     tvCountdown.setText(getResources().getQuantityString(R.plurals.countdown_seconds,
                             quantity, quantity));

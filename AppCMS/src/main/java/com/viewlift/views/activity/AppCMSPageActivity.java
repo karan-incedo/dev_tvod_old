@@ -33,14 +33,16 @@ import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
-import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.casting.CastServiceProvider;
+import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
@@ -49,6 +51,9 @@ import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.NavBarItemView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSPageFragment;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.HashMap;
@@ -94,28 +99,22 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @BindView(R.id.media_route_button)
     ImageButton mMediaRouteButton;
-
+    CastServiceProvider castProvider;
     private AppCMSPresenter appCMSPresenter;
     private Stack<String> appCMSBinderStack;
     private Map<String, AppCMSBinder> appCMSBinderMap;
     private BroadcastReceiver presenterActionReceiver;
     private BroadcastReceiver presenterCloseActionReceiver;
-
     private NavBarItemView pageViewDuringSearch;
     private boolean resumeInternalEvents;
     private boolean isActive;
     private boolean shouldSendCloseOthersAction;
     private AppCMSBinder updatedAppCMSBinder;
-
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
     private AccessToken accessToken;
-
     private IInAppBillingService inAppBillingService;
-
     private ServiceConnection inAppBillingServiceConn;
-
-    CastServiceProvider castProvider;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -188,22 +187,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
-                    Log.d(TAG, "Received Presenter Close Action: fragment count = "
-                            + getSupportFragmentManager().getBackStackEntryCount());
-                    if (appCMSBinderStack.size() > 1) {
-                        try {
-                            getSupportFragmentManager().popBackStack();
-                        } catch (IllegalStateException e) {
-                            Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
-                        }
-                        handleBack(true, false, true);
-                        if (appCMSBinderStack.size() > 0) {
-                            AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                            handleBack(true, appCMSBinderStack.size() < 2, false);
-                            handleLaunchPageAction(appCMSBinder);
-                        }
-                        isActive = true;
-                    }
+                    handleCloseAction();
                 }
             }
         };
@@ -229,16 +213,42 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         callbackManager = CallbackManager.Factory.create();
 
-        accessTokenTracker = new AccessTokenTracker() {
+            accessTokenTracker = new AccessTokenTracker() {
             @Override
             protected void onCurrentAccessTokenChanged(
                     AccessToken oldAccessToken,
                     AccessToken currentAccessToken) {
                 AppCMSPageActivity.this.accessToken = currentAccessToken;
                 if (appCMSPresenter != null && currentAccessToken != null) {
-                    appCMSPresenter.setFacebookAccessToken(AppCMSPageActivity.this,
-                            currentAccessToken.getToken(),
-                            currentAccessToken.getUserId());
+                    GraphRequest request = GraphRequest.newMeRequest(
+                            currentAccessToken,
+                            new GraphRequest.GraphJSONObjectCallback() {
+                                @Override
+                                public void onCompleted(
+                                        JSONObject user,
+                                        GraphResponse response) {
+                                    String username = null;
+                                    String email = null;
+                                    try {
+                                        username = user.getString("name");
+                                        email = user.getString("email");
+                                    } catch (JSONException e) {
+                                        Log.e(TAG, "Error parsing Facebook Graph JSON: " + e.getMessage());
+                                    }
+                                    if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+                                        handleCloseAction();
+                                    }
+                                    appCMSPresenter.setFacebookAccessToken(AppCMSPageActivity.this,
+                                            currentAccessToken.getToken(),
+                                            currentAccessToken.getUserId(),
+                                            username,
+                                            email);
+                                }
+                            });
+                    Bundle parameters = new Bundle();
+                    parameters.putString("fields", "id,name,email");
+                    request.setParameters(parameters);
+                    request.executeAsync();
                 }
             }
         };
@@ -363,6 +373,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         super.onResume();
         resume();
         Log.d(TAG, "onResume()");
+
     }
 
     @Override
@@ -427,8 +438,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
         if (resultCode == Activity.RESULT_OK) {
             if (result != null && result.isSuccess()) {
+                if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+                    handleCloseAction();
+                }
                 appCMSPresenter.setGoogleAccessToken(this, result.getSignInAccount().getIdToken(),
-                        result.getSignInAccount().getId());
+                        result.getSignInAccount().getId(),
+                        result.getSignInAccount().getDisplayName(),
+                        result.getSignInAccount().getEmail());
             }
 
             if (FacebookSdk.isFacebookRequestCode(requestCode)) {
@@ -497,7 +513,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSFragment.setEnabled(true);
             appCMSTabNavContainer.setEnabled(true);
             loadingProgressBar.setVisibility(View.GONE);
-
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 appCMSTabNavContainer.getChildAt(i).setEnabled(true);
             }
@@ -589,7 +604,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         /**
          * casting button will show only on home page ,movie page and player page so check which page will be open
          */
-        setMediaRouerButtonVisibilty(appCMSBinder.getPageId());
+        setMediaRouterButtonVisibilty(appCMSBinder.getPageId());
     }
 
     private void selectNavItemAndLaunchPage(NavBarItemView v, String pageId, String pageTitle) {
@@ -882,25 +897,44 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         Log.e(TAG, "Failed to connect for Google SignIn: " + connectionResult.getErrorMessage());
     }
 
-    private void setMediaRouerButtonVisibilty(String pageId) {
+    private void setMediaRouterButtonVisibilty(String pageId) {
         if (appCMSPresenter.findHomePageNavItem().getPageId().equalsIgnoreCase(pageId) ||
                 appCMSPresenter.findMoviesPageNavItem().getPageId().equalsIgnoreCase(pageId)) {
             ll_media_route_button.setVisibility(View.VISIBLE);
         } else {
             ll_media_route_button.setVisibility(View.GONE);
         }
-        if (castProvider != null) {
-            castProvider.setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
-            castProvider.onActivityResume();
-        }
+
+        CastServiceProvider.getInstance(getApplicationContext()).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
+        CastServiceProvider.getInstance(getApplicationContext()).onActivityResume();
 
     }
 
     private void setCasting() {
         try {
             castProvider = CastServiceProvider.getInstance(getApplicationContext());
+
         } catch (Exception e) {
             Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
+        }
+    }
+
+    private void handleCloseAction() {
+        Log.d(TAG, "Received Presenter Close Action: fragment count = "
+                + getSupportFragmentManager().getBackStackEntryCount());
+        if (appCMSBinderStack.size() > 1) {
+            try {
+                getSupportFragmentManager().popBackStack();
+            } catch (IllegalStateException e) {
+                Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
+            }
+            handleBack(true, false, true);
+            if (appCMSBinderStack.size() > 0) {
+                AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                handleBack(true, appCMSBinderStack.size() < 2, false);
+                handleLaunchPageAction(appCMSBinder);
+            }
+            isActive = true;
         }
     }
 }

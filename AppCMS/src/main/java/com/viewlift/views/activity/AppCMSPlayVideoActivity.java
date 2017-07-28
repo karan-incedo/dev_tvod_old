@@ -17,16 +17,18 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
+import com.viewlift.casting.CastServiceProvider;
+import com.viewlift.casting.CastingUtils;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.VideoAssets;
+import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 
 import java.util.List;
-
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 6/14/17.
@@ -56,6 +58,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
         Intent intent = getIntent();
         Bundle bundleExtra = intent.getBundleExtra(getString(R.string.app_cms_video_player_bundle_binder_key));
+        String[] extra = intent.getStringArrayExtra(getString(R.string.video_player_hls_url_key));
+
 
         try {
             binder = (AppCMSVideoPageBinder)
@@ -66,10 +70,18 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 Gist gist = binder.getContentData().getGist();
                 String videoUrl = "";
                 String fontColor = binder.getFontColor();
-                 title = "";
+                title = "";
+
+                String closedCaptionUrl = null;
                 if (!binder.isTrailer()) {
                     title = gist.getTitle();
-                    if (binder.getContentData().getStreamingInfo() != null &&
+                    if (binder.isOffline()
+                            && extra != null
+                            && extra.length >= 2
+                            && extra[1] != null
+                            && gist.getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
+                        videoUrl = !TextUtils.isEmpty(extra[1]) ? extra[1] : "";
+                    } else if (binder.getContentData().getStreamingInfo() != null &&
                             binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
                         VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
                         videoUrl = videoAssets.getHls();
@@ -78,6 +90,14 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 videoUrl = videoAssets.getMpeg().get(i).getUrl();
                             }
                         }
+                    }
+
+                    // TODO: 7/27/2017 Implement CC for multiple languages.
+                    if (binder.getContentData() != null
+                            && binder.getContentData().getContentDetails() != null
+                            && binder.getContentData().getContentDetails().getClosedCaptions() != null
+                            && binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl() != null){
+                        closedCaptionUrl = binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl();
                     }
                 } else {
                     if (binder.getContentData().getContentDetails() != null
@@ -93,14 +113,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             }
                         }
                     }
-                }
-                String closedCaptionUrl = null;
-                // TODO: 7/27/2017 Implement CC for multiple languages.
-                if (binder.getContentData() != null
-                        && binder.getContentData().getContentDetails() != null
-                        && binder.getContentData().getContentDetails().getClosedCaptions() != null
-                        && binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl() != null){
-                    closedCaptionUrl = binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl();
                 }
                 String permaLink = gist.getPermalink();
                 hlsUrl = videoUrl;
@@ -168,6 +180,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         if (!appCMSPresenter.isNetworkConnected()) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                     null,
+                    false,
                     null);
             finish();
         }
@@ -193,19 +206,30 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     @Override
     public void onMovieFinished() {
         // TODO: 7/12/2017 Add a check for autoplay from settings
-        if (!binder.isTrailer()
-                && relateVideoIds != null
-                && currentlyPlayingIndex != relateVideoIds.size() - 1) {
-            binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
-            appCMSPresenter.openAutoPlayScreen(binder);
+        if (!binder.isOffline()) {
+            if (!binder.isTrailer()
+                    && relateVideoIds != null
+                    && currentlyPlayingIndex != relateVideoIds.size() - 1) {
+                binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
+                appCMSPresenter.openAutoPlayScreen(binder);
+            }
+        } else {
+            // TODO: 7/28/2017 Open autoplay screen for offline videos
+            /*if (binder.getRelateVideoIds() != null) {
+                appCMSPresenter.openAutoPlayScreen(binder);
+            }*/
         }
         closePlayer();
     }
 
     @Override
-    public void onRemotePlayback(long currentPosition) {
+    public void onRemotePlayback(long currentPosition, int castingModeChromecast) {
         // TODO: Add a check for autoplay from settings
-        CastHelper.getInstance(getApplicationContext()).launchRemoteMedia(appCMSPresenter, relateVideoIds,filmId, currentPosition, binder);
+        if(castingModeChromecast== CastingUtils.CASTING_MODE_CHROMECAST){
+            CastHelper.getInstance(getApplicationContext()).launchRemoteMedia(appCMSPresenter, relateVideoIds,filmId, currentPosition, binder);
+        }else if(castingModeChromecast== CastingUtils.CASTING_MODE_ROKU){
+            CastServiceProvider.getInstance(getApplicationContext()).launchRokuCasting(filmId,videoImageUrl,title);
+        }
 
     }
 

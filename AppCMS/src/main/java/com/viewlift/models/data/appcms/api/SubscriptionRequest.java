@@ -31,6 +31,10 @@ public class SubscriptionRequest {
     @Expose
     String planId;
 
+    @SerializedName("planIdentifier")
+    @Expose
+    String planIdentifier;
+
     @SerializedName("platform")
     @Expose
     String platform;
@@ -165,5 +169,13 @@ public class SubscriptionRequest {
 
     public void setReceipt(String receipt) {
         this.receipt = receipt;
+    }
+
+    public String getPlanIdentifier() {
+        return planIdentifier;
+    }
+
+    public void setPlanIdentifier(String planIdentifier) {
+        this.planIdentifier = planIdentifier;
     }
 }
