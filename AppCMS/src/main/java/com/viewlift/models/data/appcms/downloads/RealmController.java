@@ -76,12 +76,12 @@ public class RealmController {
         realm.commitTransaction();
     }
 
-    public RealmResults<DownloadVideoRealm> getDownloades() {
+    public RealmResults<DownloadVideoRealm> getDownloads() {
 
         return realm.where(DownloadVideoRealm.class).findAll();
     }
 
-    public RealmResults<DownloadVideoRealm> getDownloadesByStatus(String status) {
+    public RealmResults<DownloadVideoRealm> getDownloadsByStatus(String status) {
 
         return realm.where(DownloadVideoRealm.class).contains("downloadStatus", status).findAll();
     }

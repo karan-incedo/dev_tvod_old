@@ -1132,6 +1132,8 @@ public class AppCMSPresenter {
                 Log.e(TAG, "Failed to purchase item with sku: "
                         + getActiveSubscriptionSku(currentActivity));
             }
+        } else {
+            Log.e(TAG, "InAppBillingService: " + inAppBillingService);
         }
     }
 
@@ -1322,6 +1324,8 @@ public class AppCMSPresenter {
 
         downloadVideoRealm.setPermalink(contentDatum.getGist().getPermalink());
         downloadVideoRealm.setDownloadStatus(DownloadStatus.STATUS_PENDING);
+
+        getLoggedInUser(currentActivity);
 
 
         realmController.addDownload(downloadVideoRealm);
@@ -1523,7 +1527,7 @@ public class AppCMSPresenter {
     }
 
     public void clearDownload(final Action1<UserVideoDownloadStatus> resultAction1) {
-        for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloades()) {
+        for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloads()) {
 
             removeDownloadedFile(downloadVideoRealm.getVideoId());
         }
@@ -1578,7 +1582,7 @@ public class AppCMSPresenter {
             settings.setLazyLoad(false);
 
             List<ContentDatum> contentData = new ArrayList<>();
-            for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloades()) {
+            for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloads()) {
                 ContentDatum data = createContentDatum(downloadVideoRealm);
 
                 contentData.add(data);
@@ -3045,6 +3049,7 @@ public class AppCMSPresenter {
                             deeplinkSearchQuery);
                 }
             }
+
             CastHelper.getInstance(currentActivity.getApplicationContext()).castingLogout();
         }
     }
