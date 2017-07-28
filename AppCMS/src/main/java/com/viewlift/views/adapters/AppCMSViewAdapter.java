@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -364,17 +365,19 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 adapterData != null) {
             String currentSubscriptionSku = appCMSPresenter.getActiveSubscriptionSku(context);
             float currentSubscriptionPrice = appCMSPresenter.getActiveSubscriptionPrice(context);
-            List<Integer> elementIndicesToCull = new ArrayList<>();
-            for (int i = 0; i < adapterData.size(); i++) {
-                if (adapterData.get(i).getId().equals(currentSubscriptionSku)) {
-                    elementIndicesToCull.add(i);
-                } else if ((float) adapterData.get(0).getPlanDetails().get(0).getRecurringPaymentAmount() <=
-                        currentSubscriptionPrice) {
-                    elementIndicesToCull.add(i);
+            if (!TextUtils.isEmpty(currentSubscriptionSku)) {
+                List<Integer> elementIndicesToCull = new ArrayList<>();
+                for (int i = 0; i < adapterData.size(); i++) {
+                    if (adapterData.get(i).getId().equals(currentSubscriptionSku)) {
+                        elementIndicesToCull.add(i);
+                    } else if ((float) adapterData.get(0).getPlanDetails().get(0).getRecurringPaymentAmount() <=
+                            currentSubscriptionPrice) {
+                        elementIndicesToCull.add(i);
+                    }
                 }
-            }
-            for (int i = 0; i < elementIndicesToCull.size(); i++) {
-                adapterData.remove((int) elementIndicesToCull.get(i));
+                for (int i = 0; i < elementIndicesToCull.size(); i++) {
+                    adapterData.remove((int) elementIndicesToCull.get(i));
+                }
             }
         }
     }
