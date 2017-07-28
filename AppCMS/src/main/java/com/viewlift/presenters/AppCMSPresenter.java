@@ -199,6 +199,8 @@ public class AppCMSPresenter {
     private static final String USER_EMAIL_SHARED_PREF_NAME = "user_email_pref";
     private static final String REFRESH_TOKEN_SHARED_PREF_NAME = "refresh_token_pref";
     private static final String USER_LOGGED_IN_TIME_PREF_NAME = "user_loggedin_time_pref";
+    private static final String USER_SETTINGS_PREF_NAME = "user_settings_pref";
+    private static final String USER_CLOSED_CAPTION_PREF_KEY = "user_closed_caption_pref_key";
     private static final String FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME = "facebook_access_token_shared_pref_name";
     private static final String GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME = "google_access_token_shared_pref_name";
     private static final String ACTIVE_SUBSCRIPTION_SKU = "active_subscription_sku_pref_key";
@@ -2525,6 +2527,34 @@ public class AppCMSPresenter {
             SharedPreferences sharedPrefs = context.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
             return sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, userId).commit() &&
                     setLoggedInTime(context);
+        }
+        return false;
+    }
+
+    /**
+     * Method is used to get the user preference with regard to Closed caption
+     *
+     * @param context current context of Activity/Application
+     * @return true/false based upon the user preference
+     */
+    public boolean getClosedCaptionPreference(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_SETTINGS_PREF_NAME, 0);
+            return sharedPrefs.getBoolean(USER_CLOSED_CAPTION_PREF_KEY, false);
+        }
+        return false;
+    }
+
+    /**
+     * Method is used to set the user preference with regard to Closed caption
+     *
+     * @param context current context of Activity/Application
+     * @return true/false if the set operation was successful
+     */
+    public boolean setClosedCaptionPreference(Context context, boolean ccPref) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_SETTINGS_PREF_NAME, 0);
+            return sharedPrefs.edit().putBoolean(USER_CLOSED_CAPTION_PREF_KEY, ccPref).commit();
         }
         return false;
     }
