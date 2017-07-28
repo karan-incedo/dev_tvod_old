@@ -3,7 +3,6 @@ package com.viewlift.views.customviews;
 import android.content.Context;
 import android.media.AudioManager;
 import android.net.Uri;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -47,10 +46,10 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
+import com.viewlift.R;
 
 import rx.Observable;
 import rx.functions.Action1;
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/31/17.

@@ -55,6 +55,7 @@ import com.google.android.gms.iid.InstanceID;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
+import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenResponse;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
@@ -2925,6 +2926,7 @@ public class AppCMSPresenter {
 
     public void logout() {
         if (currentActivity != null) {
+            AppsFlyerUtils.appsFlyerLogoutEvent(currentActivity,getLoggedInUser(currentActivity));
             SharedPreferences sharedPrefs =
                     currentActivity.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
             sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, null).apply();
@@ -3492,7 +3494,7 @@ public class AppCMSPresenter {
                 String url = currentActivity.getString(R.string.app_cms_signup_api_url,
                         appCMSMain.getApiBaseUrl(),
                         appCMSMain.getInternalName());
-                startLoginAsyncTask(url, email, password);
+                startLoginAsyncTask(url, email, password, false);
             } else {
                 signupFromFacebook = false;
                 isSgnupFromGoogle = false;
@@ -3548,7 +3550,7 @@ public class AppCMSPresenter {
             String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                     appCMSMain.getApiBaseUrl(),
                     appCMSMain.getInternalName());
-            startLoginAsyncTask(url, email, password);
+            startLoginAsyncTask(url, email, password, true);
         }
     }
 
@@ -3579,7 +3581,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private void startLoginAsyncTask(String url, String email, String password) {
+    private void startLoginAsyncTask(String url, String email, String password, boolean isSignin) {
         PostAppCMSLoginRequestAsyncTask.Params params = new PostAppCMSLoginRequestAsyncTask.Params
                 .Builder()
                 .url(url)
@@ -3590,6 +3592,7 @@ public class AppCMSPresenter {
                 new Action1<SignInResponse>() {
                     @Override
                     public void call(SignInResponse signInResponse) {
+                        Log.v("printingurl",url) ;
                         if (signInResponse == null) {
                             // Show log error
                             Log.e(TAG, "Email and password are not valid.");
@@ -3617,6 +3620,7 @@ public class AppCMSPresenter {
                                         false,
                                         deeplinkSearchQuery);
                             }
+                            AppsFlyerUtils.appsFlyerLoginEvent(currentActivity,isSignin,signInResponse.getUserId()) ;
                         }
                     }
 
