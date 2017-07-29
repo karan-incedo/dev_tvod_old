@@ -2999,9 +2999,16 @@ public class AppCMSPresenter {
 
     public void logout() {
         if (currentActivity != null) {
-            SharedPreferences sharedPrefs =
-                    currentActivity.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
-            sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, null).apply();
+            setLoggedInUser(currentActivity, null);
+            setLoggedInUserName(currentActivity, null);
+            setLoggedInUserEmail(currentActivity, null);
+            setActiveSubscriptionPrice(currentActivity, 0.0f);
+            setActiveSubscriptionId(currentActivity, null);
+            setActiveSubscriptionSku(currentActivity, null);
+            setActiveSubscriptionPlanName(currentActivity, null);
+            setActiveSubscriptionReceipt(currentActivity, null);
+            setRefreshToken(currentActivity, null);
+            setAuthToken(currentActivity, null);
 
             if (googleApiClient != null && googleApiClient.isConnected()) {
                 Auth.GoogleSignInApi.signOut(googleApiClient);
@@ -3752,6 +3759,15 @@ public class AppCMSPresenter {
                                         entitlementPendingVideoData.closeLauncher,
                                         entitlementPendingVideoData.currentlyPlayingIndex,
                                         entitlementPendingVideoData.relateVideoIds);
+                                entitlementPendingVideoData.pagePath = null;
+                                entitlementPendingVideoData.action = null;
+                                entitlementPendingVideoData.filmTitle = null;
+                                entitlementPendingVideoData.extraData = null;
+                                entitlementPendingVideoData.contentDatum = null;
+                                entitlementPendingVideoData.closeLauncher = false;
+                                entitlementPendingVideoData.currentlyPlayingIndex = -1;
+                                entitlementPendingVideoData.relateVideoIds = null;
+                                entitlementPendingVideoData = null;
                             } else {
                                 NavigationPrimary homePageNavItem = findHomePageNavItem();
                                 if (homePageNavItem != null) {
