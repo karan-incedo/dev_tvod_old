@@ -941,11 +941,11 @@ public class AppCMSPresenter {
         viewGroup.setClickable(isEnabled);
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             if (viewGroup.getChildAt(i) instanceof ViewGroup) {
-                if (viewGroup instanceof RecyclerView) {
-                    ((RecyclerView) viewGroup).setLayoutFrozen(isEnabled);
-                    if (((RecyclerView) viewGroup).getAdapter() instanceof AppCMSViewAdapter) {
+                if (viewGroup.getChildAt(i) instanceof RecyclerView) {
+                    ((RecyclerView) viewGroup.getChildAt(i)).setLayoutFrozen(!isEnabled);
+                    if (((RecyclerView) viewGroup.getChildAt(i)).getAdapter() instanceof AppCMSViewAdapter) {
                         AppCMSViewAdapter appCMSViewAdapter =
-                                (AppCMSViewAdapter) ((RecyclerView) viewGroup).getAdapter();
+                                (AppCMSViewAdapter) ((RecyclerView) viewGroup.getChildAt(i)).getAdapter();
                         appCMSViewAdapter.setClickable(isEnabled);
                     }
                 } else {
@@ -1424,40 +1424,41 @@ public class AppCMSPresenter {
     public synchronized void updateDownloadingStatus(String filmId, final ImageView imageView,
                                                      AppCMSPresenter presenter,
                                                      final Action1<UserVideoDownloadStatus> responseAction) {
-        long videoId = realmController.getDownloadById(filmId).getVideoId_DM();
+        if (realmController.getDownloadById(filmId) != null) {
+            long videoId = realmController.getDownloadById(filmId).getVideoId_DM();
 
-        DownloadManager.Query query = new DownloadManager.Query();
-        query.setFilterById(videoId);
+            DownloadManager.Query query = new DownloadManager.Query();
+            query.setFilterById(videoId);
 
-        /**
-         * Timer code can be optimize with RxJava code
-         */
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
+            /**
+             * Timer code can be optimize with RxJava code
+             */
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
 
-                Cursor c = downloadManager.query(query);
-                if (c.moveToFirst()) {
-                    downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-                    long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-                    long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-                    int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
-                    Log.d(TAG, "download progress =" + downloaded + " totel-> " + totalSize + " " + downloadPercent);
-                    if (downloaded >= totalSize || downloadPercent > 100) {
-                        if (currentActivity != null)
-                            currentActivity.runOnUiThread(() -> appCMSUserDownloadVideoStatusCall
-                                    .call(filmId, presenter, responseAction));
-                        this.cancel();
-                    } else {
-                        if (currentActivity != null)
-                            currentActivity.runOnUiThread(() -> circularImageBar(imageView, downloadPercent));
+                    Cursor c = downloadManager.query(query);
+                    if (c.moveToFirst()) {
+                        downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                        long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                        long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                        int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
+                        Log.d(TAG, "download progress =" + downloaded + " totel-> " + totalSize + " " + downloadPercent);
+                        if (downloaded >= totalSize || downloadPercent > 100) {
+                            if (currentActivity != null)
+                                currentActivity.runOnUiThread(() -> appCMSUserDownloadVideoStatusCall
+                                        .call(filmId, presenter, responseAction));
+                            this.cancel();
+                        } else {
+                            if (currentActivity != null)
+                                currentActivity.runOnUiThread(() -> circularImageBar(imageView, downloadPercent));
+                        }
                     }
+                    c.close();
                 }
-                c.close();
-            }
-        }, 500, 1000);
+            }, 500, 1000);
 
-
+        }
     }
 
     private void circularImageBar(ImageView iv2, int i) {
@@ -1466,11 +1467,6 @@ public class AppCMSPresenter {
         Canvas canvas = new Canvas(b);
         Paint paint = new Paint();
 
-  /*      paint.setColor(Color.DKGRAY);
-        paint.setStrokeWidth(3);
-        paint.setStyle(Paint.Style.STROKE);
-        canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 2, paint);
-*/
         int tintColor = Color.parseColor((this.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
         paint.setColor(tintColor);
         paint.setStrokeWidth(iv2.getWidth() / 7);
@@ -1480,14 +1476,6 @@ public class AppCMSPresenter {
         oval.set(2, 2, iv2.getWidth() - 2, iv2.getHeight() - 2);
         canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
 
-       /* paint.setStrokeWidth(0);
-        paint.setStyle(Paint.Style.FILL);
-        paint.setTextAlign(Paint.Align.CENTER);
-        paint.setColor(Color.parseColor("#FFFFFF"));
-        paint.setTextSize((iv2.getWidth() / 2));
-
-        canvas.drawText("" + i, iv2.getWidth() / 2, ((iv2.getWidth() / 2) + (paint.getTextSize() / 3)), paint);
-*/
         iv2.setImageBitmap(b);
     }
 
