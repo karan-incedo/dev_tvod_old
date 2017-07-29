@@ -225,12 +225,9 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     @Override
     public void onRemotePlayback(long currentPosition, int castingModeChromecast) {
         // TODO: Add a check for autoplay from settings
-        if(castingModeChromecast== CastingUtils.CASTING_MODE_CHROMECAST){
+        if(castingModeChromecast== CastingUtils.CASTING_MODE_CHROMECAST) {
             CastHelper.getInstance(getApplicationContext()).launchRemoteMedia(appCMSPresenter, relateVideoIds,filmId, currentPosition, binder);
-        }else if(castingModeChromecast== CastingUtils.CASTING_MODE_ROKU){
-            CastServiceProvider.getInstance(this).launchRokuCasting(filmId,videoImageUrl,title);
         }
-
     }
 
     @Override

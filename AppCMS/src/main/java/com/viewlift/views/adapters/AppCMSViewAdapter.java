@@ -122,9 +122,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     View childView = parent.getChildAt(i);
                     setBorder(childView, unselectedColor);
                     if (childView instanceof CollectionGridItemView) {
+                        ((CollectionGridItemView) childView).setSelectable(false);
                         for (View collectionGridChild : ((CollectionGridItemView) childView).getViewsToUpdateOnClickEvent()) {
                             if (collectionGridChild instanceof Button) {
-                                collectionGridChild.setEnabled(false);
                                 collectionGridChild.setBackgroundColor(ContextCompat.getColor(v.getContext(),
                                         R.color.disabledButtonColor));
                             }
@@ -132,10 +132,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     }
                 }
                 setBorder(v, selectedColor);
+                ((CollectionGridItemView) v).setSelectable(true);
                 if (v instanceof CollectionGridItemView) {
                     for (View collectionGridChild : ((CollectionGridItemView) v).getViewsToUpdateOnClickEvent()) {
                         if (collectionGridChild instanceof Button) {
-                            collectionGridChild.setEnabled(true);
                             collectionGridChild.setBackgroundColor(selectedColor);
                         }
                     }
@@ -189,11 +189,15 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     @Override
                     public void click(Component childComponent, ContentDatum data) {
                         if (isClickable) {
-                            appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
-                                    data.getId(),
-                                    data.getPlanDetails().get(0).getCountryCode(),
-                                    data.getName(),
-                                    (float) data.getPlanDetails().get(0).getRecurringPaymentAmount());
+                            if (itemView.isSelectable()) {
+                                appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
+                                        data.getId(),
+                                        data.getPlanDetails().get(0).getCountryCode(),
+                                        data.getName(),
+                                        (float) data.getPlanDetails().get(0).getRecurringPaymentAmount());
+                            } else {
+                                itemView.performClick();
+                            }
                         }
                     }
 
@@ -375,8 +379,14 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         elementIndicesToCull.add(i);
                     }
                 }
-                for (int i = 0; i < elementIndicesToCull.size(); i++) {
-                    adapterData.remove((int) elementIndicesToCull.get(i));
+                if (elementIndicesToCull.size() > 0) {
+                    List<ContentDatum> updatedAdapterData = new ArrayList<>();
+                    for (int i = 0; i < adapterData.size(); i++) {
+                        if (!elementIndicesToCull.contains(i)) {
+                            updatedAdapterData.add(adapterData.get(i));
+                        }
+                    }
+                    adapterData = updatedAdapterData;
                 }
             }
         }

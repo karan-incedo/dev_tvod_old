@@ -52,7 +52,7 @@ public class CollectionGridItemView extends BaseView {
     protected int defaultHeight;
     private List<ItemContainer> childItems;
     private List<View> viewsToUpdateOnClickEvent;
-    private boolean allowClickEvents;
+    private boolean selectable;
 
     @Inject
     public CollectionGridItemView(Context context,
@@ -152,6 +152,14 @@ public class CollectionGridItemView extends BaseView {
 
     public int getNumberOfChildren() {
         return childItems.size();
+    }
+
+    public boolean isSelectable() {
+        return selectable;
+    }
+
+    public void setSelectable(boolean selectable) {
+        this.selectable = selectable;
     }
 
     public void bindChild(Context context,
@@ -290,7 +298,6 @@ public class CollectionGridItemView extends BaseView {
                     ((TextView) view).setText("");
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PURCHASE_BUTTON_KEY) {
                     ((TextView) view).setText(childComponent.getText());
-                    view.setEnabled(false);
                     view.setBackgroundColor(ContextCompat.getColor(getContext(),
                             R.color.disabledButtonColor));
                     viewsToUpdateOnClickEvent.add(view);

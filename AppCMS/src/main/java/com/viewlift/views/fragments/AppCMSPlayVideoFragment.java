@@ -278,7 +278,6 @@ public class AppCMSPlayVideoFragment extends Fragment
                 getActivity().finish();
             } else {
                 castProvider.setActivityInstance(getActivity(), mMediaRouteButton);
-                castProvider.playRokuCastPlaybackIfCastConnected();
             }
         } catch (Exception e) {
             Log.e(TAG, "Error initializing cast provider: " + e.getMessage());

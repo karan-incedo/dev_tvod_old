@@ -84,13 +84,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name="com.viewlift.casting.roku.RokuCastingOverlay"
-            android:configChanges="orientation|screenSize"
-            android:launchMode="singleTask">
-
-        </activity>
-
         <provider
             android:name="com.viewlift.models.data.appcms.providers.AppCMSSearchableContentProvider"
             android:authorities="@string/app_cms_search_provider" />
