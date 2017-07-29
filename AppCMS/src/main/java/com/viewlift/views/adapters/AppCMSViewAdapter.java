@@ -132,8 +132,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     }
                 }
                 setBorder(v, selectedColor);
-                ((CollectionGridItemView) v).setSelectable(true);
                 if (v instanceof CollectionGridItemView) {
+                    ((CollectionGridItemView) v).setSelectable(true);
                     for (View collectionGridChild : ((CollectionGridItemView) v).getViewsToUpdateOnClickEvent()) {
                         if (collectionGridChild instanceof Button) {
                             collectionGridChild.setBackgroundColor(selectedColor);
@@ -187,16 +187,18 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
 
                     @Override
-                    public void click(Component childComponent, ContentDatum data) {
+                    public void click(CollectionGridItemView collectionGridItemView,
+                                      Component childComponent,
+                                      ContentDatum data) {
                         if (isClickable) {
-                            if (itemView.isSelectable()) {
+                            if (collectionGridItemView.isSelectable()) {
                                 appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
                                         data.getId(),
                                         data.getPlanDetails().get(0).getCountryCode(),
                                         data.getName(),
                                         (float) data.getPlanDetails().get(0).getRecurringPaymentAmount());
                             } else {
-                                itemView.performClick();
+                                collectionGridItemView.performClick();
                             }
                         }
                     }
@@ -209,7 +211,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             } else {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
-                    public void click(Component childComponent, ContentDatum data) {
+                    public void click(CollectionGridItemView collectionGridItemView,
+                                      Component childComponent,
+                                      ContentDatum data) {
                         if (isClickable) {
                             Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                             String permalink = data.getGist().getPermalink();

@@ -305,7 +305,9 @@ public class CollectionGridItemView extends BaseView {
                 view.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        onClickHandler.click(childComponent, data);
+                        onClickHandler.click(CollectionGridItemView.this,
+                                childComponent,
+                                data);
                     }
                 });
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
@@ -400,7 +402,9 @@ public class CollectionGridItemView extends BaseView {
     }
 
     public interface OnClickHandler {
-        void click(Component childComponent, ContentDatum data);
+        void click(CollectionGridItemView collectionGridItemView,
+                   Component childComponent,
+                   ContentDatum data);
 
         void play(Component childComponent, ContentDatum data);
     }
