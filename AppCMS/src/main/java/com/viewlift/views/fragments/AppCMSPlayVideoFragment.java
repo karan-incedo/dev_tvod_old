@@ -210,7 +210,12 @@ public class AppCMSPlayVideoFragment extends Fragment
                     if (shouldRequestAds && !isAdDisplayed) {
                         requestAds(adsUrl);
                     } else {
-                        videoPlayerView.resumePlayer();
+                        if (beaconMessageThread != null) {
+                            beaconMessageThread.sendBeaconPing = true;
+                            if (!beaconMessageThread.isAlive()) {
+                                beaconMessageThread.start();
+                            }
+                        }
                     }
 
                 } else if (playerState.getPlaybackState() == ExoPlayer.STATE_ENDED) {
@@ -358,7 +363,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 videoPlayerView.pausePlayer();
                 break;
             case CONTENT_RESUME_REQUESTED:
-//                isAdDisplayed = false;
+                isAdDisplayed = false;
                 videoPlayerView.startPlayer();
                 if (beaconMessageThread != null) {
                     beaconMessageThread.sendBeaconPing = true;
