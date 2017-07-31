@@ -503,6 +503,35 @@ public class ViewCreator {
                                 view.setVisibility(View.VISIBLE);
                                 view.forceLayout();
                             }
+                        } else if (componentType == AppCMSUIKeyType.PAGE_SETTINGS_KEY) {
+                            for (Component settingsComponent : component.getComponents()) {
+                                shouldHideComponent = false;
+
+                                AppCMSUIKeyType settingsComponentType = jsonValueKeyMap.get(settingsComponent.getType());
+
+                                if (componentType == null) {
+                                    componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                                }
+
+                                AppCMSUIKeyType settingsComponentKey = jsonValueKeyMap.get(settingsComponent.getKey());
+
+                                if (settingsComponentKey == null) {
+                                    settingsComponentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                                }
+
+                                View settingsView = pageView.findViewFromComponentId(module.getId()
+                                        + settingsComponent.getKey());
+
+                                if (settingsView != null) {
+                                    if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_NAME_VALUE_KEY) {
+                                        ((TextView) settingsView).setText(appCMSPresenter.getLoggedInUserName(context));
+                                    } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_VALUE_KEY) {
+                                        ((TextView) settingsView).setText(appCMSPresenter.getLoggedInUserEmail(context));
+                                    } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_VALUE_KEY) {
+                                        ((TextView) settingsView).setText(appCMSPresenter.getActiveSubscriptionPlanName(context));
+                                    }
+                                }
+                            }
                         }
 
                         if (shouldHideComponent) {
@@ -1817,14 +1846,26 @@ public class ViewCreator {
 
                         case PAGE_SETTINGS_NAME_VALUE_KEY:
                             ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserName(context));
+                            pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
+                                    .id(moduleAPI.getId() + component.getKey())
+                                    .view(componentViewResult.componentView)
+                                    .build());
                             break;
 
                         case PAGE_SETTINGS_EMAIL_VALUE_KEY:
                             ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserEmail(context));
+                            pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
+                                    .id(moduleAPI.getId() + component.getKey())
+                                    .view(componentViewResult.componentView)
+                                    .build());
                             break;
 
                         case PAGE_SETTINGS_PLAN_VALUE_KEY:
                             ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getActiveSubscriptionPlanName(context));
+                            pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
+                                    .id(moduleAPI.getId() + component.getKey())
+                                    .view(componentViewResult.componentView)
+                                    .build());
                             break;
 
                         case PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY:

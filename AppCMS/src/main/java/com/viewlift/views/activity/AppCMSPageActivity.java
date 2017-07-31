@@ -395,6 +395,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } else if (resultCode == RESULT_CANCELED) {
             if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
                 appCMSPresenter.setActiveSubscriptionSku(this, null);
+                handleBack(true, true, false);
             }
         }
     }
