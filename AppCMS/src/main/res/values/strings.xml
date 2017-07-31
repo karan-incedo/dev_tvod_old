@@ -5,6 +5,9 @@
     <string name="app_cms_binder_key">app_cms_binder</string>
     <string name="app_cms_video_player_binder_key">app_cms_video_player_binder</string>
     <string name="app_cms_video_player_bundle_binder_key">app_cms_video_player_bundle_binder</string>
+    <string name="app_cms_download_setting_bundle_key">app_cms_download_setting_bundle_key</string>
+    <string name="app_cms_download_setting_binder_key">app_cms_download_setting_binder_key</string>
+
     <string name="app_cms_bundle_key">app_cms_bundle</string>
     <string name="launch_binder_key">launch_binder</string>
     <string name="video_player_data_key">video_player_data</string>
@@ -172,4 +175,11 @@
     <string name="app_cms_cancel_subscription_not_subscribed_message">You are currently not subscribed to any plans.</string>
     <string name="app_cms_cancel_subscription_subscription_not_valid_message">Subscription is not valid.</string>
     <string name="app_cms_subscribtion_title">Subscription</string>
+
+
+
+    <string name="app_cms_download_quality_title">SET YOUR DOWNLOAD QUALITY</string>
+
+
+    <string name="app_cms_downloas_setting_listner_key">app_cms_downloas_setting_listner_key</string>
 </resources>

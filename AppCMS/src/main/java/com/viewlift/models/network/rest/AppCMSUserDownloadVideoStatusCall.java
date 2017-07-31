@@ -3,11 +3,9 @@ package com.viewlift.models.network.rest;
 import android.app.DownloadManager;
 import android.database.Cursor;
 
-
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
 import com.viewlift.models.data.appcms.downloads.UserVideoDownloadStatus;
-import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import javax.inject.Inject;
@@ -26,9 +24,9 @@ public class AppCMSUserDownloadVideoStatusCall {
     }
 
     public void call(String videoId, AppCMSPresenter appCMSPresenter,
-                     final Action1<UserVideoDownloadStatus> readyAction1) {
+                     final Action1<UserVideoDownloadStatus> readyAction1, String userId) {
         try {
-            DownloadVideoRealm downloadVideoRealm = appCMSPresenter.getRealmController().getDownloadById(videoId);
+            DownloadVideoRealm downloadVideoRealm = appCMSPresenter.getRealmController().getDownloadByIdBelongstoUser(videoId, userId);
             if (downloadVideoRealm == null) {
 
                 Observable.just((UserVideoDownloadStatus) null).subscribe(readyAction1);
@@ -67,16 +65,15 @@ public class AppCMSUserDownloadVideoStatusCall {
                         statusResponse.setDownloadStatus(DownloadStatus.STATUS_PENDING);
                         break;
                     case DownloadManager.STATUS_SUCCESSFUL:
-                                    String uriVideo = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
-                            long totalSize = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                        String uriVideo = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+                        long totalSize = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
 
 
-
-                            appCMSPresenter.getRealmController().updateDownloadInfo(videoId,
-                                    uriVideo,
-                                    appCMSPresenter.downloadedMediaLocalURI(downloadVideoRealm.getVideoThumbId_DM()),
-                                    totalSize,
-                                    DownloadStatus.STATUS_SUCCESSFUL);
+                        appCMSPresenter.getRealmController().updateDownloadInfo(videoId,
+                                uriVideo,
+                                appCMSPresenter.downloadedMediaLocalURI(downloadVideoRealm.getVideoThumbId_DM()),
+                                totalSize,
+                                DownloadStatus.STATUS_SUCCESSFUL);
 
                         statusResponse.setDownloadStatus(DownloadStatus.STATUS_SUCCESSFUL);
                         statusResponse.setVideoSize(totalSize);

@@ -32,6 +32,7 @@ public class DownloadVideoRealm extends RealmObject {
     private String videoNumber;
     private String permalink;
     private String posterImageUrl;
+    private String userId;
 
 
     public String getVideoId() {
@@ -208,5 +209,13 @@ public class DownloadVideoRealm extends RealmObject {
 
     public void setPosterImageUrl(String posterImageUrl) {
         this.posterImageUrl = posterImageUrl;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

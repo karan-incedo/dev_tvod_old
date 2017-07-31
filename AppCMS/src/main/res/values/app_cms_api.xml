@@ -139,6 +139,7 @@
     <string name="app_cms_page_video_play_button_key">playButton</string>
     <string name="app_cms_page_video_description_key">videoDescriptionText</string>dd
     <string name="app_cms_page_video_title_key">videoTitle</string>
+    <string name="app_cms_page_download_setting_title_key">DownloadQualityTitle</string>
     <string name="app_cms_page_video_subtitle_key">videoSubTitle</string>
     <string name="app_cms_page_video_ageLabel_key">ageLabel</string>
     <string name="app_cms_page_video_share_key">shareButton</string>
@@ -152,6 +153,8 @@
     <string name="app_cms_page_video_credits_directors">Directors</string>
     <string name="app_cms_page_video_credits_starring_key">Starring</string>
     <string name="app_cms_page_autoplay_module_key">AC AutoPlay 01</string>
+
+    <string name="app_cms_page_download_setting_module_key">AC DownloadSettings 01</string>
     <string name="app_cms_page_api_thumbnail_url_key">thumbnail</string>
     <string name="app_cms_page_api_title_key">title</string>
     <string name="app_cms_page_api_description_key">description</string>
@@ -184,6 +187,7 @@
     <!-- AppAppCMSPageUIPage names for Actions -->
     <string name="app_cms_pagename_authscreen_key">Authentication Screen</string>
     <string name="app_cms_pagename_splashscreen_key">Splash Screen</string>
+    <string name="app_cms_pagename_downloadsettingscreen_key">Download Settings</string>
     <string name="app_cms_pagename_homescreen_key">Home Page</string>
     <string name="app_cms_pagename_subscriptionscreen_key">View Plans</string>
     <string name="app_cms_pagename_historyscreen_key">My History</string>
@@ -278,7 +282,7 @@
     <string name="app_cms_image_with_resize_query">%1$s?impolicy=resize&amp;w=%2$d&amp;h=%3$d</string>
 
     <!--TV Specific-->
-    <string name="app_cms_header_view">headerView</string>
+    <string name="app_cms_header_view">headerView</string>`
     <string name="app_cms_videodetail_header_view">videoDetailHeader</string>
 
 
@@ -295,4 +299,7 @@
     <string name="app_cms_autoplay_cancel_button_key">cancelButton</string>
     <string name="app_cms_autoplay_playing_in_label_key">playInLabel</string>
     <string name="app_cms_autoplay_timer_label_key">timerLabel</string>
+
+    <string name="app_cms_download_quality_cancel_button_key">cancelButton</string>
+    <string name="app_cms_download_quality_continue_button_key">continueButton</string>
 </resources>

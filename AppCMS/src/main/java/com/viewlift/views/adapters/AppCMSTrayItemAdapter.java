@@ -141,7 +141,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                 appCMSPresenter,
                                 userVideoDownloadStatus -> {
                                     if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
-                                        holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.cancel);
+                                        holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.crossicon);
                                         loadImage(holder.itemView.getContext(), userVideoDownloadStatus.getThumbUri(), holder.appCMSContinueWatchingVideoImage);
                                         holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
                                     } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_RUNNING) {
@@ -149,7 +149,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                     }
                                     contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
 
-                                });
+                                },
+                                appCMSPresenter.getLoggedInUser(holder.itemView.getContext()));
                         holder.appCMSContinueWatchingSize.setText("Cancel".toUpperCase());
                         holder.appCMSContinueWatchingSize.setOnClickListener(v -> {
                             delete(contentDatum);
@@ -166,7 +167,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
                         break;
                     case STATUS_SUCCESSFUL:
-                        holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.cancel);
+                        holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.crossicon);
                         break;
 
                 }
@@ -463,6 +464,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
         if (isDownload) {
             Log.d(TAG, " Ofline play is under process ... ");
+
         } else {
 
             String permalink = data.getGist().getPermalink();
@@ -621,7 +623,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         ImageButton appCMSContinueWatchingDeleteButton;
 
         @BindView(R.id.app_cms_continue_watching_video_size)
-        TextView appCMSContinueWatchingDuration;
+        TextView appCMSContinueWatchingSize;
+
 
         @BindView(R.id.app_cms_continue_watching_separator_view)
         View appCMSContinueWatchingSeparatorView;
@@ -630,7 +633,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         TextView appCMSNotItemLabel;
 
         @BindView(R.id.app_cms_continue_watching_duration)
-        TextView appCMSContinueWatchingSize;
+        TextView appCMSContinueWatchingDuration;
 
         public ViewHolder(View itemView, boolean isHistoryView) {
             super(itemView);

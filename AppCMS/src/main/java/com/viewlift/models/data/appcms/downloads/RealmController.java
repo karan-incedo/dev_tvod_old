@@ -3,7 +3,6 @@ package com.viewlift.models.data.appcms.downloads;
 import android.app.Activity;
 import android.app.Application;
 import android.support.v4.app.Fragment;
-import android.util.Size;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -81,6 +80,21 @@ public class RealmController {
         return realm.where(DownloadVideoRealm.class).findAll();
     }
 
+    public RealmResults<DownloadVideoRealm> getDownloadesByUserId(String userId) {
+
+        return realm.where(DownloadVideoRealm.class).contains("userId", userId).findAll();
+    }
+
+    public RealmResults<DownloadVideoRealm> getAllUnfinishedDownloades() {
+
+        String[] status = {String.valueOf(DownloadStatus.STATUS_FAILED),
+                String.valueOf(DownloadStatus.STATUS_PAUSED),
+                String.valueOf(DownloadStatus.STATUS_PENDING),
+                String.valueOf(DownloadStatus.STATUS_RUNNING)};
+        return realm.where(DownloadVideoRealm.class).in("downloadStatus", status).findAll();
+
+    }
+
     public RealmResults<DownloadVideoRealm> getDownloadesByStatus(String status) {
 
         return realm.where(DownloadVideoRealm.class).contains("downloadStatus", status).findAll();
@@ -91,7 +105,19 @@ public class RealmController {
         return realm.where(DownloadVideoRealm.class).equalTo("videoId", videoId).findFirst();
     }
 
-    public void addDownload(DownloadVideoRealm downloadVideoRealm){
+    public DownloadVideoRealm getDownloadByIdBelongstoUser(String videoId, String userId) {
+
+
+        return realm.where(DownloadVideoRealm.class)
+                .beginGroup()
+                .equalTo("videoId", videoId)
+                .equalTo("userId", userId)
+                .endGroup()
+                .findFirst();
+
+    }
+
+    public void addDownload(DownloadVideoRealm downloadVideoRealm) {
 
         realm.beginTransaction();
         realm.insert(downloadVideoRealm);
@@ -99,7 +125,7 @@ public class RealmController {
     }
 
 
-    public void updateDownloadInfo(String videoId , String filmUrl, String thumbUrl,long totlsize, DownloadStatus status) {
+    public void updateDownloadInfo(String videoId, String filmUrl, String thumbUrl, long totlsize, DownloadStatus status) {
         DownloadVideoRealm toEdit = realm.where(DownloadVideoRealm.class)
                 .equalTo("videoId", videoId).findFirst();
 
@@ -119,6 +145,7 @@ public class RealmController {
 
     /**
      * This may be usefull in future when we try to implement "downloadedSoFar" value also
+     *
      * @param videoId
      * @param filmUrl
      * @param thumbUrl
@@ -126,7 +153,7 @@ public class RealmController {
      * @param downloadedSoFar
      * @param status
      */
-    public void updateDownloadInfo(String videoId , String filmUrl, String thumbUrl,long totlsize,long downloadedSoFar, DownloadStatus status) {
+    public void updateDownloadInfo(String videoId, String filmUrl, String thumbUrl, long totlsize, long downloadedSoFar, DownloadStatus status) {
         DownloadVideoRealm toEdit = realm.where(DownloadVideoRealm.class)
                 .equalTo("videoId", videoId).findFirst();
 
@@ -145,10 +172,10 @@ public class RealmController {
 
     }
 
-    public void removeFromDB(DownloadVideoRealm downloadVideoRealm){
+    public void removeFromDB(DownloadVideoRealm downloadVideoRealm) {
 
         DownloadVideoRealm toEdit = realm.where(DownloadVideoRealm.class)
-            .equalTo("videoId", downloadVideoRealm.getVideoId()).findFirst();
+                .equalTo("videoId", downloadVideoRealm.getVideoId()).findFirst();
 
         if (!realm.isInTransaction())
             realm.beginTransaction();
