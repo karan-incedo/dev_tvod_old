@@ -55,7 +55,7 @@ public class CastHelper {
     private List<String> listCompareRelatedVideosId;
 
     public MediaRouteSelector mMediaRouteSelector;
-    private MyMediaRouterCallback mMediaRouterCallback, routerCall;
+    private MyMediaRouterCallback mMediaRouterCallback;
     private AppCMSPresenter appCMSPresenterComponenet;
     public String appName;
     public List<Object> routes = new ArrayList<>();
@@ -76,7 +76,6 @@ public class CastHelper {
                 .build();
         appName = mAppContext.getResources().getString(R.string.app_name);
         mMediaRouterCallback = new MyMediaRouterCallback();
-        routerCall = new MyMediaRouterCallback();
 
         setCastDiscovery();
 
@@ -248,17 +247,26 @@ public class CastHelper {
             listRelatedVideosDetails = new ArrayList<ContentDatum>();
             listRelatedVideosId = new ArrayList<String>();
             listCompareRelatedVideosId = new ArrayList<String>();
-
-            if (!relateVideoId.contains(filmId)) {
-                isMainMediaId = true;
-                listRelatedVideosId.add(filmId);
-                currentPlayingIndex = 0;
-            } else {
-                currentPlayingIndex = relateVideoId.indexOf(filmId);
+            if (filmId == null && relateVideoId == null) {
+                return;
             }
+            if (relateVideoId != null) {
 
-            listRelatedVideosId.addAll(relateVideoId);
-            listCompareRelatedVideosId.addAll(listRelatedVideosId);
+                if (!relateVideoId.contains(filmId)) {
+                    isMainMediaId = true;
+                    listRelatedVideosId.add(filmId);
+                    currentPlayingIndex = 0;
+                } else {
+                    currentPlayingIndex = relateVideoId.indexOf(filmId);
+                }
+
+                listRelatedVideosId.addAll(relateVideoId);
+                listCompareRelatedVideosId.addAll(listRelatedVideosId);
+            } else if (filmId != null) {
+                currentPlayingIndex = 0;
+                listRelatedVideosId.add(filmId);
+                listCompareRelatedVideosId.add(filmId);
+            }
             binderPlayScreen = binder;
             callRelatedVideoData();
         }
@@ -575,9 +583,9 @@ public class CastHelper {
      * removes those for which {@link #onFilterRoute} returns false.
      * </p>
      *
-     * @param routes The list of routes to filter in-place, never null.
+     * @param route The list of routes to filter in-place, never null.
      */
-    public void onFilterRoutes(@NonNull List<Object> routes) {
+    public void onFilterRoutes(@NonNull List<Object> route) {
         for (int i = routes.size(); i-- > 0; ) {
             if (routes.get(i) instanceof MediaRouter.RouteInfo)
                 if (!onFilterRoute((MediaRouter.RouteInfo) routes.get(i))) {
@@ -618,8 +626,9 @@ public class CastHelper {
         if (CastContext.getSharedInstance(mAppContext).getSessionManager() != null) {
 
             try {
-                if (CastContext.getSharedInstance(mAppContext).getSessionManager() != null)
+                if (CastContext.getSharedInstance(mAppContext).getSessionManager() != null) {
                     CastContext.getSharedInstance(mAppContext).getSessionManager().removeSessionManagerListener(mSessionManagerListener, CastSession.class);
+                }
 
                 CastContext.getSharedInstance(mAppContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().removeListener(remoteListener);
 
@@ -637,5 +646,4 @@ public class CastHelper {
         }
     }
 }
-
 
