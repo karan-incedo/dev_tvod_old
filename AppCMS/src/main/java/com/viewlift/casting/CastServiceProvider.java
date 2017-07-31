@@ -126,7 +126,6 @@ public class CastServiceProvider {
         boolean isConnected = false;
         if (mCastHelper.isRemoteDeviceConnected()) {
 
-            mCastHelper.openRemoteController();
             launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
             isConnected = true;
         }
