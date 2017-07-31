@@ -16,7 +16,6 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Mobile;
 import com.viewlift.models.data.appcms.ui.page.TabletLandscape;
 import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
-import com.viewlift.presenters.AppCMSActionType;
 
 import java.util.Map;
 
@@ -331,7 +330,10 @@ public abstract class BaseView extends FrameLayout {
                         lm = 0;
                     }
                     break;
-
+                case PAGE_DOWNLOAD_SETTING_TITLE_KEY:
+                    gravity = Gravity.CENTER_HORIZONTAL;
+                    bm = viewHeight / 2;
+                    break;
                 case PAGE_CAROUSEL_TITLE_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
                     if (isLandscape(getContext()) || !isTablet(getContext())) {
@@ -425,7 +427,7 @@ public abstract class BaseView extends FrameLayout {
                 layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
                 layoutParams.setMargins(0, tm, 0, bm);
             } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY) {
-                tm  *= +1.6;
+                tm *= +1.6;
                 layoutParams.setMargins(lm, tm, rm, bm);
             }
         }

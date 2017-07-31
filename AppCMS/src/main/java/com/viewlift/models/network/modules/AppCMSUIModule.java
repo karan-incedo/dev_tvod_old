@@ -120,6 +120,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_splashscreen_key),
                 AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_downloadsettingscreen_key),
+                AppCMSUIKeyType.ANDROID_DOWNLOAD_SETTINGS_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_homescreen_key),
                 AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_subscriptionscreen_key),
@@ -306,6 +308,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_DESCRIPTION_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_title_key),
                 AppCMSUIKeyType.PAGE_VIDEO_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_setting_title_key),
+                AppCMSUIKeyType.PAGE_DOWNLOAD_SETTING_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_subtitle_key),
                 AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_share_key),
@@ -338,6 +342,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_DETAIL_HEADER_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_autoplay_module_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_setting_module_key),
+                AppCMSUIKeyType.PAGE_DOWNLOAD_SETTING_MODULE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_back_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_BACK_KEY);
@@ -377,6 +383,12 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_timer_label_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_TIMER_LABEL_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_download_quality_cancel_button_key),
+                AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_download_quality_continue_button_key),
+                AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CCONTINUE_BUTTON_KEY);
 
         jsonValueKeyMap.put("", AppCMSUIKeyType.PAGE_EMPTY_KEY);
         jsonValueKeyMap.put(null, AppCMSUIKeyType.PAGE_NULL_KEY);

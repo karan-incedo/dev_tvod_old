@@ -68,7 +68,9 @@ import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Mpeg;
 import com.viewlift.models.data.appcms.api.Settings;
+import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.api.SubscriptionRequest;
+import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
 import com.viewlift.models.data.appcms.downloads.RealmController;
@@ -137,6 +139,7 @@ import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
 import com.viewlift.models.network.utility.MainUtils;
+import com.viewlift.views.activity.AppCMSDownloadQualityActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
@@ -144,6 +147,7 @@ import com.viewlift.views.activity.AppCMSSearchActivity;
 import com.viewlift.views.activity.AutoplayActivity;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
+import com.viewlift.views.binders.AppCMSDownloadQualityBinder;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.OnInternalEvent;
@@ -155,8 +159,11 @@ import com.viewlift.views.fragments.AppCMSResetPasswordFragment;
 import com.viewlift.views.fragments.AppCMSSearchFragment;
 import com.viewlift.views.fragments.AppCMSSettingsFragment;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
@@ -201,6 +208,7 @@ public class AppCMSPresenter {
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
+
     private static final String USER_NAME_SHARED_PREF_NAME = "user_name_pref";
     private static final String USER_EMAIL_SHARED_PREF_NAME = "user_email_pref";
     private static final String REFRESH_TOKEN_SHARED_PREF_NAME = "refresh_token_pref";
@@ -215,6 +223,9 @@ public class AppCMSPresenter {
     private static final String ACTIVE_SUBSCRIPTION_RECEIPT = "active_subscription_token_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PLAN_NAME = "active_subscription_plan_name_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PRICE_NAME = "active_subscription_plan_price_pref_key";
+
+    private static final String USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME = "user_download_quality_pref";
+
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String ANONYMOUS_AUTH_TOKEN_PREF_NAME = "anonymous_auth_token_pref_key";
     private static final long MILLISECONDS_PER_SECOND = 1000L;
@@ -291,6 +302,7 @@ public class AppCMSPresenter {
     private Uri deeplinkSearchQuery;
     private MetaPage splashPage;
     private MetaPage loginPage;
+    private MetaPage downloadQualityPage;
     private MetaPage homePage;
     private MetaPage subscriptionPage;
     private PlatformType platformType;
@@ -547,7 +559,7 @@ public class AppCMSPresenter {
     }
 
     public void getUserVideoDownloadStatus(String filmId, Action1<UserVideoDownloadStatus> responseAction) {
-        appCMSUserDownloadVideoStatusCall.call(filmId, this, responseAction);
+        appCMSUserDownloadVideoStatusCall.call(filmId, this, responseAction, getLoggedInUser(currentActivity));
     }
 
     public void signinAnonymousUser() {
@@ -632,6 +644,17 @@ public class AppCMSPresenter {
                     } else {
                         playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url), "");
                     }
+                } else {
+                    requestAds = false;
+                    isTrailer = true;
+                }
+                if (contentDatum != null &&
+                        contentDatum.getGist() != null &&
+                        contentDatum.getGist().getVideoImageUrl() != null) {
+                    playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url), contentDatum.getGist().getVideoImageUrl());
+                } else {
+                    playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url), "");
+                }
 
                     playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_font_color_key),
                             appCMSMain.getBrand().getGeneral().getTextColor());
@@ -1248,7 +1271,7 @@ public class AppCMSPresenter {
     public void removeDownloadedFile(String filmId, final Action1<UserVideoDownloadStatus> resultAction1) {
         removeDownloadedFile(filmId);
 
-        appCMSUserDownloadVideoStatusCall.call(filmId, this, resultAction1);
+        appCMSUserDownloadVideoStatusCall.call(filmId, this, resultAction1, getLoggedInUser(currentActivity));
 
     }
 
@@ -1261,6 +1284,75 @@ public class AppCMSPresenter {
         realmController.removeFromDB(downloadVideoRealm);
     }
 
+
+    /**
+     * This function will be called in two cases
+     * 1) When 1st time downloading start
+     * 2) From settings option any time
+     *
+     * @param contentDatum  pass null from setting screen button / This value could be usefull
+     *                      in future we are going to implement the MPEG rendition quality
+     *                      dynamically.
+     * @param resultAction1 pass null from setting screen button
+     */
+    public void showDownloadQualityScreen(final ContentDatum contentDatum,
+                                          final Action1<UserVideoDownloadStatus> resultAction1) {
+
+
+        AppCMSPageAPI apiData = new AppCMSPageAPI();
+        List<Module> moduleList = new ArrayList<>();
+        Module module = new Module();
+
+        List<ContentDatum> contentData = new ArrayList<>();
+        ContentDatum contentDatumLocal = new ContentDatum();
+        StreamingInfo streamingInfo = new StreamingInfo();
+        VideoAssets videoAssets = new VideoAssets();
+        List<Mpeg> mpegs = new ArrayList<>();
+
+        String renditionValueArray[] = {"1080p", "720p", "360p"};
+        for (String renditionValue : renditionValueArray) {
+            Mpeg mpeg = new Mpeg();
+            mpeg.setRenditionValue(renditionValue);
+            mpegs.add(mpeg);
+        }
+
+
+        videoAssets.setMpeg(mpegs);
+        videoAssets.setType("videoAssets");
+
+        streamingInfo.setVideoAssets(videoAssets);
+        contentDatumLocal.setStreamingInfo(streamingInfo);
+
+
+        contentData.add(contentDatumLocal);
+        module.setContentData(contentData);
+
+        moduleList.add(module);
+        apiData.setModules(moduleList);
+
+        launchDownloadQualityActivity(currentActivity,
+                navigationPages.get(downloadQualityPage.getPageId()),
+                apiData,
+                downloadQualityPage.getPageId(),
+                downloadQualityPage.getPageName(),
+                pageIdToPageNameMap.get(downloadQualityPage.getPageId()),
+                loadFromFile,
+                false,
+                true,
+                false,
+                false,
+                getAppCMSDownloadQualityBinder(currentActivity,
+                        navigationPages.get(downloadQualityPage.getPageId()),
+                        apiData,
+                        downloadQualityPage.getPageId(),
+                        downloadQualityPage.getPageName(),
+                        downloadQualityPage.getPageName(),
+                        loadFromFile,
+                        true,
+                        true,
+                        false,
+                        contentDatum, resultAction1));
+    }
 
     /**
      * Implementation of download manager gives us facility of Async downloading of multiple video
@@ -1280,6 +1372,7 @@ public class AppCMSPresenter {
      * @param resultAction1
      * @param add           In future development this is need to change in Enum as we may perform options Add/Pause/Resume/Delete from here onwards
      */
+
     public void editDownload(final ContentDatum contentDatum,
                              final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
 
@@ -1291,16 +1384,44 @@ public class AppCMSPresenter {
 
 
             int bitrate = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
-            downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
 
+            String downloadQualityRendition = getUserDownloadQualityPref(currentActivity);
+            Map<String, String> urlRenditionMap = new HashMap<String, String>();
             for (Mpeg mpeg : contentDatum.getStreamingInfo().getVideoAssets().getMpeg()) {
-                if (mpeg.getBitrate() < bitrate) {
-                    downloadURL = mpeg.getUrl();
-                    bitrate = mpeg.getBitrate();
+                urlRenditionMap.put(mpeg.getRenditionValue().replace("_", "").trim(), mpeg.getUrl());
+            }
+            downloadURL = urlRenditionMap.get(downloadQualityRendition);
+
+            if (downloadQualityRendition != null) {
+                if (downloadURL == null && downloadQualityRendition.contains("360")) {
+                    if (urlRenditionMap.get("720p") != null) {
+                        downloadURL = urlRenditionMap.get("720p");
+                    } else if (urlRenditionMap.get("1080p") != null) {
+                        downloadURL = urlRenditionMap.get("1080p");
+                    }
+                } else if (downloadURL == null && downloadQualityRendition.contains("720")) {
+                    if (urlRenditionMap.get("360p") != null) {
+                        downloadURL = urlRenditionMap.get("360p");
+                    } else if (urlRenditionMap.get("1080p") != null) {
+                        downloadURL = urlRenditionMap.get("1080p");
+                    }
+
+                } else if (downloadURL == null && downloadQualityRendition.contains("1080")) {
+
+                    if (urlRenditionMap.get("720p") != null) {
+                        downloadURL = urlRenditionMap.get("720p");
+                    } else if (urlRenditionMap.get("360p") != null) {
+                        downloadURL = urlRenditionMap.get("360p");
+                    }
+                } else if (downloadURL == null) {
+                    downloadURL = urlRenditionMap.get(urlRenditionMap.keySet().toArray()[0]);
                 }
+            } else {
+                downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
             }
 
-            DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL))
+
+            DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
                     .setTitle(contentDatum.getGist().getTitle())
                     .setDescription(contentDatum.getGist().getDescription())
                     .setAllowedOverRoaming(false)
@@ -1318,7 +1439,7 @@ public class AppCMSPresenter {
 
             createLocalEntry(enqueueId, thumbEnqueueId, contentDatum, downloadURL);
 
-            appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), this, resultAction1);
+            appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), this, resultAction1, getLoggedInUser(currentActivity));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1329,6 +1450,7 @@ public class AppCMSPresenter {
         DownloadVideoRealm downloadVideoRealm = new DownloadVideoRealm();
         downloadVideoRealm.setVideoThumbId_DM(thumbEnqueueId);
         downloadVideoRealm.setVideoId_DM(enqueueId);
+
         downloadVideoRealm.setVideoId(contentDatum.getGist().getId());
         downloadVideoRealm.setVideoTitle(contentDatum.getGist().getTitle());
         downloadVideoRealm.setVideoDescription(contentDatum.getGist().getDescription());
@@ -1341,7 +1463,7 @@ public class AppCMSPresenter {
 
         downloadVideoRealm.setPermalink(contentDatum.getGist().getPermalink());
         downloadVideoRealm.setDownloadStatus(DownloadStatus.STATUS_PENDING);
-
+        downloadVideoRealm.setUserId(getLoggedInUser(currentActivity));
 
         realmController.addDownload(downloadVideoRealm);
     }
@@ -1438,36 +1560,34 @@ public class AppCMSPresenter {
 
     public synchronized void updateDownloadingStatus(String filmId, final ImageView imageView,
                                                      AppCMSPresenter presenter,
-                                                     final Action1<UserVideoDownloadStatus> responseAction) {
-        if (realmController.getDownloadById(filmId) != null) {
-            long videoId = realmController.getDownloadById(filmId).getVideoId_DM();
+                                                     final Action1<UserVideoDownloadStatus> responseAction, String userId) {
+        long videoId = realmController.getDownloadByIdBelongstoUser(filmId, userId).getVideoId_DM();
+            
+        DownloadManager.Query query = new DownloadManager.Query();
+        query.setFilterById(videoId);
 
-            DownloadManager.Query query = new DownloadManager.Query();
-            query.setFilterById(videoId);
+        /**
+         * Timer code can be optimize with RxJava code
+         */
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
 
-            /**
-             * Timer code can be optimize with RxJava code
-             */
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-
-                    Cursor c = downloadManager.query(query);
-                    if (c.moveToFirst()) {
-                        downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-                        long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-                        long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-                        int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
-                        Log.d(TAG, "download progress =" + downloaded + " totel-> " + totalSize + " " + downloadPercent);
-                        if (downloaded >= totalSize || downloadPercent > 100) {
-                            if (currentActivity != null)
-                                currentActivity.runOnUiThread(() -> appCMSUserDownloadVideoStatusCall
-                                        .call(filmId, presenter, responseAction));
-                            this.cancel();
-                        } else {
-                            if (currentActivity != null)
-                                currentActivity.runOnUiThread(() -> circularImageBar(imageView, downloadPercent));
-                        }
+                Cursor c = downloadManager.query(query);
+                if (c.moveToFirst()) {
+                    downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                    long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                    long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                    int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
+                    Log.d(TAG, "download progress =" + downloaded + " totel-> " + totalSize + " " + downloadPercent);
+                    if (downloaded >= totalSize || downloadPercent > 100) {
+                        if (currentActivity != null)
+                            currentActivity.runOnUiThread(() -> appCMSUserDownloadVideoStatusCall
+                                    .call(filmId, presenter, responseAction, getLoggedInUser(currentActivity)));
+                        this.cancel();
+                    } else {
+                        if (currentActivity != null)
+                            currentActivity.runOnUiThread(() -> circularImageBar(imageView, downloadPercent));
                     }
                     c.close();
                 }
@@ -1484,7 +1604,7 @@ public class AppCMSPresenter {
 
         int tintColor = Color.parseColor((this.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
         paint.setColor(tintColor);
-        paint.setStrokeWidth(iv2.getWidth() / 7);
+        paint.setStrokeWidth(iv2.getWidth() / 10);
         paint.setStyle(Paint.Style.FILL);
         final RectF oval = new RectF();
         paint.setStyle(Paint.Style.STROKE);
@@ -1530,12 +1650,12 @@ public class AppCMSPresenter {
     }
 
     public void clearDownload(final Action1<UserVideoDownloadStatus> resultAction1) {
-        for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloads()) {
+        for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloadesByUserId(getLoggedInUser(currentActivity))) {
 
             removeDownloadedFile(downloadVideoRealm.getVideoId());
         }
 
-        appCMSUserDownloadVideoStatusCall.call("", this, resultAction1);
+        appCMSUserDownloadVideoStatusCall.call("", this, resultAction1, getLoggedInUser(currentActivity));
     }
 
     public void clearWatchlist(final Action1<AppCMSAddToWatchlistResult> resultAction1) {
@@ -1585,8 +1705,25 @@ public class AppCMSPresenter {
             settings.setLazyLoad(false);
 
             List<ContentDatum> contentData = new ArrayList<>();
-            for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloads()) {
-                ContentDatum data = createContentDatum(downloadVideoRealm);
+
+            for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloadesByUserId(getLoggedInUser(currentActivity))) {
+                ContentDatum data = new ContentDatum();
+                Gist gist = new Gist();
+                gist.setId(downloadVideoRealm.getVideoId());
+                gist.setTitle(downloadVideoRealm.getVideoTitle());
+                gist.setDescription(downloadVideoRealm.getVideoDescription());
+                gist.setPosterImageUrl(downloadVideoRealm.getVideoFileURL());
+                gist.setVideoImageUrl(downloadVideoRealm.getVideoFileURL());
+
+                gist.setPermalink(downloadVideoRealm.getPermalink());
+                gist.setDownloadStatus(downloadVideoRealm.getDownloadStatus());
+                gist.setRuntime(downloadVideoRealm.getVideoDuration());
+
+
+                data.setGist(gist);
+                data.setShowQueue(true);
+                data.setUserId(getLoggedInUser(currentActivity));
+                data.setAddedDate(downloadVideoRealm.getDownloadDate());
 
                 contentData.add(data);
             }
@@ -1791,7 +1928,6 @@ public class AppCMSPresenter {
             final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
             GetAppCMSVideoDetailAsyncTask.Params params =
                     new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url).build();
-
             if (!binder.isOffline()) {
                 new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
                         new Action1<AppCMSVideoDetail>() {
@@ -2630,12 +2766,27 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public String getUserDownloadQualityPref(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, 0);
+            return sharedPrefs.getString(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, null);
+        }
+    }
+         
     public String getAnonymousUserToken(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(ANONYMOUS_AUTH_TOKEN_PREF_NAME, 0);
             return sharedPrefs.getString(ANONYMOUS_AUTH_TOKEN_PREF_NAME, null);
         }
         return null;
+    }
+
+    public boolean setUserDownloadQualityPref(Context context, String downloadQuality) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, 0);
+            return sharedPrefs.edit().putString(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, downloadQuality).commit() &&
+                    setLoggedInTime(context);
+        }
     }
 
     public boolean setAnonymousUserToken(Context context, String anonymousAuthToken) {
@@ -3910,6 +4061,35 @@ public class AppCMSPresenter {
         return args;
     }
 
+    private AppCMSDownloadQualityBinder getAppCMSDownloadQualityBinder(Activity activity,
+                                                                       AppCMSPageUI appCMSPageUI,
+                                                                       AppCMSPageAPI appCMSPageAPI,
+                                                                       String pageId,
+                                                                       String pageName,
+                                                                       String screenName,
+                                                                       boolean loadedFromFile,
+                                                                       boolean appbarPresent,
+                                                                       boolean fullScreenEnabled,
+                                                                       boolean navbarPresent,
+                                                                       ContentDatum contentDatum,
+                                                                       Action1<UserVideoDownloadStatus> resultAction
+    ) {
+        return new AppCMSDownloadQualityBinder(appCMSMain,
+                appCMSPageUI,
+                appCMSPageAPI,
+                pageId,
+                pageName,
+                screenName,
+                loadedFromFile,
+                appbarPresent,
+                fullScreenEnabled,
+                navbarPresent,
+                isUserLoggedIn(activity),
+                jsonValueKeyMap,
+                contentDatum,
+                resultAction);
+    }
+
     private AppCMSBinder getAppCMSBinder(Activity activity,
                                          AppCMSPageUI appCMSPageUI,
                                          AppCMSPageAPI appCMSPageAPI,
@@ -4049,6 +4229,28 @@ public class AppCMSPresenter {
         currentActivity.startActivity(intent);
     }
 
+    private void launchDownloadQualityActivity(Activity activity,
+                                               AppCMSPageUI appCMSPageUI,
+                                               AppCMSPageAPI appCMSPageAPI,
+                                               String pageId,
+                                               String pageName,
+                                               String screenName,
+                                               boolean loadFromFile,
+                                               boolean appbarPresent,
+                                               boolean fullscreenEnabled,
+                                               boolean navbarPresent,
+                                               boolean sendCloseAction,
+                                               AppCMSDownloadQualityBinder binder) {
+
+
+        Bundle args = new Bundle();
+        args.putBinder(activity.getString(R.string.app_cms_download_setting_binder_key), binder);
+        Intent intent = new Intent(currentActivity, AppCMSDownloadQualityActivity.class);
+        intent.putExtra(currentActivity.getString(R.string.app_cms_download_setting_bundle_key), args);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        currentActivity.startActivity(intent);
+    }
+
     private void getAppCMSSite(final Activity activity,
                                final AppCMSMain main,
                                final PlatformType platformType) {
@@ -4164,6 +4366,10 @@ public class AppCMSPresenter {
             if (loginPageIndex >= 0) {
                 loginPage = metaPageList.get(loginPageIndex);
             }
+            int DownloadQualitysIndex = getdownloadQualityPage(metaPageList);
+            if (DownloadQualitysIndex >= 0) {
+                downloadQualityPage = metaPageList.get(DownloadQualitysIndex);
+            }
             int homePageIndex = getHomePage(metaPageList);
             if (homePageIndex >= 0) {
                 homePage = metaPageList.get(homePageIndex);
@@ -4215,6 +4421,7 @@ public class AppCMSPresenter {
         if (metaPage.getPageId().equalsIgnoreCase("f43c6e4f-7635-4577-bf07-af16bedb9886")) {
             metaPage.setPageUI("https://s3.amazonaws.com/appcms-config/d9162bc2-1228-43da-84bf-e0e56421fe79/android/f43c6e4f-7635-4577-bf07-af16bedb9886.json");
         }
+
         Log.d(TAG, "Processing meta page " +
                 metaPage.getPageName() + ": " +
                 metaPage.getPageId() + " " +
@@ -4222,6 +4429,7 @@ public class AppCMSPresenter {
                 metaPage.getPageAPI());
         pageIdToPageAPIUrlMap.put(metaPage.getPageId(), metaPage.getPageAPI());
         pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
+
         getAppCMSPage(activity.getString(R.string.app_cms_url_with_appended_timestamp,
                 metaPage.getPageUI(),
                 main.getTimestamp()),
@@ -4248,6 +4456,32 @@ public class AppCMSPresenter {
                 loadFromFile);
     }
 
+    /**
+     * Temp menthod for loading download Quality screen from Assets till json is not updated at Server
+     */
+    public AppCMSPageUI getDataFromFile(String fileName) {
+        StringBuilder buf = new StringBuilder();
+        try {
+            InputStream json = currentActivity.getAssets().open(fileName);
+            BufferedReader in =
+                    new BufferedReader(new InputStreamReader(json, "UTF-8"));
+            String str;
+
+            while ((str = in.readLine()) != null) {
+                buf.append(str);
+            }
+
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Gson gson = new Gson();
+
+        AppCMSPageUI pageUI = gson.fromJson(buf.toString().trim(), AppCMSPageUI.class);
+        return pageUI;
+    }
+
     private int getSplashPage(List<MetaPage> metaPageList) {
         for (int i = 0; i < metaPageList.size(); i++) {
             if (jsonValueKeyMap.get(metaPageList.get(i).getPageName()) ==
@@ -4262,6 +4496,16 @@ public class AppCMSPresenter {
         for (int i = 0; i < metaPageList.size(); i++) {
             if (jsonValueKeyMap.get(metaPageList.get(i).getPageName()) ==
                     AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int getdownloadQualityPage(List<MetaPage> metaPageList) {
+        for (int i = 0; i < metaPageList.size(); i++) {
+            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName()) ==
+                    AppCMSUIKeyType.ANDROID_DOWNLOAD_SETTINGS_KEY) {
                 return i;
             }
         }
