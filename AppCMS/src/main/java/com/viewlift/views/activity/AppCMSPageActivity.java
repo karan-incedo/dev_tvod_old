@@ -290,8 +290,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         createMoviesNavItem(appCMSPresenter.findMoviesPageNavItem());
         createSearchNavItem();
 
-        setCasting();
-
         Log.d(TAG, "onCreate()");
     }
 
@@ -504,6 +502,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.sendCloseOthersAction(null, false);
             shouldSendCloseOthersAction = false;
         }
+
+        setCastingInstanse();
 
         registerReceiver(presenterCloseActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
@@ -861,15 +861,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             ll_media_route_button.setVisibility(View.GONE);
         }
 
-        CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
-        CastServiceProvider.getInstance(this).onActivityResume();
-
+        setCastingInstanse();
     }
 
-    private void setCasting() {
+    private void setCastingInstanse() {
         try {
-            castProvider = CastServiceProvider.getInstance(this);
 
+            CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
+            CastServiceProvider.getInstance(this).onActivityResume();
         } catch (Exception e) {
             Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
         }
