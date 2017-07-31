@@ -729,11 +729,7 @@ public class ViewCreator {
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList module : modulesList) {
-            if (!modulesToIgnore.contains(module.getView()) &&
-                    (appCMSPresenter.isUserLoggedIn(context) ||
-                            (!appCMSPresenter.isUserLoggedIn(context) &&
-                                    jsonValueKeyMap.get(module.getView())
-                                            != AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY))) {
+            if (!modulesToIgnore.contains(module.getView())) {
                 Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
                 View childView = createModuleView(context, module, moduleAPI, pageView,
                         jsonValueKeyMap,
