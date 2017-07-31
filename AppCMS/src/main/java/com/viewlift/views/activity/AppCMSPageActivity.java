@@ -512,12 +512,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private boolean shouldPopStack() {
-        return appCMSBinderStack.size() > 0 &&
-                (!appCMSPresenter.isPagePrimary(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
-                        (appCMSPresenter.isUserLoggedIn(this) ||
-                                (!appCMSPresenter.isPageSplashPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
-                                !appCMSPresenter.isUserLoggedIn(this))) &&
-                        !appCMSPresenter.isViewPlanPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()));
+        if (appCMSBinderStack.size() > 0 && appCMSBinderMap.get(appCMSBinderStack.peek()) != null) {
+            return appCMSBinderStack.size() > 0 &&
+                    (!appCMSPresenter.isPagePrimary(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
+                            (appCMSPresenter.isUserLoggedIn(this) ||
+                                    (!appCMSPresenter.isPageSplashPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
+                                            !appCMSPresenter.isUserLoggedIn(this))) &&
+                            !appCMSPresenter.isViewPlanPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()));
+        }
+        return false;
     }
 
     private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder) {
