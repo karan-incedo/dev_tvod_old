@@ -120,6 +120,8 @@
     <string name="app_cms_page_edit_profile_key">Edit Profile</string>
     <string name="app_cms_page_cancel_subscription_key">Cancel Subscription</string>
     <string name="app_cms_page_upgrade_subscription_key">Upgrade Subscription</string>
+    <string name="app_cms_page_background_image_view_key">backgroundImage</string>
+    <string name="app_cms_page_background_image_type_type">imageView</string>
 
     <string name="app_cms_page_history_module_key">AC History 01</string>
     <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>

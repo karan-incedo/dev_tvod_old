@@ -248,6 +248,10 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_upgrade_subscription_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_background_image_view_key),
+                AppCMSUIKeyType.PAGE_BACKGROUND_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_background_image_type_type),
+                AppCMSUIKeyType.PAGE_BACKGROUND_IMAGE_TYPE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_title_key),
                 AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY);

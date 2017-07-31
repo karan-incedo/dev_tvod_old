@@ -1971,6 +1971,14 @@ public class ViewCreator {
                 }
                 break;
 
+            case PAGE_BACKGROUND_IMAGE_TYPE_KEY:
+                componentViewResult.componentView = new ImageView(context);
+                if (jsonValueKeyMap.get(component.getView()) == AppCMSUIKeyType.PAGE_BACKGROUND_IMAGE_KEY) {
+                    ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.logo);
+                    ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                }
+                break;
+
             case PAGE_PROGRESS_VIEW_KEY:
                 componentViewResult.componentView = new ProgressBar(context,
                         null,
