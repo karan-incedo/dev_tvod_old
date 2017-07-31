@@ -10,14 +10,21 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.media.MediaRouter;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ActionItemTarget;
+import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
+import com.github.amlcurran.showcaseview.targets.Target;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.cast.CastDevice;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.cast.framework.CastStateListener;
+import com.google.android.gms.cast.framework.IntroductoryOverlay;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.roku.dialog.CastChooserDialog;
@@ -68,7 +75,10 @@ public class CastServiceProvider {
         initChromecast();
     }
 
+    private CastStateListener mCastStateListener;
+
     private void initChromecast() {
+
         mCastHelper = CastHelper.getInstance(mContext);
         mCastHelper.initCastingObj();
         if (mCastSession == null) {
@@ -109,7 +119,7 @@ public class CastServiceProvider {
         }
 
         createMediaChooserDialog();
-        mCastHelper. setCastDiscovery();
+        mCastHelper.setCastDiscovery();
 
         if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().isDefault()) {
             Log.d(this.getClass().getName(), "This is a default route");
@@ -236,6 +246,20 @@ public class CastServiceProvider {
         }
     };
 
+    private ShowcaseView mShowCaseView;
+
+    private void showIntroOverLay() {
+        Target target = new ViewTarget(mMediaRouteButton.getId(), mActivity);
+        mShowCaseView = new ShowcaseView.Builder(mActivity)
+                .setTarget(target) //Here is where you supply the id of the action bar item you want to display
+                .setContentText("Touch To Cast Videos On TV")
+                .build();
+
+        mShowCaseView.forceTextPosition(ShowcaseView.ABOVE_SHOWCASE);
+        mShowCaseView.setStyle(R.style.CustomShowcaseTheme);
+        mShowCaseView.show();
+    }
+
     /**
      * refreshCastMediaIcon invalidate the media icon view on the basis of casting status i.e disconnected/Conntected
      */
@@ -244,6 +268,13 @@ public class CastServiceProvider {
             return;
 
         mMediaRouteButton.setVisibility(mCastHelper.isCastDeviceAvailable ? View.VISIBLE : View.INVISIBLE);
+
+        //Setting the Casting Overlay for Casting
+        if (mCastHelper.isCastDeviceAvailable)
+            if (!appCMSPresenter.isCastOverLayShown(mActivity)) {
+                appCMSPresenter.setCastOverLay(mActivity);
+                showIntroOverLay();
+            }
 
         if (!mCastHelper.isCastDeviceAvailable && castChooserDialog != null && castChooserDialog.isShowing()) {
             castChooserDialog.dismiss();
