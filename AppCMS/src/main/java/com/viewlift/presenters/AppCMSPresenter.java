@@ -552,9 +552,8 @@ public class AppCMSPresenter {
         }
     }
 
-    public void getUserVideoDownloadStatus(String filmId, Action1<UserVideoDownloadStatus> responseAction) {
-        appCMSUserDownloadVideoStatusCall.call(filmId, this, responseAction,
-                getLoggedInUser(currentActivity));
+    public void getUserVideoDownloadStatus(String filmId, Action1<UserVideoDownloadStatus> responseAction, String userId) {
+        appCMSUserDownloadVideoStatusCall.call(filmId, this, responseAction, userId);
     }
 
     public void signinAnonymousUser() {
@@ -637,6 +636,14 @@ public class AppCMSPresenter {
                             contentDatum.getGist().getVideoImageUrl() != null) {
                         playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url),
                                 contentDatum.getGist().getVideoImageUrl());
+                    } else {
+                        playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url), "");
+                    }
+
+                    if (contentDatum != null &&
+                            contentDatum.getGist() != null &&
+                            contentDatum.getGist().getVideoImageUrl() != null) {
+                        playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url), contentDatum.getGist().getVideoImageUrl());
                     } else {
                         playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url), "");
                     }
@@ -1401,6 +1408,7 @@ public class AppCMSPresenter {
                 downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
             }
 
+            downloadURL = downloadURL.replace("https:/", "http:/");
 
             DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
                     .setTitle(contentDatum.getGist().getTitle())
@@ -1422,6 +1430,10 @@ public class AppCMSPresenter {
 
             appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), this,
                     resultAction1, getLoggedInUser(currentActivity));
+
+            showToast(
+                    currentActivity.getString(R.string.app_cms_download_started_mesage,
+                            contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1562,9 +1574,9 @@ public class AppCMSPresenter {
                     long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
                     long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
                     int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
-                    Log.d(TAG, "download progress =" + downloaded + " total-> " + totalSize + " " + downloadPercent);
-                    if (downloaded >= totalSize || downloadPercent > 100) {
-                        if (currentActivity != null)
+                    Log.d(TAG, "download progress =" + downloaded + " totel-> " + totalSize + " " + downloadPercent);
+                    if (downloaded >= totalSize || downloadPercent > 100 ) {
+                        if (currentActivity != null && isUserLoggedIn(currentActivity))
                             currentActivity.runOnUiThread(() -> appCMSUserDownloadVideoStatusCall
                                     .call(filmId, presenter, responseAction, getLoggedInUser(currentActivity)));
                         this.cancel();
@@ -1579,10 +1591,15 @@ public class AppCMSPresenter {
     }
 
     private void circularImageBar(ImageView iv2, int i) {
-        // Bitmap b = Bitmap.createBitmap(28, 28,Bitmap.Config.ARGB_8888);
+
         Bitmap b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(b);
         Paint paint = new Paint();
+
+        paint.setColor(Color.DKGRAY);
+        paint.setStrokeWidth(iv2.getWidth() / 10);
+        paint.setStyle(Paint.Style.STROKE);
+        canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 2, paint);
 
         int tintColor = Color.parseColor((this.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
         paint.setColor(tintColor);
@@ -1592,6 +1609,7 @@ public class AppCMSPresenter {
         paint.setStyle(Paint.Style.STROKE);
         oval.set(2, 2, iv2.getWidth() - 2, iv2.getHeight() - 2);
         canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
+
 
         iv2.setImageBitmap(b);
     }
@@ -1687,9 +1705,7 @@ public class AppCMSPresenter {
             settings.setLazyLoad(false);
 
             List<ContentDatum> contentData = new ArrayList<>();
-
-            for (DownloadVideoRealm downloadVideoRealm :
-                    realmController.getDownloadesByUserId(getLoggedInUser(currentActivity))) {
+            for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloadesByUserId(getLoggedInUser(currentActivity))) {
                 ContentDatum data = new ContentDatum();
                 Gist gist = new Gist();
                 gist.setId(downloadVideoRealm.getVideoId());
@@ -3381,6 +3397,10 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public void showToast(String messgae, int messageDuration) {
+        Toast.makeText(currentActivity, messgae, messageDuration).show();
+    }
+
     public void showEntitlementDialog(DialogType dialogType) {
         if (currentActivity != null) {
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
@@ -4539,38 +4559,41 @@ public class AppCMSPresenter {
                         .loadFromFile(loadFromFile)
                         .build();
         Log.d(TAG, "Params: " + main.getAndroid() + " " + loadFromFile);
-        new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
-            if (appCMSAndroidUI == null ||
-                    appCMSAndroidUI.getMetaPages() == null ||
-                    appCMSAndroidUI.getMetaPages().size() < 1) {
-                Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
-                launchErrorActivity(activity, PlatformType.TV);
-            } else {
-                //TODO : change navigation object as per TV.
+        new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, new Action1<AppCMSAndroidUI>() {
+            @Override
+            public void call(final AppCMSAndroidUI appCMSAndroidUI) {
+                if (appCMSAndroidUI == null ||
+                        appCMSAndroidUI.getMetaPages() == null ||
+                        appCMSAndroidUI.getMetaPages().size() < 1) {
+                    Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
+                    launchErrorActivity(activity, PlatformType.TV);
+                } else {
+                    //TODO : change navigation object as per TV.
+                    Navigation navigationTV = new GsonBuilder().create().fromJson
+                            (MainUtils.loadJsonFromAssets(currentActivity, "navigation.json"), Navigation.class);
 
-                navigation = new GsonBuilder().create().fromJson
-                        (MainUtils.loadJsonFromAssets(currentActivity, "navigation.json"),
-                                Navigation.class); //appCMSAndroidUI.getNavigation();
-                queueMetaPages(appCMSAndroidUI.getMetaPages());
-                final MetaPage firstPage = pagesToProcess.peek();
-                Log.d(TAG, "Processing meta pages queue");
-                processMetaPagesQueue(activity,
-                        main,
-                        loadFromFile,
-                        new Action0() {
-                            @Override
-                            public void call() {
-                                Log.d(TAG, "Launching first page: " + firstPage.getPageName());
-                                NavigationPrimary homePageNav = findHomePageNavItem();
-                                boolean launchSuccess = navigateToTVPage(homePageNav.getPageId(),
-                                        homePageNav.getTitle(),
-                                        homePageNav.getUrl(),
-                                        true,
-                                        searchQuery);
-                                if (!launchSuccess) {
-                                    Log.e(TAG, "Failed to launch page: "
-                                            + firstPage.getPageName());
-                                    launchErrorActivity(currentActivity, PlatformType.TV);
+                    navigation = navigationTV; //appCMSAndroidUI.getNavigation();
+                    queueMetaPages(appCMSAndroidUI.getMetaPages());
+                    final MetaPage firstPage = pagesToProcess.peek();
+                    Log.d(TAG, "Processing meta pages queue");
+                    processMetaPagesQueue(activity,
+                            main,
+                            loadFromFile,
+                            new Action0() {
+                                @Override
+                                public void call() {
+                                    Log.d(TAG, "Launching first page: " + firstPage.getPageName());
+                                    NavigationPrimary homePageNav = findHomePageNavItem();
+                                    boolean launchSuccess = navigateToTVPage(homePageNav.getPageId(),
+                                            homePageNav.getTitle(),
+                                            homePageNav.getUrl(),
+                                            true,
+                                            searchQuery);
+                                    if (!launchSuccess) {
+                                        Log.e(TAG, "Failed to launch page: "
+                                                + firstPage.getPageName());
+                                        launchErrorActivity(currentActivity, PlatformType.TV);
+                                    }
                                 }
                             }
                         });
