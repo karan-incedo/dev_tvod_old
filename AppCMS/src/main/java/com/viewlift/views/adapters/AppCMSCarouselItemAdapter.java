@@ -84,6 +84,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                 if (adapterData.size() > 1 && !cancelled) {
                     updateCarousel(updatedIndex + 1, false);
                     postUpdateCarousel();
+                } else if (cancelled) {
+                    updatedIndex = getDefaultIndex();
                 }
             }
         };
