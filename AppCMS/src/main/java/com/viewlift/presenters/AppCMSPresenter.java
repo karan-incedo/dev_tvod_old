@@ -3676,8 +3676,6 @@ public class AppCMSPresenter {
     }
 
     public void reinitiateSignup(String receiptData) {
-        Toast.makeText(currentActivity, "Finished subscribing to " + skuToPurchase, Toast.LENGTH_LONG).show();
-
         setActiveSubscriptionReceipt(currentActivity, receiptData);
 
         SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
@@ -3715,7 +3713,6 @@ public class AppCMSPresenter {
                     new Action1<AppCMSSubscriptionPlanResult>() {
                         @Override
                         public void call(AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResult) {
-                            Toast.makeText(currentActivity, "Finished posting subscription data", Toast.LENGTH_LONG).show();
                             NavigationPrimary homePageNavItem = findHomePageNavItem();
                             if (homePageNavItem != null) {
                                 navigateToPage(homePageNavItem.getPageId(),
@@ -3732,9 +3729,6 @@ public class AppCMSPresenter {
                     });
         } catch (IOException e) {
             Log.e(TAG, "Failed to update user subscription status");
-            Toast.makeText(currentActivity,
-                    "There was an error updating the subscription status" + e.getMessage(),
-                    Toast.LENGTH_LONG).show();
         }
 
         setActiveSubscriptionSku(currentActivity, skuToPurchase);
