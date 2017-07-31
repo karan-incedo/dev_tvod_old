@@ -630,6 +630,12 @@ public class CastHelper {
             }
         }
     }
+
+    public void stopPlayback() {
+        if (getRemoteMediaClient() != null) {
+            getRemoteMediaClient().stop();
+        }
+    }
 }
 
 

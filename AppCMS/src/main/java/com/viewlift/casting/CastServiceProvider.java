@@ -16,6 +16,8 @@ import android.widget.ImageButton;
 import com.google.android.gms.cast.CastDevice;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.CastState;
+import com.google.android.gms.cast.framework.CastStateListener;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.roku.dialog.CastChooserDialog;
@@ -75,6 +77,14 @@ public class CastServiceProvider {
         }
         mCastHelper.setCallBackListener(callBackCastHelper);
         mCastHelper.setCastSessionManager();
+        CastContext.getSharedInstance(mContext).addCastStateListener(new CastStateListener() {
+            @Override
+            public void onCastStateChanged(int castState) {
+                if (castState == CastState.NOT_CONNECTED) {
+                    mCastHelper.stopPlayback();
+                }
+            }
+        });
     }
 
     /*
