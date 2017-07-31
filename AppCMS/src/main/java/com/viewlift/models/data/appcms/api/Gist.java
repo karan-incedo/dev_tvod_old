@@ -66,7 +66,7 @@ public class Gist {
 
     @SerializedName("watchedTime")
     @Expose
-    int watchedTime;
+    long watchedTime;
 
     @SerializedName("contentType")
     @Expose
@@ -203,11 +203,11 @@ public class Gist {
         this.primaryCategory = primaryCategory;
     }
 
-    public int getWatchedTime() {
+    public long getWatchedTime() {
         return watchedTime;
     }
 
-    public void setWatchedTime(int watchedTime) {
+    public void setWatchedTime(long watchedTime) {
         this.watchedTime = watchedTime;
     }
 

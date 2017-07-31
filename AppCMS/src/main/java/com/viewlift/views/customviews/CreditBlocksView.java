@@ -27,6 +27,11 @@ public class CreditBlocksView extends RelativeLayout {
     private final float fontsizeKey;
     private final float fontsizeValue;
 
+    private TextView directorListTitleView;
+    private TextView directorListView;
+    private TextView starringListTitleView;
+    private TextView starringListView;
+
     public CreditBlocksView(Context context,
                             String fontFamilyKey,
                             int fontFamilyKeyType,
@@ -63,91 +68,107 @@ public class CreditBlocksView extends RelativeLayout {
         int starringListTitleViewId = View.generateViewId();
         int starringListViewId = View.generateViewId();
 
-        if (!TextUtils.isEmpty(directorListTitle) && !TextUtils.isEmpty(directorList)) {
-            TextView directorListTitleView = new TextView(getContext());
-            directorListTitleView.setText(directorListTitle);
-            directorListTitleView.setTypeface(keyTypeFace);
-            directorListTitleView.setTextColor(textColor);
-            if (fontsizeKey != -1.0f) {
-                directorListTitleView.setTextSize(fontsizeKey);
-            }
-            LayoutParams directorListTitleLayoutParams =
-                    new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            directorListTitleLayoutParams.addRule(ALIGN_PARENT_START);
-            directorListTitleView.setLayoutParams(directorListTitleLayoutParams);
-            directorListTitleView.setSingleLine(true);
-            directorListTitleView.setId(directorListTitleViewId);
-            addView(directorListTitleView);
+        directorListTitleView = new TextView(getContext());
+        directorListTitleView.setTypeface(keyTypeFace);
+        directorListTitleView.setTextColor(textColor);
+        if (fontsizeKey != -1.0f) {
+            directorListTitleView.setTextSize(fontsizeKey);
+        }
+        LayoutParams directorListTitleLayoutParams =
+                new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        directorListTitleLayoutParams.addRule(ALIGN_PARENT_START);
+        directorListTitleView.setLayoutParams(directorListTitleLayoutParams);
+        directorListTitleView.setSingleLine(true);
+        directorListTitleView.setId(directorListTitleViewId);
+        addView(directorListTitleView);
 
-            TextView directorListView = new TextView(getContext());
+        directorListView = new TextView(getContext());
+        directorListView.setTypeface(valueTypeFace);
+        directorListView.setTextColor(textColor);
+        directorListView.setPadding((int) getContext().getResources().getDimension(R.dimen.castview_padding),
+                0,
+                0,
+                0);
+        if (fontsizeValue != -1.0f) {
+            directorListView.setTextSize(fontsizeValue);
+        }
+        LayoutParams directorListLayoutParams =
+                new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        directorListLayoutParams.addRule(ALIGN_PARENT_END);
+        directorListLayoutParams.addRule(END_OF, directorListTitleViewId);
+        directorListView.setLayoutParams(directorListLayoutParams);
+        directorListView.setId(directorListViewId);
+        addView(directorListView);
+
+        starringListTitleView = new TextView(getContext());
+        starringListTitleView.setTypeface(keyTypeFace);
+        starringListTitleView.setTextColor(textColor);
+        if (fontsizeKey != -1.0f) {
+            starringListTitleView.setTextSize(fontsizeKey);
+        }
+        LayoutParams starringListTitleLayoutParams =
+                new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        starringListTitleLayoutParams.addRule(ALIGN_PARENT_START);
+        starringListTitleLayoutParams.addRule(BELOW, directorListTitleViewId);
+        starringListTitleView.setLayoutParams(starringListTitleLayoutParams);
+        starringListTitleView.setSingleLine(true);
+        starringListTitleView.setId(starringListTitleViewId);
+        addView(starringListTitleView);
+
+        starringListView = new TextView(getContext());
+        starringListView.setTypeface(valueTypeFace);
+        starringListView.setTextColor(textColor);
+        starringListView.setPadding((int) getContext().getResources().getDimension(R.dimen.castview_padding),
+                0,
+                0,
+                0);
+        if (fontsizeValue != -1.0f) {
+            starringListView.setTextSize(fontsizeValue);
+        }
+
+        LayoutParams starringListLayoutParams =
+                new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        starringListLayoutParams.addRule(ALIGN_PARENT_END);
+        starringListLayoutParams.addRule(END_OF, starringListTitleViewId);
+        starringListLayoutParams.addRule(ALIGN_START, directorListViewId);
+        starringListLayoutParams.addRule(BELOW, directorListViewId);
+        starringListView.setLayoutParams(starringListLayoutParams);
+        starringListView.setId(starringListViewId);
+        addView(starringListView);
+
+        updateText(directorListTitle, directorList, starringListTitle, starringList);
+    }
+
+    public void updateText(String directorListTitle,
+                           String directorList,
+                           String starringListTitle,
+                           String starringList) {
+        if (!TextUtils.isEmpty(directorListTitle) && !TextUtils.isEmpty(directorList) &&
+                directorListTitleView != null &&
+                directorListView != null) {
+            directorListTitleView.setText(directorListTitle);
             directorListView.setText(directorList);
-            directorListView.setTypeface(valueTypeFace);
-            directorListView.setTextColor(textColor);
-            directorListView.setPadding((int) getContext().getResources().getDimension(R.dimen.castview_padding),
-                    0,
-                    0,
-                    0);
-            if (fontsizeValue != -1.0f) {
-                directorListView.setTextSize(fontsizeValue);
-            }
+
             ViewTreeObserver directorListVto = directorListView.getViewTreeObserver();
             directorListVto.addOnGlobalLayoutListener(new ViewCreatorMultiLineLayoutListener(directorListView,
                     null,
                     directorList,
                     null,
                     true));
-            LayoutParams directorListLayoutParams =
-                    new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            directorListLayoutParams.addRule(ALIGN_PARENT_END);
-            directorListLayoutParams.addRule(END_OF, directorListTitleViewId);
-            directorListView.setLayoutParams(directorListLayoutParams);
-            directorListView.setId(directorListViewId);
-            addView(directorListView);
         }
 
-        if (!TextUtils.isEmpty(starringListTitle) && !TextUtils.isEmpty(starringList)) {
-            TextView starringListTitleView = new TextView(getContext());
+        if (!TextUtils.isEmpty(starringListTitle) && !TextUtils.isEmpty(starringList) &&
+                starringListTitleView != null &&
+                starringListView != null) {
             starringListTitleView.setText(starringListTitle);
-            starringListTitleView.setTypeface(keyTypeFace);
-            starringListTitleView.setTextColor(textColor);
-            if (fontsizeKey != -1.0f) {
-                starringListTitleView.setTextSize(fontsizeKey);
-            }
-            LayoutParams starringListTitleLayoutParams =
-                    new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            starringListTitleLayoutParams.addRule(ALIGN_PARENT_START);
-            starringListTitleLayoutParams.addRule(BELOW, directorListTitleViewId);
-            starringListTitleView.setLayoutParams(starringListTitleLayoutParams);
-            starringListTitleView.setSingleLine(true);
-            starringListTitleView.setId(starringListTitleViewId);
-            addView(starringListTitleView);
-
-            TextView starringListView = new TextView(getContext());
             starringListView.setText(starringList);
-            starringListView.setTypeface(valueTypeFace);
-            starringListView.setTextColor(textColor);
-            starringListView.setPadding((int) getContext().getResources().getDimension(R.dimen.castview_padding),
-                    0,
-                    0,
-                    0);
-            if (fontsizeValue != -1.0f) {
-                starringListView.setTextSize(fontsizeValue);
-            }
+
             ViewTreeObserver starringListVto = starringListView.getViewTreeObserver();
             starringListVto.addOnGlobalLayoutListener(new ViewCreatorMultiLineLayoutListener(starringListView,
                     null,
                     starringList,
                     null,
                     true));
-            LayoutParams starringListLayoutParams =
-                    new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            starringListLayoutParams.addRule(ALIGN_PARENT_END);
-            starringListLayoutParams.addRule(END_OF, starringListTitleViewId);
-            starringListLayoutParams.addRule(ALIGN_START, directorListViewId);
-            starringListLayoutParams.addRule(BELOW, directorListViewId);
-            starringListView.setLayoutParams(starringListLayoutParams);
-            starringListView.setId(starringListViewId);
-            addView(starringListView);
         }
     }
 }

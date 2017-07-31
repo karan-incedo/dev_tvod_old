@@ -169,6 +169,11 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
     @Override
     public void cancel(boolean cancel) {
         this.cancelled = cancel;
+        if (this.cancelled) {
+            deselect(selectedViewIndex);
+            selectedViewIndex = 0;
+            select(selectedViewIndex);
+        }
     }
 
     @Override

@@ -67,6 +67,7 @@ public class AppCMSSearchFragment extends DialogFragment {
         appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         appCMSSearchView.setIconifiedByDefault(false);
         appCMSSearchView.setFocusable(true);
+        appCMSSearchView.getSuggestionsAdapter();
         appCMSSearchView.requestFocus();
 
         SearchSuggestionsAdapter searchSuggestionsAdapter = new SearchSuggestionsAdapter(getContext(),

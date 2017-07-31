@@ -22,6 +22,8 @@ import com.viewlift.views.modules.AppCMSPageViewModule;
 
 import com.viewlift.R;
 
+import java.util.List;
+
 /**
  * Created by viewlift on 5/3/17.
  */
@@ -181,5 +183,28 @@ public class AppCMSPageFragment extends Fragment {
             return appCMSViewComponent.viewCreator();
         }
         return null;
+    }
+
+    public List<String> getModulesToIgnore() {
+        if (appCMSViewComponent != null) {
+            return appCMSViewComponent.modulesToIgnore();
+        }
+        return null;
+    }
+
+    public void refreshView(AppCMSBinder appCMSBinder) {
+        this.appCMSBinder = appCMSBinder;
+        ViewCreator viewCreator = getViewCreator();
+        List<String> modulesToIgnore = getModulesToIgnore();
+        if (viewCreator != null && modulesToIgnore != null) {
+            viewCreator.refreshPageView(pageView,
+                    getContext(),
+                    appCMSBinder.getAppCMSPageUI(),
+                    appCMSBinder.getAppCMSPageAPI(),
+                    appCMSBinder.getJsonValueKeyMap(),
+                    appCMSPresenter,
+                    modulesToIgnore);
+        }
+        pageView.requestLayout();
     }
 }

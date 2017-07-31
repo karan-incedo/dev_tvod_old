@@ -155,7 +155,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new Dialog(getActivity(), getTheme()){
+        return new Dialog(getActivity(), getTheme()) {
             @Override
             public void onBackPressed() {
                 dismiss();

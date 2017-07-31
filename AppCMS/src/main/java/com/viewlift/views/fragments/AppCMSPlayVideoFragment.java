@@ -80,7 +80,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
     };
     private boolean isAdDisplayed;
-    private int watchedTime;
+    private long watchedTime;
     private ImageButton mMediaRouteButton;
     private CastServiceProvider castProvider;
     private CastSession mCastSession;
@@ -96,7 +96,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                                                       String filmId,
                                                       String adsUrl,
                                                       boolean requestAds,
-                                                      int watchedTime,
+                                                      long watchedTime,
                                                       String imageUrl,
                                                       String closedCaptionUrl) {
         AppCMSPlayVideoFragment appCMSPlayVideoFragment = new AppCMSPlayVideoFragment();
@@ -108,7 +108,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         args.putString(context.getString(R.string.video_layer_film_id_key), filmId);
         args.putString(context.getString(R.string.video_player_ads_url_key), adsUrl);
         args.putBoolean(context.getString(R.string.video_player_request_ads_key), requestAds);
-        args.putInt(context.getString(R.string.watched_time_key), watchedTime);
+        args.putLong(context.getString(R.string.watched_time_key), watchedTime);
         args.putString(context.getString(R.string.played_movie_image_url), imageUrl);
         args.putString(context.getString(R.string.video_player_closed_caption_key), closedCaptionUrl);
         appCMSPlayVideoFragment.setArguments(args);
@@ -137,7 +137,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             filmId = args.getString(getContext().getString(R.string.video_layer_film_id_key));
             adsUrl = args.getString(getContext().getString(R.string.video_player_ads_url_key));
             shouldRequestAds = false;
-            watchedTime = args.getInt(getContext().getString(R.string.watched_time_key));
+            watchedTime = args.getLong(getContext().getString(R.string.watched_time_key));
             imageUrl = args.getString(getContext().getString(R.string.played_movie_image_url));
             closedCaptionUrl = args.getString(getContext().getString(R.string.video_player_closed_caption_key));
         }
@@ -202,7 +202,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
             Log.i(TAG, "Playing video: " + hlsUrl);
         }
-        videoPlayerView.setCurrentPosition((long) watchedTime * SECS_TO_MSECS);
+        videoPlayerView.setCurrentPosition(watchedTime * SECS_TO_MSECS);
         videoPlayerView.setOnPlayerStateChanged(new Action1<VideoPlayerView.PlayerState>() {
             @Override
             public void call(VideoPlayerView.PlayerState playerState) {

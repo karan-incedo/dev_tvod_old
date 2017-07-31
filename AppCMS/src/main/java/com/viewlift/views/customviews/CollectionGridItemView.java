@@ -22,8 +22,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -52,7 +53,7 @@ public class CollectionGridItemView extends BaseView {
     protected int defaultHeight;
     private List<ItemContainer> childItems;
     private List<View> viewsToUpdateOnClickEvent;
-    private boolean selectable;
+    private boolean allowClickEvents;
 
     @Inject
     public CollectionGridItemView(Context context,
@@ -154,14 +155,6 @@ public class CollectionGridItemView extends BaseView {
         return childItems.size();
     }
 
-    public boolean isSelectable() {
-        return selectable;
-    }
-
-    public void setSelectable(boolean selectable) {
-        this.selectable = selectable;
-    }
-
     public void bindChild(Context context,
                           View view,
                           final ContentDatum data,
@@ -207,11 +200,10 @@ public class CollectionGridItemView extends BaseView {
                                     childViewWidth,
                                     childViewHeight);
                             Log.d(TAG, "Loading image: " + imageUrl);
-                            Picasso.with(context)
+                            Glide.with(context)
                                     .load(imageUrl)
-                                    .resize(childViewWidth, childViewHeight)
+                                    .override(childViewWidth, childViewHeight)
                                     .centerCrop()
-                                    .onlyScaleDown()
                                     .into((ImageView) view);
                         } else {
                             String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
@@ -219,18 +211,17 @@ public class CollectionGridItemView extends BaseView {
                                     childViewWidth,
                                     childViewHeight);
                             Log.d(TAG, "Loading image: " + imageUrl);
-                            Picasso.with(context)
+                            Glide.with(context)
                                     .load(imageUrl)
-                                    .resize(childViewWidth, childViewHeight)
+                                    .override(childViewWidth, childViewHeight)
                                     .centerCrop()
-                                    .onlyScaleDown()
                                     .into((ImageView) view);
                         }
                     } else if (childViewHeight > 0 &&
                             childViewWidth > 0 &&
                             !TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
                         if (isLandscape(getContext())) {
-                            Picasso.with(context)
+                            Glide.with(context)
                                     .load(data.getGist().getVideoImageUrl())
                                     .into((ImageView) view);
                         } else {
@@ -239,11 +230,10 @@ public class CollectionGridItemView extends BaseView {
                                     childViewWidth,
                                     childViewHeight);
                             Log.d(TAG, "Loading image: " + imageUrl);
-                            Picasso.with(context)
+                            Glide.with(context)
                                     .load(imageUrl)
-                                    .resize(childViewWidth, childViewHeight)
+                                    .override(childViewWidth, childViewHeight)
                                     .centerCrop()
-                                    .onlyScaleDown()
                                     .into((ImageView) view);
                         }
                     } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
@@ -253,21 +243,25 @@ public class CollectionGridItemView extends BaseView {
                                 deviceWidth,
                                 childViewHeight);
                         Log.d(TAG, "Loading image: " + imageUrl);
-                        Picasso.with(context)
+                        Glide.with(context)
                                 .load(imageUrl)
-                                .resize(deviceWidth, childViewHeight)
-                                .centerCrop()
-                                .transform(new Transformation() {
+                                .override(deviceWidth, childViewHeight)
+                                .transform(new BitmapTransformation(context) {
                                     @Override
-                                    public Bitmap transform(Bitmap source) {
-                                        int width = source.getWidth();
-                                        int height = source.getHeight();
+                                    public String getId() {
+                                        return imageUrl;
+                                    }
+
+                                    @Override
+                                    protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
+                                        int width = toTransform.getWidth();
+                                        int height = toTransform.getHeight();
                                         Bitmap sourceWithGradient =
                                                 Bitmap.createBitmap(width,
                                                         height,
                                                         Bitmap.Config.ARGB_8888);
                                         Canvas canvas = new Canvas(sourceWithGradient);
-                                        canvas.drawBitmap(source, 0, 0, null);
+                                        canvas.drawBitmap(toTransform, 0, 0, null);
                                         Paint paint = new Paint();
                                         LinearGradient shader = new LinearGradient(0,
                                                 0,
@@ -279,14 +273,9 @@ public class CollectionGridItemView extends BaseView {
                                         paint.setShader(shader);
                                         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
                                         canvas.drawRect(0, 0, width, height, paint);
-                                        source.recycle();
+                                        toTransform.recycle();
                                         paint = null;
                                         return sourceWithGradient;
-                                    }
-
-                                    @Override
-                                    public String key() {
-                                        return imageUrl;
                                     }
                                 })
                                 .into((ImageView) view);
@@ -298,6 +287,7 @@ public class CollectionGridItemView extends BaseView {
                     ((TextView) view).setText("");
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PURCHASE_BUTTON_KEY) {
                     ((TextView) view).setText(childComponent.getText());
+                    view.setEnabled(false);
                     view.setBackgroundColor(ContextCompat.getColor(getContext(),
                             R.color.disabledButtonColor));
                     viewsToUpdateOnClickEvent.add(view);
@@ -305,9 +295,7 @@ public class CollectionGridItemView extends BaseView {
                 view.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        onClickHandler.click(CollectionGridItemView.this,
-                                childComponent,
-                                data);
+                        onClickHandler.click(childComponent, data);
                     }
                 });
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
@@ -402,9 +390,7 @@ public class CollectionGridItemView extends BaseView {
     }
 
     public interface OnClickHandler {
-        void click(CollectionGridItemView collectionGridItemView,
-                   Component childComponent,
-                   ContentDatum data);
+        void click(Component childComponent, ContentDatum data);
 
         void play(Component childComponent, ContentDatum data);
     }

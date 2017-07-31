@@ -3,6 +3,7 @@ package com.viewlift.views.customviews;
 import android.content.Context;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -46,10 +47,10 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
-import com.viewlift.R;
 
 import rx.Observable;
 import rx.functions.Action1;
+import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/31/17.
@@ -337,7 +338,11 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         playerState.playbackState = playbackState;
 
         if (onPlayerStateChanged != null) {
-            Observable.just(playerState).subscribe(onPlayerStateChanged);
+            try {
+                Observable.just(playerState).subscribe(onPlayerStateChanged);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to update player state change status: " + e.getMessage());
+            }
         }
     }
 

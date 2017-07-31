@@ -122,9 +122,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     View childView = parent.getChildAt(i);
                     setBorder(childView, unselectedColor);
                     if (childView instanceof CollectionGridItemView) {
-                        ((CollectionGridItemView) childView).setSelectable(false);
                         for (View collectionGridChild : ((CollectionGridItemView) childView).getViewsToUpdateOnClickEvent()) {
                             if (collectionGridChild instanceof Button) {
+                                collectionGridChild.setEnabled(false);
                                 collectionGridChild.setBackgroundColor(ContextCompat.getColor(v.getContext(),
                                         R.color.disabledButtonColor));
                             }
@@ -133,9 +133,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 }
                 setBorder(v, selectedColor);
                 if (v instanceof CollectionGridItemView) {
-                    ((CollectionGridItemView) v).setSelectable(true);
                     for (View collectionGridChild : ((CollectionGridItemView) v).getViewsToUpdateOnClickEvent()) {
                         if (collectionGridChild instanceof Button) {
+                            collectionGridChild.setEnabled(true);
                             collectionGridChild.setBackgroundColor(selectedColor);
                         }
                     }
@@ -177,6 +177,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         notifyDataSetChanged();
         listView.setAdapter(this);
         listView.invalidate();
+        notifyDataSetChanged();
     }
 
     protected void bindView(CollectionGridItemView itemView,
@@ -187,19 +188,13 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
 
                     @Override
-                    public void click(CollectionGridItemView collectionGridItemView,
-                                      Component childComponent,
-                                      ContentDatum data) {
+                    public void click(Component childComponent, ContentDatum data) {
                         if (isClickable) {
-                            if (collectionGridItemView.isSelectable()) {
-                                appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
-                                        data.getId(),
-                                        data.getPlanDetails().get(0).getCountryCode(),
-                                        data.getName(),
-                                        (float) data.getPlanDetails().get(0).getRecurringPaymentAmount());
-                            } else {
-                                collectionGridItemView.performClick();
-                            }
+                            appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
+                                    data.getId(),
+                                    data.getPlanDetails().get(0).getCountryCode(),
+                                    data.getName(),
+                                    (float) data.getPlanDetails().get(0).getRecurringPaymentAmount());
                         }
                     }
 
@@ -211,9 +206,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             } else {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
-                    public void click(CollectionGridItemView collectionGridItemView,
-                                      Component childComponent,
-                                      ContentDatum data) {
+                    public void click(Component childComponent, ContentDatum data) {
                         if (isClickable) {
                             Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                             String permalink = data.getGist().getPermalink();
@@ -383,14 +376,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         elementIndicesToCull.add(i);
                     }
                 }
-                if (elementIndicesToCull.size() > 0) {
-                    List<ContentDatum> updatedAdapterData = new ArrayList<>();
-                    for (int i = 0; i < adapterData.size(); i++) {
-                        if (!elementIndicesToCull.contains(i)) {
-                            updatedAdapterData.add(adapterData.get(i));
-                        }
-                    }
-                    adapterData = updatedAdapterData;
+                for (int i = 0; i < elementIndicesToCull.size(); i++) {
+                    adapterData.remove((int) elementIndicesToCull.get(i));
                 }
             }
         }

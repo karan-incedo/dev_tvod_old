@@ -527,9 +527,21 @@ public class AppCMSPresenter {
     }
 
     public void getUserVideoStatus(String filmId, Action1<UserVideoStatusResponse> responseAction) {
-        String url = currentActivity.getString(R.string.app_cms_video_status_api_url,
-                appCMSMain.getApiBaseUrl(), filmId, appCMSMain.getInternalName());
-        appCMSUserVideoStatusCall.call(url, getAuthToken(currentActivity), responseAction);
+        if (shouldRefreshAuthToken()) {
+            refreshIdentity(getRefreshToken(currentActivity),
+                    new Action0() {
+                        @Override
+                        public void call() {
+                            String url = currentActivity.getString(R.string.app_cms_video_status_api_url,
+                                    appCMSMain.getApiBaseUrl(), filmId, appCMSMain.getInternalName());
+                            appCMSUserVideoStatusCall.call(url, getAuthToken(currentActivity), responseAction);
+                        }
+                    });
+        } else {
+            String url = currentActivity.getString(R.string.app_cms_video_status_api_url,
+                    appCMSMain.getApiBaseUrl(), filmId, appCMSMain.getInternalName());
+            appCMSUserVideoStatusCall.call(url, getAuthToken(currentActivity), responseAction);
+        }
     }
 
     public void getUserVideoDownloadStatus(String filmId, Action1<UserVideoDownloadStatus> responseAction) {
@@ -574,7 +586,6 @@ public class AppCMSPresenter {
             boolean isTrailer = false;
             if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
                     actionType == AppCMSActionType.WATCH_TRAILER) {
-
                 boolean entitlementActive = true;
                 if (appCMSMain.getServiceType().equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
                     if (isUserLoggedIn(currentActivity)) {
@@ -764,7 +775,6 @@ public class AppCMSPresenter {
                 } else if (actionType == AppCMSActionType.SIGNIN) {
                     navigateToLoginPage();
                 } else {
-                    showMainFragmentView(false);
                     boolean appbarPresent = true;
                     boolean fullscreenEnabled = false;
                     boolean navbarPresent = true;
@@ -861,6 +871,7 @@ public class AppCMSPresenter {
                                         String previousPageName) {
         boolean result = false;
         showMainFragmentView(false);
+        cancelInternalEvents();
         AppCMSNavItemsFragment navItemsFragment =
                 AppCMSNavItemsFragment.newInstance(currentActivity,
                         getAppCMSBinder(currentActivity,
@@ -1324,8 +1335,6 @@ public class AppCMSPresenter {
 
         downloadVideoRealm.setPermalink(contentDatum.getGist().getPermalink());
         downloadVideoRealm.setDownloadStatus(DownloadStatus.STATUS_PENDING);
-
-        getLoggedInUser(currentActivity);
 
 
         realmController.addDownload(downloadVideoRealm);
@@ -1984,29 +1993,20 @@ public class AppCMSPresenter {
             callRefreshIdentity(new Action0() {
                 @Override
                 public void call() {
-                    String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
-                            appCMSMain.getApiBaseUrl(),
-                            getRefreshToken(currentActivity));
-
-                    appCMSRefreshIdentityCall.call(url, new Action1<RefreshIdentityResponse>() {
-                        @Override
-                        public void call(RefreshIdentityResponse refreshIdentityResponse) {
-                            try {
-                                appCMSHistoryCall.call(currentActivity.getString(R.string.app_cms_history_api_url,
-                                        apiBaseUrl, getLoggedInUser(currentActivity), siteiD,
-                                        getLoggedInUser(currentActivity)),
-                                        getAuthToken(currentActivity),
-                                        new Action1<AppCMSHistoryResult>() {
-                                            @Override
-                                            public void call(AppCMSHistoryResult appCMSHistoryResult) {
-                                                history.call(appCMSHistoryResult);
-                                            }
-                                        });
-                            } catch (IOException e) {
-                                Log.e(TAG, "getHistoryPageContent: " + e.toString());
-                            }
-                        }
-                    });
+                    try {
+                        appCMSHistoryCall.call(currentActivity.getString(R.string.app_cms_history_api_url,
+                                apiBaseUrl, getLoggedInUser(currentActivity), siteiD,
+                                getLoggedInUser(currentActivity)),
+                                getAuthToken(currentActivity),
+                                new Action1<AppCMSHistoryResult>() {
+                                    @Override
+                                    public void call(AppCMSHistoryResult appCMSHistoryResult) {
+                                        history.call(appCMSHistoryResult);
+                                    }
+                                });
+                    } catch (IOException e) {
+                        Log.e(TAG, "getHistoryPageContent: " + e.toString());
+                    }
                 }
             });
         } else {
@@ -2442,13 +2442,14 @@ public class AppCMSPresenter {
                                             this.appbarPresent,
                                             this.fullscreenEnabled,
                                             this.navbarPresent,
-                                            false,
+                                            this.sendCloseAction,
                                             this.searchQuery);
                                     Intent updatePageIntent =
                                             new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
                                     updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
                                             args);
                                     currentActivity.sendBroadcast(updatePageIntent);
+                                    dismissOpenDialogs(null);
                                 }
                             } else {
                                 sendStopLoadingPageAction();
@@ -2702,16 +2703,16 @@ public class AppCMSPresenter {
     public long getLoggedInTime(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_LOGGED_IN_TIME_PREF_NAME, 0);
-            return sharedPrefs.getLong("", 0L);
+            return sharedPrefs.getLong(USER_LOGGED_IN_TIME_PREF_NAME, 0L);
         }
         return 0L;
     }
 
     public boolean setLoggedInTime(Context context) {
         if (context != null) {
-            SharedPreferences sharedPrefs = context.getSharedPreferences("", 0);
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_LOGGED_IN_TIME_PREF_NAME, 0);
             Date now = new Date();
-            return sharedPrefs.edit().putLong("", now.getTime()).commit();
+            return sharedPrefs.edit().putLong(USER_LOGGED_IN_TIME_PREF_NAME, now.getTime()).commit();
         }
         return false;
     }
@@ -3026,8 +3027,9 @@ public class AppCMSPresenter {
                             false,
                             true,
                             false,
-                            false,
+                            true,
                             deeplinkSearchQuery);
+                    dismissOpenDialogs(null);
                 }
             } else {
                 launchType = LaunchType.LOGIN_AND_SIGNUP;
@@ -3040,8 +3042,9 @@ public class AppCMSPresenter {
                             true,
                             false,
                             true,
-                            false,
+                            true,
                             deeplinkSearchQuery);
+                    dismissOpenDialogs(null);
                 }
             }
 
@@ -3235,7 +3238,7 @@ public class AppCMSPresenter {
     public boolean shouldRefreshAuthToken() {
         if (currentActivity != null) {
             long lastLoginTime = getLoggedInTime(currentActivity);
-            if (lastLoginTime > 0) {
+            if (lastLoginTime >= 0) {
                 long now = new Date().getTime();
                 long timeDiff = now - lastLoginTime;
                 long minutesSinceLogin = timeDiff / (MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE);

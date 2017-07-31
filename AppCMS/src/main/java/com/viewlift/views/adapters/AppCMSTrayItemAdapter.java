@@ -17,7 +17,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
@@ -38,6 +37,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.functions.Action1;
+import com.bumptech.glide.Glide;
 
 /**
  * Created by viewlift on 7/7/17.
@@ -330,7 +330,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     public void loadImage(Context context, String url, ImageView imageView) {
-        Picasso.with(context)
+        Glide.with(context)
                 .load(Uri.decode(url).toString())
                 .into(imageView);
     }
