@@ -589,7 +589,9 @@ public class AppCMSPresenter {
             if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
                     actionType == AppCMSActionType.WATCH_TRAILER) {
                 boolean entitlementActive = true;
-                if (appCMSMain.getServiceType().equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
+                boolean svodServiceType =
+                        appCMSMain.getServiceType().equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key));
+                if (svodServiceType) {
                     if (isUserLoggedIn(currentActivity)) {
                         // For now just verify that the anonymous user token is available, but the subscription needs to be verified too.
                         if (TextUtils.isEmpty(getAnonymousUserToken(currentActivity))) {
@@ -604,7 +606,7 @@ public class AppCMSPresenter {
 
                 if (entitlementActive) {
                     Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
-                    boolean requestAds = true;
+                    boolean requestAds = !svodServiceType;
                     String textColor;
                     String adsUrl;
                     if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE) {
