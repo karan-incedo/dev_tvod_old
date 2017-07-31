@@ -57,6 +57,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -646,9 +647,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             ((AppCMSPageFragment)  getSupportFragmentManager().findFragmentByTag(appCMSBinder.getPageId() + BaseView.isLandscape(this))).refreshView(appCMSBinder);
             pageLoading(false);
             appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
-            updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-            appCMSPresenter.showMainFragmentView(true);
-            appCMSPresenter.restartInternalEvents();
+            try {
+                updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                appCMSPresenter.showMainFragmentView(true);
+                appCMSPresenter.restartInternalEvents();
+            } catch (EmptyStackException e) {
+                Log.e(TAG, "Error attempting to restart screen: " + appCMSBinder.getScreenName());
+                appCMSPresenter.navigateToLoginPage();
+            }
         } else {
             int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
             Log.d(TAG, "Page distance from top: " + distanceFromStackTop);

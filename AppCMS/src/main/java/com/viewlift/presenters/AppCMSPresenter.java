@@ -779,15 +779,7 @@ public class AppCMSPresenter {
                         }
                     }
                 } else if (actionType == AppCMSActionType.HOME_PAGE) {
-                    navigateToPage(homePage.getPageId(),
-                            homePage.getPageName(),
-                            homePage.getPageUI(),
-                            true,
-                            true,
-                            false,
-                            true,
-                            false,
-                            deeplinkSearchQuery);
+                    navigateToHomePage();
                 } else if (actionType == AppCMSActionType.SIGNIN) {
                     navigateToLoginPage();
                 } else {
@@ -2342,6 +2334,20 @@ public class AppCMSPresenter {
         }
     }
 
+    public void navigateToHomePage() {
+        if (homePage != null) {
+            navigateToPage(homePage.getPageId(),
+                    homePage.getPageName(),
+                    homePage.getPageUI(),
+                    true,
+                    true,
+                    false,
+                    true,
+                    false,
+                    deeplinkSearchQuery);
+        }
+    }
+
     public void navigateToLoginPage() {
         if (loginPage != null) {
             boolean launchSuccess = navigateToPage(loginPage.getPageId(),
@@ -3182,15 +3188,7 @@ public class AppCMSPresenter {
                 launchType = LaunchType.LOGIN_AND_SIGNUP;
 
                 if (homePage != null) {
-                    navigateToPage(homePage.getPageId(),
-                            homePage.getPageName(),
-                            homePage.getPageUI(),
-                            false,
-                            true,
-                            false,
-                            true,
-                            true,
-                            deeplinkSearchQuery);
+                    navigateToHomePage();
                     dismissOpenDialogs(null);
                 }
             }
