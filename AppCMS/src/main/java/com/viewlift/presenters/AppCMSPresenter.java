@@ -644,17 +644,6 @@ public class AppCMSPresenter {
                     } else {
                         playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url), "");
                     }
-                } else {
-                    requestAds = false;
-                    isTrailer = true;
-                }
-                if (contentDatum != null &&
-                        contentDatum.getGist() != null &&
-                        contentDatum.getGist().getVideoImageUrl() != null) {
-                    playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url), contentDatum.getGist().getVideoImageUrl());
-                } else {
-                    playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url), "");
-                }
 
                     playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_font_color_key),
                             appCMSMain.getBrand().getGeneral().getTextColor());
@@ -1591,9 +1580,8 @@ public class AppCMSPresenter {
                     }
                     c.close();
                 }
-            }, 500, 1000);
-
-        }
+            }
+        },500, 1000);
     }
 
     private void circularImageBar(ImageView iv2, int i) {
@@ -2771,6 +2759,7 @@ public class AppCMSPresenter {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, 0);
             return sharedPrefs.getString(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, null);
         }
+        return null;
     }
          
     public String getAnonymousUserToken(Context context) {
@@ -2787,6 +2776,7 @@ public class AppCMSPresenter {
             return sharedPrefs.edit().putString(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, downloadQuality).commit() &&
                     setLoggedInTime(context);
         }
+        return false;
     }
 
     public boolean setAnonymousUserToken(Context context, String anonymousAuthToken) {

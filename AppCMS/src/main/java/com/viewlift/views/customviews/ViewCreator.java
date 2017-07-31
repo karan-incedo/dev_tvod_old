@@ -321,7 +321,7 @@ public class ViewCreator {
                                     if (moduleAPI.getContentData() != null) {
                                         appCMSPresenter.getUserVideoDownloadStatus(
                                                 moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) view, appCMSPresenter,
-                                                        moduleAPI.getContentData().get(0)));
+                                                        moduleAPI.getContentData().get(0), appCMSPresenter.getLoggedInUser(context)));
                                     }
                                     view.setVisibility(View.VISIBLE);
                                 }
@@ -2364,7 +2364,7 @@ public class ViewCreator {
         private View.OnClickListener addClickListener;
 
         public UpdateDownloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
-                                             ContentDatum contentDatum) {
+                                             ContentDatum contentDatum, String userId) {
             this.imageButton = imageButton;
             this.appCMSPresenter = presenter;
             this.contentDatum = contentDatum;
@@ -2373,12 +2373,12 @@ public class ViewCreator {
             addClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (appCMSPresenter.getUserDownloadQualityPref(UpdateDowloadImageIconAction.this.imageButton.getContext()) != null
-                            && appCMSPresenter.getUserDownloadQualityPref(UpdateDowloadImageIconAction.this.imageButton.getContext()).length() > 0) {
-                        appCMSPresenter.editDownload(UpdateDowloadImageIconAction.this.contentDatum, UpdateDowloadImageIconAction.this, true);
+                    if (appCMSPresenter.getUserDownloadQualityPref(UpdateDownloadImageIconAction.this.imageButton.getContext()) != null
+                            && appCMSPresenter.getUserDownloadQualityPref(UpdateDownloadImageIconAction.this.imageButton.getContext()).length() > 0) {
+                        appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
 
                     } else {
-                        appCMSPresenter.showDownloadQualityScreen(UpdateDowloadImageIconAction.this.contentDatum, UpdateDowloadImageIconAction.this);
+                        appCMSPresenter.showDownloadQualityScreen(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this);
                     }
                 }
             };
@@ -2397,11 +2397,11 @@ public class ViewCreator {
 
                         break;
                     case STATUS_PENDING:
-                        appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(), UpdateDowloadImageIconAction.this.imageButton, appCMSPresenter, this, userId);
+                        appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(), UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId);
                         imageButton.setOnClickListener(null);
                         break;
                     case STATUS_RUNNING:
-                        appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(), UpdateDowloadImageIconAction.this.imageButton, appCMSPresenter, this, userId);
+                        appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(), UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId);
 
                         imageButton.setOnClickListener(null);
                         break;
