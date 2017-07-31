@@ -42,6 +42,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.apptentive.android.sdk.Apptentive;
@@ -312,6 +313,7 @@ public class AppCMSPresenter {
     private String planToPurchase;
     private String currencyOfPlanToPurchase;
     private String planToPurchaseName;
+    private String apikey;
     private float planToPurchasePrice;
     private String planReceipt;
     private GoogleApiClient googleApiClient;
@@ -1169,6 +1171,8 @@ public class AppCMSPresenter {
                                     currentActivity.getString(R.string.app_cms_subscription_platform_key)),
                             R.string.app_cms_subscription_plan_cancel_key,
                             subscriptionRequest,
+                            apikey,
+                            getAuthToken(currentActivity),
                             result -> {
                             },
                             appCMSSubscriptionPlanResults -> {
@@ -3531,6 +3535,8 @@ public class AppCMSPresenter {
     }
 
     public void reinitiateSignup(String receiptData) {
+        Toast.makeText(currentActivity, "Finished subscribing to " + skuToPurchase, Toast.LENGTH_LONG).show();
+
         setActiveSubscriptionReceipt(currentActivity, receiptData);
 
         SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
@@ -3557,6 +3563,8 @@ public class AppCMSPresenter {
                             currentActivity.getString(R.string.app_cms_subscription_platform_key)),
                     subscriptionCallType,
                     subscriptionRequest,
+                    apikey,
+                    getAuthToken(currentActivity),
                     new Action1<List<AppCMSSubscriptionPlanResult>>() {
                         @Override
                         public void call(List<AppCMSSubscriptionPlanResult> result) {
@@ -3565,12 +3573,27 @@ public class AppCMSPresenter {
                     },
                     new Action1<AppCMSSubscriptionPlanResult>() {
                         @Override
-                        public void call(AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResults) {
-
+                        public void call(AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResult) {
+                            Toast.makeText(currentActivity, "Finished posting subscription data", Toast.LENGTH_LONG).show();
+                            NavigationPrimary homePageNavItem = findHomePageNavItem();
+                            if (homePageNavItem != null) {
+                                navigateToPage(homePageNavItem.getPageId(),
+                                        homePageNavItem.getTitle(),
+                                        homePageNavItem.getUrl(),
+                                        false,
+                                        true,
+                                        false,
+                                        true,
+                                        false,
+                                        deeplinkSearchQuery);
+                            }
                         }
                     });
         } catch (IOException e) {
             Log.e(TAG, "Failed to update user subscription status");
+            Toast.makeText(currentActivity,
+                    "There was an error updating the subscription status" + e.getMessage(),
+                    Toast.LENGTH_LONG).show();
         }
 
         setActiveSubscriptionSku(currentActivity, skuToPurchase);
@@ -3662,6 +3685,8 @@ public class AppCMSPresenter {
                                 appCMSMain.getInternalName()),
                         R.string.app_cms_subscription_subscribed_plan_key,
                         null,
+                        apikey,
+                        getAuthToken(currentActivity),
                         new Action1<List<AppCMSSubscriptionPlanResult>>() {
                             @Override
                             public void call(List<AppCMSSubscriptionPlanResult> result) {
@@ -4032,10 +4057,11 @@ public class AppCMSPresenter {
             new GetAppCMSSiteAsyncTask(appCMSSiteCall,
                     appCMSSite -> {
                         if (appCMSSite != null) {
+                            apikey = appCMSSite.getGist().getAppAccess().getAppSecretKey();
                             AppCMSAPIComponent appCMSAPIComponent = DaggerAppCMSAPIComponent.builder()
                                     .appCMSAPIModule(new AppCMSAPIModule(activity,
                                             main.getApiBaseUrl(),
-                                            appCMSSite.getGist().getAppAccess().getAppSecretKey()))
+                                            apikey))
                                     .build();
                             appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
                             appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
@@ -4323,7 +4349,7 @@ public class AppCMSPresenter {
                                 @Override
                                 public void call() {
                                     Log.d(TAG, "Launching first page: " + firstPage.getPageName());
-                                    NavigationPrimary homePageNav = findHomePageNavItem();
+                                    NavigationPrimary homePageNav =     findHomePageNavItem();
                                     boolean launchSuccess = navigateToTVPage(homePageNav.getPageId(),
                                             homePageNav.getTitle(),
                                             homePageNav.getUrl(),
