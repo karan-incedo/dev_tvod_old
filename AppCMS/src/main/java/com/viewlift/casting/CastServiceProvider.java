@@ -252,7 +252,7 @@ public class CastServiceProvider {
         Target target = new ViewTarget(mMediaRouteButton.getId(), mActivity);
         mShowCaseView = new ShowcaseView.Builder(mActivity)
                 .setTarget(target) //Here is where you supply the id of the action bar item you want to display
-                .setContentText("Touch To Cast Videos On TV")
+                .setContentText(R.string.app_cast_overlay_text)
                 .build();
 
         mShowCaseView.forceTextPosition(ShowcaseView.ABOVE_SHOWCASE);
