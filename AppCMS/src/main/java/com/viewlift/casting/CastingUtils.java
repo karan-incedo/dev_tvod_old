@@ -9,7 +9,9 @@ import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.MediaQueueItem;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.common.images.WebImage;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.views.customviews.BaseView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,9 +32,11 @@ public class CastingUtils {
     private static final int PRELOAD_TIME_S = 20;
 
     public static final boolean IS_CHROMECAST_ENABLE = true;
-    public static final String ROKU_APP_NAME = "TheGreatCoursesPlus";
 
-    public static MediaQueueItem[] BuildCastingQueueItems(List<ContentDatum> detailsRelatedVideoData, String appName, List<String> listCompareRelatedVideosId) {
+    public static MediaQueueItem[] BuildCastingQueueItems(List<ContentDatum> detailsRelatedVideoData,
+                                                          String appName,
+                                                          List<String> listCompareRelatedVideosId,
+                                                          Context context) {
 
         MediaQueueItem[] queueItemsArray;
 
@@ -51,7 +55,7 @@ public class CastingUtils {
                 if (getPlayingUrl(detailsRelatedVideoData.get(i)) != null && !TextUtils.isEmpty(getPlayingUrl(detailsRelatedVideoData.get(i)))) {
                     int currentPlayingIndex = listCompareRelatedVideosId.indexOf(detailsRelatedVideoData.get(i).getGist().getId());
 
-                    queueItemsArray[currentPlayingIndex] = new MediaQueueItem.Builder(buildMediaInfoFromList(detailsRelatedVideoData.get(i), appName))
+                    queueItemsArray[currentPlayingIndex] = new MediaQueueItem.Builder(buildMediaInfoFromList(detailsRelatedVideoData.get(i), appName, context))
                             .setAutoplay(true)
                             .setPreloadTime(PRELOAD_TIME_S)
                             .setCustomData(seasonObj)
@@ -66,7 +70,9 @@ public class CastingUtils {
         return null;
     }
 
-    public static MediaInfo buildMediaInfoFromList(ContentDatum contentData, String appName) {
+    public static MediaInfo buildMediaInfoFromList(ContentDatum contentData,
+                                                   String appName,
+                                                   Context context) {
         String titleMediaInfo = "";
         String subTitleMediaInfo = "";
         String imageMediaInfo = "";
@@ -86,7 +92,12 @@ public class CastingUtils {
             }
         }
         urlMediaInfo = getPlayingUrl(contentData);
-        return buildMediaInfo(titleMediaInfo, subTitleMediaInfo, imageMediaInfo, urlMediaInfo, medoaInfoCustomData);
+        return buildMediaInfo(titleMediaInfo,
+                subTitleMediaInfo,
+                imageMediaInfo,
+                urlMediaInfo,
+                medoaInfoCustomData,
+                context);
     }
 
     public static String getPlayingUrl(ContentDatum contentData) {
@@ -107,11 +118,24 @@ public class CastingUtils {
     }
 
 
-    public static MediaInfo buildMediaInfo(String Title, String subtitle, String Image, String url, JSONObject medoaInfoCustomData) {
+    public static MediaInfo buildMediaInfo(String Title,
+                                           String subtitle,
+                                           String image,
+                                           String url,
+                                           JSONObject medoaInfoCustomData,
+                                           Context context) {
         MediaMetadata movieMetadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
         movieMetadata.putString(MediaMetadata.KEY_SUBTITLE, subtitle);
         movieMetadata.putString(MediaMetadata.KEY_TITLE, Title);
-        movieMetadata.addImage(new WebImage(Uri.parse(Image)));
+        int imageWidth = BaseView.getDeviceWidth();
+        int imageHeight = BaseView.getDeviceHeight();
+        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                image,
+                imageWidth,
+                imageHeight);
+        movieMetadata.addImage(new WebImage(Uri.parse(imageUrl),
+                imageWidth,
+                imageHeight));
 
         return new MediaInfo.Builder(url)
                 .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)

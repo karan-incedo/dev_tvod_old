@@ -301,7 +301,12 @@ public class CastHelper {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        getRemoteMediaClient().load(CastingUtils.buildMediaInfo(title, appName, imageUrl, videoUrl, customData));
+        getRemoteMediaClient().load(CastingUtils.buildMediaInfo(title,
+                appName,
+                imageUrl,
+                videoUrl,
+                customData,
+                mAppContext));
         getRemoteMediaClient().addListener(remoteListener);
 
     }
@@ -531,7 +536,10 @@ public class CastHelper {
     private void castMediaListToRemoteLocation() {
         CastingUtils.isMediaQueueLoaded = true;
         if (getRemoteMediaClient() != null) {
-            MediaQueueItem[] queueItemsArray = CastingUtils.BuildCastingQueueItems(listRelatedVideosDetails, appName, listCompareRelatedVideosId);
+            MediaQueueItem[] queueItemsArray = CastingUtils.BuildCastingQueueItems(listRelatedVideosDetails,
+                    appName,
+                    listCompareRelatedVideosId,
+                    mAppContext);
             getRemoteMediaClient().queueLoad(queueItemsArray, currentPlayingIndex,
                     MediaStatus.REPEAT_MODE_REPEAT_OFF, currentMediaPosition, null);
             getRemoteMediaClient().addListener(remoteListener);

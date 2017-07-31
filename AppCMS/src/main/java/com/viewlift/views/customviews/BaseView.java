@@ -791,6 +791,22 @@ public abstract class BaseView extends FrameLayout {
         return -1.0f;
     }
 
+    public static int getDeviceWidth() {
+        return DEVICE_WIDTH;
+    }
+
+    public static void setDeviceWidth(int deviceWidth) {
+        DEVICE_WIDTH = deviceWidth;
+    }
+
+    public static int getDeviceHeight() {
+        return DEVICE_HEIGHT;
+    }
+
+    public static void setDeviceHeight(int deviceHeight) {
+        DEVICE_HEIGHT = deviceHeight;
+    }
+
     protected void initializeComponentHasViewList(int size) {
         componentHasViewList = new boolean[size];
     }
