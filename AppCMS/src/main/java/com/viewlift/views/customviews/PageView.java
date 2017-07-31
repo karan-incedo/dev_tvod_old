@@ -17,7 +17,9 @@ import com.viewlift.views.adapters.AppCMSBaseAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -30,12 +32,14 @@ public class PageView extends BaseView {
     private List<ListWithAdapter> adapterList;
     private List<ViewWithComponentId> viewsWithComponentIds;
     private boolean userLoggedIn;
+    private Map<String, ModuleView> moduleViewMap;
 
     @Inject
     public PageView(Context context, AppCMSPageUI appCMSPageUI) {
         super(context);
         this.appCMSPageUI = appCMSPageUI;
         this.viewsWithComponentIds = new ArrayList<>();
+        this.moduleViewMap = new HashMap<>();
         init();
     }
 
@@ -68,6 +72,7 @@ public class PageView extends BaseView {
                 ((AppCMSBaseAdapter) listWithAdapter.getAdapter())
                         .updateData(listWithAdapter.getListView(), contentData);
             }
+            listWithAdapter.listView.setVisibility(VISIBLE);
         }
     }
 
@@ -78,6 +83,15 @@ public class PageView extends BaseView {
                 if (module == ((ModuleView) child).getModule()) {
                     child.setVisibility(VISIBLE);
                 }
+            }
+        }
+    }
+
+    public void setAllChildrenVisible(ViewGroup viewGroup) {
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            viewGroup.getChildAt(i).setVisibility(VISIBLE);
+            if (viewGroup.getChildAt(i) instanceof ViewGroup) {
+                setAllChildrenVisible((ViewGroup) viewGroup.getChildAt(i));
             }
         }
     }
@@ -130,6 +144,17 @@ public class PageView extends BaseView {
                     return viewWithComponentId.view;
                 }
             }
+        }
+        return null;
+    }
+
+    public void addModuleViewWithModuleId(String moduleId, ModuleView moduleView) {
+        moduleViewMap.put(moduleId, moduleView);
+    }
+
+    public ModuleView getModuleViewWithModuleId(String moduleId) {
+        if (moduleViewMap.containsKey(moduleId)) {
+            return moduleViewMap.get(moduleId);
         }
         return null;
     }

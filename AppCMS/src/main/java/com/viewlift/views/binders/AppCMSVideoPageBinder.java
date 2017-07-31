@@ -17,6 +17,7 @@ import java.util.Map;
 
 public class AppCMSVideoPageBinder extends Binder {
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
+    private boolean isOffline;
     private AppCMSPageUI appCMSPageUI;
     private AppCMSPageAPI appCMSPageAPI;
     private String pageID;
@@ -57,7 +58,8 @@ public class AppCMSVideoPageBinder extends Binder {
             boolean isTrailer,
             boolean userLoggedIn,
             List<String> relatedVideoIds,
-            int currentlyPlayingIndex) {
+            int currentlyPlayingIndex,
+            boolean isOffline) {
         this.appCMSPageUI = appCMSPageUI;
         this.appCMSPageAPI = appCMSPageAPI;
         this.pageID = pageID;
@@ -78,6 +80,7 @@ public class AppCMSVideoPageBinder extends Binder {
         this.isLoggedIn = userLoggedIn;
         this.relateVideoIds = relatedVideoIds;
         this.currentPlayingVideoIndex = currentlyPlayingIndex;
+        this.isOffline = isOffline;
     }
 
     public AppCMSPageUI getAppCMSPageUI() {
@@ -234,5 +237,13 @@ public class AppCMSVideoPageBinder extends Binder {
 
     public void setTrailer(boolean trailer) {
         isTrailer = trailer;
+    }
+
+    public boolean isOffline() {
+        return isOffline;
+    }
+
+    public void setOffline(boolean offline) {
+        isOffline = offline;
     }
 }

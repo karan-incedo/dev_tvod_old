@@ -24,17 +24,20 @@ import com.viewlift.R;
  */
 
 public class StarRating extends LinearLayout {
+    private static final int NUM_STARS = 5;
+
     private final int starBorderColor;
     private final int starFillColor;
     private final float rating;
     private final VectorDrawable starDrawableNoFill;
     private final VectorDrawable starDrawable;
+    private StarViewGlobalLayoutListener[] starViewGlobalLayoutListener;
 
     private static class StarViewGlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
         final ImageView imageToFill;
         final int borderColor;
         final int fillColor;
-        final float percentageToFill;
+        float percentageToFill;
         final VectorDrawable starDrawableNoFill;
         final VectorDrawable starDrawable;
 
@@ -84,6 +87,10 @@ public class StarRating extends LinearLayout {
                 imageToFill.setImageDrawable(new BitmapDrawable(imageToFill.getContext().getResources(), starViewCropped));
             }
         }
+
+        public void updatePercentageToFill(float percentageToFill) {
+            this.percentageToFill = percentageToFill;
+        }
     }
 
     public StarRating(Context context, int starBorderColor, int starFillColor, float rating) {
@@ -93,6 +100,7 @@ public class StarRating extends LinearLayout {
         this.rating = rating;
         this.starDrawableNoFill = (VectorDrawable) ContextCompat.getDrawable(getContext(), R.drawable.star_icon_no_fill);
         this.starDrawable = (VectorDrawable) ContextCompat.getDrawable(getContext(), R.drawable.star_icon);
+        this.starViewGlobalLayoutListener = new StarViewGlobalLayoutListener[NUM_STARS];
         init();
     }
 
@@ -100,7 +108,7 @@ public class StarRating extends LinearLayout {
         setOrientation(HORIZONTAL);
 
         float ratingRemainder = rating;
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < NUM_STARS; i++) {
             LinearLayout.LayoutParams starLayoutParams =
                     new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
             starLayoutParams.weight = 1;
@@ -108,15 +116,25 @@ public class StarRating extends LinearLayout {
             ImageView starView = new ImageView(getContext());
             starView.setLayoutParams(starLayoutParams);
             float fillRatio = ratingRemainder >= 1.0f ? 1.0f : ratingRemainder % 1.0f;
-            starView.getViewTreeObserver()
-                    .addOnGlobalLayoutListener(new StarViewGlobalLayoutListener(starView,
-                            starBorderColor,
-                            starFillColor,
-                            fillRatio,
-                            starDrawableNoFill,
-                            starDrawable));
+            starViewGlobalLayoutListener[i] = new StarViewGlobalLayoutListener(starView,
+                    starBorderColor,
+                    starFillColor,
+                    fillRatio,
+                    starDrawableNoFill,
+                    starDrawable);
+            starView.getViewTreeObserver().addOnGlobalLayoutListener(starViewGlobalLayoutListener[i]);
             addView(starView);
             ratingRemainder -= 1.0f;
         }
+    }
+
+    public void updateRating(float percentageToFill) {
+        float ratingRemainder = percentageToFill;
+        for (int i = 0; i < NUM_STARS; i++) {
+            float fillRatio = ratingRemainder >= 1.0f ? 1.0f : ratingRemainder % 1.0f;
+            starViewGlobalLayoutListener[i].updatePercentageToFill(fillRatio);
+            ratingRemainder -= 1.0f;
+        }
+        requestLayout();
     }
 }

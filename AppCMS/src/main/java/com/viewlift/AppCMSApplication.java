@@ -5,8 +5,10 @@ import android.app.Application;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.appsflyer.AppsFlyerLib;
 import com.apptentive.android.sdk.Apptentive;
 import com.crashlytics.android.Crashlytics;
+import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
 import com.viewlift.models.network.modules.AppCMSUIModule;
 import com.viewlift.views.components.AppCMSPresenterComponent;
@@ -14,6 +16,8 @@ import com.viewlift.views.components.DaggerAppCMSPresenterComponent;
 import com.viewlift.views.modules.AppCMSPresenterModule;
 
 import io.fabric.sdk.android.Fabric;
+
+import static com.viewlift.analytics.AppsFlyerUtils.addDeviceInfo;
 
 /**
  * Created by viewlift on 5/4/17.
@@ -76,6 +80,11 @@ public class AppCMSApplication extends Application {
         });
 
         Fabric.with(this, new Crashlytics());
+
+        //Initializing AppsFlyer
+        AppsFlyerLib.getInstance().startTracking(this,getString(R.string.app_cms_appsflyer_dev_key));
+        AppsFlyerUtils.uninstallApp(this, getString(R.string.GCM_SENDER_ID_APPFLYERS));
+        addDeviceInfo(this);
     }
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {

@@ -62,6 +62,12 @@ public class AppCMSPageViewModule {
 
     @Provides
     @Singleton
+    public List<String> providesModulesToIgnoreList() {
+        return modulesToIgnoreList;
+    }
+
+    @Provides
+    @Singleton
     @Nullable
     public PageView providesViewFromPage(ViewCreator viewCreator) {
         return viewCreator.generatePage(context,

@@ -431,4 +431,9 @@ public class Component implements ModuleWithComponents {
     public void setyAxisSetManually(boolean yAxisSetManually) {
         this.yAxisSetManually = yAxisSetManually;
     }
+
+    @Override
+    public String getId() {
+        return null;
+    }
 }

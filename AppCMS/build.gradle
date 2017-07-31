@@ -30,7 +30,7 @@ android {
     buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId packageName
-        minSdkVersion 22
+        minSdkVersion 23
         targetSdkVersion 25
         versionCode 10
         versionName "1.0.20"
@@ -40,6 +40,8 @@ android {
     productFlavors {
         mobile {
             dimension = "green"
+            minSdkVersion 23
+            targetSdkVersion 25
         }
         tv {
             minSdkVersion 21
@@ -137,7 +139,7 @@ dependencies {
     tvCompile "com.android.support:leanback-v17:$rootProject.ext.androidsupportVersion"
     tvCompile "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
     tvCompile 'com.github.bumptech.glide:glide:3.4.+'
-    compile "com.squareup.picasso:picasso:$rootProject.ext.picassoVersion"
+    compile "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
     compile "com.google.dagger:dagger:$rootProject.ext.daggerVersion"
     compile "com.google.code.gson:gson:$rootProject.ext.gsonVersion"
     compile "com.squareup.okhttp3:okhttp:$rootProject.ext.okHttp3Version"
@@ -156,6 +158,8 @@ dependencies {
         transitive = true
     }
 
+    compile "com.urbanairship.android:urbanairship-sdk:$rootProject.ext.urbanAirshipVersion"
+
     compile "com.jakewharton:butterknife:$rootProject.ext.butterknifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.ext.butterknifeVersion"
 
@@ -172,6 +176,8 @@ dependencies {
 
     compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
+
+    compile 'com.appsflyer:af-android-sdk:4.6.7@aar'
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -59,6 +59,7 @@ import com.viewlift.R;
 public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListener {
     private static final String TAG = "VideoPlayerFragment";
     private ToggleButton ccToggleButton;
+    private boolean isClosedCaptionEnabled = false;
 
     public static class PlayerState {
         boolean playWhenReady;
@@ -127,7 +128,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
             }
         } else {
             if (ccToggleButton != null) {
-                ccToggleButton.setChecked(true);
+                ccToggleButton.setChecked(isClosedCaptionEnabled);
             }
         }
     }
@@ -192,6 +193,10 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         }
     }
 
+    public void setClosedCaptionEnabled(boolean closedCaptionEnabled) {
+        isClosedCaptionEnabled = closedCaptionEnabled;
+    }
+
     public SimpleExoPlayerView getPlayerView() {
         return playerView;
     }
@@ -215,6 +220,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
                 if (onClosedCaptionButtonClicked != null) {
                     onClosedCaptionButtonClicked.call(isChecked);
                 }
+                isClosedCaptionEnabled = isChecked;
             }
         });
 
@@ -332,7 +338,11 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         playerState.playbackState = playbackState;
 
         if (onPlayerStateChanged != null) {
-            Observable.just(playerState).subscribe(onPlayerStateChanged);
+            try {
+                Observable.just(playerState).subscribe(onPlayerStateChanged);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to update player state change status: " + e.getMessage());
+            }
         }
     }
 

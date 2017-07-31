@@ -9,7 +9,6 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -49,6 +48,7 @@ import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
+import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.NavBarItemView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSPageFragment;
@@ -135,8 +135,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         try {
             updatedAppCMSBinder =
                     (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
-            appCMSBinderStack.push(updatedAppCMSBinder.getPageId());
-            appCMSBinderMap.put(updatedAppCMSBinder.getPageId(), updatedAppCMSBinder);
             shouldSendCloseOthersAction = updatedAppCMSBinder.shouldSendCloseAction();
         } catch (ClassCastException e) {
             Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
@@ -188,22 +186,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
-                    Log.d(TAG, "Received Presenter Close Action: fragment count = "
-                            + getSupportFragmentManager().getBackStackEntryCount());
-                    if (appCMSBinderStack.size() > 1) {
-                        try {
-                            getSupportFragmentManager().popBackStack();
-                        } catch (IllegalStateException e) {
-                            Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
-                        }
-                        handleBack(true, false, true);
-                        if (appCMSBinderStack.size() > 0) {
-                            AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                            handleBack(true, appCMSBinderStack.size() < 2, false);
-                            handleLaunchPageAction(appCMSBinder);
-                        }
-                        isActive = true;
-                    }
+                    handleCloseAction();
                 }
             }
         };
@@ -229,7 +212,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         callbackManager = CallbackManager.Factory.create();
 
-            accessTokenTracker = new AccessTokenTracker() {
+        accessTokenTracker = new AccessTokenTracker() {
             @Override
             protected void onCurrentAccessTokenChanged(
                     AccessToken oldAccessToken,
@@ -250,6 +233,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         email = user.getString("email");
                                     } catch (JSONException e) {
                                         Log.e(TAG, "Error parsing Facebook Graph JSON: " + e.getMessage());
+                                    }
+                                    if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+                                        handleCloseAction();
                                     }
                                     appCMSPresenter.setFacebookAccessToken(AppCMSPageActivity.this,
                                             currentAccessToken.getToken(),
@@ -283,10 +269,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             }
         };
-        Intent serviceIntent =
-                new Intent("com.android.vending.billing.InAppBillingService.BIND");
-        serviceIntent.setPackage("com.android.vending");
-        bindService(serviceIntent, inAppBillingServiceConn, Context.BIND_AUTO_CREATE);
+        if (inAppBillingService == null) {
+            Intent serviceIntent =
+                    new Intent("com.android.vending.billing.InAppBillingService.BIND");
+            serviceIntent.setPackage("com.android.vending");
+            bindService(serviceIntent, inAppBillingServiceConn, Context.BIND_AUTO_CREATE);
+        }
 
         if (appCMSPresenter != null) {
             appCMSPresenter.setInAppBillingServiceConn(inAppBillingServiceConn);
@@ -308,68 +296,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        int appCMSBinderStackSize = appCMSBinderStack.size();
-        outState.putInt(getString(R.string.app_cms_binder_stack_size_key), appCMSBinderStackSize);
-        for (int i = appCMSBinderStackSize - 1; i >= 0; i--) {
-            outState.putBinder(getString(R.string.app_cms_binder_stack_element_key, i),
-                    appCMSBinderMap.get(appCMSBinderStack.get(i)));
-        }
-        outState.putBoolean(getString(R.string.resume_internal_events_key), resumeInternalEvents);
-        Log.d(TAG, "Saving instance state");
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        int appCMSBinderStackSize = savedInstanceState.getInt(getString(R.string.app_cms_binder_stack_size_key));
-        appCMSBinderStack.clear();
-        appCMSBinderMap.clear();
-        for (int i = 0; i < appCMSBinderStackSize; i++) {
-            try {
-                AppCMSBinder appCMSBinder =
-                        ((AppCMSBinder) savedInstanceState.getBinder(getString(R.string.app_cms_binder_stack_element_key, i)));
-                String pageId = appCMSBinder.getPageId();
-                appCMSBinderStack.push(pageId);
-                appCMSBinderMap.put(pageId, appCMSBinder);
-                updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-            } catch (ClassCastException e) {
-                Log.e(TAG, "Could not attach fragment: " + e.toString());
-            }
-        }
-        resumeInternalEvents = savedInstanceState.getBoolean(getString(R.string.resume_internal_events_key));
-        Log.d(TAG, "Restoring instance state");
-    }
-
-    @Override
     public void onBackPressed() {
-        if (appCMSPresenter != null && appCMSPresenter.isMainFragmentViewVisible()) {
-            appCMSPresenter.showMainFragmentView(false);
-            super.onBackPressed();
-            Log.d(TAG, "Back pressed - Binder stack size: " + appCMSBinderStack.size());
-            pageLoading(false);
-            handleBack(true, appCMSBinderStack.size() < 2, true);
-            if (appCMSBinderStack.size() > 0 && appCMSBinderMap.get(appCMSBinderStack.peek()) != null) {
-                AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                handleBack(true, appCMSBinderStack.size() < 2, false);
-                handleLaunchPageAction(appCMSBinder);
-            } else {
-                isActive = false;
-                finishAffinity();
-            }
-            if (appCMSPresenter != null) {
-                appCMSPresenter.popActionInternalEvents();
-                appCMSPresenter.restartInternalEvents();
-            }
-            if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
-                appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN);
-            }
-        } else if (appCMSPresenter != null) {
-            appCMSPresenter.popActionInternalEvents();
-            appCMSPresenter.setNavItemToCurrentAction(this);
-            appCMSPresenter.showMainFragmentView(true);
-        }
+        handleCloseAction();
     }
 
     @Override
@@ -451,6 +379,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
         if (resultCode == Activity.RESULT_OK) {
             if (result != null && result.isSuccess()) {
+                if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+                    handleCloseAction();
+                }
                 appCMSPresenter.setGoogleAccessToken(this, result.getSignInAccount().getIdToken(),
                         result.getSignInAccount().getId(),
                         result.getSignInAccount().getDisplayName(),
@@ -499,11 +430,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             AppCMSBinder appCMSBinder = appCMSBinderStack.size() > 0 ?
                     appCMSBinderMap.get(appCMSBinderStack.peek()) :
                     null;
-            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                Log.d(TAG, "Orientation changed - handling back");
-                handleBack(true, true, false);
-            }
             if (appCMSBinder != null) {
+                appCMSBinderMap.remove(appCMSBinderStack.pop());
                 handleLaunchPageAction(appCMSBinder);
             }
         }
@@ -532,6 +460,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void handleBack(boolean popBinderStack, boolean closeActionPage, boolean recurse) {
         if (popBinderStack && appCMSBinderStack.size() > 0) {
             appCMSBinderStack.pop();
+            appCMSPresenter.popActionInternalEvents();
         }
         if (appCMSBinderStack.size() > 0) {
             updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
@@ -578,15 +507,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         registerReceiver(presenterCloseActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
-
-
     }
 
     private boolean shouldPopStack() {
         return appCMSBinderStack.size() > 0 &&
                 (!appCMSPresenter.isPagePrimary(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
-                        (!appCMSPresenter.isPageSplashPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
-                                !appCMSPresenter.isUserLoggedIn(this)) &&
+                        (appCMSPresenter.isUserLoggedIn(this) ||
+                                (!appCMSPresenter.isPageSplashPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
+                                !appCMSPresenter.isUserLoggedIn(this))) &&
                         !appCMSPresenter.isViewPlanPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()));
     }
 
@@ -598,6 +526,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         Log.d(TAG, "createScreenFromAppCMSBinder() - Handling Navbar");
         handleNavbar(appCMSBinder);
         handleOrientation(getResources().getConfiguration().orientation, appCMSBinder);
+        createFragment(appCMSBinder);
     }
 
     private void createFragment(AppCMSBinder appCMSBinder) {
@@ -605,10 +534,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             getSupportFragmentManager().addOnBackStackChangedListener(this);
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            Fragment appCMSPageFragment = AppCMSPageFragment.newInstance(this, appCMSBinder);
+            AppCMSPageFragment appCMSPageFragment = AppCMSPageFragment.newInstance(this, appCMSBinder);
             fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment,
-                    appCMSBinder.getPageId());
-            fragmentTransaction.addToBackStack(appCMSBinder.getPageId());
+                    appCMSBinder.getPageId() + BaseView.isLandscape(this));
+            fragmentTransaction.addToBackStack(appCMSBinder.getPageId() + BaseView.isLandscape(this));
             fragmentTransaction.commit();
         } catch (IllegalStateException e) {
             Log.e(TAG, "Failed to add Fragment to back stack");
@@ -684,7 +613,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             showSystemUI(getWindow().getDecorView());
         }
         handleNavbar(appCMSBinder);
-        createFragment(appCMSBinder);
     }
 
     private void handleToolbar(boolean appbarPresent, AppCMSMain appCMSMain) {
@@ -708,24 +636,39 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void handleLaunchPageAction(final AppCMSBinder appCMSBinder) {
         Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
-        int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
-        Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
-        int i = 0;
-        while (i < distanceFromStackTop || shouldPopStack()) {
-            Log.d(TAG, "Popping stack to getList to page item");
-            try {
-                getSupportFragmentManager().popBackStackImmediate();
-            } catch (IllegalStateException e) {
-                Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
+        int lastBackstackEntry = getSupportFragmentManager().getBackStackEntryCount();
+        if (lastBackstackEntry > 0 &&
+                (appCMSBinder.getPageId() + BaseView.isLandscape(this))
+                        .equals(getSupportFragmentManager()
+                        .getBackStackEntryAt(lastBackstackEntry - 1)
+                        .getName()) &&
+                getSupportFragmentManager().findFragmentByTag(appCMSBinder.getPageId() + BaseView.isLandscape(this)) instanceof AppCMSPageFragment) {
+            ((AppCMSPageFragment)  getSupportFragmentManager().findFragmentByTag(appCMSBinder.getPageId() + BaseView.isLandscape(this))).refreshView(appCMSBinder);
+            pageLoading(false);
+            appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
+            updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+            appCMSPresenter.showMainFragmentView(true);
+            appCMSPresenter.restartInternalEvents();
+        } else {
+            int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
+            Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
+            int i = 0;
+            while (i < distanceFromStackTop && shouldPopStack()) {
+                Log.d(TAG, "Popping stack to getList to page item");
+                try {
+                    getSupportFragmentManager().popBackStack();
+                } catch (IllegalStateException e) {
+                    Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
+                }
+                handleBack(true, false, false);
+                i++;
             }
-            handleBack(true, false, false);
-            i++;
-        }
-        appCMSBinderStack.push(appCMSBinder.getPageId());
-        appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
-        updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+            appCMSBinderStack.push(appCMSBinder.getPageId());
+            appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
+            updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
 
-        createScreenFromAppCMSBinder(appCMSBinder);
+            createScreenFromAppCMSBinder(appCMSBinder);
+        }
     }
 
     private void hideSystemUI(View decorView) {
@@ -902,6 +845,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     public void onBackStackChanged() {
         appCMSPresenter.dismissOpenDialogs(null);
         appCMSPresenter.showMainFragmentView(true);
+        appCMSPresenter.restartInternalEvents();
         getSupportFragmentManager().removeOnBackStackChangedListener(this);
     }
 
@@ -917,17 +861,47 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             ll_media_route_button.setVisibility(View.GONE);
         }
 
-        CastServiceProvider.getInstance(getApplicationContext()).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
-        CastServiceProvider.getInstance(getApplicationContext()).onActivityResume();
+        CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
+        CastServiceProvider.getInstance(this).onActivityResume();
 
     }
 
     private void setCasting() {
         try {
-            castProvider = CastServiceProvider.getInstance(getApplicationContext());
+            castProvider = CastServiceProvider.getInstance(this);
 
         } catch (Exception e) {
             Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
+        }
+    }
+
+    private void handleCloseAction() {
+        Log.d(TAG, "Received Presenter Close Action: fragment count = "
+                + getSupportFragmentManager().getBackStackEntryCount());
+        if (appCMSBinderStack.size() > 1) {
+            try {
+                getSupportFragmentManager().popBackStack();
+            } catch (IllegalStateException e) {
+                Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
+            }
+            handleBack(true, false, true);
+            if (appCMSBinderStack.size() > 0) {
+                AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                handleBack(true, appCMSBinderStack.size() < 2, false);
+                appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
+                        + BaseView.isLandscape(this));
+                handleLaunchPageAction(appCMSBinder);
+            }
+            isActive = true;
+        } else {
+            isActive = false;
+            finishAffinity();
+        }
+        if (appCMSPresenter != null) {
+            appCMSPresenter.restartInternalEvents();
+        }
+        if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN);
         }
     }
 }

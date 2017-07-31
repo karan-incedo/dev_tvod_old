@@ -15,4 +15,6 @@ public interface ModuleWithComponents {
     String getView();
 
     Settings getSettings();
+
+    String getId();
 }

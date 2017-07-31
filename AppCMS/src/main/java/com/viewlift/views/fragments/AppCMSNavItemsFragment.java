@@ -113,19 +113,25 @@ public class AppCMSNavItemsFragment extends DialogFragment {
             appCMSNavLoginButton.setBackground(loginBorder);
 
             Button appCMSNavFreeTrialButton = (Button) view.findViewById(R.id.app_cms_nav_free_trial_button);
-            appCMSNavFreeTrialButton.setTextColor(textColor);
-            appCMSNavFreeTrialButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dismiss();
-                    if (appCMSPresenter != null) {
-                        appCMSPresenter.showMainFragmentView(true);
-                        appCMSPresenter.setNavItemToCurrentAction(getActivity());
-                        appCMSPresenter.navigateToSubscriptionPlansPage();
+            if (appCMSPresenter.getAppCMSMain()
+                    .getServiceType()
+                    .equals(getContext().getString(R.string.app_cms_main_svod_service_type_key))) {
+                appCMSNavFreeTrialButton.setTextColor(textColor);
+                appCMSNavFreeTrialButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dismiss();
+                        if (appCMSPresenter != null) {
+                            appCMSPresenter.showMainFragmentView(true);
+                            appCMSPresenter.setNavItemToCurrentAction(getActivity());
+                            appCMSPresenter.navigateToSubscriptionPlansPage();
+                        }
                     }
-                }
-            });
-            appCMSNavFreeTrialButton.setBackgroundColor(buttonColor);
+                });
+                appCMSNavFreeTrialButton.setBackgroundColor(buttonColor);
+            } else {
+                appCMSNavFreeTrialButton.setVisibility(View.INVISIBLE);
+            }
         }
 
         ImageButton closeButton = (ImageButton) view.findViewById(R.id.app_cms_close_button);
@@ -149,7 +155,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new Dialog(getActivity(), getTheme()){
+        return new Dialog(getActivity(), getTheme()) {
             @Override
             public void onBackPressed() {
                 dismiss();

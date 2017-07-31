@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +54,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     protected boolean isSelected;
     protected int unselectedColor;
     protected int selectedColor;
+    protected boolean isClickable;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -91,6 +93,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.isSelected = false;
         this.unselectedColor = ContextCompat.getColor(context, android.R.color.white);
         this.selectedColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+        this.isClickable = true;
 
         cullData(context);
     }
@@ -119,9 +122,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     View childView = parent.getChildAt(i);
                     setBorder(childView, unselectedColor);
                     if (childView instanceof CollectionGridItemView) {
+                        ((CollectionGridItemView) childView).setSelectable(false);
                         for (View collectionGridChild : ((CollectionGridItemView) childView).getViewsToUpdateOnClickEvent()) {
                             if (collectionGridChild instanceof Button) {
-                                collectionGridChild.setEnabled(false);
                                 collectionGridChild.setBackgroundColor(ContextCompat.getColor(v.getContext(),
                                         R.color.disabledButtonColor));
                             }
@@ -130,9 +133,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 }
                 setBorder(v, selectedColor);
                 if (v instanceof CollectionGridItemView) {
+                    ((CollectionGridItemView) v).setSelectable(true);
                     for (View collectionGridChild : ((CollectionGridItemView) v).getViewsToUpdateOnClickEvent()) {
                         if (collectionGridChild instanceof Button) {
-                            collectionGridChild.setEnabled(true);
                             collectionGridChild.setBackgroundColor(selectedColor);
                         }
                     }
@@ -174,6 +177,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         notifyDataSetChanged();
         listView.setAdapter(this);
         listView.invalidate();
+        notifyDataSetChanged();
     }
 
     protected void bindView(CollectionGridItemView itemView,
@@ -184,12 +188,20 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
 
                     @Override
-                    public void click(Component childComponent, ContentDatum data) {
-                        appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
-                                data.getId(),
-                                data.getPlanDetails().get(0).getCountryCode(),
-                                data.getName(),
-                                (float) data.getPlanDetails().get(0).getRecurringPaymentAmount());
+                    public void click(CollectionGridItemView collectionGridItemView,
+                                      Component childComponent,
+                                      ContentDatum data) {
+                        if (isClickable) {
+                            if (collectionGridItemView.isSelectable()) {
+                                appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
+                                        data.getId(),
+                                        data.getPlanDetails().get(0).getCountryCode(),
+                                        data.getName(),
+                                        (float) data.getPlanDetails().get(0).getRecurringPaymentAmount());
+                            } else {
+                                collectionGridItemView.performClick();
+                            }
+                        }
                     }
 
                     @Override
@@ -200,64 +212,70 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             } else {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
-                    public void click(Component childComponent, ContentDatum data) {
-                        Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
-                        String permalink = data.getGist().getPermalink();
-                        String action = defaultAction;
-                        String title = data.getGist().getTitle();
-                        String hlsUrl = getHlsUrl(data);
-                        String[] extraData = new String[3];
-                        extraData[0] = permalink;
-                        extraData[1] = hlsUrl;
-                        extraData[2] = data.getGist().getId();
-                        Log.d(TAG, "Launching " + permalink + ": " + action);
-                        List<String> relatedVideoIds = null;
-                        if (data.getContentDetails() != null &&
-                                data.getContentDetails().getRelatedVideoIds() != null) {
-                            relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
-                        }
-                        int currentPlayingIndex = -1;
-                        if (relatedVideoIds == null) {
-                            currentPlayingIndex = 0;
-                        }
-                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                action,
-                                title,
-                                extraData,
-                                data,
-                                false,
-                                currentPlayingIndex,
-                                relatedVideoIds)) {
-                            Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
-                                    + " action: " + action + " hlsUrl: " + hlsUrl);
+                    public void click(CollectionGridItemView collectionGridItemView,
+                                      Component childComponent,
+                                      ContentDatum data) {
+                        if (isClickable) {
+                            Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
+                            String permalink = data.getGist().getPermalink();
+                            String action = defaultAction;
+                            String title = data.getGist().getTitle();
+                            String hlsUrl = getHlsUrl(data);
+                            String[] extraData = new String[3];
+                            extraData[0] = permalink;
+                            extraData[1] = hlsUrl;
+                            extraData[2] = data.getGist().getId();
+                            Log.d(TAG, "Launching " + permalink + ": " + action);
+                            List<String> relatedVideoIds = null;
+                            if (data.getContentDetails() != null &&
+                                    data.getContentDetails().getRelatedVideoIds() != null) {
+                                relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
+                            }
+                            int currentPlayingIndex = -1;
+                            if (relatedVideoIds == null) {
+                                currentPlayingIndex = 0;
+                            }
+                            if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                    action,
+                                    title,
+                                    extraData,
+                                    data,
+                                    false,
+                                    currentPlayingIndex,
+                                    relatedVideoIds)) {
+                                Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
+                                        + " action: " + action + " hlsUrl: " + hlsUrl);
+                            }
                         }
                     }
 
                     @Override
                     public void play(Component childComponent, ContentDatum data) {
-                        Log.d(TAG, "Playing item: " + data.getGist().getTitle());
-                        String filmId = data.getGist().getId();
-                        String permaLink = data.getGist().getPermalink();
-                        String title = data.getGist().getTitle();
-                        List<String> relatedVideoIds = null;
-                        if (data.getContentDetails() != null &&
-                                data.getContentDetails().getRelatedVideoIds() != null) {
-                            relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
-                        }
-                        int currentPlayingIndex = -1;
-                        if (relatedVideoIds == null) {
-                            currentPlayingIndex = 0;
-                        }
-                        if (!appCMSPresenter.launchVideoPlayer(data,
-                                currentPlayingIndex,
-                                relatedVideoIds)) {
-                            Log.e(TAG, "Could not launch play action: " +
-                                    " filmId: " +
-                                    filmId +
-                                    " permaLink: " +
-                                    permaLink +
-                                    " title: " +
-                                    title);
+                        if (isClickable) {
+                            Log.d(TAG, "Playing item: " + data.getGist().getTitle());
+                            String filmId = data.getGist().getId();
+                            String permaLink = data.getGist().getPermalink();
+                            String title = data.getGist().getTitle();
+                            List<String> relatedVideoIds = null;
+                            if (data.getContentDetails() != null &&
+                                    data.getContentDetails().getRelatedVideoIds() != null) {
+                                relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
+                            }
+                            int currentPlayingIndex = -1;
+                            if (relatedVideoIds == null) {
+                                currentPlayingIndex = 0;
+                            }
+                            if (!appCMSPresenter.launchVideoPlayer(data,
+                                    currentPlayingIndex,
+                                    relatedVideoIds)) {
+                                Log.e(TAG, "Could not launch play action: " +
+                                        " filmId: " +
+                                        filmId +
+                                        " permaLink: " +
+                                        permaLink +
+                                        " title: " +
+                                        title);
+                            }
                         }
                     }
                 };
@@ -270,31 +288,33 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String permalink = data.getGist().getPermalink();
-                    String title = data.getGist().getTitle();
-                    Log.d(TAG, "Launching " + permalink + ":" + defaultAction);
-                    List<String> relatedVideoIds = null;
-                    if (data.getContentDetails() != null &&
-                            data.getContentDetails().getRelatedVideoIds() != null) {
-                        relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
-                    }
-                    int currentPlayingIndex = -1;
-                    if (relatedVideoIds == null) {
-                        currentPlayingIndex = 0;
-                    }
-                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                            defaultAction,
-                            title,
-                            null,
-                            null,
-                            false,
-                            currentPlayingIndex,
-                            relatedVideoIds)) {
-                        Log.e(TAG, "Could not launch action: " +
-                                " permalink: " +
-                                permalink +
-                                " action: " +
-                                defaultAction);
+                    if (isClickable) {
+                        String permalink = data.getGist().getPermalink();
+                        String title = data.getGist().getTitle();
+                        Log.d(TAG, "Launching " + permalink + ":" + defaultAction);
+                        List<String> relatedVideoIds = null;
+                        if (data.getContentDetails() != null &&
+                                data.getContentDetails().getRelatedVideoIds() != null) {
+                            relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
+                        }
+                        int currentPlayingIndex = -1;
+                        if (relatedVideoIds == null) {
+                            currentPlayingIndex = 0;
+                        }
+                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                defaultAction,
+                                title,
+                                null,
+                                null,
+                                false,
+                                currentPlayingIndex,
+                                relatedVideoIds)) {
+                            Log.e(TAG, "Could not launch action: " +
+                                    " permalink: " +
+                                    permalink +
+                                    " action: " +
+                                    defaultAction);
+                        }
                     }
                 }
             });
@@ -308,6 +328,14 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     onClickHandler,
                     viewTypeKey);
         }
+    }
+
+    public boolean isClickable() {
+        return isClickable;
+    }
+
+    public void setClickable(boolean clickable) {
+        isClickable = clickable;
     }
 
     private String getDefaultAction(Context context) {
@@ -346,17 +374,19 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 adapterData != null) {
             String currentSubscriptionSku = appCMSPresenter.getActiveSubscriptionSku(context);
             float currentSubscriptionPrice = appCMSPresenter.getActiveSubscriptionPrice(context);
-            List<Integer> elementIndicesToCull = new ArrayList<>();
-            for (int i = 0; i < adapterData.size(); i++) {
-                if (adapterData.get(i).getId().equals(currentSubscriptionSku)) {
-                    elementIndicesToCull.add(i);
-                } else if ((float) adapterData.get(0).getPlanDetails().get(0).getRecurringPaymentAmount() <=
-                        currentSubscriptionPrice) {
-                    elementIndicesToCull.add(i);
+            if (!TextUtils.isEmpty(currentSubscriptionSku)) {
+                List<Integer> elementIndicesToCull = new ArrayList<>();
+                for (int i = 0; i < adapterData.size(); i++) {
+                    if (adapterData.get(i).getId().equals(currentSubscriptionSku)) {
+                        elementIndicesToCull.add(i);
+                    } else if ((float) adapterData.get(0).getPlanDetails().get(0).getRecurringPaymentAmount() <=
+                            currentSubscriptionPrice) {
+                        elementIndicesToCull.add(i);
+                    }
                 }
-            }
-            for (int i = 0; i < elementIndicesToCull.size(); i++) {
-                adapterData.remove((int) elementIndicesToCull.get(i));
+                for (int i = 0; i < elementIndicesToCull.size(); i++) {
+                    adapterData.remove((int) elementIndicesToCull.get(i));
+                }
             }
         }
     }

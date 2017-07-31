@@ -12,8 +12,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -117,20 +116,9 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                     imageWidth,
                     imageHeight);
 
-            Picasso.with(viewHolder.view.getContext())
+            Glide.with(viewHolder.view.getContext())
                     .load(imageUrl)
-                    .into(viewHolder.filmThumbnail,
-                            new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    Log.d(TAG, "Loaded image: " + imageUrl);
-                                }
-
-                                @Override
-                                public void onError() {
-                                    Log.e(TAG, "Failed to load image: " + imageUrl);
-                                }
-                            });
+                    .into(viewHolder.filmThumbnail);
         }
     }
 
