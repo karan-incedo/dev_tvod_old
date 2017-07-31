@@ -251,42 +251,46 @@ public class CollectionGridItemView extends BaseView {
                                 deviceWidth,
                                 childViewHeight);
                         Log.d(TAG, "Loading image: " + imageUrl);
-                        Glide.with(context)
-                                .load(imageUrl)
-                                .override(deviceWidth, childViewHeight)
-                                .transform(new BitmapTransformation(context) {
-                                    @Override
-                                    public String getId() {
-                                        return imageUrl;
-                                    }
+                        try {
+                            Glide.with(context)
+                                    .load(imageUrl)
+                                    .override(deviceWidth, childViewHeight)
+                                    .transform(new BitmapTransformation(context) {
+                                        @Override
+                                        public String getId() {
+                                            return imageUrl;
+                                        }
 
-                                    @Override
-                                    protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
-                                        int width = toTransform.getWidth();
-                                        int height = toTransform.getHeight();
-                                        Bitmap sourceWithGradient =
-                                                Bitmap.createBitmap(width,
-                                                        height,
-                                                        Bitmap.Config.ARGB_8888);
-                                        Canvas canvas = new Canvas(sourceWithGradient);
-                                        canvas.drawBitmap(toTransform, 0, 0, null);
-                                        Paint paint = new Paint();
-                                        LinearGradient shader = new LinearGradient(0,
-                                                0,
-                                                0,
-                                                height,
-                                                0xFFFFFFFF,
-                                                0xFF000000,
-                                                Shader.TileMode.CLAMP);
-                                        paint.setShader(shader);
-                                        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
-                                        canvas.drawRect(0, 0, width, height, paint);
-                                        toTransform.recycle();
-                                        paint = null;
-                                        return sourceWithGradient;
-                                    }
-                                })
-                                .into((ImageView) view);
+                                        @Override
+                                        protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
+                                            int width = toTransform.getWidth();
+                                            int height = toTransform.getHeight();
+                                            Bitmap sourceWithGradient =
+                                                    Bitmap.createBitmap(width,
+                                                            height,
+                                                            Bitmap.Config.ARGB_8888);
+                                            Canvas canvas = new Canvas(sourceWithGradient);
+                                            canvas.drawBitmap(toTransform, 0, 0, null);
+                                            Paint paint = new Paint();
+                                            LinearGradient shader = new LinearGradient(0,
+                                                    0,
+                                                    0,
+                                                    height,
+                                                    0xFFFFFFFF,
+                                                    0xFF000000,
+                                                    Shader.TileMode.CLAMP);
+                                            paint.setShader(shader);
+                                            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
+                                            canvas.drawRect(0, 0, width, height, paint);
+                                            toTransform.recycle();
+                                            paint = null;
+                                            return sourceWithGradient;
+                                        }
+                                    })
+                                    .into((ImageView) view);
+                        } catch (IllegalArgumentException e) {
+                            Log.e(TAG, "Failed to load image with Glide: " + e.toString());
+                        }
                     }
                     bringToFront = false;
                 }
