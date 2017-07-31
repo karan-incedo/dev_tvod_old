@@ -53,7 +53,7 @@ public class CollectionGridItemView extends BaseView {
     protected int defaultHeight;
     private List<ItemContainer> childItems;
     private List<View> viewsToUpdateOnClickEvent;
-    private boolean allowClickEvents;
+    private boolean selectable;
 
     @Inject
     public CollectionGridItemView(Context context,
@@ -153,6 +153,14 @@ public class CollectionGridItemView extends BaseView {
 
     public int getNumberOfChildren() {
         return childItems.size();
+    }
+
+    public boolean isSelectable() {
+        return selectable;
+    }
+
+    public void setSelectable(boolean selectable) {
+        this.selectable = selectable;
     }
 
     public void bindChild(Context context,
@@ -287,7 +295,6 @@ public class CollectionGridItemView extends BaseView {
                     ((TextView) view).setText("");
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PURCHASE_BUTTON_KEY) {
                     ((TextView) view).setText(childComponent.getText());
-                    view.setEnabled(false);
                     view.setBackgroundColor(ContextCompat.getColor(getContext(),
                             R.color.disabledButtonColor));
                     viewsToUpdateOnClickEvent.add(view);
@@ -295,7 +302,9 @@ public class CollectionGridItemView extends BaseView {
                 view.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        onClickHandler.click(childComponent, data);
+                        onClickHandler.click(CollectionGridItemView.this,
+                                childComponent,
+                                data);
                     }
                 });
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
@@ -390,7 +399,9 @@ public class CollectionGridItemView extends BaseView {
     }
 
     public interface OnClickHandler {
-        void click(Component childComponent, ContentDatum data);
+        void click(CollectionGridItemView collectionGridItemView,
+                   Component childComponent,
+                   ContentDatum data);
 
         void play(Component childComponent, ContentDatum data);
     }
