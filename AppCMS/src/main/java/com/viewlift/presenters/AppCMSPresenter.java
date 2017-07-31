@@ -40,6 +40,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.apptentive.android.sdk.Apptentive;
@@ -539,8 +540,8 @@ public class AppCMSPresenter {
         appCMSUserVideoStatusCall.call(url, getAuthToken(currentActivity), responseAction);
     }
 
-    public void getUserVideoDownloadStatus(String filmId, Action1<UserVideoDownloadStatus> responseAction) {
-        appCMSUserDownloadVideoStatusCall.call(filmId, this, responseAction, getLoggedInUser(currentActivity));
+    public void getUserVideoDownloadStatus(String filmId, Action1<UserVideoDownloadStatus> responseAction,String userId) {
+        appCMSUserDownloadVideoStatusCall.call(filmId, this, responseAction, userId);
     }
 
     public boolean launchButtonSelectedAction(String pagePath,
@@ -1310,6 +1311,7 @@ public class AppCMSPresenter {
                 downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
             }
 
+            downloadURL=downloadURL.replace("https:/","http:/");
 
             DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
                     .setTitle(contentDatum.getGist().getTitle())
@@ -1321,6 +1323,8 @@ public class AppCMSPresenter {
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
 
+            downloadRequest.allowScanningByMediaScanner();
+
             enqueueId = downloadManager.enqueue(downloadRequest);
 
             /**
@@ -1330,6 +1334,10 @@ public class AppCMSPresenter {
             createLocalEntry(enqueueId, thumbEnqueueId, contentDatum, downloadURL);
 
             appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), this, resultAction1, getLoggedInUser(currentActivity));
+
+            showToast(
+                    currentActivity.getString(R.string.app_cms_download_started_mesage,
+                    contentDatum.getGist().getTitle()),Toast.LENGTH_LONG);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1493,11 +1501,11 @@ public class AppCMSPresenter {
         Canvas canvas = new Canvas(b);
         Paint paint = new Paint();
 
-  /*      paint.setColor(Color.DKGRAY);
+        paint.setColor(Color.DKGRAY);
         paint.setStrokeWidth(3);
         paint.setStyle(Paint.Style.STROKE);
         canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 2, paint);
-*/
+
         int tintColor = Color.parseColor((this.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
         paint.setColor(tintColor);
         paint.setStrokeWidth(iv2.getWidth() / 10);
@@ -3207,6 +3215,9 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public void showToast(String messgae,int messageDuration){
+        Toast.makeText(currentActivity,messgae,messageDuration).show();
+    }
     public void showDialog(DialogType dialogType,
                            String optionalMessage,
                            boolean showCancelButton,
