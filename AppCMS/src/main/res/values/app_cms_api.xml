@@ -300,7 +300,7 @@
     <string name="app_cms_autoplay_playing_in_label_key">playInLabel</string>
     <string name="app_cms_autoplay_timer_label_key">timerLabel</string>
 
-    <string name="app_cms_download_started_mesage">"%1$s" has been started downloading.</string>
+    <string name="app_cms_download_started_mesage">%1$s has started downloading.</string>
     <string name="app_cms_download_quality_cancel_button_key">cancelButton</string>
     <string name="app_cms_download_quality_continue_button_key">continueButton</string>
 </resources>
