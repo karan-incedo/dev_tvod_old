@@ -20,14 +20,10 @@ import butterknife.ButterKnife;
  */
 
 public abstract class AppCMSRadioAdapter<T> extends RecyclerView.Adapter<AppCMSRadioAdapter.ViewHolder> {
-    public int mSelectedItem = 2;
-    public List<T> mItems;
+    List<T> mItems;
+    private int downloadQualityPosition = 1; // Default position is 1, i.e 720p
+    private ItemClickListener itemClickListener;
     private Context mContext;
-    public ItemClickListener itemClickListener;
-
-    public interface ItemClickListener<T> {
-        public void onItemClick(T item);
-    }
 
     public AppCMSRadioAdapter(Context context, List<T> items) {
         mContext = context;
@@ -36,7 +32,7 @@ public abstract class AppCMSRadioAdapter<T> extends RecyclerView.Adapter<AppCMSR
 
     @Override
     public void onBindViewHolder(AppCMSRadioAdapter.ViewHolder viewHolder, final int i) {
-        viewHolder.mRadio.setChecked(i == mSelectedItem);
+        viewHolder.mRadio.setChecked(i == downloadQualityPosition);
     }
 
     @Override
@@ -51,34 +47,34 @@ public abstract class AppCMSRadioAdapter<T> extends RecyclerView.Adapter<AppCMSR
         return new ViewHolder(view);
     }
 
+    public void setItemClickListener(ItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
+    }
+
+    public interface ItemClickListener<T> {
+        void onItemClick(T item);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.radio)
-        public RadioButton mRadio;
+        RadioButton mRadio;
 
         @BindView(R.id.text)
-        public TextView mText;
+        TextView mText;
 
         public ViewHolder(final View inflate) {
             super(inflate);
             ButterKnife.bind(this, inflate);
 
-            View.OnClickListener clickListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mSelectedItem = getAdapterPosition();
-                    notifyItemRangeChanged(0, mItems.size());
-                    itemClickListener.onItemClick(mItems.get(mSelectedItem));
-                }
+            View.OnClickListener clickListener = v -> {
+                downloadQualityPosition = getAdapterPosition();
+                notifyItemRangeChanged(0, mItems.size());
+                itemClickListener.onItemClick(mItems.get(downloadQualityPosition));
             };
             itemView.setOnClickListener(clickListener);
             mRadio.setOnClickListener(clickListener);
         }
-    }
-
-
-    public void setItemClickListener(ItemClickListener itemClickListener) {
-        this.itemClickListener = itemClickListener;
     }
 
 }
