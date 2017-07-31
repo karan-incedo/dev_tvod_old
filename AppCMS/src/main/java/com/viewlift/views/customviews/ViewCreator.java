@@ -3,6 +3,7 @@ package com.viewlift.views.customviews;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -225,7 +226,6 @@ public class ViewCreator {
                                             }
                                         }
                                     });
-                                    view.setVisibility(View.VISIBLE);
                                 } else {
                                     if (!BaseView.isLandscape(context)) {
                                         shouldHideComponent = true;
@@ -501,6 +501,35 @@ public class ViewCreator {
                                         starringListSb.toString());
                                 view.setVisibility(View.VISIBLE);
                                 view.forceLayout();
+                            }
+                        } else if (componentType == AppCMSUIKeyType.PAGE_SETTINGS_KEY) {
+                            for (Component settingsComponent : component.getComponents()) {
+                                shouldHideComponent = false;
+
+                                AppCMSUIKeyType settingsComponentType = jsonValueKeyMap.get(settingsComponent.getType());
+
+                                if (componentType == null) {
+                                    componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                                }
+
+                                AppCMSUIKeyType settingsComponentKey = jsonValueKeyMap.get(settingsComponent.getKey());
+
+                                if (settingsComponentKey == null) {
+                                    settingsComponentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                                }
+
+                                View settingsView = pageView.findViewFromComponentId(module.getId()
+                                        + settingsComponent.getKey());
+
+                                if (settingsView != null) {
+                                    if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_NAME_VALUE_KEY) {
+                                        ((TextView) settingsView).setText(appCMSPresenter.getLoggedInUserName(context));
+                                    } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_VALUE_KEY) {
+                                        ((TextView) settingsView).setText(appCMSPresenter.getLoggedInUserEmail(context));
+                                    } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_VALUE_KEY) {
+                                        ((TextView) settingsView).setText(appCMSPresenter.getActiveSubscriptionPlanName(context));
+                                    }
+                                }
                             }
                         }
 
@@ -1270,11 +1299,17 @@ public class ViewCreator {
                         ((ImageButton) componentViewResult.componentView)
                                 .setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
-                        appCMSPresenter.getUserVideoStatus(
-                                moduleAPI.getContentData().get(0).getGist().getId(),
-                                new UpdateImageIconAction((ImageButton) componentViewResult
-                                        .componentView, appCMSPresenter, moduleAPI.getContentData()
-                                        .get(0).getGist().getId()));
+                        if (!appCMSPresenter.isUserLoggedIn(context)) {
+                            componentViewResult.componentView.setVisibility(View.GONE);
+                        } else {
+                            if (moduleAPI.getContentData() != null) {
+                                appCMSPresenter.getUserVideoStatus(
+                                        moduleAPI.getContentData().get(0).getGist().getId(),
+                                        new UpdateImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter, moduleAPI.getContentData()
+                                                .get(0).getGist().getId()));
+                            }
+                            componentViewResult.componentView.setVisibility(View.VISIBLE);
+                        }
                         pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
                                 .id(moduleAPI.getId() + component.getKey())
                                 .view(componentViewResult.componentView)
@@ -1317,6 +1352,7 @@ public class ViewCreator {
                         } else {
                             if (!BaseView.isLandscape(context)) {
                                 componentViewResult.shouldHideComponent = true;
+                                componentViewResult.componentView.setVisibility(View.GONE);
                             }
                         }
                         pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
@@ -1388,8 +1424,10 @@ public class ViewCreator {
                         break;
 
                     case PAGE_VIDEO_CLOSE_KEY:
-                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.crossicon);
+                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.cancel);
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+                        ((ImageButton) componentViewResult.componentView).getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -1805,14 +1843,26 @@ public class ViewCreator {
 
                         case PAGE_SETTINGS_NAME_VALUE_KEY:
                             ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserName(context));
+                            pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
+                                    .id(moduleAPI.getId() + component.getKey())
+                                    .view(componentViewResult.componentView)
+                                    .build());
                             break;
 
                         case PAGE_SETTINGS_EMAIL_VALUE_KEY:
                             ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserEmail(context));
+                            pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
+                                    .id(moduleAPI.getId() + component.getKey())
+                                    .view(componentViewResult.componentView)
+                                    .build());
                             break;
 
                         case PAGE_SETTINGS_PLAN_VALUE_KEY:
                             ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getActiveSubscriptionPlanName(context));
+                            pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
+                                    .id(moduleAPI.getId() + component.getKey())
+                                    .view(componentViewResult.componentView)
+                                    .build());
                             break;
 
                         case PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY:
@@ -2421,8 +2471,10 @@ public class ViewCreator {
                 }
 
             } else {
-
                 imageButton.setImageResource(R.drawable.ic_download);
+                imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+                imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
                 imageButton.setOnClickListener(addClickListener);
             }
         }

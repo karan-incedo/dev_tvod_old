@@ -57,6 +57,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -290,8 +291,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         createMoviesNavItem(appCMSPresenter.findMoviesPageNavItem());
         createSearchNavItem();
 
-        setCasting();
-
         Log.d(TAG, "onCreate()");
     }
 
@@ -396,6 +395,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } else if (resultCode == RESULT_CANCELED) {
             if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
                 appCMSPresenter.setActiveSubscriptionSku(this, null);
+                handleBack(true, true, false);
             }
         }
     }
@@ -505,17 +505,22 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             shouldSendCloseOthersAction = false;
         }
 
+        setCastingInstanse();
+
         registerReceiver(presenterCloseActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
     }
 
     private boolean shouldPopStack() {
-        return appCMSBinderStack.size() > 0 &&
-                (!appCMSPresenter.isPagePrimary(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
-                        (appCMSPresenter.isUserLoggedIn(this) ||
-                                (!appCMSPresenter.isPageSplashPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
-                                !appCMSPresenter.isUserLoggedIn(this))) &&
-                        !appCMSPresenter.isViewPlanPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()));
+        if (appCMSBinderStack.size() > 0 && appCMSBinderMap.get(appCMSBinderStack.peek()) != null) {
+            return appCMSBinderStack.size() > 0 &&
+                    (!appCMSPresenter.isPagePrimary(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
+                            (appCMSPresenter.isUserLoggedIn(this) ||
+                                    (!appCMSPresenter.isPageSplashPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
+                                            !appCMSPresenter.isUserLoggedIn(this))) &&
+                            !appCMSPresenter.isViewPlanPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()));
+        }
+        return false;
     }
 
     private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder) {
@@ -646,9 +651,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             ((AppCMSPageFragment)  getSupportFragmentManager().findFragmentByTag(appCMSBinder.getPageId() + BaseView.isLandscape(this))).refreshView(appCMSBinder);
             pageLoading(false);
             appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
-            updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-            appCMSPresenter.showMainFragmentView(true);
-            appCMSPresenter.restartInternalEvents();
+            try {
+                updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                appCMSPresenter.showMainFragmentView(true);
+                appCMSPresenter.restartInternalEvents();
+            } catch (EmptyStackException e) {
+                Log.e(TAG, "Error attempting to restart screen: " + appCMSBinder.getScreenName());
+                appCMSPresenter.navigateToLoginPage();
+            }
         } else {
             int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
             Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
@@ -861,15 +871,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             ll_media_route_button.setVisibility(View.GONE);
         }
 
-        CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
-        CastServiceProvider.getInstance(this).onActivityResume();
-
+        setCastingInstanse();
     }
 
-    private void setCasting() {
+    private void setCastingInstanse() {
         try {
-            castProvider = CastServiceProvider.getInstance(this);
 
+            CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
+            CastServiceProvider.getInstance(this).onActivityResume();
         } catch (Exception e) {
             Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
         }

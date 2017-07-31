@@ -126,7 +126,6 @@ public class CastServiceProvider {
         boolean isConnected = false;
         if (mCastHelper.isRemoteDeviceConnected()) {
 
-            mCastHelper.openRemoteController();
             launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
             isConnected = true;
         }
@@ -148,6 +147,7 @@ public class CastServiceProvider {
             mCastHelper.routes.addAll(mCastHelper.mMediaRouter.getRoutes());
         }
 
+        mCastHelper.onFilterRoutes(mCastHelper.routes);
         castChooserDialog.setRoutes(mCastHelper.routes);
     }
 
@@ -267,10 +267,10 @@ public class CastServiceProvider {
             public void onClick(View v) {
                 castDisconnectDialog = new CastDisconnectDialog(mActivity);
 
-                if (mCastHelper.mSelectedDevice == null) {
+                if (mCastHelper.mSelectedDevice == null && mActivity!=null) {
                     castChooserDialog.setRoutes(mCastHelper.routes);
                     castChooserDialog.show();
-                } else if (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null) {
+                } else if (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null && mActivity!=null) {
                     castDisconnectDialog.setToBeDisconnectDevice(mCastHelper.mMediaRouter);
                     castDisconnectDialog.show();
                 }

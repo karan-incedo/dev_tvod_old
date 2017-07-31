@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.MediaRouteDiscoveryFragment;
 import android.support.v7.media.MediaRouteSelector;
 import android.support.v7.media.MediaRouter;
@@ -24,6 +25,7 @@ import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
@@ -55,7 +57,7 @@ public class CastHelper {
     private List<String> listCompareRelatedVideosId;
 
     public MediaRouteSelector mMediaRouteSelector;
-    private MyMediaRouterCallback mMediaRouterCallback, routerCall;
+    private MyMediaRouterCallback mMediaRouterCallback;
     private AppCMSPresenter appCMSPresenterComponenet;
     public String appName;
     public List<Object> routes = new ArrayList<>();
@@ -65,7 +67,7 @@ public class CastHelper {
     public CastDevice mSelectedDevice;
     private int currentPlayingIndex = 0;
     public int playIndexPosition = 0;
-    long castCurrentDuration;
+    private long castCurrentDuration;
     private static final String DISCOVERY_FRAGMENT_TAG = "DiscoveryFragment";
 
     private CastHelper(Context mContext) {
@@ -76,7 +78,6 @@ public class CastHelper {
                 .build();
         appName = mAppContext.getResources().getString(R.string.app_name);
         mMediaRouterCallback = new MyMediaRouterCallback();
-        routerCall = new MyMediaRouterCallback();
 
         setCastDiscovery();
 
@@ -248,24 +249,51 @@ public class CastHelper {
             listRelatedVideosDetails = new ArrayList<ContentDatum>();
             listRelatedVideosId = new ArrayList<String>();
             listCompareRelatedVideosId = new ArrayList<String>();
+            if (filmId == null && relateVideoId == null) {
+                return;
+            }
+            if (relateVideoId != null) {
 
-            if (!relateVideoId.contains(filmId)) {
-                isMainMediaId = true;
-                listRelatedVideosId.add(filmId);
+                if (!relateVideoId.contains(filmId)) {
+                    isMainMediaId = true;
+                    listRelatedVideosId.add(filmId);
+                    currentPlayingIndex = 0;
+                } else {
+                    currentPlayingIndex = relateVideoId.indexOf(filmId);
+                }
+
+                listRelatedVideosId.addAll(relateVideoId);
+                listCompareRelatedVideosId.addAll(listRelatedVideosId);
+            } else if (filmId != null) {
                 currentPlayingIndex = 0;
-            } else {
-                currentPlayingIndex = relateVideoId.indexOf(filmId);
+                listRelatedVideosId.add(filmId);
+                listCompareRelatedVideosId.add(filmId);
             }
 
-            listRelatedVideosId.addAll(relateVideoId);
-            listCompareRelatedVideosId.addAll(listRelatedVideosId);
             binderPlayScreen = binder;
             callRelatedVideoData();
         }
     }
 
     //launchSingleMediaRemote use to launch media when auto play off
-    public void launchSingleMediaRemote(String title, String appName, String imageUrl, String hlsUrl, String filmId) {
+    public void launchSingleMediaRemote(String filmId, AppCMSVideoPageBinder binder) {
+        String imageUrl = "";
+        String title = "";
+        String videoUrl = "";
+        Toast.makeText(mAppContext, mAppContext.getString(R.string.loading_vid_on_casting), Toast.LENGTH_SHORT).show();
+
+        if (binder.getContentData().getContentDetails() != null
+                && binder.getContentData().getContentDetails().getTrailers() != null
+                && binder.getContentData().getContentDetails().getTrailers().get(0) != null
+                && binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
+            title = binder.getContentData().getContentDetails().getTrailers().get(0).getTitle();
+            VideoAssets videoAssets = binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets();
+            if (videoAssets.getMpeg().size() > 0) {
+                videoUrl = videoAssets.getMpeg().get(videoAssets.getMpeg().size()-1).getUrl();
+            }
+
+            imageUrl = binder.getContentData().getGist().getVideoImageUrl();
+        }
         CastingUtils.isRemoteMediaControllerOpen = false;
         JSONObject customData = new JSONObject();
         try {
@@ -273,7 +301,9 @@ public class CastHelper {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        getRemoteMediaClient().load(CastingUtils.buildMediaInfo(title, appName, imageUrl, hlsUrl, customData));
+        getRemoteMediaClient().load(CastingUtils.buildMediaInfo(title, appName, imageUrl, videoUrl, customData));
+        getRemoteMediaClient().addListener(remoteListener);
+
     }
 
     public void openRemoteController() {
@@ -286,6 +316,7 @@ public class CastHelper {
             }
             if (!CastingUtils.isRemoteMediaControllerOpen) {
                 Intent intent = new Intent(mActivity, ExpandedControlsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 mActivity.startActivity(intent);
                 CastingUtils.isRemoteMediaControllerOpen = true;
             }
@@ -298,6 +329,7 @@ public class CastHelper {
             @Override
             public void onStatusUpdated() {
                 openRemoteController();
+                updatePlaybackState();
             }
 
             @Override
@@ -310,8 +342,9 @@ public class CastHelper {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                playIndexPosition = listCompareRelatedVideosId.indexOf(CastingUtils.castingMediaId);
-                System.out.println("Cast Index " + playIndexPosition);
+                if (listCompareRelatedVideosId != null) {
+                    playIndexPosition = listCompareRelatedVideosId.indexOf(CastingUtils.castingMediaId);
+                }
 
                 Log.d(TAG, "Remote Media listener-" + "onMetadataUpdated");
             }
@@ -568,6 +601,41 @@ public class CastHelper {
     }
 
 
+    private void updatePlaybackState() {
+        boolean isFinish = false;
+        mCastSession = CastContext.getSharedInstance(mAppContext).getSessionManager()
+                .getCurrentCastSession();
+
+        if (listRelatedVideosDetails != null) {
+            int currentVideoDetailIndex = getCurrentIndex(listRelatedVideosDetails, CastingUtils.castingMediaId);
+            if (currentVideoDetailIndex < listRelatedVideosDetails.size()) {
+                isFinish = false;
+            }
+        } else {
+            isFinish = true;
+        }
+
+        int status = getRemoteMediaClient().getPlayerState();
+        int idleReason = getRemoteMediaClient().getIdleReason();
+
+        switch (status) {
+            case MediaStatus.PLAYER_STATE_IDLE:
+                if (idleReason == MediaStatus.IDLE_REASON_FINISHED) {
+
+                    if (isFinish && mActivity instanceof AppCMSPlayVideoActivity) {
+                        mActivity.finish();
+                    }
+
+                }
+                break;
+
+            default: // case unknown
+
+                break;
+        }
+    }
+
+
     /**
      * Called to filter the set of routes that should be included in the list.
      * <p>
@@ -575,9 +643,9 @@ public class CastHelper {
      * removes those for which {@link #onFilterRoute} returns false.
      * </p>
      *
-     * @param routes The list of routes to filter in-place, never null.
+     * @param route The list of routes to filter in-place, never null.
      */
-    public void onFilterRoutes(@NonNull List<Object> routes) {
+    public void onFilterRoutes(@NonNull List<Object> route) {
         for (int i = routes.size(); i-- > 0; ) {
             if (routes.get(i) instanceof MediaRouter.RouteInfo)
                 if (!onFilterRoute((MediaRouter.RouteInfo) routes.get(i))) {
@@ -618,8 +686,9 @@ public class CastHelper {
         if (CastContext.getSharedInstance(mAppContext).getSessionManager() != null) {
 
             try {
-                if (CastContext.getSharedInstance(mAppContext).getSessionManager() != null)
+                if (CastContext.getSharedInstance(mAppContext).getSessionManager() != null) {
                     CastContext.getSharedInstance(mAppContext).getSessionManager().removeSessionManagerListener(mSessionManagerListener, CastSession.class);
+                }
 
                 CastContext.getSharedInstance(mAppContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().removeListener(remoteListener);
 
@@ -637,5 +706,4 @@ public class CastHelper {
         }
     }
 }
-
 
