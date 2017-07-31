@@ -66,7 +66,7 @@ public class Gist {
 
     @SerializedName("watchedTime")
     @Expose
-    int watchedTime;
+    long watchedTime;
 
     @SerializedName("contentType")
     @Expose
@@ -85,6 +85,11 @@ public class Gist {
     int watchedPercentage;
 
     String downloadStatus;
+
+    /**
+     * This is to store the url of the downloaded file
+     */
+    String localFileUrl;
 
     public String getId() {
         return id;
@@ -198,11 +203,11 @@ public class Gist {
         this.primaryCategory = primaryCategory;
     }
 
-    public int getWatchedTime() {
+    public long getWatchedTime() {
         return watchedTime;
     }
 
-    public void setWatchedTime(int watchedTime) {
+    public void setWatchedTime(long watchedTime) {
         this.watchedTime = watchedTime;
     }
 
@@ -244,5 +249,13 @@ public class Gist {
 
     public void setDownloadStatus(DownloadStatus downloadStatus) {
         this.downloadStatus = downloadStatus.toString();
+    }
+
+    public String getLocalFileUrl() {
+        return localFileUrl;
+    }
+
+    public void setLocalFileUrl(String localFileUrl) {
+        this.localFileUrl = localFileUrl;
     }
 }

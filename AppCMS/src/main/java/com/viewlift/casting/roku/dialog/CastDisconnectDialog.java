@@ -12,8 +12,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.viewlift.casting.CastHelper;
-import com.viewlift.casting.roku.RokuDevice;
-import com.viewlift.casting.roku.RokuWrapper;
 
 
 public class CastDisconnectDialog extends MediaRouteControllerDialog implements View.OnClickListener {
@@ -32,12 +30,10 @@ public class CastDisconnectDialog extends MediaRouteControllerDialog implements 
     private TextView mRouteNameTextView;
     private String type;
     private Object toBeDisconnectDevice;
-    RokuWrapper.RokuWrapperEventListener callBackRoku;
 
-    public CastDisconnectDialog(@NonNull Context context, RokuWrapper.RokuWrapperEventListener callBackRoku) {
+    public CastDisconnectDialog(@NonNull Context context) {
         super(context);
         this.mContext = context;
-        this.callBackRoku=callBackRoku;
     }
 
     public CastDisconnectDialog(@NonNull Context context, @StyleRes int themeResId) {
@@ -62,15 +58,11 @@ public class CastDisconnectDialog extends MediaRouteControllerDialog implements 
         mStopCastingButton.setText(android.support.v7.mediarouter.R.string.mr_controller_stop_casting);
         mStopCastingButton.setOnClickListener(this);
 
-        if (toBeDisconnectDevice != null)
+        if (toBeDisconnectDevice != null) {
             if (selectedDeviceType.equals(CHROMECAST)) {
                 mRouteNameTextView.setText(((MediaRouter) toBeDisconnectDevice).getSelectedRoute().getName());
-            } else if (selectedDeviceType.equals(ROKU)) {
-                mRouteNameTextView.setText(((RokuDevice) toBeDisconnectDevice).getRokuDeviceName());
-                findViewById(android.support.v7.mediarouter.R.id.mr_custom_control).setVisibility(View.GONE);
-                findViewById(android.support.v7.mediarouter.R.id.mr_default_control).setVisibility(View.GONE);
-                mStopCastingButton.setVisibility(View.GONE);
             }
+        }
     }
 
     public void setType(String type) {
@@ -85,8 +77,6 @@ public class CastDisconnectDialog extends MediaRouteControllerDialog implements 
         this.toBeDisconnectDevice = toBeDisconnectDevice;
         if (toBeDisconnectDevice instanceof MediaRouter) {
             selectedDeviceType = CHROMECAST;
-        } else if (toBeDisconnectDevice instanceof RokuDevice) {
-            selectedDeviceType = ROKU;
         }
     }
 
@@ -110,19 +100,18 @@ public class CastDisconnectDialog extends MediaRouteControllerDialog implements 
     public void onClick(View v) {
         int id = v.getId();
         if (id == BUTTON_STOP_RES_ID || id == BUTTON_DISCONNECT_RES_ID) {
-            if (toBeDisconnectDevice != null)
+            if (toBeDisconnectDevice != null) {
                 if (selectedDeviceType.equals(CHROMECAST)) {
                     if (((MediaRouter) toBeDisconnectDevice).getSelectedRoute().isSelected()) {
 
                         ((MediaRouter) toBeDisconnectDevice).unselect(id == BUTTON_STOP_RES_ID ?
                                 MediaRouter.UNSELECT_REASON_STOPPED :
                                 MediaRouter.UNSELECT_REASON_DISCONNECTED);
-                        CastHelper.getInstance(mContext).isCastDeviceConnected=false;
+                        CastHelper.getInstance(mContext).isCastDeviceConnected = false;
                         System.out.println("unselecte");
                     }
-                } else if (selectedDeviceType.equals(ROKU)) {
-                    RokuWrapper.getInstance().sendStopRequest();
                 }
+            }
             dismiss();
         }
     }

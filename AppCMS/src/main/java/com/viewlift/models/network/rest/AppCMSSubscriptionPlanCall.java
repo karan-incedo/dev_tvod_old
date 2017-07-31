@@ -6,6 +6,7 @@ package com.viewlift.models.network.rest;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -14,7 +15,9 @@ import com.viewlift.models.data.appcms.api.SubscriptionRequest;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionPlanResult;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -30,19 +33,28 @@ public class AppCMSSubscriptionPlanCall {
     private final AppCMSSubscriptionPlanRest appCMSSubscriptionPlanRest;
     @SuppressWarnings({"unused, FieldCanBeLocal"})
     private final Gson gson;
+    private Map<String, String> authHeaders;
 
     @Inject
     public AppCMSSubscriptionPlanCall(AppCMSSubscriptionPlanRest appCMSSubscriptionPlanRest,
                                       Gson gson) {
         this.appCMSSubscriptionPlanRest = appCMSSubscriptionPlanRest;
         this.gson = gson;
+        this.authHeaders = new HashMap<>();
     }
 
     @WorkerThread
     public void call(String url, int subscriptionCallType, SubscriptionRequest request,
+                     String apiKey, String authToken,
                      final Action1<List<AppCMSSubscriptionPlanResult>> planResultAction1,
                      final Action1<AppCMSSubscriptionPlanResult> resultAction1)
             throws IOException {
+
+        authHeaders.clear();
+        if (!TextUtils.isEmpty(apiKey) && !TextUtils.isEmpty(authToken)) {
+            authHeaders.put("Authorization", authToken);
+            authHeaders.put("x-api-key", apiKey);
+        }
 
         switch (subscriptionCallType) {
 
@@ -83,7 +95,7 @@ public class AppCMSSubscriptionPlanCall {
                 break;
 
             case R.string.app_cms_subscription_plan_create_key:
-                appCMSSubscriptionPlanRest.createPlan(url, request)
+                appCMSSubscriptionPlanRest.createPlan(url, authHeaders, request)
                         .enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
                             @Override
                             public void onResponse(@NonNull Call<AppCMSSubscriptionPlanResult> call,
@@ -100,7 +112,7 @@ public class AppCMSSubscriptionPlanCall {
                 break;
 
             case R.string.app_cms_subscription_plan_update_key:
-                appCMSSubscriptionPlanRest.updatePlan(url, request)
+                appCMSSubscriptionPlanRest.updatePlan(url, authHeaders, request)
                         .enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
                             @Override
                             public void onResponse(@NonNull Call<AppCMSSubscriptionPlanResult> call,
@@ -117,7 +129,7 @@ public class AppCMSSubscriptionPlanCall {
                 break;
 
             case R.string.app_cms_subscription_plan_cancel_key:
-                appCMSSubscriptionPlanRest.cancelPlan(url, request)
+                appCMSSubscriptionPlanRest.cancelPlan(url, authHeaders, request)
                         .enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
                             @Override
                             public void onResponse(@NonNull Call<AppCMSSubscriptionPlanResult> call,

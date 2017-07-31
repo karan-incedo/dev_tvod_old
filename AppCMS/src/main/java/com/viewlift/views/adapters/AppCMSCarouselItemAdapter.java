@@ -171,7 +171,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                     return true;
                 } else if (motionEvent.getActionMasked() == MotionEvent.ACTION_UP) {
                     if (!scrolled && childIndex != -1 && adapterData.size() != 0) {
-                        onClickHandler.click(component,
+                        onClickHandler.click(null,
+                                component,
                                 adapterData.get(childIndex % adapterData.size()));
                     } else {
                         listView.removeOnScrollListener(scrollListener);
@@ -274,7 +275,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
         cancelled = cancel;
         if (!cancelled && !started) {
             carouselHandler.removeCallbacks(carouselUpdater);
-            sendEvent(new InternalEvent<Object>(updatedIndex));
+            updatedIndex = getDefaultIndex();
+            listView.scrollToPosition(updatedIndex);
             postUpdateCarousel();
             started = true;
         } else if (cancel) {

@@ -17,7 +17,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
@@ -38,6 +37,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.functions.Action1;
+import com.bumptech.glide.Glide;
 
 /**
  * Created by viewlift on 7/7/17.
@@ -182,6 +182,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             }
             loadImage(holder.itemView.getContext(), imageUrl.toString(), holder.appCMSContinueWatchingVideoImage);
 
+            holder.itemView.setOnClickListener(v -> {
+//                click(contentDatum, holder.itemView.getContext());
+                play(contentDatum,
+                        holder.itemView.getContext(),
+                        /*getNextContentDatum(position)*/ null);
+            });
+
 
             holder.appCMSContinueWatchingVideoImage.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -223,12 +230,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 }
             });
 
-            holder.appCMSContinueWatchingDescription.setOnClickListener(new View.OnClickListener() {
+            /*holder.appCMSContinueWatchingDescription.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    click(contentDatum);
+
                 }
-            });
+            });*/
 
             holder.appCMSContinueWatchingDuration.setText(String.valueOf(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
                     + " " + String.valueOf(holder.itemView.getContext().getString(R.string.mins_abbreviation)));
@@ -256,6 +263,55 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         }
     }
 
+    private ContentDatum getNextContentDatum(int position) {
+        if(position + 1 == adapterData.size()){
+            return null;
+        }
+        ContentDatum contentDatum = adapterData.get(++position);
+        if (!contentDatum.getGist().getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
+            getNextContentDatum(position);
+        }
+        return contentDatum;
+    }
+
+    private void play(ContentDatum data, Context context, ContentDatum nextContentDatum) {
+        if (isDownload) {
+            Log.d(TAG, " Ofline play is under process ... ");
+            String permalink = data.getGist().getPermalink();
+            String action = context.getString(R.string.app_cms_action_watchvideo_key);
+            String title = data.getGist().getTitle();
+            String hlsUrl = data.getGist().getLocalFileUrl();
+            String[] extraData = new String[4];
+            extraData[0] = permalink;
+            extraData[1] = hlsUrl;
+            extraData[2] = data.getGist().getId();
+            extraData[3] = "true"; // to know that this is an offline video
+            Log.d(TAG, "Launching " + permalink + ": " + action);
+            ArrayList<String> relateVideoIds = null;
+            if (nextContentDatum != null) {
+                relateVideoIds = new ArrayList<>();
+                relateVideoIds.add(nextContentDatum.getGist().getId());
+            }
+            if (!appCMSPresenter.launchButtonSelectedAction(
+                    permalink,
+                    action,
+                    title,
+                    extraData,
+                    data,
+                    false,
+                    -1,
+                    relateVideoIds)) {
+                Log.e(TAG, "Could not launch action: " +
+                        " permalink: " +
+                        permalink +
+                        " action: " +
+                        action +
+                        " hlsUrl: " +
+                        hlsUrl);
+            }
+        }
+    }
+
 
     @Override
     public int getItemCount() {
@@ -275,7 +331,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     public void loadImage(Context context, String url, ImageView imageView) {
-        Picasso.with(context)
+        Glide.with(context)
                 .load(Uri.decode(url).toString())
                 .into(imageView);
     }
@@ -475,6 +531,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             extraData[0] = permalink;
             extraData[1] = hlsUrl;
             extraData[2] = data.getGist().getId();
+            List<String> relatedVideos = null;
+            if (data.getContentDetails() != null &&
+                    data.getContentDetails().getRelatedVideoIds() != null) {
+                relatedVideos = data.getContentDetails().getRelatedVideoIds();
+            }
             Log.d(TAG, "Launching " + permalink + ": " + action);
             if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                     action,
@@ -483,7 +544,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     data,
                     false,
                     -1,
-                    data.getContentDetails().getRelatedVideoIds())) {
+                    relatedVideos)) {
                 Log.e(TAG, "Could not launch action: " +
                         " permalink: " +
                         permalink +

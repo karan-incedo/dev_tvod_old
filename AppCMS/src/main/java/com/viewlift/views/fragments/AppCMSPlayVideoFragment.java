@@ -30,6 +30,7 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.gms.cast.framework.CastSession;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -79,7 +80,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
     };
     private boolean isAdDisplayed;
-    private int watchedTime;
+    private long watchedTime;
     private ImageButton mMediaRouteButton;
     private CastServiceProvider castProvider;
     private CastSession mCastSession;
@@ -95,7 +96,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                                                       String filmId,
                                                       String adsUrl,
                                                       boolean requestAds,
-                                                      int watchedTime,
+                                                      long watchedTime,
                                                       String imageUrl,
                                                       String closedCaptionUrl) {
         AppCMSPlayVideoFragment appCMSPlayVideoFragment = new AppCMSPlayVideoFragment();
@@ -107,7 +108,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         args.putString(context.getString(R.string.video_layer_film_id_key), filmId);
         args.putString(context.getString(R.string.video_player_ads_url_key), adsUrl);
         args.putBoolean(context.getString(R.string.video_player_request_ads_key), requestAds);
-        args.putInt(context.getString(R.string.watched_time_key), watchedTime);
+        args.putLong(context.getString(R.string.watched_time_key), watchedTime);
         args.putString(context.getString(R.string.played_movie_image_url), imageUrl);
         args.putString(context.getString(R.string.video_player_closed_caption_key), closedCaptionUrl);
         appCMSPlayVideoFragment.setArguments(args);
@@ -135,8 +136,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             hlsUrl = args.getString(getContext().getString(R.string.video_player_hls_url_key));
             filmId = args.getString(getContext().getString(R.string.video_layer_film_id_key));
             adsUrl = args.getString(getContext().getString(R.string.video_player_ads_url_key));
-            shouldRequestAds = false;
-            watchedTime = args.getInt(getContext().getString(R.string.watched_time_key));
+            shouldRequestAds = args.getBoolean(getContext().getString(R.string.video_player_request_ads_key));
+            watchedTime = args.getLong(getContext().getString(R.string.watched_time_key));
             imageUrl = args.getString(getContext().getString(R.string.played_movie_image_url));
             closedCaptionUrl = args.getString(getContext().getString(R.string.video_player_closed_caption_key));
         }
@@ -151,6 +152,9 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         parentScreenName = getContext().getString(R.string.app_cms_beacon_video_player_parent_screen_name);
         setRetainInstance(true);
+
+        AppsFlyerUtils.appsFlyerPlayEvent(getContext(),filmId, appCMSPresenter);
+
     }
 
 
@@ -193,11 +197,12 @@ public class AppCMSPlayVideoFragment extends Fragment
         setCasting();
 
         if (!TextUtils.isEmpty(hlsUrl)) {
+            videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference(getContext()));
             videoPlayerView.setUri(Uri.parse(hlsUrl),
                     !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
             Log.i(TAG, "Playing video: " + hlsUrl);
         }
-        videoPlayerView.setCurrentPosition((long) watchedTime * SECS_TO_MSECS);
+        videoPlayerView.setCurrentPosition(watchedTime * SECS_TO_MSECS);
         videoPlayerView.setOnPlayerStateChanged(new Action1<VideoPlayerView.PlayerState>() {
             @Override
             public void call(VideoPlayerView.PlayerState playerState) {
@@ -205,7 +210,12 @@ public class AppCMSPlayVideoFragment extends Fragment
                     if (shouldRequestAds && !isAdDisplayed) {
                         requestAds(adsUrl);
                     } else {
-                        videoPlayerView.resumePlayer();
+                        if (beaconMessageThread != null) {
+                            beaconMessageThread.sendBeaconPing = true;
+                            if (!beaconMessageThread.isAlive()) {
+                                beaconMessageThread.start();
+                            }
+                        }
                     }
 
                 } else if (playerState.getPlaybackState() == ExoPlayer.STATE_ENDED) {
@@ -246,6 +256,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             public void call(Boolean isChecked) {
                 videoPlayerView.getPlayerView().getSubtitleView()
                         .setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                appCMSPresenter.setClosedCaptionPreference(getContext(), isChecked);
             }
         });
         if (!shouldRequestAds) {
@@ -265,14 +276,13 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     private void setCasting() {
         try {
-            castProvider = CastServiceProvider.getInstance(getActivity().getApplicationContext());
+            castProvider = CastServiceProvider.getInstance(getActivity());
             castProvider.setRemotePlaybackCallback(callBackRemotePlayback);
             isCastConnected = castProvider.playChromeCastPlaybackIfCastConnected();
             if (isCastConnected) {
                 getActivity().finish();
             } else {
                 castProvider.setActivityInstance(getActivity(), mMediaRouteButton);
-                castProvider.playRokuCastPlaybackIfCastConnected();
             }
         } catch (Exception e) {
             Log.e(TAG, "Error initializing cast provider: " + e.getMessage());
@@ -353,7 +363,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 videoPlayerView.pausePlayer();
                 break;
             case CONTENT_RESUME_REQUESTED:
-//                isAdDisplayed = false;
+                isAdDisplayed = false;
                 videoPlayerView.startPlayer();
                 if (beaconMessageThread != null) {
                     beaconMessageThread.sendBeaconPing = true;
