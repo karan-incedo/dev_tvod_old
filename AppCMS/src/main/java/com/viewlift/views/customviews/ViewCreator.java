@@ -315,13 +315,12 @@ public class ViewCreator {
                                     }
                                 });
                             } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY) {
-                                if (!appCMSPresenter.isUserLoggedIn(context)) {
-                                    view.setVisibility(View.GONE);
-                                } else {
+                                if (view!=null){
                                     if (moduleAPI.getContentData() != null) {
+                                        String userId= appCMSPresenter.getLoggedInUser(context);
                                         appCMSPresenter.getUserVideoDownloadStatus(
                                                 moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) view, appCMSPresenter,
-                                                        moduleAPI.getContentData().get(0)));
+                                                        moduleAPI.getContentData().get(0),userId),userId);
                                     }
                                     view.setVisibility(View.VISIBLE);
                                 }
@@ -1252,16 +1251,20 @@ public class ViewCreator {
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.info_icon));
                         break;
                     case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
-                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
-
-                        appCMSPresenter.getUserVideoDownloadStatus(
-                        moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
-                                        moduleAPI.getContentData().get(0), appCMSPresenter.getLoggedInUser(context)));
-                        pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                                .id(moduleAPI.getId() + component.getKey())
-                                .view(componentViewResult.componentView)
-                                .build());
+                        if (appCMSPresenter.isUserLoggedIn(context)) {
+                            ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                            componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
+                            String userId = appCMSPresenter.getLoggedInUser(context);
+                            appCMSPresenter.getUserVideoDownloadStatus(
+                                    moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
+                                            moduleAPI.getContentData().get(0), userId), userId);
+                            pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
+                                    .id(moduleAPI.getId() + component.getKey())
+                                    .view(componentViewResult.componentView)
+                                    .build());
+                        }else{
+                             componentViewResult.componentView.setVisibility(View.GONE);
+                        }
                         break;
                     case PAGE_ADD_TO_WATCHLIST_KEY:
                         ((ImageButton) componentViewResult.componentView)
@@ -2364,7 +2367,7 @@ public class ViewCreator {
         private View.OnClickListener addClickListener;
 
         public UpdateDownloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
-                                             ContentDatum contentDatum) {
+                                             ContentDatum contentDatum,String userId) {
             this.imageButton = imageButton;
             this.appCMSPresenter = presenter;
             this.contentDatum = contentDatum;
@@ -2373,12 +2376,12 @@ public class ViewCreator {
             addClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (appCMSPresenter.getUserDownloadQualityPref(UpdateDowloadImageIconAction.this.imageButton.getContext()) != null
-                            && appCMSPresenter.getUserDownloadQualityPref(UpdateDowloadImageIconAction.this.imageButton.getContext()).length() > 0) {
-                        appCMSPresenter.editDownload(UpdateDowloadImageIconAction.this.contentDatum, UpdateDowloadImageIconAction.this, true);
+                    if (appCMSPresenter.getUserDownloadQualityPref(UpdateDownloadImageIconAction.this.imageButton.getContext()) != null
+                            && appCMSPresenter.getUserDownloadQualityPref(UpdateDownloadImageIconAction.this.imageButton.getContext()).length() > 0) {
+                        appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
 
                     } else {
-                        appCMSPresenter.showDownloadQualityScreen(UpdateDowloadImageIconAction.this.contentDatum, UpdateDowloadImageIconAction.this);
+                        appCMSPresenter.showDownloadQualityScreen(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this);
                     }
                 }
             };
@@ -2397,11 +2400,11 @@ public class ViewCreator {
 
                         break;
                     case STATUS_PENDING:
-                        appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(), UpdateDowloadImageIconAction.this.imageButton, appCMSPresenter, this, userId);
+                        appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(), UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId);
                         imageButton.setOnClickListener(null);
                         break;
                     case STATUS_RUNNING:
-                        appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(), UpdateDowloadImageIconAction.this.imageButton, appCMSPresenter, this, userId);
+                        appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(), UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId);
 
                         imageButton.setOnClickListener(null);
                         break;

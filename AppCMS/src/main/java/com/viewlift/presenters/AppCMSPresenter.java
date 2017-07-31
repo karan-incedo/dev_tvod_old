@@ -558,8 +558,8 @@ public class AppCMSPresenter {
         }
     }
 
-    public void getUserVideoDownloadStatus(String filmId, Action1<UserVideoDownloadStatus> responseAction) {
-        appCMSUserDownloadVideoStatusCall.call(filmId, this, responseAction, getLoggedInUser(currentActivity));
+    public void getUserVideoDownloadStatus(String filmId, Action1<UserVideoDownloadStatus> responseAction, String userId) {
+        appCMSUserDownloadVideoStatusCall.call(filmId, this, responseAction, userId);
     }
 
     public void signinAnonymousUser() {
@@ -644,17 +644,14 @@ public class AppCMSPresenter {
                     } else {
                         playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url), "");
                     }
-                } else {
-                    requestAds = false;
-                    isTrailer = true;
-                }
-                if (contentDatum != null &&
-                        contentDatum.getGist() != null &&
-                        contentDatum.getGist().getVideoImageUrl() != null) {
-                    playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url), contentDatum.getGist().getVideoImageUrl());
-                } else {
-                    playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url), "");
-                }
+
+                    if (contentDatum != null &&
+                            contentDatum.getGist() != null &&
+                            contentDatum.getGist().getVideoImageUrl() != null) {
+                        playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url), contentDatum.getGist().getVideoImageUrl());
+                    } else {
+                        playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url), "");
+                    }
 
                     playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_font_color_key),
                             appCMSMain.getBrand().getGeneral().getTextColor());
@@ -1420,7 +1417,7 @@ public class AppCMSPresenter {
                 downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
             }
 
-            downloadURL=downloadURL.replace("https:/","http:/");
+            downloadURL = downloadURL.replace("https:/", "http:/");
 
             DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
                     .setTitle(contentDatum.getGist().getTitle())
@@ -1444,7 +1441,7 @@ public class AppCMSPresenter {
 
             showToast(
                     currentActivity.getString(R.string.app_cms_download_started_mesage,
-                    contentDatum.getGist().getTitle()),Toast.LENGTH_LONG);
+                            contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1585,8 +1582,8 @@ public class AppCMSPresenter {
                     long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
                     int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
                     Log.d(TAG, "download progress =" + downloaded + " totel-> " + totalSize + " " + downloadPercent);
-                    if (downloaded >= totalSize || downloadPercent > 100) {
-                        if (currentActivity != null)
+                    if (downloaded >= totalSize || downloadPercent > 100 ) {
+                        if (currentActivity != null && isUserLoggedIn(currentActivity))
                             currentActivity.runOnUiThread(() -> appCMSUserDownloadVideoStatusCall
                                     .call(filmId, presenter, responseAction, getLoggedInUser(currentActivity)));
                         this.cancel();
@@ -1596,9 +1593,8 @@ public class AppCMSPresenter {
                     }
                     c.close();
                 }
-            }, 500, 1000);
-
-        }
+            }
+        }, 500, 1000);
     }
 
     private void circularImageBar(ImageView iv2, int i) {
@@ -2788,6 +2784,7 @@ public class AppCMSPresenter {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, 0);
             return sharedPrefs.getString(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, null);
         }
+        return null;
     }
 
     public String getAnonymousUserToken(Context context) {
@@ -2804,6 +2801,7 @@ public class AppCMSPresenter {
             return sharedPrefs.edit().putString(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, downloadQuality).commit() &&
                     setLoggedInTime(context);
         }
+        return false;
     }
 
     public boolean setAnonymousUserToken(Context context, String anonymousAuthToken) {
@@ -3424,9 +3422,10 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public void showToast(String messgae,int messageDuration){
-        Toast.makeText(currentActivity,messgae,messageDuration).show();
+    public void showToast(String messgae, int messageDuration) {
+        Toast.makeText(currentActivity, messgae, messageDuration).show();
     }
+
     public void showEntitlementDialog(DialogType dialogType) {
         if (currentActivity != null) {
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
@@ -4615,7 +4614,7 @@ public class AppCMSPresenter {
                                 @Override
                                 public void call() {
                                     Log.d(TAG, "Launching first page: " + firstPage.getPageName());
-                                    NavigationPrimary homePageNav =     findHomePageNavItem();
+                                    NavigationPrimary homePageNav = findHomePageNavItem();
                                     boolean launchSuccess = navigateToTVPage(homePageNav.getPageId(),
                                             homePageNav.getTitle(),
                                             homePageNav.getUrl(),
