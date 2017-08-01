@@ -25,6 +25,7 @@
     <string name="app_cms_beacon_platform">Android</string>
     <string name="app_cms_beacon_dpm_android">Standard Android OS</string>
     <string name="app_cms_beacon_video_player_parent_screen_name">VideoPlayer</string>
+    <string name="app_cms_beacon_casting_screen_name">CastingView</string>
 
     <!-- AppCMS Google Analytics -->
     <string name="app_cms_template_page_separator">&#160;-&#160;</string>
