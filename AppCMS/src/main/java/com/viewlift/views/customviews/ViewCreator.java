@@ -156,7 +156,9 @@ public class ViewCreator {
                                 view.setVisibility(View.VISIBLE);
                                 moduleView.setVisibility(View.VISIBLE);
                             } else {
-                                view.setVisibility(View.GONE);
+                                if (view != null) {
+                                    view.setVisibility(View.GONE);
+                                }
                                 moduleView.setVisibility(View.GONE);
                             }
                         } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
