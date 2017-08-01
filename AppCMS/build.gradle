@@ -26,12 +26,12 @@ repositories {
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.0"
     defaultConfig {
         applicationId packageName
         minSdkVersion 23
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 10
         versionName "1.0.20"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -41,11 +41,11 @@ android {
         mobile {
             dimension = "green"
             minSdkVersion 23
-            targetSdkVersion 25
+            targetSdkVersion 26
         }
         tv {
             minSdkVersion 21
-            compileSdkVersion 25
+            compileSdkVersion 26
             dimension = "green"
             aaptOptions {
                 cruncherEnabled = false
@@ -138,7 +138,6 @@ dependencies {
     compile "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
     tvCompile "com.android.support:leanback-v17:$rootProject.ext.androidsupportVersion"
     tvCompile "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
-    tvCompile 'com.github.bumptech.glide:glide:3.4.+'
     compile "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
     compile "com.google.dagger:dagger:$rootProject.ext.daggerVersion"
     compile "com.google.code.gson:gson:$rootProject.ext.gsonVersion"
@@ -177,7 +176,7 @@ dependencies {
     compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
 
-    compile 'com.appsflyer:af-android-sdk:4.6.7@aar'
+    compile "com.appsflyer:af-android-sdk:$rootProject.ext.appsFlyerVersion"
 }
 
 apply plugin: 'com.google.gms.google-services'
