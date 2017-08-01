@@ -39,9 +39,9 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
     private final Runnable carouselUpdater;
     private final boolean loop;
     private List<OnInternalEvent> internalEventReceivers;
-    private int updatedIndex;
-    private boolean cancelled;
-    private boolean started;
+    private volatile int updatedIndex;
+    private volatile boolean cancelled;
+    private volatile boolean started;
     private boolean scrolled;
     private RecyclerView.OnScrollListener scrollListener;
 
@@ -284,6 +284,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
         } else if (cancel) {
             carouselHandler.removeCallbacks(carouselUpdater);
             started = false;
+            updatedIndex = getDefaultIndex();
         }
     }
 

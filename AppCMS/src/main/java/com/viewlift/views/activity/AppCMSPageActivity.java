@@ -426,13 +426,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (appCMSPresenter != null && appCMSPresenter.isMainFragmentViewVisible()) {
-            AppCMSBinder appCMSBinder = appCMSBinderStack.size() > 0 ?
-                    appCMSBinderMap.get(appCMSBinderStack.peek()) :
-                    null;
-            if (appCMSBinder != null) {
-                appCMSBinderMap.remove(appCMSBinderStack.pop());
-                handleLaunchPageAction(appCMSBinder);
+        if (appCMSPresenter != null) {
+            appCMSPresenter.cancelInternalEvents();
+            if (appCMSPresenter.isMainFragmentViewVisible()) {
+                AppCMSBinder appCMSBinder = appCMSBinderStack.size() > 0 ?
+                        appCMSBinderMap.get(appCMSBinderStack.peek()) :
+                        null;
+                if (appCMSBinder != null) {
+                    appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
+                            + BaseView.isLandscape(this));
+                    handleLaunchPageAction(appCMSBinder);
+                }
             }
         }
     }

@@ -25,6 +25,8 @@ import com.viewlift.models.network.rest.AppCMSGoogleLoginCall;
 import com.viewlift.models.network.rest.AppCMSGoogleLoginRest;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSHistoryRest;
+import com.viewlift.models.network.rest.AppCMSIPGeoLocatorCall;
+import com.viewlift.models.network.rest.AppCMSIPGeoLocatorRest;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSMainUIRest;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
@@ -653,6 +655,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSIPGeoLocatorRest providesAppCMSIPGeoLocatorRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSIPGeoLocatorRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -766,6 +774,12 @@ public class AppCMSUIModule {
     @Singleton
     public GoogleCancelSubscriptionCall providesGoogleCancelSubscriptionCall(GoogleCancelSubscriptionRest googleCancelSubscriptionRest) {
         return new GoogleCancelSubscriptionCall(googleCancelSubscriptionRest);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSIPGeoLocatorCall providesAppCMSIPGeoLocatorCall(AppCMSIPGeoLocatorRest appCMSIPGeoLocatorRest) {
+        return new AppCMSIPGeoLocatorCall(appCMSIPGeoLocatorRest);
     }
 
     @Provides

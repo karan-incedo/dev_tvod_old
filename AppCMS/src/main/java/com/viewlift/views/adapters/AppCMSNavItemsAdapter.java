@@ -114,6 +114,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     viewHolder.navItemLabel.setText(navigationUser.getTitle().toUpperCase());
                     viewHolder.navItemLabel.setTextColor(textColor);
                     viewHolder.itemView.setOnClickListener(v -> {
+                        appCMSPresenter.cancelInternalEvents();
                         AppCMSUIKeyType titleKey = jsonValueKeyMap.get(navigationUser.getTitle());
                         if (titleKey == null) {
                             titleKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
@@ -175,6 +176,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                         viewHolder.navItemLabel.setText(navigationFooter.getTitle().toUpperCase());
                         viewHolder.navItemLabel.setTextColor(textColor);
                         viewHolder.itemView.setOnClickListener(v -> {
+                            appCMSPresenter.cancelInternalEvents();
                             itemSelected = true;
                             if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
                                     navigationFooter.getTitle(),
@@ -200,7 +202,10 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             if (0 <= (i - indexOffset) && userLoggedIn) {
                 viewHolder.navItemLabel.setText(R.string.app_cms_sign_out_label);
                 viewHolder.navItemLabel.setTextColor(textColor);
-                viewHolder.itemView.setOnClickListener(v -> appCMSPresenter.logout());
+                viewHolder.itemView.setOnClickListener(v -> {
+                    appCMSPresenter.cancelInternalEvents();
+                    appCMSPresenter.logout();
+                });
             }
         }
     }

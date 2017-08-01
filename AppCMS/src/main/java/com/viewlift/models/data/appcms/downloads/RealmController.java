@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.support.v4.app.Fragment;
 
+import com.viewlift.models.data.appcms.api.SubscriptionPlan;
+
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
@@ -123,6 +125,15 @@ public class RealmController {
         realm.commitTransaction();
     }
 
+    public void addSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
+        realm.beginTransaction();
+        realm.insert(subscriptionPlan);
+        realm.commitTransaction();
+    }
+
+    public RealmResults<SubscriptionPlan> getAllSubscriptionPlans() {
+        return realm.where(SubscriptionPlan.class).findAll();
+    }
 
     public void updateDownloadInfo(String videoId, String filmUrl, String thumbUrl, long totlsize, DownloadStatus status) {
         DownloadVideoRealm toEdit = realm.where(DownloadVideoRealm.class)
@@ -183,5 +194,9 @@ public class RealmController {
 
         realm.commitTransaction();
 
+    }
+
+    public void closeRealm() {
+        realm.close();
     }
 }

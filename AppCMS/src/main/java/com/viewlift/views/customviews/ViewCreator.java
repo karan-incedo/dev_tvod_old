@@ -38,6 +38,7 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Mpeg;
+import com.viewlift.models.data.appcms.api.PlanDetail;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.UserVideoDownloadStatus;
 import com.viewlift.models.data.appcms.history.AppCMSDeleteHistoryResult;
@@ -2207,6 +2208,8 @@ public class ViewCreator {
                 break;
 
             case PAGE_PLAN_META_DATA_VIEW_KEY:
+                appCMSPresenter.createSubscriptionPlans(moduleAPI);
+
                 componentViewResult.componentView = new SubscriptionMetaDataView(context,
                         component,
                         component.getLayout(),
