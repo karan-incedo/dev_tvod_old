@@ -56,7 +56,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     protected int unselectedColor;
     protected int selectedColor;
     protected boolean isClickable;
-    boolean isPlanSorted = false;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -127,7 +126,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     setBorder(childView, unselectedColor);
                     if (childView instanceof CollectionGridItemView) {
                         ((CollectionGridItemView) childView).setSelectable(false);
-                        for (View collectionGridChild : ((CollectionGridItemView) childView).getViewsToUpdateOnClickEvent()) {
+                        for (View collectionGridChild : ((CollectionGridItemView) childView)
+                                .getViewsToUpdateOnClickEvent()) {
                             if (collectionGridChild instanceof Button) {
                                 collectionGridChild.setBackgroundColor(ContextCompat.getColor(v.getContext(),
                                         R.color.disabledButtonColor));
@@ -138,7 +138,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 setBorder(v, selectedColor);
                 if (v instanceof CollectionGridItemView) {
                     ((CollectionGridItemView) v).setSelectable(true);
-                    for (View collectionGridChild : ((CollectionGridItemView) v).getViewsToUpdateOnClickEvent()) {
+                    for (View collectionGridChild : ((CollectionGridItemView) v)
+                            .getViewsToUpdateOnClickEvent()) {
                         if (collectionGridChild instanceof Button) {
                             collectionGridChild.setBackgroundColor(selectedColor);
                         }
@@ -287,7 +288,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
-
+            //
         } else {
             itemView.setOnClickListener(v -> {
                 if (isClickable) {
