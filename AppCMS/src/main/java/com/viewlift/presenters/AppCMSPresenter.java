@@ -3922,12 +3922,8 @@ public class AppCMSPresenter {
                     Log.e(TAG, "getSubscriptionPageContent: " + e.toString());
                 }
             }
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    subscriptionPlans = getExistingSubscriptionPlans();
-                }
-            }).start();
+
+            subscriptionPlans = getExistingSubscriptionPlans();
         }
     }
 
