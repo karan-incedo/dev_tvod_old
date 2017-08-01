@@ -284,6 +284,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
         } else if (cancel) {
             carouselHandler.removeCallbacks(carouselUpdater);
             started = false;
+            updatedIndex = getDefaultIndex();
         }
     }
 
