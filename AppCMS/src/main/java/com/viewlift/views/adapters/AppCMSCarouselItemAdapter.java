@@ -39,7 +39,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
     private final Runnable carouselUpdater;
     private final boolean loop;
     private List<OnInternalEvent> internalEventReceivers;
-    private int updatedIndex;
+    private volatile int updatedIndex;
     private boolean cancelled;
     private boolean started;
     private boolean scrolled;
