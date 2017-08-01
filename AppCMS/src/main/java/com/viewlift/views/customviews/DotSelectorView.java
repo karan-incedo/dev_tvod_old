@@ -28,10 +28,10 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
     private Component component;
     private final int selectedColor;
     private final int deselectedColor;
-    private int selectedViewIndex;
     private List<View> childViews;
     private List<OnInternalEvent> internalEventReceivers;
-    private boolean cancelled;
+    private volatile int selectedViewIndex;
+    private volatile  boolean cancelled;
 
     public DotSelectorView(Context context,
                            Component component,

@@ -40,8 +40,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
     private final boolean loop;
     private List<OnInternalEvent> internalEventReceivers;
     private volatile int updatedIndex;
-    private boolean cancelled;
-    private boolean started;
+    private volatile boolean cancelled;
+    private volatile boolean started;
     private boolean scrolled;
     private RecyclerView.OnScrollListener scrollListener;
 
