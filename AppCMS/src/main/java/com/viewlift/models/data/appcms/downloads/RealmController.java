@@ -127,7 +127,7 @@ public class RealmController {
 
     public void addSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
         realm.beginTransaction();
-        realm.insert(subscriptionPlan);
+        realm.insertOrUpdate(subscriptionPlan);
         realm.commitTransaction();
     }
 

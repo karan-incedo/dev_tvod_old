@@ -677,8 +677,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 handleBack(true, false, false);
                 i++;
             }
-            appCMSBinderStack.push(appCMSBinder.getPageId());
-            appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
+
+            if (distanceFromStackTop < 0) {
+                appCMSBinderStack.push(appCMSBinder.getPageId());
+                appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
+            }
+
             updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
 
             createScreenFromAppCMSBinder(appCMSBinder);

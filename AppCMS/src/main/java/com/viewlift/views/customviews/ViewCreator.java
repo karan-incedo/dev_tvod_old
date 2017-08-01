@@ -118,7 +118,6 @@ public class ViewCreator {
                                 Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                 AppCMSPresenter appCMSPresenter,
                                 List<String> modulesToIgnore) {
-        int i = 0;
         for (ModuleList module : appCMSPageUI.getModuleList()) {
             if (!modulesToIgnore.contains(module.getView())) {
                 ModuleView moduleView = pageView.getModuleViewWithModuleId(module.getId());
@@ -150,14 +149,16 @@ public class ViewCreator {
                         if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY ||
                                 componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY ||
                                 componentType == AppCMSUIKeyType.PAGE_CAROUSEL_VIEW_KEY) {
-                            pageView.updateDataList(moduleAPI.getContentData(), i);
+                            pageView.updateDataList(moduleAPI.getContentData(),
+                                    moduleAPI.getId() + component.getKey());
                             if (moduleAPI.getContentData() != null &&
                                     moduleAPI.getContentData().size() > 0) {
-                                pageView.setVisibility(View.VISIBLE);
+                                view.setVisibility(View.VISIBLE);
+                                moduleView.setVisibility(View.VISIBLE);
                             } else {
-                                pageView.setVisibility(View.GONE);
+                                view.setVisibility(View.GONE);
+                                moduleView.setVisibility(View.GONE);
                             }
-                            i++;
                         } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
                             if (appCMSPresenter.isUserLoggedIn(context)) {
                                 ((ProgressBar) view).setMax(100);
@@ -1048,6 +1049,11 @@ public class ViewCreator {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
                                 .adapter(radioAdapter)
                                 .listview((RecyclerView) componentViewResult.componentView)
+                                .id(moduleAPI.getId() + component.getKey())
+                                .build());
+                        pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
+                                .id(moduleAPI.getId() + component.getKey())
+                                .view(componentViewResult.componentView)
                                 .build());
                     }
 
@@ -1073,6 +1079,11 @@ public class ViewCreator {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
                                 .adapter(appCMSTrayItemAdapter)
                                 .listview((RecyclerView) componentViewResult.componentView)
+                                .id(moduleAPI.getId() + component.getKey())
+                                .build());
+                        pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
+                                .id(moduleAPI.getId() + component.getKey())
+                                .view(componentViewResult.componentView)
                                 .build());
                     }
                 }
@@ -1151,6 +1162,12 @@ public class ViewCreator {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
                                 .adapter(appCMSViewAdapter)
                                 .listview((RecyclerView) componentViewResult.componentView)
+                                .id(moduleAPI.getId() + component.getKey())
+                                .build());
+
+                        pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
+                                .id(moduleAPI.getId() + component.getKey())
+                                .view(componentViewResult.componentView)
                                 .build());
                     }
 
@@ -1188,6 +1205,11 @@ public class ViewCreator {
                     pageView.addListWithAdapter(new ListWithAdapter.Builder()
                             .adapter(appCMSCarouselItemAdapter)
                             .listview((RecyclerView) componentViewResult.componentView)
+                            .id(moduleAPI.getId() + component.getKey())
+                            .build());
+                    pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
+                            .id(moduleAPI.getId() + component.getKey())
+                            .view(componentViewResult.componentView)
                             .build());
                 }
                 componentViewResult.onInternalEvent = appCMSCarouselItemAdapter;
@@ -2208,8 +2230,6 @@ public class ViewCreator {
                 break;
 
             case PAGE_PLAN_META_DATA_VIEW_KEY:
-                appCMSPresenter.createSubscriptionPlans(moduleAPI);
-
                 componentViewResult.componentView = new SubscriptionMetaDataView(context,
                         component,
                         component.getLayout(),

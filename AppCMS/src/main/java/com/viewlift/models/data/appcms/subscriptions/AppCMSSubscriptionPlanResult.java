@@ -47,11 +47,11 @@ public class AppCMSSubscriptionPlanResult {
 
     @SerializedName("addedDate")
     @Expose
-    int addedDate;
+    long addedDate;
 
     @SerializedName("updateDate")
     @Expose
-    int updateDate;
+    long updateDate;
 
     public String getId() {
         return id;
@@ -117,19 +117,19 @@ public class AppCMSSubscriptionPlanResult {
         this.siteOwner = siteOwner;
     }
 
-    public int getAddedDate() {
+    public long getAddedDate() {
         return addedDate;
     }
 
-    public void setAddedDate(int addedDate) {
+    public void setAddedDate(long addedDate) {
         this.addedDate = addedDate;
     }
 
-    public int getUpdateDate() {
+    public long getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(int updateDate) {
+    public void setUpdateDate(long updateDate) {
         this.updateDate = updateDate;
     }
 }

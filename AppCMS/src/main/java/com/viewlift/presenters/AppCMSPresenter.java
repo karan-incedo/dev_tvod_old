@@ -81,6 +81,7 @@ import com.viewlift.models.data.appcms.history.AppCMSDeleteHistoryResult;
 import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
 import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
+import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionResult;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
@@ -1486,18 +1487,6 @@ public class AppCMSPresenter {
         realmController.addDownload(downloadVideoRealm);
     }
 
-    public void createSubscriptionPlans(Module moduleAPI) {
-        List<SubscriptionPlan> subscriptionPlans = new ArrayList<>();
-        for (int i = 0; i < moduleAPI.getContentData().size(); i++) {
-            SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
-            subscriptionPlan.setPlanId(moduleAPI.getContentData().get(i).getId());
-            subscriptionPlan.setSku(moduleAPI.getContentData().get(i).getIdentifier());
-            subscriptionPlan.setSubscriptionPrice(moduleAPI.getContentData().get(i).getPlanDetails().get(0).getRecurringPaymentAmount());
-            createSubscriptionPlan(subscriptionPlan);
-        }
-        this.subscriptionPlans = subscriptionPlans;
-    }
-
     public void createSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
         realmController.addSubscriptionPlan(subscriptionPlan);
     }
@@ -2381,7 +2370,7 @@ public class AppCMSPresenter {
             navigateToPage(homePage.getPageId(),
                     homePage.getPageName(),
                     homePage.getPageUI(),
-                    true,
+                    false,
                     true,
                     false,
                     true,
@@ -3858,6 +3847,31 @@ public class AppCMSPresenter {
                             public void call() {
                                 try {
                                     appCMSSubscriptionPlanCall.call(
+                                            currentActivity.getString(R.string.app_cms_subscription_plan_list_api_url,
+                                                    appCMSMain.getApiBaseUrl(),
+                                                    appCMSMain.getInternalName()),
+                                            R.string.app_cms_subscription_plan_list_key,
+                                            null,
+                                            apikey,
+                                            getAuthToken(currentActivity),
+                                            appCMSSubscriptionPlanResultList -> {
+                                                for (AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResult : appCMSSubscriptionPlanResultList) {
+                                                    SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
+                                                    subscriptionPlan.setSku(appCMSSubscriptionPlanResult.getIdentifier());
+                                                    subscriptionPlan.setPlanId(appCMSSubscriptionPlanResult.getId());
+                                                    subscriptionPlan.setSubscriptionPrice(
+                                                            appCMSSubscriptionPlanResult
+                                                                    .getPlanDetails()
+                                                                    .get(0)
+                                                                    .getRecurringPaymentAmount());
+                                                    createSubscriptionPlan(subscriptionPlan);
+                                                }
+                                                subscriptionPlans = getExistingSubscriptionPlans();
+                                            },
+                                            appCMSSubscriptionPlanResult -> {
+
+                                            });
+                                    appCMSSubscriptionPlanCall.call(
                                             currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
                                                     appCMSMain.getApiBaseUrl(),
                                                     appCMSMain.getInternalName()),
@@ -3892,6 +3906,31 @@ public class AppCMSPresenter {
             } else {
                 try {
                     appCMSSubscriptionPlanCall.call(
+                            currentActivity.getString(R.string.app_cms_subscription_plan_list_api_url,
+                                    appCMSMain.getApiBaseUrl(),
+                                    appCMSMain.getInternalName()),
+                            R.string.app_cms_subscription_plan_list_key,
+                            null,
+                            apikey,
+                            getAuthToken(currentActivity),
+                            appCMSSubscriptionPlanResultList -> {
+                                for (AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResult : appCMSSubscriptionPlanResultList) {
+                                    SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
+                                    subscriptionPlan.setSku(appCMSSubscriptionPlanResult.getIdentifier());
+                                    subscriptionPlan.setPlanId(appCMSSubscriptionPlanResult.getId());
+                                    subscriptionPlan.setSubscriptionPrice(
+                                            appCMSSubscriptionPlanResult
+                                                    .getPlanDetails()
+                                                    .get(0)
+                                                    .getRecurringPaymentAmount());
+                                    createSubscriptionPlan(subscriptionPlan);
+                                }
+                                subscriptionPlans = getExistingSubscriptionPlans();
+                            },
+                            appCMSSubscriptionPlanResult -> {
+
+                            });
+                    appCMSSubscriptionPlanCall.call(
                             currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
                                     appCMSMain.getApiBaseUrl(),
                                     appCMSMain.getInternalName()),
@@ -3922,8 +3961,6 @@ public class AppCMSPresenter {
                     Log.e(TAG, "getSubscriptionPageContent: " + e.toString());
                 }
             }
-
-            subscriptionPlans = getExistingSubscriptionPlans();
         }
     }
 

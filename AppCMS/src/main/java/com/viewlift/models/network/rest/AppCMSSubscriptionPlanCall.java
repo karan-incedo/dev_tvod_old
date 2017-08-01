@@ -59,7 +59,7 @@ public class AppCMSSubscriptionPlanCall {
         switch (subscriptionCallType) {
 
             case R.string.app_cms_subscription_plan_list_key:
-                appCMSSubscriptionPlanRest.getPlanList(url)
+                appCMSSubscriptionPlanRest.getPlanList(url, authHeaders)
                         .enqueue(new Callback<List<AppCMSSubscriptionPlanResult>>() {
                             @Override
                             public void onResponse(@NonNull Call<List<AppCMSSubscriptionPlanResult>> call,
@@ -76,7 +76,7 @@ public class AppCMSSubscriptionPlanCall {
                 break;
 
             case R.string.app_cms_subscription_subscribed_plan_key:
-                appCMSSubscriptionPlanRest.getSubscribedPlan(url).enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
+                appCMSSubscriptionPlanRest.getSubscribedPlan(url, authHeaders).enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
                     @Override
                     public void onResponse(Call<AppCMSSubscriptionPlanResult> call, Response<AppCMSSubscriptionPlanResult> response) {
                         if (response != null) {
