@@ -22,6 +22,8 @@ import java.util.List;
 public class CastingUtils {
 
     public static String MEDIA_KEY = "media_key";
+    public static String PARAM_KEY = "param_key";
+
     public static boolean isRemoteMediaControllerOpen = false;
     public static boolean isMediaQueueLoaded = true;
     public static String castingMediaId = "";
@@ -32,6 +34,7 @@ public class CastingUtils {
     private static final int PRELOAD_TIME_S = 20;
 
     public static final boolean IS_CHROMECAST_ENABLE = true;
+
 
     public static MediaQueueItem[] BuildCastingQueueItems(List<ContentDatum> detailsRelatedVideoData,
                                                           String appName,
@@ -48,6 +51,8 @@ public class CastingUtils {
                 JSONObject seasonObj = new JSONObject();
                 try {
                     seasonObj.put(MEDIA_KEY, detailsRelatedVideoData.get(i).getGist().getId());
+                    seasonObj.put(PARAM_KEY, detailsRelatedVideoData.get(i).getGist().getPermalink());
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -81,6 +86,8 @@ public class CastingUtils {
         JSONObject medoaInfoCustomData = new JSONObject();
         try {
             medoaInfoCustomData.put(MEDIA_KEY, contentData.getGist().getId());
+            medoaInfoCustomData.put(PARAM_KEY, contentData.getGist().getPermalink());
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -162,5 +169,24 @@ public class CastingUtils {
             e.printStackTrace();
         }
         return remoteMediaId;
+    }
+
+    public static String getRemoteParamKey(Context mContext) {
+        JSONObject getRemoteObject = null;
+        String remoteParamKey = "";
+        try {
+            getRemoteObject = CastContext.getSharedInstance(mContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().getCurrentItem().getCustomData();
+            remoteParamKey = getRemoteObject.getString(CastingUtils.PARAM_KEY);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            getRemoteObject = CastContext.getSharedInstance(mContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().getMediaInfo().getCustomData();
+            remoteParamKey = getRemoteObject.getString(CastingUtils.PARAM_KEY);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return remoteParamKey;
     }
 }
