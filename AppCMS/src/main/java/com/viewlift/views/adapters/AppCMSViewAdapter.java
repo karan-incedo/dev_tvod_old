@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -23,10 +24,10 @@ import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import com.viewlift.R;
+import java.util.Objects;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -55,6 +56,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     protected int unselectedColor;
     protected int selectedColor;
     protected boolean isClickable;
+    boolean isPlanSorted = false;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -92,10 +94,12 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
         this.isSelected = false;
         this.unselectedColor = ContextCompat.getColor(context, android.R.color.white);
-        this.selectedColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+        this.selectedColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                .getGeneral().getBlockTitleColor());
         this.isClickable = true;
 
         cullData(context);
+        sortPlans();
     }
 
     @Override
@@ -285,36 +289,33 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
 
         } else {
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (isClickable) {
-                        String permalink = data.getGist().getPermalink();
-                        String title = data.getGist().getTitle();
-                        Log.d(TAG, "Launching " + permalink + ":" + defaultAction);
-                        List<String> relatedVideoIds = null;
-                        if (data.getContentDetails() != null &&
-                                data.getContentDetails().getRelatedVideoIds() != null) {
-                            relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
-                        }
-                        int currentPlayingIndex = -1;
-                        if (relatedVideoIds == null) {
-                            currentPlayingIndex = 0;
-                        }
-                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                defaultAction,
-                                title,
-                                null,
-                                null,
-                                false,
-                                currentPlayingIndex,
-                                relatedVideoIds)) {
-                            Log.e(TAG, "Could not launch action: " +
-                                    " permalink: " +
-                                    permalink +
-                                    " action: " +
-                                    defaultAction);
-                        }
+            itemView.setOnClickListener(v -> {
+                if (isClickable) {
+                    String permalink = data.getGist().getPermalink();
+                    String title = data.getGist().getTitle();
+                    Log.d(TAG, "Launching " + permalink + ":" + defaultAction);
+                    List<String> relatedVideoIds = null;
+                    if (data.getContentDetails() != null &&
+                            data.getContentDetails().getRelatedVideoIds() != null) {
+                        relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
+                    }
+                    int currentPlayingIndex = -1;
+                    if (relatedVideoIds == null) {
+                        currentPlayingIndex = 0;
+                    }
+                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                            defaultAction,
+                            title,
+                            null,
+                            null,
+                            false,
+                            currentPlayingIndex,
+                            relatedVideoIds)) {
+                        Log.e(TAG, "Could not launch action: " +
+                                " permalink: " +
+                                permalink +
+                                " action: " +
+                                defaultAction);
                     }
                 }
             });
@@ -351,15 +352,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         return null;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        CollectionGridItemView componentView;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            this.componentView = (CollectionGridItemView) itemView;
-        }
-    }
-
     private void setBorder(View itemView,
                            int color) {
         GradientDrawable planBorder = new GradientDrawable();
@@ -388,6 +380,23 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     adapterData.remove((int) elementIndicesToCull.get(i));
                 }
             }
+        }
+    }
+
+    private void sortPlans() {
+        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY && adapterData != null) {
+            if (!Objects.equals(adapterData.get(0).getName(), "Annual Plan")) {
+                Collections.reverse(adapterData);
+            }
+        }
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        CollectionGridItemView componentView;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            this.componentView = (CollectionGridItemView) itemView;
         }
     }
 }
