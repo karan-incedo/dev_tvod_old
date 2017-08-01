@@ -1,5 +1,6 @@
 package com.viewlift.presenters;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.PendingIntent;
@@ -66,8 +67,10 @@ import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Mpeg;
+import com.viewlift.models.data.appcms.api.PlanDetail;
 import com.viewlift.models.data.appcms.api.Settings;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
+import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 import com.viewlift.models.data.appcms.api.SubscriptionRequest;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
@@ -176,6 +179,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.inject.Inject;
 
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -327,6 +331,7 @@ public class AppCMSPresenter {
     private long downloaded = 0L;
     private LruCache<String, PageView> pageViewLruCache;
     private EntitlementPendingVideoData entitlementPendingVideoData;
+    private List<SubscriptionPlan> subscriptionPlans;
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -445,6 +450,7 @@ public class AppCMSPresenter {
     public void unsetCurrentActivity(Activity closedActivity) {
         if (currentActivity == closedActivity) {
             currentActivity = null;
+            this.realmController.closeRealm();
         }
     }
 
@@ -961,9 +967,11 @@ public class AppCMSPresenter {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void setAllChildrenEnabled(boolean isEnabled, ViewGroup viewGroup) {
         viewGroup.setEnabled(isEnabled);
         viewGroup.setClickable(isEnabled);
+        viewGroup.setNestedScrollingEnabled(isEnabled);
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             if (viewGroup.getChildAt(i) instanceof ViewGroup) {
                 if (viewGroup.getChildAt(i) instanceof RecyclerView) {
@@ -1133,12 +1141,26 @@ public class AppCMSPresenter {
         if (currentActivity != null &&
                 inAppBillingService != null) {
             try {
-                String activeSubscription = getActiveSubscriptionSku(currentActivity);
+                Bundle activeSubs = inAppBillingService.getPurchases(3,
+                        currentActivity.getPackageName(),
+                        "subs",
+                        null);
+                ArrayList<String> subscribedSkus = activeSubs.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
+
+                if (subscribedSkus.size() > 0) {
+                    showDialog(DialogType.EXISTING_SUBSCRIPTION,
+                            currentActivity.getString(R.string.app_cms_existing_subscription_error_message),
+                            false,
+                            null);
+                    return;
+                }
+
                 Bundle buyIntentBundle = inAppBillingService.getBuyIntent(3,
                         currentActivity.getPackageName(),
                         skuToPurchase,
                         "subs",
                         null);
+
                 PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
                 if (pendingIntent != null) {
                     currentActivity.startIntentSenderForResult(pendingIntent.getIntentSender(),
@@ -1462,6 +1484,31 @@ public class AppCMSPresenter {
         downloadVideoRealm.setUserId(getLoggedInUser(currentActivity));
 
         realmController.addDownload(downloadVideoRealm);
+    }
+
+    public void createSubscriptionPlans(Module moduleAPI) {
+        List<SubscriptionPlan> subscriptionPlans = new ArrayList<>();
+        for (int i = 0; i < moduleAPI.getContentData().size(); i++) {
+            SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
+            subscriptionPlan.setPlanId(moduleAPI.getContentData().get(i).getId());
+            subscriptionPlan.setSku(moduleAPI.getContentData().get(i).getIdentifier());
+            subscriptionPlan.setSubscriptionPrice(moduleAPI.getContentData().get(i).getPlanDetails().get(0).getRecurringPaymentAmount());
+            createSubscriptionPlan(subscriptionPlan);
+        }
+        this.subscriptionPlans = subscriptionPlans;
+    }
+
+    public void createSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
+        realmController.addSubscriptionPlan(subscriptionPlan);
+    }
+
+    public List<SubscriptionPlan> getExistingSubscriptionPlans() {
+        List<SubscriptionPlan> subscriptionPlans = new ArrayList<>();
+        RealmResults<SubscriptionPlan> subscriptionPlanRealmResults = realmController.getAllSubscriptionPlans();
+        for (SubscriptionPlan subscriptionPlan : subscriptionPlanRealmResults) {
+            subscriptionPlans.add(subscriptionPlan);
+        }
+        return subscriptionPlans;
     }
 
     /**
@@ -2338,7 +2385,7 @@ public class AppCMSPresenter {
                     true,
                     false,
                     true,
-                    false,
+                    true,
                     deeplinkSearchQuery);
         }
     }
@@ -3482,6 +3529,11 @@ public class AppCMSPresenter {
                     message = optionalMessage;
                     break;
 
+                case EXISTING_SUBSCRIPTION:
+                    title = currentActivity.getString(R.string.app_cms_existing_subscription_title);
+                    message = optionalMessage;
+                    break;
+
                 case SUBSCRIBE:
                     title = currentActivity.getString(R.string.app_cms_subscription_title);
                     message = optionalMessage;
@@ -3870,6 +3922,12 @@ public class AppCMSPresenter {
                     Log.e(TAG, "getSubscriptionPageContent: " + e.toString());
                 }
             }
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    subscriptionPlans = getExistingSubscriptionPlans();
+                }
+            }).start();
         }
     }
 
@@ -5038,7 +5096,8 @@ public class AppCMSPresenter {
         CANCEL_SUBSCRIPTION,
         SUBSCRIBE,
         SUBSCRIPTION_REQUIRED,
-        LOGIN_AND_SUBSCRIPTION_REQUIRED
+        LOGIN_AND_SUBSCRIPTION_REQUIRED,
+        EXISTING_SUBSCRIPTION
     }
 
     private static class BeaconRunnable implements Runnable {

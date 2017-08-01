@@ -207,4 +207,6 @@
     <string name="app_cms_login_and_subscription_required_message">Please login or subscribe to continue.</string>
     <string name="app_cms_login_button_text">LOGIN</string>
     <string name="app_cms_subscription_button_text">SUBSCRIBE</string>
+    <string name="app_cms_existing_subscription_error_message">The Play Store Google ID already has a subscription. Please sign into the app with an email and password that was used when the account was created.</string>
+    <string name="app_cms_existing_subscription_title">Existing Subscription</string>
 </resources>
