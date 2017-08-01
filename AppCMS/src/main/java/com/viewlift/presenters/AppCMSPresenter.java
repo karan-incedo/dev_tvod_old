@@ -414,7 +414,7 @@ public class AppCMSPresenter {
         this.pageIdToPageAPIUrlMap = new HashMap<>();
         this.actionToPageAPIUrlMap = new HashMap<>();
         this.actionToPageNameMap = new HashMap<>();
-        this.pageIdToPageNameMap = new HashMap();
+        this.pageIdToPageNameMap = new HashMap<>();
         this.actionTypeToMetaPageMap = new HashMap<>();
         this.onOrientationChangeHandlers = new ArrayList<>();
         this.onActionInternalEvents = new HashMap<>();
@@ -581,7 +581,7 @@ public class AppCMSPresenter {
         if (!isNetworkConnected()) {
             showDialog(DialogType.NETWORK, null, false, null);
         } else if (currentActivity != null && !loadingPage) {
-            final AppCMSActionType actionType = actionToActionTypeMap.get(action);
+            AppCMSActionType actionType = actionToActionTypeMap.get(action);
             if (actionType == null) {
                 Log.e(TAG, "Action " + action + " not found!");
                 return false;
@@ -782,6 +782,10 @@ public class AppCMSPresenter {
                     navigateToHomePage();
                 } else if (actionType == AppCMSActionType.SIGNIN) {
                     navigateToLoginPage();
+                } else if (actionType == AppCMSActionType.CHANGE_DOWNLOAD_QUALITY) {
+                    showDownloadQualityScreen(contentDatum, userVideoDownloadStatus -> {
+                        //
+                    });
                 } else {
                     boolean appbarPresent = true;
                     boolean fullscreenEnabled = false;
@@ -1293,10 +1297,11 @@ public class AppCMSPresenter {
     public void showDownloadQualityScreen(final ContentDatum contentDatum,
                                           final Action1<UserVideoDownloadStatus> resultAction1) {
 
-
         AppCMSPageAPI apiData = new AppCMSPageAPI();
         List<Module> moduleList = new ArrayList<>();
         Module module = new Module();
+
+        getUserDownloadQualityPref(currentActivity);
 
         List<ContentDatum> contentData = new ArrayList<>();
         ContentDatum contentDatumLocal = new ContentDatum();
@@ -1311,13 +1316,11 @@ public class AppCMSPresenter {
             mpegs.add(mpeg);
         }
 
-
         videoAssets.setMpeg(mpegs);
         videoAssets.setType("videoAssets");
 
         streamingInfo.setVideoAssets(videoAssets);
         contentDatumLocal.setStreamingInfo(streamingInfo);
-
 
         contentData.add(contentDatumLocal);
         module.setContentData(contentData);
@@ -1478,9 +1481,7 @@ public class AppCMSPresenter {
     public List<SubscriptionPlan> getExistingSubscriptionPlans() {
         List<SubscriptionPlan> subscriptionPlans = new ArrayList<>();
         RealmResults<SubscriptionPlan> subscriptionPlanRealmResults = realmController.getAllSubscriptionPlans();
-        for (SubscriptionPlan subscriptionPlan : subscriptionPlanRealmResults) {
-            subscriptionPlans.add(subscriptionPlan);
-        }
+        subscriptionPlans.addAll(subscriptionPlanRealmResults);
         return subscriptionPlans;
     }
 
@@ -1691,14 +1692,11 @@ public class AppCMSPresenter {
             request.setContentType(currentActivity.getString(R.string.add_to_watchlist_content_type_video));
             request.setPosition(1L);
             appCMSAddToWatchlistCall.call(url, getAuthToken(currentActivity),
-                    new Action1<AppCMSAddToWatchlistResult>() {
-                        @Override
-                        public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
-                            try {
-                                Observable.just(addToWatchlistResult).subscribe(resultAction1);
-                            } catch (Exception e) {
-                                Log.e(TAG, "clearWatchlistContent: " + e.toString());
-                            }
+                    addToWatchlistResult -> {
+                        try {
+                            Observable.just(addToWatchlistResult).subscribe(resultAction1);
+                        } catch (Exception e) {
+                            Log.e(TAG, "clearWatchlistContent: " + e.toString());
                         }
                     }, request, false);
         } catch (Exception e) {

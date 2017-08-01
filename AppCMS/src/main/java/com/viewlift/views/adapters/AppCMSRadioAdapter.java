@@ -20,8 +20,8 @@ import butterknife.ButterKnife;
  */
 
 public abstract class AppCMSRadioAdapter<T> extends RecyclerView.Adapter<AppCMSRadioAdapter.ViewHolder> {
+    int downloadQualityPosition = 1; // Default position is 1, i.e 720p
     List<T> mItems;
-    private int downloadQualityPosition = 1; // Default position is 1, i.e 720p
     private ItemClickListener itemClickListener;
     private Context mContext;
 
@@ -76,5 +76,4 @@ public abstract class AppCMSRadioAdapter<T> extends RecyclerView.Adapter<AppCMSR
             mRadio.setOnClickListener(clickListener);
         }
     }
-
 }

@@ -26,7 +26,6 @@ public class AppCMSDownloadQualityAdapter extends AppCMSRadioAdapter<Mpeg> {
     protected AppCMSPresenter appCMSPresenter;
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
 
-
     public AppCMSDownloadQualityAdapter(Context context, List<Mpeg> items, List<Component> components,
                                         AppCMSPresenter appCMSPresenter,
                                         Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
@@ -35,6 +34,14 @@ public class AppCMSDownloadQualityAdapter extends AppCMSRadioAdapter<Mpeg> {
         this.components = components;
         this.jsonValueKeyMap = jsonValueKeyMap;
 
+        if (appCMSPresenter.getUserDownloadQualityPref(context) != null) {
+            for (Integer i = 0; i < items.size(); i++) {
+                if (items.get(i).getRenditionValue().equals(appCMSPresenter
+                        .getUserDownloadQualityPref(context))) {
+                    this.downloadQualityPosition = i;
+                }
+            }
+        }
     }
 
     @Override

@@ -394,7 +394,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_download_quality_continue_button_key),
-                AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CCONTINUE_BUTTON_KEY);
+                AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CONTINUE_BUTTON_KEY);
 
         jsonValueKeyMap.put("", AppCMSUIKeyType.PAGE_EMPTY_KEY);
         jsonValueKeyMap.put(null, AppCMSUIKeyType.PAGE_NULL_KEY);
@@ -492,6 +492,9 @@ public class AppCMSUIModule {
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_managesubscription_key),
                 AppCMSActionType.MANAGE_SUBSCRIPTION);
+
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_change_download_quality_key),
+                AppCMSActionType.CHANGE_DOWNLOAD_QUALITY);
     }
 
     @Provides

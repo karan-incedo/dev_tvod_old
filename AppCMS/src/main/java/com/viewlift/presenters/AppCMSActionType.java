@@ -26,4 +26,5 @@ public enum AppCMSActionType {
     SIGNIN,
     EDIT_PROFILE,
     MANAGE_SUBSCRIPTION,
+    CHANGE_DOWNLOAD_QUALITY
 }

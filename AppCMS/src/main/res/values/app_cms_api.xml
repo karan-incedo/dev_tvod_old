@@ -217,6 +217,9 @@
     <string name="app_cms_action_editprofile_key">editProfile</string>
     <string name="app_cms_action_managesubscription_key">manageSubscription</string>
 
+    <string name="app_cms_action_change_download_quality_key">changeDownloadQuality</string>
+    <!--<string name="app_cms_action_change_download_quality_key">Manage Download</string>-->
+
     <string name="app_cms_action_logingoogle_key">logingoogle</string>
     <string name="app_cms_action_signupgoogle_key">signupgoogle</string>
 
