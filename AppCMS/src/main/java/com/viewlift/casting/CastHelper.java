@@ -43,6 +43,8 @@ import rx.functions.Action1;
 public class CastHelper {
     private String TAG = "CastHelper";
     private static CastHelper objMain;
+    private String beaconScreenName = "";
+
     private CastContext mCastContext;
     private CastSession mCastSession;
     public MediaRouter mMediaRouter;
@@ -70,6 +72,11 @@ public class CastHelper {
     private long castCurrentDuration;
     private static final String DISCOVERY_FRAGMENT_TAG = "DiscoveryFragment";
 
+    private AppCMSVideoPageBinder binderPlayScreen;
+    private boolean isMainMediaId = false;
+    private long currentMediaPosition = 0;
+    private String startingFilmId = "";
+
     private CastHelper(Context mContext) {
         mAppContext = mContext.getApplicationContext();
         mCastContext = CastContext.getSharedInstance(mAppContext);
@@ -77,6 +84,8 @@ public class CastHelper {
                 .addControlCategory("com.google.android.gms.cast.CATEGORY_CAST")
                 .build();
         appName = mAppContext.getResources().getString(R.string.app_name);
+        beaconScreenName = mAppContext.getResources().getString(R.string.app_cms_beacon_casting_screen_name);
+
         mMediaRouterCallback = new MyMediaRouterCallback();
 
         setCastDiscovery();
@@ -226,10 +235,6 @@ public class CastHelper {
         return isCastDeviceConnected;
     }
 
-    private AppCMSVideoPageBinder binderPlayScreen;
-    private boolean isMainMediaId = false;
-    private long currentMediaPosition = 0;
-    private String startingFilmId = "";
 
     public void launchRemoteMedia(AppCMSPresenter appCMSPresenter, List<String> relateVideoId, String filmId, long currentPosition, AppCMSVideoPageBinder binder) {
         if (mActivity != null && CastingUtils.isMediaQueueLoaded) {
@@ -289,7 +294,7 @@ public class CastHelper {
             title = binder.getContentData().getContentDetails().getTrailers().get(0).getTitle();
             VideoAssets videoAssets = binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets();
             if (videoAssets.getMpeg().size() > 0) {
-                videoUrl = videoAssets.getMpeg().get(videoAssets.getMpeg().size()-1).getUrl();
+                videoUrl = videoAssets.getMpeg().get(videoAssets.getMpeg().size() - 1).getUrl();
             }
 
             imageUrl = binder.getContentData().getGist().getVideoImageUrl();
@@ -482,19 +487,25 @@ public class CastHelper {
 
     private void initProgressListeners() {
 
-        progressListener = new RemoteMediaClient.ProgressListener() {
-            @Override
-            public void onProgressUpdated(long remoteCastProgress, long totalCastDuration) {
-                castCurrentDuration = remoteCastProgress / 1000;
-                try {
-                    if (castCurrentDuration % 30 == 0) {
-                        String currentRemoteMediaId = CastingUtils.getRemoteMediaId(mAppContext);
+        progressListener = (remoteCastProgress, totalCastDuration) -> {
+            castCurrentDuration = remoteCastProgress / 1000;
+            try {
+                if (castCurrentDuration % 30 == 0) {
+                    String currentRemoteMediaId = CastingUtils.getRemoteMediaId(mAppContext);
+                    String currentMediaParamKey = CastingUtils.getRemoteParamKey(mAppContext);
+
+                    if (!TextUtils.isEmpty(currentRemoteMediaId)) {
                         appCMSPresenterComponenet.updateWatchedTime(currentRemoteMediaId,
                                 castCurrentDuration);
+                        appCMSPresenterComponenet.sendBeaconPingMessage(currentRemoteMediaId,
+                                currentMediaParamKey,
+                                beaconScreenName,
+                                castCurrentDuration);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         };
     }
