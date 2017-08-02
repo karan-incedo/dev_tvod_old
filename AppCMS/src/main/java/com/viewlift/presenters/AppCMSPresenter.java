@@ -46,6 +46,10 @@ import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.apptentive.android.sdk.Apptentive;
+import com.facebook.AccessToken;
+import com.facebook.FacebookRequestError;
+import com.facebook.GraphRequest;
+import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
@@ -308,7 +312,7 @@ public class AppCMSPresenter {
     private String subscriptionUserEmail;
     private String subscriptionUserPassword;
     private boolean signupFromFacebook;
-    private boolean isSgnupFromGoogle;
+    private boolean isSignupFromGoogle;
     private String facebookAccessToken;
     private String facebookUserId;
     private String facebookUsername;
@@ -745,6 +749,7 @@ public class AppCMSPresenter {
                 loginFacebook();
             } else if (actionType == AppCMSActionType.SIGNUP_FACEBOOK) {
                 Log.d(TAG, "Facebook Signup selected");
+//                signUpFacebook();
                 loginFacebook();
             } else if (actionType == AppCMSActionType.LOGIN_GOOGLE) {
                 Log.d(TAG, "Google Login selected");
@@ -1092,6 +1097,17 @@ public class AppCMSPresenter {
         }
     }
 
+//    public void signUpFacebook() {
+//        if (currentActivity != null) {
+//            signupFromFacebook = true;
+//
+//            LoginManager.getInstance().logInWithReadPermissions(currentActivity,
+//                    Arrays.asList("public_profile", "user_friends"));
+//
+//            initiateItemPurchase();
+//        }
+//    }
+
     public void loginFacebook() {
         if (currentActivity != null) {
             signupFromFacebook = true;
@@ -1102,7 +1118,7 @@ public class AppCMSPresenter {
 
     public void loginGoogle() {
         if (currentActivity != null) {
-            isSgnupFromGoogle = true;
+            isSignupFromGoogle = true;
 
             GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions
                     .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -3226,6 +3242,23 @@ public class AppCMSPresenter {
 
     public void logout() {
         if (currentActivity != null) {
+
+            GraphRequest revokePermissions = new GraphRequest(AccessToken.getCurrentAccessToken(),
+                    getLoggedInUser(currentActivity) + "/permissions/", null,
+                    HttpMethod.DELETE, response -> {
+                if (response != null) {
+                    FacebookRequestError error = response.getError();
+                    if (error != null) {
+                        Log.e(TAG, error.toString());
+                    } else {
+                        //
+                    }
+                }
+            });
+
+            revokePermissions.executeAsync();
+            LoginManager.getInstance().logOut();
+
             setLoggedInUser(currentActivity, null);
             setLoggedInUserName(currentActivity, null);
             setLoggedInUserEmail(currentActivity, null);
@@ -3791,7 +3824,7 @@ public class AppCMSPresenter {
                     facebookUserId,
                     facebookUsername,
                     facebookEmail);
-        } else if (isSgnupFromGoogle) {
+        } else if (isSignupFromGoogle) {
             setGoogleAccessToken(currentActivity,
                     googleAccessToken,
                     googleUserId,
@@ -3841,7 +3874,7 @@ public class AppCMSPresenter {
                 startLoginAsyncTask(url, email, password);
             } else {
                 signupFromFacebook = false;
-                isSgnupFromGoogle = false;
+                isSignupFromGoogle = false;
                 subscriptionUserEmail = email;
                 subscriptionUserPassword = password;
                 sendCloseOthersAction(null, true);

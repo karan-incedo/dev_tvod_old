@@ -24,10 +24,8 @@ import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -390,8 +388,24 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     private void sortPlans() {
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY && adapterData != null) {
-            if (!Objects.equals(adapterData.get(0).getName(), "Annual Plan")) {
-                Collections.reverse(adapterData);
+
+            ContentDatum temp;
+            while (!adapterData.get(0).getName().equals("Annual Plan")) {
+                temp = adapterData.get(0);
+                adapterData.remove(0);
+                adapterData.add(temp);
+            }
+
+            while (!adapterData.get(1).getName().equals("Monthly Plan (Premium)")) {
+                temp = adapterData.get(1);
+                adapterData.remove(1);
+                adapterData.add(temp);
+            }
+
+            while (!adapterData.get(2).getName().equals("Monthly Plan (Basic)")) {
+                temp = adapterData.get(2);
+                adapterData.remove(2);
+                adapterData.add(temp);
             }
         }
     }
