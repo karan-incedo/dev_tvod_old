@@ -4002,7 +4002,7 @@ public class AppCMSPresenter {
         if (availableUpgradesForUser != null) {
             return (availableUpgradesForUser.size() > 0);
         }
-        return false;
+        return true;
     }
 
     public boolean isActionFacebook(String action) {
