@@ -198,5 +198,6 @@ public class RealmController {
 
     public void closeRealm() {
         realm.close();
+        instance = null;
     }
 }
