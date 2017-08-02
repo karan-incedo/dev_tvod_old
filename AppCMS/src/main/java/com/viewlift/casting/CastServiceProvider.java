@@ -77,14 +77,6 @@ public class CastServiceProvider {
         }
         mCastHelper.setCallBackListener(callBackCastHelper);
         mCastHelper.setCastSessionManager();
-        CastContext.getSharedInstance(mContext).addCastStateListener(new CastStateListener() {
-            @Override
-            public void onCastStateChanged(int castState) {
-                if (castState == CastState.NOT_CONNECTED) {
-                    mCastHelper.stopPlayback();
-                }
-            }
-        });
     }
 
     /*

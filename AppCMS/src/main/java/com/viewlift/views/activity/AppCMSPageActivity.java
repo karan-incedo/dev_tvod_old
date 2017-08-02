@@ -43,6 +43,8 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
@@ -149,6 +151,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     try {
                         updatedAppCMSBinder =
                                 (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
+                        mergeInputData(updatedAppCMSBinder, updatedAppCMSBinder.getPageId());
                         if (isActive) {
                             handleLaunchPageAction(updatedAppCMSBinder);
                         } else if (updatedAppCMSBinder.shouldSendCloseAction()) {
@@ -259,6 +262,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             @Override
             public void onServiceDisconnected(ComponentName name) {
                 inAppBillingService = null;
+                unbindService(this);
             }
 
             @Override
@@ -855,6 +859,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 }
                             });
                 }
+            }
+        }
+    }
+
+    private void mergeInputData(AppCMSBinder updatedAppCMSBinder, String pageId) {
+        if (appCMSBinderMap.containsKey(pageId) && appCMSPresenter != null &&
+                appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
+            AppCMSBinder appCMSBinder = appCMSBinderMap.get(pageId);
+            if (updatedAppCMSBinder.getPagePath().equals(appCMSBinder.getPagePath())) {
+                AppCMSPageAPI updatedAppCMSPageAPI = updatedAppCMSBinder.getAppCMSPageAPI();
+                AppCMSPageAPI appCMSPageAPI = appCMSBinder.getAppCMSPageAPI();
+                appCMSPresenter.mergeData(updatedAppCMSPageAPI, appCMSPageAPI);
             }
         }
     }

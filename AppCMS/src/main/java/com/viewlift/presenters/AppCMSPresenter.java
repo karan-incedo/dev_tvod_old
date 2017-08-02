@@ -460,7 +460,8 @@ public class AppCMSPresenter {
 
     public boolean launchVideoPlayer(final ContentDatum contentDatum,
                                      final int currentlyPlayingIndex,
-                                     List<String> relateVideoIds) {
+                                     List<String> relateVideoIds,
+                                     long watchedTime) {
         boolean result = false;
         if (currentActivity != null &&
                 !loadingPage && appCMSMain != null &&
@@ -485,6 +486,9 @@ public class AppCMSPresenter {
                                     appCMSVideoDetail.getRecords() != null &&
                                     appCMSVideoDetail.getRecords().get(0) != null &&
                                     appCMSVideoDetail.getRecords().get(0).getContentDetails() != null) {
+                                if (watchedTime >= 0) {
+                                    appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(watchedTime);
+                                }
                                 launchButtonSelectedAction(appCMSVideoDetail.getRecords().get(0).getGist().getPermalink(),
                                         action,
                                         appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
@@ -496,6 +500,9 @@ public class AppCMSPresenter {
                             }
                         }).execute(params);
             } else {
+                if (watchedTime >= 0) {
+                    contentDatum.getGist().setWatchedTime(watchedTime);
+                }
                 launchButtonSelectedAction(
                         contentDatum.getGist().getPermalink(),
                         action,
@@ -908,6 +915,21 @@ public class AppCMSPresenter {
                 currentActivity.getString(R.string.app_cms_navigation_page_tag));
 
         return result;
+    }
+
+    public void mergeData(AppCMSPageAPI fromAppCMSPageAPI, AppCMSPageAPI toAppCMSPageAPI) {
+        for (Module module : fromAppCMSPageAPI.getModules()) {
+            Module updateModule = null;
+            for (Module module1 : toAppCMSPageAPI.getModules()) {
+                if (module.getId() != null && module1 != null &&
+                        module.getId().equals(module1.getId())) {
+                    updateModule = module1;
+                }
+            }
+            if (updateModule != null) {
+
+            }
+        }
     }
 
     public void dismissOpenDialogs(AppCMSNavItemsFragment newAppCMSNavItemsFragment) {
@@ -2534,44 +2556,107 @@ public class AppCMSPresenter {
                             searchQuery) {
                         @Override
                         public void call(final AppCMSPageAPI appCMSPageAPI) {
+                            final AppCMSPageAPIAction appCMSPageAPIAction = this;
                             if (appCMSPageAPI != null) {
-                                cancelInternalEvents();
-                                pushActionInternalEvents(this.pageId + BaseView.isLandscape(currentActivity));
-                                navigationPageData.put(this.pageId, appCMSPageAPI);
-                                if (this.launchActivity) {
-                                    launchPageActivity(currentActivity,
-                                            this.appCMSPageUI,
-                                            appCMSPageAPI,
-                                            this.pageId,
-                                            this.pageTitle,
-                                            this.pagePath,
-                                            pageIdToPageNameMap.get(this.pageId),
-                                            loadFromFile,
-                                            this.appbarPresent,
-                                            this.fullscreenEnabled,
-                                            this.navbarPresent,
-                                            this.sendCloseAction,
-                                            this.searchQuery);
-                                } else {
-                                    Bundle args = getPageActivityBundle(currentActivity,
-                                            this.appCMSPageUI,
-                                            appCMSPageAPI,
-                                            this.pageId,
-                                            this.pageTitle,
-                                            this.pagePath,
-                                            pageIdToPageNameMap.get(this.pageId),
-                                            loadFromFile,
-                                            this.appbarPresent,
-                                            this.fullscreenEnabled,
-                                            this.navbarPresent,
-                                            this.sendCloseAction,
-                                            this.searchQuery);
-                                    Intent updatePageIntent =
-                                            new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                    updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                            args);
-                                    currentActivity.sendBroadcast(updatePageIntent);
-                                    dismissOpenDialogs(null);
+                                boolean loadingHistory = false;
+                                if (isUserLoggedIn(currentActivity)) {
+                                    for (Module module : appCMSPageAPI.getModules()) {
+                                        if (jsonValueKeyMap.get(module.getModuleType()) ==
+                                                AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
+                                            if (module.getContentData() != null &&
+                                                    module.getContentData().size() > 0) {
+                                                loadingHistory = true;
+                                                getHistoryData(new Action1<AppCMSHistoryResult>() {
+                                                    @Override
+                                                    public void call(AppCMSHistoryResult appCMSHistoryResult) {
+                                                        AppCMSPageAPI historyAPI =
+                                                                appCMSHistoryResult.convertToAppCMSPageAPI(module.getId());
+                                                        mergeData(historyAPI, appCMSPageAPI);
+
+                                                        cancelInternalEvents();
+                                                        pushActionInternalEvents(appCMSPageAPIAction.pageId + BaseView.isLandscape(currentActivity));
+                                                        navigationPageData.put(appCMSPageAPIAction.pageId, appCMSPageAPI);
+                                                        if (appCMSPageAPIAction.launchActivity) {
+                                                            launchPageActivity(currentActivity,
+                                                                    appCMSPageAPIAction.appCMSPageUI,
+                                                                    appCMSPageAPI,
+                                                                    appCMSPageAPIAction.pageId,
+                                                                    appCMSPageAPIAction.pageTitle,
+                                                                    appCMSPageAPIAction.pagePath,
+                                                                    pageIdToPageNameMap.get(appCMSPageAPIAction.pageId),
+                                                                    loadFromFile,
+                                                                    appCMSPageAPIAction.appbarPresent,
+                                                                    appCMSPageAPIAction.fullscreenEnabled,
+                                                                    appCMSPageAPIAction.navbarPresent,
+                                                                    appCMSPageAPIAction.sendCloseAction,
+                                                                    appCMSPageAPIAction.searchQuery);
+                                                        } else {
+                                                            Bundle args = getPageActivityBundle(currentActivity,
+                                                                    appCMSPageAPIAction.appCMSPageUI,
+                                                                    appCMSPageAPI,
+                                                                    appCMSPageAPIAction.pageId,
+                                                                    appCMSPageAPIAction.pageTitle,
+                                                                    appCMSPageAPIAction.pagePath,
+                                                                    pageIdToPageNameMap.get(appCMSPageAPIAction.pageId),
+                                                                    loadFromFile,
+                                                                    appCMSPageAPIAction.appbarPresent,
+                                                                    appCMSPageAPIAction.fullscreenEnabled,
+                                                                    appCMSPageAPIAction.navbarPresent,
+                                                                    appCMSPageAPIAction.sendCloseAction,
+                                                                    appCMSPageAPIAction.searchQuery);
+                                                            Intent updatePageIntent =
+                                                                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                                            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                                                    args);
+                                                            currentActivity.sendBroadcast(updatePageIntent);
+                                                            dismissOpenDialogs(null);
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (!loadingHistory) {
+                                    cancelInternalEvents();
+                                    pushActionInternalEvents(this.pageId + BaseView.isLandscape(currentActivity));
+                                    navigationPageData.put(this.pageId, appCMSPageAPI);
+                                    if (this.launchActivity) {
+                                        launchPageActivity(currentActivity,
+                                                this.appCMSPageUI,
+                                                appCMSPageAPI,
+                                                this.pageId,
+                                                this.pageTitle,
+                                                this.pagePath,
+                                                pageIdToPageNameMap.get(this.pageId),
+                                                loadFromFile,
+                                                this.appbarPresent,
+                                                this.fullscreenEnabled,
+                                                this.navbarPresent,
+                                                this.sendCloseAction,
+                                                this.searchQuery);
+                                    } else {
+                                        Bundle args = getPageActivityBundle(currentActivity,
+                                                this.appCMSPageUI,
+                                                appCMSPageAPI,
+                                                this.pageId,
+                                                this.pageTitle,
+                                                this.pagePath,
+                                                pageIdToPageNameMap.get(this.pageId),
+                                                loadFromFile,
+                                                this.appbarPresent,
+                                                this.fullscreenEnabled,
+                                                this.navbarPresent,
+                                                this.sendCloseAction,
+                                                this.searchQuery);
+                                        Intent updatePageIntent =
+                                                new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                        updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                                args);
+                                        currentActivity.sendBroadcast(updatePageIntent);
+                                        dismissOpenDialogs(null);
+                                    }
                                 }
                             } else {
                                 sendStopLoadingPageAction();
@@ -3557,7 +3642,7 @@ public class AppCMSPresenter {
                                        long currentPosition) {
         Log.d(TAG, "Sending Beacon Ad Impression");
         String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition,
-                BeaconEvent.AD_IMPRESSION);
+                BeaconEvent.AD_IMPRESSION, false);
         if (url != null) {
             Log.d(TAG, "Beacon Ad Impression: " + url);
             beaconMessageRunnable.setUrl(url);
@@ -3567,9 +3652,9 @@ public class AppCMSPresenter {
 
     public void sendBeaconAdRequestMessage(String vid, String screenName, String parentScreenName,
                                            long currentPosition) {
-        Log.d(TAG, "Sending Beacon Ad Message");
+        Log.d(TAG, "Sending Beacon Ad Request");
         String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition,
-                BeaconEvent.AD_REQUEST);
+                BeaconEvent.AD_REQUEST, false);
         if (url != null) {
             Log.d(TAG, "Beacon Ad Request: " + url);
             beaconMessageRunnable.setUrl(url);
@@ -3578,9 +3663,9 @@ public class AppCMSPresenter {
     }
 
     public void sendBeaconPingMessage(String vid, String screenName, String parentScreenName,
-                                      long currentPosition) {
+                                      long currentPosition, boolean usingChromecast) {
         Log.d(TAG, "Sending Beacon Ping Message");
-        String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.PING);
+        String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.PING, usingChromecast);
         if (url != null) {
             Log.d(TAG, "Beacon Ping: " + url);
             beaconMessageRunnable.setUrl(url);
@@ -3589,9 +3674,9 @@ public class AppCMSPresenter {
     }
 
     public void sendBeaconPlayMessage(String vid, String screenName, String parentScreenName,
-                                      long currentPosition) {
-        Log.d(TAG, "Sending Beacon Ad Message");
-        String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.PLAY);
+                                      long currentPosition, boolean usingChromecast) {
+        Log.d(TAG, "Sending Beacon Play Message");
+        String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.PLAY, usingChromecast);
         if (url != null) {
             Log.d(TAG, "Beacon Play: " + url);
             beaconMessageRunnable.setUrl(url);
@@ -3609,8 +3694,8 @@ public class AppCMSPresenter {
     }
 
     private String getBeaconUrl(String vid, String screenName, String parentScreenName,
-                                long currentPosition, BeaconEvent event) {
-        String url = null;
+                                long currentPosition, BeaconEvent event, boolean usingChromecast) {
+        StringBuilder url = new StringBuilder();
         if (currentActivity != null && appCMSMain != null) {
             final String utfEncoding = currentActivity.getString(R.string.utf8enc);
             String uid = InstanceID.getInstance(currentActivity).getId();
@@ -3619,7 +3704,7 @@ public class AppCMSPresenter {
                 uid = getLoggedInUser(currentActivity);
             }
             try {
-                url = currentActivity.getString(R.string.app_cms_beacon_url,
+                url.append(currentActivity.getString(R.string.app_cms_beacon_url,
                         appCMSMain.getBeacon().getApiBaseUrl(),
                         URLEncoder.encode(appCMSMain.getBeacon().getSiteName(), utfEncoding),
                         URLEncoder.encode(appCMSMain.getBeacon().getClientId(), utfEncoding),
@@ -3632,12 +3717,16 @@ public class AppCMSPresenter {
                         URLEncoder.encode(parentScreenName, utfEncoding),
                         event,
                         currentPositionSecs,
-                        URLEncoder.encode(uid, utfEncoding));
+                        URLEncoder.encode(uid, utfEncoding)));
+                if (usingChromecast) {
+                    url.append(URLEncoder.encode(currentActivity.getString(R.string.app_cms_beacon_chromecast_dp2_url),
+                            utfEncoding));
+                }
             } catch (UnsupportedEncodingException e) {
                 Log.e(TAG, "DialogType encoding Beacon URL parameters: " + e.toString());
             }
         }
-        return url;
+        return url.toString();
     }
 
     public void sendGaScreen(String screenName) {
@@ -4805,10 +4894,14 @@ public class AppCMSPresenter {
         }
     }
 
-    public void playNextVideo(AppCMSVideoPageBinder binder, int currentlyPlayingIndex) {
+    public void playNextVideo(AppCMSVideoPageBinder binder,
+                              int currentlyPlayingIndex,
+                              long watchedTime) {
+        sendCloseOthersAction(null, true);
         launchVideoPlayer(binder.getContentData(),
                 currentlyPlayingIndex,
-                binder.getRelateVideoIds());
+                binder.getRelateVideoIds(),
+                watchedTime / 1000L);
     }
 
     public Map<String, AppCMSUIKeyType> getJsonValueKeyMap() {

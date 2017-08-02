@@ -273,7 +273,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                             }
                             if (!appCMSPresenter.launchVideoPlayer(data,
                                     currentPlayingIndex,
-                                    relatedVideoIds)) {
+                                    relatedVideoIds,
+                                    -1)) {
                                 Log.e(TAG, "Could not launch play action: " +
                                         " filmId: " +
                                         filmId +

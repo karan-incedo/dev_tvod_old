@@ -563,7 +563,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         String title = data.getGist().getTitle();
         if (!appCMSPresenter.launchVideoPlayer(data,
                 -1,
-                data.getContentDetails().getRelatedVideoIds())) {
+                data.getContentDetails().getRelatedVideoIds(),
+                -1)) {
             Log.e(TAG, "Could not launch play action: " +
                     " filmId: " +
                     filmId +
