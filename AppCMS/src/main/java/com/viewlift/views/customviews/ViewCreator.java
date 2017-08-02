@@ -424,15 +424,24 @@ public class ViewCreator {
                                     int viewHeight = (int) BaseView.getViewHeight(context,
                                             component.getLayout(),
                                             ViewGroup.LayoutParams.WRAP_CONTENT);
+
                                     if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
+                                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                                moduleAPI.getContentData().get(0).getGist().getPosterImageUrl(),
+                                                viewWidth,
+                                                viewHeight);
                                         Glide.with(context)
-                                                .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
+                                                .load(imageUrl)
                                                 .override(viewWidth, viewHeight)
                                                 .centerCrop()
                                                 .into((ImageView) view);
                                     } else if (viewWidth > 0) {
+                                        String videoImageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                                moduleAPI.getContentData().get(0).getGist().getVideoImageUrl(),
+                                                viewWidth,
+                                                viewHeight);
                                         Glide.with(context)
-                                                .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                                .load(videoImageUrl)
                                                 .override(viewWidth, viewHeight)
                                                 .centerCrop()
                                                 .into((ImageView) view);
