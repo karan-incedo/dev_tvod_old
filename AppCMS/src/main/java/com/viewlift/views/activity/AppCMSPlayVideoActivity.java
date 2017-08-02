@@ -97,7 +97,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     if (binder.getContentData() != null
                             && binder.getContentData().getContentDetails() != null
                             && binder.getContentData().getContentDetails().getClosedCaptions() != null
-                            && binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl() != null){
+                            && binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
                         closedCaptionUrl = binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl();
                     }
                 } else {
@@ -163,7 +163,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 if (intent.getBooleanExtra(getString(R.string.close_self_key), true) &&
                         (sendingPage == null || getString(R.string.app_cms_video_page_tag).equals(sendingPage))) {
                     Log.d(TAG, "Closing activity");
-                    getSupportFragmentManager().popBackStack();
+                    finish();
                 }
             }
         };
@@ -181,7 +181,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         super.onResume();
 
         /*This is to enable offline video playback even when Internet is not available*/
-        if (binder != null && !binder.isOffline() &&!appCMSPresenter.isNetworkConnected()) {
+        if (binder != null && !binder.isOffline() && !appCMSPresenter.isNetworkConnected()) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                     null,
                     false,
@@ -231,7 +231,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                  int castingModeChromecast,
                                  boolean sendBeaconPlay,
                                  Action1<CastHelper.OnApplicationEnded> onApplicationEndedAction) {
-        if(castingModeChromecast== CastingUtils.CASTING_MODE_CHROMECAST && !binder.isTrailer()) {
+        if (castingModeChromecast == CastingUtils.CASTING_MODE_CHROMECAST && !binder.isTrailer()) {
             CastHelper.getInstance(getApplicationContext()).launchRemoteMedia(appCMSPresenter,
                     relateVideoIds,
                     filmId,
@@ -239,9 +239,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     binder,
                     sendBeaconPlay,
                     onApplicationEndedAction);
-        }else  if(castingModeChromecast== CastingUtils.CASTING_MODE_CHROMECAST && binder.isTrailer()) {
-            CastHelper.getInstance(getApplicationContext()).launchSingleMediaRemote( filmId,binder);
+        } else if (castingModeChromecast == CastingUtils.CASTING_MODE_CHROMECAST && binder.isTrailer()) {
+            CastHelper.getInstance(getApplicationContext()).launchSingleMediaRemote(appCMSPresenter, filmId, binder, currentPosition);
         }
+
     }
 
     @Override

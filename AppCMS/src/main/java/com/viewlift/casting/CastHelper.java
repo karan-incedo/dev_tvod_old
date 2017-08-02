@@ -316,11 +316,13 @@ public class CastHelper {
     }
 
     //launchSingleMediaRemote use to launch media when auto play off
-    public void launchSingleMediaRemote(String filmId, AppCMSVideoPageBinder binder) {
+    public void launchSingleMediaRemote(AppCMSPresenter appCMSPresenter, String filmId, AppCMSVideoPageBinder binder, long currentPosition) {
         String imageUrl = "";
         String title = "";
         String videoUrl = "";
         Toast.makeText(mAppContext, mAppContext.getString(R.string.loading_vid_on_casting), Toast.LENGTH_SHORT).show();
+        this.appCMSPresenterComponenet = appCMSPresenter;
+        listRelatedVideosDetails = new ArrayList<ContentDatum>();
 
         if (binder.getContentData().getContentDetails() != null
                 && binder.getContentData().getContentDetails().getTrailers() != null
@@ -341,12 +343,17 @@ public class CastHelper {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        try {
+            customData.put(CastingUtils.PARAM_KEY, binder.getContentData().getGist().getPermalink());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         getRemoteMediaClient().load(CastingUtils.buildMediaInfo(title,
                 appName,
                 imageUrl,
                 videoUrl,
                 customData,
-                mAppContext));
+                mAppContext), true, currentPosition);
         getRemoteMediaClient().addListener(remoteListener);
 
     }
@@ -374,12 +381,13 @@ public class CastHelper {
             @Override
             public void onStatusUpdated() {
                 openRemoteController();
-                updatePlaybackState();
-                if (getRemoteMediaClient() != null &&
+                if (getRemoteMediaClient() != null && getRemoteMediaClient().getMediaStatus() != null &&
                         getRemoteMediaClient().getMediaStatus().getCurrentItemId() <
                                 getRemoteMediaClient().getMediaStatus().getLoadingItemId()) {
                     sentBeaconPlay = false;
                 }
+                updatePlaybackState();
+
             }
 
             @Override
@@ -494,6 +502,11 @@ public class CastHelper {
                 }
                 CastingUtils.isMediaQueueLoaded = true;
                 if (callBackRemoteListener != null && mActivity instanceof AppCMSPlayVideoActivity && binderPlayScreen != null) {
+
+                    //if player activity already opened than finish it
+                    if (onApplicationEndedAction != null) {
+                        Observable.just(onApplicationEnded).subscribe(onApplicationEndedAction);
+                    }
                     //if casted from local play screen from first video than this video will not in related video list  so set -1 index position to play on local player
 
                     if (CastingUtils.castingMediaId == null || TextUtils.isEmpty(CastingUtils.castingMediaId)) {
@@ -517,8 +530,6 @@ public class CastHelper {
                         appCMSPresenterComponenet.playNextVideo(binderPlayScreen,
                                 binderPlayScreen.getCurrentPlayingVideoIndex(),
                                 currentMediaPosition);
-                    } else if (onApplicationEndedAction != null) {
-                        Observable.just(onApplicationEnded).subscribe(onApplicationEndedAction);
                     }
 
                     CastingUtils.castingMediaId = "";
@@ -674,10 +685,10 @@ public class CastHelper {
         mCastSession = CastContext.getSharedInstance(mAppContext).getSessionManager()
                 .getCurrentCastSession();
 
-        if (listRelatedVideosDetails != null) {
+        if (listRelatedVideosDetails != null && listRelatedVideosDetails.size() > 0) {
             int currentVideoDetailIndex = getCurrentIndex(listRelatedVideosDetails, CastingUtils.castingMediaId);
-            if (currentVideoDetailIndex < listRelatedVideosDetails.size()) {
-                isFinish = false;
+            if (currentVideoDetailIndex <= listRelatedVideosDetails.size()) {
+                isFinish = true;
             }
         } else {
             isFinish = true;
@@ -703,6 +714,7 @@ public class CastHelper {
                     }
                 }
                 break;
+
             case MediaStatus.PLAYER_STATE_PAUSED:
                 sendBeaconPing = false;
                 break;
@@ -717,6 +729,13 @@ public class CastHelper {
 
             case MediaStatus.PLAYER_STATE_IDLE:
                 sendBeaconPing = false;
+                if (idleReason == MediaStatus.IDLE_REASON_FINISHED) {
+                    //If all movies in auto play queue have been finished then finish the player activity if opened
+                    if (isFinish && mActivity instanceof AppCMSPlayVideoActivity) {
+                        mActivity.finish();
+                    }
+
+                }
                 break;
 
             default: // case unknown

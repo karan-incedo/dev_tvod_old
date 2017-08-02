@@ -159,7 +159,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         parentScreenName = getContext().getString(R.string.app_cms_beacon_video_player_parent_screen_name);
         setRetainInstance(true);
 
-        AppsFlyerUtils.appsFlyerPlayEvent(getContext(),filmId, appCMSPresenter);
+        AppsFlyerUtils.appsFlyerPlayEvent(getContext(), filmId, appCMSPresenter);
 
     }
 
@@ -206,8 +206,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference(getContext()));
             videoPlayerView.getPlayerView().getSubtitleView()
                     .setVisibility(appCMSPresenter.getClosedCaptionPreference(getContext())
-                    ? View.VISIBLE
-                    : View.GONE);
+                            ? View.VISIBLE
+                            : View.GONE);
             videoPlayerView.setUri(Uri.parse(hlsUrl),
                     !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
             Log.i(TAG, "Playing video: " + hlsUrl);
@@ -301,7 +301,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             castProvider = CastServiceProvider.getInstance(getActivity());
             castProvider.setRemotePlaybackCallback(callBackRemotePlayback);
             isCastConnected = castProvider.playChromeCastPlaybackIfCastConnected();
-            if (isCastConnected) {
+            if (isCastConnected && getActivity() != null) {
                 getActivity().finish();
             } else {
                 castProvider.setActivityInstance(getActivity(), mMediaRouteButton);
@@ -431,10 +431,6 @@ public class AppCMSPlayVideoFragment extends Fragment
             adsLoader.removeAdErrorListener(this);
         }
         adsLoader = null;
-
-        if (castProvider != null) {
-            castProvider.setRemotePlaybackCallback(null);
-        }
 
         super.onDestroyView();
     }
