@@ -38,7 +38,6 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Mpeg;
-import com.viewlift.models.data.appcms.api.PlanDetail;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.UserVideoDownloadStatus;
 import com.viewlift.models.data.appcms.history.AppCMSDeleteHistoryResult;
@@ -430,6 +429,7 @@ public class ViewCreator {
                                     int viewHeight = (int) BaseView.getViewHeight(context,
                                             component.getLayout(),
                                             ViewGroup.LayoutParams.WRAP_CONTENT);
+
                                     if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
                                         Glide.with(context)
                                                 .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())

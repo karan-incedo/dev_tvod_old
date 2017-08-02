@@ -64,7 +64,11 @@ public class AppCMSSubscriptionPlanCall {
                             @Override
                             public void onResponse(@NonNull Call<List<AppCMSSubscriptionPlanResult>> call,
                                                    @NonNull Response<List<AppCMSSubscriptionPlanResult>> response) {
-                                Observable.just(response.body()).subscribe(planResultAction1);
+                                if (response != null) {
+                                    Observable.just(response.body()).subscribe(planResultAction1);
+                                } else {
+                                    Observable.just((List<AppCMSSubscriptionPlanResult>) null).subscribe(planResultAction1);
+                                }
                             }
 
                             @Override

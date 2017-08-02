@@ -37,6 +37,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Observable;
 import rx.functions.Action1;
 
 
@@ -70,12 +71,16 @@ public class CastHelper {
     private int currentPlayingIndex = 0;
     public int playIndexPosition = 0;
     private long castCurrentDuration;
+    private long castCurrentMediaPosition;
     private static final String DISCOVERY_FRAGMENT_TAG = "DiscoveryFragment";
 
     private AppCMSVideoPageBinder binderPlayScreen;
     private boolean isMainMediaId = false;
     private long currentMediaPosition = 0;
     private String startingFilmId = "";
+    private boolean sentBeaconPlay;
+    private boolean sendBeaconPing;
+    private Action1<OnApplicationEnded> onApplicationEndedAction;
 
     private CastHelper(Context mContext) {
         mAppContext = mContext.getApplicationContext();
@@ -88,10 +93,32 @@ public class CastHelper {
 
         mMediaRouterCallback = new MyMediaRouterCallback();
 
+        castCurrentMediaPosition = 0L;
+
         setCastDiscovery();
 
     }
 
+    public static class OnApplicationEnded {
+        private int recommendedVideoIndex;
+        private long currentWatchedTime;
+
+        public int getRecommendedVideoIndex() {
+            return recommendedVideoIndex;
+        }
+
+        public void setRecommendedVideoIndex(int recommendedVideoIndex) {
+            this.recommendedVideoIndex = recommendedVideoIndex;
+        }
+
+        public long getCurrentWatchedTime() {
+            return currentWatchedTime;
+        }
+
+        public void setCurrentWatchedTime(long currentWatchedTime) {
+            this.currentWatchedTime = currentWatchedTime;
+        }
+    }
 
     public void setCastDiscovery() {
         if (CastingUtils.IS_CHROMECAST_ENABLE) {
@@ -236,7 +263,15 @@ public class CastHelper {
     }
 
 
-    public void launchRemoteMedia(AppCMSPresenter appCMSPresenter, List<String> relateVideoId, String filmId, long currentPosition, AppCMSVideoPageBinder binder) {
+    public void launchRemoteMedia(AppCMSPresenter appCMSPresenter,
+                                  List<String> relateVideoId,
+                                  String filmId,
+                                  long currentPosition,
+                                  AppCMSVideoPageBinder binder,
+                                  boolean sentBeaconPlay,
+                                  Action1<OnApplicationEnded> onApplicationEndedAction) {
+        this.sentBeaconPlay = sentBeaconPlay;
+        this.onApplicationEndedAction = onApplicationEndedAction;
         if (mActivity != null && CastingUtils.isMediaQueueLoaded) {
             Toast.makeText(mAppContext, mAppContext.getString(R.string.loading_vid_on_casting), Toast.LENGTH_SHORT).show();
 
@@ -340,6 +375,11 @@ public class CastHelper {
             public void onStatusUpdated() {
                 openRemoteController();
                 updatePlaybackState();
+                if (getRemoteMediaClient() != null &&
+                        getRemoteMediaClient().getMediaStatus().getCurrentItemId() <
+                                getRemoteMediaClient().getMediaStatus().getLoadingItemId()) {
+                    sentBeaconPlay = false;
+                }
             }
 
             @Override
@@ -443,13 +483,17 @@ public class CastHelper {
             }
 
             private void onApplicationDisconnected() {
+                OnApplicationEnded onApplicationEnded = new OnApplicationEnded();
+                onApplicationEnded.setCurrentWatchedTime(castCurrentMediaPosition);
+                onApplicationEnded.setRecommendedVideoIndex(playIndexPosition);
+
                 if (getRemoteMediaClient() != null) {
+                    getRemoteMediaClient().stop();
                     getRemoteMediaClient().removeListener(remoteListener);
                     getRemoteMediaClient().removeProgressListener(progressListener);
                 }
                 CastingUtils.isMediaQueueLoaded = true;
                 if (callBackRemoteListener != null && mActivity instanceof AppCMSPlayVideoActivity && binderPlayScreen != null) {
-                    mActivity.finish();
                     //if casted from local play screen from first video than this video will not in related video list  so set -1 index position to play on local player
 
                     if (CastingUtils.castingMediaId == null || TextUtils.isEmpty(CastingUtils.castingMediaId)) {
@@ -469,9 +513,12 @@ public class CastHelper {
                     }
 
                     binderPlayScreen.setCurrentPlayingVideoIndex(playIndexPosition);
-                    if (playIndexPosition < listCompareRelatedVideosId.size()) {
+                    if (0 < playIndexPosition && playIndexPosition < listCompareRelatedVideosId.size()) {
                         appCMSPresenterComponenet.playNextVideo(binderPlayScreen,
-                                binderPlayScreen.getCurrentPlayingVideoIndex());
+                                binderPlayScreen.getCurrentPlayingVideoIndex(),
+                                currentMediaPosition);
+                    } else if (onApplicationEndedAction != null) {
+                        Observable.just(onApplicationEnded).subscribe(onApplicationEndedAction);
                     }
 
                     CastingUtils.castingMediaId = "";
@@ -488,9 +535,10 @@ public class CastHelper {
     private void initProgressListeners() {
 
         progressListener = (remoteCastProgress, totalCastDuration) -> {
+            castCurrentMediaPosition = remoteCastProgress;
             castCurrentDuration = remoteCastProgress / 1000;
             try {
-                if (castCurrentDuration % 30 == 0) {
+                if (castCurrentDuration % 30 == 0 && sendBeaconPing) {
                     String currentRemoteMediaId = CastingUtils.getRemoteMediaId(mAppContext);
                     String currentMediaParamKey = CastingUtils.getRemoteParamKey(mAppContext);
 
@@ -500,7 +548,8 @@ public class CastHelper {
                         appCMSPresenterComponenet.sendBeaconPingMessage(currentRemoteMediaId,
                                 currentMediaParamKey,
                                 beaconScreenName,
-                                castCurrentDuration);
+                                castCurrentDuration,
+                                true);
                     }
 
                 }
@@ -638,18 +687,40 @@ public class CastHelper {
         int idleReason = getRemoteMediaClient().getIdleReason();
 
         switch (status) {
-            case MediaStatus.PLAYER_STATE_IDLE:
-                if (idleReason == MediaStatus.IDLE_REASON_FINISHED) {
+            case MediaStatus.PLAYER_STATE_PLAYING:
+                sendBeaconPing = true;
+                if (!sentBeaconPlay) {
+                    String currentRemoteMediaId = CastingUtils.getRemoteMediaId(mAppContext);
+                    String currentMediaParamKey = CastingUtils.getRemoteParamKey(mAppContext);
 
-                    if (isFinish && mActivity instanceof AppCMSPlayVideoActivity) {
-                        mActivity.finish();
+                    if (!TextUtils.isEmpty(currentRemoteMediaId)) {
+                        appCMSPresenterComponenet.sendBeaconPlayMessage(currentRemoteMediaId,
+                                currentMediaParamKey,
+                                beaconScreenName,
+                                castCurrentDuration,
+                                true);
+                        sentBeaconPlay = true;
                     }
-
                 }
+                break;
+            case MediaStatus.PLAYER_STATE_PAUSED:
+                sendBeaconPing = false;
+                break;
+
+            case MediaStatus.PLAYER_STATE_UNKNOWN:
+                sendBeaconPing = false;
+                break;
+
+            case MediaStatus.PLAYER_STATE_BUFFERING:
+                sendBeaconPing = false;
+                break;
+
+            case MediaStatus.PLAYER_STATE_IDLE:
+                sendBeaconPing = false;
                 break;
 
             default: // case unknown
-
+                sendBeaconPing = false;
                 break;
         }
     }
