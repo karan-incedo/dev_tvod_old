@@ -274,6 +274,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         };
 
         if (inAppBillingService == null) {
+            if (inAppBillingServiceConn != null) {
+                try {
+                    unbindService(inAppBillingServiceConn);
+                } catch (IllegalArgumentException e) {
+                    Log.w(TAG, "InApp Billing Service is not registered: " + e.toString());
+                }
+            }
             Intent serviceIntent =
                     new Intent("com.android.vending.billing.InAppBillingService.BIND");
             serviceIntent.setPackage("com.android.vending");
