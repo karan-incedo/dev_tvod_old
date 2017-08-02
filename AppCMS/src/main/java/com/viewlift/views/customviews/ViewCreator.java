@@ -152,18 +152,22 @@ public class ViewCreator {
                                 if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY ||
                                         componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY ||
                                         componentType == AppCMSUIKeyType.PAGE_CAROUSEL_VIEW_KEY) {
-                                    pageView.updateDataList(moduleAPI.getContentData(),
-                                            moduleAPI.getId() + component.getKey());
-                                    if (moduleAPI.getContentData() != null &&
-                                            moduleAPI.getContentData().size() > 0) {
-                                        view.setVisibility(View.VISIBLE);
-                                        moduleView.setVisibility(View.VISIBLE);
-                                    } else {
-                                        if (view != null) {
-                                            view.setVisibility(View.GONE);
+
+                                    AppCMSUIKeyType moduleType = jsonValueKeyMap.get(module.getView());
+                                    if (moduleType != AppCMSUIKeyType.PAGE_SUBSCRIPTION_IMAGEROW_KEY) {
+                                        pageView.updateDataList(moduleAPI.getContentData(),
+                                                moduleAPI.getId() + component.getKey());
+                                        if (moduleAPI.getContentData() != null &&
+                                                moduleAPI.getContentData().size() > 0) {
+                                            view.setVisibility(View.VISIBLE);
+                                            moduleView.setVisibility(View.VISIBLE);
+                                        } else {
+                                            if (view != null) {
+                                                view.setVisibility(View.GONE);
+                                            }
+                                            moduleView.setVisibility(View.GONE);
+                                            shouldHideModule = true;
                                         }
-                                        moduleView.setVisibility(View.GONE);
-                                        shouldHideModule = true;
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
                                     if (appCMSPresenter.isUserLoggedIn(context)) {
