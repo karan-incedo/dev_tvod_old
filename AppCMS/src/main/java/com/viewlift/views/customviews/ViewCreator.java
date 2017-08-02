@@ -1607,6 +1607,11 @@ public class ViewCreator {
                     case PAGE_DOWNLOAD_QUALITY_CONTINUE_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.download_quality_continue_button);
                         break;
+
+                    case PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY:
+                        componentViewResult.componentView.setId(R.id.download_quality_cancel_button);
+                        break;
+
                     default:
                         componentViewResult.componentView.setOnClickListener(v -> {
                             String[] extraData = new String[1];
@@ -2141,9 +2146,9 @@ public class ViewCreator {
                         .view(componentViewResult.componentView)
                         .build());
 
-                if(!BaseView.isTablet(context)
+                if (!BaseView.isTablet(context)
                         && jsonValueKeyMap.get(moduleAPI.getModuleType())
-                        == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY){
+                        == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY) {
                     componentViewResult.componentView.setVisibility(View.GONE);
                 }
                 break;
