@@ -708,7 +708,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             int i = 0;
             while ((i < distanceFromStackTop &&
                     shouldPopStack()) ||
-                    (appCMSBinder.shouldSendCloseAction() && appCMSBinderStack.size() > 1)) {
+                    (appCMSBinder.shouldSendCloseAction() &&
+                            appCMSBinderStack.size() > 1 &&
+                            i < appCMSBinderStack.size())) {
                 Log.d(TAG, "Popping stack to getList to page item");
                 try {
                     getSupportFragmentManager().popBackStack();
