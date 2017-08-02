@@ -179,6 +179,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         adapterData = null;
         notifyDataSetChanged();
         adapterData = contentData;
+
+        sortPlans();
+
         notifyDataSetChanged();
         listView.setAdapter(this);
         listView.invalidate();

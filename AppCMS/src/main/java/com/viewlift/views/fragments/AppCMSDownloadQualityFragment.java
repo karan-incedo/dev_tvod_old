@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.google.gson.Gson;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.Mpeg;
@@ -40,6 +39,18 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRad
     private PageView pageView;
     private String downloadQuality;
 
+    public AppCMSDownloadQualityFragment() {
+        // Required empty public constructor
+    }
+
+    public static AppCMSDownloadQualityFragment newInstance(Context context, AppCMSDownloadQualityBinder binder) {
+        AppCMSDownloadQualityFragment fragment = new AppCMSDownloadQualityFragment();
+        Bundle args = new Bundle();
+        args.putBinder(context.getString(R.string.app_cms_download_setting_binder_key), binder);
+        //     args.putSerializable(context.getString(R.string.app_cms_download_setting_listener_key), onDismiss);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -57,7 +68,6 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRad
         } catch (ClassCastException e) {
             Log.e(TAG, "Could not attach fragment: " + e.toString());
         }
-
     }
 
     @Override
@@ -65,11 +75,6 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRad
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
     }
-
-    public AppCMSDownloadQualityFragment() {
-        // Required empty public constructor
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -93,8 +98,8 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRad
             } else {
                 appCMSPresenter.unrestrictPortraitOnly();
             }
-
         }
+
         if (container != null) {
             container.removeAllViews();
         }
@@ -105,32 +110,25 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRad
             Button continueButton = (Button) pageView.findViewById(R.id.download_quality_continue_button);
             Button cancelButton = (Button) pageView.findViewById(R.id.download_quality_cancel_button);
 
-            cancelButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (isAdded() && isVisible()) {
-
-                        getActivity().finish();
-
-                    }
-                }
-            });
-            ((AppCMSDownloadQualityAdapter) listDownloadQuality.getAdapter()).setItemClickListener(this);
-            continueButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    if (appCMSPresenter.setUserDownloadQualityPref(getActivity(), downloadQuality)
-                            && binder.getContentDatum() != null && binder.getResultAction1() != null) {
-                        appCMSPresenter.editDownload(binder.getContentDatum(), binder.getResultAction1(), true);
-                    }
+            cancelButton.setOnClickListener(v -> {
+                if (isAdded() && isVisible()) {
                     getActivity().finish();
                 }
             });
 
+            ((AppCMSDownloadQualityAdapter) listDownloadQuality.getAdapter()).setItemClickListener(this);
+
+            continueButton.setOnClickListener(v -> {
+                if (appCMSPresenter.setUserDownloadQualityPref(getActivity(), downloadQuality)
+                        && binder.getContentDatum() != null && binder.getResultAction1() != null) {
+                    appCMSPresenter.editDownload(binder.getContentDatum(), binder.getResultAction1(), true);
+                } else {
+                    appCMSPresenter.setUserDownloadQualityPref(getActivity(), downloadQuality);
+                }
+                getActivity().finish();
+            });
 
             pageView.setBackgroundColor(Color.TRANSPARENT);
-
         }
         return pageView;
     }
@@ -145,7 +143,6 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRad
                 Log.e(TAG, "Could not attach fragment: " + e.toString());
             }
         }
-
     }
 
     @Override
@@ -157,10 +154,10 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRad
 
         if (pageView == null) {
             Log.e(TAG, "AppCMS page creation error");
-
         } else {
             pageView.notifyAdaptersOfUpdate();
         }
+
         if (appCMSPresenter != null) {
             appCMSPresenter.dismissOpenDialogs(null);
         }
@@ -179,7 +176,6 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRad
     @Override
     public void onPause() {
         super.onPause();
-
     }
 
     @Override
@@ -188,10 +184,10 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRad
         if (binder != null && appCMSViewComponent.viewCreator() != null) {
             appCMSPresenter.removeLruCacheItem(getContext(), binder.getPageId());
         }
+
         binder = null;
         pageView = null;
     }
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -205,17 +201,7 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRad
         handleOrientation(newConfig.orientation);
     }
 
-    public static AppCMSDownloadQualityFragment newInstance(Context context, AppCMSDownloadQualityBinder binder) {
-        AppCMSDownloadQualityFragment fragment = new AppCMSDownloadQualityFragment();
-        Bundle args = new Bundle();
-        args.putBinder(context.getString(R.string.app_cms_download_setting_binder_key), binder);
-        //     args.putSerializable(context.getString(R.string.app_cms_downloas_setting_listner_key), onDismiss);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     public AppCMSViewComponent buildAppCMSViewComponent() {
-
         return DaggerAppCMSViewComponent.builder()
                 .appCMSPageViewModule(new AppCMSPageViewModule(getContext(),
                         binder.getAppCMSPageUI(),
@@ -230,7 +216,6 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRad
     public void onDetach() {
         super.onDetach();
     }
-
 
     @Override
     public void onItemClick(Mpeg item) {
