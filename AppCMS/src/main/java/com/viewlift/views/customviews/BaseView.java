@@ -388,7 +388,7 @@ public abstract class BaseView extends FrameLayout {
                     break;
                 case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
                     if (isTablet(getContext())) {
-                        lm -= viewWidth * 1.2;
+                        lm -= viewWidth * 2.0;
                     }
                     break;
                 default:
