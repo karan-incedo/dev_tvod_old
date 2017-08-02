@@ -390,19 +390,19 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY && adapterData != null) {
 
             ContentDatum temp;
-            while (!adapterData.get(0).getName().equals("Annual Plan")) {
+            while (!adapterData.get(0).getName().contains("Annual")) {
                 temp = adapterData.get(0);
                 adapterData.remove(0);
                 adapterData.add(temp);
             }
 
-            while (!adapterData.get(1).getName().equals("Monthly Plan (Premium)")) {
+            while (!adapterData.get(1).getName().contains("Premium")) {
                 temp = adapterData.get(1);
                 adapterData.remove(1);
                 adapterData.add(temp);
             }
 
-            while (!adapterData.get(2).getName().equals("Monthly Plan (Basic)")) {
+            while (!adapterData.get(2).getName().contains("Basic")) {
                 temp = adapterData.get(2);
                 adapterData.remove(2);
                 adapterData.add(temp);
