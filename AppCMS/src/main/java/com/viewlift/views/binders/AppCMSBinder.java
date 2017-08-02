@@ -30,7 +30,7 @@ public class AppCMSBinder extends Binder {
     private final boolean fullScreenEnabled;
     private final boolean navbarPresent;
     private final boolean userLoggedIn;
-    private final boolean sendCloseAction;
+    private boolean sendCloseAction;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private Uri searchQuery;
 
@@ -142,5 +142,9 @@ public class AppCMSBinder extends Binder {
 
     public void updateAppCMSPageAPI(AppCMSPageAPI appCMSPageAPI) {
         this.appCMSPageAPI = appCMSPageAPI;
+    }
+
+    public void unsetSendCloseAction() {
+        sendCloseAction = false;
     }
 }

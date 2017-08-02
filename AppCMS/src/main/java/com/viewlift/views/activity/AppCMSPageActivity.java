@@ -43,8 +43,6 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
-import com.viewlift.models.data.appcms.api.ContentDatum;
-import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
@@ -399,7 +397,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } else if (resultCode == RESULT_CANCELED) {
             if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
                 appCMSPresenter.setActiveSubscriptionSku(this, null);
-                handleBack(true, true, false);
+                handleBack(true, true, false, true);
             }
         }
     }
@@ -418,7 +416,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             } catch (IllegalStateException e) {
                 Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
             }
-            handleBack(true, false, false);
+            handleBack(true, false, false, true);
         }
         if (appCMSBinderStack.size() > 0) {
             handleLaunchPageAction(appCMSBinderMap.get(appCMSBinderStack.peek()));
@@ -465,10 +463,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
     }
 
-    private void handleBack(boolean popBinderStack, boolean closeActionPage, boolean recurse) {
+    private void handleBack(boolean popBinderStack,
+                            boolean closeActionPage,
+                            boolean recurse,
+                            boolean popActionStack) {
         if (popBinderStack && appCMSBinderStack.size() > 0) {
             appCMSBinderStack.pop();
-            appCMSPresenter.popActionInternalEvents();
+            if (popActionStack) {
+                appCMSPresenter.popActionInternalEvents();
+            }
         }
         if (appCMSBinderStack.size() > 0) {
             updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
@@ -485,7 +488,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
             if (recurse) {
                 Log.d(TAG, "Handling back - recursive op");
-                handleBack(popBinderStack, closeActionPage && appCMSBinderStack.size() > 0, recurse);
+                handleBack(popBinderStack,
+                        closeActionPage && appCMSBinderStack.size() > 0,
+                        recurse,
+                        popActionStack);
             }
         }
     }
@@ -569,7 +575,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 true,
                 false,
                 true,
-                true,
+                false,
                 null)) {
             Log.e(TAG, "Could not navigate to page with Title: " +
                     pageTitle +
@@ -650,7 +656,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
         int lastBackstackEntry = getSupportFragmentManager().getBackStackEntryCount();
-        if (lastBackstackEntry > 0 &&
+        if (!appCMSBinder.shouldSendCloseAction() &&
+                lastBackstackEntry > 0 &&
                 (appCMSBinder.getPageId() + BaseView.isLandscape(this))
                         .equals(getSupportFragmentManager()
                         .getBackStackEntryAt(lastBackstackEntry - 1)
@@ -671,21 +678,29 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
             Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
             int i = 0;
-            while (i < distanceFromStackTop && shouldPopStack()) {
+            while ((i < distanceFromStackTop &&
+                    shouldPopStack()) ||
+                    (appCMSBinder.shouldSendCloseAction() && appCMSBinderStack.size() > 0)) {
                 Log.d(TAG, "Popping stack to getList to page item");
                 try {
                     getSupportFragmentManager().popBackStack();
                 } catch (IllegalStateException e) {
                     Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                 }
-                handleBack(true, false, false);
+                handleBack(true,
+                        false,
+                        false,
+                        !appCMSBinder.shouldSendCloseAction());
                 i++;
             }
 
-            if (distanceFromStackTop < 0) {
+            if (distanceFromStackTop < 0 ||
+                    appCMSBinder.shouldSendCloseAction()) {
                 appCMSBinderStack.push(appCMSBinder.getPageId());
                 appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
             }
+
+            appCMSBinder.unsetSendCloseAction();
 
             updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
 
@@ -911,20 +926,28 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void handleCloseAction() {
         Log.d(TAG, "Received Presenter Close Action: fragment count = "
                 + getSupportFragmentManager().getBackStackEntryCount());
-        if (appCMSBinderStack.size() > 1) {
+        if (appCMSBinderStack.size() > 0) {
             try {
                 getSupportFragmentManager().popBackStack();
             } catch (IllegalStateException e) {
                 Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
             }
-            handleBack(true, false, true);
-            if (appCMSBinderStack.size() > 0) {
-                AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                handleBack(true, appCMSBinderStack.size() < 2, false);
-                appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
-                        + BaseView.isLandscape(this));
-                handleLaunchPageAction(appCMSBinder);
+
+            handleBack(true, false, true, true);
+
+            if (appCMSBinderStack.size() == 0) {
+                finishAffinity();
+                return;
             }
+
+            AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+            handleBack(false,
+                    appCMSBinderStack.size() < 2,
+                    false,
+                    true);
+            appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
+                    + BaseView.isLandscape(this));
+            handleLaunchPageAction(appCMSBinder);
             isActive = true;
         } else {
             isActive = false;

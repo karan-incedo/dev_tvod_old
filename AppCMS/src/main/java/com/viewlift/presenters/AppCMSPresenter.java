@@ -329,6 +329,7 @@ public class AppCMSPresenter {
     private LruCache<String, PageView> pageViewLruCache;
     private EntitlementPendingVideoData entitlementPendingVideoData;
     private List<SubscriptionPlan> subscriptionPlans;
+    private boolean navigateToHomeToRefresh;
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -2682,8 +2683,13 @@ public class AppCMSPresenter {
 
     public void sendRefreshPageAction() {
         if (currentActivity != null) {
-            Intent refreshPageIntent = new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION);
-            currentActivity.sendBroadcast(refreshPageIntent);
+            if (navigateToHomeToRefresh) {
+                navigateToHomePage();
+                navigateToHomeToRefresh = false;
+            } else {
+                Intent refreshPageIntent = new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION);
+                currentActivity.sendBroadcast(refreshPageIntent);
+            }
         }
     }
 
@@ -3235,30 +3241,8 @@ public class AppCMSPresenter {
                 Auth.GoogleSignInApi.signOut(googleApiClient);
             }
 
-            if (jsonValueKeyMap.get(appCMSMain.getServiceType())
-                    == AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE && !isUserLoggedIn(currentActivity)) {
-                launchType = LaunchType.LOGIN;
-
-                if (splashPage != null) {
-                    navigateToPage(splashPage.getPageId(),
-                            splashPage.getPageName(),
-                            splashPage.getPageUI(),
-                            false,
-                            false,
-                            true,
-                            false,
-                            true,
-                            deeplinkSearchQuery);
-                    dismissOpenDialogs(null);
-                }
-            } else {
-                launchType = LaunchType.LOGIN_AND_SIGNUP;
-
-                if (homePage != null) {
-                    navigateToHomePage();
-                    dismissOpenDialogs(null);
-                }
-            }
+            navigateToHomeToRefresh = true;
+            launchNavigationPage(null, null);
 
             CastHelper.getInstance(currentActivity.getApplicationContext()).castingLogout();
         }
