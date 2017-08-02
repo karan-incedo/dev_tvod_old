@@ -1271,8 +1271,7 @@ public class ViewCreator {
                 } else if (appCMSPresenter.isActionGoogle(component.getAction())) {
                     applyBorderToComponent(context, componentViewResult.componentView, component,
                             ContextCompat.getColor(context, R.color.googleRed));
-                } else if ((componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY ||
-                        componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY)
+                } else if ((componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY)
                         && component.getBorderWidth() != 0) {
                     applyBorderToComponent(
                             context,
@@ -1602,28 +1601,6 @@ public class ViewCreator {
                     case PAGE_DOWNLOAD_QUALITY_CONTINUE_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.download_quality_continue_button);
                         break;
-
-                    case PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY:
-                        componentViewResult.componentView.setId(R.id.download_quality_cancel_button);
-                        /*componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (!appCMSPresenter.launchButtonSelectedAction(null,
-                                        component.getAction(),
-                                        null,
-                                        null,
-                                        null,
-                                        false,
-                                        0,
-                                        null)) {
-                                    Log.e(TAG, "Could not launch action: " +
-                                            " action: " +
-                                            component.getAction());
-                                }
-                            }
-                        });*/
-                        break;
-
                     default:
                         componentViewResult.componentView.setOnClickListener(v -> {
                             String[] extraData = new String[1];
@@ -2157,6 +2134,12 @@ public class ViewCreator {
                         .id(moduleAPI.getId() + component.getKey())
                         .view(componentViewResult.componentView)
                         .build());
+
+                if(!BaseView.isTablet(context)
+                        && jsonValueKeyMap.get(moduleAPI.getModuleType())
+                        == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY){
+                    componentViewResult.componentView.setVisibility(View.GONE);
+                }
                 break;
 
             case PAGE_TEXTFIELD_KEY:

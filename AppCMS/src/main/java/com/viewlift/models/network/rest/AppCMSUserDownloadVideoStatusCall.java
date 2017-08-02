@@ -72,6 +72,8 @@ public class AppCMSUserDownloadVideoStatusCall {
                         appCMSPresenter.getRealmController().updateDownloadInfo(videoId,
                                 uriVideo,
                                 appCMSPresenter.downloadedMediaLocalURI(downloadVideoRealm.getVideoThumbId_DM()),
+                                appCMSPresenter.downloadedMediaLocalURI(downloadVideoRealm.getPosterThumbId_DM()),
+                                appCMSPresenter.downloadedMediaLocalURI(downloadVideoRealm.getSubtitlesId_DM()),
                                 totalSize,
                                 DownloadStatus.STATUS_SUCCESSFUL);
 
@@ -79,6 +81,8 @@ public class AppCMSUserDownloadVideoStatusCall {
                         statusResponse.setVideoSize(totalSize);
                         statusResponse.setThumbUri(appCMSPresenter.downloadedMediaLocalURI(downloadVideoRealm.getVideoThumbId_DM()));
                         statusResponse.setVideoUri(appCMSPresenter.downloadedMediaLocalURI(downloadVideoRealm.getVideoId_DM()));
+                        statusResponse.setPosterUri(appCMSPresenter.downloadedMediaLocalURI(downloadVideoRealm.getPosterThumbId_DM()));
+                        statusResponse.setSubtitlesUri(appCMSPresenter.downloadedMediaLocalURI(downloadVideoRealm.getSubtitlesId_DM()));
 
                         break;
                     default:
