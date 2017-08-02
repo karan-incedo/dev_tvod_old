@@ -19,8 +19,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.SizeReadyCallback;
 import com.bumptech.glide.request.target.Target;
 import com.viewlift.AppCMSApplication;
@@ -149,55 +151,11 @@ public class AutoplayFragment extends Fragment {
                     .load(imageUrl)
 //                        .resize(pageView.getWidth(), pageView.getHeight())
 //                        .centerCrop()
-                    .into(new Target() {
+                    .into(new SimpleTarget<GlideDrawable>() {
                         @Override
-                        public void onStart() {
-
-                        }
-
-                        @Override
-                        public void onStop() {
-
-                        }
-
-                        @Override
-                        public void onDestroy() {
-
-                        }
-
-                        @Override
-                        public void onLoadStarted(Drawable placeholder) {
-                            pageView.setBackground(placeholder);
-                        }
-
-                        @Override
-                        public void onLoadFailed(Exception e, Drawable errorDrawable) {
-
-                        }
-
-                        @Override
-                        public void onResourceReady(Object resource, GlideAnimation glideAnimation) {
-
-                        }
-
-                        @Override
-                        public void onLoadCleared(Drawable placeholder) {
-
-                        }
-
-                        @Override
-                        public void getSize(SizeReadyCallback cb) {
-
-                        }
-
-                        @Override
-                        public void setRequest(Request request) {
-
-                        }
-
-                        @Override
-                        public Request getRequest() {
-                            return null;
+                        public void onResourceReady(GlideDrawable resource,
+                                                    GlideAnimation<? super GlideDrawable> glideAnimation) {
+                            pageView.setBackground(resource);
                         }
                     });
         }

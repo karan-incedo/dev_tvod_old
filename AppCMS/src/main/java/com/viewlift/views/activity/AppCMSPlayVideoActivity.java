@@ -180,7 +180,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
-        if (!appCMSPresenter.isNetworkConnected()) {
+        /*This is to enable offline video playback even when Internet is not available*/
+        if (binder != null && !binder.isOffline() &&!appCMSPresenter.isNetworkConnected()) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                     null,
                     false,
@@ -217,10 +218,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 appCMSPresenter.openAutoPlayScreen(binder);
             }
         } else {
-            // TODO: 7/28/2017 Open autoplay screen for offline videos
-            /*if (binder.getRelateVideoIds() != null) {
+            if (binder.getRelateVideoIds() != null
+                    && currentlyPlayingIndex != relateVideoIds.size() - 1) {
                 appCMSPresenter.openAutoPlayScreen(binder);
-            }*/
+            }
         }
         closePlayer();
     }

@@ -66,7 +66,9 @@ import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenRespo
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.ContentDetails;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Module;
@@ -234,6 +236,7 @@ public class AppCMSPresenter {
     private static final String MEDIA_SURFIX_MP4 = ".mp4";
     private static final String MEDIA_SURFIX_PNG = ".png";
     private static final String MEDIA_SURFIX_JPG = ".jpg";
+    private static final String MEDIA_SUFFIX_SRT = ".srt";
     private static final int RC_GOOGLE_SIGN_IN = 1001;
     private static int PAGE_LRU_CACHE_SIZE = 10;
     private final Gson gson;
@@ -588,12 +591,20 @@ public class AppCMSPresenter {
                                               final boolean closeLauncher,
                                               int currentlyPlayingIndex,
                                               List<String> relateVideoIds) {
+        final AppCMSActionType actionType = actionToActionTypeMap.get(action);
         boolean result = false;
+        boolean isVideoOffline = false;
+        try {
+            isVideoOffline = Boolean.parseBoolean(extraData[3]);
+        } catch (Exception e) {
+            Log.e(TAG, e.getLocalizedMessage());
+        }
         Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
-        if (!isNetworkConnected()) {
+
+        /*This is to enable offline video playback even if Internet is not available*/
+        if (!(actionType == AppCMSActionType.PLAY_VIDEO_PAGE && isVideoOffline) && !isNetworkConnected()) {
             showDialog(DialogType.NETWORK, null, false, null);
         } else if (currentActivity != null && !loadingPage) {
-            AppCMSActionType actionType = actionToActionTypeMap.get(action);
             if (actionType == null) {
                 Log.e(TAG, "Action " + action + " not found!");
                 return false;
@@ -673,13 +684,6 @@ public class AppCMSPresenter {
                             .getGeneral()
                             .getBackgroundColor();
 
-
-                    boolean isOffline = false;
-                    try {
-                        isOffline = Boolean.parseBoolean(extraData[3]);
-                    } catch (Exception e) {
-                        Log.e(TAG, e.getLocalizedMessage());
-                    }
                     AppCMSVideoPageBinder appCMSVideoPageBinder =
                             getAppCMSVideoPageBinder(currentActivity,
                                     null,
@@ -700,7 +704,7 @@ public class AppCMSPresenter {
                                     isTrailer,
                                     relateVideoIds,
                                     currentlyPlayingIndex,
-                                    isOffline);
+                                    isVideoOffline);
                     if (closeLauncher) {
                         sendCloseOthersAction(null, true);
                     }
@@ -1319,6 +1323,8 @@ public class AppCMSPresenter {
             return;
         downloadManager.remove(downloadVideoRealm.getVideoId_DM());
         downloadManager.remove(downloadVideoRealm.getVideoThumbId_DM());
+        downloadManager.remove(downloadVideoRealm.getPosterThumbId_DM());
+        downloadManager.remove(downloadVideoRealm.getSubtitlesId_DM());
         realmController.removeFromDB(downloadVideoRealm);
     }
 
@@ -1414,8 +1420,16 @@ public class AppCMSPresenter {
                              final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
 
         long enqueueId = 0L;
-        long thumbEnqueueId = downloadVideoImage(contentDatum.getGist().getVideoImageUrl(),
-                contentDatum.getGist().getId());
+        long thumbEnqueueId = downloadVideoImage(contentDatum.getGist().getVideoImageUrl(), contentDatum.getGist().getId());
+        long posterEnqueueId = downloadPosterImage(contentDatum.getGist().getPosterImageUrl(), contentDatum.getGist().getId());
+        long ccEnqueueId = 0L;
+        if (contentDatum.getContentDetails() != null &&
+                contentDatum.getContentDetails().getClosedCaptions() != null &&
+                contentDatum.getContentDetails().getClosedCaptions().size() > 0 &&
+                contentDatum.getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
+            ccEnqueueId = downloadVideoSubtitles(contentDatum.getContentDetails()
+                    .getClosedCaptions().get(0).getUrl(), contentDatum.getGist().getId());
+        }
 
         try {
             String downloadURL = "";
@@ -1477,7 +1491,13 @@ public class AppCMSPresenter {
              * Inserting data in realm data object
              */
 
-            createLocalEntry(enqueueId, thumbEnqueueId, contentDatum, downloadURL);
+            createLocalEntry(
+                    enqueueId,
+                    thumbEnqueueId,
+                    posterEnqueueId,
+                    ccEnqueueId,
+                    contentDatum,
+                    downloadURL);
 
             appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), this,
                     resultAction1, getLoggedInUser(currentActivity));
@@ -1491,16 +1511,27 @@ public class AppCMSPresenter {
         }
     }
 
-    public void createLocalEntry(long enqueueId, long thumbEnqueueId, ContentDatum contentDatum, String downloadURL) {
+    public void createLocalEntry(long enqueueId,
+                                 long thumbEnqueueId,
+                                 long posterEnqueueId,
+                                 long ccEnqueueId,
+                                 ContentDatum contentDatum,
+                                 String downloadURL) {
         DownloadVideoRealm downloadVideoRealm = new DownloadVideoRealm();
         downloadVideoRealm.setVideoThumbId_DM(thumbEnqueueId);
+        downloadVideoRealm.setPosterThumbId_DM(posterEnqueueId);
         downloadVideoRealm.setVideoId_DM(enqueueId);
 
         downloadVideoRealm.setVideoId(contentDatum.getGist().getId());
         downloadVideoRealm.setVideoTitle(contentDatum.getGist().getTitle());
         downloadVideoRealm.setVideoDescription(contentDatum.getGist().getDescription());
         downloadVideoRealm.setLocalURI(downloadedMediaLocalURI(enqueueId));
-        downloadVideoRealm.setPosterImageUrl(getPngPosterPath(contentDatum.getGist().getId()));
+        downloadVideoRealm.setVideoImageUrl(getPngPosterPath(contentDatum.getGist().getId()));
+        downloadVideoRealm.setPosterFileURL(getPngPosterPath(contentDatum.getGist().getId()));
+        if (ccEnqueueId != 0) {
+            downloadVideoRealm.setSubtitlesId_DM(ccEnqueueId);
+            downloadVideoRealm.setSubtitlesFileURL(getPngPosterPath(contentDatum.getGist().getId()));
+        }
         downloadVideoRealm.setVideoFileURL(downloadedMediaLocalURI(thumbEnqueueId));
         downloadVideoRealm.setVideoWebURL(downloadURL);
         downloadVideoRealm.setDownloadDate(System.currentTimeMillis());
@@ -1544,6 +1575,60 @@ public class AppCMSPresenter {
                     .setDescription(filename)
                     .setAllowedOverRoaming(false)
                     .setDestinationInExternalFilesDir(currentActivity, "thumbs", filename + MEDIA_SURFIX_JPG)
+                    .setVisibleInDownloadsUi(false)
+                    .setShowRunningNotification(true);
+            enqueueId = downloadManager.enqueue(downloadRequest);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return enqueueId;
+    }
+
+    /**
+     * Created separate method for initiating downloading images as I was facing trouble in
+     * initiating tow downloads in same method
+     * <p>
+     * By this way our Image will store in app dir under "thumbs" folder and it will not be visible
+     * to the other apps
+     *
+     * @param downloadURL
+     * @param filename
+     */
+    public long downloadPosterImage(String downloadURL, String filename) {
+
+        long enqueueId = 0L;
+        try {
+
+            DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL))
+                    .setTitle(filename)
+                    .setDescription(filename)
+                    .setAllowedOverRoaming(false)
+                    .setDestinationInExternalFilesDir(currentActivity, "posters", filename + MEDIA_SURFIX_JPG)
+                    .setVisibleInDownloadsUi(false)
+                    .setShowRunningNotification(true);
+            enqueueId = downloadManager.enqueue(downloadRequest);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return enqueueId;
+    }
+
+    public long downloadVideoSubtitles(String downloadURL, String filename) {
+
+        long enqueueId = 0L;
+        try {
+
+            DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL))
+                    .setTitle(filename)
+                    .setDescription(filename)
+                    .setAllowedOverRoaming(false)
+                    .setDestinationInExternalFilesDir(currentActivity, "closedCaptions", filename + MEDIA_SUFFIX_SRT)
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
             enqueueId = downloadManager.enqueue(downloadRequest);
@@ -1764,23 +1849,7 @@ public class AppCMSPresenter {
 
             List<ContentDatum> contentData = new ArrayList<>();
             for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloadesByUserId(getLoggedInUser(currentActivity))) {
-                ContentDatum data = new ContentDatum();
-                Gist gist = new Gist();
-                gist.setId(downloadVideoRealm.getVideoId());
-                gist.setTitle(downloadVideoRealm.getVideoTitle());
-                gist.setDescription(downloadVideoRealm.getVideoDescription());
-                gist.setPosterImageUrl(downloadVideoRealm.getVideoFileURL());
-                gist.setVideoImageUrl(downloadVideoRealm.getVideoFileURL());
-
-                gist.setPermalink(downloadVideoRealm.getPermalink());
-                gist.setDownloadStatus(downloadVideoRealm.getDownloadStatus());
-                gist.setRuntime(downloadVideoRealm.getVideoDuration());
-
-
-                data.setGist(gist);
-                data.setShowQueue(true);
-                data.setUserId(getLoggedInUser(currentActivity));
-                data.setAddedDate(downloadVideoRealm.getDownloadDate());
+                ContentDatum data = createContentDatum(downloadVideoRealm);
 
                 contentData.add(data);
             }
@@ -1839,10 +1908,19 @@ public class AppCMSPresenter {
         gist.setId(downloadVideoRealm.getVideoId());
         gist.setTitle(downloadVideoRealm.getVideoTitle());
         gist.setDescription(downloadVideoRealm.getVideoDescription());
-        gist.setPosterImageUrl(downloadVideoRealm.getVideoFileURL());
+        gist.setPosterImageUrl(downloadVideoRealm.getPosterFileURL());
         gist.setVideoImageUrl(downloadVideoRealm.getVideoFileURL());
         gist.setLocalFileUrl(downloadVideoRealm.getLocalURI());
 
+        if (!TextUtils.isEmpty(downloadVideoRealm.getSubtitlesFileURL())) {
+            ClosedCaptions closedCaption = new ClosedCaptions();
+            closedCaption.setUrl(downloadVideoRealm.getSubtitlesFileURL());
+            List<ClosedCaptions> closedCaptions = new ArrayList<>();
+            closedCaptions.add(closedCaption);
+            ContentDetails contentDetails = new ContentDetails();
+            contentDetails.setClosedCaptions(closedCaptions);
+            data.setContentDetails(contentDetails);
+        }
         gist.setPermalink(downloadVideoRealm.getPermalink());
         gist.setDownloadStatus(downloadVideoRealm.getDownloadStatus());
         gist.setRuntime(downloadVideoRealm.getVideoDuration());
@@ -1981,36 +2059,39 @@ public class AppCMSPresenter {
 
         if (currentActivity != null) {
             final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
-            GetAppCMSVideoDetailAsyncTask.Params params =
-                    new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url).build();
+
             if (!binder.isOffline()) {
+                GetAppCMSVideoDetailAsyncTask.Params params =
+                        new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url).build();
                 new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
-                        appCMSVideoDetail -> {
-                            if (appCMSVideoDetail != null) {
-                                binder.setContentData(appCMSVideoDetail.getRecords().get(0));
-                                AppCMSPageAPI pageAPI = null;
-                                for (ModuleList moduleList :
-                                        appCMSPageUI.getModuleList()) {
-                                    if (moduleList.getType().equals(currentActivity
-                                            .getString(R.string.app_cms_page_autoplay_module_key))) {
-                                        pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
-                                                moduleList.getType());
-                                        break;
+                        new Action1<AppCMSVideoDetail>() {
+                            @Override
+                            public void call(AppCMSVideoDetail appCMSVideoDetail) {
+                                if (appCMSVideoDetail != null) {
+                                    binder.setContentData(appCMSVideoDetail.getRecords().get(0));
+                                    AppCMSPageAPI pageAPI = null;
+                                    for (ModuleList moduleList :
+                                            appCMSPageUI.getModuleList()) {
+                                        if (moduleList.getType().equals(currentActivity.getString(R.string.app_cms_page_autoplay_module_key))) {
+                                            pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
+                                                    moduleList.getType());
+                                            break;
+                                        }
                                     }
-                                }
-                                if (pageAPI != null) {
-                                    launchAutoplayActivity(currentActivity,
-                                            appCMSPageUI,
-                                            pageAPI,
-                                            pageId,
-                                            pageTitle,
-                                            pageIdToPageNameMap.get(pageId),
-                                            loadFromFile,
-                                            false,
-                                            true,
-                                            false,
-                                            false,
-                                            binder);
+                                    if (pageAPI != null) {
+                                        launchAutoplayActivity(currentActivity,
+                                                appCMSPageUI,
+                                                pageAPI,
+                                                pageId,
+                                                pageTitle,
+                                                pageIdToPageNameMap.get(pageId),
+                                                loadFromFile,
+                                                false,
+                                                true,
+                                                false,
+                                                false,
+                                                binder);
+                                    }
                                 }
                             }
                         }).execute(params);
@@ -3568,7 +3649,10 @@ public class AppCMSPresenter {
                     title = currentActivity.getString(R.string.app_cms_subscription_title);
                     message = optionalMessage;
                     break;
-
+                case DOWNLOAD_INCOMPLETE:
+                    title = currentActivity.getString(R.string.app_cms_download_incomplete_error_title);
+                    message = currentActivity.getString(R.string.app_cms_download_incomplete_error_message);
+                    break;
                 default:
                     title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
                     message = currentActivity.getString(R.string.app_cms_network_connectivity_error_message);
@@ -4915,10 +4999,41 @@ public class AppCMSPresenter {
                               int currentlyPlayingIndex,
                               long watchedTime) {
         sendCloseOthersAction(null, true);
-        launchVideoPlayer(binder.getContentData(),
-                currentlyPlayingIndex,
-                binder.getRelateVideoIds(),
-                watchedTime / 1000L);
+        if (!binder.isOffline()) {
+            launchVideoPlayer(binder.getContentData(),
+                    currentlyPlayingIndex,
+                    binder.getRelateVideoIds(),
+                    watchedTime / 1000L);
+        } else {
+            String permalink = binder.getContentData().getGist().getPermalink();
+            String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
+            String title = binder.getContentData().getGist().getTitle();
+            String hlsUrl = binder.getContentData().getGist().getLocalFileUrl();
+            String[] extraData = new String[4];
+            extraData[0] = permalink;
+            extraData[1] = hlsUrl;
+            extraData[2] = binder.getContentData().getGist().getId();
+            extraData[3] = "true"; // to know that this is an offline video
+            Log.d(TAG, "Launching " + permalink + ": " + action);
+
+            if (!launchButtonSelectedAction(
+                    permalink,
+                    action,
+                    title,
+                    extraData,
+                    binder.getContentData(),
+                    false,
+                    binder.getCurrentPlayingVideoIndex(),
+                    binder.getRelateVideoIds())) {
+                Log.e(TAG, "Could not launch action: " +
+                        " permalink: " +
+                        permalink +
+                        " action: " +
+                        action +
+                        " hlsUrl: " +
+                        hlsUrl);
+            }
+        }
     }
 
     public Map<String, AppCMSUIKeyType> getJsonValueKeyMap() {
@@ -4946,7 +5061,10 @@ public class AppCMSPresenter {
             }
         } else {
             ContentDatum contentDatum =
-                    createContentDatum(realmController.getDownloadById(binder.getRelateVideoIds().get(0)));
+                    createContentDatum(realmController.getDownloadById(
+                            binder.getRelateVideoIds().get(
+                                    binder.getCurrentPlayingVideoIndex() + 1)));
+            binder.setCurrentPlayingVideoIndex(binder.getCurrentPlayingVideoIndex() + 1);
             binder.setContentData(contentDatum);
         }
         String pageId = getAutoplayPageId();
@@ -5171,7 +5289,8 @@ public class AppCMSPresenter {
         SUBSCRIBE,
         SUBSCRIPTION_REQUIRED,
         LOGIN_AND_SUBSCRIPTION_REQUIRED,
-        EXISTING_SUBSCRIPTION
+        EXISTING_SUBSCRIPTION,
+        DOWNLOAD_INCOMPLETE
     }
 
     private static class BeaconRunnable implements Runnable {

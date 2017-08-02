@@ -204,6 +204,10 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         if (!TextUtils.isEmpty(hlsUrl)) {
             videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference(getContext()));
+            videoPlayerView.getPlayerView().getSubtitleView()
+                    .setVisibility(appCMSPresenter.getClosedCaptionPreference(getContext())
+                    ? View.VISIBLE
+                    : View.GONE);
             videoPlayerView.setUri(Uri.parse(hlsUrl),
                     !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
             Log.i(TAG, "Playing video: " + hlsUrl);
