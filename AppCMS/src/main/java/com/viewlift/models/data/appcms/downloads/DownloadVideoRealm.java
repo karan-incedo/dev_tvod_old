@@ -13,6 +13,8 @@ public class DownloadVideoRealm extends RealmObject {
     private String videoId;
     private long videoId_DM;
     private long videoThumbId_DM;
+    private long posterThumbId_DM;
+    private long subtitlesId_DM;
     private String videoTitle;
     private String videoDescription;
     private String downloadStatus;
@@ -31,7 +33,9 @@ public class DownloadVideoRealm extends RealmObject {
     private String showDescription;
     private String videoNumber;
     private String permalink;
-    private String posterImageUrl;
+    private String videoImageUrl;
+    private String posterFileURL;
+    private String subtitlesFileURL;
     private String userId;
 
 
@@ -57,6 +61,22 @@ public class DownloadVideoRealm extends RealmObject {
 
     public void setVideoThumbId_DM(long videoThumbId_DM) {
         this.videoThumbId_DM = videoThumbId_DM;
+    }
+
+    public long getPosterThumbId_DM() {
+        return posterThumbId_DM;
+    }
+
+    public void setPosterThumbId_DM(long posterThumbId_DM) {
+        this.posterThumbId_DM = posterThumbId_DM;
+    }
+
+    public long getSubtitlesId_DM() {
+        return subtitlesId_DM;
+    }
+
+    public void setSubtitlesId_DM(long subtitlesId_DM) {
+        this.subtitlesId_DM = subtitlesId_DM;
     }
 
     public String getVideoTitle() {
@@ -97,6 +117,22 @@ public class DownloadVideoRealm extends RealmObject {
 
     public void setVideoFileURL(String videoFileURL) {
         this.videoFileURL = videoFileURL;
+    }
+
+    public String getPosterFileURL() {
+        return posterFileURL;
+    }
+
+    public void setPosterFileURL(String posterFileURL) {
+        this.posterFileURL = posterFileURL;
+    }
+
+    public String getSubtitlesFileURL() {
+        return subtitlesFileURL;
+    }
+
+    public void setSubtitlesFileURL(String subtitlesFileURL) {
+        this.subtitlesFileURL = subtitlesFileURL;
     }
 
     public String getLocalURI() {
@@ -203,12 +239,12 @@ public class DownloadVideoRealm extends RealmObject {
         this.permalink = permalink;
     }
 
-    public String getPosterImageUrl() {
-        return posterImageUrl;
+    public String getVideoImageUrl() {
+        return videoImageUrl;
     }
 
-    public void setPosterImageUrl(String posterImageUrl) {
-        this.posterImageUrl = posterImageUrl;
+    public void setVideoImageUrl(String videoImageUrl) {
+        this.videoImageUrl = videoImageUrl;
     }
 
     public String getUserId() {

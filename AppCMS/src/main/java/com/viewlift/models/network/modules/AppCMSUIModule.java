@@ -390,9 +390,6 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_timer_label_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_TIMER_LABEL_KEY);
 
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_download_quality_cancel_button_key),
-                AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY);
-
         jsonValueKeyMap.put(context.getString(R.string.app_cms_download_quality_continue_button_key),
                 AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CONTINUE_BUTTON_KEY);
 
@@ -455,6 +452,9 @@ public class AppCMSUIModule {
                 AppCMSActionType.SHARE);
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_close_key),
+                AppCMSActionType.CLOSE);
+
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_cancel_key),
                 AppCMSActionType.CLOSE);
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_login_key),

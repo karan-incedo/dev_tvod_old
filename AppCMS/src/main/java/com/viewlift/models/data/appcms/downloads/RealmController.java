@@ -135,7 +135,7 @@ public class RealmController {
         return realm.where(SubscriptionPlan.class).findAll();
     }
 
-    public void updateDownloadInfo(String videoId, String filmUrl, String thumbUrl, long totlsize, DownloadStatus status) {
+    public void updateDownloadInfo(String videoId, String filmUrl, String thumbUrl, String posterUrl, String subtitlesUrl, long totlsize, DownloadStatus status) {
         DownloadVideoRealm toEdit = realm.where(DownloadVideoRealm.class)
                 .equalTo("videoId", videoId).findFirst();
 
@@ -144,7 +144,9 @@ public class RealmController {
 
         toEdit.setVideoSize(totlsize);
         toEdit.setVideoFileURL(thumbUrl);
-        toEdit.setPosterImageUrl(thumbUrl);
+        toEdit.setVideoImageUrl(thumbUrl);
+        toEdit.setPosterFileURL(posterUrl);
+        toEdit.setSubtitlesFileURL(subtitlesUrl);
         toEdit.setLocalURI(filmUrl);
         toEdit.setDownloadStatus(status);
 
@@ -173,7 +175,7 @@ public class RealmController {
         toEdit.setVideoSize(totlsize);
         toEdit.setVideo_Downloaded_so_far(downloadedSoFar);
         toEdit.setVideoFileURL(thumbUrl);
-        toEdit.setPosterImageUrl(thumbUrl);
+        toEdit.setVideoImageUrl(thumbUrl);
         toEdit.setLocalURI(filmUrl);
         toEdit.setDownloadStatus(status);
 
