@@ -1180,7 +1180,7 @@ public class AppCMSPresenter {
 
                 Bundle buyIntentBundle;
                 if (subscribedSkus.size() > 0) {
-                    buyIntentBundle = inAppBillingService.getBuyIntentToReplaceSkus(3,
+                    buyIntentBundle = inAppBillingService.getBuyIntentToReplaceSkus(5,
                             currentActivity.getPackageName(),
                             subscribedSkus,
                             skuToPurchase,
