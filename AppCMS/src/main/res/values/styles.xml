@@ -8,6 +8,12 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="CustomShowcaseTheme" parent="ShowcaseView">
+        <item name="sv_showcaseColor">@color/colorAccent</item>
+        <item name="sv_buttonText">OK</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
     <style name="Theme.CastControllerTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="castExpandedControllerStyle">

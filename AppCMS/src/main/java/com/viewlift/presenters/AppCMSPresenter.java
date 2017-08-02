@@ -209,7 +209,11 @@ public class AppCMSPresenter {
     public static final String SEARCH_ACTION = "SEARCH_ACTION";
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
+    private static final String CASTING_OVERLAY_PREF_NAME = "cast_intro_pref";
+
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
+
+    private static final String CAST_SHARED_PREF_NAME = "cast_shown";
 
     private static final String USER_NAME_SHARED_PREF_NAME = "user_name_pref";
     private static final String USER_EMAIL_SHARED_PREF_NAME = "user_email_pref";
@@ -2924,6 +2928,33 @@ public class AppCMSPresenter {
         return null;
     }
 
+    public boolean setCastOverLay(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(CASTING_OVERLAY_PREF_NAME, 0);
+            return sharedPrefs.edit().putBoolean(CAST_SHARED_PREF_NAME, true).commit();
+        }
+        return false;
+    }
+
+    /**
+     * Get The Value of Cast Overlay is shown or not
+     * @param context
+     * @return
+     */
+    public boolean isCastOverLayShown(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(CASTING_OVERLAY_PREF_NAME, 0);
+            return sharedPrefs.getBoolean(CAST_SHARED_PREF_NAME, false);
+        }
+        return false;
+    }
+
+    /**
+     * Set The Value for the Cast Introductory Overlay
+     * @param context
+     * @param userId
+     * @return
+     */
     public boolean setLoggedInUser(Context context, String userId) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
