@@ -156,7 +156,7 @@ dependencies {
     compile "com.google.android.gms:play-services-analytics:$rootProject.ext.googlePlayServicesVersion"
     compile "com.google.android.gms:play-services-gcm:$rootProject.ext.googlePlayServicesVersion"
     compile "com.google.android.gms:play-services-auth:$rootProject.ext.googlePlayServicesVersion"
-    compile "jp.wasabeef:glide-transformations:$rootProject.ext.wasabeefVersion"
+    compile "jp.wasabeef:glide-transformations:$rootProject.ext.glideTransformationVersion"
     compile("com.crashlytics.sdk.android:crashlytics:$rootProject.ext.crashlyticsVersion") {
         transitive = true
     }
