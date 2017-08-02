@@ -35,6 +35,8 @@ android {
         versionCode 10
         versionName "1.0.20"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        renderscriptTargetApi 25
+        renderscriptSupportModeEnabled true
     }
     flavorDimensions "green"
     productFlavors {
@@ -154,6 +156,7 @@ dependencies {
     compile "com.google.android.gms:play-services-analytics:$rootProject.ext.googlePlayServicesVersion"
     compile "com.google.android.gms:play-services-gcm:$rootProject.ext.googlePlayServicesVersion"
     compile "com.google.android.gms:play-services-auth:$rootProject.ext.googlePlayServicesVersion"
+    compile "jp.wasabeef:glide-transformations:$rootProject.ext.wasabeefVersion"
     compile("com.crashlytics.sdk.android:crashlytics:$rootProject.ext.crashlyticsVersion") {
         transitive = true
     }

@@ -199,7 +199,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             holder.appCMSContinueWatchingPlayButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    click(contentDatum);
+                    play(contentDatum,
+                            holder.itemView.getContext(),
+                            getListOfUpcomingMovies(position));
                 }
             });
 

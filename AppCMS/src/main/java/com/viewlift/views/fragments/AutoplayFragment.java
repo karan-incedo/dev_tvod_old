@@ -3,10 +3,7 @@ package com.viewlift.views.fragments;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
@@ -20,12 +17,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.SizeReadyCallback;
-import com.bumptech.glide.request.target.Target;
 import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
@@ -34,7 +29,7 @@ import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.modules.AppCMSPageViewModule;
 
-import com.viewlift.R;
+import jp.wasabeef.glide.transformations.BlurTransformation;
 
 /**
  * This fragment is the manifestation of the autoplay screen which opens whenever a movie gets
@@ -111,7 +106,7 @@ public class AutoplayFragment extends Fragment {
                 ((ViewGroup) pageView.getParent()).removeAllViews();
             }
             if (!BaseView.isTablet(getContext())) {
-                appCMSPresenter .restrictPortraitOnly();
+                appCMSPresenter.restrictPortraitOnly();
             } else {
                 appCMSPresenter.unrestrictPortraitOnly();
             }
@@ -126,12 +121,9 @@ public class AutoplayFragment extends Fragment {
             Button playButton = (Button) pageView.findViewById(R.id.autoplay_play_button);
 
             if (playButton != null) {
-                playButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (isAdded() && isVisible()) {
-                            fragmentInteractionListener.onCountdownFinished();
-                        }
+                playButton.setOnClickListener(v -> {
+                    if (isAdded() && isVisible()) {
+                        fragmentInteractionListener.onCountdownFinished();
                     }
                 });
             }
@@ -141,20 +133,20 @@ public class AutoplayFragment extends Fragment {
                                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                                         .getBackgroundColor().replace("#", "#DD")));
             }
-            String imageUrl = "";
+            String imageUrl;
             if (BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext())) {
                 imageUrl = binder.getContentData().getGist().getVideoImageUrl();
             } else {
                 imageUrl = binder.getContentData().getGist().getPosterImageUrl();
             }
-            Glide.with(getContext())
-                    .load(imageUrl)
-//                        .resize(pageView.getWidth(), pageView.getHeight())
-//                        .centerCrop()
+
+            Glide.with(getContext()).load(imageUrl)
+                    .bitmapTransform(new BlurTransformation(getContext()))
                     .into(new SimpleTarget<GlideDrawable>() {
                         @Override
                         public void onResourceReady(GlideDrawable resource,
-                                                    GlideAnimation<? super GlideDrawable> glideAnimation) {
+                                                    GlideAnimation<? super GlideDrawable>
+                                                            glideAnimation) {
                             pageView.setBackground(resource);
                         }
                     });
