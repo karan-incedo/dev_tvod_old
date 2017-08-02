@@ -918,16 +918,18 @@ public class AppCMSPresenter {
 
     public void mergeData(AppCMSPageAPI fromAppCMSPageAPI, AppCMSPageAPI toAppCMSPageAPI) {
         for (Module module : fromAppCMSPageAPI.getModules()) {
-            Module updateModule = null;
+            Module updateToModule = null;
+            Module updateFromModule = null;
             for (Module module1 : toAppCMSPageAPI.getModules()) {
                 if (module.getId() != null && module1 != null &&
                         module.getId().equals(module1.getId())) {
-                    updateModule = module1;
+                    updateFromModule = module;
+                    updateToModule = module1;
                 }
             }
-            if (updateModule != null) {
-                for (ContentDatum toContentDatum : module.getContentData()) {
-                    for (ContentDatum fromContentDatum : fromAppCMSPageAPI.getModules().get(0).getContentData()) {
+            if (updateToModule != null) {
+                for (ContentDatum toContentDatum : updateToModule.getContentData()) {
+                    for (ContentDatum fromContentDatum : updateFromModule.getContentData()) {
                         if (toContentDatum.getGist().getDescription().equals(fromContentDatum.getGist().getDescription())) {
                             toContentDatum.getGist().setWatchedTime(fromContentDatum.getGist().getWatchedTime());
                             toContentDatum.getGist().setWatchedPercentage(fromContentDatum.getGist().getWatchedPercentage());
@@ -1179,7 +1181,7 @@ public class AppCMSPresenter {
                 ArrayList<String> subscribedSkus = activeSubs.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
 
                 Bundle buyIntentBundle;
-                if (subscribedSkus.size() > 0) {
+                if (subscribedSkus != null && subscribedSkus.size() > 0) {
                     buyIntentBundle = inAppBillingService.getBuyIntentToReplaceSkus(5,
                             currentActivity.getPackageName(),
                             subscribedSkus,
