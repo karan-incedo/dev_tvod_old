@@ -1356,7 +1356,7 @@ public class AppCMSPresenter {
         VideoAssets videoAssets = new VideoAssets();
         List<Mpeg> mpegs = new ArrayList<>();
 
-        String renditionValueArray[] = {"360p", "720p", "1080"};
+        String renditionValueArray[] = {"360p", "720p", "1080p"};
         for (String renditionValue : renditionValueArray) {
             Mpeg mpeg = new Mpeg();
             mpeg.setRenditionValue(renditionValue);
@@ -1434,7 +1434,7 @@ public class AppCMSPresenter {
         }
 
         try {
-            String downloadURL = "";
+            String downloadURL;
 
             int bitrate = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
 
@@ -1489,7 +1489,7 @@ public class AppCMSPresenter {
 
             enqueueId = downloadManager.enqueue(downloadRequest);
 
-            /**
+            /*
              * Inserting data in realm data object
              */
 
@@ -2939,6 +2939,7 @@ public class AppCMSPresenter {
 
     /**
      * Get The Value of Cast Overlay is shown or not
+     *
      * @param context
      * @return
      */
@@ -2952,6 +2953,7 @@ public class AppCMSPresenter {
 
     /**
      * Set The Value for the Cast Introductory Overlay
+     *
      * @param context
      * @param userId
      * @return

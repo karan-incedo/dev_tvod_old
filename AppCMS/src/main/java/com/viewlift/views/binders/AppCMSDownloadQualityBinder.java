@@ -1,13 +1,11 @@
 package com.viewlift.views.binders;
 
-import android.net.Uri;
 import android.os.Binder;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.downloads.UserVideoDownloadStatus;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
-import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 
@@ -22,7 +20,6 @@ import rx.functions.Action1;
 public class AppCMSDownloadQualityBinder extends Binder {
     private final AppCMSMain appCMSMain;
     private final AppCMSPageUI appCMSPageUI;
-    private AppCMSPageAPI appCMSPageAPI;
     private final String pageId;
     private final String pageName;
     private final String screenName;
@@ -30,10 +27,11 @@ public class AppCMSDownloadQualityBinder extends Binder {
     private final boolean appbarPresent;
     private final boolean fullScreenEnabled;
     private final boolean navbarPresent;
-    private final  boolean userLoggedIn;
+    private final boolean userLoggedIn;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final ContentDatum contentDatum;
     private final Action1<UserVideoDownloadStatus> resultAction1;
+    private AppCMSPageAPI appCMSPageAPI;
 
 
     public AppCMSDownloadQualityBinder(AppCMSMain appCMSMain,
@@ -49,8 +47,7 @@ public class AppCMSDownloadQualityBinder extends Binder {
                                        boolean userLoggedIn,
                                        Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                        ContentDatum contentDatum,
-                                       Action1<UserVideoDownloadStatus> resultAction1
-    ) {
+                                       Action1<UserVideoDownloadStatus> resultAction1) {
         this.appCMSMain = appCMSMain;
         this.appCMSPageUI = appCMSPageUI;
         this.appCMSPageAPI = appCMSPageAPI;
@@ -62,9 +59,9 @@ public class AppCMSDownloadQualityBinder extends Binder {
         this.fullScreenEnabled = fullScreenEnabled;
         this.navbarPresent = navbarPresent;
         this.jsonValueKeyMap = jsonValueKeyMap;
-        this.userLoggedIn=userLoggedIn;
-        this.contentDatum=contentDatum;
-        this.resultAction1=resultAction1;
+        this.userLoggedIn = userLoggedIn;
+        this.contentDatum = contentDatum;
+        this.resultAction1 = resultAction1;
     }
 
     public AppCMSMain getAppCMSMain() {
@@ -113,7 +110,6 @@ public class AppCMSDownloadQualityBinder extends Binder {
 
     public Map<String, AppCMSUIKeyType> getJsonValueKeyMap() {
         return jsonValueKeyMap;
-
     }
 
     public boolean isUserLoggedIn() {
