@@ -1178,19 +1178,22 @@ public class AppCMSPresenter {
                         null);
                 ArrayList<String> subscribedSkus = activeSubs.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
 
+                Bundle buyIntentBundle;
                 if (subscribedSkus.size() > 0) {
-                    showDialog(DialogType.EXISTING_SUBSCRIPTION,
-                            currentActivity.getString(R.string.app_cms_existing_subscription_error_message),
-                            false,
+                    buyIntentBundle = inAppBillingService.getBuyIntentToReplaceSkus(3,
+                            currentActivity.getPackageName(),
+                            subscribedSkus,
+                            skuToPurchase,
+                            "subs",
                             null);
                     return;
+                } else {
+                    buyIntentBundle = inAppBillingService.getBuyIntent(3,
+                            currentActivity.getPackageName(),
+                            skuToPurchase,
+                            "subs",
+                            null);
                 }
-
-                Bundle buyIntentBundle = inAppBillingService.getBuyIntent(3,
-                        currentActivity.getPackageName(),
-                        skuToPurchase,
-                        "subs",
-                        null);
 
                 PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
                 if (pendingIntent != null) {
