@@ -741,9 +741,7 @@ public class AppCMSPresenter {
                             currentActivity.getResources().getText(R.string.send_to)));
                 }
             } else if (actionType == AppCMSActionType.CLOSE) {
-                if (launchType == LaunchType.SUBSCRIBE) {
-                    launchType = LaunchType.LOGIN;
-                }
+                sendCloseOthersAction(null, false);
             } else if (actionType == AppCMSActionType.LOGIN) {
                 Log.d(TAG, "Login action selected: " + extraData[0]);
                 closeSoftKeyboard();
@@ -2437,6 +2435,7 @@ public class AppCMSPresenter {
 
     public void navigateToSubscriptionPlansPage() {
         if (subscriptionPage != null) {
+            launchType = LaunchType.SUBSCRIBE;
             boolean launchSuccess = navigateToPage(subscriptionPage.getPageId(),
                     subscriptionPage.getPageName(),
                     subscriptionPage.getPageUI(),
@@ -3615,6 +3614,7 @@ public class AppCMSPresenter {
                 builder.setPositiveButton(R.string.app_cms_login_button_text,
                         (dialog, which) -> {
                             dialog.dismiss();
+                            launchType = LaunchType.LOGIN;
                             navigateToLoginPage();
                         });
                 builder.setNegativeButton(R.string.app_cms_subscription_button_text,
@@ -4255,6 +4255,10 @@ public class AppCMSPresenter {
                         }
                     }).execute(params);
         }
+    }
+
+    public boolean isAppSVOD() {
+        return jsonValueKeyMap.get(appCMSMain.getServiceType()) == AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE;
     }
 
     public void setNavItemToCurrentAction(Activity activity) {

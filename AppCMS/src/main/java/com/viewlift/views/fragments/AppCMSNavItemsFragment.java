@@ -103,6 +103,11 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                         appCMSPresenter.showMainFragmentView(true);
                         appCMSPresenter.setNavItemToCurrentAction(getActivity());
                         appCMSPresenter.cancelInternalEvents();
+                        if (appCMSPresenter.isAppSVOD()) {
+                            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN);
+                        } else {
+                            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
+                        }
                         appCMSPresenter.navigateToLoginPage();
                     }
                 }
@@ -126,6 +131,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                             appCMSPresenter.showMainFragmentView(true);
                             appCMSPresenter.setNavItemToCurrentAction(getActivity());
                             appCMSPresenter.cancelInternalEvents();
+                            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
                             appCMSPresenter.navigateToSubscriptionPlansPage();
                         }
                     }

@@ -119,6 +119,7 @@ public class ViewCreator {
         for (ModuleList module : appCMSPageUI.getModuleList()) {
             if (!modulesToIgnore.contains(module.getView())) {
                 ModuleView moduleView = pageView.getModuleViewWithModuleId(module.getId());
+                boolean shouldHideModule = false;
                 if (moduleView != null) {
                     moduleView.resetHeightAdjusters();
 
@@ -158,6 +159,7 @@ public class ViewCreator {
                                     view.setVisibility(View.GONE);
                                 }
                                 moduleView.setVisibility(View.GONE);
+                                shouldHideModule = true;
                             }
                         } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
                             if (appCMSPresenter.isUserLoggedIn(context)) {
@@ -656,6 +658,10 @@ public class ViewCreator {
                     moduleView.removeResetHeightAdjusters();
 
                     moduleView.setLayoutParams(moduleLayoutParams);
+
+                    if (!shouldHideModule) {
+                        moduleView.setVisibility(View.VISIBLE);
+                    }
 
                     moduleView.requestLayout();
                 }
