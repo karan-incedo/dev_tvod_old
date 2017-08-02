@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.MediaRouteDiscoveryFragment;
 import android.support.v7.media.MediaRouteSelector;
 import android.support.v7.media.MediaRouter;
@@ -24,6 +25,7 @@ import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
@@ -35,12 +37,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Observable;
 import rx.functions.Action1;
 
 
 public class CastHelper {
     private String TAG = "CastHelper";
     private static CastHelper objMain;
+    private String beaconScreenName = "";
+
     private CastContext mCastContext;
     private CastSession mCastSession;
     public MediaRouter mMediaRouter;
@@ -55,7 +60,7 @@ public class CastHelper {
     private List<String> listCompareRelatedVideosId;
 
     public MediaRouteSelector mMediaRouteSelector;
-    private MyMediaRouterCallback mMediaRouterCallback, routerCall;
+    private MyMediaRouterCallback mMediaRouterCallback;
     private AppCMSPresenter appCMSPresenterComponenet;
     public String appName;
     public List<Object> routes = new ArrayList<>();
@@ -65,8 +70,17 @@ public class CastHelper {
     public CastDevice mSelectedDevice;
     private int currentPlayingIndex = 0;
     public int playIndexPosition = 0;
-    long castCurrentDuration;
+    private long castCurrentDuration;
+    private long castCurrentMediaPosition;
     private static final String DISCOVERY_FRAGMENT_TAG = "DiscoveryFragment";
+
+    private AppCMSVideoPageBinder binderPlayScreen;
+    private boolean isMainMediaId = false;
+    private long currentMediaPosition = 0;
+    private String startingFilmId = "";
+    private boolean sentBeaconPlay;
+    private boolean sendBeaconPing;
+    private Action1<OnApplicationEnded> onApplicationEndedAction;
 
     private CastHelper(Context mContext) {
         mAppContext = mContext.getApplicationContext();
@@ -75,13 +89,36 @@ public class CastHelper {
                 .addControlCategory("com.google.android.gms.cast.CATEGORY_CAST")
                 .build();
         appName = mAppContext.getResources().getString(R.string.app_name);
+        beaconScreenName = mAppContext.getResources().getString(R.string.app_cms_beacon_casting_screen_name);
+
         mMediaRouterCallback = new MyMediaRouterCallback();
-        routerCall = new MyMediaRouterCallback();
+
+        castCurrentMediaPosition = 0L;
 
         setCastDiscovery();
 
     }
 
+    public static class OnApplicationEnded {
+        private int recommendedVideoIndex;
+        private long currentWatchedTime;
+
+        public int getRecommendedVideoIndex() {
+            return recommendedVideoIndex;
+        }
+
+        public void setRecommendedVideoIndex(int recommendedVideoIndex) {
+            this.recommendedVideoIndex = recommendedVideoIndex;
+        }
+
+        public long getCurrentWatchedTime() {
+            return currentWatchedTime;
+        }
+
+        public void setCurrentWatchedTime(long currentWatchedTime) {
+            this.currentWatchedTime = currentWatchedTime;
+        }
+    }
 
     public void setCastDiscovery() {
         if (CastingUtils.IS_CHROMECAST_ENABLE) {
@@ -225,12 +262,16 @@ public class CastHelper {
         return isCastDeviceConnected;
     }
 
-    private AppCMSVideoPageBinder binderPlayScreen;
-    private boolean isMainMediaId = false;
-    private long currentMediaPosition = 0;
-    private String startingFilmId = "";
 
-    public void launchRemoteMedia(AppCMSPresenter appCMSPresenter, List<String> relateVideoId, String filmId, long currentPosition, AppCMSVideoPageBinder binder) {
+    public void launchRemoteMedia(AppCMSPresenter appCMSPresenter,
+                                  List<String> relateVideoId,
+                                  String filmId,
+                                  long currentPosition,
+                                  AppCMSVideoPageBinder binder,
+                                  boolean sentBeaconPlay,
+                                  Action1<OnApplicationEnded> onApplicationEndedAction) {
+        this.sentBeaconPlay = sentBeaconPlay;
+        this.onApplicationEndedAction = onApplicationEndedAction;
         if (mActivity != null && CastingUtils.isMediaQueueLoaded) {
             Toast.makeText(mAppContext, mAppContext.getString(R.string.loading_vid_on_casting), Toast.LENGTH_SHORT).show();
 
@@ -248,24 +289,51 @@ public class CastHelper {
             listRelatedVideosDetails = new ArrayList<ContentDatum>();
             listRelatedVideosId = new ArrayList<String>();
             listCompareRelatedVideosId = new ArrayList<String>();
+            if (filmId == null && relateVideoId == null) {
+                return;
+            }
+            if (relateVideoId != null) {
 
-            if (!relateVideoId.contains(filmId)) {
-                isMainMediaId = true;
-                listRelatedVideosId.add(filmId);
+                if (!relateVideoId.contains(filmId)) {
+                    isMainMediaId = true;
+                    listRelatedVideosId.add(filmId);
+                    currentPlayingIndex = 0;
+                } else {
+                    currentPlayingIndex = relateVideoId.indexOf(filmId);
+                }
+
+                listRelatedVideosId.addAll(relateVideoId);
+                listCompareRelatedVideosId.addAll(listRelatedVideosId);
+            } else if (filmId != null) {
                 currentPlayingIndex = 0;
-            } else {
-                currentPlayingIndex = relateVideoId.indexOf(filmId);
+                listRelatedVideosId.add(filmId);
+                listCompareRelatedVideosId.add(filmId);
             }
 
-            listRelatedVideosId.addAll(relateVideoId);
-            listCompareRelatedVideosId.addAll(listRelatedVideosId);
             binderPlayScreen = binder;
             callRelatedVideoData();
         }
     }
 
     //launchSingleMediaRemote use to launch media when auto play off
-    public void launchSingleMediaRemote(String title, String appName, String imageUrl, String hlsUrl, String filmId) {
+    public void launchSingleMediaRemote(String filmId, AppCMSVideoPageBinder binder) {
+        String imageUrl = "";
+        String title = "";
+        String videoUrl = "";
+        Toast.makeText(mAppContext, mAppContext.getString(R.string.loading_vid_on_casting), Toast.LENGTH_SHORT).show();
+
+        if (binder.getContentData().getContentDetails() != null
+                && binder.getContentData().getContentDetails().getTrailers() != null
+                && binder.getContentData().getContentDetails().getTrailers().get(0) != null
+                && binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
+            title = binder.getContentData().getContentDetails().getTrailers().get(0).getTitle();
+            VideoAssets videoAssets = binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets();
+            if (videoAssets.getMpeg().size() > 0) {
+                videoUrl = videoAssets.getMpeg().get(videoAssets.getMpeg().size() - 1).getUrl();
+            }
+
+            imageUrl = binder.getContentData().getGist().getVideoImageUrl();
+        }
         CastingUtils.isRemoteMediaControllerOpen = false;
         JSONObject customData = new JSONObject();
         try {
@@ -273,7 +341,14 @@ public class CastHelper {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        getRemoteMediaClient().load(CastingUtils.buildMediaInfo(title, appName, imageUrl, hlsUrl, customData));
+        getRemoteMediaClient().load(CastingUtils.buildMediaInfo(title,
+                appName,
+                imageUrl,
+                videoUrl,
+                customData,
+                mAppContext));
+        getRemoteMediaClient().addListener(remoteListener);
+
     }
 
     public void openRemoteController() {
@@ -286,6 +361,7 @@ public class CastHelper {
             }
             if (!CastingUtils.isRemoteMediaControllerOpen) {
                 Intent intent = new Intent(mActivity, ExpandedControlsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 mActivity.startActivity(intent);
                 CastingUtils.isRemoteMediaControllerOpen = true;
             }
@@ -298,6 +374,12 @@ public class CastHelper {
             @Override
             public void onStatusUpdated() {
                 openRemoteController();
+                updatePlaybackState();
+                if (getRemoteMediaClient() != null &&
+                        getRemoteMediaClient().getMediaStatus().getCurrentItemId() <
+                                getRemoteMediaClient().getMediaStatus().getLoadingItemId()) {
+                    sentBeaconPlay = false;
+                }
             }
 
             @Override
@@ -310,8 +392,9 @@ public class CastHelper {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                playIndexPosition = listCompareRelatedVideosId.indexOf(CastingUtils.castingMediaId);
-                System.out.println("Cast Index " + playIndexPosition);
+                if (listCompareRelatedVideosId != null) {
+                    playIndexPosition = listCompareRelatedVideosId.indexOf(CastingUtils.castingMediaId);
+                }
 
                 Log.d(TAG, "Remote Media listener-" + "onMetadataUpdated");
             }
@@ -400,13 +483,17 @@ public class CastHelper {
             }
 
             private void onApplicationDisconnected() {
+                OnApplicationEnded onApplicationEnded = new OnApplicationEnded();
+                onApplicationEnded.setCurrentWatchedTime(castCurrentMediaPosition);
+                onApplicationEnded.setRecommendedVideoIndex(playIndexPosition);
+
                 if (getRemoteMediaClient() != null) {
+                    getRemoteMediaClient().stop();
                     getRemoteMediaClient().removeListener(remoteListener);
                     getRemoteMediaClient().removeProgressListener(progressListener);
                 }
                 CastingUtils.isMediaQueueLoaded = true;
                 if (callBackRemoteListener != null && mActivity instanceof AppCMSPlayVideoActivity && binderPlayScreen != null) {
-                    mActivity.finish();
                     //if casted from local play screen from first video than this video will not in related video list  so set -1 index position to play on local player
 
                     if (CastingUtils.castingMediaId == null || TextUtils.isEmpty(CastingUtils.castingMediaId)) {
@@ -426,9 +513,12 @@ public class CastHelper {
                     }
 
                     binderPlayScreen.setCurrentPlayingVideoIndex(playIndexPosition);
-                    if (playIndexPosition < listCompareRelatedVideosId.size()) {
+                    if (0 < playIndexPosition && playIndexPosition < listCompareRelatedVideosId.size()) {
                         appCMSPresenterComponenet.playNextVideo(binderPlayScreen,
-                                binderPlayScreen.getCurrentPlayingVideoIndex());
+                                binderPlayScreen.getCurrentPlayingVideoIndex(),
+                                currentMediaPosition);
+                    } else if (onApplicationEndedAction != null) {
+                        Observable.just(onApplicationEnded).subscribe(onApplicationEndedAction);
                     }
 
                     CastingUtils.castingMediaId = "";
@@ -444,19 +534,27 @@ public class CastHelper {
 
     private void initProgressListeners() {
 
-        progressListener = new RemoteMediaClient.ProgressListener() {
-            @Override
-            public void onProgressUpdated(long remoteCastProgress, long totalCastDuration) {
-                castCurrentDuration = remoteCastProgress / 1000;
-                try {
-                    if (castCurrentDuration % 30 == 0) {
-                        String currentRemoteMediaId = CastingUtils.getRemoteMediaId(mAppContext);
+        progressListener = (remoteCastProgress, totalCastDuration) -> {
+            castCurrentMediaPosition = remoteCastProgress;
+            castCurrentDuration = remoteCastProgress / 1000;
+            try {
+                if (castCurrentDuration % 30 == 0 && sendBeaconPing) {
+                    String currentRemoteMediaId = CastingUtils.getRemoteMediaId(mAppContext);
+                    String currentMediaParamKey = CastingUtils.getRemoteParamKey(mAppContext);
+
+                    if (!TextUtils.isEmpty(currentRemoteMediaId)) {
                         appCMSPresenterComponenet.updateWatchedTime(currentRemoteMediaId,
                                 castCurrentDuration);
+                        appCMSPresenterComponenet.sendBeaconPingMessage(currentRemoteMediaId,
+                                currentMediaParamKey,
+                                beaconScreenName,
+                                castCurrentDuration,
+                                true);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         };
     }
@@ -498,7 +596,10 @@ public class CastHelper {
     private void castMediaListToRemoteLocation() {
         CastingUtils.isMediaQueueLoaded = true;
         if (getRemoteMediaClient() != null) {
-            MediaQueueItem[] queueItemsArray = CastingUtils.BuildCastingQueueItems(listRelatedVideosDetails, appName, listCompareRelatedVideosId);
+            MediaQueueItem[] queueItemsArray = CastingUtils.BuildCastingQueueItems(listRelatedVideosDetails,
+                    appName,
+                    listCompareRelatedVideosId,
+                    mAppContext);
             getRemoteMediaClient().queueLoad(queueItemsArray, currentPlayingIndex,
                     MediaStatus.REPEAT_MODE_REPEAT_OFF, currentMediaPosition, null);
             getRemoteMediaClient().addListener(remoteListener);
@@ -568,6 +669,63 @@ public class CastHelper {
     }
 
 
+    private void updatePlaybackState() {
+        boolean isFinish = false;
+        mCastSession = CastContext.getSharedInstance(mAppContext).getSessionManager()
+                .getCurrentCastSession();
+
+        if (listRelatedVideosDetails != null) {
+            int currentVideoDetailIndex = getCurrentIndex(listRelatedVideosDetails, CastingUtils.castingMediaId);
+            if (currentVideoDetailIndex < listRelatedVideosDetails.size()) {
+                isFinish = false;
+            }
+        } else {
+            isFinish = true;
+        }
+
+        int status = getRemoteMediaClient().getPlayerState();
+        int idleReason = getRemoteMediaClient().getIdleReason();
+
+        switch (status) {
+            case MediaStatus.PLAYER_STATE_PLAYING:
+                sendBeaconPing = true;
+                if (!sentBeaconPlay) {
+                    String currentRemoteMediaId = CastingUtils.getRemoteMediaId(mAppContext);
+                    String currentMediaParamKey = CastingUtils.getRemoteParamKey(mAppContext);
+
+                    if (!TextUtils.isEmpty(currentRemoteMediaId)) {
+                        appCMSPresenterComponenet.sendBeaconPlayMessage(currentRemoteMediaId,
+                                currentMediaParamKey,
+                                beaconScreenName,
+                                castCurrentDuration,
+                                true);
+                        sentBeaconPlay = true;
+                    }
+                }
+                break;
+            case MediaStatus.PLAYER_STATE_PAUSED:
+                sendBeaconPing = false;
+                break;
+
+            case MediaStatus.PLAYER_STATE_UNKNOWN:
+                sendBeaconPing = false;
+                break;
+
+            case MediaStatus.PLAYER_STATE_BUFFERING:
+                sendBeaconPing = false;
+                break;
+
+            case MediaStatus.PLAYER_STATE_IDLE:
+                sendBeaconPing = false;
+                break;
+
+            default: // case unknown
+                sendBeaconPing = false;
+                break;
+        }
+    }
+
+
     /**
      * Called to filter the set of routes that should be included in the list.
      * <p>
@@ -575,9 +733,9 @@ public class CastHelper {
      * removes those for which {@link #onFilterRoute} returns false.
      * </p>
      *
-     * @param routes The list of routes to filter in-place, never null.
+     * @param route The list of routes to filter in-place, never null.
      */
-    public void onFilterRoutes(@NonNull List<Object> routes) {
+    public void onFilterRoutes(@NonNull List<Object> route) {
         for (int i = routes.size(); i-- > 0; ) {
             if (routes.get(i) instanceof MediaRouter.RouteInfo)
                 if (!onFilterRoute((MediaRouter.RouteInfo) routes.get(i))) {
@@ -618,8 +776,9 @@ public class CastHelper {
         if (CastContext.getSharedInstance(mAppContext).getSessionManager() != null) {
 
             try {
-                if (CastContext.getSharedInstance(mAppContext).getSessionManager() != null)
+                if (CastContext.getSharedInstance(mAppContext).getSessionManager() != null) {
                     CastContext.getSharedInstance(mAppContext).getSessionManager().removeSessionManagerListener(mSessionManagerListener, CastSession.class);
+                }
 
                 CastContext.getSharedInstance(mAppContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().removeListener(remoteListener);
 
@@ -637,5 +796,4 @@ public class CastHelper {
         }
     }
 }
-
 

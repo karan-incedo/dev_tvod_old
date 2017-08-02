@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -25,8 +26,6 @@ import com.viewlift.views.customviews.ViewCreator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -92,10 +91,12 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
         this.isSelected = false;
         this.unselectedColor = ContextCompat.getColor(context, android.R.color.white);
-        this.selectedColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+        this.selectedColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                .getGeneral().getBlockTitleColor());
         this.isClickable = true;
 
         cullData(context);
+        sortPlans();
     }
 
     @Override
@@ -123,7 +124,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     setBorder(childView, unselectedColor);
                     if (childView instanceof CollectionGridItemView) {
                         ((CollectionGridItemView) childView).setSelectable(false);
-                        for (View collectionGridChild : ((CollectionGridItemView) childView).getViewsToUpdateOnClickEvent()) {
+                        for (View collectionGridChild : ((CollectionGridItemView) childView)
+                                .getViewsToUpdateOnClickEvent()) {
                             if (collectionGridChild instanceof Button) {
                                 collectionGridChild.setBackgroundColor(ContextCompat.getColor(v.getContext(),
                                         R.color.disabledButtonColor));
@@ -134,7 +136,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 setBorder(v, selectedColor);
                 if (v instanceof CollectionGridItemView) {
                     ((CollectionGridItemView) v).setSelectable(true);
-                    for (View collectionGridChild : ((CollectionGridItemView) v).getViewsToUpdateOnClickEvent()) {
+                    for (View collectionGridChild : ((CollectionGridItemView) v)
+                            .getViewsToUpdateOnClickEvent()) {
                         if (collectionGridChild instanceof Button) {
                             collectionGridChild.setBackgroundColor(selectedColor);
                         }
@@ -174,6 +177,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         adapterData = null;
         notifyDataSetChanged();
         adapterData = contentData;
+
+        sortPlans();
+
         notifyDataSetChanged();
         listView.setAdapter(this);
         listView.invalidate();
@@ -267,7 +273,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                             }
                             if (!appCMSPresenter.launchVideoPlayer(data,
                                     currentPlayingIndex,
-                                    relatedVideoIds)) {
+                                    relatedVideoIds,
+                                    -1)) {
                                 Log.e(TAG, "Could not launch play action: " +
                                         " filmId: " +
                                         filmId +
@@ -283,38 +290,35 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
-
+            //
         } else {
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (isClickable) {
-                        String permalink = data.getGist().getPermalink();
-                        String title = data.getGist().getTitle();
-                        Log.d(TAG, "Launching " + permalink + ":" + defaultAction);
-                        List<String> relatedVideoIds = null;
-                        if (data.getContentDetails() != null &&
-                                data.getContentDetails().getRelatedVideoIds() != null) {
-                            relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
-                        }
-                        int currentPlayingIndex = -1;
-                        if (relatedVideoIds == null) {
-                            currentPlayingIndex = 0;
-                        }
-                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                defaultAction,
-                                title,
-                                null,
-                                null,
-                                false,
-                                currentPlayingIndex,
-                                relatedVideoIds)) {
-                            Log.e(TAG, "Could not launch action: " +
-                                    " permalink: " +
-                                    permalink +
-                                    " action: " +
-                                    defaultAction);
-                        }
+            itemView.setOnClickListener(v -> {
+                if (isClickable) {
+                    String permalink = data.getGist().getPermalink();
+                    String title = data.getGist().getTitle();
+                    Log.d(TAG, "Launching " + permalink + ":" + defaultAction);
+                    List<String> relatedVideoIds = null;
+                    if (data.getContentDetails() != null &&
+                            data.getContentDetails().getRelatedVideoIds() != null) {
+                        relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
+                    }
+                    int currentPlayingIndex = -1;
+                    if (relatedVideoIds == null) {
+                        currentPlayingIndex = 0;
+                    }
+                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                            defaultAction,
+                            title,
+                            null,
+                            null,
+                            false,
+                            currentPlayingIndex,
+                            relatedVideoIds)) {
+                        Log.e(TAG, "Could not launch action: " +
+                                " permalink: " +
+                                permalink +
+                                " action: " +
+                                defaultAction);
                     }
                 }
             });
@@ -351,15 +355,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         return null;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        CollectionGridItemView componentView;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            this.componentView = (CollectionGridItemView) itemView;
-        }
-    }
-
     private void setBorder(View itemView,
                            int color) {
         GradientDrawable planBorder = new GradientDrawable();
@@ -388,6 +383,39 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     adapterData.remove((int) elementIndicesToCull.get(i));
                 }
             }
+        }
+    }
+
+    private void sortPlans() {
+        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY && adapterData != null) {
+
+            ContentDatum temp;
+            while (!adapterData.get(0).getName().equals("Annual Plan")) {
+                temp = adapterData.get(0);
+                adapterData.remove(0);
+                adapterData.add(temp);
+            }
+
+            while (!adapterData.get(1).getName().equals("Monthly Plan (Premium)")) {
+                temp = adapterData.get(1);
+                adapterData.remove(1);
+                adapterData.add(temp);
+            }
+
+            while (!adapterData.get(2).getName().equals("Monthly Plan (Basic)")) {
+                temp = adapterData.get(2);
+                adapterData.remove(2);
+                adapterData.add(temp);
+            }
+        }
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        CollectionGridItemView componentView;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            this.componentView = (CollectionGridItemView) itemView;
         }
     }
 }

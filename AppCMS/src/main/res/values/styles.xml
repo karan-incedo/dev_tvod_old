@@ -27,4 +27,17 @@
         </item>
     </style>
 
+    <style name="TransparentTheme" parent="@style/AppTheme">
+
+        <!--  <item name="android:background">@android:color/transparent</item>
+          <item name="background">@null</item>-->
+
+        <item name="android:windowBackground">@android:color/transparent</item>
+
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
 </resources>

@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="com.android.vending.BILLING" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name="com.viewlift.AppCMSApplication"
@@ -45,8 +46,7 @@
 
         <activity
             android:name="com.viewlift.views.activity.AppCMSPlayVideoActivity"
-            android:configChanges="orientation|screenSize"
-            android:launchMode="singleTask" />
+            android:configChanges="orientation|screenSize" />
 
         <activity
             android:name="com.viewlift.views.activity.AppCMSSearchActivity"
@@ -92,19 +92,12 @@
 
         <service android:name="com.viewlift.models.network.background.services.AppCMSBackgroundService" />
 
-        <activity android:name="com.viewlift.views.activity.AutoplayActivity" />
+        <activity android:name="com.viewlift.views.activity.AutoplayActivity"></activity>
+        <activity android:name="com.viewlift.views.activity.AppCMSDownloadQualityActivity" android:theme="@style/TransparentTheme"></activity>
 
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="com.viewlift.casting.CastOptionsProvider" />
-
-        <receiver
-            android:name="com.appsflyer.SingleInstallBroadcastReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.android.vending.INSTALL_REFERRER" />
-            </intent-filter>
-        </receiver>
 
     </application>
 

@@ -65,14 +65,15 @@ public class PageView extends BaseView {
         }
     }
 
-    public void updateDataList(List<ContentDatum> contentData, int index) {
-        if (0 <= index && index < adapterList.size()) {
-            ListWithAdapter listWithAdapter = adapterList.get(index);
-            if (listWithAdapter.getAdapter() instanceof AppCMSBaseAdapter) {
-                ((AppCMSBaseAdapter) listWithAdapter.getAdapter())
-                        .updateData(listWithAdapter.getListView(), contentData);
+    public void updateDataList(List<ContentDatum> contentData, String id) {
+        for (int i = 0; i < adapterList.size(); i++) {
+            if (adapterList.get(i).id != null &&
+                    adapterList.get(i).id.equals(id)) {
+                if (adapterList.get(i).adapter instanceof AppCMSBaseAdapter) {
+                    ((AppCMSBaseAdapter) adapterList.get(i).adapter)
+                            .updateData(adapterList.get(i).listView, contentData);
+                }
             }
-            listWithAdapter.listView.setVisibility(VISIBLE);
         }
     }
 

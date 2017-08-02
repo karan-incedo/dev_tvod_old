@@ -102,6 +102,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                     if (appCMSPresenter != null) {
                         appCMSPresenter.showMainFragmentView(true);
                         appCMSPresenter.setNavItemToCurrentAction(getActivity());
+                        appCMSPresenter.cancelInternalEvents();
                         appCMSPresenter.navigateToLoginPage();
                     }
                 }
@@ -124,6 +125,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                         if (appCMSPresenter != null) {
                             appCMSPresenter.showMainFragmentView(true);
                             appCMSPresenter.setNavItemToCurrentAction(getActivity());
+                            appCMSPresenter.cancelInternalEvents();
                             appCMSPresenter.navigateToSubscriptionPlansPage();
                         }
                     }
@@ -142,6 +144,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 if (appCMSPresenter != null) {
                     appCMSPresenter.showMainFragmentView(true);
                     appCMSPresenter.setNavItemToCurrentAction(getActivity());
+                    appCMSPresenter.cancelInternalEvents();
                     appCMSPresenter.sendRefreshPageAction();
                 }
             }
@@ -162,6 +165,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 if (appCMSPresenter != null) {
                     appCMSPresenter.setNavItemToCurrentAction(getActivity());
                     appCMSPresenter.showMainFragmentView(true);
+                    appCMSPresenter.cancelInternalEvents();
                     appCMSPresenter.sendRefreshPageAction();
                 }
             }

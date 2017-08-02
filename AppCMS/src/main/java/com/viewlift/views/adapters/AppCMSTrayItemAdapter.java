@@ -141,7 +141,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                 appCMSPresenter,
                                 userVideoDownloadStatus -> {
                                     if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
-                                        holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.cancel);
+                                        holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.crossicon);
                                         loadImage(holder.itemView.getContext(), userVideoDownloadStatus.getThumbUri(), holder.appCMSContinueWatchingVideoImage);
                                         holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
                                     } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_RUNNING) {
@@ -149,7 +149,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                     }
                                     contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
 
-                                });
+                                },
+                                appCMSPresenter.getLoggedInUser(holder.itemView.getContext()));
                         holder.appCMSContinueWatchingSize.setText("Cancel".toUpperCase());
                         holder.appCMSContinueWatchingSize.setOnClickListener(v -> {
                             delete(contentDatum);
@@ -166,7 +167,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
                         break;
                     case STATUS_SUCCESSFUL:
-                        holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.cancel);
+                        holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.crossicon);
                         break;
 
                 }
@@ -182,10 +183,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             loadImage(holder.itemView.getContext(), imageUrl.toString(), holder.appCMSContinueWatchingVideoImage);
 
             holder.itemView.setOnClickListener(v -> {
-//                click(contentDatum, holder.itemView.getContext());
                 play(contentDatum,
-                        holder.itemView.getContext(),
-                        /*getNextContentDatum(position)*/ null);
+                    holder.itemView.getContext(),
+                    getListOfUpcomingMovies(position));
             });
 
 
@@ -273,41 +273,64 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         return contentDatum;
     }
 
-    private void play(ContentDatum data, Context context, ContentDatum nextContentDatum) {
-        if (isDownload) {
-            Log.d(TAG, " Ofline play is under process ... ");
-            String permalink = data.getGist().getPermalink();
-            String action = context.getString(R.string.app_cms_action_watchvideo_key);
-            String title = data.getGist().getTitle();
-            String hlsUrl = data.getGist().getLocalFileUrl();
-            String[] extraData = new String[4];
-            extraData[0] = permalink;
-            extraData[1] = hlsUrl;
-            extraData[2] = data.getGist().getId();
-            extraData[3] = "true"; // to know that this is an offline video
-            Log.d(TAG, "Launching " + permalink + ": " + action);
-            ArrayList<String> relateVideoIds = null;
-            if (nextContentDatum != null) {
-                relateVideoIds = new ArrayList<>();
-                relateVideoIds.add(nextContentDatum.getGist().getId());
+    /**
+     * Return list of ids of all the completely downloaded movies which fall after the supplied
+     * position
+     * @param position position after which movies are to be fetched for autoplay
+     * @return list of ids of upcoming completed movies
+     */
+    private List<String> getListOfUpcomingMovies(int position) {
+        if (position + 1 == adapterData.size()) {
+            return null;
+        }
+
+        List<String> contentDatumList = new ArrayList<>();
+        for (int i = position + 1; i < adapterData.size(); i++) {
+            ContentDatum contentDatum = adapterData.get(i);
+            if (contentDatum.getGist().getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
+                contentDatumList.add(contentDatum.getGist().getId());
             }
-            if (!appCMSPresenter.launchButtonSelectedAction(
-                    permalink,
-                    action,
-                    title,
-                    extraData,
-                    data,
-                    false,
-                    -1,
-                    relateVideoIds)) {
-                Log.e(TAG, "Could not launch action: " +
-                        " permalink: " +
-                        permalink +
-                        " action: " +
-                        action +
-                        " hlsUrl: " +
-                        hlsUrl);
+        }
+
+        return contentDatumList;
+    }
+
+    private void play(ContentDatum data, Context context, List<String> relatedVideoIds) {
+        if (isDownload)
+            if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
+                appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
+                        null,
+                        false,
+                        null);
+                return;
             }
+        String permalink = data.getGist().getPermalink();
+        String action = context.getString(R.string.app_cms_action_watchvideo_key);
+        String title = data.getGist().getTitle();
+        String hlsUrl = data.getGist().getLocalFileUrl();
+        String[] extraData = new String[4];
+        extraData[0] = permalink;
+        extraData[1] = hlsUrl;
+        extraData[2] = data.getGist().getId();
+        extraData[3] = "true"; // to know that this is an offline video
+        Log.d(TAG, "Launching " + permalink + ": " + action);
+
+        if (!appCMSPresenter.launchButtonSelectedAction(
+                permalink,
+                action,
+                title,
+                extraData,
+                data,
+                false,
+                -1,
+                relatedVideoIds)) {
+            Log.e(TAG, "Could not launch action: " +
+                    " permalink: " +
+                    permalink +
+                    " action: " +
+                    action +
+                    " hlsUrl: " +
+                    hlsUrl);
         }
     }
 
@@ -519,6 +542,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
         if (isDownload) {
             Log.d(TAG, " Ofline play is under process ... ");
+
         } else {
 
             String permalink = data.getGist().getPermalink();
@@ -561,7 +585,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         String title = data.getGist().getTitle();
         if (!appCMSPresenter.launchVideoPlayer(data,
                 -1,
-                data.getContentDetails().getRelatedVideoIds())) {
+                data.getContentDetails().getRelatedVideoIds(),
+                -1)) {
             Log.e(TAG, "Could not launch play action: " +
                     " filmId: " +
                     filmId +
@@ -682,7 +707,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         ImageButton appCMSContinueWatchingDeleteButton;
 
         @BindView(R.id.app_cms_continue_watching_video_size)
-        TextView appCMSContinueWatchingDuration;
+        TextView appCMSContinueWatchingSize;
+
 
         @BindView(R.id.app_cms_continue_watching_separator_view)
         View appCMSContinueWatchingSeparatorView;
@@ -691,7 +717,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         TextView appCMSNotItemLabel;
 
         @BindView(R.id.app_cms_continue_watching_duration)
-        TextView appCMSContinueWatchingSize;
+        TextView appCMSContinueWatchingDuration;
 
         public ViewHolder(View itemView, boolean isHistoryView) {
             super(itemView);

@@ -20,10 +20,10 @@ import retrofit2.http.Url;
 
 public interface AppCMSSubscriptionPlanRest {
     @GET
-    Call<List<AppCMSSubscriptionPlanResult>> getPlanList(@Url String url);
+    Call<List<AppCMSSubscriptionPlanResult>> getPlanList(@Url String url, @HeaderMap Map<String, String> authHeaders);
 
     @GET
-    Call<AppCMSSubscriptionPlanResult> getSubscribedPlan(@Url String url);
+    Call<AppCMSSubscriptionPlanResult> getSubscribedPlan(@Url String url, @HeaderMap Map<String, String> authHeaders);
 
     @POST
     Call<AppCMSSubscriptionPlanResult> createPlan(@Url String url, @HeaderMap Map<String, String> authHeaders, @Body SubscriptionRequest request);

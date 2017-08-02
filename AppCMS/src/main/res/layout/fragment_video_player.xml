@@ -9,13 +9,33 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:orientation="horizontal">
-      
+
         <Button
-            android:layout_width="40dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            android:layout_weight="0.1"
+            android:background="@android:color/transparent"
+            android:focusable="false"
+            android:padding="4dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/cancel"
+            android:enabled="false"
+            android:visibility="invisible"/>
+      
+        <ImageButton
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_margin="4dp"
+            android:layout_weight="1"
+            android:background="#00000000"
+            android:padding="4dp"
+            android:scaleType="center"
+            android:src="@drawable/anim_cast"
             android:enabled="false"
-            android:visibility="invisible" />
+            android:visibility="invisible"/>
 
         <com.viewlift.views.customviews.AlwaysSelectedTextView
             android:id="@+id/app_cms_video_player_title_view"

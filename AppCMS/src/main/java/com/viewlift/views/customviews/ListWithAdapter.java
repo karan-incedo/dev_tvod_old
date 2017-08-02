@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 public class ListWithAdapter {
     RecyclerView listView;
     RecyclerView.Adapter adapter;
+    String id;
 
     public RecyclerView getListView() {
         return listView;
@@ -32,6 +33,11 @@ public class ListWithAdapter {
 
         public Builder adapter(RecyclerView.Adapter adapter) {
             listWithAdapter.adapter = adapter;
+            return this;
+        }
+
+        public Builder id(String id) {
+            listWithAdapter.id = id;
             return this;
         }
 
