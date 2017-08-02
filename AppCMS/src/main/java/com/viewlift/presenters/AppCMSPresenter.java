@@ -1683,8 +1683,8 @@ public class AppCMSPresenter {
     public void clearWatchlist(final Action1<AppCMSAddToWatchlistResult> resultAction1) {
         final String url = currentActivity.getString(R.string.app_cms_clear_watchlist_api_url,
                 appCMSMain.getApiBaseUrl(),
-                getLoggedInUser(currentActivity),
-                appCMSMain.getInternalName());
+                appCMSMain.getInternalName(),
+                getLoggedInUser(currentActivity));
 
         try {
             AddToWatchlistRequest request = new AddToWatchlistRequest();
