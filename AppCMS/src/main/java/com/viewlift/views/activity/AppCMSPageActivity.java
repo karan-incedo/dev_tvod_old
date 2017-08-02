@@ -151,7 +151,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
                         mergeInputData(updatedAppCMSBinder, updatedAppCMSBinder.getPageId());
                         if (isActive) {
-                            handleLaunchPageAction(updatedAppCMSBinder);
+                            handleLaunchPageAction(updatedAppCMSBinder, false);
                         } else if (updatedAppCMSBinder.shouldSendCloseAction()) {
                             Intent appCMSIntent = new Intent(AppCMSPageActivity.this,
                                     AppCMSPageActivity.class);
@@ -179,7 +179,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     updateData();
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION)) {
                     AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                    handleLaunchPageAction(appCMSBinder);
+                    handleLaunchPageAction(appCMSBinder, false);
                 }
             }
         };
@@ -433,7 +433,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         if (appCMSBinderStack.size() > 0) {
-            handleLaunchPageAction(appCMSBinderMap.get(appCMSBinderStack.peek()));
+            handleLaunchPageAction(appCMSBinderMap.get(appCMSBinderStack.peek()), false);
         } else {
             finish();
         }
@@ -451,7 +451,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (appCMSBinder != null) {
                     appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
                             + BaseView.isLandscape(this));
-                    handleLaunchPageAction(appCMSBinder);
+                    handleLaunchPageAction(appCMSBinder, true);
                 }
             }
         }
@@ -524,7 +524,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         if (!isActive) {
             if (updatedAppCMSBinder != null) {
-                handleLaunchPageAction(updatedAppCMSBinder);
+                handleLaunchPageAction(updatedAppCMSBinder, false);
             }
         }
 
@@ -670,7 +670,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
     }
 
-    private void handleLaunchPageAction(final AppCMSBinder appCMSBinder) {
+    private void handleLaunchPageAction(final AppCMSBinder appCMSBinder,
+                                        boolean configurationChanged) {
         Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
         int lastBackstackEntry = getSupportFragmentManager().getBackStackEntryCount();
@@ -715,7 +716,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
 
             if (distanceFromStackTop < 0 ||
-                    appCMSBinder.shouldSendCloseAction()) {
+                    appCMSBinder.shouldSendCloseAction() ||
+                    configurationChanged) {
                 appCMSBinderStack.push(appCMSBinder.getPageId());
                 appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
             }
@@ -948,7 +950,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     true);
             appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
                     + BaseView.isLandscape(this));
-            handleLaunchPageAction(appCMSBinder);
+            handleLaunchPageAction(appCMSBinder, false);
             isActive = true;
         } else {
             isActive = false;
