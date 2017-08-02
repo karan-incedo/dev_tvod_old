@@ -1186,7 +1186,6 @@ public class AppCMSPresenter {
                             skuToPurchase,
                             "subs",
                             null);
-                    return;
                 } else {
                     buyIntentBundle = inAppBillingService.getBuyIntent(3,
                             currentActivity.getPackageName(),
