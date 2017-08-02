@@ -215,4 +215,6 @@
 
     <string name="app_cms_download_incomplete_error_title">Download Incomplete</string>
     <string name="app_cms_download_incomplete_error_message">Please wait until the download is completed.</string>
+
+    <string name="google_play_store_subscriptions_url">https://play.google.com/store/account</string>
 </resources>

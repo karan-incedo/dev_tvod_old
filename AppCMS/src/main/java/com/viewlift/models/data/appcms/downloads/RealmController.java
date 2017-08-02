@@ -5,6 +5,7 @@ import android.app.Application;
 import android.support.v4.app.Fragment;
 
 import com.viewlift.models.data.appcms.api.SubscriptionPlan;
+import com.viewlift.models.data.appcms.api.UserSubscriptionPlan;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -133,6 +134,16 @@ public class RealmController {
 
     public RealmResults<SubscriptionPlan> getAllSubscriptionPlans() {
         return realm.where(SubscriptionPlan.class).findAll();
+    }
+
+    public void addUserSubscriptionPlan(UserSubscriptionPlan userSubscriptionPlan) {
+        realm.beginTransaction();
+        realm.insertOrUpdate(userSubscriptionPlan);
+        realm.commitTransaction();
+    }
+
+    public RealmResults<UserSubscriptionPlan> getUserSubscriptionPlan(String userId) {
+        return realm.where(UserSubscriptionPlan.class).equalTo("userId", userId).distinct("userId");
     }
 
     public void updateDownloadInfo(String videoId, String filmUrl, String thumbUrl, String posterUrl, String subtitlesUrl, long totlsize, DownloadStatus status) {

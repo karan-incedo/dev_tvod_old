@@ -1607,19 +1607,41 @@ public class ViewCreator {
                     case PAGE_DOWNLOAD_QUALITY_CONTINUE_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.download_quality_continue_button);
                         break;
+
                     default:
-                        componentViewResult.componentView.setOnClickListener(v -> {
-                            String[] extraData = new String[1];
-                            extraData[0] = component.getKey();
-                            appCMSPresenter.launchButtonSelectedAction(null,
-                                    component.getAction(),
-                                    null,
-                                    extraData,
-                                    null,
-                                    false,
-                                    0,
-                                    null);
-                        });
+                        boolean viewEnabled = true;
+                        if (jsonValueKeyMap.get(component.getKey()) ==
+                                AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
+                            if (!appCMSPresenter.upgradesAvailableForUser(appCMSPresenter.getLoggedInUser(context))) {
+                                componentViewResult.componentView.setEnabled(false);
+                                componentViewResult.componentView.setVisibility(View.INVISIBLE);
+                                viewEnabled = false;
+                            }
+                        }
+
+                        if (jsonValueKeyMap.get(component.getKey()) ==
+                                AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
+                            if (TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionSku(context))) {
+                                componentViewResult.componentView.setEnabled(false);
+                                componentViewResult.componentView.setVisibility(View.INVISIBLE);
+                                viewEnabled = false;
+                            }
+                        }
+
+                        if (viewEnabled) {
+                            componentViewResult.componentView.setOnClickListener(v -> {
+                                String[] extraData = new String[1];
+                                extraData[0] = component.getKey();
+                                appCMSPresenter.launchButtonSelectedAction(null,
+                                        component.getAction(),
+                                        null,
+                                        extraData,
+                                        null,
+                                        false,
+                                        0,
+                                        null);
+                            });
+                        }
                 }
 
                 if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SETTINGS_KEY) {
