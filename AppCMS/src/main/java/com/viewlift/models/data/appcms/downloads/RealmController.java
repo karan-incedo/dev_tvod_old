@@ -133,7 +133,10 @@ public class RealmController {
     }
 
     public RealmResults<SubscriptionPlan> getAllSubscriptionPlans() {
-        return realm.where(SubscriptionPlan.class).findAll();
+        if (realm.where(SubscriptionPlan.class).count() > 0) {
+            return realm.where(SubscriptionPlan.class).findAll();
+        }
+        return null;
     }
 
     public void addUserSubscriptionPlan(UserSubscriptionPlan userSubscriptionPlan) {
@@ -143,7 +146,10 @@ public class RealmController {
     }
 
     public RealmResults<UserSubscriptionPlan> getUserSubscriptionPlan(String userId) {
-        return realm.where(UserSubscriptionPlan.class).equalTo("userId", userId).distinct("userId");
+        if (realm.where(UserSubscriptionPlan.class).equalTo("userId", userId).count() > 0) {
+            return realm.where(UserSubscriptionPlan.class).equalTo("userId", userId).distinct("userId");
+        }
+        return null;
     }
 
     public void updateDownloadInfo(String videoId, String filmUrl, String thumbUrl, String posterUrl, String subtitlesUrl, long totlsize, DownloadStatus status) {

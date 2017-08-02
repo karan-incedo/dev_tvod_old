@@ -20,6 +20,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -418,8 +419,19 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         } else if (resultCode == RESULT_CANCELED) {
             if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
-                appCMSPresenter.setActiveSubscriptionSku(this, null);
-                handleBack(true, true, false, true);
+                if (!TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionSku(this))) {
+                    appCMSPresenter.showConfirmCancelSubscriptionDialog(retry -> {
+                        if (retry) {
+                            appCMSPresenter.initiateItemPurchase();
+                        } else {
+                            appCMSPresenter.setActiveSubscriptionSku(this, null);
+                            handleBack(true, true, false, true);
+                        }
+                    });
+                } else {
+                    appCMSPresenter.setActiveSubscriptionSku(this, null);
+                    handleBack(true, true, false, true);
+                }
             }
         }
     }

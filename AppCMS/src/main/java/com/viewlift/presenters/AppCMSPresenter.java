@@ -96,7 +96,6 @@ import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
-import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.models.data.appcms.watchlist.AppCMSWatchlistResult;
@@ -3615,6 +3614,50 @@ public class AppCMSPresenter {
         }
     }
 
+    public void showConfirmCancelSubscriptionDialog(Action1<Boolean> oncConfirmationAction) {
+        if (currentActivity != null) {
+            int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
+            AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
+            String title = currentActivity.getString(R.string.app_cms_payment_cancelled_dialog_title);
+            String message = currentActivity.getString(R.string.app_cms_payment_canceled_body);
+            builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
+                    Integer.toHexString(textColor).substring(2),
+                    title)))
+                    .setMessage(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
+                            Integer.toHexString(textColor).substring(2),
+                            message)));
+            builder.setPositiveButton(R.string.app_cms_positive_confirmation_button_text,
+                    (dialog, which) -> {
+                        dialog.dismiss();
+                        if (oncConfirmationAction != null) {
+                            Observable.just(true).subscribe(oncConfirmationAction);
+                        }
+                    });
+            builder.setNegativeButton(R.string.app_cms_negative_confirmation_button_text,
+                    (dialog, which) -> {
+                        dialog.dismiss();
+                        if (oncConfirmationAction != null) {
+                            Observable.just(false).subscribe(oncConfirmationAction);
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
+                        Color.parseColor(appCMSMain.getBrand()
+                                .getGeneral()
+                                .getBackgroundColor())));
+                if (currentActivity.getWindow().isActive()) {
+                    try {
+                        dialog.show();
+                    } catch (Exception e) {
+                        Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
+                                + e.toString());
+                    }
+                }
+            }
+        }
+    }
+
     public void showDialog(DialogType dialogType,
                            String optionalMessage,
                            boolean showCancelButton,
@@ -3945,10 +3988,10 @@ public class AppCMSPresenter {
     }
 
     public List<SubscriptionPlan> availableUpgradesForUser(String userId) {
-        UserSubscriptionPlan userSubscriptionPlan =
-                realmController.getUserSubscriptionPlan(userId).first();
-        if (userSubscriptionPlan != null) {
-            return userSubscriptionPlan.getAvailableUpgrades();
+        RealmResults<UserSubscriptionPlan> userSubscriptionPlanResult =
+                realmController.getUserSubscriptionPlan(userId);
+        if (userSubscriptionPlanResult != null) {
+            return userSubscriptionPlanResult.first().getAvailableUpgrades();
         }
         return null;
     }
