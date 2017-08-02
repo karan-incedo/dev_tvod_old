@@ -675,7 +675,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
         int lastBackstackEntry = getSupportFragmentManager().getBackStackEntryCount();
-        if (!appCMSBinder.shouldSendCloseAction() &&
+        if (!configurationChanged &&
+                !appCMSBinder.shouldSendCloseAction() &&
                 lastBackstackEntry > 0 &&
                 (appCMSBinder.getPageId() + BaseView.isLandscape(this))
                         .equals(getSupportFragmentManager()
@@ -708,16 +709,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 } catch (IllegalStateException e) {
                     Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                 }
-                handleBack(true,
-                        false,
-                        false,
-                        !appCMSBinder.shouldSendCloseAction());
+                if (i < distanceFromStackTop - 1) {
+                    handleBack(true,
+                            false,
+                            false,
+                            !appCMSBinder.shouldSendCloseAction());
+                }
                 i++;
             }
 
             if (distanceFromStackTop < 0 ||
-                    appCMSBinder.shouldSendCloseAction() ||
-                    configurationChanged) {
+                    appCMSBinder.shouldSendCloseAction()) {
                 appCMSBinderStack.push(appCMSBinder.getPageId());
                 appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
             }
@@ -944,6 +946,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
 
             AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+
             handleBack(false,
                     appCMSBinderStack.size() < 2,
                     false,
