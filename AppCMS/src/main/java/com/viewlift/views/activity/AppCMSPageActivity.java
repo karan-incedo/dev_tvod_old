@@ -64,6 +64,7 @@ import java.util.Stack;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.functions.Action1;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -189,6 +190,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
                     handleCloseAction();
+                    appCMSPresenter.refreshPageAPIData(updatedAppCMSBinder.getAppCMSPageUI(),
+                            updatedAppCMSBinder.getPageId(),
+                            appCMSPageAPI -> {
+                                updatedAppCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
+                            });
                 }
             }
         };
@@ -702,7 +708,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             int i = 0;
             while ((i < distanceFromStackTop &&
                     shouldPopStack()) ||
-                    (appCMSBinder.shouldSendCloseAction() && appCMSBinderStack.size() > 0)) {
+                    (appCMSBinder.shouldSendCloseAction() && appCMSBinderStack.size() > 1)) {
                 Log.d(TAG, "Popping stack to getList to page item");
                 try {
                     getSupportFragmentManager().popBackStack();
