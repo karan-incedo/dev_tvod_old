@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
@@ -79,6 +80,15 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         } else {
             this.adapterData = new ArrayList<>();
         }
+
+        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
+            if (appCMSPresenter.isUserLoggedIn(context)) {
+                List<SubscriptionPlan> availableSubscriptionPlans =
+                    appCMSPresenter.availableUpgradesForUser(appCMSPresenter.getLoggedInUser(context));
+                cullDataByAvailableUpgrades(availableSubscriptionPlans);
+            }
+        }
+
         this.defaultWidth = defaultWidth;
         this.defaultHeight = defaultHeight;
         this.useMarginsAsPercentages = true;
@@ -390,24 +400,45 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY && adapterData != null) {
 
             ContentDatum temp;
-            while (!adapterData.get(0).getName().equals("Annual Plan")) {
+            int count = 0;
+            while (!adapterData.get(0).getName().contains("Annual") && count < adapterData.size()) {
                 temp = adapterData.get(0);
                 adapterData.remove(0);
                 adapterData.add(temp);
+                count++;
             }
 
-            while (!adapterData.get(1).getName().equals("Monthly Plan (Premium)")) {
+            count = 0;
+            while (!adapterData.get(1).getName().contains("Premium") && count < adapterData.size()) {
                 temp = adapterData.get(1);
                 adapterData.remove(1);
                 adapterData.add(temp);
+                count++;
             }
 
-            while (!adapterData.get(2).getName().equals("Monthly Plan (Basic)")) {
+            count = 0;
+            while (!adapterData.get(2).getName().contains("Basic") && count < adapterData.size()) {
                 temp = adapterData.get(2);
                 adapterData.remove(2);
                 adapterData.add(temp);
+                count++;
             }
         }
+    }
+
+    private void cullDataByAvailableUpgrades(List<SubscriptionPlan> availableSubscriptionPlans) {
+        List<ContentDatum> updatedData = new ArrayList<>();
+        if (availableSubscriptionPlans != null) {
+            for (ContentDatum contentDatum : adapterData) {
+                for (SubscriptionPlan subscriptionPlan : availableSubscriptionPlans) {
+                    if (!TextUtils.isEmpty(contentDatum.getIdentifier()) &&
+                            contentDatum.getIdentifier().equals(subscriptionPlan.getSku())) {
+                        updatedData.add(contentDatum);
+                    }
+                }
+            }
+        }
+        this.adapterData = updatedData;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

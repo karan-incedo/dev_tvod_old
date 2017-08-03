@@ -77,6 +77,7 @@ import com.viewlift.models.data.appcms.api.Settings;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 import com.viewlift.models.data.appcms.api.SubscriptionRequest;
+import com.viewlift.models.data.appcms.api.UserSubscriptionPlan;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
@@ -182,6 +183,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.inject.Inject;
 
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -741,9 +743,7 @@ public class AppCMSPresenter {
                             currentActivity.getResources().getText(R.string.send_to)));
                 }
             } else if (actionType == AppCMSActionType.CLOSE) {
-                if (launchType == LaunchType.SUBSCRIBE) {
-                    launchType = LaunchType.LOGIN;
-                }
+                sendCloseOthersAction(null, false);
             } else if (actionType == AppCMSActionType.LOGIN) {
                 Log.d(TAG, "Login action selected: " + extraData[0]);
                 closeSoftKeyboard();
@@ -779,22 +779,7 @@ public class AppCMSPresenter {
                     if (extraData != null && extraData.length > 0) {
                         String key = extraData[0];
                         if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                            if (!TextUtils.isEmpty(getActiveSubscriptionSku(currentActivity))) {
-                                showDialog(DialogType.CANCEL_SUBSCRIPTION,
-                                        currentActivity.getString(R.string.app_cms_cancel_subscription_ask_for_confirmation_message),
-                                        true,
-                                        new Action0() {
-                                            @Override
-                                            public void call() {
-                                                sendSubscriptionCancellation();
-                                            }
-                                        });
-                            } else {
-                                showDialog(DialogType.CANCEL_SUBSCRIPTION,
-                                        currentActivity.getString(R.string.app_cms_cancel_subscription_not_subscribed_message),
-                                        false,
-                                        null);
-                            }
+                            sendSubscriptionCancellation();
                         } else if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
                             navigateToSubscriptionPlansPage();
                         }
@@ -933,15 +918,24 @@ public class AppCMSPresenter {
 
     public void mergeData(AppCMSPageAPI fromAppCMSPageAPI, AppCMSPageAPI toAppCMSPageAPI) {
         for (Module module : fromAppCMSPageAPI.getModules()) {
-            Module updateModule = null;
+            Module updateToModule = null;
+            Module updateFromModule = null;
             for (Module module1 : toAppCMSPageAPI.getModules()) {
                 if (module.getId() != null && module1 != null &&
                         module.getId().equals(module1.getId())) {
-                    updateModule = module1;
+                    updateFromModule = module;
+                    updateToModule = module1;
                 }
             }
-            if (updateModule != null) {
-
+            if (updateToModule != null) {
+                for (ContentDatum toContentDatum : updateToModule.getContentData()) {
+                    for (ContentDatum fromContentDatum : updateFromModule.getContentData()) {
+                        if (toContentDatum.getGist().getDescription().equals(fromContentDatum.getGist().getDescription())) {
+                            toContentDatum.getGist().setWatchedTime(fromContentDatum.getGist().getWatchedTime());
+                            toContentDatum.getGist().setWatchedPercentage(fromContentDatum.getGist().getWatchedPercentage());
+                        }
+                    }
+                }
             }
         }
     }
@@ -1186,19 +1180,21 @@ public class AppCMSPresenter {
                         null);
                 ArrayList<String> subscribedSkus = activeSubs.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
 
-                if (subscribedSkus.size() > 0) {
-                    showDialog(DialogType.EXISTING_SUBSCRIPTION,
-                            currentActivity.getString(R.string.app_cms_existing_subscription_error_message),
-                            false,
+                Bundle buyIntentBundle;
+                if (subscribedSkus != null && subscribedSkus.size() > 0) {
+                    buyIntentBundle = inAppBillingService.getBuyIntentToReplaceSkus(5,
+                            currentActivity.getPackageName(),
+                            subscribedSkus,
+                            skuToPurchase,
+                            "subs",
                             null);
-                    return;
+                } else {
+                    buyIntentBundle = inAppBillingService.getBuyIntent(3,
+                            currentActivity.getPackageName(),
+                            skuToPurchase,
+                            "subs",
+                            null);
                 }
-
-                Bundle buyIntentBundle = inAppBillingService.getBuyIntent(3,
-                        currentActivity.getPackageName(),
-                        skuToPurchase,
-                        "subs",
-                        null);
 
                 PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
                 if (pendingIntent != null) {
@@ -1225,40 +1221,9 @@ public class AppCMSPresenter {
 
     public void sendSubscriptionCancellation() {
         if (currentActivity != null) {
-            if (!TextUtils.isEmpty(getActiveSubscriptionSku(currentActivity))) {
-                SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
-                subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
-                subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
-                subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
-                subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency(currentActivity));
-                subscriptionRequest.setPlanIdentifier(getActiveSubscriptionSku(currentActivity));
-                subscriptionRequest.setPlanId(getActiveSubscriptionId(currentActivity));
-                subscriptionRequest.setUserId(getLoggedInUser(currentActivity));
-                subscriptionRequest.setReceipt(getActiveSubscriptionReceipt(currentActivity));
-
-                try {
-                    appCMSSubscriptionPlanCall.call(
-                            currentActivity.getString(R.string.app_cms_cancel_subscription_api_url,
-                                    appCMSMain.getApiBaseUrl(),
-                                    appCMSMain.getInternalName(),
-                                    currentActivity.getString(R.string.app_cms_subscription_platform_key)),
-                            R.string.app_cms_subscription_plan_cancel_key,
-                            subscriptionRequest,
-                            apikey,
-                            getAuthToken(currentActivity),
-                            result -> {
-                            },
-                            appCMSSubscriptionPlanResults -> {
-                                sendCloseOthersAction(null, false);
-                                showDialog(DialogType.CANCEL_SUBSCRIPTION,
-                                        currentActivity.getString(R.string.app_cms_cancel_subscription_confirmation_message),
-                                        false,
-                                        null);
-                            });
-                } catch (IOException e) {
-                    Log.e(TAG, "Failed to update user subscription status");
-                }
-            }
+            Intent googlePlayStoreCancelIntent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse(currentActivity.getString(R.string.google_play_store_subscriptions_url)));
+            currentActivity.startActivity(googlePlayStoreCancelIntent);
         }
     }
 
@@ -1358,7 +1323,7 @@ public class AppCMSPresenter {
         VideoAssets videoAssets = new VideoAssets();
         List<Mpeg> mpegs = new ArrayList<>();
 
-        String renditionValueArray[] = {"360p", "720p", "1080"};
+        String renditionValueArray[] = {"360p", "720p", "1080p"};
         for (String renditionValue : renditionValueArray) {
             Mpeg mpeg = new Mpeg();
             mpeg.setRenditionValue(renditionValue);
@@ -1436,7 +1401,7 @@ public class AppCMSPresenter {
         }
 
         try {
-            String downloadURL = "";
+            String downloadURL;
 
             int bitrate = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
 
@@ -1491,7 +1456,7 @@ public class AppCMSPresenter {
 
             enqueueId = downloadManager.enqueue(downloadRequest);
 
-            /**
+            /*
              * Inserting data in realm data object
              */
 
@@ -2437,6 +2402,7 @@ public class AppCMSPresenter {
 
     public void navigateToSubscriptionPlansPage() {
         if (subscriptionPage != null) {
+            launchType = LaunchType.SUBSCRIBE;
             boolean launchSuccess = navigateToPage(subscriptionPage.getPageId(),
                     subscriptionPage.getPageName(),
                     subscriptionPage.getPageUI(),
@@ -2673,7 +2639,8 @@ public class AppCMSPresenter {
                                                     public void call(AppCMSHistoryResult appCMSHistoryResult) {
                                                         if (appCMSHistoryResult != null) {
                                                             AppCMSPageAPI historyAPI =
-                                                                    appCMSHistoryResult.convertToAppCMSPageAPI(module.getId());
+                                                                    appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
+                                                            historyAPI.getModules().get(0).setId(module.getId());
                                                             mergeData(historyAPI, appCMSPageAPI);
 
                                                             cancelInternalEvents();
@@ -2940,6 +2907,7 @@ public class AppCMSPresenter {
 
     /**
      * Get The Value of Cast Overlay is shown or not
+     *
      * @param context
      * @return
      */
@@ -2953,6 +2921,7 @@ public class AppCMSPresenter {
 
     /**
      * Set The Value for the Cast Introductory Overlay
+     *
      * @param context
      * @param userId
      * @return
@@ -3615,6 +3584,7 @@ public class AppCMSPresenter {
                 builder.setPositiveButton(R.string.app_cms_login_button_text,
                         (dialog, which) -> {
                             dialog.dismiss();
+                            launchType = LaunchType.LOGIN;
                             navigateToLoginPage();
                         });
                 builder.setNegativeButton(R.string.app_cms_subscription_button_text,
@@ -3630,6 +3600,50 @@ public class AppCMSPresenter {
                         });
             }
 
+            AlertDialog dialog = builder.create();
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
+                        Color.parseColor(appCMSMain.getBrand()
+                                .getGeneral()
+                                .getBackgroundColor())));
+                if (currentActivity.getWindow().isActive()) {
+                    try {
+                        dialog.show();
+                    } catch (Exception e) {
+                        Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
+                                + e.toString());
+                    }
+                }
+            }
+        }
+    }
+
+    public void showConfirmCancelSubscriptionDialog(Action1<Boolean> oncConfirmationAction) {
+        if (currentActivity != null) {
+            int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
+            AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
+            String title = currentActivity.getString(R.string.app_cms_payment_cancelled_dialog_title);
+            String message = currentActivity.getString(R.string.app_cms_payment_canceled_body);
+            builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
+                    Integer.toHexString(textColor).substring(2),
+                    title)))
+                    .setMessage(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
+                            Integer.toHexString(textColor).substring(2),
+                            message)));
+            builder.setPositiveButton(R.string.app_cms_positive_confirmation_button_text,
+                    (dialog, which) -> {
+                        dialog.dismiss();
+                        if (oncConfirmationAction != null) {
+                            Observable.just(true).subscribe(oncConfirmationAction);
+                        }
+                    });
+            builder.setNegativeButton(R.string.app_cms_negative_confirmation_button_text,
+                    (dialog, which) -> {
+                        dialog.dismiss();
+                        if (oncConfirmationAction != null) {
+                            Observable.just(false).subscribe(oncConfirmationAction);
+                        }
+                    });
             AlertDialog dialog = builder.create();
             if (dialog.getWindow() != null) {
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
@@ -3884,6 +3898,24 @@ public class AppCMSPresenter {
         subscriptionRequest.setUserId(getLoggedInUser(currentActivity));
         subscriptionRequest.setReceipt(receiptData);
 
+        UserSubscriptionPlan userSubscriptionPlan = new UserSubscriptionPlan();
+        userSubscriptionPlan.setUserId(getLoggedInUser(currentActivity));
+        userSubscriptionPlan.setPlanReceipt(receiptData);
+        SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
+        subscriptionPlan.setSubscriptionPrice(planToPurchasePrice);
+        subscriptionPlan.setPlanId(planToPurchase);
+        subscriptionPlan.setSku(skuToPurchase);
+        userSubscriptionPlan.setSubscriptionPlan(subscriptionPlan);
+
+        RealmList<SubscriptionPlan> availableUpgradeSubscriptionPlans =
+                new RealmList<>();
+        RealmResults<SubscriptionPlan> allAvailableSubscriptionPlans =
+                realmController.getAllSubscriptionPlans();
+        availableUpgradeSubscriptionPlans.addAll(allAvailableSubscriptionPlans);
+        userSubscriptionPlan.setAvailableUpgrades(availableUpgradeSubscriptionPlans);
+
+        realmController.addUserSubscriptionPlan(userSubscriptionPlan);
+
         int subscriptionCallType = R.string.app_cms_subscription_plan_create_key;
 
         if (getActiveSubscriptionSku(currentActivity) != null) {
@@ -3957,6 +3989,24 @@ public class AppCMSPresenter {
 
         googleAccessToken = null;
         googleUserId = null;
+    }
+
+    public List<SubscriptionPlan> availableUpgradesForUser(String userId) {
+        RealmResults<UserSubscriptionPlan> userSubscriptionPlanResult =
+                realmController.getUserSubscriptionPlan(userId);
+        if (userSubscriptionPlanResult != null) {
+            return userSubscriptionPlanResult.first().getAvailableUpgrades();
+        }
+        return null;
+    }
+
+    public boolean upgradesAvailableForUser(String userId) {
+        List<SubscriptionPlan> availableUpgradesForUser =
+                availableUpgradesForUser(userId);
+        if (availableUpgradesForUser != null) {
+            return (availableUpgradesForUser.size() > 0);
+        }
+        return true;
     }
 
     public boolean isActionFacebook(String action) {
@@ -4255,6 +4305,10 @@ public class AppCMSPresenter {
                         }
                     }).execute(params);
         }
+    }
+
+    public boolean isAppSVOD() {
+        return jsonValueKeyMap.get(appCMSMain.getServiceType()) == AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE;
     }
 
     public void setNavItemToCurrentAction(Activity activity) {

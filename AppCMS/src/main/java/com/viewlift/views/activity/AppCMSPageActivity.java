@@ -20,6 +20,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -190,11 +191,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
                     handleCloseAction();
-                    appCMSPresenter.refreshPageAPIData(updatedAppCMSBinder.getAppCMSPageUI(),
-                            updatedAppCMSBinder.getPageId(),
-                            appCMSPageAPI -> {
-                                updatedAppCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
-                            });
+                    for (String appCMSBinderKey : appCMSBinderStack) {
+                        AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderKey);
+                        RefreshAppCMSBinderAction appCMSBinderAction =
+                                new RefreshAppCMSBinderAction(appCMSBinder);
+                        appCMSPresenter.refreshPageAPIData(appCMSBinder.getAppCMSPageUI(),
+                                appCMSBinder.getPageId(),
+                                appCMSBinderAction);
+                    }
                 }
             }
         };
@@ -415,8 +419,19 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         } else if (resultCode == RESULT_CANCELED) {
             if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
-                appCMSPresenter.setActiveSubscriptionSku(this, null);
-                handleBack(true, true, false, true);
+                if (!TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionSku(this))) {
+                    appCMSPresenter.showConfirmCancelSubscriptionDialog(retry -> {
+                        if (retry) {
+                            appCMSPresenter.initiateItemPurchase();
+                        } else {
+                            appCMSPresenter.setActiveSubscriptionSku(this, null);
+                            handleBack(true, true, false, true);
+                        }
+                    });
+                } else {
+                    appCMSPresenter.setActiveSubscriptionSku(this, null);
+                    handleBack(true, true, false, true);
+                }
             }
         }
     }
@@ -553,8 +568,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     (!appCMSPresenter.isPagePrimary(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
                             (appCMSPresenter.isUserLoggedIn(this) ||
                                     (!appCMSPresenter.isPageSplashPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
-                                            !appCMSPresenter.isUserLoggedIn(this))) &&
-                            !appCMSPresenter.isViewPlanPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()));
+                                            !appCMSPresenter.isUserLoggedIn(this))));
         }
         return false;
     }
@@ -971,9 +985,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSPresenter != null) {
             appCMSPresenter.restartInternalEvents();
         }
+    }
 
-        if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
-            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN);
+    private static class RefreshAppCMSBinderAction implements Action1<AppCMSPageAPI> {
+        private AppCMSBinder appCMSBinder;
+
+        public RefreshAppCMSBinderAction(AppCMSBinder appCMSBinder) {
+            this.appCMSBinder = appCMSBinder;
+        }
+
+        @Override
+        public void call(AppCMSPageAPI appCMSPageAPI) {
+            appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
         }
     }
 }

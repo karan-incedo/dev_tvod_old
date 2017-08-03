@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -7,38 +6,43 @@
         android:id="@+id/app_cms_close_button"
         android:layout_width="@dimen/close_button_size"
         android:layout_height="@dimen/close_button_size"
-        android:scaleType="fitCenter"
-        android:background="@android:color/transparent"
-        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
         android:layout_margin="@dimen/close_button_margin"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
         android:src="@drawable/cancel" />
 
     <FrameLayout
         android:layout_width="@dimen/app_cms_search_bar_width"
         android:layout_height="wrap_content"
-        android:elevation="@dimen/searchbar_elevation"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/app_cms_close_button"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true">
+        android:layout_below="@id/app_cms_close_button"
+        android:layout_centerHorizontal="true"
+        android:elevation="@dimen/searchbar_elevation">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
             <android.support.v7.widget.SearchView
                 android:id="@+id/app_cms_search_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:layout_weight="7">
-            </android.support.v7.widget.SearchView>
+                android:layout_weight="7"
+                android:background="@android:color/white" />
+
             <Button
                 android:id="@+id/app_cms_search_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:text="@string/search_button_text"/>
+                android:text="@string/search_button_text" />
+
         </LinearLayout>
+
     </FrameLayout>
+
 </RelativeLayout>

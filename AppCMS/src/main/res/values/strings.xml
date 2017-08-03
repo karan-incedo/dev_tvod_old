@@ -215,4 +215,10 @@
 
     <string name="app_cms_download_incomplete_error_title">Download Incomplete</string>
     <string name="app_cms_download_incomplete_error_message">Please wait until the download is completed.</string>
+
+    <string name="google_play_store_subscriptions_url">https://play.google.com/store/account</string>
+    <string name="app_cms_payment_cancelled_dialog_title">Payment Canceled</string>
+    <string name="app_cms_payment_canceled_body">Your payment has been canceled. Do you want to reinitiate your payment.</string>
+    <string name="app_cms_positive_confirmation_button_text">YES</string>
+    <string name="app_cms_negative_confirmation_button_text">NO</string>
 </resources>
