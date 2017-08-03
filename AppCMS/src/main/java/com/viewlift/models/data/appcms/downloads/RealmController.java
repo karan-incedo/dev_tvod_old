@@ -6,7 +6,8 @@ import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 
 import com.viewlift.models.data.appcms.api.SubscriptionPlan;
-import com.viewlift.models.data.appcms.api.UserSubscriptionPlan;
+import com.viewlift.models.data.appcms.subscriptions.AppCMSUserSubscriptionPlanResult;
+import com.viewlift.models.data.appcms.subscriptions.UserSubscriptionPlan;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;

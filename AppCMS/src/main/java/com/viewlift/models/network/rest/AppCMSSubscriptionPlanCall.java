@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.SubscriptionRequest;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionPlanResult;
+import com.viewlift.models.data.appcms.subscriptions.AppCMSUserSubscriptionPlanResult;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -47,7 +48,8 @@ public class AppCMSSubscriptionPlanCall {
     public void call(String url, int subscriptionCallType, SubscriptionRequest request,
                      String apiKey, String authToken,
                      final Action1<List<AppCMSSubscriptionPlanResult>> planResultAction1,
-                     final Action1<AppCMSSubscriptionPlanResult> resultAction1)
+                     final Action1<AppCMSSubscriptionPlanResult> resultAction1,
+                     final Action1<AppCMSUserSubscriptionPlanResult> userSubscriptionPlanResult)
             throws IOException {
 
         authHeaders.clear();
@@ -80,20 +82,20 @@ public class AppCMSSubscriptionPlanCall {
                 break;
 
             case R.string.app_cms_subscription_subscribed_plan_key:
-                appCMSSubscriptionPlanRest.getSubscribedPlan(url, authHeaders).enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
+                appCMSSubscriptionPlanRest.getSubscribedPlan(url, authHeaders).enqueue(new Callback<AppCMSUserSubscriptionPlanResult>() {
                     @Override
-                    public void onResponse(Call<AppCMSSubscriptionPlanResult> call, Response<AppCMSSubscriptionPlanResult> response) {
+                    public void onResponse(Call<AppCMSUserSubscriptionPlanResult> call, Response<AppCMSUserSubscriptionPlanResult> response) {
                         if (response != null) {
-                            Observable.just(response.body()).subscribe(resultAction1);
+                            Observable.just(response.body()).subscribe(userSubscriptionPlanResult);
                         } else {
-                            Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
+                            Observable.just((AppCMSUserSubscriptionPlanResult) null).subscribe(userSubscriptionPlanResult);
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<AppCMSSubscriptionPlanResult> call, Throwable t) {
+                    public void onFailure(Call<AppCMSUserSubscriptionPlanResult> call, Throwable t) {
                         Log.e(TAG, "onFailure: " + t.getMessage());
-                        Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
+                        Observable.just((AppCMSUserSubscriptionPlanResult) null).subscribe(userSubscriptionPlanResult);
                     }
                 });
                 break;

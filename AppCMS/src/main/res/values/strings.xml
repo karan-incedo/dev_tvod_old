@@ -42,6 +42,7 @@
     <string name="app_cms_network_connectivity_error_title">Network Connectivity</string>
     <string name="app_cms_network_connectivity_error_message">Please connect your device to a network and try again.</string>
     <string name="app_cms_signin_error_title">Sign In</string>
+    <string name="app_cms_signup_error_title">Sign Up</string>
     <string name="app_cms_reset_password_title">Reset Password</string>
     <string name="app_cms_reset_password_success_description">Please check %1$s for a reset password link.</string>
     <string name="app_cms_cancel_subscription_ask_for_confirmation_message">Are you sure you wish to cancel your subscription?</string>
@@ -106,6 +107,7 @@
     <string name="app_cms_default_video_ext">m3u8</string>
 
     <string name="app_cms_login_again">Your session has expired.  Please login again.</string>
+    <string name="app_cms_error_user_already_exists">A user with that email already exists.</string>
     <string name="app_cms_error_email_password">Email and password are not valid.</string>
     <string name="app_cms_edit_settings_button_text">EDIT</string>
     <string name="app_cms_account_name_title_text">Name:</string>
@@ -124,7 +126,6 @@
     <string name="reset_password_text">RESET PASSWORD</string>
     <string name="watched_time_key">watched_time</string>
     <string name="played_movie_image_url">played_movie_image</string>
-    <string name="subscription_payment_processor">Android</string>
 
     <!-- AppCMS Video Detail API -->
     <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>

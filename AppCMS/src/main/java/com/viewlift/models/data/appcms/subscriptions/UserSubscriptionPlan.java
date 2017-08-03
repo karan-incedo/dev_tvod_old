@@ -1,19 +1,22 @@
-package com.viewlift.models.data.appcms.api;
+package com.viewlift.models.data.appcms.subscriptions;
+
+import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 /**
- * Created by viewlift on 8/2/17.
+ * Created by viewlift on 8/3/17.
  */
 
 public class UserSubscriptionPlan extends RealmObject {
     @PrimaryKey
-    String userId;
-    String planReceipt;
-    SubscriptionPlan subscriptionPlan;
-    RealmList<SubscriptionPlan> availableUpgrades;
+    private String userId;
+    private String planReceipt;
+    private String paymentHandler;
+    private SubscriptionPlan subscriptionPlan;
+    private RealmList<SubscriptionPlan> availableUpgrades;
 
     public String getUserId() {
         return userId;
@@ -29,6 +32,14 @@ public class UserSubscriptionPlan extends RealmObject {
 
     public void setPlanReceipt(String planReceipt) {
         this.planReceipt = planReceipt;
+    }
+
+    public String getPaymentHandler() {
+        return paymentHandler;
+    }
+
+    public void setPaymentHandler(String paymentHandler) {
+        this.paymentHandler = paymentHandler;
     }
 
     public SubscriptionPlan getSubscriptionPlan() {
