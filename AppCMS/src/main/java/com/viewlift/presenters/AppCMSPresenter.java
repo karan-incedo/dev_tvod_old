@@ -624,6 +624,19 @@ public class AppCMSPresenter {
         appCMSUserDownloadVideoStatusCall.call(filmId, this, responseAction, userId);
     }
 
+    public void signinAnonymousUser(final AppCMSMain main) {
+        if (currentActivity != null) {
+            String url = currentActivity.getString(R.string.app_cms_anonymous_auth_token_api_url,
+                    main.getApiBaseUrl(),
+                    main.getInternalName());
+            appCMSAnonymousAuthTokenCall.call(url, anonymousAuthTokenResponse -> {
+                if (anonymousAuthTokenResponse != null) {
+                    setAnonymousUserToken(currentActivity, anonymousAuthTokenResponse.getAuthorizationToken());
+                }
+            });
+        }
+    }
+
     public void signinAnonymousUser(final Activity activity, final AppCMSMain main, int tryCount) {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_anonymous_auth_token_api_url,
@@ -3318,6 +3331,8 @@ public class AppCMSPresenter {
             setActiveSubscriptionReceipt(currentActivity, null);
             setRefreshToken(currentActivity, null);
             setAuthToken(currentActivity, null);
+
+            signinAnonymousUser(appCMSMain);
 
             if (googleApiClient != null && googleApiClient.isConnected()) {
                 Auth.GoogleSignInApi.signOut(googleApiClient);
