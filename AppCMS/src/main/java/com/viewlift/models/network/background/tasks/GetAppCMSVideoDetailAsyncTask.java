@@ -15,36 +15,15 @@ import rx.functions.Action1;
  * Created by anas.azeem on 7/12/2017.
  * Owned by ViewLift, NYC
  */
-public class GetAppCMSVideoDetailAsyncTask extends AsyncTask<GetAppCMSVideoDetailAsyncTask.Params, Integer, AppCMSVideoDetail> {
+public class GetAppCMSVideoDetailAsyncTask extends AsyncTask<GetAppCMSVideoDetailAsyncTask.Params,
+        Integer, AppCMSVideoDetail> {
     private static final String TAG = "VideoDetailAsyncTask";
 
     private final AppCMSVideoDetailCall call;
     private final Action1<AppCMSVideoDetail> readyAction;
 
-    public static class Params {
-        String url;
-        boolean loadFromFile;
-        public static class Builder {
-            private Params params;
-            public Builder() {
-                this.params = new Params();
-            }
-            public Builder url(String url) {
-                params.url = url;
-                return this;
-            }
-            public Builder loadFromFile(boolean loadFromFile) {
-                params.loadFromFile = loadFromFile;
-                return this;
-            }
-            public Params build() {
-                return params;
-            }
-        }
-    }
-
     public GetAppCMSVideoDetailAsyncTask(AppCMSVideoDetailCall call,
-                                           Action1<AppCMSVideoDetail> readyAction) {
+                                         Action1<AppCMSVideoDetail> readyAction) {
         this.call = call;
         this.readyAction = readyAction;
     }
@@ -53,7 +32,7 @@ public class GetAppCMSVideoDetailAsyncTask extends AsyncTask<GetAppCMSVideoDetai
     protected AppCMSVideoDetail doInBackground(Params... params) {
         if (params.length > 0) {
             try {
-                return call.call(params[0].url);
+                return call.call(params[0].url, params[0].authToken);
             } catch (IOException e) {
                 Log.e(TAG, "Could not retrieve Video Detail data - " + params[0] + ": " + e.toString());
             }
@@ -64,5 +43,38 @@ public class GetAppCMSVideoDetailAsyncTask extends AsyncTask<GetAppCMSVideoDetai
     @Override
     protected void onPostExecute(AppCMSVideoDetail appCMSVideoDetail) {
         Observable.just(appCMSVideoDetail).subscribe(readyAction);
+    }
+
+    public static class Params {
+        String url;
+        String authToken;
+        boolean loadFromFile;
+
+        public static class Builder {
+            private Params params;
+
+            public Builder() {
+                this.params = new Params();
+            }
+
+            public Builder url(String url) {
+                params.url = url;
+                return this;
+            }
+
+            public Builder authToken(String authToken) {
+                params.authToken = authToken;
+                return this;
+            }
+
+            public Builder loadFromFile(boolean loadFromFile) {
+                params.loadFromFile = loadFromFile;
+                return this;
+            }
+
+            public Params build() {
+                return params;
+            }
+        }
     }
 }
