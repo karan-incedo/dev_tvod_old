@@ -136,6 +136,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 holder.appCMSContinueWatchingSize.setVisibility(View.VISIBLE);
                 holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(contentDatum.getGist().getId()));
 
+
                 if (contentDatum.getGist() != null) {
                     switch (contentDatum.getGist().getDownloadStatus()) {
                         case STATUS_PENDING:
@@ -146,7 +147,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         appCMSPresenter,
                                         userVideoDownloadStatus -> {
                                             if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
-                                                holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.crossicon);
+                                                holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.ic_deleteicon);
                                                 loadImage(holder.itemView.getContext(), userVideoDownloadStatus.getThumbUri(), holder.appCMSContinueWatchingVideoImage);
                                                 holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
                                             } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_RUNNING) {
@@ -160,9 +161,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                 holder.appCMSContinueWatchingSize.setText("Cancel".toUpperCase());
                                 holder.appCMSContinueWatchingSize.setOnClickListener(v -> {
                                     delete(contentDatum);
-                            /*appCMSPresenter.removeDownloadedFile((contentDatum.getGist().getId()));
-                            adapterData.remove(contentDatum);
-                            notifyDataSetChanged();*/
+
 
 
                                 });
@@ -172,10 +171,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                         }
                         case STATUS_FAILED:
 
-                            break;
-                        case STATUS_SUCCESSFUL:
-                            holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.crossicon);
-                            break;
+
+                        break;
+                    case STATUS_SUCCESSFUL:
+                        holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.ic_deleteicon);
+                        break;
 
                     }
                 }

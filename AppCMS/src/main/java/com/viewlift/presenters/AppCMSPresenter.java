@@ -998,9 +998,11 @@ public class AppCMSPresenter {
                 }
             }
             if (updateToModule != null &&
+
                     updateToModule.getContentData() != null &&
                     updateFromModule != null &&
                     updateFromModule.getContentData() != null) {
+
                 for (ContentDatum toContentDatum : updateToModule.getContentData()) {
                     for (ContentDatum fromContentDatum : updateFromModule.getContentData()) {
                         if (toContentDatum.getGist().getDescription().equals(fromContentDatum.getGist().getDescription())) {
