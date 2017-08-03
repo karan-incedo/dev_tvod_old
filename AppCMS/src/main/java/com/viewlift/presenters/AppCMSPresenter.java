@@ -2033,34 +2033,31 @@ public class AppCMSPresenter {
                 GetAppCMSVideoDetailAsyncTask.Params params =
                         new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url).build();
                 new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
-                        new Action1<AppCMSVideoDetail>() {
-                            @Override
-                            public void call(AppCMSVideoDetail appCMSVideoDetail) {
-                                if (appCMSVideoDetail != null) {
-                                    binder.setContentData(appCMSVideoDetail.getRecords().get(0));
-                                    AppCMSPageAPI pageAPI = null;
-                                    for (ModuleList moduleList :
-                                            appCMSPageUI.getModuleList()) {
-                                        if (moduleList.getType().equals(currentActivity.getString(R.string.app_cms_page_autoplay_module_key))) {
-                                            pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
-                                                    moduleList.getType());
-                                            break;
-                                        }
+                        appCMSVideoDetail -> {
+                            if (appCMSVideoDetail != null) {
+                                binder.setContentData(appCMSVideoDetail.getRecords().get(0));
+                                AppCMSPageAPI pageAPI = null;
+                                for (ModuleList moduleList :
+                                        appCMSPageUI.getModuleList()) {
+                                    if (moduleList.getType().equals(currentActivity.getString(R.string.app_cms_page_autoplay_module_key))) {
+                                        pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
+                                                moduleList.getType());
+                                        break;
                                     }
-                                    if (pageAPI != null) {
-                                        launchAutoplayActivity(currentActivity,
-                                                appCMSPageUI,
-                                                pageAPI,
-                                                pageId,
-                                                pageTitle,
-                                                pageIdToPageNameMap.get(pageId),
-                                                loadFromFile,
-                                                false,
-                                                true,
-                                                false,
-                                                false,
-                                                binder);
-                                    }
+                                }
+                                if (pageAPI != null) {
+                                    launchAutoplayActivity(currentActivity,
+                                            appCMSPageUI,
+                                            pageAPI,
+                                            pageId,
+                                            pageTitle,
+                                            pageIdToPageNameMap.get(pageId),
+                                            loadFromFile,
+                                            false,
+                                            true,
+                                            false,
+                                            false,
+                                            binder);
                                 }
                             }
                         }).execute(params);

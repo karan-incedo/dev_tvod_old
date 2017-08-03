@@ -183,9 +183,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             loadImage(holder.itemView.getContext(), imageUrl.toString(), holder.appCMSContinueWatchingVideoImage);
 
             holder.itemView.setOnClickListener(v -> {
-                play(contentDatum,
-                    holder.itemView.getContext(),
-                    getListOfUpcomingMovies(position));
+                if (isDownload) {
+                    play(contentDatum,
+                        holder.itemView.getContext(),
+                        getListOfUpcomingMovies(position));
+                }
             });
 
 
@@ -199,9 +201,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             holder.appCMSContinueWatchingPlayButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    play(contentDatum,
-                            holder.itemView.getContext(),
-                            getListOfUpcomingMovies(position));
+                    if (isDownload) {
+                        play(contentDatum,
+                                holder.itemView.getContext(),
+                                getListOfUpcomingMovies(position));
+                    }
                 }
             });
 
@@ -298,14 +302,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     private void play(ContentDatum data, Context context, List<String> relatedVideoIds) {
-        if (isDownload)
-            if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
-                appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
-                        null,
-                        false,
-                        null);
-                return;
-            }
+        if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
+            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
+                    null,
+                    false,
+                    null);
+            return;
+        }
         String permalink = data.getGist().getPermalink();
         String action = context.getString(R.string.app_cms_action_watchvideo_key);
         String title = data.getGist().getTitle();
