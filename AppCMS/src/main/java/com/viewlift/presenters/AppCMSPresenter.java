@@ -574,14 +574,21 @@ public class AppCMSPresenter {
         appCMSUserDownloadVideoStatusCall.call(filmId, this, responseAction, userId);
     }
 
-    public void signinAnonymousUser() {
+    public void signinAnonymousUser(final Activity activity, final AppCMSMain main, int tryCount) {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_anonymous_auth_token_api_url,
-                    appCMSMain.getApiBaseUrl(),
-                    appCMSMain.getInternalName());
+                    main.getApiBaseUrl(),
+                    main.getInternalName());
             appCMSAnonymousAuthTokenCall.call(url, anonymousAuthTokenResponse -> {
                 if (anonymousAuthTokenResponse != null) {
                     setAnonymousUserToken(currentActivity, anonymousAuthTokenResponse.getAuthorizationToken());
+                    if (tryCount == 0) {
+                        getAppCMSAndroid(activity,
+                                main,
+                                tryCount + 1);
+                    } else {
+                        showDialog(DialogType.NETWORK, null, false, null);
+                    }
                 }
             });
         }
@@ -2906,8 +2913,12 @@ public class AppCMSPresenter {
 
     public String getAuthToken(Context context) {
         if (context != null) {
-            SharedPreferences sharedPrefs = context.getSharedPreferences(AUTH_TOKEN_SHARED_PREF_NAME, 0);
-            return sharedPrefs.getString(AUTH_TOKEN_SHARED_PREF_NAME, null);
+            if (isUserLoggedIn(context)) {
+                SharedPreferences sharedPrefs = context.getSharedPreferences(AUTH_TOKEN_SHARED_PREF_NAME, 0);
+                return sharedPrefs.getString(AUTH_TOKEN_SHARED_PREF_NAME, null);
+            } else {
+                return getAnonymousUserToken(context);
+            }
         }
         return null;
     }
@@ -4439,7 +4450,7 @@ public class AppCMSPresenter {
                             clearMaps();
                             switch (platformType) {
                                 case ANDROID:
-                                    getAppCMSAndroid(activity, main);
+                                    getAppCMSAndroid(activity, main, 0);
                                     break;
                                 case TV:
                                     getAppCMSTV(activity, main, null);
@@ -4453,61 +4464,64 @@ public class AppCMSPresenter {
         }
     }
 
-    private void getAppCMSAndroid(final Activity activity, final AppCMSMain main) {
-        GetAppCMSAndroidUIAsyncTask.Params params =
-                new GetAppCMSAndroidUIAsyncTask.Params.Builder()
-                        .url(activity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                main.getAndroid(),
-                                main.getTimestamp()))
-                        .loadFromFile(loadFromFile)
-                        .build();
-        Log.d(TAG, "Params: " + main.getAndroid() + " " + loadFromFile);
-        new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
-            if (appCMSAndroidUI == null ||
-                    appCMSAndroidUI.getMetaPages() == null ||
-                    appCMSAndroidUI.getMetaPages().size() < 1) {
-                Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
-                launchErrorActivity(activity, platformType);
-            } else {
-                signinAnonymousUser();
-                initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
-                navigation = appCMSAndroidUI.getNavigation();
-                queueMetaPages(appCMSAndroidUI.getMetaPages());
-                final MetaPage firstPage = pagesToProcess.peek();
-                Log.d(TAG, "Processing meta pages queue");
-                processMetaPagesQueue(activity,
-                        main,
-                        loadFromFile,
-                        new Action0() {
-                            @Override
-                            public void call() {
-                                if (firstPage != null) {
-                                    Log.d(TAG, "Launching first page: "
-                                            + firstPage.getPageName());
-                                    boolean appbarPresent =
-                                            (jsonValueKeyMap.get(firstPage.getPageName())
-                                                    != AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY);
-                                    boolean navbarPresent = appbarPresent;
-                                    boolean fullscreen = !appbarPresent;
-                                    boolean launchSuccess = navigateToPage(firstPage.getPageId(),
-                                            firstPage.getPageName(),
-                                            firstPage.getPageUI(),
-                                            true,
-                                            appbarPresent,
-                                            fullscreen,
-                                            navbarPresent,
-                                            false,
-                                            deeplinkSearchQuery);
-                                    if (!launchSuccess) {
-                                        Log.e(TAG, "Failed to launch page: "
+    private void getAppCMSAndroid(final Activity activity, final AppCMSMain main, int tryCount) {
+        if (TextUtils.isEmpty(getAuthToken(activity))) {
+            signinAnonymousUser(activity, main, tryCount);
+        } else {
+            GetAppCMSAndroidUIAsyncTask.Params params =
+                    new GetAppCMSAndroidUIAsyncTask.Params.Builder()
+                            .url(activity.getString(R.string.app_cms_url_with_appended_timestamp,
+                                    main.getAndroid(),
+                                    main.getTimestamp()))
+                            .loadFromFile(loadFromFile)
+                            .build();
+            Log.d(TAG, "Params: " + main.getAndroid() + " " + loadFromFile);
+            new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
+                if (appCMSAndroidUI == null ||
+                        appCMSAndroidUI.getMetaPages() == null ||
+                        appCMSAndroidUI.getMetaPages().size() < 1) {
+                    Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
+                    launchErrorActivity(activity, platformType);
+                } else {
+                    initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
+                    navigation = appCMSAndroidUI.getNavigation();
+                    queueMetaPages(appCMSAndroidUI.getMetaPages());
+                    final MetaPage firstPage = pagesToProcess.peek();
+                    Log.d(TAG, "Processing meta pages queue");
+                    processMetaPagesQueue(activity,
+                            main,
+                            loadFromFile,
+                            new Action0() {
+                                @Override
+                                public void call() {
+                                    if (firstPage != null) {
+                                        Log.d(TAG, "Launching first page: "
                                                 + firstPage.getPageName());
-                                        launchErrorActivity(currentActivity, platformType);
+                                        boolean appbarPresent =
+                                                (jsonValueKeyMap.get(firstPage.getPageName())
+                                                        != AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY);
+                                        boolean navbarPresent = appbarPresent;
+                                        boolean fullscreen = !appbarPresent;
+                                        boolean launchSuccess = navigateToPage(firstPage.getPageId(),
+                                                firstPage.getPageName(),
+                                                firstPage.getPageUI(),
+                                                true,
+                                                appbarPresent,
+                                                fullscreen,
+                                                navbarPresent,
+                                                false,
+                                                deeplinkSearchQuery);
+                                        if (!launchSuccess) {
+                                            Log.e(TAG, "Failed to launch page: "
+                                                    + firstPage.getPageName());
+                                            launchErrorActivity(currentActivity, platformType);
+                                        }
                                     }
                                 }
-                            }
-                        });
-            }
-        }).execute(params);
+                            });
+                }
+            }).execute(params);
+        }
     }
 
     private void getAppCMSPage(String url,
