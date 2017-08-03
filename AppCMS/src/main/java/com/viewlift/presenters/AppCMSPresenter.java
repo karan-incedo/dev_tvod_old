@@ -61,6 +61,7 @@ import com.google.android.gms.iid.InstanceID;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
+import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenResponse;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
@@ -1339,6 +1340,15 @@ public class AppCMSPresenter {
                                             currentActivity.getString(R.string.app_cms_cancel_subscription_confirmation_message),
                                             false,
                                             null);
+
+                                    AppsFlyerUtils.appsFlyerSubscriptionEvent(currentActivity, this,
+                                            false,
+                                            getLoggedInUser(currentActivity),
+                                            subscriptionRequest.getPlanId(),
+                                            String.valueOf(appCMSSubscriptionPlanResults
+                                                    .getPlanDetails().get(0).getRecurringPaymentAmount()),
+                                            subscriptionRequest.getPlanId(),
+                                            subscriptionRequest.getCurrencyCode());
                                 },
                                 currentUserPlan -> {
 
@@ -3103,6 +3113,7 @@ public class AppCMSPresenter {
                                         entitlementPendingVideoData.currentlyPlayingIndex,
                                         entitlementPendingVideoData.relateVideoIds);
                             } else {
+                                cancelInternalEvents();
                                 NavigationPrimary homePageNavItem = findHomePageNavItem();
                                 if (homePageNavItem != null) {
                                     navigateToPage(homePageNavItem.getPageId(),
@@ -3164,6 +3175,7 @@ public class AppCMSPresenter {
                                         entitlementPendingVideoData.currentlyPlayingIndex,
                                         entitlementPendingVideoData.relateVideoIds);
                             } else {
+                                cancelInternalEvents();
                                 NavigationPrimary homePageNavItem = findHomePageNavItem();
                                 if (homePageNavItem != null) {
                                     navigateToPage(homePageNavItem.getPageId(),
@@ -3342,6 +3354,7 @@ public class AppCMSPresenter {
             launchNavigationPage(null, null);
 
             CastHelper.getInstance(currentActivity.getApplicationContext()).castingLogout();
+            AppsFlyerUtils.appsFlyerLogoutEvent(currentActivity, getLoggedInUser(currentActivity));
         }
     }
 
@@ -3908,6 +3921,16 @@ public class AppCMSPresenter {
                     },
                     appCMSSubscriptionPlanResult -> {
                         if (appCMSSubscriptionPlanResult != null) {
+                            AppsFlyerUtils.appsFlyerSubscriptionEvent(currentActivity, this,
+                                    true,
+                                    getLoggedInUser(currentActivity),
+                                    subscriptionRequest.getPlanId(),
+                                    String.valueOf(appCMSSubscriptionPlanResult.getPlanDetails()
+                                            .get(0).getRecurringPaymentAmount()),
+                                    subscriptionRequest.getPlanId(),
+                                    subscriptionRequest.getCurrencyCode());
+
+                            cancelInternalEvents();
                             NavigationPrimary homePageNavItem = findHomePageNavItem();
                             if (homePageNavItem != null) {
                                 navigateToPage(homePageNavItem.getPageId(),
@@ -4110,7 +4133,7 @@ public class AppCMSPresenter {
                                                             appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler());
                                                 }
                                             }
-                                        );
+                                    );
                                 } catch (Exception e) {
                                     Log.e(TAG, "getSubscriptionPageContent: " + e.toString());
                                 }
@@ -4264,6 +4287,8 @@ public class AppCMSPresenter {
                         setLoggedInUserName(currentActivity, signInResponse.getName());
                         setLoggedInUserEmail(currentActivity, signInResponse.getEmail());
 
+                        AppsFlyerUtils.appsFlyerLoginEvent(currentActivity, !signup, signInResponse.getUserId());
+
                         if (followWithSubscription) {
                             signupFromFacebook = false;
                             isSignupFromGoogle = false;
@@ -4293,6 +4318,7 @@ public class AppCMSPresenter {
                                 entitlementPendingVideoData.relateVideoIds = null;
                                 entitlementPendingVideoData = null;
                             } else {
+                                cancelInternalEvents();
                                 NavigationPrimary homePageNavItem = findHomePageNavItem();
                                 if (homePageNavItem != null) {
                                     cancelInternalEvents();
@@ -4632,16 +4658,11 @@ public class AppCMSPresenter {
     }
 
     private void getAppCMSAndroid(final Activity activity, final AppCMSMain main, int tryCount) {
-        if (TextUtils.isEmpty(getAuthToken(activity))) {
+        if (!isUserLoggedIn(currentActivity) && TextUtils.isEmpty(getAuthToken(activity))) {
             signinAnonymousUser(activity, main, tryCount);
-        } else if (shouldRefreshAuthToken() && tryCount == 0) {
+        } else if (isUserLoggedIn(currentActivity) && shouldRefreshAuthToken() && tryCount == 0) {
             refreshIdentity(getRefreshToken(activity),
-                    new Action0() {
-                        @Override
-                        public void call() {
-                            getAppCMSAndroid(activity, main, tryCount + 1);
-                        }
-                    });
+                    () -> getAppCMSAndroid(activity, main, tryCount + 1));
         } else {
             GetAppCMSAndroidUIAsyncTask.Params params =
                     new GetAppCMSAndroidUIAsyncTask.Params.Builder()
@@ -4936,6 +4957,7 @@ public class AppCMSPresenter {
                             @Override
                             public void call() {
                                 Log.d(TAG, "Launching first page: " + firstPage.getPageName());
+                                cancelInternalEvents();
                                 NavigationPrimary homePageNav = findHomePageNavItem();
                                 boolean launchSuccess = navigateToTVPage(homePageNav.getPageId(),
                                         homePageNav.getTitle(),

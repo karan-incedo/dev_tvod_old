@@ -131,7 +131,7 @@
     <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
 
     <string name="media_route_menu_title">Play on&#8230;</string>
-   <string name="countdown_seconds">%d seconds</string>
+    <string name="countdown_seconds">%d seconds</string>
     <string name="related_movies_id_list">related_movies_id</string>
     <string name="loading_vid_on_casting">Loading on casting device..</string>
     <string name="app_cms_page_autoplay_key">AutoPlay Screen</string>
@@ -177,21 +177,49 @@
     <string name="app_cms_appsflyer_film_id">af_film_id</string>
     <string name="app_cms_appsflyer_course_id">af_course_id</string>
     <string name="app_cms_appsflyer_sub_category">af_film_sub_category</string>
-    <string name="app_cms_appsflyer_video_view">af_video_view</string>
+    <string name="app_cms_appsflyer_video_view">film viewing</string>
+    <string name="app_cms_appsflyer_signup_success">SignUp Success</string>
     <string name="app_cms_appsflyer_login_success">Login Success</string>
-    <string name="app_cms_appsflyer_signup_success">signUpSuccess</string>
     <string name="app_cms_login">Login</string>
+
+    <string name="app_cms_appsflyer_app_open_key">App Open</string>
+    <string name="app_cms_appsflyer_event_app_open_value">app open</string>
+
+    <string name="app_cms_appsflyer_login_key">Login</string>
+    <string name="app_cms_appsflyer_login_status_key">Login Status</string>
+    <string name="app_cms_appsflyer_event_login_value">login success</string>
+
+    <string name="app_cms_appsflyer_logout_key">Logout</string>
+    <string name="app_cms_appsflyer_event_logout_value">logout success</string>
+
+    <string name="app_cms_appsflyer_app_registration_key">App Registration</string>
+    <string name="app_cms_appsflyer_event_app_registration_value">app registration</string>
+
+    <string name="app_cms_appsflyer_subscription_key">Subscribe</string>
+    <string name="app_cms_appsflyer_event_subscription_value">subscribe</string>
+
+    <string name="app_cms_appsflyer_unsubscribe_key">UnSubscribe</string>
+    <string name="app_cms_appsflyer_event_unsubscribe_value">unsubscribe</string>
+
+    <string name="app_cms_appsflyer_film_viewing_key">Film Viewing</string>
+    <string name="app_cms_appsflyer_event_film_viewing_value">film viewing</string>
+
+    <string name="app_cms_appsflyer_app_uninstall_key">App Uninstall</string>
+    <string name="app_cms_appsflyer_event_app_uninstall_value">app uninstall</string>
+
     <string name="app_cms_registered_state">Registered state</string>
     <string name="app_cms_appsflyer_event_type_logout">Logout</string>
     <string name="app_cms_appsflyer_entitled_state">Entitled state</string>
     <string name="app_cms_appsflyer_registered_state">Registered state</string>
     <string name="app_cms_appsflyer_subscription">Subscription</string>
     <string name="app_cms_appsflyer_cancel_subscription">Cancel Payment</string>
+
     <string name="app_cms_appsflyer_order_id">af_order_id</string>
     <string name="app_cms_appsflyer_product_id">af_product_id</string>
     <string name="app_cms_user_cancel_payment">User Cancel Payment</string>
     <string name="app_cms_plan_type">af_plan_type</string>
     <string name="GCM_SENDER_ID_APPFLYERS">525148171038</string>
+
     <string name="app_cms_cancel_subscription_title">Cancel Subscription</string>
     <string name="app_cms_confirm_alert_dialog_button_text">OK</string>
     <string name="app_cms_cancel_alert_dialog_button_text">CANCEL</string>
@@ -201,6 +229,7 @@
     <string name="app_cms_subscribtion_title">Subscription</string>
     <string name="app_cms_download_quality_title">SET YOUR DOWNLOAD QUALITY</string>
     <string name="app_cms_downloas_setting_listner_key">app_cms_downloas_setting_listner_key</string>
+
     <string name="app_cms_subscription_title">Subscription</string>
     <string name="app_cms_login_required_title">Subscription Required</string>
     <string name="app_cms_login_required_message">Please login to continue</string>
