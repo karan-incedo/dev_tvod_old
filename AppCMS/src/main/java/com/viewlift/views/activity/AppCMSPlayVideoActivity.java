@@ -240,7 +240,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     sendBeaconPlay,
                     onApplicationEndedAction);
         } else if (castingModeChromecast == CastingUtils.CASTING_MODE_CHROMECAST && binder.isTrailer()) {
-            CastHelper.getInstance(getApplicationContext()).launchSingleMediaRemote(appCMSPresenter, filmId, binder, currentPosition);
+            CastHelper.getInstance(getApplicationContext()).launchTrailor(appCMSPresenter, filmId, binder, currentPosition);
         }
 
     }

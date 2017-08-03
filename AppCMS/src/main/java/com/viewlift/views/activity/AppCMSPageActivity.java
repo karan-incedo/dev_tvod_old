@@ -126,7 +126,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_appcms_page);
 
         ButterKnife.bind(this);
-
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
@@ -670,6 +669,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             showSystemUI(getWindow().getDecorView());
         }
         handleNavbar(appCMSBinder);
+
+        setCastingInstance();
+        if (CastServiceProvider.getInstance(this).isOverlayVisible()) {
+            CastServiceProvider.getInstance(this).showIntroOverLay();
+        }
     }
 
     private void handleToolbar(boolean appbarPresent, AppCMSMain appCMSMain) {
@@ -938,7 +942,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             ll_media_route_button.setVisibility(View.GONE);
         }
 
-        setCastingInstance();
     }
 
     private void setCastingInstance() {

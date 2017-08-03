@@ -53,6 +53,7 @@ public class CastServiceProvider {
     private static CastServiceProvider objMain;
     private Context mContext;
     private AppCMSPresenter appCMSPresenter;
+    private ShowcaseView mShowCaseView;
 
     public CastServiceProvider(Activity activity) {
         this.mContext = activity;
@@ -220,7 +221,6 @@ public class CastServiceProvider {
 
         @Override
         public void onRouterUnselected(MediaRouter mMediaRouter, MediaRouter.RouteInfo info) {
-
             mCastHelper.mSelectedDevice = null;
             refreshCastMediaIcon();
         }
@@ -238,9 +238,8 @@ public class CastServiceProvider {
         }
     };
 
-    private ShowcaseView mShowCaseView;
 
-    private void showIntroOverLay() {
+    public void showIntroOverLay() {
         Target target = new ViewTarget(mMediaRouteButton.getId(), mActivity);
         mShowCaseView = new ShowcaseView.Builder(mActivity)
                 .setTarget(target) //Here is where you supply the id of the action bar item you want to display
@@ -250,6 +249,15 @@ public class CastServiceProvider {
         mShowCaseView.forceTextPosition(ShowcaseView.ABOVE_SHOWCASE);
         mShowCaseView.setStyle(R.style.CustomShowcaseTheme);
         mShowCaseView.show();
+    }
+
+    public boolean isOverlayVisible() {
+        boolean isVisible = false;
+        if (mShowCaseView != null && mShowCaseView.isShowing()) {
+            isVisible = true;
+            mShowCaseView.hide();
+        }
+        return isVisible;
     }
 
     /**
@@ -290,10 +298,10 @@ public class CastServiceProvider {
             public void onClick(View v) {
                 castDisconnectDialog = new CastDisconnectDialog(mActivity);
 
-                if (mCastHelper.mSelectedDevice == null && mActivity!=null) {
+                if (mCastHelper.mSelectedDevice == null && mActivity != null) {
                     castChooserDialog.setRoutes(mCastHelper.routes);
                     castChooserDialog.show();
-                } else if (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null && mActivity!=null) {
+                } else if (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null && mActivity != null) {
                     castDisconnectDialog.setToBeDisconnectDevice(mCastHelper.mMediaRouter);
                     castDisconnectDialog.show();
                 }

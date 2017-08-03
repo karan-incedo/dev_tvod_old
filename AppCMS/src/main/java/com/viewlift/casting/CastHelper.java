@@ -289,6 +289,7 @@ public class CastHelper {
             listRelatedVideosDetails = new ArrayList<ContentDatum>();
             listRelatedVideosId = new ArrayList<String>();
             listCompareRelatedVideosId = new ArrayList<String>();
+
             if (filmId == null && relateVideoId == null) {
                 return;
             }
@@ -311,15 +312,22 @@ public class CastHelper {
             }
 
             binderPlayScreen = binder;
-            callRelatedVideoData();
+
+            if (relateVideoId == null) {
+                lauchSingeRemoteMedia(filmId, binder.getContentData().getGist().getPermalink(), binder.getContentData().getGist().getTitle(), binder.getContentData().getGist().getVideoImageUrl(), CastingUtils.getPlayingUrl(binder.getContentData()), currentPosition);
+            } else {
+                callRelatedVideoData();
+            }
         }
     }
 
-    //launchSingleMediaRemote use to launch media when auto play off
-    public void launchSingleMediaRemote(AppCMSPresenter appCMSPresenter, String filmId, AppCMSVideoPageBinder binder, long currentPosition) {
+    //launchTrailor use to launch media when auto play off
+    public void launchTrailor(AppCMSPresenter appCMSPresenter, String filmId, AppCMSVideoPageBinder binder, long currentPosition) {
         String imageUrl = "";
         String title = "";
         String videoUrl = "";
+        String paramKey = "";
+
         Toast.makeText(mAppContext, mAppContext.getString(R.string.loading_vid_on_casting), Toast.LENGTH_SHORT).show();
         this.appCMSPresenterComponenet = appCMSPresenter;
         listRelatedVideosDetails = new ArrayList<ContentDatum>();
@@ -336,6 +344,14 @@ public class CastHelper {
 
             imageUrl = binder.getContentData().getGist().getVideoImageUrl();
         }
+        if (binder.getContentData().getGist().getPermalink() != null) {
+            paramKey = binder.getContentData().getGist().getPermalink();
+        }
+        lauchSingeRemoteMedia(filmId, paramKey, title, imageUrl, videoUrl, currentPosition);
+
+    }
+
+    private void lauchSingeRemoteMedia(String filmId, String param_key, String title, String imageUrl, String videoUrl, long currentPosition) {
         CastingUtils.isRemoteMediaControllerOpen = false;
         JSONObject customData = new JSONObject();
         try {
@@ -344,7 +360,7 @@ public class CastHelper {
             e.printStackTrace();
         }
         try {
-            customData.put(CastingUtils.PARAM_KEY, binder.getContentData().getGist().getPermalink());
+            customData.put(CastingUtils.PARAM_KEY, param_key);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -355,7 +371,6 @@ public class CastHelper {
                 customData,
                 mAppContext), true, currentPosition);
         getRemoteMediaClient().addListener(remoteListener);
-
     }
 
     public void openRemoteController() {
@@ -588,9 +603,9 @@ public class CastHelper {
         appCMSPresenterComponenet.getRelatedMedia(filmIds, new Action1<AppCMSVideoDetail>() {
             @Override
             public void call(AppCMSVideoDetail relatedMediaVideoDetails) {
-                if (listRelatedVideosDetails == null) {
+                if (listRelatedVideosDetails == null && relatedMediaVideoDetails != null && relatedMediaVideoDetails.getRecords() != null) {
                     listRelatedVideosDetails = relatedMediaVideoDetails.getRecords();
-                } else {
+                } else if (relatedMediaVideoDetails != null && relatedMediaVideoDetails.getRecords() != null) {
                     listRelatedVideosDetails.addAll(relatedMediaVideoDetails.getRecords());
                 }
 
@@ -606,7 +621,7 @@ public class CastHelper {
 
     private void castMediaListToRemoteLocation() {
         CastingUtils.isMediaQueueLoaded = true;
-        if (getRemoteMediaClient() != null) {
+        if (getRemoteMediaClient() != null && listRelatedVideosDetails != null && listRelatedVideosDetails.size() > 0) {
             MediaQueueItem[] queueItemsArray = CastingUtils.BuildCastingQueueItems(listRelatedVideosDetails,
                     appName,
                     listCompareRelatedVideosId,
@@ -615,6 +630,9 @@ public class CastHelper {
                     MediaStatus.REPEAT_MODE_REPEAT_OFF, currentMediaPosition, null);
             getRemoteMediaClient().addListener(remoteListener);
             getRemoteMediaClient().addProgressListener(progressListener, 1000);
+        } else {
+            lauchSingeRemoteMedia(startingFilmId, binderPlayScreen.getContentData().getGist().getPermalink(), binderPlayScreen.getContentData().getGist().getTitle(), binderPlayScreen.getContentData().getGist().getVideoImageUrl(), CastingUtils.getPlayingUrl(binderPlayScreen.getContentData()), currentMediaPosition);
+
         }
     }
 
