@@ -1724,7 +1724,7 @@ public class AppCMSPresenter {
     }
 
     public String downloadedMediaLocalURI(long enqueueId) {
-        String uriLocal = "file:///";
+        String uriLocal = currentActivity.getString(R.string.download_file_prefix);
         DownloadManager.Query query = new DownloadManager.Query();
         query.setFilterById(enqueueId);
         Cursor cursor = downloadManager.query(query);
