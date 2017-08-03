@@ -109,9 +109,15 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     // TODO: 7/27/2017 Implement CC for multiple languages.
                     if (binder.getContentData() != null
                             && binder.getContentData().getContentDetails() != null
-                            && binder.getContentData().getContentDetails().getClosedCaptions() != null
-                            && binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl() != null){
-                        closedCaptionUrl = binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl();
+                            && binder.getContentData().getContentDetails().getClosedCaptions()
+                            != null
+                            && binder.getContentData().getContentDetails().getClosedCaptions()
+                            .get(0).getUrl() != null
+                            && !binder.getContentData().getContentDetails().getClosedCaptions()
+                            .get(0).getUrl().equalsIgnoreCase(
+                                    getString(R.string.download_file_prefix))){
+                        closedCaptionUrl = binder.getContentData().getContentDetails()
+                                .getClosedCaptions().get(0).getUrl();
                     }
                 } else {
                     if (binder.getContentData().getContentDetails() != null

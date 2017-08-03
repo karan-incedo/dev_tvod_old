@@ -222,4 +222,5 @@
     <string name="app_cms_payment_canceled_body">Your payment has been canceled. Do you want to reinitiate your payment.</string>
     <string name="app_cms_positive_confirmation_button_text">YES</string>
     <string name="app_cms_negative_confirmation_button_text">NO</string>
+    <string name="download_file_prefix">file:///</string>
 </resources>
