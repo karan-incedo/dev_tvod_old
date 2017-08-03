@@ -97,6 +97,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     if (binder.getContentData() != null
                             && binder.getContentData().getContentDetails() != null
                             && binder.getContentData().getContentDetails().getClosedCaptions() != null
+                            && binder.getContentData().getContentDetails().getClosedCaptions().size() > 0
                             && binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
                         closedCaptionUrl = binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl();
                     }
@@ -240,7 +241,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     sendBeaconPlay,
                     onApplicationEndedAction);
         } else if (castingModeChromecast == CastingUtils.CASTING_MODE_CHROMECAST && binder.isTrailer()) {
-            CastHelper.getInstance(getApplicationContext()).launchTrailor(appCMSPresenter, filmId, binder, currentPosition);
+            CastHelper.getInstance(getApplicationContext()).launchTrailer(appCMSPresenter, filmId, binder, currentPosition);
         }
 
     }

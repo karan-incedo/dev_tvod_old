@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.MediaRouteDiscoveryFragment;
 import android.support.v7.media.MediaRouteSelector;
 import android.support.v7.media.MediaRouter;
@@ -81,6 +80,10 @@ public class CastHelper {
     private boolean sentBeaconPlay;
     private boolean sendBeaconPing;
     private Action1<OnApplicationEnded> onApplicationEndedAction;
+    private String imageUrl = "";
+    private String title = "";
+    private String videoUrl = "";
+    private String paramLink = "";
 
     private CastHelper(Context mContext) {
         mAppContext = mContext.getApplicationContext();
@@ -277,6 +280,7 @@ public class CastHelper {
 
             CastingUtils.isRemoteMediaControllerOpen = false;
             currentMediaPosition = currentPosition;
+            binderPlayScreen = binder;
             startingFilmId = filmId;
             if (getRemoteMediaClient() == null) {
                 return;
@@ -302,7 +306,6 @@ public class CastHelper {
                 } else {
                     currentPlayingIndex = relateVideoId.indexOf(filmId);
                 }
-
                 listRelatedVideosId.addAll(relateVideoId);
                 listCompareRelatedVideosId.addAll(listRelatedVideosId);
             } else if (filmId != null) {
@@ -311,27 +314,24 @@ public class CastHelper {
                 listCompareRelatedVideosId.add(filmId);
             }
 
-            binderPlayScreen = binder;
 
-            if (relateVideoId == null) {
-                lauchSingeRemoteMedia(filmId, binder.getContentData().getGist().getPermalink(), binder.getContentData().getGist().getTitle(), binder.getContentData().getGist().getVideoImageUrl(), CastingUtils.getPlayingUrl(binder.getContentData()), currentPosition);
+            if (relateVideoId == null && binderPlayScreen != null) {
+                videoUrl = CastingUtils.getPlayingUrl(binderPlayScreen.getContentData());
+                lauchSingeRemoteMedia(binderPlayScreen, videoUrl, filmId, currentPosition);
+
             } else {
                 callRelatedVideoData();
             }
         }
     }
 
-    //launchTrailor use to launch media when auto play off
-    public void launchTrailor(AppCMSPresenter appCMSPresenter, String filmId, AppCMSVideoPageBinder binder, long currentPosition) {
-        String imageUrl = "";
-        String title = "";
-        String videoUrl = "";
-        String paramKey = "";
+    //launchTrailer use to launch media when auto play off
+    public void launchTrailer(AppCMSPresenter appCMSPresenter, String filmId, AppCMSVideoPageBinder binder, long currentPosition) {
+
 
         Toast.makeText(mAppContext, mAppContext.getString(R.string.loading_vid_on_casting), Toast.LENGTH_SHORT).show();
         this.appCMSPresenterComponenet = appCMSPresenter;
         listRelatedVideosDetails = new ArrayList<ContentDatum>();
-
         if (binder.getContentData().getContentDetails() != null
                 && binder.getContentData().getContentDetails().getTrailers() != null
                 && binder.getContentData().getContentDetails().getTrailers().get(0) != null
@@ -341,17 +341,26 @@ public class CastHelper {
             if (videoAssets.getMpeg().size() > 0) {
                 videoUrl = videoAssets.getMpeg().get(videoAssets.getMpeg().size() - 1).getUrl();
             }
-
-            imageUrl = binder.getContentData().getGist().getVideoImageUrl();
         }
-        if (binder.getContentData().getGist().getPermalink() != null) {
-            paramKey = binder.getContentData().getGist().getPermalink();
-        }
-        lauchSingeRemoteMedia(filmId, paramKey, title, imageUrl, videoUrl, currentPosition);
+        lauchSingeRemoteMedia(binder, videoUrl, filmId, currentPosition);
 
     }
 
-    private void lauchSingeRemoteMedia(String filmId, String param_key, String title, String imageUrl, String videoUrl, long currentPosition) {
+
+    private void lauchSingeRemoteMedia(AppCMSVideoPageBinder binder, String videoPlayUrl, String filmId, long currentPosition) {
+
+        if (binderPlayScreen != null && binderPlayScreen.getContentData() != null && binderPlayScreen.getContentData().getGist() != null) {
+            if (binderPlayScreen.getContentData().getGist().getPermalink() != null) {
+                paramLink = binderPlayScreen.getContentData().getGist().getPermalink();
+            }
+            if (binderPlayScreen.getContentData().getGist().getTitle() != null) {
+                title = binderPlayScreen.getContentData().getGist().getTitle();
+            }
+            if (binderPlayScreen.getContentData().getGist().getVideoImageUrl() != null) {
+                imageUrl = binderPlayScreen.getContentData().getGist().getVideoImageUrl();
+            }
+
+        }
         CastingUtils.isRemoteMediaControllerOpen = false;
         JSONObject customData = new JSONObject();
         try {
@@ -360,14 +369,14 @@ public class CastHelper {
             e.printStackTrace();
         }
         try {
-            customData.put(CastingUtils.PARAM_KEY, param_key);
+            customData.put(CastingUtils.PARAM_KEY, paramLink);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         getRemoteMediaClient().load(CastingUtils.buildMediaInfo(title,
                 appName,
                 imageUrl,
-                videoUrl,
+                videoPlayUrl,
                 customData,
                 mAppContext), true, currentPosition);
         getRemoteMediaClient().addListener(remoteListener);
@@ -630,8 +639,11 @@ public class CastHelper {
                     MediaStatus.REPEAT_MODE_REPEAT_OFF, currentMediaPosition, null);
             getRemoteMediaClient().addListener(remoteListener);
             getRemoteMediaClient().addProgressListener(progressListener, 1000);
-        } else {
-            lauchSingeRemoteMedia(startingFilmId, binderPlayScreen.getContentData().getGist().getPermalink(), binderPlayScreen.getContentData().getGist().getTitle(), binderPlayScreen.getContentData().getGist().getVideoImageUrl(), CastingUtils.getPlayingUrl(binderPlayScreen.getContentData()), currentMediaPosition);
+
+        } else if (binderPlayScreen != null && binderPlayScreen.getContentData() != null) {
+
+            videoUrl = CastingUtils.getPlayingUrl(binderPlayScreen.getContentData());
+            lauchSingeRemoteMedia(binderPlayScreen, videoUrl, startingFilmId, currentMediaPosition);
 
         }
     }
