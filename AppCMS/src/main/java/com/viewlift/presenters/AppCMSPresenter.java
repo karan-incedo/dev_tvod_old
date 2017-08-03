@@ -1818,9 +1818,7 @@ public class AppCMSPresenter {
 
             List<ContentDatum> contentData = new ArrayList<>();
             for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloadesByUserId(getLoggedInUser(currentActivity))) {
-                ContentDatum data = createContentDatum(downloadVideoRealm);
-
-                contentData.add(data);
+                contentData.add(downloadVideoRealm.convertToContentDatum(getLoggedInUser(currentActivity)));
             }
             module.setContentData(contentData);
             module.setTitle(currentActivity.getString(R.string.app_cms_page_download_title));
@@ -1868,38 +1866,6 @@ public class AppCMSPresenter {
                 currentActivity.sendBroadcast(downloadPageIntent);
             }
         }
-    }
-
-    @NonNull
-    private ContentDatum createContentDatum(DownloadVideoRealm downloadVideoRealm) {
-        ContentDatum data = new ContentDatum();
-        Gist gist = new Gist();
-        gist.setId(downloadVideoRealm.getVideoId());
-        gist.setTitle(downloadVideoRealm.getVideoTitle());
-        gist.setDescription(downloadVideoRealm.getVideoDescription());
-        gist.setPosterImageUrl(downloadVideoRealm.getPosterFileURL());
-        gist.setVideoImageUrl(downloadVideoRealm.getVideoFileURL());
-        gist.setLocalFileUrl(downloadVideoRealm.getLocalURI());
-
-        if (!TextUtils.isEmpty(downloadVideoRealm.getSubtitlesFileURL())) {
-            ClosedCaptions closedCaption = new ClosedCaptions();
-            closedCaption.setUrl(downloadVideoRealm.getSubtitlesFileURL());
-            List<ClosedCaptions> closedCaptions = new ArrayList<>();
-            closedCaptions.add(closedCaption);
-            ContentDetails contentDetails = new ContentDetails();
-            contentDetails.setClosedCaptions(closedCaptions);
-            data.setContentDetails(contentDetails);
-        }
-        gist.setPermalink(downloadVideoRealm.getPermalink());
-        gist.setDownloadStatus(downloadVideoRealm.getDownloadStatus());
-        gist.setRuntime(downloadVideoRealm.getVideoDuration());
-
-
-        data.setGist(gist);
-        data.setShowQueue(true);
-        data.setUserId(getLoggedInUser(currentActivity));
-        data.setAddedDate(downloadVideoRealm.getDownloadDate());
-        return data;
     }
 
     public void clearHistory(final Action1<AppCMSDeleteHistoryResult> resultAction1) {
@@ -2059,6 +2025,8 @@ public class AppCMSPresenter {
                                             false,
                                             binder);
                                 }
+                            } else {
+                                Log.e(TAG, "API issue in VideoDetail call");
                             }
                         }).execute(params);
             } else {
@@ -5159,10 +5127,10 @@ public class AppCMSPresenter {
                         appCMSMain.getSite());
             }
         } else {
-            ContentDatum contentDatum =
-                    createContentDatum(realmController.getDownloadById(
-                            binder.getRelateVideoIds().get(
-                                    binder.getCurrentPlayingVideoIndex() + 1)));
+            ContentDatum contentDatum = realmController.getDownloadById(
+                    binder.getRelateVideoIds().get(
+                            binder.getCurrentPlayingVideoIndex() + 1))
+                    .convertToContentDatum(getLoggedInUser(currentActivity));
             binder.setCurrentPlayingVideoIndex(binder.getCurrentPlayingVideoIndex() + 1);
             binder.setContentData(contentDatum);
         }

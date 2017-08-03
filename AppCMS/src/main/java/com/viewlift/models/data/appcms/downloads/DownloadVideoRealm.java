@@ -1,5 +1,15 @@
 package com.viewlift.models.data.appcms.downloads;
 
+import android.text.TextUtils;
+
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
+import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.ContentDetails;
+import com.viewlift.models.data.appcms.api.Gist;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -253,5 +263,36 @@ public class DownloadVideoRealm extends RealmObject {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public ContentDatum convertToContentDatum(String userId) {
+        ContentDatum data = new ContentDatum();
+        Gist gist = new Gist();
+        gist.setId(getVideoId());
+        gist.setTitle(getVideoTitle());
+        gist.setDescription(getVideoDescription());
+        gist.setPosterImageUrl(getPosterFileURL());
+        gist.setVideoImageUrl(getVideoFileURL());
+        gist.setLocalFileUrl(getLocalURI());
+
+        if (!TextUtils.isEmpty(getSubtitlesFileURL())) {
+            ClosedCaptions closedCaption = new ClosedCaptions();
+            closedCaption.setUrl(getSubtitlesFileURL());
+            List<ClosedCaptions> closedCaptions = new ArrayList<>();
+            closedCaptions.add(closedCaption);
+            ContentDetails contentDetails = new ContentDetails();
+            contentDetails.setClosedCaptions(closedCaptions);
+            data.setContentDetails(contentDetails);
+        }
+        gist.setPermalink(getPermalink());
+        gist.setDownloadStatus(getDownloadStatus());
+        gist.setRuntime(getVideoDuration());
+
+
+        data.setGist(gist);
+        data.setShowQueue(true);
+        data.setUserId(userId);
+        data.setAddedDate(getDownloadDate());
+        return data;
     }
 }

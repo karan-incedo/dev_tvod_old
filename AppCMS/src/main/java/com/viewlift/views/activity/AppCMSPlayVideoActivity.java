@@ -86,12 +86,15 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             && extra[1] != null
                             && gist.getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
                         videoUrl = !TextUtils.isEmpty(extra[1]) ? extra[1] : "";
-                    } else if (extra != null && extra[2] != null
+                    }
+                    /*If the video is already downloaded, play if from there, even if Internet is
+                    * available*/
+                    else if (gist.getId() != null
                             && appCMSPresenter.getRealmController() != null
-                            && appCMSPresenter.getRealmController().getDownloadById(extra[2]) != null
-                            && appCMSPresenter.getRealmController().getDownloadById(extra[2]).getDownloadStatus() != null
-                            && appCMSPresenter.getRealmController().getDownloadById(extra[2]).getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
-                        videoUrl = appCMSPresenter.getRealmController().getDownloadById(extra[2]).getLocalURI();
+                            && appCMSPresenter.getRealmController().getDownloadById(gist.getId()) != null
+                            && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus() != null
+                            && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
+                        videoUrl = appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getLocalURI();
                     } else if (binder.getContentData().getStreamingInfo() != null &&
                             binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
                         VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();

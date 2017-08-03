@@ -184,9 +184,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
             holder.itemView.setOnClickListener(v -> {
                 if (isDownload) {
-                    play(contentDatum,
+                    playDownloaded(contentDatum,
                         holder.itemView.getContext(),
                         getListOfUpcomingMovies(position));
+                } else {
+                    click(adapterData.get(position));
                 }
             });
 
@@ -194,7 +196,15 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             holder.appCMSContinueWatchingVideoImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    click(contentDatum);
+                    if (isDownload) {
+                        playDownloaded(contentDatum,
+                                holder.itemView.getContext(),
+                                getListOfUpcomingMovies(position));
+                    } else {
+                        play(adapterData.get(position),
+                                holder.itemView.getContext()
+                                        .getString(R.string.app_cms_action_watchvideo_key));
+                    }
                 }
             });
 
@@ -202,9 +212,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 @Override
                 public void onClick(View v) {
                     if (isDownload) {
-                        play(contentDatum,
+                        playDownloaded(contentDatum,
                                 holder.itemView.getContext(),
                                 getListOfUpcomingMovies(position));
+                    } else {
+                        play(adapterData.get(position),
+                                holder.itemView.getContext()
+                                        .getString(R.string.app_cms_action_watchvideo_key));
                     }
                 }
             });
@@ -301,7 +315,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         return contentDatumList;
     }
 
-    private void play(ContentDatum data, Context context, List<String> relatedVideoIds) {
+    private void playDownloaded(ContentDatum data, Context context, List<String> relatedVideoIds) {
         if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
                     null,
@@ -545,60 +559,46 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     private void click(ContentDatum data) {
         Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
-        if (isDownload) {
-            Log.d(TAG, " Ofline play is under process ... ");
-
-        } else {
-
-            String permalink = data.getGist().getPermalink();
-            String action = defaultAction;
-            String title = data.getGist().getTitle();
-            String hlsUrl = getHlsUrl(data);
-            String[] extraData = new String[3];
-            extraData[0] = permalink;
-            extraData[1] = hlsUrl;
-            extraData[2] = data.getGist().getId();
-            List<String> relatedVideos = null;
-            if (data.getContentDetails() != null &&
-                    data.getContentDetails().getRelatedVideoIds() != null) {
-                relatedVideos = data.getContentDetails().getRelatedVideoIds();
-            }
-            Log.d(TAG, "Launching " + permalink + ": " + action);
-            if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                    action,
-                    title,
-                    extraData,
-                    data,
-                    false,
-                    -1,
-                    relatedVideos)) {
-                Log.e(TAG, "Could not launch action: " +
-                        " permalink: " +
-                        permalink +
-                        " action: " +
-                        action +
-                        " hlsUrl: " +
-                        hlsUrl);
-            }
+        String permalink = data.getGist().getPermalink();
+        String action = defaultAction;
+        String title = data.getGist().getTitle();
+        String hlsUrl = getHlsUrl(data);
+        String[] extraData = new String[3];
+        extraData[0] = permalink;
+        extraData[1] = hlsUrl;
+        extraData[2] = data.getGist().getId();
+        List<String> relatedVideos = null;
+        if (data.getContentDetails() != null &&
+                data.getContentDetails().getRelatedVideoIds() != null) {
+            relatedVideos = data.getContentDetails().getRelatedVideoIds();
+        }
+        Log.d(TAG, "Launching " + permalink + ": " + action);
+        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                action,
+                title,
+                extraData,
+                data,
+                false,
+                -1,
+                relatedVideos)) {
+            Log.e(TAG, "Could not launch action: " +
+                    " permalink: " +
+                    permalink +
+                    " action: " +
+                    action +
+                    " hlsUrl: " +
+                    hlsUrl);
         }
     }
 
-    private void play(ContentDatum data) {
-        Log.d(TAG, "Playing item: " + data.getGist().getTitle());
-        String filmId = data.getGist().getId();
-        String permaLink = data.getGist().getPermalink();
-        String title = data.getGist().getTitle();
+    private void play(ContentDatum data, String action) {
         if (!appCMSPresenter.launchVideoPlayer(data,
                 -1,
-                data.getContentDetails().getRelatedVideoIds(),
-                -1)) {
-            Log.e(TAG, "Could not launch play action: " +
-                    " filmId: " +
-                    filmId +
-                    " permaLink: " +
-                    permaLink +
-                    " title: " +
-                    title);
+                null,
+                data.getGist().getWatchedTime())) {
+            Log.e(TAG, "Could not launch action: " +
+                    " action: " +
+                    action);
         }
     }
 
