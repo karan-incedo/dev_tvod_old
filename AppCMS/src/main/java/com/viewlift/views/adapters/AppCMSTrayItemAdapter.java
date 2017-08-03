@@ -141,7 +141,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                 appCMSPresenter,
                                 userVideoDownloadStatus -> {
                                     if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
-                                        holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.crossicon);
+                                        holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.ic_deleteicon);
                                         loadImage(holder.itemView.getContext(), userVideoDownloadStatus.getThumbUri(), holder.appCMSContinueWatchingVideoImage);
                                         holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
                                     } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_RUNNING) {
@@ -167,7 +167,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
                         break;
                     case STATUS_SUCCESSFUL:
-                        holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.crossicon);
+                        holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.ic_deleteicon);
                         break;
 
                 }

@@ -49,6 +49,7 @@ public abstract class AppCMSRadioAdapter<T> extends RecyclerView.Adapter<AppCMSR
 
     public void setItemClickListener(ItemClickListener itemClickListener) {
         this.itemClickListener = itemClickListener;
+        itemClickListener.onItemClick(mItems.get(downloadQualityPosition));
     }
 
     public interface ItemClickListener<T> {
