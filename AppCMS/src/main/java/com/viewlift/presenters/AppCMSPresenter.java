@@ -161,6 +161,8 @@ import com.viewlift.views.fragments.AppCMSResetPasswordFragment;
 import com.viewlift.views.fragments.AppCMSSearchFragment;
 import com.viewlift.views.fragments.AppCMSSettingsFragment;
 
+import org.w3c.dom.Text;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -343,6 +345,7 @@ public class AppCMSPresenter {
     private EntitlementPendingVideoData entitlementPendingVideoData;
     private List<SubscriptionPlan> subscriptionPlans;
     private boolean navigateToHomeToRefresh;
+    private boolean configurationChanged;
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -772,7 +775,7 @@ public class AppCMSPresenter {
                     signup(extraData[0], extraData[1]);
                 } else if (actionType == AppCMSActionType.START_TRIAL) {
                     Log.d(TAG, "Start Trial selected");
-                    navigateToSubscriptionPlansPage();
+                    navigateToSubscriptionPlansPage(null, null);
                 } else if (actionType == AppCMSActionType.EDIT_PROFILE) {
                     launchEditProfilePage();
                 } else if (actionType == AppCMSActionType.MANAGE_SUBSCRIPTION) {
@@ -781,7 +784,7 @@ public class AppCMSPresenter {
                         if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
                             sendSubscriptionCancellation();
                         } else if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
-                            navigateToSubscriptionPlansPage();
+                            navigateToSubscriptionPlansPage(null, null);
                         }
                     }
                 } else if (actionType == AppCMSActionType.HOME_PAGE) {
@@ -927,7 +930,10 @@ public class AppCMSPresenter {
                     updateToModule = module1;
                 }
             }
-            if (updateToModule != null) {
+            if (updateToModule != null &&
+                    updateToModule.getContentData() != null &&
+                    updateFromModule != null &&
+                    updateFromModule.getContentData() != null) {
                 for (ContentDatum toContentDatum : updateToModule.getContentData()) {
                     for (ContentDatum fromContentDatum : updateFromModule.getContentData()) {
                         if (toContentDatum.getGist().getDescription().equals(fromContentDatum.getGist().getDescription())) {
@@ -948,12 +954,31 @@ public class AppCMSPresenter {
         appCMSNavItemsFragment = newAppCMSNavItemsFragment;
     }
 
+    public void onConfigurationChange(boolean configurationChanged) {
+        this.configurationChanged = configurationChanged;
+    }
+
+    public boolean getConfigurationChanged() {
+        return configurationChanged;
+    }
+
+    public boolean isMainFragmentTransparent() {
+        if (currentActivity != null) {
+            FrameLayout mainFragmentView =
+                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_fragment);
+            if (mainFragmentView != null) {
+                return (mainFragmentView.getAlpha() == 1.0f);
+            }
+        }
+        return false;
+    }
+
     public boolean isMainFragmentViewVisible() {
         if (currentActivity != null) {
             FrameLayout mainFragmentView =
                     (FrameLayout) currentActivity.findViewById(R.id.app_cms_fragment);
             if (mainFragmentView != null) {
-                return mainFragmentView.getVisibility() == View.VISIBLE;
+                return (mainFragmentView.getVisibility() == View.VISIBLE);
             }
         }
         return false;
@@ -2400,7 +2425,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void navigateToSubscriptionPlansPage() {
+    public void navigateToSubscriptionPlansPage(String previousPageId, String previousPageName) {
         if (subscriptionPage != null) {
             launchType = LaunchType.SUBSCRIBE;
             boolean launchSuccess = navigateToPage(subscriptionPage.getPageId(),
@@ -2412,9 +2437,33 @@ public class AppCMSPresenter {
                     false,
                     false,
                     deeplinkSearchQuery);
+            if (!TextUtils.isEmpty(previousPageId) &&
+                    !TextUtils.isEmpty(previousPageName)) {
+                checkForExistSubscription(previousPageId, previousPageName);
+            }
+
             if (!launchSuccess) {
                 Log.e(TAG, "Failed to launch page: " + subscriptionPage.getPageName());
                 launchErrorActivity(currentActivity, platformType);
+            }
+        }
+    }
+
+    public void checkForExistSubscription(String previousPageId, String previousPageName) {
+        if (currentActivity != null) {
+            Bundle activeSubs = null;
+            try {
+                activeSubs = inAppBillingService.getPurchases(3,
+                        currentActivity.getPackageName(),
+                        "subs",
+                        null);
+                ArrayList<String> subscribedSkus = activeSubs.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
+                if (subscribedSkus != null && subscribedSkus.size() > 0) {
+                    launchNavigationPage(previousPageId, previousPageName);
+                }
+            } catch (RemoteException e) {
+                Log.e(TAG, "Failed to purchase item with sku: "
+                        + getActiveSubscriptionSku(currentActivity));
             }
         }
     }
@@ -3590,13 +3639,13 @@ public class AppCMSPresenter {
                 builder.setNegativeButton(R.string.app_cms_subscription_button_text,
                         (dialog, which) -> {
                             dialog.dismiss();
-                            navigateToSubscriptionPlansPage();
+                            navigateToSubscriptionPlansPage(null, null);
                         });
             } else {
                 builder.setPositiveButton(R.string.app_cms_subscription_button_text,
                         (dialog, which) -> {
                             dialog.dismiss();
-                            navigateToSubscriptionPlansPage();
+                            navigateToSubscriptionPlansPage(null, null);
                         });
             }
 
@@ -3911,9 +3960,10 @@ public class AppCMSPresenter {
                 new RealmList<>();
         RealmResults<SubscriptionPlan> allAvailableSubscriptionPlans =
                 realmController.getAllSubscriptionPlans();
-        availableUpgradeSubscriptionPlans.addAll(allAvailableSubscriptionPlans);
+        if (allAvailableSubscriptionPlans != null) {
+            availableUpgradeSubscriptionPlans.addAll(allAvailableSubscriptionPlans);
+        }
         userSubscriptionPlan.setAvailableUpgrades(availableUpgradeSubscriptionPlans);
-
         realmController.addUserSubscriptionPlan(userSubscriptionPlan);
 
         int subscriptionCallType = R.string.app_cms_subscription_plan_create_key;
@@ -3936,17 +3986,19 @@ public class AppCMSPresenter {
 
                     },
                     appCMSSubscriptionPlanResult -> {
-                        NavigationPrimary homePageNavItem = findHomePageNavItem();
-                        if (homePageNavItem != null) {
-                            navigateToPage(homePageNavItem.getPageId(),
-                                    homePageNavItem.getTitle(),
-                                    homePageNavItem.getUrl(),
-                                    false,
-                                    true,
-                                    false,
-                                    true,
-                                    false,
-                                    deeplinkSearchQuery);
+                        if (appCMSSubscriptionPlanResult != null) {
+                            NavigationPrimary homePageNavItem = findHomePageNavItem();
+                            if (homePageNavItem != null) {
+                                navigateToPage(homePageNavItem.getPageId(),
+                                        homePageNavItem.getTitle(),
+                                        homePageNavItem.getUrl(),
+                                        false,
+                                        true,
+                                        false,
+                                        true,
+                                        false,
+                                        deeplinkSearchQuery);
+                            }
                         }
                     });
         } catch (IOException e) {

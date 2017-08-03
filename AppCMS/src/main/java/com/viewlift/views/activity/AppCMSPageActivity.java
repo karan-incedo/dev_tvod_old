@@ -344,6 +344,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             selectNavItem(pageViewDuringSearch);
         }
 
+        appCMSPresenter.cancelInternalEvents();
+
         unregisterReceiver(presenterCloseActionReceiver);
         isActive = false;
     }
@@ -534,6 +536,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void resume() {
+        appCMSPresenter.restartInternalEvents();
         if (pageViewDuringSearch != null) {
             selectNavItem(pageViewDuringSearch);
         } else {
@@ -573,7 +576,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         return false;
     }
 
-    private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder) {
+    private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder,
+                                              boolean configurationChanged) {
         Log.d(TAG, "Handling new AppCMSBinder: " + appCMSBinder.getPageName());
 
         pageLoading(false);
@@ -581,11 +585,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         Log.d(TAG, "createScreenFromAppCMSBinder() - Handling Navbar");
         handleNavbar(appCMSBinder);
         handleOrientation(getResources().getConfiguration().orientation, appCMSBinder);
-        createFragment(appCMSBinder);
+        createFragment(appCMSBinder, configurationChanged);
     }
 
-    private void createFragment(AppCMSBinder appCMSBinder) {
+    private void createFragment(AppCMSBinder appCMSBinder, boolean configurationChanged) {
         try {
+            appCMSPresenter.onConfigurationChange(configurationChanged);
             getSupportFragmentManager().addOnBackStackChangedListener(this);
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -750,7 +755,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
 
-            createScreenFromAppCMSBinder(appCMSBinder);
+            createScreenFromAppCMSBinder(appCMSBinder, configurationChanged);
         }
     }
 
@@ -921,7 +926,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     public void onBackStackChanged() {
         appCMSPresenter.dismissOpenDialogs(null);
-        appCMSPresenter.showMainFragmentView(true);
+        if (!appCMSPresenter.getConfigurationChanged() &&
+                !appCMSPresenter.isMainFragmentTransparent()) {
+            appCMSPresenter.showMainFragmentView(true);
+        }
+        appCMSPresenter.onConfigurationChange(false);
         appCMSPresenter.restartInternalEvents();
         getSupportFragmentManager().removeOnBackStackChangedListener(this);
     }
