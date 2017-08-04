@@ -998,6 +998,7 @@ public class AppCMSPresenter {
                 }
             }
             if (updateToModule != null &&
+
                     updateToModule.getContentData() != null &&
                     updateFromModule != null &&
                     updateFromModule.getContentData() != null) {
