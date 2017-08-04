@@ -122,9 +122,9 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRad
                 }
                 getActivity().finish();
             });
-
-            cancelButton.setOnClickListener(v -> getActivity().finish());
             
+            cancelButton.setOnClickListener(v -> getActivity().finish());
+
             pageView.setBackgroundColor(Color.TRANSPARENT);
         }
         return pageView;
