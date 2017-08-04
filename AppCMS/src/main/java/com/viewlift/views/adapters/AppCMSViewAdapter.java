@@ -169,6 +169,24 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             }
             bindView(holder.componentView, adapterData.get(position));
         }
+
+        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
+            int selectableIndex = -1;
+            for (int i = 0; i < adapterData.size(); i++) {
+                if (holder.componentView.isSelectable()) {
+                    selectableIndex = i;
+                }
+            }
+
+            if (selectableIndex == -1) {
+                selectableIndex = 0;
+            }
+
+            if (selectableIndex == position) {
+                holder.componentView.setSelectable(true);
+                holder.componentView.performClick();
+            }
+        }
     }
 
     @Override
