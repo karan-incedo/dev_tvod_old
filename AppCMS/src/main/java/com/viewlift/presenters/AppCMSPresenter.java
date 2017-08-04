@@ -4591,6 +4591,9 @@ public class AppCMSPresenter {
                                         boolean navbarPresent,
                                         boolean sendCloseAction,
                                         AppCMSVideoPageBinder binder) {
+        if (currentActivity instanceof AppCMSPlayVideoActivity) {
+            ((AppCMSPlayVideoActivity) currentActivity).closePlayer();
+        }
 
         Bundle args = getAutoplayActivityBundle(activity,
                 appCMSPageUI,
