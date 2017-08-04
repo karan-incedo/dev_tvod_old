@@ -322,7 +322,6 @@ public class ViewCreator {
                                         });
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY) {
                                         if (view != null) {
-
                                             if (moduleAPI.getContentData() != null) {
                                                 String userId = appCMSPresenter.getLoggedInUser(context);
                                                 appCMSPresenter.getUserVideoDownloadStatus(
@@ -330,16 +329,10 @@ public class ViewCreator {
                                                                 moduleAPI.getContentData().get(0), userId), userId);
 
                                             }
-                                            if (appCMSPresenter.isUserSubscribed(context)) {
-                                                view.setVisibility(View.VISIBLE);
-                                            } else {
-                                                view.setVisibility(View.GONE);
-                                            }
+                                            view.setVisibility(View.VISIBLE);
                                         }
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) {
-                                        if (!appCMSPresenter.isUserSubscribed(context)) {
-                                            view.setVisibility(View.GONE);
-                                        } else {
+                                        if (view != null) {
                                             if (moduleAPI.getContentData() != null) {
                                                 appCMSPresenter.getUserVideoStatus(
                                                         moduleAPI.getContentData().get(0).getGist().getId(),
@@ -1345,11 +1338,7 @@ public class ViewCreator {
                                 .view(componentViewResult.componentView)
                                 .build());
 
-                        if (appCMSPresenter.isUserSubscribed(context)) {
-                            componentViewResult.componentView.setVisibility(View.VISIBLE);
-                        } else {
-                            componentViewResult.componentView.setVisibility(View.GONE);
-                        }
+                        componentViewResult.componentView.setVisibility(View.VISIBLE);
 
                         break;
 
@@ -1371,11 +1360,7 @@ public class ViewCreator {
                                 .view(componentViewResult.componentView)
                                 .build());
 
-                        if (appCMSPresenter.isUserSubscribed(context)) {
-                            componentViewResult.componentView.setVisibility(View.VISIBLE);
-                        } else {
-                            componentViewResult.componentView.setVisibility(View.GONE);
-                        }
+                        componentViewResult.componentView.setVisibility(View.VISIBLE);
 
                         break;
 
