@@ -232,14 +232,17 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     && currentlyPlayingIndex != relateVideoIds.size() - 1) {
                 binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
                 appCMSPresenter.openAutoPlayScreen(binder);
+            } else {
+                closePlayer();
             }
         } else {
             if (binder.getRelateVideoIds() != null
                     && currentlyPlayingIndex != relateVideoIds.size() - 1) {
                 appCMSPresenter.openAutoPlayScreen(binder);
+            } else {
+                closePlayer();
             }
         }
-        closePlayer();
     }
 
     @Override
