@@ -697,8 +697,7 @@ public class AppCMSPresenter {
                                 .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key));
                 if (svodServiceType) {
                     if (isUserLoggedIn(currentActivity)) {
-                        // For now just verify that the anonymous user token is available, but the subscription needs to be verified too.
-                        if (TextUtils.isEmpty(getAnonymousUserToken(currentActivity))) {
+                        if (!isUserSubscribed(currentActivity)) {
                             showEntitlementDialog(DialogType.SUBSCRIPTION_REQUIRED);
                             entitlementActive = false;
                         }
@@ -4129,7 +4128,7 @@ public class AppCMSPresenter {
                                             singleResult -> {
                                             },
                                             appCMSSubscriptionPlanResult -> {
-                                                if (appCMSSubscriptionPlanResult != null &&
+                                                if (appCMSSubscriptionPlanResult != null &&l
                                                         appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails() != null) {
 
                                                     UserSubscriptionPlan userSubscriptionPlan = new UserSubscriptionPlan();

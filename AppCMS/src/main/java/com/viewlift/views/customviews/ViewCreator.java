@@ -333,7 +333,7 @@ public class ViewCreator {
                                             view.setVisibility(View.VISIBLE);
                                         }
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) {
-                                        if (!appCMSPresenter.isUserLoggedIn(context)) {
+                                        if (!appCMSPresenter.isUserSubscribed(context)) {
                                             view.setVisibility(View.GONE);
                                         } else {
                                             if (moduleAPI.getContentData() != null) {
@@ -2422,7 +2422,7 @@ public class ViewCreator {
             this.filmId = filmId;
 
             addClickListener = v -> {
-                if (appCMSPresenter.isUserLoggedIn(UpdateImageIconAction.this.imageButton.getContext())) {
+                if (appCMSPresenter.isUserSubscribed(UpdateImageIconAction.this.imageButton.getContext())) {
 
                     appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
                             new Action1<AppCMSAddToWatchlistResult>() {
@@ -2484,7 +2484,7 @@ public class ViewCreator {
             this.userId = userId;
 
             addClickListener = v -> {
-                if (appCMSPresenter.isUserLoggedIn(UpdateDownloadImageIconAction.this.imageButton.getContext())) {
+                if (appCMSPresenter.isUserSubscribed(UpdateDownloadImageIconAction.this.imageButton.getContext())) {
                     if (appCMSPresenter.getUserDownloadQualityPref(UpdateDownloadImageIconAction.this.imageButton.getContext()) != null
                             && appCMSPresenter.getUserDownloadQualityPref(UpdateDownloadImageIconAction.this.imageButton.getContext()).length() > 0) {
                         appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
