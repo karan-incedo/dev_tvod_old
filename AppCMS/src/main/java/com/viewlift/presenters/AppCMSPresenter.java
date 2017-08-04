@@ -58,6 +58,7 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.iid.InstanceID;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
@@ -343,6 +344,8 @@ public class AppCMSPresenter {
     private List<SubscriptionPlan> subscriptionPlans;
     private boolean navigateToHomeToRefresh;
     private boolean configurationChanged;
+    private FirebaseAnalytics mFireBaseAnalytics;
+
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -3056,6 +3059,14 @@ public class AppCMSPresenter {
             return sharedPreferences.edit().putString(AUTH_TOKEN_SHARED_PREF_NAME, authToken).commit();
         }
         return false;
+    }
+
+    public FirebaseAnalytics getmFireBaseAnalytics() {
+        return mFireBaseAnalytics;
+    }
+
+    public void setmFireBaseAnalytics(FirebaseAnalytics mFireBaseAnalytics) {
+        this.mFireBaseAnalytics = mFireBaseAnalytics;
     }
 
     public String getFacebookAccessToken(Context context) {
