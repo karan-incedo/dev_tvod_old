@@ -52,6 +52,7 @@ public class AppCMSSubscriptionPlanCall {
                      final Action1<AppCMSUserSubscriptionPlanResult> userSubscriptionPlanResult)
             throws IOException {
 
+        Log.d(TAG, "URL: " + url);
         authHeaders.clear();
         if (!TextUtils.isEmpty(apiKey) && !TextUtils.isEmpty(authToken)) {
             authHeaders.put("Authorization", authToken);
@@ -101,6 +102,8 @@ public class AppCMSSubscriptionPlanCall {
                 break;
 
             case R.string.app_cms_subscription_plan_create_key:
+                authHeaders.put("Content-Type", "application/json");
+                Log.d(TAG, "Headers: " + authHeaders.toString());
                 appCMSSubscriptionPlanRest.createPlan(url, authHeaders, request)
                         .enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
                             @Override
@@ -118,6 +121,8 @@ public class AppCMSSubscriptionPlanCall {
                 break;
 
             case R.string.app_cms_subscription_plan_update_key:
+                authHeaders.put("Content-Type", "application/json");
+                Log.d(TAG, "Headers: " + authHeaders.toString());
                 appCMSSubscriptionPlanRest.updatePlan(url, authHeaders, request)
                         .enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
                             @Override

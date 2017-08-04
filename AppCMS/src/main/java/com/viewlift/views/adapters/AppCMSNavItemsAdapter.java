@@ -73,7 +73,6 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 if (navigation.getNavigationPrimary().get(j).getAccessLevels() != null) {
                     if ((userLoggedIn && !navigation.getNavigationPrimary().get(j).getAccessLevels().getLoggedIn()) ||
                             (!userLoggedIn && !navigation.getNavigationPrimary().get(j).getAccessLevels().getLoggedOut()) ||
-                            (!userSubscribed && navigation.getNavigationPrimary().get(j).getAccessLevels().getSubscribed()) ||
                             (userSubscribed && !navigation.getNavigationPrimary().get(j).getAccessLevels().getSubscribed())) {
                         indexOffset++;
                     } else {
@@ -90,9 +89,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             final NavigationPrimary navigationPrimary = navigation.getNavigationPrimary().get(i + indexOffset);
             if (navigationPrimary.getAccessLevels() != null) {
                 if ((userLoggedIn && navigationPrimary.getAccessLevels().getLoggedIn()) ||
-                        (!userLoggedIn && navigationPrimary.getAccessLevels().getLoggedOut()) &&
-                                ((!userSubscribed && !navigationPrimary.getAccessLevels().getSubscribed()) ||
-                                        (userSubscribed && navigationPrimary.getAccessLevels().getSubscribed()))) {
+                        !userLoggedIn && navigationPrimary.getAccessLevels().getLoggedOut() ||
+                                !userSubscribed && !navigationPrimary.getAccessLevels().getSubscribed()) {
                     viewHolder.navItemLabel.setText(navigationPrimary.getTitle().toUpperCase());
                     viewHolder.navItemLabel.setTextColor(textColor);
 
@@ -208,9 +206,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 for (int j = 0; j <= (i - indexOffset) && j < navigation.getNavigationFooter().size(); j++) {
                     if (navigation.getNavigationFooter().get(j).getAccessLevels() != null) {
                         if (userLoggedIn && !navigation.getNavigationFooter().get(j).getAccessLevels().getLoggedIn() ||
-                                !userLoggedIn && !navigation.getNavigationFooter().get(j).getAccessLevels().getLoggedOut() ||
-                                (userSubscribed && !navigation.getNavigationFooter().get(j).getAccessLevels().getSubscribed()) ||
-                                        (!userSubscribed && navigation.getNavigationFooter().get(j).getAccessLevels().getSubscribed())) {
+                                !userLoggedIn && !navigation.getNavigationFooter().get(j).getAccessLevels().getLoggedOut()) {
                             indexOffset--;
                         }
                     }
@@ -222,9 +218,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 final NavigationFooter navigationFooter = navigation.getNavigationFooter().get(i - indexOffset);
                 if (navigationFooter.getAccessLevels() != null) {
                     if ((userLoggedIn && navigationFooter.getAccessLevels().getLoggedIn()) ||
-                            (!userLoggedIn && navigationFooter.getAccessLevels().getLoggedOut()) &&
-                                    ((!userSubscribed && !navigationFooter.getAccessLevels().getSubscribed()) ||
-                                            (userSubscribed && navigationFooter.getAccessLevels().getSubscribed()))) {
+                            (!userLoggedIn && navigationFooter.getAccessLevels().getLoggedOut())) {
                         viewHolder.navItemLabel.setText(navigationFooter.getTitle().toUpperCase());
                         viewHolder.navItemLabel.setTextColor(textColor);
                         viewHolder.itemView.setOnClickListener(v -> {
@@ -274,9 +268,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     NavigationPrimary navigationPrimary = navigation.getNavigationPrimary().get(i);
                     if (navigationPrimary.getAccessLevels() != null) {
                         if ((!userLoggedIn && navigationPrimary.getAccessLevels().getLoggedOut() ||
-                                userLoggedIn && navigationPrimary.getAccessLevels().getLoggedIn()) &&
-                                ((!userSubscribed && !navigationPrimary.getAccessLevels().getSubscribed()) ||
-                                        (userSubscribed && navigationPrimary.getAccessLevels().getSubscribed()))) {
+                                userLoggedIn && navigationPrimary.getAccessLevels().getLoggedIn() ||
+                                !userSubscribed && !navigationPrimary.getAccessLevels().getSubscribed())) {
                             totalItemCount++;
                             numPrimaryItems++;
                         }
@@ -304,9 +297,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     NavigationFooter navigationFooter = navigation.getNavigationFooter().get(i);
                     if (navigationFooter.getAccessLevels() != null) {
                         if ((!userLoggedIn && navigation.getNavigationFooter().get(i).getAccessLevels().getLoggedOut() ||
-                                userLoggedIn && navigation.getNavigationFooter().get(i).getAccessLevels().getLoggedIn()) &&
-                                ((!userSubscribed && !navigation.getNavigationFooter().get(i).getAccessLevels().getSubscribed()) ||
-                                        (userSubscribed && navigation.getNavigationFooter().get(i).getAccessLevels().getSubscribed()))) {
+                                userLoggedIn && navigation.getNavigationFooter().get(i).getAccessLevels().getLoggedIn())) {
                             totalItemCount++;
                             numFooterItems++;
                         }

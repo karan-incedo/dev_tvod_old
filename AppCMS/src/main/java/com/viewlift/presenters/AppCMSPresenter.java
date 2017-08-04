@@ -919,6 +919,8 @@ public class AppCMSPresenter {
                                     false,
                                     closeLauncher,
                                     null) {
+
+                                final AppCMSPageAPIAction appCMSPageAPIAction = this;
                                 @Override
                                 public void call(final AppCMSPageAPI appCMSPageAPI) {
                                     if (appCMSPageAPI != null) {
@@ -945,32 +947,32 @@ public class AppCMSPresenter {
                                                                 navigationPageData.put(pageId, appCMSPageAPI);
                                                                 if (launchActivity) {
                                                                     launchPageActivity(currentActivity,
-                                                                            appCMSPageUI,
+                                                                            appCMSPageAPIAction.appCMSPageUI,
                                                                             appCMSPageAPI,
-                                                                            pageId,
-                                                                            pageTitle,
-                                                                            pageTitle,
+                                                                            appCMSPageAPIAction.pageId,
+                                                                            appCMSPageAPIAction.pageTitle,
+                                                                            appCMSPageAPIAction.pageTitle,
                                                                             pageIdToPageNameMap.get(pageId),
                                                                             loadFromFile,
-                                                                            true,
-                                                                            false,
-                                                                            true,
-                                                                            true,
-                                                                            null);
+                                                                            appCMSPageAPIAction.appbarPresent,
+                                                                            appCMSPageAPIAction.fullscreenEnabled,
+                                                                            appCMSPageAPIAction.navbarPresent,
+                                                                            appCMSPageAPIAction.sendCloseAction,
+                                                                            appCMSPageAPIAction.searchQuery);
                                                                 } else {
                                                                     Bundle args = getPageActivityBundle(currentActivity,
-                                                                            appCMSPageUI,
+                                                                            appCMSPageAPIAction.appCMSPageUI,
                                                                             appCMSPageAPI,
-                                                                            pageId,
-                                                                            pageTitle,
-                                                                            pageTitle,
+                                                                            appCMSPageAPIAction.pageId,
+                                                                            appCMSPageAPIAction.pageTitle,
+                                                                            appCMSPageAPIAction.pageTitle,
                                                                             pageIdToPageNameMap.get(pageId),
                                                                             loadFromFile,
-                                                                            true,
-                                                                            false,
-                                                                            true,
-                                                                            true,
-                                                                            null);
+                                                                            appCMSPageAPIAction.appbarPresent,
+                                                                            appCMSPageAPIAction.fullscreenEnabled,
+                                                                            appCMSPageAPIAction.navbarPresent,
+                                                                            appCMSPageAPIAction.sendCloseAction,
+                                                                            appCMSPageAPIAction.searchQuery);
                                                                     Intent updatePageIntent =
                                                                             new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
                                                                     updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
@@ -1392,6 +1394,8 @@ public class AppCMSPresenter {
                     subscriptionRequest.setUserId(getLoggedInUser(currentActivity));
                     subscriptionRequest.setReceipt(getActiveSubscriptionReceipt(currentActivity));
 
+                    Log.d(TAG, "Subscription request: " + gson.toJson(subscriptionRequest, SubscriptionRequest.class));
+
                     try {
                         appCMSSubscriptionPlanCall.call(
                                 currentActivity.getString(R.string.app_cms_cancel_subscription_api_url,
@@ -1411,13 +1415,14 @@ public class AppCMSPresenter {
                                             false,
                                             null);
 
-                                    AppsFlyerUtils.subscriptionEvent(currentActivity,
-                                            false,
-                                            currentActivity.getString(R.string.app_cms_appsflyer_dev_key),
-                                            String.valueOf(appCMSSubscriptionPlanResults.getPlanDetails()
-                                                    .get(0).getRecurringPaymentAmount()),
-                                            subscriptionRequest.getPlanId(),
-                                            subscriptionRequest.getCurrencyCode());
+//                                    AppsFlyerUtils.appsFlyerSubscriptionEvent(currentActivity, this,
+//                                            false,
+//                                            getLoggedInUser(currentActivity),
+//                                            subscriptionRequest.getPlanId(),
+//                                            String.valueOf(appCMSSubscriptionPlanResults
+//                                                    .getPlanDetails().get(0).getRecurringPaymentAmount()),
+//                                            subscriptionRequest.getPlanId(),
+//                                            subscriptionRequest.getCurrencyCode());
                                 },
                                 currentUserPlan -> {
 
@@ -1840,16 +1845,14 @@ public class AppCMSPresenter {
     public DownloadVideoRealm getDownloadedVideo(String videoId) {
         return realmController.getDownloadByIdBelongstoUser(videoId, getLoggedInUser(currentActivity));
     }
-
-    public boolean isVideoDownloaded(String videoId) {
-        DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId, getLoggedInUser(currentActivity));
-        if (downloadVideoRealm != null && downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId)) {
+    public boolean isVideoDownloaded(String videoId){
+        DownloadVideoRealm downloadVideoRealm= realmController.getDownloadByIdBelongstoUser(videoId,getLoggedInUser(currentActivity));
+        if (downloadVideoRealm!=null && downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId)) {
             return true;
         }
 
         return false;
     }
-
     public String getDownloadedFileSize(long size) {
         String fileSize;
         DecimalFormat dec = new DecimalFormat("0");
@@ -3518,7 +3521,7 @@ public class AppCMSPresenter {
             launchNavigationPage(null, null);
 
             CastHelper.getInstance(currentActivity.getApplicationContext()).castingLogout();
-            AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser(currentActivity));
+//            AppsFlyerUtils.appsFlyerLogoutEvent(currentActivity, getLoggedInUser(currentActivity));
         }
     }
 
@@ -4058,11 +4061,12 @@ public class AppCMSPresenter {
         subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
         subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
         subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
-        subscriptionRequest.setCurrencyCode(currencyOfPlanToPurchase);
         subscriptionRequest.setPlanId(planToPurchase);
         subscriptionRequest.setPlanIdentifier(skuToPurchase);
         subscriptionRequest.setUserId(getLoggedInUser(currentActivity));
         subscriptionRequest.setReceipt(receiptData);
+
+        Log.d(TAG, "Subscription request: " + gson.toJson(subscriptionRequest, SubscriptionRequest.class));
 
         int subscriptionCallType = R.string.app_cms_subscription_plan_create_key;
 
@@ -4085,13 +4089,16 @@ public class AppCMSPresenter {
                     },
                     appCMSSubscriptionPlanResult -> {
                         if (appCMSSubscriptionPlanResult != null) {
-                            AppsFlyerUtils.subscriptionEvent(currentActivity,
-                                    true,
-                                    currentActivity.getString(R.string.app_cms_appsflyer_dev_key),
-                                    String.valueOf(appCMSSubscriptionPlanResult.getPlanDetails()
-                                            .get(0).getRecurringPaymentAmount()),
-                                    subscriptionRequest.getPlanId(),
-                                    subscriptionRequest.getCurrencyCode());
+                            Log.d(TAG, "Subscription response: " + gson.toJson(appCMSSubscriptionPlanResult, AppCMSSubscriptionPlanResult.class));
+
+//                            AppsFlyerUtils.appsFlyerSubscriptionEvent(currentActivity, this,
+//                                    true,
+//                                    getLoggedInUser(currentActivity),
+//                                    subscriptionRequest.getPlanId(),
+//                                    String.valueOf(appCMSSubscriptionPlanResult.getPlanDetails()
+//                                            .get(0).getRecurringPaymentAmount()),
+//                                    subscriptionRequest.getPlanId(),
+//                                    subscriptionRequest.getCurrencyCode());
 
                             cancelInternalEvents();
                             NavigationPrimary homePageNavItem = findHomePageNavItem();
@@ -4489,12 +4496,7 @@ public class AppCMSPresenter {
                         setLoggedInUserName(currentActivity, signInResponse.getName());
                         setLoggedInUserEmail(currentActivity, signInResponse.getEmail());
 
-                        if (signup) {
-                            AppsFlyerUtils.registrationEvent(currentActivity, signInResponse.getUserId(),
-                                    currentActivity.getString(R.string.app_cms_appsflyer_dev_key));
-                        } else {
-                            AppsFlyerUtils.loginEvent(currentActivity, signInResponse.getUserId());
-                        }
+//                        AppsFlyerUtils.appsFlyerLoginEvent(currentActivity, !signup, signInResponse.getUserId());
 
                         if (followWithSubscription) {
                             signupFromFacebook = false;

@@ -816,9 +816,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             homeNavBarItemView.setImage(getString(R.string.app_cms_home_icon_name));
             homeNavBarItemView.setHighlightColor(highlightColor);
             homeNavBarItemView.setLabel(homePageNav.getTitle());
-            homeNavBarItemView.setOnClickListener(v -> selectNavItemAndLaunchPage(homeNavBarItemView,
-                    homePageNav.getPageId(),
-                    homePageNav.getTitle()));
+            homeNavBarItemView.setOnClickListener(v -> {
+                appCMSPresenter.showMainFragmentView(true);
+                selectNavItemAndLaunchPage(homeNavBarItemView,
+                        homePageNav.getPageId(),
+                        homePageNav.getTitle());
+            });
             homeNavBarItemView.setTag(homePageNav.getPageId());
         }
     }
@@ -832,9 +835,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             moviesNavBarItemView.setImage(getString(R.string.app_cms_movies_icon_name));
             moviesNavBarItemView.setHighlightColor(highlightColor);
             moviesNavBarItemView.setLabel(moviePageNav.getTitle());
-            moviesNavBarItemView.setOnClickListener(v -> selectNavItemAndLaunchPage(moviesNavBarItemView,
-                    moviePageNav.getPageId(),
-                    moviePageNav.getTitle()));
+            moviesNavBarItemView.setOnClickListener(v -> {
+                appCMSPresenter.showMainFragmentView(true);
+                selectNavItemAndLaunchPage(moviesNavBarItemView,
+                        moviePageNav.getPageId(),
+                        moviePageNav.getTitle());
+            });
             moviesNavBarItemView.setTag(moviePageNav.getPageId());
         }
     }
