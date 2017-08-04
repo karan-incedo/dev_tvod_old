@@ -1411,12 +1411,11 @@ public class AppCMSPresenter {
                                             false,
                                             null);
 
-                                    AppsFlyerUtils.appsFlyerSubscriptionEvent(currentActivity, this,
+                                    AppsFlyerUtils.subscriptionEvent(currentActivity,
                                             false,
-                                            getLoggedInUser(currentActivity),
-                                            subscriptionRequest.getPlanId(),
-                                            String.valueOf(appCMSSubscriptionPlanResults
-                                                    .getPlanDetails().get(0).getRecurringPaymentAmount()),
+                                            currentActivity.getString(R.string.app_cms_appsflyer_dev_key),
+                                            String.valueOf(appCMSSubscriptionPlanResults.getPlanDetails()
+                                                    .get(0).getRecurringPaymentAmount()),
                                             subscriptionRequest.getPlanId(),
                                             subscriptionRequest.getCurrencyCode());
                                 },
@@ -1841,14 +1840,16 @@ public class AppCMSPresenter {
     public DownloadVideoRealm getDownloadedVideo(String videoId) {
         return realmController.getDownloadByIdBelongstoUser(videoId, getLoggedInUser(currentActivity));
     }
-    public boolean isVideoDownloaded(String videoId){
-        DownloadVideoRealm downloadVideoRealm= realmController.getDownloadByIdBelongstoUser(videoId,getLoggedInUser(currentActivity));
-        if (downloadVideoRealm!=null && downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId)) {
+
+    public boolean isVideoDownloaded(String videoId) {
+        DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId, getLoggedInUser(currentActivity));
+        if (downloadVideoRealm != null && downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId)) {
             return true;
         }
 
         return false;
     }
+
     public String getDownloadedFileSize(long size) {
         String fileSize;
         DecimalFormat dec = new DecimalFormat("0");
@@ -3517,7 +3518,7 @@ public class AppCMSPresenter {
             launchNavigationPage(null, null);
 
             CastHelper.getInstance(currentActivity.getApplicationContext()).castingLogout();
-            AppsFlyerUtils.appsFlyerLogoutEvent(currentActivity, getLoggedInUser(currentActivity));
+            AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser(currentActivity));
         }
     }
 
@@ -4084,10 +4085,9 @@ public class AppCMSPresenter {
                     },
                     appCMSSubscriptionPlanResult -> {
                         if (appCMSSubscriptionPlanResult != null) {
-                            AppsFlyerUtils.appsFlyerSubscriptionEvent(currentActivity, this,
+                            AppsFlyerUtils.subscriptionEvent(currentActivity,
                                     true,
-                                    getLoggedInUser(currentActivity),
-                                    subscriptionRequest.getPlanId(),
+                                    currentActivity.getString(R.string.app_cms_appsflyer_dev_key),
                                     String.valueOf(appCMSSubscriptionPlanResult.getPlanDetails()
                                             .get(0).getRecurringPaymentAmount()),
                                     subscriptionRequest.getPlanId(),
@@ -4489,7 +4489,12 @@ public class AppCMSPresenter {
                         setLoggedInUserName(currentActivity, signInResponse.getName());
                         setLoggedInUserEmail(currentActivity, signInResponse.getEmail());
 
-                        AppsFlyerUtils.appsFlyerLoginEvent(currentActivity, !signup, signInResponse.getUserId());
+                        if (signup) {
+                            AppsFlyerUtils.registrationEvent(currentActivity, signInResponse.getUserId(),
+                                    currentActivity.getString(R.string.app_cms_appsflyer_dev_key));
+                        } else {
+                            AppsFlyerUtils.loginEvent(currentActivity, signInResponse.getUserId());
+                        }
 
                         if (followWithSubscription) {
                             signupFromFacebook = false;

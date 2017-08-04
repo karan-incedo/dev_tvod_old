@@ -45,7 +45,7 @@ public class AppCMSApplication extends Application {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
                 appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
-                AppsFlyerUtils.appsFlyerAppOpenEvent(activity);
+                AppsFlyerUtils.appOpenEvent(activity);
             }
 
             @Override
@@ -87,7 +87,6 @@ public class AppCMSApplication extends Application {
         Fabric.with(this, new Crashlytics());
         AppsFlyerLib.getInstance().startTracking(this, getString(R.string.app_cms_appsflyer_dev_key));
         trackInstallationEvent(this);
-        AppsFlyerUtils.registerAppEvent(this, getString(R.string.app_cms_appsflyer_dev_key));
         AppsFlyerUtils.uninstallAppEvent(this, getString(R.string.GCM_SENDER_ID_APPFLYERS));
     }
 

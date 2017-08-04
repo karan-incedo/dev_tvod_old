@@ -3,11 +3,8 @@ package com.viewlift.analytics;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
-import android.text.TextUtils;
 
-import com.appsflyer.AFInAppEventParameterName;
 import com.appsflyer.AppsFlyerLib;
-import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.HashMap;
@@ -19,27 +16,28 @@ import java.util.Map;
 
 public class AppsFlyerUtils {
 
-    public static final String REGISTER_APP = "Register App";
-    public static final String APP_OPEN = "App open";
-    public static final String LOGIN = "Login";
-    public static final String LOGOUT = "Logout";
-    public static final String SUBSCRIPTION = "Subscription";
-    public static final String CANCLE_SUBSCRIPTION = "Cancel Subscription";
-    public static final String FILM_VIEWING = "Film Viewing";
-    public static final String UNINSTALL = "Uninstall App";
+    public static final String REGISTRATION_APP_EVENT_NAME = "Registration";
+    public static final String APP_OPEN_EVENT_NAME = "App open";
+    public static final String LOGIN_EVENT_NAME = "Login";
+    public static final String LOGOUT_EVENT_NAME = "Logout";
+    public static final String SUBSCRIPTION_EVENT_NAME = "Subscription";
+    public static final String CANCEL_SUBSCRIPTION_EVENT_NAME = "Cancel Subscription";
+    public static final String FILM_VIEWING_EVENT_NAME = "Film Viewing";
+    public static final String UNINSTALL_EVENT_NAME = "Uninstall";
 
-    public static final String USER_ENTITLEMENT_STATE = "Entitled state";
-    public static final String USER_REGISTER_STATE = "Registered state";
-    public static final String PRODUCT_ID = "Product ID";
-    public static final String PLAN = "Plan";
-    public static final String PRICE = "Price";
-    public static final String CURRENCY = "Currency";
+    public static final String USER_ID_EVENT_VALUE = "UUID";
+    public static final String DEVICE_ID_EVENT_VALUE = "Device ID";
+    public static final String USER_ENTITLEMENT_STATE_EVENT_VALUE = "Entitled";
+    public static final String USER_REGISTER_STATE_EVENT_VALUE = "Registered";
+    public static final String PRODUCT_ID_EVENT_VALUE = "Product ID";
+    public static final String PRODUCT_NAME_EVENT_VALUE = "Product Name";
+    public static final String PLAN_EVENT_VALUE = "Plan";
+    public static final String PRICE_EVENT_VALUE = "Price";
+    public static final String CURRENCY_EVENT_VALUE = "Currency";
 
-    /**
-     * Method for adding device info called at the time of Application start to track Installation
-     *
-     * @param application
-     */
+    public static final String FILM_CATEGORY_EVENT_VALUE = "Category";
+    public static final String FILM_ID_EVENT_VALUE = "Film ID";
+
     public static void trackInstallationEvent(Application application) {
         AppsFlyerLib.getInstance().setAndroidIdData(getAndroidId(application));
     }
@@ -52,97 +50,80 @@ public class AppsFlyerUtils {
         return androidId;
     }
 
-    public static void registerAppEvent(Application application, String key) {
-        AppsFlyerLib.getInstance().startTracking(application, key);
+    public static void registrationEvent(Context context, String userID, String key) {
+        Map<String, Object> eventValue = new HashMap<>();
+        eventValue.put(USER_ENTITLEMENT_STATE_EVENT_VALUE, "true");
+        eventValue.put(USER_ID_EVENT_VALUE, userID);
+        eventValue.put(AppsFlyerUtils.DEVICE_ID_EVENT_VALUE, key);
+        eventValue.put(USER_REGISTER_STATE_EVENT_VALUE, true);
+
+        AppsFlyerLib.getInstance().trackEvent(context, REGISTRATION_APP_EVENT_NAME, eventValue);
     }
 
-    public static void appsFlyerAppOpenEvent(Context context) {
-        Map<String, Object> eventValue = new HashMap<>();
-        eventValue.put(context.getString(R.string.app_cms_appsflyer_app_open_key),
-                context.getString(R.string.app_cms_appsflyer_event_app_open_value));
-
-        AppsFlyerLib.getInstance().trackEvent(context, APP_OPEN, eventValue);
+    public static void appOpenEvent(Context context) {
+        AppsFlyerLib.getInstance().trackEvent(context, APP_OPEN_EVENT_NAME, null);
     }
 
-    public static void appsFlyerLoginEvent(Context context, boolean isLogin, String userID) {
+    public static void loginEvent(Context context, String userID) {
         Map<String, Object> eventValue = new HashMap<>();
-        eventValue.put(AFInAppEventParameterName.CUSTOMER_USER_ID, userID);
+        eventValue.put(AppsFlyerUtils.USER_ENTITLEMENT_STATE_EVENT_VALUE, true);
+        eventValue.put(AppsFlyerUtils.USER_ID_EVENT_VALUE, userID);
+        eventValue.put(AppsFlyerUtils.USER_REGISTER_STATE_EVENT_VALUE, true);
 
-        if (isLogin) {
-            eventValue.put(context.getString(R.string.app_cms_appsflyer_login_status_key),
-                    context.getString(R.string.app_cms_appsflyer_login_success));
-        } else {
-            eventValue.put(context.getString(R.string.app_cms_appsflyer_login_status_key),
-                    context.getString(R.string.app_cms_appsflyer_signup_success));
-        }
-
-        eventValue.put(AppsFlyerUtils.USER_REGISTER_STATE, true);
-        AppsFlyerLib.getInstance().setCustomerUserId(userID);
-        AppsFlyerLib.getInstance().trackEvent(context, LOGIN, eventValue);
+        AppsFlyerLib.getInstance().trackEvent(context, LOGIN_EVENT_NAME, eventValue);
     }
 
-    public static void appsFlyerLogoutEvent(Context context, String userID) {
+    public static void logoutEvent(Context context, String userID) {
         Map<String, Object> eventValue = new HashMap<>();
-        eventValue.put(AFInAppEventParameterName.CUSTOMER_USER_ID, userID);
-        eventValue.put(context.getString(R.string.app_cms_appsflyer_login_status), true);
-        eventValue.put(AppsFlyerUtils.USER_REGISTER_STATE, true);
+        eventValue.put(AppsFlyerUtils.USER_ENTITLEMENT_STATE_EVENT_VALUE, true);
+        eventValue.put(AppsFlyerUtils.USER_ID_EVENT_VALUE, userID);
+        eventValue.put(AppsFlyerUtils.USER_REGISTER_STATE_EVENT_VALUE, true);
 
-        System.out.print("User ID is = " + userID);
-        AppsFlyerLib.getInstance().setCustomerUserId(userID);
-        AppsFlyerLib.getInstance().trackEvent(context, LOGOUT, eventValue);
+        AppsFlyerLib.getInstance().trackEvent(context, LOGOUT_EVENT_NAME, eventValue);
     }
 
-    public static void appsFlyerSubscriptionEvent(Context context,
-                                                  AppCMSPresenter appCMSPresenter,
-                                                  boolean isSubscribing,
-                                                  String userID,
-                                                  String productId,
-                                                  String price,
-                                                  String plan,
-                                                  String currency) {
+    public static void subscriptionEvent(Context context,
+                                         boolean isSubscribing,
+                                         String deviceID,
+                                         String price,
+                                         String plan,
+                                         String currency) {
         Map<String, Object> eventValue = new HashMap<>();
+
+        eventValue.put(AppsFlyerUtils.PRODUCT_NAME_EVENT_VALUE, plan);
+        eventValue.put(AppsFlyerUtils.PRICE_EVENT_VALUE, price);
+        eventValue.put(AppsFlyerUtils.USER_ENTITLEMENT_STATE_EVENT_VALUE, true);
+        eventValue.put(AppsFlyerUtils.DEVICE_ID_EVENT_VALUE, deviceID);
+        eventValue.put(AppsFlyerUtils.CURRENCY_EVENT_VALUE, currency);
 
         if (isSubscribing) {
-            eventValue.put(AFInAppEventParameterName.CUSTOMER_USER_ID, userID);
-            eventValue.put(AppsFlyerUtils.USER_ENTITLEMENT_STATE, true);
-            eventValue.put(AppsFlyerUtils.USER_REGISTER_STATE, true);
-
-            //
-
+            AppsFlyerLib.getInstance().trackEvent(context, SUBSCRIPTION_EVENT_NAME, eventValue);
         } else {
-            eventValue.put(AppsFlyerUtils.USER_ENTITLEMENT_STATE, false);
-            eventValue.put(AppsFlyerUtils.USER_REGISTER_STATE, false);
+            AppsFlyerLib.getInstance().trackEvent(context, CANCEL_SUBSCRIPTION_EVENT_NAME, eventValue);
         }
-
-        eventValue.put(AppsFlyerUtils.PRODUCT_ID, productId);
-        eventValue.put(AppsFlyerUtils.PLAN, plan);
-        eventValue.put(AppsFlyerUtils.PRICE, price);
-        eventValue.put(AppsFlyerUtils.CURRENCY, currency);
-
-        AppsFlyerLib.getInstance().trackEvent(context, SUBSCRIPTION, eventValue);
     }
 
-    public static void appsFlyerFilmViewingEvent(Context context, String filmId,
-                                                 AppCMSPresenter appCMSPresenter) {
+    public static void filmViewingEvent(Context context,
+                                        String category,
+                                        String filmId,
+                                        AppCMSPresenter appCMSPresenter) {
 
         Map<String, Object> eventValue = new HashMap<>();
-        eventValue.put(context.getString(R.string.app_cms_appsflyer_film_id), filmId);
 
-        if (appCMSPresenter.isUserLoggedIn(context)) {
-            eventValue.put(AFInAppEventParameterName.CUSTOMER_USER_ID,
-                    appCMSPresenter.getLoggedInUser(context));
-            eventValue.put(AppsFlyerUtils.USER_ENTITLEMENT_STATE,
-                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionId(context)));
-            eventValue.put(AppsFlyerUtils.USER_REGISTER_STATE, true);
-        } else {
-            eventValue.put(AppsFlyerUtils.USER_ENTITLEMENT_STATE, false);
-            eventValue.put(AppsFlyerUtils.USER_REGISTER_STATE, false);
-        }
+        eventValue.put(AppsFlyerUtils.FILM_CATEGORY_EVENT_VALUE, category);
+        eventValue.put(USER_ID_EVENT_VALUE, appCMSPresenter.getLoggedInUser(context));
+        eventValue.put(FILM_ID_EVENT_VALUE, filmId);
+        eventValue.put("true", true);
+        eventValue.put(AppsFlyerUtils.USER_REGISTER_STATE_EVENT_VALUE, true);
+//        eventValue.put(AppsFlyerUtils.USER_ENTITLEMENT_STATE_EVENT_VALUE, !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionId(context)));
 
-        AppsFlyerLib.getInstance().trackEvent(context, FILM_VIEWING, eventValue);
+        AppsFlyerLib.getInstance().trackEvent(context, FILM_VIEWING_EVENT_NAME, eventValue);
     }
 
     public static void uninstallAppEvent(Application application, String GCM_PROJECT_KEY) {
-        AppsFlyerLib.getInstance().setGCMProjectNumber(application, GCM_PROJECT_KEY);
+        Map<String, Object> eventValue = new HashMap<>();
+        eventValue.put("GCM Project Key", GCM_PROJECT_KEY);
+        AppsFlyerLib.getInstance().trackEvent(application, UNINSTALL_EVENT_NAME, eventValue);
+//        AppsFlyerLib.getInstance().setGCMProjectNumber(application, GCM_PROJECT_KEY);
     }
 }
