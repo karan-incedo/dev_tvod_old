@@ -1415,14 +1415,13 @@ public class AppCMSPresenter {
                                             false,
                                             null);
 
-//                                    AppsFlyerUtils.appsFlyerSubscriptionEvent(currentActivity, this,
-//                                            false,
-//                                            getLoggedInUser(currentActivity),
-//                                            subscriptionRequest.getPlanId(),
-//                                            String.valueOf(appCMSSubscriptionPlanResults
-//                                                    .getPlanDetails().get(0).getRecurringPaymentAmount()),
-//                                            subscriptionRequest.getPlanId(),
-//                                            subscriptionRequest.getCurrencyCode());
+                                    AppsFlyerUtils.subscriptionEvent(currentActivity,
+                                            false,
+                                            currentActivity.getString(R.string.app_cms_appsflyer_dev_key),
+                                            String.valueOf(appCMSSubscriptionPlanResults.getPlanDetails()
+                                                    .get(0).getRecurringPaymentAmount()),
+                                            subscriptionRequest.getPlanId(),
+                                            subscriptionRequest.getCurrencyCode());
                                 },
                                 currentUserPlan -> {
 
@@ -3521,7 +3520,7 @@ public class AppCMSPresenter {
             launchNavigationPage(null, null);
 
             CastHelper.getInstance(currentActivity.getApplicationContext()).castingLogout();
-//            AppsFlyerUtils.appsFlyerLogoutEvent(currentActivity, getLoggedInUser(currentActivity));
+            AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser(currentActivity));
         }
     }
 
@@ -4091,14 +4090,13 @@ public class AppCMSPresenter {
                         if (appCMSSubscriptionPlanResult != null) {
                             Log.d(TAG, "Subscription response: " + gson.toJson(appCMSSubscriptionPlanResult, AppCMSSubscriptionPlanResult.class));
 
-//                            AppsFlyerUtils.appsFlyerSubscriptionEvent(currentActivity, this,
-//                                    true,
-//                                    getLoggedInUser(currentActivity),
-//                                    subscriptionRequest.getPlanId(),
-//                                    String.valueOf(appCMSSubscriptionPlanResult.getPlanDetails()
-//                                            .get(0).getRecurringPaymentAmount()),
-//                                    subscriptionRequest.getPlanId(),
-//                                    subscriptionRequest.getCurrencyCode());
+                            AppsFlyerUtils.subscriptionEvent(currentActivity,
+                                    true,
+                                    currentActivity.getString(R.string.app_cms_appsflyer_dev_key),
+                                    String.valueOf(appCMSSubscriptionPlanResult.getPlanDetails()
+                                            .get(0).getRecurringPaymentAmount()),
+                                    subscriptionRequest.getPlanId(),
+                                    subscriptionRequest.getCurrencyCode());
 
                             cancelInternalEvents();
                             NavigationPrimary homePageNavItem = findHomePageNavItem();
@@ -4496,7 +4494,12 @@ public class AppCMSPresenter {
                         setLoggedInUserName(currentActivity, signInResponse.getName());
                         setLoggedInUserEmail(currentActivity, signInResponse.getEmail());
 
-//                        AppsFlyerUtils.appsFlyerLoginEvent(currentActivity, !signup, signInResponse.getUserId());
+                        if (signup) {
+                            AppsFlyerUtils.registrationEvent(currentActivity, signInResponse.getUserId(),
+                                    currentActivity.getString(R.string.app_cms_appsflyer_dev_key));
+                        } else {
+                            AppsFlyerUtils.loginEvent(currentActivity, signInResponse.getUserId());
+                        }
 
                         if (followWithSubscription) {
                             signupFromFacebook = false;
