@@ -84,7 +84,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
             if (appCMSPresenter.isUserLoggedIn(context)) {
                 List<SubscriptionPlan> availableSubscriptionPlans =
-                    appCMSPresenter.availableUpgradesForUser(appCMSPresenter.getLoggedInUser(context));
+                        appCMSPresenter.availableUpgradesForUser(appCMSPresenter.getLoggedInUser(context));
                 cullDataByAvailableUpgrades(availableSubscriptionPlans);
             }
         }
@@ -443,6 +443,40 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             }
         }
     }
+
+//        public static class SortByPlanPrice {
+//        private static List<ContentDatum> data = new ArrayList<>();
+//        private double paymentAmount;
+//
+//        public SortByPlanPrice(List<ContentDatum> adapter) {
+//            data = adapter;
+//        }
+//
+//        private void initiateSort(int startIndex, int endIndex) {
+//
+//            int quickie;
+//
+//            if (startIndex < endIndex) {
+//                quickie = partition(startIndex, endIndex);
+//                initiateSort(startIndex, quickie);
+//                initiateSort(quickie + 1, endIndex);
+//            }
+//        }
+//
+//        private int partition(int start, int end) {
+//            int pivotIndex;
+//     FIXME: 8/4/17 Finish implementation (for quicksort based on recurringpayment for each plan).
+//            return 0;
+//        }
+//
+//        private List<ContentDatum> getSortedPlans() {
+//            return SortByPlanPrice.data;
+//        }
+//
+//        private void exchange(ContentDatum c1, ContentDatum c2) {
+//            //
+//        }
+//    }
 
     private void cullDataByAvailableUpgrades(List<SubscriptionPlan> availableSubscriptionPlans) {
         List<ContentDatum> updatedData = new ArrayList<>();
