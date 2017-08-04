@@ -59,7 +59,6 @@ public class PageView extends BaseView {
     public void notifyAdaptersOfUpdate() {
         for (ListWithAdapter listWithAdapter : adapterList) {
             if (listWithAdapter.getAdapter() instanceof AppCMSBaseAdapter) {
-                System.out.println("AppCMSDownloadQualityFragment  "+ listWithAdapter.getAdapter().getItemCount());
                 ((AppCMSBaseAdapter) listWithAdapter.getAdapter())
                         .resetData(listWithAdapter.getListView());
             }
