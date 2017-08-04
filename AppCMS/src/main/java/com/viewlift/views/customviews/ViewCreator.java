@@ -330,7 +330,11 @@ public class ViewCreator {
                                                                 moduleAPI.getContentData().get(0), userId), userId);
 
                                             }
-                                            view.setVisibility(View.VISIBLE);
+                                            if (appCMSPresenter.isUserSubscribed(context)) {
+                                                view.setVisibility(View.VISIBLE);
+                                            } else {
+                                                view.setVisibility(View.GONE);
+                                            }
                                         }
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) {
                                         if (!appCMSPresenter.isUserSubscribed(context)) {
@@ -1341,6 +1345,12 @@ public class ViewCreator {
                                 .view(componentViewResult.componentView)
                                 .build());
 
+                        if (appCMSPresenter.isUserSubscribed(context)) {
+                            componentViewResult.componentView.setVisibility(View.VISIBLE);
+                        } else {
+                            componentViewResult.componentView.setVisibility(View.GONE);
+                        }
+
                         break;
 
                     case PAGE_ADD_TO_WATCHLIST_KEY:
@@ -1360,6 +1370,13 @@ public class ViewCreator {
                                 .id(moduleAPI.getId() + component.getKey())
                                 .view(componentViewResult.componentView)
                                 .build());
+
+                        if (appCMSPresenter.isUserSubscribed(context)) {
+                            componentViewResult.componentView.setVisibility(View.VISIBLE);
+                        } else {
+                            componentViewResult.componentView.setVisibility(View.GONE);
+                        }
+
                         break;
 
                     case PAGE_VIDEO_WATCH_TRAILER_KEY:
