@@ -6,14 +6,15 @@
 /.idea/*
 /captures
 .externalNativeBuild
-<<<<<<< HEAD
-/.idea/*
-=======
+/.idea/**
 /.idea/misc.xml
 /.idea/encodings.xml
->>>>>>> phase_3
 /AppCMS/release/*
 /*.apk
 /*.json
 /.idea/misc.xml
 /.idea/modules.xml
+/.idea/misc.xml
+/.idea/modules.xml
+
+
