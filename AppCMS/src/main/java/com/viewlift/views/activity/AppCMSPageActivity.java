@@ -40,6 +40,7 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
@@ -119,6 +120,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private AccessToken accessToken;
     private IInAppBillingService inAppBillingService;
     private ServiceConnection inAppBillingServiceConn;
+    private FirebaseAnalytics mFireBaseAnalytics;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -310,6 +313,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         createHomeNavItem(appCMSPresenter.findHomePageNavItem());
         createMoviesNavItem(appCMSPresenter.findMoviesPageNavItem());
         createSearchNavItem();
+
+        //Settings The Firebase Analytics for Android
+        mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
+        if (mFireBaseAnalytics != null && appCMSPresenter != null)
+            appCMSPresenter.setmFireBaseAnalytics(mFireBaseAnalytics);
 
         Log.d(TAG, "onCreate()");
     }
