@@ -4099,6 +4099,7 @@ public class AppCMSPresenter {
                                     subscriptionRequest.getCurrencyCode());
 
                             cancelInternalEvents();
+                            restartInternalEvents();
                             NavigationPrimary homePageNavItem = findHomePageNavItem();
                             if (homePageNavItem != null) {
                                 navigateToPage(homePageNavItem.getPageId(),
@@ -4148,8 +4149,6 @@ public class AppCMSPresenter {
                     googleUserId,
                     googleUsername,
                     googleEmail);
-        } else {
-            signup(subscriptionUserEmail, subscriptionUserPassword);
         }
         subscriptionUserEmail = null;
         subscriptionUserPassword = null;
