@@ -3596,7 +3596,7 @@ public class AppCMSPresenter {
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             String title = currentActivity.getString(R.string.app_cms_login_required_title);
             String message = currentActivity.getString(R.string.app_cms_login_required_message);
-            if (dialogType == DialogType.SUBSCRIPTION_REQUIRED) {
+            if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED) {
                 title = currentActivity.getString(R.string.app_cms_login_and_subscription_required_title);
                 message = currentActivity.getString(R.string.app_cms_login_and_subscription_required_message);
             }
