@@ -4128,7 +4128,7 @@ public class AppCMSPresenter {
                                             singleResult -> {
                                             },
                                             appCMSSubscriptionPlanResult -> {
-                                                if (appCMSSubscriptionPlanResult != null &&l
+                                                if (appCMSSubscriptionPlanResult != null &&
                                                         appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails() != null) {
 
                                                     UserSubscriptionPlan userSubscriptionPlan = new UserSubscriptionPlan();

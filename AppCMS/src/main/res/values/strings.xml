@@ -232,7 +232,7 @@
 
     <string name="app_cms_subscription_title">Subscription</string>
     <string name="app_cms_login_required_title">Subscription Required</string>
-    <string name="app_cms_login_required_message">Please login to continue</string>
+    <string name="app_cms_login_required_message">Please Subscribe to continue</string>
     <string name="app_cms_login_and_subscription_required_title">Login and Subscription Required</string>
     <string name="app_cms_login_and_subscription_required_message">Please login or subscribe to continue.</string>
     <string name="app_cms_login_button_text">LOGIN</string>
