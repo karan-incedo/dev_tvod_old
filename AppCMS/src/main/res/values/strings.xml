@@ -252,4 +252,8 @@
     <string name="app_cms_positive_confirmation_button_text">YES</string>
     <string name="app_cms_negative_confirmation_button_text">NO</string>
     <string name="download_file_prefix">file:///</string>
+
+    //cast receiver
+    <string name="chromecast_receiver_app_id">0974224E</string>
+
 </resources>

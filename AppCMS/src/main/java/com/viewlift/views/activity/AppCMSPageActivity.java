@@ -40,6 +40,7 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
@@ -82,6 +83,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private static final int MOVIES_PAGE_INDEX = 2;
     private static final int SEARCH_INDEX = 3;
 
+
     @BindView(R.id.app_cms_page_loading_progressbar)
     ProgressBar loadingProgressBar;
 
@@ -119,6 +121,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private AccessToken accessToken;
     private IInAppBillingService inAppBillingService;
     private ServiceConnection inAppBillingServiceConn;
+    private FirebaseAnalytics mFireBaseAnalytics;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -126,11 +130,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_appcms_page);
 
         ButterKnife.bind(this);
-
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
-
         appCMSBinderStack = new Stack<>();
         appCMSBinderMap = new HashMap<>();
 
@@ -310,6 +312,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         createHomeNavItem(appCMSPresenter.findHomePageNavItem());
         createMoviesNavItem(appCMSPresenter.findMoviesPageNavItem());
         createSearchNavItem();
+
+        //Settings The Firebase Analytics for Android
+        mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
+        if (mFireBaseAnalytics != null && appCMSPresenter != null)
+            appCMSPresenter.setmFireBaseAnalytics(mFireBaseAnalytics);
 
         Log.d(TAG, "onCreate()");
     }
@@ -584,6 +591,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         Log.d(TAG, "createScreenFromAppCMSBinder() - Handling Navbar");
         handleNavbar(appCMSBinder);
+//        CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
+//        CastServiceProvider.getInstance(this).onActivityResume();
+
         handleOrientation(getResources().getConfiguration().orientation, appCMSBinder);
         createFragment(appCMSBinder, configurationChanged);
     }
@@ -675,6 +685,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             showSystemUI(getWindow().getDecorView());
         }
         handleNavbar(appCMSBinder);
+
+
     }
 
     private void handleToolbar(boolean appbarPresent, AppCMSMain appCMSMain) {
@@ -940,6 +952,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void setMediaRouterButtonVisibility(String pageId) {
+
+        if (CastServiceProvider.getInstance(this).isOverlayVisible()) {
+            CastServiceProvider.getInstance(this).showIntroOverLay();
+        }
+
         if (appCMSPresenter.findHomePageNavItem().getPageId().equalsIgnoreCase(pageId) ||
                 appCMSPresenter.findMoviesPageNavItem().getPageId().equalsIgnoreCase(pageId)) {
             ll_media_route_button.setVisibility(View.VISIBLE);
@@ -947,7 +964,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             ll_media_route_button.setVisibility(View.GONE);
         }
 
-        setCastingInstance();
     }
 
     private void setCastingInstance() {

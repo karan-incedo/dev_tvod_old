@@ -58,6 +58,7 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.iid.InstanceID;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
@@ -343,6 +344,8 @@ public class AppCMSPresenter {
     private List<SubscriptionPlan> subscriptionPlans;
     private boolean navigateToHomeToRefresh;
     private boolean configurationChanged;
+    private FirebaseAnalytics mFireBaseAnalytics;
+
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -998,9 +1001,11 @@ public class AppCMSPresenter {
                 }
             }
             if (updateToModule != null &&
+
                     updateToModule.getContentData() != null &&
                     updateFromModule != null &&
                     updateFromModule.getContentData() != null) {
+
                 for (ContentDatum toContentDatum : updateToModule.getContentData()) {
                     for (ContentDatum fromContentDatum : updateFromModule.getContentData()) {
                         if (!TextUtils.isEmpty(toContentDatum.getGist().getDescription()) &&
@@ -1638,7 +1643,8 @@ public class AppCMSPresenter {
             downloadVideoRealm.setSubtitlesId_DM(ccEnqueueId);
             downloadVideoRealm.setSubtitlesFileURL(getPngPosterPath(contentDatum.getGist().getId()));
         }
-        downloadVideoRealm.setVideoFileURL(downloadedMediaLocalURI(thumbEnqueueId));
+
+        downloadVideoRealm.setVideoFileURL(contentDatum.getGist().getVideoImageUrl()); //This change has been done due to making thumb image available at time of videos are downloading.
         downloadVideoRealm.setVideoWebURL(downloadURL);
         downloadVideoRealm.setDownloadDate(System.currentTimeMillis());
         downloadVideoRealm.setVideoDuration(contentDatum.getGist().getRuntime());
@@ -1767,6 +1773,18 @@ public class AppCMSPresenter {
         return getDownloadedFileSize(downloadVideoRealm.getVideoSize());
     }
 
+
+    public DownloadVideoRealm getDownloadedVideo(String videoId) {
+        return realmController.getDownloadByIdBelongstoUser(videoId, getLoggedInUser(currentActivity));
+    }
+    public boolean isVideoDownloaded(String videoId){
+        DownloadVideoRealm downloadVideoRealm= realmController.getDownloadByIdBelongstoUser(videoId,getLoggedInUser(currentActivity));
+        if (downloadVideoRealm!=null && downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId)) {
+            return true;
+        }
+
+        return false;
+    }
     public String getDownloadedFileSize(long size) {
         String fileSize;
         DecimalFormat dec = new DecimalFormat("0");
@@ -3065,6 +3083,14 @@ public class AppCMSPresenter {
             return sharedPreferences.edit().putString(AUTH_TOKEN_SHARED_PREF_NAME, authToken).commit();
         }
         return false;
+    }
+
+    public FirebaseAnalytics getmFireBaseAnalytics() {
+        return mFireBaseAnalytics;
+    }
+
+    public void setmFireBaseAnalytics(FirebaseAnalytics mFireBaseAnalytics) {
+        this.mFireBaseAnalytics = mFireBaseAnalytics;
     }
 
     public String getFacebookAccessToken(Context context) {
@@ -4613,6 +4639,9 @@ public class AppCMSPresenter {
                                         boolean navbarPresent,
                                         boolean sendCloseAction,
                                         AppCMSVideoPageBinder binder) {
+        if (currentActivity instanceof AppCMSPlayVideoActivity) {
+            ((AppCMSPlayVideoActivity) currentActivity).closePlayer();
+        }
 
         Bundle args = getAutoplayActivityBundle(activity,
                 appCMSPageUI,

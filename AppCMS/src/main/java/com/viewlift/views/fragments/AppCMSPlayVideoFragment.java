@@ -206,8 +206,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference(getContext()));
             videoPlayerView.getPlayerView().getSubtitleView()
                     .setVisibility(appCMSPresenter.getClosedCaptionPreference(getContext())
-                    ? View.VISIBLE
-                    : View.GONE);
+                            ? View.VISIBLE
+                            : View.GONE);
             videoPlayerView.setUri(Uri.parse(hlsUrl),
                     !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
             Log.i(TAG, "Playing video: " + hlsUrl);
@@ -431,10 +431,6 @@ public class AppCMSPlayVideoFragment extends Fragment
             adsLoader.removeAdErrorListener(this);
         }
         adsLoader = null;
-
-        if (castProvider != null) {
-            castProvider.setRemotePlaybackCallback(null);
-        }
 
         super.onDestroyView();
     }

@@ -109,7 +109,7 @@ public class CastingUtils {
 
     public static String getPlayingUrl(ContentDatum contentData) {
         String playUrl = "";
-        if (contentData.getStreamingInfo() != null && contentData.getStreamingInfo().getVideoAssets() != null) {
+        if (contentData!=null && contentData.getStreamingInfo() != null && contentData.getStreamingInfo().getVideoAssets() != null) {
 
 
             if (contentData.getStreamingInfo().getVideoAssets().getMpeg() != null && contentData.getStreamingInfo().getVideoAssets().getMpeg().size() > 0) {
