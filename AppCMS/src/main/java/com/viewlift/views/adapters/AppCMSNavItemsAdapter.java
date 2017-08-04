@@ -102,13 +102,27 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
 
                     viewHolder.itemView.setOnClickListener(v -> {
                         Log.d(TAG, "Navigating to page with Title: " + navigationPrimary.getTitle());
+                        AppCMSUIKeyType titleKey = jsonValueKeyMap.get(navigationPrimary.getTitle());
+                        if (titleKey == null) {
+                            titleKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                        }
+
+                        boolean appbarPresent = true;
+                        boolean fullscreenEnabled = false;
+                        boolean navbarPresent = true;
+                        if (titleKey == AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY) {
+                            appbarPresent = false;
+                            fullscreenEnabled = true;
+                            navbarPresent = false;
+                        }
+
                         if (!appCMSPresenter.navigateToPage(navigationPrimary.getPageId(),
                                 navigationPrimary.getTitle(),
                                 navigationPrimary.getUrl(),
                                 false,
-                                true,
-                                false,
-                                true,
+                                appbarPresent,
+                                fullscreenEnabled,
+                                navbarPresent,
                                 true,
                                 null)) {
                             Log.e(TAG, "Could not navigate to page with Title: " +
