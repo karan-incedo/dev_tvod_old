@@ -846,7 +846,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
         searchNavBarItemView.setImage(getString(R.string.app_cms_search_icon_name));
         searchNavBarItemView.setHighlightColor(highlightColor);
-        searchNavBarItemView.hideLabel();
+        searchNavBarItemView.setLabel(getString(R.string.app_cms_search_label));
         searchNavBarItemView.setOnClickListener(v -> {
             pageViewDuringSearch = getSelectedNavItem();
             appCMSPresenter.launchSearchPage();
