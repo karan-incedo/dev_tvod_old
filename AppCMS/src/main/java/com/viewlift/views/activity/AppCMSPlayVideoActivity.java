@@ -54,6 +54,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_player_page);
+
+        appCMSPresenter = ((AppCMSApplication) getApplication()).
+                getAppCMSPresenterComponent().appCMSPresenter();
+
         FrameLayout appCMSPlayVideoPageContainer =
                 (FrameLayout) findViewById(R.id.app_cms_play_video_page_container);
 
@@ -82,6 +86,15 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             && extra[1] != null
                             && gist.getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
                         videoUrl = !TextUtils.isEmpty(extra[1]) ? extra[1] : "";
+                    }
+                    /*If the video is already downloaded, play if from there, even if Internet is
+                    * available*/
+                    else if (gist.getId() != null
+                            && appCMSPresenter.getRealmController() != null
+                            && appCMSPresenter.getRealmController().getDownloadById(gist.getId()) != null
+                            && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus() != null
+                            && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
+                        videoUrl = appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getLocalURI();
                     } else if (binder.getContentData().getStreamingInfo() != null &&
                             binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
                         VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
@@ -98,7 +111,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             && binder.getContentData().getContentDetails() != null
                             && binder.getContentData().getContentDetails().getClosedCaptions() != null
                             && binder.getContentData().getContentDetails().getClosedCaptions().size() > 0
-                            && binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
+                            && binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl() != null
+                            && !binder.getContentData().getContentDetails().getClosedCaptions()
+                            .get(0).getUrl().equalsIgnoreCase(
+                                    getString(R.string.download_file_prefix))){
                         closedCaptionUrl = binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl();
                     }
                 } else {
@@ -171,9 +187,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
         registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
 
-        appCMSPresenter =
-                ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
-
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
@@ -243,7 +256,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         } else if (castingModeChromecast == CastingUtils.CASTING_MODE_CHROMECAST && binder.isTrailer()) {
             CastHelper.getInstance(getApplicationContext()).launchTrailer(appCMSPresenter, filmId, binder, currentPosition);
         }
-
     }
 
     @Override

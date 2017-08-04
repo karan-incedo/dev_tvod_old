@@ -7,11 +7,13 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.media.MediaRouter;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
@@ -30,6 +32,7 @@ import com.viewlift.R;
 import com.viewlift.casting.roku.dialog.CastChooserDialog;
 import com.viewlift.casting.roku.dialog.CastDisconnectDialog;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 
 import java.util.List;
@@ -100,7 +103,7 @@ public class CastServiceProvider {
         mCastHelper.setInstance(mActivity);
         mMediaRouteButton.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.anim_cast, null));
         castAnimDrawable = (AnimationDrawable) mMediaRouteButton.getDrawable();
-        castAnimDrawable.start();
+
     }
 
     public void onActivityResume() {
@@ -240,22 +243,37 @@ public class CastServiceProvider {
 
 
     public void showIntroOverLay() {
-        Target target = new ViewTarget(mMediaRouteButton.getId(), mActivity);
-        mShowCaseView = new ShowcaseView.Builder(mActivity)
-                .setTarget(target) //Here is where you supply the id of the action bar item you want to display
-                .setContentText(R.string.app_cast_overlay_text)
-                .build();
 
-        mShowCaseView.forceTextPosition(ShowcaseView.ABOVE_SHOWCASE);
-        mShowCaseView.setStyle(R.style.CustomShowcaseTheme);
-        mShowCaseView.show();
+        if (mMediaRouteButton != null && mActivity != null) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Target target = new ViewTarget(mMediaRouteButton.getId(), mActivity);
+                    mShowCaseView = new ShowcaseView.Builder(mActivity)
+                            .setTarget(target) //Here is where you supply the id of the action bar item you want to display
+                            .setContentText(R.string.app_cast_overlay_text)
+                            .build();
+
+                    mShowCaseView.forceTextPosition(ShowcaseView.ABOVE_SHOWCASE);
+                    mShowCaseView.setStyle(R.style.CustomShowcaseTheme);
+
+                    mShowCaseView.show();
+                    mShowCaseView.invalidate();
+                }
+            },500);
+
+        }
     }
+
 
     public boolean isOverlayVisible() {
         boolean isVisible = false;
         if (mShowCaseView != null && mShowCaseView.isShowing()) {
             isVisible = true;
+            ((ViewGroup) mActivity.getWindow().getDecorView()).removeView(mShowCaseView);
             mShowCaseView.hide();
+
+            mShowCaseView = null;
         }
         return isVisible;
     }
@@ -280,7 +298,9 @@ public class CastServiceProvider {
             castChooserDialog.dismiss();
         }
 
-        if (mCastHelper.isCastDeviceAvailable) {
+        if (mCastHelper.isCastDeviceAvailable)
+
+        {
             if (mCastHelper.isRemoteDeviceConnected() || (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null)) {
                 castAnimDrawable.stop();
                 Drawable selectedImageDrawable = mActivity.getResources().getDrawable(R.drawable.toolbar_cast_connected, null);
@@ -293,7 +313,9 @@ public class CastServiceProvider {
             }
         }
 
-        mMediaRouteButton.setOnClickListener(new View.OnClickListener() {
+        mMediaRouteButton.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View v) {
                 castDisconnectDialog = new CastDisconnectDialog(mActivity);

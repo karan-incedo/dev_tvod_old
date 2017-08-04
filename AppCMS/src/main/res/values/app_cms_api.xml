@@ -311,4 +311,9 @@
     <string name="app_cms_download_started_mesage">%1$s has started downloading.</string>
     <string name="app_cms_download_quality_cancel_button_key">cancelButton</string>
     <string name="app_cms_download_quality_continue_button_key">continueButton</string>
+
+    <!-- AppCMS Payment Processor values -->
+    <string name="subscription_ios_payment_processor_friendly">iOS</string>
+    <string name="subscription_android_payment_processor_friendly">Android</string>
+    <string name="subscription_web_payment_processor_friendly">Stripe</string>
 </resources>

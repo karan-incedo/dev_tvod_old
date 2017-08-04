@@ -6,6 +6,7 @@ package com.viewlift.models.network.rest;
 
 import com.viewlift.models.data.appcms.api.SubscriptionRequest;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionPlanResult;
+import com.viewlift.models.data.appcms.subscriptions.AppCMSUserSubscriptionPlanResult;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ public interface AppCMSSubscriptionPlanRest {
     Call<List<AppCMSSubscriptionPlanResult>> getPlanList(@Url String url, @HeaderMap Map<String, String> authHeaders);
 
     @GET
-    Call<AppCMSSubscriptionPlanResult> getSubscribedPlan(@Url String url, @HeaderMap Map<String, String> authHeaders);
+    Call<AppCMSUserSubscriptionPlanResult> getSubscribedPlan(@Url String url, @HeaderMap Map<String, String> authHeaders);
 
     @POST
     Call<AppCMSSubscriptionPlanResult> createPlan(@Url String url, @HeaderMap Map<String, String> authHeaders, @Body SubscriptionRequest request);

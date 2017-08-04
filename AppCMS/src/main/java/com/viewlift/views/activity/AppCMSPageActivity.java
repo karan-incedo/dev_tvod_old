@@ -82,6 +82,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private static final int MOVIES_PAGE_INDEX = 2;
     private static final int SEARCH_INDEX = 3;
 
+
     @BindView(R.id.app_cms_page_loading_progressbar)
     ProgressBar loadingProgressBar;
 
@@ -129,7 +130,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
-
         appCMSBinderStack = new Stack<>();
         appCMSBinderMap = new HashMap<>();
 
@@ -343,6 +343,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             selectNavItem(pageViewDuringSearch);
         }
 
+        appCMSPresenter.cancelInternalEvents();
+
         unregisterReceiver(presenterCloseActionReceiver);
         isActive = false;
     }
@@ -533,6 +535,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void resume() {
+        appCMSPresenter.restartInternalEvents();
         if (pageViewDuringSearch != null) {
             selectNavItem(pageViewDuringSearch);
         } else {
@@ -572,19 +575,24 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         return false;
     }
 
-    private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder) {
+    private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder,
+                                              boolean configurationChanged) {
         Log.d(TAG, "Handling new AppCMSBinder: " + appCMSBinder.getPageName());
 
         pageLoading(false);
 
         Log.d(TAG, "createScreenFromAppCMSBinder() - Handling Navbar");
         handleNavbar(appCMSBinder);
+//        CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
+//        CastServiceProvider.getInstance(this).onActivityResume();
+
         handleOrientation(getResources().getConfiguration().orientation, appCMSBinder);
-        createFragment(appCMSBinder);
+        createFragment(appCMSBinder, configurationChanged);
     }
 
-    private void createFragment(AppCMSBinder appCMSBinder) {
+    private void createFragment(AppCMSBinder appCMSBinder, boolean configurationChanged) {
         try {
+            appCMSPresenter.onConfigurationChange(configurationChanged);
             getSupportFragmentManager().addOnBackStackChangedListener(this);
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -670,10 +678,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
         handleNavbar(appCMSBinder);
 
-        setCastingInstance();
-        if (CastServiceProvider.getInstance(this).isOverlayVisible()) {
-            CastServiceProvider.getInstance(this).showIntroOverLay();
-        }
+
     }
 
     private void handleToolbar(boolean appbarPresent, AppCMSMain appCMSMain) {
@@ -754,7 +759,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
 
-            createScreenFromAppCMSBinder(appCMSBinder);
+            createScreenFromAppCMSBinder(appCMSBinder, configurationChanged);
         }
     }
 
@@ -925,7 +930,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     public void onBackStackChanged() {
         appCMSPresenter.dismissOpenDialogs(null);
-        appCMSPresenter.showMainFragmentView(true);
+        if (!appCMSPresenter.getConfigurationChanged() &&
+                !appCMSPresenter.isMainFragmentTransparent()) {
+            appCMSPresenter.showMainFragmentView(true);
+        }
+        appCMSPresenter.onConfigurationChange(false);
         appCMSPresenter.restartInternalEvents();
         getSupportFragmentManager().removeOnBackStackChangedListener(this);
     }
@@ -935,6 +944,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void setMediaRouterButtonVisibility(String pageId) {
+
+        if (CastServiceProvider.getInstance(this).isOverlayVisible()) {
+            CastServiceProvider.getInstance(this).showIntroOverLay();
+        }
+
         if (appCMSPresenter.findHomePageNavItem().getPageId().equalsIgnoreCase(pageId) ||
                 appCMSPresenter.findMoviesPageNavItem().getPageId().equalsIgnoreCase(pageId)) {
             ll_media_route_button.setVisibility(View.VISIBLE);

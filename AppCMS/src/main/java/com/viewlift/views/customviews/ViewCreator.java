@@ -424,6 +424,15 @@ public class ViewCreator {
                                                             false);
                                             textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
                                         }
+                                    } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY) {
+                                        String paymentProcessor = appCMSPresenter.getActiveSubscriptionProcessor(context);
+                                        if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor_friendly))) {
+                                            ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_ios_payment_processor_friendly));
+                                        } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly))) {
+                                            ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
+                                        } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_web_payment_processor_friendly))) {
+                                            ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_web_payment_processor_friendly));
+                                        }
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
                                     if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
@@ -1625,7 +1634,7 @@ public class ViewCreator {
                     default:
                         boolean viewEnabled = true;
                         if (jsonValueKeyMap.get(component.getKey()) ==
-                                AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
+                                AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
                             if (!appCMSPresenter.upgradesAvailableForUser(appCMSPresenter.getLoggedInUser(context))) {
                                 componentViewResult.componentView.setEnabled(false);
                                 componentViewResult.componentView.setVisibility(View.INVISIBLE);
@@ -1634,7 +1643,7 @@ public class ViewCreator {
                         }
 
                         if (jsonValueKeyMap.get(component.getKey()) ==
-                                AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
+                                AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
                             if (TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionSku(context))) {
                                 componentViewResult.componentView.setEnabled(false);
                                 componentViewResult.componentView.setVisibility(View.INVISIBLE);
@@ -1893,7 +1902,15 @@ public class ViewCreator {
                             break;
 
                         case PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY:
-                            ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_payment_processor));
+                            String paymentProcessor = appCMSPresenter.getActiveSubscriptionProcessor(context);
+                            if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor_friendly))) {
+                                ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_ios_payment_processor_friendly));
+                            } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly))) {
+                                ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
+                            } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_web_payment_processor_friendly))) {
+                                ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_web_payment_processor_friendly));
+                            }
+
                             break;
 
                         case PAGE_SETTINGS_TITLE_KEY:

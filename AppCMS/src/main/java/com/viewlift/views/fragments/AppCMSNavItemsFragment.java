@@ -132,7 +132,9 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                             appCMSPresenter.setNavItemToCurrentAction(getActivity());
                             appCMSPresenter.cancelInternalEvents();
                             appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
-                            appCMSPresenter.navigateToSubscriptionPlansPage();
+                            appCMSBinder.getPageId(); appCMSBinder.getPageName();
+                            appCMSPresenter.navigateToSubscriptionPlansPage(appCMSBinder.getPageId(),
+                                    appCMSBinder.getPageName());
                         }
                     }
                 });

@@ -159,7 +159,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         parentScreenName = getContext().getString(R.string.app_cms_beacon_video_player_parent_screen_name);
         setRetainInstance(true);
 
-        AppsFlyerUtils.appsFlyerPlayEvent(getContext(), filmId, appCMSPresenter);
+        AppsFlyerUtils.appsFlyerFilmViewingEvent(getContext(),filmId, appCMSPresenter);
 
     }
 
@@ -301,7 +301,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             castProvider = CastServiceProvider.getInstance(getActivity());
             castProvider.setRemotePlaybackCallback(callBackRemotePlayback);
             isCastConnected = castProvider.playChromeCastPlaybackIfCastConnected();
-            if (isCastConnected && getActivity() != null) {
+            if (isCastConnected) {
                 getActivity().finish();
             } else {
                 castProvider.setActivityInstance(getActivity(), mMediaRouteButton);

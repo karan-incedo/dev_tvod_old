@@ -3,9 +3,11 @@ package com.viewlift.models.data.appcms.downloads;
 import android.app.Activity;
 import android.app.Application;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 
 import com.viewlift.models.data.appcms.api.SubscriptionPlan;
-import com.viewlift.models.data.appcms.api.UserSubscriptionPlan;
+import com.viewlift.models.data.appcms.subscriptions.AppCMSUserSubscriptionPlanResult;
+import com.viewlift.models.data.appcms.subscriptions.UserSubscriptionPlan;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -105,6 +107,21 @@ public class RealmController {
     public DownloadVideoRealm getDownloadById(String videoId) {
 
         return realm.where(DownloadVideoRealm.class).equalTo("videoId", videoId).findFirst();
+    }
+
+    /**
+     * Use this method to know if a video is available and completely downloaded.
+     *
+     * @param videoId id of the video you need to get information about
+     * @return true if the video is available and ready to play, false otherwise
+     */
+    public boolean isVideoReadyToPlayOffline(String videoId) {
+        if (TextUtils.isEmpty(videoId)) {
+            return false;
+        }
+        DownloadVideoRealm downloadById = getDownloadById(videoId);
+        return downloadById != null && getDownloadById(videoId).getDownloadStatus()
+                .equals(DownloadStatus.STATUS_SUCCESSFUL);
     }
 
     public DownloadVideoRealm getDownloadByIdBelongstoUser(String videoId, String userId) {
