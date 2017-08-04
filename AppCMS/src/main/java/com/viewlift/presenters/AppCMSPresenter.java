@@ -4196,14 +4196,31 @@ public class AppCMSPresenter {
 
     public void signup(String email, String password) {
         if (currentActivity != null) {
-            String url = currentActivity.getString(R.string.app_cms_signup_api_url,
-                    appCMSMain.getApiBaseUrl(),
-                    appCMSMain.getInternalName());
-            startLoginAsyncTask(url,
-                    email,
-                    password,
-                    true,
-                    launchType == LaunchType.SUBSCRIBE);
+            if (TextUtils.isEmpty(email) && TextUtils.isEmpty(password)) {
+                showDialog(DialogType.SIGNUP,
+                        currentActivity.getString(R.string.app_cms_signup_invalid_email_and_password_message),
+                        false,
+                        null);
+            } else if (TextUtils.isEmpty(email)) {
+                showDialog(DialogType.SIGNUP,
+                        currentActivity.getString(R.string.app_cms_signup_invalid_email_message),
+                        false,
+                        null);
+            } else if (TextUtils.isEmpty(password)) {
+                showDialog(DialogType.SIGNUP,
+                        currentActivity.getString(R.string.app_cms_signup_invalid_password_message),
+                        false,
+                        null);
+            } else {
+                String url = currentActivity.getString(R.string.app_cms_signup_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        appCMSMain.getInternalName());
+                startLoginAsyncTask(url,
+                        email,
+                        password,
+                        true,
+                        launchType == LaunchType.SUBSCRIBE);
+            }
         }
     }
 
