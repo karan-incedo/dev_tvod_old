@@ -70,6 +70,7 @@
     <string name="video_player_permalink_key">video_player_permalink</string>
     <string name="video_player_font_color_key">video_player_font_color</string>
     <string name="video_player_closed_caption_key">video_player_closed_caption</string>
+    <string name="video_primary_category_key">video_primary_category</string>
     <string name="opensans_bold_ttf">fonts/OpenSans-Bold.ttf</string>
     <string name="opensans_semibold_ttf">fonts/OpenSans-Semibold.ttf</string>
     <string name="opensans_extrabold_ttf">fonts/OpenSans-ExtraBold.ttf</string>
