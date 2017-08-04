@@ -140,6 +140,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 String bgColor = binder.getBgColor();
                 int playIndex = binder.getCurrentPlayingVideoIndex();
                 long watchedTime = gist.getWatchedTime();
+                String primaryCategory = gist.getPrimaryCategory().getTitle();
                 boolean playAds = binder.isPlayAds();
                 relateVideoIds = binder.getRelateVideoIds();
                 currentlyPlayingIndex = binder.getCurrentPlayingVideoIndex();
@@ -152,6 +153,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 final AppCMSPlayVideoFragment appCMSPlayVideoFragment =
                         AppCMSPlayVideoFragment.newInstance(this,
+                                primaryCategory,
                                 fontColor,
                                 title,
                                 permaLink,
