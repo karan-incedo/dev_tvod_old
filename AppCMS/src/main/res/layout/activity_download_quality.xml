@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/background_dark"
-    tools:context="com.viewlift.views.activity.AppCMSDownloadSettingActivity">
+    android:background="#19000000"
+    tools:context="com.viewlift.views.activity.AppCMSDownloadQualityActivity">
 
     <FrameLayout
         android:id="@+id/app_cms_fragment"
@@ -12,6 +12,7 @@
         android:layout_height="match_parent" />
 
     <FrameLayout
+
         android:id="@+id/app_cms_addon_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

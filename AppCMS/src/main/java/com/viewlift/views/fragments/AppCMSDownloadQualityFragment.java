@@ -3,6 +3,7 @@ package com.viewlift.views.fragments;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -109,7 +110,7 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRad
             RecyclerView listDownloadQuality = (RecyclerView) pageView.findViewById(R.id.download_quality_selection_list);
             Button continueButton = (Button) pageView.findViewById(R.id.download_quality_continue_button);
             Button cancelButton = (Button) pageView.findViewById(R.id.download_quality_cancel_button);
-
+            
             ((AppCMSDownloadQualityAdapter) listDownloadQuality.getAdapter()).setItemClickListener(this);
 
             continueButton.setOnClickListener(v -> {
@@ -121,7 +122,7 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRad
                 }
                 getActivity().finish();
             });
-
+            
             cancelButton.setOnClickListener(v -> getActivity().finish());
 
             pageView.setBackgroundColor(Color.TRANSPARENT);
@@ -151,6 +152,9 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRad
         if (pageView == null) {
             Log.e(TAG, "AppCMS page creation error");
         } else {
+
+            getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            pageView.setBackgroundColor(getActivity().getResources().getColor(R.color.semiTransparentColor,null));
             pageView.notifyAdaptersOfUpdate();
         }
 

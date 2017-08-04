@@ -142,8 +142,7 @@ public class AppCMSDownloadQualityAdapter extends AppCMSRadioAdapter<Mpeg> {
             }
             textView.setTypeface(face);
 
-            textView.setWidth((int) BaseView.getViewWidth(context, component.getLayout(), component.getLayout().getMobile().getWidth()));
-
+            textView.setWidth(context.getResources().getDimensionPixelOffset(R.dimen.app_cms_download_quality_rendition_width));
 
         }
     }

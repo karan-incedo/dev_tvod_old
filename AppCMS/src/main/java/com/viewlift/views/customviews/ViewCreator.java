@@ -322,11 +322,13 @@ public class ViewCreator {
                                         });
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY) {
                                         if (view != null) {
+
                                             if (moduleAPI.getContentData() != null) {
                                                 String userId = appCMSPresenter.getLoggedInUser(context);
                                                 appCMSPresenter.getUserVideoDownloadStatus(
                                                         moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) view, appCMSPresenter,
                                                                 moduleAPI.getContentData().get(0), userId), userId);
+
                                             }
                                             view.setVisibility(View.VISIBLE);
                                         }
@@ -1296,7 +1298,7 @@ public class ViewCreator {
                 } else if (appCMSPresenter.isActionGoogle(component.getAction())) {
                     applyBorderToComponent(context, componentViewResult.componentView, component,
                             ContextCompat.getColor(context, R.color.googleRed));
-                } else if ((componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY)
+                } else if (componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY
                         && component.getBorderWidth() != 0) {
                     applyBorderToComponent(
                             context,
@@ -1327,37 +1329,33 @@ public class ViewCreator {
                         break;
 
                     case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
-                        if (appCMSPresenter.isUserLoggedIn(context)) {
-                            ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                            componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
-                            String userId = appCMSPresenter.getLoggedInUser(context);
-                            appCMSPresenter.getUserVideoDownloadStatus(
-                                    moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
-                                            moduleAPI.getContentData().get(0), userId), userId);
-                            pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                                    .id(moduleAPI.getId() + component.getKey())
-                                    .view(componentViewResult.componentView)
-                                    .build());
-                        } else {
-                            componentViewResult.componentView.setVisibility(View.GONE);
-                        }
+
+                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
+                        String userId = appCMSPresenter.getLoggedInUser(context);
+                        appCMSPresenter.getUserVideoDownloadStatus(
+                                moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
+                                        moduleAPI.getContentData().get(0), userId), userId);
+                        pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
+                                .id(moduleAPI.getId() + component.getKey())
+                                .view(componentViewResult.componentView)
+                                .build());
+
                         break;
 
                     case PAGE_ADD_TO_WATCHLIST_KEY:
                         ((ImageButton) componentViewResult.componentView)
                                 .setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
-                        if (!appCMSPresenter.isUserLoggedIn(context)) {
-                            componentViewResult.componentView.setVisibility(View.GONE);
-                        } else {
-                            if (moduleAPI.getContentData() != null) {
-                                appCMSPresenter.getUserVideoStatus(
-                                        moduleAPI.getContentData().get(0).getGist().getId(),
-                                        new UpdateImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter, moduleAPI.getContentData()
-                                                .get(0).getGist().getId()));
-                            }
-                            componentViewResult.componentView.setVisibility(View.VISIBLE);
+
+                        if (moduleAPI.getContentData() != null) {
+                            appCMSPresenter.getUserVideoStatus(
+                                    moduleAPI.getContentData().get(0).getGist().getId(),
+                                    new UpdateImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter, moduleAPI.getContentData()
+                                            .get(0).getGist().getId()));
                         }
+                        componentViewResult.componentView.setVisibility(View.VISIBLE);
+
                         pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
                                 .id(moduleAPI.getId() + component.getKey())
                                 .view(componentViewResult.componentView)
@@ -1605,8 +1603,8 @@ public class ViewCreator {
                     case PAGE_AUTOPLAY_MOVIE_PLAY_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.autoplay_play_button);
                         break;
-
                     case PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY:
+                        Log.e(TAG, "PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY  " + component.getAction());
                         componentViewResult.componentView.setOnClickListener(v -> {
                             if (!appCMSPresenter.launchButtonSelectedAction(null,
                                     component.getAction(),
@@ -1626,11 +1624,11 @@ public class ViewCreator {
                     case PAGE_DOWNLOAD_QUALITY_CONTINUE_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.download_quality_continue_button);
                         break;
-
+                        
                     case PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY:
-                        componentViewResult.componentView.setId(R.id.download_quality_cancel_button);
-                        break;
-
+                         componentViewResult.componentView.setId(R.id.download_quality_cancel_button);
+                         break;
+                        
                     default:
                         boolean viewEnabled = true;
                         if (jsonValueKeyMap.get(component.getKey()) ==
@@ -2421,16 +2419,22 @@ public class ViewCreator {
             this.appCMSPresenter = presenter;
             this.filmId = filmId;
 
-            addClickListener = v -> appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
-                    new Action1<AppCMSAddToWatchlistResult>() {
-                        @Override
-                        public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
-                            UpdateImageIconAction.this.imageButton.setImageResource(
-                                    R.drawable.remove_from_watchlist);
-                            UpdateImageIconAction.this.imageButton.setOnClickListener(removeClickListener);
-                        }
-                    }, true);
+            addClickListener = v -> {
+                if (appCMSPresenter.isUserLoggedIn(UpdateImageIconAction.this.imageButton.getContext())) {
 
+                    appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
+                            new Action1<AppCMSAddToWatchlistResult>() {
+                                @Override
+                                public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
+                                    UpdateImageIconAction.this.imageButton.setImageResource(
+                                            R.drawable.remove_from_watchlist);
+                                    UpdateImageIconAction.this.imageButton.setOnClickListener(removeClickListener);
+                                }
+                            }, true);
+                } else {
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED);
+                }
+            };
             removeClickListener = v -> appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
                     new Action1<AppCMSAddToWatchlistResult>() {
                         @Override
@@ -2478,12 +2482,16 @@ public class ViewCreator {
             this.userId = userId;
 
             addClickListener = v -> {
-                if (appCMSPresenter.getUserDownloadQualityPref(UpdateDownloadImageIconAction.this.imageButton.getContext()) != null
-                        && appCMSPresenter.getUserDownloadQualityPref(UpdateDownloadImageIconAction.this.imageButton.getContext()).length() > 0) {
-                    appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
+                if (appCMSPresenter.isUserLoggedIn(UpdateDownloadImageIconAction.this.imageButton.getContext())) {
+                    if (appCMSPresenter.getUserDownloadQualityPref(UpdateDownloadImageIconAction.this.imageButton.getContext()) != null
+                            && appCMSPresenter.getUserDownloadQualityPref(UpdateDownloadImageIconAction.this.imageButton.getContext()).length() > 0) {
+                        appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
 
+                    } else {
+                        appCMSPresenter.showDownloadQualityScreen(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this);
+                    }
                 } else {
-                    appCMSPresenter.showDownloadQualityScreen(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this);
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED);
                 }
             };
         }

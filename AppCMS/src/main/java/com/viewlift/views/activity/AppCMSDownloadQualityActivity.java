@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -33,16 +35,13 @@ public class AppCMSDownloadQualityActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         handoffReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                String sendingPage
-                        = intent.getStringExtra(getString(R.string.app_cms_closing_page_name));
-                if (intent.getBooleanExtra(getString(R.string.close_self_key), true) &&
-                        (sendingPage == null || getString(R.string.app_cms_video_page_tag).equals(sendingPage))) {
-                    Log.d(TAG, "Closing activity");
-                    finish();
-                }
+
+                Log.d(TAG, "Closing activity");
+                finish();
             }
         };
 
