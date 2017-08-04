@@ -1003,7 +1003,8 @@ public class AppCMSPresenter {
                     updateFromModule.getContentData() != null) {
                 for (ContentDatum toContentDatum : updateToModule.getContentData()) {
                     for (ContentDatum fromContentDatum : updateFromModule.getContentData()) {
-                        if (toContentDatum.getGist().getDescription().equals(fromContentDatum.getGist().getDescription())) {
+                        if (!TextUtils.isEmpty(toContentDatum.getGist().getDescription()) &&
+                                toContentDatum.getGist().getDescription().equals(fromContentDatum.getGist().getDescription())) {
                             toContentDatum.getGist().setWatchedTime(fromContentDatum.getGist().getWatchedTime());
                             toContentDatum.getGist().setWatchedPercentage(fromContentDatum.getGist().getWatchedPercentage());
                         }
@@ -2232,7 +2233,11 @@ public class AppCMSPresenter {
                             null) {
                         @Override
                         public void call(AppCMSHistoryResult appCMSHistoryResult) {
-                            Observable.just(appCMSHistoryResult).subscribe(appCMSHistoryResultAction);
+                            if (appCMSHistoryResult != null) {
+                                Observable.just(appCMSHistoryResult).subscribe(appCMSHistoryResultAction);
+                            } else {
+                                Observable.just((AppCMSHistoryResult) null).subscribe(appCMSHistoryResultAction);
+                            }
                         }
                     });
         }
@@ -2595,7 +2600,7 @@ public class AppCMSPresenter {
                         @Override
                         public void call(final AppCMSPageAPI appCMSPageAPI) {
                             final AppCMSPageAPIAction appCMSPageAPIAction = this;
-                            if (appCMSPageAPI != null) {
+                                if (appCMSPageAPI != null) {
                                 boolean loadingHistory = false;
                                 if (isUserLoggedIn(currentActivity)) {
                                     for (Module module : appCMSPageAPI.getModules()) {
@@ -2833,6 +2838,10 @@ public class AppCMSPresenter {
 
     public boolean isUserLoggedIn(Context context) {
         return getLoggedInUser(context) != null;
+    }
+
+    public boolean isUserSubscribed(Context context) {
+        return getActiveSubscriptionSku(context) != null;
     }
 
     public String getPngPosterPath(String fileName) {
@@ -4179,27 +4188,49 @@ public class AppCMSPresenter {
                             null,
                             apikey,
                             getAuthToken(currentActivity),
-                            result -> {
+                            listResult -> {
+                            },
+                            singleResult -> {
                             },
                             appCMSSubscriptionPlanResult -> {
                                 if (appCMSSubscriptionPlanResult != null &&
-                                        appCMSSubscriptionPlanResult.getPlanDetails() != null) {
+                                        appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails() != null) {
+
+                                    UserSubscriptionPlan userSubscriptionPlan = new UserSubscriptionPlan();
+                                    userSubscriptionPlan.setUserId(getLoggedInUser(currentActivity));
+                                    userSubscriptionPlan.setPlanReceipt(appCMSSubscriptionPlanResult.getSubscriptionInfo().getReceipt());
+                                    userSubscriptionPlan.setPaymentHandler(appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler());
+                                    SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
+                                    subscriptionPlan.setSubscriptionPrice(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails().get(0).getRecurringPaymentAmount());
+                                    subscriptionPlan.setPlanId(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
+                                    subscriptionPlan.setSku(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
+                                    userSubscriptionPlan.setSubscriptionPlan(subscriptionPlan);
+
+                                    RealmList<SubscriptionPlan> availableUpgradeSubscriptionPlans =
+                                            new RealmList<>();
+                                    RealmResults<SubscriptionPlan> allAvailableSubscriptionPlans =
+                                            realmController.getAllSubscriptionPlans();
+                                    if (allAvailableSubscriptionPlans != null) {
+                                        availableUpgradeSubscriptionPlans.addAll(allAvailableSubscriptionPlans);
+                                    }
+                                    userSubscriptionPlan.setAvailableUpgrades(availableUpgradeSubscriptionPlans);
+                                    realmController.addUserSubscriptionPlan(userSubscriptionPlan);
+
                                     setActiveSubscriptionSku(currentActivity,
-                                            appCMSSubscriptionPlanResult.getIdentifier());
+                                            appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
                                     setActiveSubscriptionId(currentActivity,
-                                            appCMSSubscriptionPlanResult.getId());
+                                            appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
                                     setActiveSubscriptionCurrency(currentActivity,
-                                            appCMSSubscriptionPlanResult.getPlanDetails()
+                                            appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()
                                                     .get(0).getRecurringPaymentCurrencyCode());
                                     setActiveSubscriptionPlanName(currentActivity,
-                                            appCMSSubscriptionPlanResult.getName());
+                                            appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
                                     setActiveSubscriptionPrice(currentActivity, (float)
-                                            appCMSSubscriptionPlanResult.getPlanDetails()
+                                            appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()
                                                     .get(0).getRecurringPaymentAmount());
+                                    setActiveSubscriptionProcessor(currentActivity,
+                                            appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler());
                                 }
-                            },
-                            appCMSUserSubscriptionResult -> {
-
                             });
                 } catch (Exception e) {
                     Log.e(TAG, "getSubscriptionPageContent: " + e.toString());
@@ -4487,6 +4518,7 @@ public class AppCMSPresenter {
                 navbarPresent,
                 sendCloseAction,
                 isUserLoggedIn(activity),
+                isUserSubscribed(activity),
                 jsonValueKeyMap,
                 searchQuery);
     }
@@ -4531,6 +4563,7 @@ public class AppCMSPresenter {
                 contentDatum,
                 isTrailer,
                 isUserLoggedIn(activity),
+                isUserSubscribed(activity),
                 relatedVideoIds,
                 currentlyPlayingIndex,
                 isOffline);
@@ -4658,7 +4691,7 @@ public class AppCMSPresenter {
     }
 
     private void getAppCMSAndroid(final Activity activity, final AppCMSMain main, int tryCount) {
-        if (!isUserLoggedIn(currentActivity) && TextUtils.isEmpty(getAuthToken(activity))) {
+        if (!isUserLoggedIn(currentActivity) && tryCount == 0) {
             signinAnonymousUser(activity, main, tryCount);
         } else if (isUserLoggedIn(currentActivity) && shouldRefreshAuthToken() && tryCount == 0) {
             refreshIdentity(getRefreshToken(activity),

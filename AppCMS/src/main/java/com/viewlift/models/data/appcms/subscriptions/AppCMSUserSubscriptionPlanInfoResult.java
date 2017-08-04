@@ -22,16 +22,16 @@ public class AppCMSUserSubscriptionPlanInfoResult {
     private String subscriptionStatus;
     @SerializedName("subscriptionStartDate")
     @Expose
-    private int subscriptionStartDate;
+    private long subscriptionStartDate;
     @SerializedName("subscriptionEndDate")
     @Expose
-    private int subscriptionEndDate;
+    private long subscriptionEndDate;
     @SerializedName("paymentInitiatedDate")
     @Expose
-    private int paymentInitiatedDate;
+    private long paymentInitiatedDate;
     @SerializedName("paymentToBeReInitiatedDate")
     @Expose
-    private int paymentToBeReInitiatedDate;
+    private long paymentToBeReInitiatedDate;
     @SerializedName("siteOwner")
     @Expose
     private String siteOwner;
@@ -79,10 +79,10 @@ public class AppCMSUserSubscriptionPlanInfoResult {
     private String gatewayRefundId;
     @SerializedName("addedDate")
     @Expose
-    private int addedDate;
+    private long addedDate;
     @SerializedName("updateDate")
     @Expose
-    private int updateDate;
+    private long updateDate;
     @SerializedName("debugInfo")
     @Expose
     private DebugInfo debugInfo;
@@ -140,35 +140,35 @@ public class AppCMSUserSubscriptionPlanInfoResult {
         this.subscriptionStatus = subscriptionStatus;
     }
 
-    public int getSubscriptionStartDate() {
+    public long getSubscriptionStartDate() {
         return subscriptionStartDate;
     }
 
-    public void setSubscriptionStartDate(int subscriptionStartDate) {
+    public void setSubscriptionStartDate(long subscriptionStartDate) {
         this.subscriptionStartDate = subscriptionStartDate;
     }
 
-    public int getSubscriptionEndDate() {
+    public long getSubscriptionEndDate() {
         return subscriptionEndDate;
     }
 
-    public void setSubscriptionEndDate(int subscriptionEndDate) {
+    public void setSubscriptionEndDate(long subscriptionEndDate) {
         this.subscriptionEndDate = subscriptionEndDate;
     }
 
-    public int getPaymentInitiatedDate() {
+    public long getPaymentInitiatedDate() {
         return paymentInitiatedDate;
     }
 
-    public void setPaymentInitiatedDate(int paymentInitiatedDate) {
+    public void setPaymentInitiatedDate(long paymentInitiatedDate) {
         this.paymentInitiatedDate = paymentInitiatedDate;
     }
 
-    public int getPaymentToBeReInitiatedDate() {
+    public long getPaymentToBeReInitiatedDate() {
         return paymentToBeReInitiatedDate;
     }
 
-    public void setPaymentToBeReInitiatedDate(int paymentToBeReInitiatedDate) {
+    public void setPaymentToBeReInitiatedDate(long paymentToBeReInitiatedDate) {
         this.paymentToBeReInitiatedDate = paymentToBeReInitiatedDate;
     }
 
@@ -292,19 +292,19 @@ public class AppCMSUserSubscriptionPlanInfoResult {
         this.gatewayRefundId = gatewayRefundId;
     }
 
-    public int getAddedDate() {
+    public long getAddedDate() {
         return addedDate;
     }
 
-    public void setAddedDate(int addedDate) {
+    public void setAddedDate(long addedDate) {
         this.addedDate = addedDate;
     }
 
-    public int getUpdateDate() {
+    public long getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(int updateDate) {
+    public void setUpdateDate(long updateDate) {
         this.updateDate = updateDate;
     }
 

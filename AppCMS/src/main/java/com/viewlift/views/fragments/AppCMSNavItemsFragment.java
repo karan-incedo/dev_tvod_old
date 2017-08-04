@@ -78,6 +78,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 appCMSPresenter,
                 appCMSBinder.getJsonValueKeyMap(),
                 appCMSBinder.isUserLoggedIn(),
+                appCMSBinder.isUserSubscribed(),
                 textColor);
         navItemsList.setAdapter(appCMSNavItemsAdapter);
         if (!BaseView.isTablet(getContext())) {
