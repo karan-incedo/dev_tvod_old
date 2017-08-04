@@ -2559,6 +2559,7 @@ public class AppCMSPresenter {
 
     public void navigateToHomePage() {
         if (homePage != null) {
+            restartInternalEvents();
             navigateToPage(homePage.getPageId(),
                     homePage.getPageName(),
                     homePage.getPageUI(),
