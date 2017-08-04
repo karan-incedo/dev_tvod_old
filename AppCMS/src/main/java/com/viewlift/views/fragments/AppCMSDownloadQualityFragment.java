@@ -109,7 +109,8 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRad
 
             RecyclerView listDownloadQuality = (RecyclerView) pageView.findViewById(R.id.download_quality_selection_list);
             Button continueButton = (Button) pageView.findViewById(R.id.download_quality_continue_button);
-
+            Button cancelButton = (Button) pageView.findViewById(R.id.download_quality_cancel_button);
+            
             ((AppCMSDownloadQualityAdapter) listDownloadQuality.getAdapter()).setItemClickListener(this);
 
             continueButton.setOnClickListener(v -> {
