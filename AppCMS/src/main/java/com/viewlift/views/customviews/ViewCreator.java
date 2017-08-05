@@ -32,6 +32,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -436,12 +437,8 @@ public class ViewCreator {
                                 } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
                                     if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
                                         if (moduleAPI.getContentData() != null) {
-                                            int viewWidth = BaseView.isLandscape(context) ?
-                                                    ViewGroup.LayoutParams.WRAP_CONTENT :
-                                                    context.getResources().getDisplayMetrics().widthPixels;
-                                            int viewHeight = (int) BaseView.getViewHeight(context,
-                                                    component.getLayout(),
-                                                    ViewGroup.LayoutParams.WRAP_CONTENT);
+                                            int viewWidth = view.getWidth();
+                                            int viewHeight = view.getHeight();
 
                                             if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
                                                 String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
@@ -453,7 +450,7 @@ public class ViewCreator {
                                                         .override(viewWidth, viewHeight)
                                                         .centerCrop()
                                                         .into((ImageView) view);
-                                            } else if (viewWidth > 0) {
+                                            } else if (viewWidth > 0 && viewWidth > 0) {
                                                 String videoImageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                                         moduleAPI.getContentData().get(0).getGist().getVideoImageUrl(),
                                                         viewWidth,
@@ -463,11 +460,18 @@ public class ViewCreator {
                                                         .override(viewWidth, viewHeight)
                                                         .centerCrop()
                                                         .into((ImageView) view);
+                                            } else if (viewHeight > 0) {
+                                                Glide.with(context)
+                                                        .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                                        .override(Target.SIZE_ORIGINAL, viewHeight)
+                                                        .centerCrop()
+                                                        .into((ImageView) view);
                                             } else {
                                                 Glide.with(context)
                                                         .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                                         .into((ImageView) view);
                                             }
+                                            view.forceLayout();
                                         }
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_CASTVIEW_VIEW_KEY) {
@@ -2018,6 +2022,7 @@ public class ViewCreator {
                         } else {
                             Glide.with(context)
                                     .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                    .fitCenter()
                                     .into((ImageView) componentViewResult.componentView);
                         }
                         componentViewResult.useWidthOfScreen = !BaseView.isLandscape(context);
