@@ -628,7 +628,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 true,
                 false,
                 true,
-                false,
+                true,
                 null)) {
             Log.e(TAG, "Could not navigate to page with Title: " +
                     pageTitle +
