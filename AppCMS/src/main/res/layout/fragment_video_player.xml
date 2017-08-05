@@ -1,6 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
 
     <LinearLayout
         android:id="@+id/app_cms_video_player_info_container"
@@ -79,6 +80,24 @@
             android:src="@drawable/cancel" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/app_cms_video_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:orientation="vertical">
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@android:color/white"
+            android:text="@string/loading_video_text"/>
+    </LinearLayout>
 
     <com.viewlift.views.customviews.VideoPlayerView
         android:id="@+id/app_cms_video_player_container"

@@ -259,5 +259,6 @@
     <string name="app_cms_signup_invalid_email_and_password_message">Please enter a valid email and password.</string>
     <string name="app_cms_signup_invalid_email_message">Please enter a valid email.</string>
     <string name="app_cms_signup_invalid_password_message">Please enter a valid password.</string>
+    <string name="loading_video_text">Loading Video</string>
 
 </resources>

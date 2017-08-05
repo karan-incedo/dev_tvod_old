@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
@@ -62,6 +63,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private ImageButton videoPlayerViewDoneButton;
     private TextView videoPlayerTitleView;
     private VideoPlayerView videoPlayerView;
+    private LinearLayout videoLoadingProgress;
     private OnClosePlayerEvent onClosePlayerEvent;
     private BeaconPingThread beaconMessageThread;
     private long beaconMsgTimeoutMsec;
@@ -191,7 +193,6 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         videoPlayerTitleView = (TextView) rootView.findViewById(R.id.app_cms_video_player_title_view);
 
-
         if (!TextUtils.isEmpty(title)) {
             videoPlayerTitleView.setText(title);
         }
@@ -210,6 +211,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerViewDoneButton.setColorFilter(Color.parseColor(fontColor));
         videoPlayerInfoContainer.bringToFront();
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
+
+        videoLoadingProgress = (LinearLayout) rootView.findViewById(R.id.app_cms_video_loading);
 
         setCasting();
 
@@ -244,6 +247,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                         }
                     }
                 }
+                videoLoadingProgress.setVisibility(View.GONE);
             } else if (playerState.getPlaybackState() == ExoPlayer.STATE_ENDED) {
                 Log.d(TAG, "Video ended");
                 if (shouldRequestAds && adsLoader != null) {
@@ -268,6 +272,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 if (beaconMessageThread != null) {
                     beaconMessageThread.sendBeaconPing = false;
                 }
+                videoLoadingProgress.setVisibility(View.GONE);
             }
         });
         videoPlayerView.setOnPlayerControlsStateChanged(visibility -> {
@@ -293,6 +298,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                 permaLink,
                 parentScreenName,
                 videoPlayerView);
+
+        videoLoadingProgress.bringToFront();
+        videoLoadingProgress.setVisibility(View.VISIBLE);
 
         return rootView;
     }
