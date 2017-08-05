@@ -669,12 +669,11 @@ public class AppCMSPresenter {
                                               final boolean closeLauncher,
                                               int currentlyPlayingIndex,
                                               List<String> relateVideoIds) {
+        boolean result = false;
         if (!isNetworkConnected()) {
             showDialog(DialogType.NETWORK, null, false, null);
         } else {
-
             final AppCMSActionType actionType = actionToActionTypeMap.get(action);
-            boolean result = false;
             boolean isVideoOffline = false;
             try {
                 isVideoOffline = Boolean.parseBoolean(extraData[3]);
