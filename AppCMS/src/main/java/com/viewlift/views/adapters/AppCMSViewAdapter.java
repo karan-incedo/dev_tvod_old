@@ -105,7 +105,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 .getGeneral().getBlockTitleColor());
         this.isClickable = true;
 
-        cullData(context);
+        cullData(context, 0);
         sortPlans();
     }
 
@@ -392,23 +392,22 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         itemView.setBackground(planBorder);
     }
 
-    private void cullData(Context context) {
+    private void cullData(Context context, int count) {
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY &&
-                adapterData != null) {
+                adapterData != null &&
+                count < adapterData.size()) {
             String currentSubscriptionSku = appCMSPresenter.getActiveSubscriptionSku(context);
             float currentSubscriptionPrice = appCMSPresenter.getActiveSubscriptionPrice(context);
             if (!TextUtils.isEmpty(currentSubscriptionSku)) {
-                List<Integer> elementIndicesToCull = new ArrayList<>();
                 for (int i = 0; i < adapterData.size(); i++) {
                     if (adapterData.get(i).getId().equals(currentSubscriptionSku)) {
-                        elementIndicesToCull.add(i);
+                        adapterData.remove(i);
+                        cullData(context, count + 1);
                     } else if ((float) adapterData.get(0).getPlanDetails().get(0).getRecurringPaymentAmount() <=
                             currentSubscriptionPrice) {
-                        elementIndicesToCull.add(i);
+                        adapterData.remove(i);
+                        cullData(context, count + 1);
                     }
-                }
-                for (int i = 0; i < elementIndicesToCull.size(); i++) {
-                    adapterData.remove((int) elementIndicesToCull.get(i));
                 }
             }
         }
