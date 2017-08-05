@@ -688,14 +688,14 @@ public class AppCMSPresenter {
                 return false;
             }
             result = true;
-            boolean isTrailer = false;
+            boolean isTrailer = actionType == AppCMSActionType.WATCH_TRAILER;
             if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
                     actionType == AppCMSActionType.WATCH_TRAILER) {
                 boolean entitlementActive = true;
                 boolean svodServiceType =
                         appCMSMain.getServiceType()
                                 .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key));
-                if (svodServiceType) {
+                if (svodServiceType && !isTrailer) {
                     if (isUserLoggedIn(currentActivity)) {
                         if (!isUserSubscribed(currentActivity)) {
                             showEntitlementDialog(DialogType.SUBSCRIPTION_REQUIRED);
@@ -709,7 +709,7 @@ public class AppCMSPresenter {
 
                 if (entitlementActive) {
                     Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
-                    boolean requestAds = !svodServiceType;
+                    boolean requestAds = !svodServiceType && actionType != AppCMSActionType.PLAY_VIDEO_PAGE;
                     String textColor;
                     String adsUrl;
                     if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE) {
@@ -724,9 +724,6 @@ public class AppCMSPresenter {
                             playVideoIntent.putExtra(currentActivity.getString(R.string.watched_time_key),
                                     contentDatum.getGist().getWatchedTime());
                         }
-                    } else {
-                        requestAds = false;
-                        isTrailer = true;
                     }
                     if (contentDatum != null &&
                             contentDatum.getGist() != null &&
