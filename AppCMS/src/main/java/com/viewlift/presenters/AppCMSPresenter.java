@@ -4530,6 +4530,7 @@ public class AppCMSPresenter {
                                 entitlementPendingVideoData = null;
                             } else {
                                 cancelInternalEvents();
+                                restartInternalEvents();
                                 NavigationPrimary homePageNavItem = findHomePageNavItem();
                                 if (homePageNavItem != null) {
                                     cancelInternalEvents();
