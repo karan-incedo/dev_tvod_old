@@ -228,10 +228,10 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     navigationFooter.getTitle(),
                                     navigationFooter.getUrl(),
                                     false,
-                                    true,
+                                    false,
+                                    false,
                                     false,
                                     true,
-                                    false,
                                     null)) {
                                 Log.e(TAG, "Could not navigate to page with Title: " +
                                         navigationFooter.getTitle() +

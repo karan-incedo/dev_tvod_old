@@ -2526,10 +2526,10 @@ public class AppCMSPresenter {
                     subscriptionPage.getPageName(),
                     subscriptionPage.getPageUI(),
                     false,
-                    false,
                     true,
                     false,
                     false,
+                    true,
                     deeplinkSearchQuery);
             if (!TextUtils.isEmpty(previousPageId) &&
                     !TextUtils.isEmpty(previousPageName)) {
