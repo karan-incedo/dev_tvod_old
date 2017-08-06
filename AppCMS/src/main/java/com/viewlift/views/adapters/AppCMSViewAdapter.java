@@ -137,6 +137,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         for (View collectionGridChild : ((CollectionGridItemView) childView)
                                 .getViewsToUpdateOnClickEvent()) {
                             if (collectionGridChild instanceof Button) {
+                                Component childComponent = ((CollectionGridItemView) childView).matchComponentToView(collectionGridChild);
+                                ((TextView) collectionGridChild).setText(childComponent.getText());
                                 collectionGridChild.setBackgroundColor(ContextCompat.getColor(v.getContext(),
                                         R.color.disabledButtonColor));
                             }
@@ -149,6 +151,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     for (View collectionGridChild : ((CollectionGridItemView) v)
                             .getViewsToUpdateOnClickEvent()) {
                         if (collectionGridChild instanceof Button) {
+                            Component childComponent = ((CollectionGridItemView) v).matchComponentToView(collectionGridChild);
+                            ((TextView) collectionGridChild).setText(childComponent.getSelectedText());
                             collectionGridChild.setBackgroundColor(selectedColor);
                         }
                     }

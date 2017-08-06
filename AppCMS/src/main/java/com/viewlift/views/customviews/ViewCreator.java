@@ -158,8 +158,9 @@ public class ViewCreator {
                                     if (moduleType != AppCMSUIKeyType.PAGE_SUBSCRIPTION_IMAGEROW_KEY) {
                                         pageView.updateDataList(moduleAPI.getContentData(),
                                                 moduleAPI.getId() + component.getKey());
-                                        if (moduleAPI.getContentData() != null &&
-                                                moduleAPI.getContentData().size() > 0) {
+                                        if ((moduleAPI.getContentData() != null &&
+                                                moduleAPI.getContentData().size() > 0) ||
+                                                componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
                                             view.setVisibility(View.VISIBLE);
                                             moduleView.setVisibility(View.VISIBLE);
                                         } else {
@@ -1075,17 +1076,11 @@ public class ViewCreator {
                     ((RecyclerView) componentViewResult.componentView).setAdapter(radioAdapter);
                     componentViewResult.componentView.setId(R.id.download_quality_selection_list);
 
-                    // componentViewResult.onInternalEvent = radioAdapter;
-
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
                                 .adapter(radioAdapter)
                                 .listview((RecyclerView) componentViewResult.componentView)
                                 .id(moduleAPI.getId() + component.getKey())
-                                .build());
-                        pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                                .id(moduleAPI.getId() + component.getKey())
-                                .view(componentViewResult.componentView)
                                 .build());
                     }
                 } else {
@@ -1110,10 +1105,6 @@ public class ViewCreator {
                                 .adapter(appCMSTrayItemAdapter)
                                 .listview((RecyclerView) componentViewResult.componentView)
                                 .id(moduleAPI.getId() + component.getKey())
-                                .build());
-                        pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                                .id(moduleAPI.getId() + component.getKey())
-                                .view(componentViewResult.componentView)
                                 .build());
                     }
                 }
@@ -1194,11 +1185,6 @@ public class ViewCreator {
                                 .listview((RecyclerView) componentViewResult.componentView)
                                 .id(moduleAPI.getId() + component.getKey())
                                 .build());
-
-                        pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                                .id(moduleAPI.getId() + component.getKey())
-                                .view(componentViewResult.componentView)
-                                .build());
                     }
 
                     if (moduleAPI.getContentData() == null ||
@@ -1236,10 +1222,6 @@ public class ViewCreator {
                             .adapter(appCMSCarouselItemAdapter)
                             .listview((RecyclerView) componentViewResult.componentView)
                             .id(moduleAPI.getId() + component.getKey())
-                            .build());
-                    pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                            .id(moduleAPI.getId() + component.getKey())
-                            .view(componentViewResult.componentView)
                             .build());
                 }
                 componentViewResult.onInternalEvent = appCMSCarouselItemAdapter;
@@ -1337,10 +1319,6 @@ public class ViewCreator {
                         appCMSPresenter.getUserVideoDownloadStatus(
                                 moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
                                         moduleAPI.getContentData().get(0), userId), userId);
-                        pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                                .id(moduleAPI.getId() + component.getKey())
-                                .view(componentViewResult.componentView)
-                                .build());
 
                         componentViewResult.componentView.setVisibility(View.VISIBLE);
 
@@ -1358,11 +1336,6 @@ public class ViewCreator {
                                             .get(0).getGist().getId()));
                         }
                         componentViewResult.componentView.setVisibility(View.VISIBLE);
-
-                        pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                                .id(moduleAPI.getId() + component.getKey())
-                                .view(componentViewResult.componentView)
-                                .build());
 
                         componentViewResult.componentView.setVisibility(View.VISIBLE);
 
@@ -1404,10 +1377,6 @@ public class ViewCreator {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                             }
                         }
-                        pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                                .id(moduleAPI.getId() + component.getKey())
-                                .view(componentViewResult.componentView)
-                                .build());
                         break;
 
                     case PAGE_VIDEO_PLAY_BUTTON_KEY:
@@ -1456,10 +1425,6 @@ public class ViewCreator {
                         componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.play_icon));
                         componentViewResult.componentView.getBackground().setTint(tintColor);
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
-                        pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                                .id(moduleAPI.getId() + component.getKey())
-                                .view(componentViewResult.componentView)
-                                .build());
                         break;
 
                     case PAGE_PLAY_KEY:
@@ -1526,10 +1491,6 @@ public class ViewCreator {
                                 }
                             }
                         });
-                        pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                                .id(moduleAPI.getId() + component.getKey())
-                                .view(componentViewResult.componentView)
-                                .build());
                         break;
 
                     case PAGE_FORGOTPASSWORD_KEY:
@@ -1784,19 +1745,8 @@ public class ViewCreator {
                                             appCMSPresenter,
                                             false);
                             textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
-                            pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                                    .id(moduleAPI.getId() + component.getKey())
-                                    .view(componentViewResult.componentView)
-                                    .build());
                             break;
 
-                        /*case PAGE_DOWNLOAD_SETTING_TITLE_KEY:
-                            if (!TextUtils.isEmpty(component.getText())) {
-                                ((TextView) componentViewResult.componentView).setText(component.getText());
-                            } else
-                                ((TextView) componentViewResult.componentView).setText(context.getString(R.string.app_cms_download_quality_title));
-
-                            break;*/
                         case PAGE_AUTOPLAY_MOVIE_TITLE_KEY:
                             if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
@@ -1820,10 +1770,6 @@ public class ViewCreator {
                             titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                             ((TextView) componentViewResult.componentView).setSingleLine(true);
                             ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
-                            pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                                    .id(moduleAPI.getId() + component.getKey())
-                                    .view(componentViewResult.componentView)
-                                    .build());
                             break;
 
                         case PAGE_VIDEO_SUBTITLE_KEY:
@@ -1831,10 +1777,6 @@ public class ViewCreator {
                             setViewWithSubtitle(context,
                                     moduleAPI.getContentData().get(0),
                                     componentViewResult.componentView);
-                            pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                                    .id(moduleAPI.getId() + component.getKey())
-                                    .view(componentViewResult.componentView)
-                                    .build());
                             break;
 
                         case PAGE_VIDEO_AGE_LABEL_KEY:
@@ -1860,10 +1802,6 @@ public class ViewCreator {
                                         componentViewResult.componentView,
                                         component,
                                         -1);
-                                pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                                        .id(moduleAPI.getId() + component.getKey())
-                                        .view(componentViewResult.componentView)
-                                        .build());
                             }
                             break;
 
@@ -1883,26 +1821,14 @@ public class ViewCreator {
 
                         case PAGE_SETTINGS_NAME_VALUE_KEY:
                             ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserName(context));
-                            pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                                    .id(moduleAPI.getId() + component.getKey())
-                                    .view(componentViewResult.componentView)
-                                    .build());
                             break;
 
                         case PAGE_SETTINGS_EMAIL_VALUE_KEY:
                             ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserEmail(context));
-                            pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                                    .id(moduleAPI.getId() + component.getKey())
-                                    .view(componentViewResult.componentView)
-                                    .build());
                             break;
 
                         case PAGE_SETTINGS_PLAN_VALUE_KEY:
                             ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getActiveSubscriptionPlanName(context));
-                            pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                                    .id(moduleAPI.getId() + component.getKey())
-                                    .view(componentViewResult.componentView)
-                                    .build());
                             break;
 
                         case PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY:
@@ -2026,10 +1952,6 @@ public class ViewCreator {
                                     .into((ImageView) componentViewResult.componentView);
                         }
                         componentViewResult.useWidthOfScreen = !BaseView.isLandscape(context);
-                        pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                                .id(moduleAPI.getId() + component.getKey())
-                                .view(componentViewResult.componentView)
-                                .build());
                         break;
 
                     default:
@@ -2094,10 +2016,6 @@ public class ViewCreator {
                 } else {
                     componentViewResult.componentView.setVisibility(View.GONE);
                 }
-                pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                        .id(moduleAPI.getId() + component.getKey())
-                        .view(componentViewResult.componentView)
-                        .build());
                 break;
 
             case PAGE_SEPARATOR_VIEW_KEY:
@@ -2212,11 +2130,6 @@ public class ViewCreator {
                         BaseView.getFontSizeKey(context, component.getLayout()),
                         BaseView.getFontSizeValue(context, component.getLayout()));
 
-                pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                        .id(moduleAPI.getId() + component.getKey())
-                        .view(componentViewResult.componentView)
-                        .build());
-
                 if (!BaseView.isTablet(context)
                         && jsonValueKeyMap.get(moduleAPI.getModuleType())
                         == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY) {
@@ -2282,10 +2195,6 @@ public class ViewCreator {
                         starColor,
                         starColor,
                         starRating);
-                pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                        .id(moduleAPI.getId() + component.getKey())
-                        .view(componentViewResult.componentView)
-                        .build());
                 break;
 
             case PAGE_PLAN_META_DATA_VIEW_KEY:
@@ -2310,6 +2219,13 @@ public class ViewCreator {
                 break;
 
             default:
+        }
+
+        if (pageView != null) {
+            pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
+                    .id(moduleAPI.getId() + component.getKey())
+                    .view(componentViewResult.componentView)
+                    .build());
         }
     }
 

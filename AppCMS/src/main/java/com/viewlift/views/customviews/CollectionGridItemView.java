@@ -287,7 +287,6 @@ public class CollectionGridItemView extends BaseView {
                 view.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ((TextView) v).setText(childComponent.getSelectedText());
                         onClickHandler.click(CollectionGridItemView.this,
                                 childComponent,
                                 data);

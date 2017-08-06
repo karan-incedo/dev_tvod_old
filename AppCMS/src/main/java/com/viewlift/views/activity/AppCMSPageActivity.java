@@ -419,7 +419,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (FacebookSdk.isFacebookRequestCode(requestCode)) {
                 callbackManager.onActivityResult(requestCode, resultCode, data);
             } else if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
-                appCMSPresenter.reinitiateSignup(data.getStringExtra("INAPP_PURCHASE_DATA"));
+                appCMSPresenter.finalizeSignupAfterSubscription(data.getStringExtra("INAPP_PURCHASE_DATA"));
             }
         } else if (resultCode == RESULT_CANCELED) {
             if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
@@ -521,7 +521,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     + appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName());
         }
 
-        if (shouldPopStack() || closeActionPage) {
+        if (shouldPopStack(null) || closeActionPage) {
             try {
                 getSupportFragmentManager().popBackStack();
             } catch (IllegalStateException e) {
@@ -567,15 +567,34 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
     }
 
-    private boolean shouldPopStack() {
-        if (appCMSBinderStack.size() > 0 && appCMSBinderMap.get(appCMSBinderStack.peek()) != null) {
-            return appCMSBinderStack.size() > 0 &&
-                    (!appCMSPresenter.isPagePrimary(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
-                            (appCMSPresenter.isUserLoggedIn(this) ||
-                                    (!appCMSPresenter.isPageSplashPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageId()) &&
-                                            !appCMSPresenter.isUserLoggedIn(this))));
+    private boolean shouldPopStack(String newPageId) {
+        if (!isBinderStackEmpty() && !isBinderStackTopNull()) {
+            return !appCMSPresenter.isPagePrimary(appCMSBinderStack.peek()) &&
+                    !waitingForSubscriptionFinalization() &&
+                    !onlyOneUserPageOnStack(newPageId);
         }
         return false;
+    }
+
+    private boolean isBinderStackEmpty() {
+        return appCMSBinderStack.size() == 0;
+    }
+
+    private boolean isBinderStackTopNull() {
+        return appCMSBinderMap.get(appCMSBinderStack.peek()) == null;
+    }
+
+    private boolean waitingForSubscriptionFinalization() {
+        return (appCMSPresenter.isViewPlanPage(appCMSBinderStack.peek()) &&
+                appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE);
+    }
+
+    private boolean onlyOneUserPageOnStack(String newPageId) {
+        return ((newPageId == null &&
+                appCMSPresenter.isPageUser(appCMSBinderStack.peek())) ||
+                (newPageId != null &&
+                        (!appCMSPresenter.isPageUser(newPageId) ||
+                                !appCMSPresenter.isPageUser(appCMSBinderStack.peek()))));
     }
 
     private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder,
@@ -586,8 +605,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         Log.d(TAG, "createScreenFromAppCMSBinder() - Handling Navbar");
         handleNavbar(appCMSBinder);
-//        CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
-//        CastServiceProvider.getInstance(this).onActivityResume();
 
         handleOrientation(getResources().getConfiguration().orientation, appCMSBinder);
         createFragment(appCMSBinder, configurationChanged);
@@ -724,6 +741,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
                 appCMSPresenter.showMainFragmentView(true);
                 appCMSPresenter.restartInternalEvents();
+                appCMSPresenter.dismissOpenDialogs(null);
             } catch (EmptyStackException e) {
                 Log.e(TAG, "Error attempting to restart screen: " + appCMSBinder.getScreenName());
                 appCMSPresenter.navigateToLoginPage();
@@ -732,18 +750,20 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
             Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
             int i = 0;
-            while ((i < distanceFromStackTop &&
-                    shouldPopStack()) ||
+            while ((((i < distanceFromStackTop ||
+                    !onlyOneUserPageOnStack(appCMSBinder.getPageId())) &&
+                    shouldPopStack(appCMSBinder.getPageId())) ||
                     (appCMSBinder.shouldSendCloseAction() &&
                             appCMSBinderStack.size() > 1 &&
-                            i < appCMSBinderStack.size())) {
+                            i < appCMSBinderStack.size()))) {
                 Log.d(TAG, "Popping stack to getList to page item");
                 try {
                     getSupportFragmentManager().popBackStack();
                 } catch (IllegalStateException e) {
                     Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                 }
-                if (i < distanceFromStackTop - 1) {
+                if ((i < distanceFromStackTop - 1) ||
+                        !onlyOneUserPageOnStack(appCMSBinder.getPageId())) {
                     handleBack(true,
                             false,
                             false,

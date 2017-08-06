@@ -92,6 +92,7 @@ import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
+import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -1088,7 +1089,7 @@ public class AppCMSPresenter {
     }
 
     public void dismissOpenDialogs(AppCMSNavItemsFragment newAppCMSNavItemsFragment) {
-        if (appCMSNavItemsFragment != null) {
+        if (appCMSNavItemsFragment != null && appCMSNavItemsFragment.isVisible()) {
             appCMSNavItemsFragment.dismiss();
             appCMSNavItemsFragment = null;
         }
@@ -1108,7 +1109,8 @@ public class AppCMSPresenter {
             FrameLayout mainFragmentView =
                     (FrameLayout) currentActivity.findViewById(R.id.app_cms_fragment);
             if (mainFragmentView != null) {
-                return (mainFragmentView.getAlpha() == 1.0f);
+                return (mainFragmentView.getAlpha() != 1.0f &&
+                        mainFragmentView.getVisibility() == View.VISIBLE);
             }
         }
         return false;
@@ -3662,6 +3664,15 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public boolean isPageUser(String pageId) {
+        for (NavigationUser navigationUser : navigation.getNavigationUser()) {
+            if (!TextUtils.isEmpty(navigationUser.getPageId()) && pageId.contains(navigationUser.getPageId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean isPageSplashPage(String pageId) {
         if (splashPage != null &&
                 !TextUtils.isEmpty(pageId) &&
@@ -4055,7 +4066,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void reinitiateSignup(String receiptData) {
+    public void finalizeSignupAfterSubscription(String receiptData) {
         setActiveSubscriptionReceipt(currentActivity, receiptData);
 
         SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
