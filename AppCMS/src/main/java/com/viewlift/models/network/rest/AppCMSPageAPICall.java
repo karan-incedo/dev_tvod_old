@@ -54,7 +54,8 @@ public class AppCMSPageAPICall {
                               String userId,
                               boolean usePageIdQueryParam,
                               String pageId,
-                              boolean viewPlansPage) throws IOException {
+                              boolean viewPlansPage,
+                              int tryCount) throws IOException {
         String urlWithContent;
         if (usePageIdQueryParam) {
             if (viewPlansPage) {
@@ -103,6 +104,20 @@ public class AppCMSPageAPICall {
         } catch (Exception e) {
             Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
         }
+
+        if (appCMSPageAPI == null && tryCount == 0) {
+            call(context,
+                    baseUrl,
+                    endpoint,
+                    siteId,
+                    authToken,
+                    userId,
+                    usePageIdQueryParam,
+                    pageId,
+                    viewPlansPage,
+                    tryCount + 1);
+        }
+
         return appCMSPageAPI;
     }
 

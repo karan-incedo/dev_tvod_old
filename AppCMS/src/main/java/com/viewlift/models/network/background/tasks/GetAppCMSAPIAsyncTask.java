@@ -96,7 +96,8 @@ public class GetAppCMSAPIAsyncTask extends AsyncTask<GetAppCMSAPIAsyncTask.Param
                         params[0].userId,
                         params[0].usePageIdQueryParam,
                         params[0].pageId,
-                        params[0].viewPlansPage);
+                        params[0].viewPlansPage,
+                        0);
             } catch (IOException e) {
                 Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
             }
