@@ -4926,15 +4926,15 @@ public class AppCMSPresenter {
                                         boolean appbarPresent =
                                                 (jsonValueKeyMap.get(firstPage.getPageName())
                                                         != AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY);
-                                        boolean navbarPresent = appbarPresent;
                                         boolean fullscreen = !appbarPresent;
+                                        refreshSubscriptionData();
                                         boolean launchSuccess = navigateToPage(firstPage.getPageId(),
                                                 firstPage.getPageName(),
                                                 firstPage.getPageUI(),
                                                 true,
                                                 appbarPresent,
                                                 fullscreen,
-                                                navbarPresent,
+                                                appbarPresent,
                                                 false,
                                                 deeplinkSearchQuery);
                                         if (!launchSuccess) {

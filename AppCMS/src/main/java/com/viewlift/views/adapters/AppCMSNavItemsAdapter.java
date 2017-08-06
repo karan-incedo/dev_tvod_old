@@ -105,12 +105,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             titleKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
                         }
 
-                        boolean appbarPresent = true;
-                        boolean fullscreenEnabled = false;
                         boolean navbarPresent = true;
                         if (titleKey == AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY) {
-                            appbarPresent = true;
-                            fullscreenEnabled = false;
                             navbarPresent = false;
                         }
 
@@ -118,8 +114,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                 navigationPrimary.getTitle(),
                                 navigationPrimary.getUrl(),
                                 false,
-                                appbarPresent,
-                                fullscreenEnabled,
+                                true,
+                                false,
                                 navbarPresent,
                                 true,
                                 null)) {
@@ -186,9 +182,9 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                             navigationUser.getTitle(),
                                             navigationUser.getUrl(),
                                             false,
-                                            true,
                                             false,
-                                            true,
+                                            false,
+                                            false,
                                             true,
                                             null)) {
                                         Log.e(TAG, "Could not navigate to page with Title: "
