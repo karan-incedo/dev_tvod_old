@@ -4,15 +4,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:id="@+id/app_cms_toolbar_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/app_cms_logo_top_margin"
+        android:background="@drawable/logo_icon"
+        android:scaleType="centerInside" />
+
     <ImageButton
         android:id="@+id/app_cms_close_button"
         android:layout_width="@dimen/close_button_size"
         android:layout_height="@dimen/close_button_size"
         android:scaleType="fitCenter"
         android:background="@android:color/transparent"
-        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_margin="@dimen/close_button_margin"
+        android:layout_margin="@dimen/app_cms_close_button_margin"
         android:src="@drawable/cancel" />
 
     <FrameLayout

@@ -23,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -104,6 +105,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @BindView(R.id.media_route_button)
     ImageButton mMediaRouteButton;
+
+    @BindView(R.id.app_cms_close_button)
+    ImageButton closeButton;
 
     CastServiceProvider castProvider;
     private AppCMSPresenter appCMSPresenter;
@@ -308,8 +312,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         //Settings The Firebase Analytics for Android
         mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
-        if (mFireBaseAnalytics != null && appCMSPresenter != null)
+        if (mFireBaseAnalytics != null && appCMSPresenter != null) {
             appCMSPresenter.setmFireBaseAnalytics(mFireBaseAnalytics);
+        }
+
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                appCMSPresenter.sendCloseOthersAction(null, true);
+            }
+        });
 
         Log.d(TAG, "onCreate()");
     }
@@ -604,6 +616,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         Log.d(TAG, "Handling new AppCMSBinder: " + appCMSBinder.getPageName());
 
         pageLoading(false);
+
+        if (appCMSPresenter.isPagePrimary(appCMSBinder.getPageId()) &&
+                !appCMSPresenter.isViewPlanPage(appCMSBinder.getPageId())) {
+            closeButton.setVisibility(View.GONE);
+        } else {
+            closeButton.setVisibility(View.VISIBLE);
+        }
 
         Log.d(TAG, "createScreenFromAppCMSBinder() - Handling Navbar");
         handleNavbar(appCMSBinder);

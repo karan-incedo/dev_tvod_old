@@ -54,6 +54,14 @@ public class AppCMSResetPasswordFragment extends DialogFragment {
         Bundle args = getArguments();
         String email = args.getString(getContext().getString(R.string.app_cms_password_reset_email_key));
 
+        TextView titleTextView = (TextView) view.findViewById(R.id.app_cms_reset_password_page_title);
+        titleTextView.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                .getBrand().getGeneral().getTextColor()));
+
+        View imageSeparatorView = view.findViewById(R.id.app_cms_settings_separator_view);
+        imageSeparatorView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                .getBrand().getGeneral().getTextColor()));
+
         ImageButton closeButton = (ImageButton) view.findViewById(R.id.app_cms_close_button);
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override

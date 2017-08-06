@@ -29,9 +29,10 @@
     <dimen name="close_button_size">16dp</dimen>
     <dimen name="app_cms_search_bar_width">480dp</dimen>
     <dimen name="app_cms_searchbar_top_margin">300dp</dimen>
-    <dimen name="app_cms_searchbar_top_margin_land">200dp</dimen>
+    <dimen name="app_cms_searchbar_top_margin_land">140dp</dimen>
     <dimen name="app_cms_logged_out_message_textsize">10sp</dimen>
     <dimen name="app_cms_settings_page_title_textsize">18sp</dimen>
+    <dimen name="app_cms_resetpassword_page_title_textsize">18sp</dimen>
     <dimen name="app_cms_account_title_textsize">18sp</dimen>
     <dimen name="app_cms_account_padding">4dp</dimen>
     <dimen name="app_cms_separator_view_height">1dp</dimen>
@@ -52,6 +53,8 @@
 
 
     <dimen name="app_cms_download_quality_rendition_width">70dp</dimen>
+    <dimen name="app_cms_logo_top_margin">16dp</dimen>
+    <dimen name="app_cms_close_button_margin">24dp</dimen>
 
 
 </resources>
