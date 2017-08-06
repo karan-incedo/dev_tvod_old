@@ -109,8 +109,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                         boolean fullscreenEnabled = false;
                         boolean navbarPresent = true;
                         if (titleKey == AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY) {
-                            appbarPresent = false;
-                            fullscreenEnabled = true;
+                            appbarPresent = true;
+                            fullscreenEnabled = false;
                             navbarPresent = false;
                         }
 
