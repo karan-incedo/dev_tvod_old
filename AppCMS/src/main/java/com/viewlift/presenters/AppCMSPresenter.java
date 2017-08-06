@@ -3757,7 +3757,7 @@ public class AppCMSPresenter {
                 builder.setPositiveButton(R.string.app_cms_login_button_text,
                         (dialog, which) -> {
                             dialog.dismiss();
-                            launchType = LaunchType.LOGIN;
+                            launchType = LaunchType.LOGIN_AND_SIGNUP;
                             navigateToLoginPage();
                         });
                 builder.setNegativeButton(R.string.app_cms_subscription_button_text,
@@ -4148,7 +4148,7 @@ public class AppCMSPresenter {
         planToPurchasePrice = 0.0f;
 
         if (launchType == LaunchType.SUBSCRIBE) {
-            launchType = LaunchType.LOGIN;
+            launchType = LaunchType.LOGIN_AND_SIGNUP;
         }
         if (signupFromFacebook) {
             setFacebookAccessToken(currentActivity,
@@ -4988,7 +4988,7 @@ public class AppCMSPresenter {
             int pageToQueueIndex = -1;
             if (jsonValueKeyMap.get(appCMSMain.getServiceType()) == AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE
                     && !isUserLoggedIn(currentActivity)) {
-                launchType = LaunchType.LOGIN;
+                launchType = LaunchType.LOGIN_AND_SIGNUP;
                 if (appCMSMain.isForceLogin()) {
                     pageToQueueIndex = splashScreenIndex;
                 }
@@ -5656,7 +5656,7 @@ public class AppCMSPresenter {
     }
 
     public enum LaunchType {
-        LOGIN, SUBSCRIBE, LOGIN_AND_SIGNUP
+        SUBSCRIBE, LOGIN_AND_SIGNUP
     }
 
     public enum PlatformType {

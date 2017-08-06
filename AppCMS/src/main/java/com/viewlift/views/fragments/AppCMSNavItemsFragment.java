@@ -105,7 +105,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                         appCMSPresenter.setNavItemToCurrentAction(getActivity());
                         appCMSPresenter.cancelInternalEvents();
                         if (appCMSPresenter.isAppSVOD()) {
-                            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN);
+                            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
                         } else {
                             appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
                         }
