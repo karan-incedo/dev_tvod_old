@@ -469,6 +469,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         super.onConfigurationChanged(newConfig);
         if (appCMSPresenter != null) {
             appCMSPresenter.cancelInternalEvents();
+            appCMSPresenter.onConfigurationChange(true);
             if (appCMSPresenter.isMainFragmentViewVisible()) {
                 AppCMSBinder appCMSBinder = appCMSBinderStack.size() > 0 ?
                         appCMSBinderMap.get(appCMSBinderStack.peek()) :
@@ -550,7 +551,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         if (!isActive) {
             if (updatedAppCMSBinder != null) {
-                handleLaunchPageAction(updatedAppCMSBinder, false);
+                handleLaunchPageAction(updatedAppCMSBinder,
+                        appCMSPresenter.getConfigurationChanged());
             }
         }
 
@@ -612,7 +614,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void createFragment(AppCMSBinder appCMSBinder, boolean configurationChanged) {
         try {
-            appCMSPresenter.onConfigurationChange(configurationChanged);
             getSupportFragmentManager().addOnBackStackChangedListener(this);
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
