@@ -56,7 +56,6 @@ public class LoginModule extends ModuleView {
     private int loginBorderPadding;
     private EditText visibleEmailInputView;
     private EditText visiblePasswordInputView;
-    private ImageButton closeButton;
 
     public LoginModule(Context context,
                        ModuleWithComponents module,
@@ -110,45 +109,6 @@ public class LoginModule extends ModuleView {
             loginModuleSwitcherContainer.setBackgroundColor(bgColor);
             loginModuleSwitcherContainer.setPadding(0, 0, 0, 0);
 
-            final String closeAction = getContext().getString(R.string.app_cms_action_close_key);
-            closeButton = new ImageButton(getContext());
-            closeButton.setImageResource(R.drawable.cancel);
-            closeButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            closeButton.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
-            closeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (!appCMSPresenter.launchButtonSelectedAction(null,
-                            closeAction,
-                            null,
-                            null,
-                            null,
-                            false,
-                            0,
-                            null)) {
-                        Log.e(TAG, "Could not launch action: " +
-                                " action: " +
-                                closeAction);
-                    }
-                }
-            });
-            closeButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
-
-            int closeButtonImageSize = (int) getContext().getResources().getDimension(R.dimen.close_button_size);
-            int closeButtonMargin =
-                    (int) convertDpToPixel(getContext().getResources().getDimension(R.dimen.close_button_margin),
-                            getContext());
-            LinearLayout.LayoutParams closeButtonLayoutParams =
-                    new LinearLayout.LayoutParams(closeButtonImageSize, closeButtonImageSize);
-            closeButtonLayoutParams.setMargins(closeButtonMargin,
-                    closeButtonMargin,
-                    closeButtonMargin,
-                    closeButtonMargin);
-            closeButtonLayoutParams.gravity = Gravity.END;
-            closeButton.setLayoutParams(closeButtonLayoutParams);
-            closeButton.setPadding(0, 0, 0, 0);
-
-            topLayoutContainer.addView(closeButton);
             topLayoutContainer.addView(loginModuleSwitcherContainer);
 
             for (Component component : module.getComponents()) {
