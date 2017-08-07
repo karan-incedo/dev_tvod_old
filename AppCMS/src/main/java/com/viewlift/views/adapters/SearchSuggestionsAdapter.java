@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.viewlift.R;
@@ -62,7 +63,7 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
         String query = ((constraint == null) ? "" : constraint.toString());
 
         try {
-            cursor = getSearchManagerSuggestions(searchableInfo, query, 50);
+            cursor = getSearchManagerSuggestions(searchableInfo, query, 5);
             if (cursor != null) {
                 cursor.getCount();
                 return cursor;
@@ -112,7 +113,8 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
         }
 
         if (limit > 0) {
-            uriBuilder.appendQueryParameter("limit", String.valueOf(limit));
+            uriBuilder.appendQueryParameter(SearchManager.SUGGEST_PARAMETER_LIMIT,
+                    String.valueOf(limit));
         }
 
         Uri uri = uriBuilder.build();

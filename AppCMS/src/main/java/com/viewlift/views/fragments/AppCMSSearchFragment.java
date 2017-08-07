@@ -63,22 +63,18 @@ public class AppCMSSearchFragment extends DialogFragment {
                 .appCMSPresenter();
 
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        appCMSSearchView = (SearchView) view.findViewById(R.id.app_cms_search_view);
-        appCMSSearchView.setQueryHint(getString(R.string.search_films));
-        appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
-        appCMSSearchView.setIconifiedByDefault(false);
-        appCMSSearchView.setFocusable(true);
-        appCMSSearchView.getSuggestionsAdapter();
-        appCMSSearchView.clearFocus();
-        appCMSSearchView.requestFocus();
-        appCMSPresenter.showSoftKeyboard(appCMSSearchView);
-
-        SearchSuggestionsAdapter searchSuggestionsAdapter = new SearchSuggestionsAdapter(getContext(),
+        SearchSuggestionsAdapter searchSuggestionsAdapter = new SearchSuggestionsAdapter(getActivity(),
                 null,
                 searchManager.getSearchableInfo(getActivity().getComponentName()),
                 true);
 
+        appCMSSearchView = (SearchView) view.findViewById(R.id.app_cms_search_fragment_view);
+        appCMSSearchView.setQueryHint(getString(R.string.search_films));
+        appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         appCMSSearchView.setSuggestionsAdapter(searchSuggestionsAdapter);
+        appCMSSearchView.setIconifiedByDefault(false);
+        appCMSSearchView.requestFocus();
+        appCMSPresenter.showSoftKeyboard(appCMSSearchView);
 
         appCMSGoButton = (Button) view.findViewById(R.id.app_cms_search_button);
         appCMSGoButton.setBackgroundColor(0xff000000 + (int) buttonColor);
