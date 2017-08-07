@@ -790,6 +790,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
         int lastBackstackEntry = getSupportFragmentManager().getBackStackEntryCount();
+        boolean poppedStack = false;
         if (!configurationChanged &&
                 !appCMSBinder.shouldSendCloseAction() &&
                 lastBackstackEntry > 0 &&
@@ -844,6 +845,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             false,
                             false,
                             !appCMSBinder.shouldSendCloseAction());
+                    poppedStack = true;
                 }
                 i++;
             }
@@ -862,6 +864,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         Log.d(TAG, "Popping stack to getList to page item");
                         try {
                             getSupportFragmentManager().popBackStack();
+                            if (poppedStack) {
+                                appCMSBinderStack.push(appCMSBinder.getPageId());
+                                appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
+                            }
                         } catch (IllegalStateException e) {
                             Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                         }
