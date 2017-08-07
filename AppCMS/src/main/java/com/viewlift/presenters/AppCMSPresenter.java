@@ -3354,7 +3354,9 @@ public class AppCMSPresenter {
                                         entitlementPendingVideoData.currentlyPlayingIndex,
                                         entitlementPendingVideoData.relateVideoIds);
                             } else {
+                                sendCloseOthersAction(null, true);
                                 cancelInternalEvents();
+                                restartInternalEvents();
                                 NavigationPrimary homePageNavItem = findHomePageNavItem();
                                 if (homePageNavItem != null) {
                                     navigateToPage(homePageNavItem.getPageId(),
@@ -3416,7 +3418,9 @@ public class AppCMSPresenter {
                                         entitlementPendingVideoData.currentlyPlayingIndex,
                                         entitlementPendingVideoData.relateVideoIds);
                             } else {
+                                sendCloseOthersAction(null, true);
                                 cancelInternalEvents();
+                                restartInternalEvents();
                                 NavigationPrimary homePageNavItem = findHomePageNavItem();
                                 if (homePageNavItem != null) {
                                     navigateToPage(homePageNavItem.getPageId(),
@@ -4610,7 +4614,7 @@ public class AppCMSPresenter {
                                 entitlementPendingVideoData.contentDatum = null;
                                 entitlementPendingVideoData.closeLauncher = false;
                                 entitlementPendingVideoData.currentlyPlayingIndex = -1;
-                                entitlementPendingVideoData.relateVideoIds = null;
+                                entitllementPendingVideoData.relateVideoIds = null;
                                 entitlementPendingVideoData = null;
                             } else {
                                 sendCloseOthersAction(null, true);
