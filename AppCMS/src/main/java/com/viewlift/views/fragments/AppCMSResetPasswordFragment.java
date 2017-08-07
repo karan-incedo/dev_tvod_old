@@ -17,6 +17,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
@@ -58,18 +59,6 @@ public class AppCMSResetPasswordFragment extends DialogFragment {
         titleTextView.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
                 .getBrand().getGeneral().getTextColor()));
 
-        View imageSeparatorView = view.findViewById(R.id.app_cms_settings_separator_view);
-        imageSeparatorView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                .getBrand().getGeneral().getTextColor()));
-
-        ImageButton closeButton = (ImageButton) view.findViewById(R.id.app_cms_close_button);
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
-
         final EditText appCMSResetPasswordEmailInput = (EditText) view.findViewById(R.id.app_cms_reset_password_email_input);
         if (!TextUtils.isEmpty(email)) {
             appCMSResetPasswordEmailInput.setText(email);
@@ -84,27 +73,15 @@ public class AppCMSResetPasswordFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 appCMSPresenter.resetPassword(appCMSResetPasswordEmailInput.getText().toString());
-                dismiss();
+                appCMSPresenter.sendCloseOthersAction(null, true);
             }
         });
         appCMSSubmitResetPasswordButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor, buttonColor));
         appCMSSubmitResetPasswordButton.setBackgroundColor(buttonColor);
 
-        setBgColor(bgColor);
+        setBgColor(bgColor, view);
 
         return view;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        setWindow();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        setWindow();
     }
 
     @Override
@@ -113,26 +90,9 @@ public class AppCMSResetPasswordFragment extends DialogFragment {
         dismiss();
     }
 
-    private void setBgColor(int bgColor) {
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            Window window = dialog.getWindow();
-            if (window != null) {
-                window.setBackgroundDrawable(new ColorDrawable(bgColor));
-            }
-        }
-    }
-
-    private void setWindow() {
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            int width = ViewGroup.LayoutParams.MATCH_PARENT;
-            int height = ViewGroup.LayoutParams.MATCH_PARENT;
-            Window window = dialog.getWindow();
-            if (window != null) {
-                window.setLayout(width, height);
-                window.setGravity(Gravity.START);
-            }
-        }
+    private void setBgColor(int bgColor, View view) {
+        RelativeLayout appCMSResetPasswordMainLayout =
+                (RelativeLayout) view.findViewById(R.id.app_cms_reset_password_main_layout);
+        appCMSResetPasswordMainLayout.setBackgroundColor(bgColor);
     }
 }

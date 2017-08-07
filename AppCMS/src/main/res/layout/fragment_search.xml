@@ -1,33 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/app_cms_search_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <ImageView
-        android:id="@+id/app_cms_toolbar_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/app_cms_logo_top_margin"
-        android:background="@drawable/logo_icon"
-        android:scaleType="centerInside" />
-
-    <ImageButton
-        android:id="@+id/app_cms_close_button"
-        android:layout_width="@dimen/close_button_size"
-        android:layout_height="@dimen/close_button_size"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_margin="@dimen/app_cms_close_button_margin"
-        android:background="@android:color/transparent"
-        android:scaleType="fitCenter"
-        android:src="@drawable/cancel" />
-
-    <View
-        android:id="@+id/app_cms_settings_separator_view"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/app_cms_separator_view_height"
-        android:layout_below="@id/app_cms_reset_password_page_title"
-        android:alpha="0.6"/>
 
     <FrameLayout
         android:layout_width="@dimen/app_cms_search_bar_width"
