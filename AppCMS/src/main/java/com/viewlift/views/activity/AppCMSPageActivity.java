@@ -771,7 +771,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
             int i = 0;
             while ((((i < distanceFromStackTop ||
-                    (!configurationChanged && !onlyOneUserPageOnStack(appCMSBinder.getPageId()))) &&
+                    (!isBinderStackEmpty() &&
+                            !isBinderStackTopNull() &&
+                            !configurationChanged &&
+                            !onlyOneUserPageOnStack(appCMSBinder.getPageId()))) &&
                     shouldPopStack(appCMSBinder.getPageId())) ||
                     (appCMSBinder.shouldSendCloseAction() &&
                             appCMSBinderStack.size() > 1 &&
