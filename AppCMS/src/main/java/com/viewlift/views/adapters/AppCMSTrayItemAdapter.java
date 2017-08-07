@@ -18,18 +18,17 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
-import com.viewlift.models.data.appcms.downloads.UserVideoDownloadStatus;
-import com.viewlift.models.data.appcms.history.AppCMSDeleteHistoryResult;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
-import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
+import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,10 +37,6 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.functions.Action1;
-
-import com.bumptech.glide.Glide;
-import com.viewlift.views.customviews.ViewCreator;
 
 /**
  * Created by viewlift on 7/7/17.
@@ -131,7 +126,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
             StringBuffer imageUrl;
             if (isDownload) {
-                if (contentDatum.getGist() != null) {
+                if (contentDatum.getGist() != null && contentDatum.getGist().getVideoImageUrl() != null) {
                     imageUrl = new StringBuffer(contentDatum.getGist().getVideoImageUrl());
                 } else {
                     imageUrl = new StringBuffer();
@@ -163,11 +158,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         appCMSPresenter.getLoggedInUser(holder.itemView.getContext()));
 
                                 holder.appCMSContinueWatchingSize.setText("Cancel".toUpperCase());
-                                holder.appCMSContinueWatchingSize.setOnClickListener(v -> {
-                                    delete(contentDatum);
-
-
-                                });
+                                holder.appCMSContinueWatchingSize.setOnClickListener(v -> delete(contentDatum));
                             }
                             break;
 
@@ -208,18 +199,15 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
                     } else {
                         holder.appCMSContinueWatchingDownloadStatusButton.setImageResource(R.drawable.ic_download);
-                        holder.appCMSContinueWatchingDownloadStatusButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (appCMSPresenter.getUserDownloadQualityPref(holder.itemView.getContext()) != null
-                                        && appCMSPresenter.getUserDownloadQualityPref(holder.itemView.getContext()).length() > 0) {
-                                    appCMSPresenter.editDownload(contentDatum, new ViewCreator.UpdateDownloadImageIconAction((ImageButton) holder.appCMSContinueWatchingDownloadStatusButton, appCMSPresenter,
-                                            contentDatum, appCMSPresenter.getLoggedInUser(holder.itemView.getContext())), true);
+                        holder.appCMSContinueWatchingDownloadStatusButton.setOnClickListener(v -> {
+                            if (appCMSPresenter.getUserDownloadQualityPref(holder.itemView.getContext()) != null
+                                    && appCMSPresenter.getUserDownloadQualityPref(holder.itemView.getContext()).length() > 0) {
+                                appCMSPresenter.editDownload(contentDatum, new ViewCreator.UpdateDownloadImageIconAction((ImageButton) holder.appCMSContinueWatchingDownloadStatusButton, appCMSPresenter,
+                                        contentDatum, appCMSPresenter.getLoggedInUser(holder.itemView.getContext())), true);
 
-                                } else {
-                                    appCMSPresenter.showDownloadQualityScreen(contentDatum, new ViewCreator.UpdateDownloadImageIconAction((ImageButton) holder.appCMSContinueWatchingDownloadStatusButton, appCMSPresenter,
-                                            contentDatum, appCMSPresenter.getLoggedInUser(holder.itemView.getContext())));
-                                }
+                            } else {
+                                appCMSPresenter.showDownloadQualityScreen(contentDatum, new ViewCreator.UpdateDownloadImageIconAction((ImageButton) holder.appCMSContinueWatchingDownloadStatusButton, appCMSPresenter,
+                                        contentDatum, appCMSPresenter.getLoggedInUser(holder.itemView.getContext())));
                             }
                         });
                     }
@@ -239,33 +227,27 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             });
 
 
-            holder.appCMSContinueWatchingVideoImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (isDownload) {
-                        playDownloaded(contentDatum,
-                                holder.itemView.getContext(),
-                                getListOfUpcomingMovies(position));
-                    } else {
-                        play(adapterData.get(position),
-                                holder.itemView.getContext()
-                                        .getString(R.string.app_cms_action_watchvideo_key));
-                    }
+            holder.appCMSContinueWatchingVideoImage.setOnClickListener(v -> {
+                if (isDownload) {
+                    playDownloaded(contentDatum,
+                            holder.itemView.getContext(),
+                            getListOfUpcomingMovies(position));
+                } else {
+                    play(adapterData.get(position),
+                            holder.itemView.getContext()
+                                    .getString(R.string.app_cms_action_watchvideo_key));
                 }
             });
 
-            holder.appCMSContinueWatchingPlayButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (isDownload) {
-                        playDownloaded(contentDatum,
-                                holder.itemView.getContext(),
-                                getListOfUpcomingMovies(position));
-                    } else {
-                        play(adapterData.get(position),
-                                holder.itemView.getContext()
-                                        .getString(R.string.app_cms_action_watchvideo_key));
-                    }
+            holder.appCMSContinueWatchingPlayButton.setOnClickListener(v -> {
+                if (isDownload) {
+                    playDownloaded(contentDatum,
+                            holder.itemView.getContext(),
+                            getListOfUpcomingMovies(position));
+                } else {
+                    play(adapterData.get(position),
+                            holder.itemView.getContext()
+                                    .getString(R.string.app_cms_action_watchvideo_key));
                 }
             });
 
@@ -277,33 +259,15 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 holder.appCMSContinueWatchingDescription.setText(contentDatum.getGist().getDescription());
             }
 
-            holder.appCMSContinueWatchingSelectToDownloadButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showDelete(contentDatum);
-                }
-            });
+            holder.appCMSContinueWatchingSelectToDownloadButton.setOnClickListener(v -> showDelete(contentDatum));
 
 
-            holder.appCMSContinueWatchingDeleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    delete(contentDatum);
-                }
-            });
+            holder.appCMSContinueWatchingDeleteButton.setOnClickListener(v -> delete(contentDatum));
 
-            holder.appCMSContinueWatchingTitle.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    click(contentDatum);
-                }
-            });
+            holder.appCMSContinueWatchingTitle.setOnClickListener(v -> click(contentDatum));
 
-            /*holder.appCMSContinueWatchingDescription.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                }
+            /*holder.appCMSContinueWatchingDescription.setOnClickListener(v -> {
+                //
             });*/
 
             if (contentDatum.getGist() != null) {
@@ -452,7 +416,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     public void loadImage(Context context, String url, ImageView imageView) {
         Glide.with(context)
-                .load(Uri.decode(url).toString())
+                .load(Uri.decode(url))
                 .into(imageView);
     }
 
@@ -699,35 +663,26 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             Log.d(TAG, "Deleting history item: " + contentDatum.getGist().getTitle());
             if (contentDatum.getGist() != null) {
                 appCMSPresenter.editHistory(contentDatum.getGist().getId(),
-                        new Action1<AppCMSDeleteHistoryResult>() {
-                            @Override
-                            public void call(AppCMSDeleteHistoryResult appCMSDeleteHistoryResult) {
-                                adapterData.remove(contentDatum);
-                                notifyDataSetChanged();
-                            }
+                        appCMSDeleteHistoryResult -> {
+                            adapterData.remove(contentDatum);
+                            notifyDataSetChanged();
                         }, false);
             }
         } else if (isDownload) {
             if (contentDatum.getGist() != null) {
-                appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(), new Action1<UserVideoDownloadStatus>() {
-                    @Override
-                    public void call(UserVideoDownloadStatus userVideoDownloadStatus) {
-                        adapterData.remove(contentDatum);
-                        notifyDataSetChanged();
-                        resetData(mRecyclerView);
-                    }
+                appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(), userVideoDownloadStatus -> {
+                    adapterData.remove(contentDatum);
+                    notifyDataSetChanged();
+                    resetData(mRecyclerView);
                 });
             }
         } else {
             Log.d(TAG, "Deleting watchlist item: " + contentDatum.getGist().getTitle());
             if (contentDatum.getGist() != null) {
                 appCMSPresenter.editWatchlist(contentDatum.getGist().getId(),
-                        new Action1<AppCMSAddToWatchlistResult>() {
-                            @Override
-                            public void call(AppCMSAddToWatchlistResult addToWatchlistResult) {
-                                adapterData.remove(contentDatum);
-                                notifyDataSetChanged();
-                            }
+                        addToWatchlistResult -> {
+                            adapterData.remove(contentDatum);
+                            notifyDataSetChanged();
                         }, false);
             }
         }
