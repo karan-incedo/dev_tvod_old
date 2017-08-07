@@ -861,6 +861,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (distanceFromStackTop >= 0) {
                 switch (appCMSBinder.getExtraScreenType()) {
                     case NAVIGATION:
+                    case SEARCH:
                         Log.d(TAG, "Popping stack to getList to page item");
                         try {
                             getSupportFragmentManager().popBackStack();
