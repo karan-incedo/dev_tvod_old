@@ -12,7 +12,6 @@ import com.viewlift.models.data.appcms.api.Mpeg;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.views.customviews.BaseView;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,7 @@ import java.util.Map;
  * Created by sandeep.singh on 7/28/2017.
  */
 
-public class AppCMSDownloadQualityAdapter extends AppCMSRadioAdapter<Mpeg> {
+public class AppCMSDownloadQualityAdapter extends AppCMSDownloadRadioAdapter<Mpeg> {
     protected List<Component> components;
     protected AppCMSPresenter appCMSPresenter;
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
@@ -45,13 +44,13 @@ public class AppCMSDownloadQualityAdapter extends AppCMSRadioAdapter<Mpeg> {
     }
 
     @Override
-    public void onBindViewHolder(AppCMSRadioAdapter.ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(AppCMSDownloadRadioAdapter.ViewHolder viewHolder, int i) {
         super.onBindViewHolder(viewHolder, i);
         viewHolder.mText.setText(mItems.get(i).getRenditionValue());
         applyStyles(viewHolder);
     }
 
-    private void applyStyles(AppCMSRadioAdapter.ViewHolder viewHolder) {
+    private void applyStyles(AppCMSDownloadRadioAdapter.ViewHolder viewHolder) {
         for (Component component : components) {
             AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
             if (componentType == null) {

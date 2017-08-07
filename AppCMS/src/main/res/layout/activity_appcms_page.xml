@@ -36,8 +36,9 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_alignParentEnd="true">
+                    android:layout_alignParentEnd="true"
+                    android:orientation="horizontal">
+
                     <LinearLayout
                         android:id="@+id/ll_media_route_button"
 
@@ -46,13 +47,14 @@
                         android:layout_gravity="center"
 
                         android:orientation="horizontal">
+
                         <ImageButton
                             android:id="@+id/media_route_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:padding="5dp"
                             android:background="#00000000"
+                            android:padding="5dp"
                             android:src="@drawable/anim_cast"
                             android:visibility="visible" />
                     </LinearLayout>
@@ -61,9 +63,9 @@
                         android:id="@+id/app_cms_close_button"
                         android:layout_width="@dimen/close_button_size"
                         android:layout_height="@dimen/close_button_size"
-                        android:scaleType="fitCenter"
-                        android:background="@android:color/transparent"
                         android:layout_margin="@dimen/close_button_margin"
+                        android:background="@android:color/transparent"
+                        android:scaleType="fitCenter"
                         android:src="@drawable/cancel" />
                 </LinearLayout>
 
@@ -130,6 +132,7 @@
         android:layout_below="@id/app_cms_appbarlayout"
         android:layout_gravity="center_vertical"
         android:visibility="visible">
+
         <FrameLayout
             android:id="@+id/app_cms_fragment"
             android:layout_width="match_parent"
@@ -144,6 +147,7 @@
             android:layout_above="@+id/castMiniController"
             android:alpha="1"
             android:visibility="invisible" />
+
         <fragment
             android:id="@+id/castMiniController"
             class="com.google.android.gms.cast.framework.media.widget.MiniControllerFragment"
@@ -152,6 +156,7 @@
             android:layout_alignParentBottom="true"
             android:visibility="gone" />
     </RelativeLayout>
+
     <ProgressBar
         android:id="@+id/app_cms_page_loading_progressbar"
         android:layout_width="wrap_content"

@@ -19,7 +19,7 @@ import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.Mpeg;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
-import com.viewlift.views.adapters.AppCMSRadioAdapter;
+import com.viewlift.views.adapters.AppCMSDownloadRadioAdapter;
 import com.viewlift.views.binders.AppCMSDownloadQualityBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
 import com.viewlift.views.components.DaggerAppCMSViewComponent;
@@ -31,7 +31,7 @@ import com.viewlift.views.modules.AppCMSPageViewModule;
  * Created by sandeep.singh on 7/28/2017.
  */
 
-public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRadioAdapter.ItemClickListener<Mpeg> {
+public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDownloadRadioAdapter.ItemClickListener<Mpeg> {
 
     private static final String TAG = AppCMSDownloadQualityFragment.class.getSimpleName();
     private AppCMSDownloadQualityBinder binder;
@@ -110,7 +110,7 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRad
             RecyclerView listDownloadQuality = (RecyclerView) pageView.findViewById(R.id.download_quality_selection_list);
             Button continueButton = (Button) pageView.findViewById(R.id.download_quality_continue_button);
             Button cancelButton = (Button) pageView.findViewById(R.id.download_quality_cancel_button);
-            
+
             ((AppCMSDownloadQualityAdapter) listDownloadQuality.getAdapter()).setItemClickListener(this);
 
             continueButton.setOnClickListener(v -> {
@@ -122,7 +122,7 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRad
                 }
                 getActivity().finish();
             });
-            
+
             cancelButton.setOnClickListener(v -> getActivity().finish());
 
             pageView.setBackgroundColor(Color.TRANSPARENT);
@@ -154,7 +154,7 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSRad
         } else {
 
             getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            pageView.setBackgroundColor(getActivity().getResources().getColor(R.color.semiTransparentColor,null));
+            pageView.setBackgroundColor(getActivity().getResources().getColor(R.color.semiTransparentColor, null));
             pageView.notifyAdaptersOfUpdate();
         }
 
