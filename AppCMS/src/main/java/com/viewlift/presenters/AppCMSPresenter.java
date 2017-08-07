@@ -4614,7 +4614,7 @@ public class AppCMSPresenter {
                                 entitlementPendingVideoData.contentDatum = null;
                                 entitlementPendingVideoData.closeLauncher = false;
                                 entitlementPendingVideoData.currentlyPlayingIndex = -1;
-                                entitllementPendingVideoData.relateVideoIds = null;
+                                entitlementPendingVideoData.relateVideoIds = null;
                                 entitlementPendingVideoData = null;
                             } else {
                                 sendCloseOthersAction(null, true);
