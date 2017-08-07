@@ -69,7 +69,9 @@ public class AppCMSSearchFragment extends DialogFragment {
         appCMSSearchView.setIconifiedByDefault(false);
         appCMSSearchView.setFocusable(true);
         appCMSSearchView.getSuggestionsAdapter();
+        appCMSSearchView.clearFocus();
         appCMSSearchView.requestFocus();
+        appCMSPresenter.showSoftKeyboard(appCMSSearchView);
 
         SearchSuggestionsAdapter searchSuggestionsAdapter = new SearchSuggestionsAdapter(getContext(),
                 null,
@@ -100,6 +102,7 @@ public class AppCMSSearchFragment extends DialogFragment {
         if (!BaseView.isTablet(getContext())) {
             appCMSPresenter.unrestrictPortraitOnly();
         }
+        appCMSPresenter.closeSoftKeyboard();
     }
 
     @SuppressWarnings("ConstantConditions")

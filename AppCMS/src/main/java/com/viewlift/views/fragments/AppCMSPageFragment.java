@@ -107,7 +107,6 @@ public class AppCMSPageFragment extends Fragment {
         if (container != null) {
             container.removeAllViews();
         }
-        appCMSPresenter.showSoftKeyboard();
         return pageView;
     }
 

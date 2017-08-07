@@ -39,6 +39,7 @@ import android.util.Log;
 import android.util.LruCache;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethod;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -2761,18 +2762,18 @@ public class AppCMSPresenter {
         this.inAppBillingServiceConn = inAppBillingServiceConn;
     }
 
-    public void showSoftKeyboard() {
+    public void showSoftKeyboard(View view) {
         if (currentActivity != null) {
-            View view = currentActivity.getCurrentFocus();
             if (view != null) {
                 InputMethodManager imm =
                         (InputMethodManager) currentActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.showSoftInput(view, 0);
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,
+                        InputMethodManager.HIDE_IMPLICIT_ONLY);
             }
         }
     }
 
-    private void closeSoftKeyboard() {
+    public void closeSoftKeyboard() {
         if (currentActivity != null) {
             View view = currentActivity.getCurrentFocus();
             if (view != null) {
