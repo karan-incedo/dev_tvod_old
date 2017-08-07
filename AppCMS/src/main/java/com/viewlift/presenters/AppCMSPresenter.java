@@ -4612,6 +4612,7 @@ public class AppCMSPresenter {
                                 entitlementPendingVideoData.relateVideoIds = null;
                                 entitlementPendingVideoData = null;
                             } else {
+                                sendCloseOthersAction(null, true);
                                 cancelInternalEvents();
                                 restartInternalEvents();
                                 NavigationPrimary homePageNavItem = findHomePageNavItem();
