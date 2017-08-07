@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/app_cms_edit_profile_main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageButton
-        android:id="@+id/app_cms_close_button"
-        android:layout_width="@dimen/close_button_size"
-        android:layout_height="@dimen/close_button_size"
-        android:scaleType="fitCenter"
-        android:background="@android:color/transparent"
-        android:layout_gravity="end"
-        android:layout_margin="@dimen/close_button_margin"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:src="@drawable/cancel" />
+    <TextView
+        android:id="@+id/app_cms_edit_profile_page_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/app_cms_toolbar_logo"
+        android:textSize="@dimen/app_cms_settings_page_title_textsize"
+        android:text="@string/app_cms_edit_profile_dialog_title"
+        android:textStyle="bold"/>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/app_cms_edit_profile_name_container"
@@ -22,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_centerHorizontal="true"
         android:hint="@string/app_cms_username_input_text_hint"
-        android:layout_below="@id/app_cms_close_button"
+        android:layout_below="@id/app_cms_edit_profile_page_title"
         app:hintEnabled="false">
         <EditText
             android:id="@+id/app_cms_edit_profile_name_input"

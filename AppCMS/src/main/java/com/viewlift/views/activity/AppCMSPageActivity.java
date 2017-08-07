@@ -23,7 +23,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -54,7 +53,11 @@ import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.NavBarItemView;
 import com.viewlift.views.customviews.ViewCreator;
+import com.viewlift.views.fragments.AppCMSEditProfileFragment;
+import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSPageFragment;
+import com.viewlift.views.fragments.AppCMSResetPasswordFragment;
+import com.viewlift.views.fragments.AppCMSSearchFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -83,7 +86,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private static final int HOME_PAGE_INDEX = 1;
     private static final int MOVIES_PAGE_INDEX = 2;
     private static final int SEARCH_INDEX = 3;
-
 
     @BindView(R.id.app_cms_page_loading_progressbar)
     ProgressBar loadingProgressBar;
@@ -115,7 +117,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private Map<String, AppCMSBinder> appCMSBinderMap;
     private BroadcastReceiver presenterActionReceiver;
     private BroadcastReceiver presenterCloseActionReceiver;
-    private NavBarItemView pageViewDuringSearch;
     private boolean resumeInternalEvents;
     private boolean isActive;
     private boolean shouldSendCloseOthersAction;
@@ -126,7 +127,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private IInAppBillingService inAppBillingService;
     private ServiceConnection inAppBillingServiceConn;
     private FirebaseAnalytics mFireBaseAnalytics;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -159,7 +159,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
                         mergeInputData(updatedAppCMSBinder, updatedAppCMSBinder.getPageId());
                         if (isActive) {
-                            handleLaunchPageAction(updatedAppCMSBinder, false);
+                            handleLaunchPageAction(updatedAppCMSBinder,
+                                    false,
+                                    false);
                         } else if (updatedAppCMSBinder.shouldSendCloseAction()) {
                             Intent appCMSIntent = new Intent(AppCMSPageActivity.this,
                                     AppCMSPageActivity.class);
@@ -187,7 +189,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     updateData();
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION)) {
                     AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                    handleLaunchPageAction(appCMSBinder, false);
+                    handleLaunchPageAction(appCMSBinder,
+                            false,
+                            false);
                 }
             }
         };
@@ -308,7 +312,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         createMenuNavItem();
         createHomeNavItem(appCMSPresenter.findHomePageNavItem());
         createMoviesNavItem(appCMSPresenter.findMoviesPageNavItem());
-        createSearchNavItem();
+        createSearchNavItem(getString(R.string.app_cms_search_page_tag));
 
         //Settings The Firebase Analytics for Android
         mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -351,10 +355,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     protected void onPause() {
         super.onPause();
-
-        if (pageViewDuringSearch != null) {
-            selectNavItem(pageViewDuringSearch);
-        }
 
         appCMSPresenter.cancelInternalEvents();
 
@@ -470,7 +470,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         if (appCMSBinderStack.size() > 0) {
-            handleLaunchPageAction(appCMSBinderMap.get(appCMSBinderStack.peek()), false);
+            handleLaunchPageAction(appCMSBinderMap.get(appCMSBinderStack.peek()),
+                    false,
+                    false);
         } else {
             finish();
         }
@@ -489,7 +491,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (appCMSBinder != null) {
                     appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
                             + BaseView.isLandscape(this));
-                    handleLaunchPageAction(appCMSBinder, true);
+                    handleLaunchPageAction(appCMSBinder,
+                            true,
+                            false);
                 }
             }
         }
@@ -552,19 +556,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void resume() {
         appCMSPresenter.restartInternalEvents();
-        if (pageViewDuringSearch != null) {
-            selectNavItem(pageViewDuringSearch);
-        } else {
-            if (appCMSBinderStack != null && appCMSBinderStack.size() > 0) {
-                Log.d(TAG, "Activity resumed - resetting nav item");
-                selectNavItem(appCMSBinderStack.peek());
-            }
+
+        if (appCMSBinderStack != null && appCMSBinderStack.size() > 0) {
+            Log.d(TAG, "Activity resumed - resetting nav item");
+            selectNavItem(appCMSBinderStack.peek());
         }
 
         if (!isActive) {
             if (updatedAppCMSBinder != null) {
                 handleLaunchPageAction(updatedAppCMSBinder,
-                        appCMSPresenter.getConfigurationChanged());
+                        appCMSPresenter.getConfigurationChanged(),
+                        false);
             }
         }
 
@@ -611,8 +613,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 !appCMSPresenter.isPageUser(appCMSBinderStack.peek()))));
     }
 
-    private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder,
-                                              boolean configurationChanged) {
+    private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder) {
         Log.d(TAG, "Handling new AppCMSBinder: " + appCMSBinder.getPageName());
 
         pageLoading(false);
@@ -628,19 +629,63 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         handleNavbar(appCMSBinder);
 
         handleOrientation(getResources().getConfiguration().orientation, appCMSBinder);
-        createFragment(appCMSBinder, configurationChanged);
+        createFragment(appCMSBinder);
     }
 
-    private void createFragment(AppCMSBinder appCMSBinder, boolean configurationChanged) {
+    private void createFragment(AppCMSBinder appCMSBinder) {
         try {
             getSupportFragmentManager().addOnBackStackChangedListener(this);
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            AppCMSPageFragment appCMSPageFragment = AppCMSPageFragment.newInstance(this, appCMSBinder);
-            fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment,
-                    appCMSBinder.getPageId() + BaseView.isLandscape(this));
-            fragmentTransaction.addToBackStack(appCMSBinder.getPageId() + BaseView.isLandscape(this));
-            fragmentTransaction.commit();
+
+            Fragment appCMSPageFragment = null;
+
+            switch (appCMSBinder.getExtraScreenType()) {
+                case NAVIGATION:
+                    appCMSPageFragment =
+                            AppCMSNavItemsFragment.newInstance(this,
+                                   appCMSBinder,
+                                    Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
+                                    Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
+                                    Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
+                                    Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+                    break;
+
+                case SEARCH:
+                    appCMSPageFragment = AppCMSSearchFragment.newInstance(this,
+                            Long.parseLong(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()
+                                    .replace("#", ""), 16),
+                            Long.parseLong(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()
+                                    .replace("#", ""), 16),
+                            Long.parseLong(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()
+                                    .replace("#", ""), 16));
+                    break;
+
+                case RESET_PASSWORD:
+                    appCMSPageFragment =
+                            AppCMSResetPasswordFragment.newInstance(this, appCMSBinder.getPagePath());
+                    break;
+
+                case EDIT_PROFILE:
+                    appCMSPageFragment =
+                            AppCMSEditProfileFragment.newInstance(this,
+                                    appCMSPresenter.getLoggedInUserName(this),
+                                    appCMSPresenter.getLoggedInUserEmail(this));
+                    break;
+
+                case NONE:
+                    appCMSPageFragment = AppCMSPageFragment.newInstance(this, appCMSBinder);
+                    break;
+
+                default:
+            }
+
+            if (appCMSPageFragment != null) {
+                fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment,
+                        appCMSBinder.getPageId() + BaseView.isLandscape(this));
+                fragmentTransaction.addToBackStack(appCMSBinder.getPageId() + BaseView.isLandscape(this));
+                fragmentTransaction.commit();
+            }
         } catch (IllegalStateException e) {
             Log.e(TAG, "Failed to add Fragment to back stack");
         }
@@ -740,7 +785,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void handleLaunchPageAction(final AppCMSBinder appCMSBinder,
-                                        boolean configurationChanged) {
+                                        boolean configurationChanged,
+                                        boolean leavingExtraPage) {
         Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
         int lastBackstackEntry = getSupportFragmentManager().getBackStackEntryCount();
@@ -770,15 +816,20 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
             Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
             int i = 0;
-            while ((((i < distanceFromStackTop ||
+            while (((((i < distanceFromStackTop ||
                     (!isBinderStackEmpty() &&
                             !isBinderStackTopNull() &&
                             !configurationChanged &&
-                            !onlyOneUserPageOnStack(appCMSBinder.getPageId()))) &&
-                    shouldPopStack(appCMSBinder.getPageId())) ||
+                            !onlyOneUserPageOnStack(appCMSBinder.getPageId()) &&
+                            !leavingExtraPage)) &&
+                    (!leavingExtraPage && shouldPopStack(appCMSBinder.getPageId()))) ||
                     (appCMSBinder.shouldSendCloseAction() &&
                             appCMSBinderStack.size() > 1 &&
-                            i < appCMSBinderStack.size()))) {
+                            i < appCMSBinderStack.size()))) ||
+                    (!isBinderStackEmpty() &&
+                        !isBinderStackTopNull() &&
+                        appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() !=
+                                AppCMSPresenter.ExtraScreenType.NONE)) {
                 Log.d(TAG, "Popping stack to getList to page item");
                 try {
                     getSupportFragmentManager().popBackStack();
@@ -786,7 +837,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                 }
                 if ((i < distanceFromStackTop - 1) ||
-                        (!configurationChanged && !onlyOneUserPageOnStack(appCMSBinder.getPageId()))) {
+                        (!configurationChanged && !onlyOneUserPageOnStack(appCMSBinder.getPageId())) ||
+                        appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() !=
+                                AppCMSPresenter.ExtraScreenType.NONE) {
                     handleBack(true,
                             false,
                             false,
@@ -796,16 +849,36 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
 
             if (distanceFromStackTop < 0 ||
-                    appCMSBinder.shouldSendCloseAction()) {
+                    appCMSBinder.shouldSendCloseAction() ||
+                    (configurationChanged && appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() ==
+                            AppCMSPresenter.ExtraScreenType.NONE)) {
                 appCMSBinderStack.push(appCMSBinder.getPageId());
                 appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
+            }
+
+            if (distanceFromStackTop >= 0) {
+                switch (appCMSBinder.getExtraScreenType()) {
+                    case NAVIGATION:
+                        Log.d(TAG, "Popping stack to getList to page item");
+                        try {
+                            getSupportFragmentManager().popBackStack();
+                        } catch (IllegalStateException e) {
+                            Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
+                        }
+                        break;
+
+                    case NONE:
+                        break;
+
+                    default:
+                }
             }
 
             appCMSBinder.unsetSendCloseAction();
 
             updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
 
-            createScreenFromAppCMSBinder(appCMSBinder, configurationChanged);
+            createScreenFromAppCMSBinder(appCMSBinder);
         }
     }
 
@@ -833,9 +906,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         menuNavBarItemView.setHighlightColor(highlightColor);
         menuNavBarItemView.setOnClickListener(v -> {
             if (appCMSBinderStack.size() > 0) {
-                AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                if (!appCMSPresenter.launchNavigationPage(appCMSBinder.getPageId(),
-                        appCMSBinder.getPageName())) {
+                if (!appCMSPresenter.launchNavigationPage()) {
                     Log.e(TAG, "Could not launch navigation page!");
                 } else {
                     resumeInternalEvents = true;
@@ -883,7 +954,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
     }
 
-    private void createSearchNavItem() {
+    private void createSearchNavItem(String pageId) {
         NavBarItemView searchNavBarItemView =
                 (NavBarItemView) appCMSTabNavContainer.getChildAt(SEARCH_INDEX);
         int highlightColor =
@@ -892,9 +963,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         searchNavBarItemView.setHighlightColor(highlightColor);
         searchNavBarItemView.setLabel(getString(R.string.app_cms_search_label));
         searchNavBarItemView.setOnClickListener(v -> {
-            pageViewDuringSearch = getSelectedNavItem();
+            selectNavItem(searchNavBarItemView);
             appCMSPresenter.launchSearchPage();
         });
+        searchNavBarItemView.setTag(pageId);
     }
 
     private void selectNavItem(String pageId) {
@@ -1029,6 +1101,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
             }
 
+            boolean leavingExtraPage = appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() !=
+                    AppCMSPresenter.ExtraScreenType.NONE;
+
             handleBack(true, false, true, true);
 
             if (appCMSBinderStack.size() == 0) {
@@ -1038,13 +1113,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
 
-            handleBack(false,
-                    appCMSBinderStack.size() < 2,
-                    false,
-                    true);
+            if (!leavingExtraPage) {
+                handleBack(false,
+                        appCMSBinderStack.size() < 2,
+                        false,
+                        true);
+            }
+
             appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
                     + BaseView.isLandscape(this));
-            handleLaunchPageAction(appCMSBinder, false);
+            handleLaunchPageAction(appCMSBinder,
+                    false,
+                    leavingExtraPage);
             isActive = true;
         } else {
             isActive = false;

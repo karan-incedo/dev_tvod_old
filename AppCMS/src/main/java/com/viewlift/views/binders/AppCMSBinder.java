@@ -11,6 +11,7 @@ import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import java.util.Map;
 
 import com.viewlift.models.data.appcms.ui.android.Navigation;
+import com.viewlift.presenters.AppCMSPresenter;
 
 /**
  * Created by viewlift on 5/4/17.
@@ -31,6 +32,7 @@ public class AppCMSBinder extends Binder {
     private final boolean navbarPresent;
     private final boolean userLoggedIn;
     private final boolean userSubscribed;
+    private final AppCMSPresenter.ExtraScreenType extraScreenType;
     private boolean sendCloseAction;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private Uri searchQuery;
@@ -50,6 +52,7 @@ public class AppCMSBinder extends Binder {
                         boolean sendCloseAction,
                         boolean userLoggedIn,
                         boolean userSubscribed,
+                        AppCMSPresenter.ExtraScreenType extraScreenType,
                         Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                         Uri searchQuery) {
         this.appCMSMain = appCMSMain;
@@ -66,6 +69,7 @@ public class AppCMSBinder extends Binder {
         this.navbarPresent = navbarPresent;
         this.sendCloseAction = sendCloseAction;
         this.userLoggedIn = userLoggedIn;
+        this.extraScreenType = extraScreenType;
         this.userSubscribed = userSubscribed;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.searchQuery = searchQuery;
@@ -153,5 +157,9 @@ public class AppCMSBinder extends Binder {
 
     public boolean isUserSubscribed() {
         return userSubscribed;
+    }
+
+    public AppCMSPresenter.ExtraScreenType getExtraScreenType() {
+        return extraScreenType;
     }
 }
