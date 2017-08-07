@@ -1111,6 +1111,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
             }
 
+            if (appCMSPresenter.isViewPlanPage(appCMSBinderStack.peek())) {
+                appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
+            }
+
             boolean leavingExtraPage = appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() !=
                     AppCMSPresenter.ExtraScreenType.NONE;
 

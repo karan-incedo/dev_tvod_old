@@ -815,6 +815,9 @@ public class AppCMSPresenter {
                                 currentActivity.getResources().getText(R.string.send_to)));
                     }
                 } else if (actionType == AppCMSActionType.CLOSE) {
+                    if (launchType == LaunchType.SUBSCRIBE) {
+                        launchType = LaunchType.LOGIN_AND_SIGNUP;
+                    }
                     sendCloseOthersAction(null, false);
                 } else if (actionType == AppCMSActionType.LOGIN) {
                     Log.d(TAG, "Login action selected: " + extraData[0]);
@@ -4614,7 +4617,7 @@ public class AppCMSPresenter {
                                 entitlementPendingVideoData.contentDatum = null;
                                 entitlementPendingVideoData.closeLauncher = false;
                                 entitlementPendingVideoData.currentlyPlayingIndex = -1;
-                                entitllementPendingVideoData.relateVideoIds = null;
+                                entitlementPendingVideoData.relateVideoIds = null;
                                 entitlementPendingVideoData = null;
                             } else {
                                 sendCloseOthersAction(null, true);
