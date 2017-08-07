@@ -1070,6 +1070,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.showMainFragmentView(true);
         }
         appCMSPresenter.onConfigurationChange(false);
+        appCMSPresenter.cancelInternalEvents();
         appCMSPresenter.restartInternalEvents();
         getSupportFragmentManager().removeOnBackStackChangedListener(this);
     }
