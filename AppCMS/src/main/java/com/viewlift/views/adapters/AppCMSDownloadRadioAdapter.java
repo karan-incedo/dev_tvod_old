@@ -19,19 +19,19 @@ import butterknife.ButterKnife;
  * Created by sandeep.singh on 7/28/2017.
  */
 
-public abstract class AppCMSRadioAdapter<T> extends RecyclerView.Adapter<AppCMSRadioAdapter.ViewHolder> {
+public abstract class AppCMSDownloadRadioAdapter<T> extends RecyclerView.Adapter<AppCMSDownloadRadioAdapter.ViewHolder> {
     int downloadQualityPosition = 1; // Default position is 1, i.e 720p
     List<T> mItems;
     private ItemClickListener itemClickListener;
     private Context mContext;
 
-    public AppCMSRadioAdapter(Context context, List<T> items) {
+    public AppCMSDownloadRadioAdapter(Context context, List<T> items) {
         mContext = context;
         mItems = items;
     }
 
     @Override
-    public void onBindViewHolder(AppCMSRadioAdapter.ViewHolder viewHolder, final int i) {
+    public void onBindViewHolder(AppCMSDownloadRadioAdapter.ViewHolder viewHolder, final int i) {
         viewHolder.mRadio.setChecked(i == downloadQualityPosition);
     }
 
@@ -43,7 +43,7 @@ public abstract class AppCMSRadioAdapter<T> extends RecyclerView.Adapter<AppCMSR
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        final View view = inflater.inflate(R.layout.view_item, viewGroup, false);
+        final View view = inflater.inflate(R.layout.download_quality_view_item, viewGroup, false);
         return new ViewHolder(view);
     }
 
@@ -58,10 +58,10 @@ public abstract class AppCMSRadioAdapter<T> extends RecyclerView.Adapter<AppCMSR
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.radio)
+        @BindView(R.id.download_quality_radio_selection)
         RadioButton mRadio;
 
-        @BindView(R.id.text)
+        @BindView(R.id.download_quality_text)
         TextView mText;
 
         public ViewHolder(final View inflate) {
