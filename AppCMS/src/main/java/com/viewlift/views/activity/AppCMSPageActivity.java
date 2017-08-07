@@ -850,7 +850,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             if (distanceFromStackTop < 0 ||
                     appCMSBinder.shouldSendCloseAction() ||
-                    (configurationChanged && appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() ==
+                    (configurationChanged && appCMSBinder.getExtraScreenType() !=
                             AppCMSPresenter.ExtraScreenType.NONE)) {
                 appCMSBinderStack.push(appCMSBinder.getPageId());
                 appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
