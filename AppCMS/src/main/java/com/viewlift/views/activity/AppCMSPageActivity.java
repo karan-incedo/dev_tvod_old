@@ -874,6 +874,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         break;
 
                     case NONE:
+                        if (poppedStack) {
+                            appCMSBinderStack.push(appCMSBinder.getPageId());
+                            appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
+                        }
                         break;
 
                     default:
