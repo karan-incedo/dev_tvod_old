@@ -1104,7 +1104,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             boolean leavingExtraPage = appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() !=
                     AppCMSPresenter.ExtraScreenType.NONE;
 
-            handleBack(true, false, true, true);
+            handleBack(true,
+                    false,
+                    appCMSPresenter.isPageAVideoPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName()),
+                    true);
 
             if (appCMSBinderStack.size() == 0) {
                 finishAffinity();
@@ -1112,13 +1115,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
 
             AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-
-            if (!leavingExtraPage) {
-                handleBack(false,
-                        appCMSBinderStack.size() < 2,
-                        false,
-                        true);
-            }
 
             appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
                     + BaseView.isLandscape(this));
