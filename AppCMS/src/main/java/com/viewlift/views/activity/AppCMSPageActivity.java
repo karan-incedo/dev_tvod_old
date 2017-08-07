@@ -1106,7 +1106,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 + getSupportFragmentManager().getBackStackEntryCount());
         if (appCMSBinderStack.size() > 0) {
             try {
-                getSupportFragmentManager().popBackStack();
+                getSupportFragmentManager().popBackStackImmediate();
             } catch (IllegalStateException e) {
                 Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
             }

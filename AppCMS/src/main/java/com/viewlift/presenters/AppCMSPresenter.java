@@ -597,12 +597,15 @@ public class AppCMSPresenter {
                     s -> {
                         // Call update history
                         if (currentActivity != null) {
-                            Intent updateHistoryIntent = new Intent(PRESENTER_UPDATE_HISTORY_ACTION);
-
-                            currentActivity.sendBroadcast(updateHistoryIntent);
+                            sendUpdateHistoryAction();
                         }
                     });
         }
+    }
+
+    public void sendUpdateHistoryAction() {
+        Intent updateHistoryIntent = new Intent(PRESENTER_UPDATE_HISTORY_ACTION);
+        currentActivity.sendBroadcast(updateHistoryIntent);
     }
 
     public void getUserVideoStatus(String filmId, Action1<UserVideoStatusResponse> responseAction) {
@@ -3564,7 +3567,6 @@ public class AppCMSPresenter {
 
     public void logout() {
         if (currentActivity != null) {
-
             GraphRequest revokePermissions = new GraphRequest(AccessToken.getCurrentAccessToken(),
                     getLoggedInUser(currentActivity) + "/permissions/", null,
                     HttpMethod.DELETE, response -> {
@@ -3591,6 +3593,8 @@ public class AppCMSPresenter {
             setActiveSubscriptionReceipt(currentActivity, null);
             setRefreshToken(currentActivity, null);
             setAuthToken(currentActivity, null);
+
+            sendUpdateHistoryAction();
 
             signinAnonymousUser(appCMSMain);
 
