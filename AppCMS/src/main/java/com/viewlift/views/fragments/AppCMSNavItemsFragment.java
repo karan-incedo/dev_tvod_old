@@ -95,6 +95,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     if (appCMSPresenter != null) {
+                        appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
                         appCMSPresenter.navigateToLoginPage();
                     }
                 }
@@ -114,6 +115,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                     @Override
                     public void onClick(View v) {
                         if (appCMSPresenter != null) {
+                            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
                             appCMSPresenter.navigateToSubscriptionPlansPage(appCMSBinder.getPageId(),
                                     appCMSBinder.getPageName());
                         }
