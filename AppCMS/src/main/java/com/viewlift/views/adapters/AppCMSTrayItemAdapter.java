@@ -277,7 +277,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 holder.appCMSContinueWatchingDescription.setText(contentDatum.getGist().getDescription());
             }
 
-            holder.appCMSContinueWatchingSelectToDeleteButton.setOnClickListener(new View.OnClickListener() {
+            holder.appCMSContinueWatchingSelectToDownloadButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     showDelete(contentDatum);
@@ -344,7 +344,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             holder.appCMSContinueWatchingPlayButton.setVisibility(View.GONE);
             holder.appCMSContinueWatchingTitle.setVisibility(View.GONE);
             holder.appCMSContinueWatchingDescription.setVisibility(View.GONE);
-            holder.appCMSContinueWatchingSelectToDeleteButton.setVisibility(View.GONE);
+            holder.appCMSContinueWatchingSelectToDownloadButton.setVisibility(View.GONE);
             holder.appCMSContinueWatchingDeleteButton.setVisibility(View.GONE);
             holder.appCMSContinueWatchingDuration.setVisibility(View.GONE);
             holder.appCMSContinueWatchingSize.setVisibility(View.GONE);
@@ -503,7 +503,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                 viewHolder.appCMSContinueWatchingDeleteButton
                                         .setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(),
                                                 component.getBackgroundColor())));
-                                viewHolder.appCMSContinueWatchingSelectToDeleteButton
+                                viewHolder.appCMSContinueWatchingSelectToDownloadButton
                                         .setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(),
                                                 component.getBackgroundColor())));
                             } else {
@@ -511,13 +511,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         viewHolder.appCMSContinueWatchingDeleteButton,
                                         component);
                                 applyBorderToComponent(viewHolder.itemView.getContext(),
-                                        viewHolder.appCMSContinueWatchingSelectToDeleteButton,
+                                        viewHolder.appCMSContinueWatchingSelectToDownloadButton,
                                         component);
                             }
                             viewHolder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
-                            viewHolder.appCMSContinueWatchingSelectToDeleteButton.getBackground().setTint(tintColor);
+                            viewHolder.appCMSContinueWatchingSelectToDownloadButton.getBackground().setTint(tintColor);
                             viewHolder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
-                            viewHolder.appCMSContinueWatchingSelectToDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+                            viewHolder.appCMSContinueWatchingSelectToDownloadButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                     }
                     break;
                 case PAGE_LABEL_KEY:
@@ -795,8 +795,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         @BindView(R.id.app_cms_continue_watching_description)
         TextView appCMSContinueWatchingDescription;
 
-        @BindView(R.id.app_cms_continue_watching_select_to_delete_button)
-        ImageButton appCMSContinueWatchingSelectToDeleteButton;
+        @BindView(R.id.app_cms_continue_watching_select_to_download_button)
+        ImageButton appCMSContinueWatchingSelectToDownloadButton;
 
         @BindView(R.id.app_cms_continue_watching_delete_button)
         ImageButton appCMSContinueWatchingDeleteButton;
@@ -826,8 +826,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             ButterKnife.bind(this, itemView);
 
 //            if (isHistoryView) {
-//                appCMSContinueWatchingDeleteButton.setVisibility(View.GONE);
-//                appCMSContinueWatchingDeleteButton.setEnabled(false);
+//                appCMSContinueWatchingSelectToDownloadButton.setVisibility(View.GONE);
+//                appCMSContinueWatchingSelectToDownloadButton.setEnabled(false);
 //            }
         }
     }
