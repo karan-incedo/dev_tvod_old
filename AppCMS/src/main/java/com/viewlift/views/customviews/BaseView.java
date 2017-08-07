@@ -464,11 +464,13 @@ public abstract class BaseView extends FrameLayout {
 
             if (largeScreenLayout == Configuration.SCREENLAYOUT_SIZE_LARGE ||
                     xLargeScreenLayout == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
-                int densityDpi = context.getResources().getDisplayMetrics().densityDpi;
-                if (densityDpi == DisplayMetrics.DENSITY_DEFAULT ||
-                        densityDpi == DisplayMetrics.DENSITY_HIGH ||
-                        densityDpi == DisplayMetrics.DENSITY_TV ||
-                        densityDpi == DisplayMetrics.DENSITY_XHIGH) {
+
+                DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+                float yInches = metrics.heightPixels / metrics.ydpi;
+                float xInches = metrics.widthPixels / metrics.xdpi;
+                double diagonalInches = Math.sqrt(xInches * xInches + yInches * yInches);
+
+                if (diagonalInches >= 6.5) {
                     return true;
                 }
             }
