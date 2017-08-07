@@ -47,7 +47,7 @@
     <string name="app_cms_facebook_login_api_url">%1$s/identity/signin/facebook?site=%2$s</string>
 
     <!--AppCMS Google Login API-->
-    <string name="app_cms_google_login_api_url">%1$s/identity/signin/google</string>
+    <string name="app_cms_google_login_api_url">%1$s/identity/signin/google?device=android_phone&amp;site=%2$s</string>
 
     <!-- AppCMS User Identity API -->
     <string name="app_cms_user_identity_api_url">%1$s/identity/user?site=%2$s</string>

@@ -3392,7 +3392,7 @@ public class AppCMSPresenter {
             initiateItemPurchase();
         } else if (context != null) {
             String url = currentActivity.getString(R.string.app_cms_google_login_api_url,
-                    appCMSMain.getApiBaseUrl());
+                    appCMSMain.getApiBaseUrl(), appCMSMain.getInternalName());
 
             appCMSGoogleLoginCall.call(url, googleAccessToken,
                     googleLoginResponse -> {
