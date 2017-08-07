@@ -107,7 +107,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.isClickable = true;
 
         cullData(context, 0);
-        sortPlans();
+        sortPlanPricesInDescendingOrder();
     }
 
     @Override
@@ -211,7 +211,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         notifyDataSetChanged();
         adapterData = contentData;
 
-        sortPlans();
+        sortPlanPricesInDescendingOrder();
 
         notifyDataSetChanged();
         listView.setAdapter(this);
@@ -418,26 +418,15 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
     }
 
-    private void sortPlans() {
+    private void sortPlanPricesInDescendingOrder() {
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY && adapterData != null) {
 
-            /* To facilitate sorting by descending order,
-            *  the return statements in both 'if' conditionals have been switched
-            */
+            Collections.sort(adapterData,
+                    (datum1, datum2) -> Double.compare(datum1.getPlanDetails().get(0)
+                            .getRecurringPaymentAmount(), datum2.getPlanDetails().get(0)
+                            .getRecurringPaymentAmount()));
 
-            Collections.sort(adapterData, (datum1, datum2) -> {
-                if (datum1.getPlanDetails().get(0).getRecurringPaymentAmount()
-                        > datum2.getPlanDetails().get(0).getRecurringPaymentAmount()) {
-                    return -1;
-                }
-
-                if (datum1.getPlanDetails().get(0).getRecurringPaymentAmount()
-                        < datum2.getPlanDetails().get(0).getRecurringPaymentAmount()) {
-                    return 1;
-                }
-
-                return 0;
-            });
+            Collections.reverse(adapterData);
         }
     }
 
