@@ -818,9 +818,6 @@ public class AppCMSPresenter {
                                 currentActivity.getResources().getText(R.string.send_to)));
                     }
                 } else if (actionType == AppCMSActionType.CLOSE) {
-                    if (launchType == LaunchType.SUBSCRIBE) {
-                        launchType = LaunchType.LOGIN_AND_SIGNUP;
-                    }
                     sendCloseOthersAction(null, false);
                 } else if (actionType == AppCMSActionType.LOGIN) {
                     Log.d(TAG, "Login action selected: " + extraData[0]);
