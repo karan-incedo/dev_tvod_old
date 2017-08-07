@@ -25,6 +25,7 @@ import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -420,66 +421,25 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private void sortPlans() {
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY && adapterData != null) {
 
-            ContentDatum temp;
-            int count = 0;
-            while (!adapterData.get(0).getName().contains("Annual") && count < adapterData.size()) {
-                temp = adapterData.get(0);
-                adapterData.remove(0);
-                adapterData.add(temp);
-                count++;
-            }
+            /* To facilitate sorting by descending order,
+            *  the return statements in both 'if' conditionals have been switched
+            */
 
-            count = 0;
-            while (!adapterData.get(1).getName().contains("Premium") && count < adapterData.size()) {
-                temp = adapterData.get(1);
-                adapterData.remove(1);
-                adapterData.add(temp);
-                count++;
-            }
+            Collections.sort(adapterData, (datum1, datum2) -> {
+                if (datum1.getPlanDetails().get(0).getRecurringPaymentAmount()
+                        > datum2.getPlanDetails().get(0).getRecurringPaymentAmount()) {
+                    return -1;
+                }
 
-            count = 0;
-            while (!adapterData.get(2).getName().contains("Basic") && count < adapterData.size()) {
-                temp = adapterData.get(2);
-                adapterData.remove(2);
-                adapterData.add(temp);
-                count++;
-            }
+                if (datum1.getPlanDetails().get(0).getRecurringPaymentAmount()
+                        < datum2.getPlanDetails().get(0).getRecurringPaymentAmount()) {
+                    return 1;
+                }
+
+                return 0;
+            });
         }
     }
-
-//        public static class SortByPlanPrice {
-//        private static List<ContentDatum> data = new ArrayList<>();
-//        private double paymentAmount;
-//
-//        public SortByPlanPrice(List<ContentDatum> adapter) {
-//            data = adapter;
-//        }
-//
-//        private void initiateSort(int startIndex, int endIndex) {
-//
-//            int quickie;
-//
-//            if (startIndex < endIndex) {
-//                quickie = partition(startIndex, endIndex);
-//                initiateSort(startIndex, quickie);
-//                initiateSort(quickie + 1, endIndex);
-//            }
-//        }
-//
-//        private int partition(int start, int end) {
-//            int pivotIndex;
-//     FIXME: 8/4/17 Finish implementation (for quicksort based on recurringpayment for each plan).
-//            return 0;
-//        }
-//
-//        private List<ContentDatum> getSortedPlans() {
-//            return SortByPlanPrice.data;
-//        }
-//
-//        private void exchange(ContentDatum c1, ContentDatum c2) {
-//            //
-//        }
-//    }
 
     private void cullDataByAvailableUpgrades(List<SubscriptionPlan> availableSubscriptionPlans) {
         List<ContentDatum> updatedData = new ArrayList<>();
