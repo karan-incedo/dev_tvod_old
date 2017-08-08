@@ -1605,11 +1605,14 @@ public class ViewCreator {
                                 componentViewResult.componentView.setVisibility(View.INVISIBLE);
                                 viewEnabled = false;
                             }
-                        }
+                        }a
 
                         if (jsonValueKeyMap.get(component.getKey()) ==
                                 AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                            if (TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionSku(context))) {
+                            if (TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionSku(context)) ||
+                                    (!TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionProcessor(context)) &&
+                                    !appCMSPresenter.getActiveSubscriptionProcessor(context)
+                                            .equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly)))) {
                                 componentViewResult.componentView.setEnabled(false);
                                 componentViewResult.componentView.setVisibility(View.INVISIBLE);
                                 viewEnabled = false;
