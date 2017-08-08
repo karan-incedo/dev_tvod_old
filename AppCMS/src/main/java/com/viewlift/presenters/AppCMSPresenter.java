@@ -1876,7 +1876,7 @@ public class AppCMSPresenter {
         DownloadManager.Query query = new DownloadManager.Query();
         query.setFilterById(enqueueId);
         Cursor cursor = downloadManager.query(query);
-        if (enqueueId != 0L && cursor.moveToFirst()) {
+        if (enqueueId != 0L && cursor != null && cursor.moveToFirst()) {
             uriLocal = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
         }
         cursor.close();
@@ -1960,7 +1960,7 @@ public class AppCMSPresenter {
             public void run() {
 
                 Cursor c = downloadManager.query(query);
-                if (c.moveToFirst()) {
+                if (c != null && c.moveToFirst()) {
                     downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
                     long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
                     long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
