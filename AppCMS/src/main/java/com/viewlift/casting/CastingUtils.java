@@ -190,24 +190,4 @@ public class CastingUtils {
         return remoteParamKey;
     }
 
-    public static class OnCasting {
-        private int recommendedVideoIndex;
-        private long currentWatchedTime;
-
-        public int getRecommendedVideoIndex() {
-            return recommendedVideoIndex;
-        }
-
-        public void setRecommendedVideoIndex(int recommendedVideoIndex) {
-            this.recommendedVideoIndex = recommendedVideoIndex;
-        }
-
-        public long getCurrentWatchedTime() {
-            return currentWatchedTime;
-        }
-
-        public void setCurrentWatchedTime(long currentWatchedTime) {
-            this.currentWatchedTime = currentWatchedTime;
-        }
-    }
 }
