@@ -254,7 +254,7 @@
     <string name="app_cms_negative_confirmation_button_text">NO</string>
     <string name="download_file_prefix">file:///</string>
 
-    //cast receiver
+    <!-- cast receiver -->
     <string name="chromecast_receiver_app_id">0974224E</string>
     <string name="app_cms_signup_invalid_email_and_password_message">Please enter a valid email and password.</string>
     <string name="app_cms_signup_invalid_email_message">Please enter a valid email.</string>

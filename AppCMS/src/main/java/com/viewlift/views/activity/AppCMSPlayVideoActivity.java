@@ -49,7 +49,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     private String hlsUrl;
     private String videoImageUrl;
     private String filmId;
-
+    private String primaryCategory;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,7 +140,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 String bgColor = binder.getBgColor();
                 int playIndex = binder.getCurrentPlayingVideoIndex();
                 long watchedTime = gist.getWatchedTime();
-                String primaryCategory = gist.getPrimaryCategory().getTitle();
+                if(gist.getPrimaryCategory()!=null && gist.getPrimaryCategory().getTitle()!=null)
+                 primaryCategory = gist.getPrimaryCategory().getTitle();
                 boolean playAds = binder.isPlayAds();
                 relateVideoIds = binder.getRelateVideoIds();
                 currentlyPlayingIndex = binder.getCurrentPlayingVideoIndex();

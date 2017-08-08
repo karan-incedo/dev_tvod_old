@@ -11,28 +11,21 @@ import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.media.MediaRouter;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.ActionItemTarget;
-import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.cast.CastDevice;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
-import com.google.android.gms.cast.framework.CastState;
-import com.google.android.gms.cast.framework.CastStateListener;
-import com.google.android.gms.cast.framework.IntroductoryOverlay;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.roku.dialog.CastChooserDialog;
 import com.viewlift.casting.roku.dialog.CastDisconnectDialog;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 
 import java.util.List;
@@ -58,7 +51,7 @@ public class CastServiceProvider {
     private AppCMSPresenter appCMSPresenter;
     private ShowcaseView mShowCaseView;
 
-    public CastServiceProvider(Activity activity) {
+    private CastServiceProvider(Activity activity) {
         this.mContext = activity;
         setCasting();
 
@@ -79,7 +72,6 @@ public class CastServiceProvider {
         initChromecast();
     }
 
-    private CastStateListener mCastStateListener;
 
     private void initChromecast() {
 
@@ -118,7 +110,7 @@ public class CastServiceProvider {
         mCastHelper.setCastDiscovery();
 
         if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().isDefault()) {
-            Log.d(this.getClass().getName(), "This is a default route");
+            Log.d(TAG, "This is a default route");
             mCastHelper.mSelectedDevice = null;
         } else if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().getConnectionState()
                 == MediaRouter.RouteInfo.CONNECTION_STATE_CONNECTED) {
@@ -131,7 +123,6 @@ public class CastServiceProvider {
     public boolean playChromeCastPlaybackIfCastConnected() {
         boolean isConnected = false;
         if (mCastHelper.isRemoteDeviceConnected()) {
-
             launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
             isConnected = true;
         }
@@ -245,22 +236,19 @@ public class CastServiceProvider {
     public void showIntroOverLay() {
 
         if (mMediaRouteButton != null && mActivity != null) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Target target = new ViewTarget(mMediaRouteButton.getId(), mActivity);
-                    mShowCaseView = new ShowcaseView.Builder(mActivity)
-                            .setTarget(target) //Here is where you supply the id of the action bar item you want to display
-                            .setContentText(R.string.app_cast_overlay_text)
-                            .build();
+            new Handler().postDelayed(() -> {
+                Target target = new ViewTarget(mMediaRouteButton.getId(), mActivity);
+                mShowCaseView = new ShowcaseView.Builder(mActivity)
+                        .setTarget(target) //Here is where you supply the id of the action bar item you want to display
+                        .setContentText(R.string.app_cast_overlay_text)
+                        .build();
 
-                    mShowCaseView.forceTextPosition(ShowcaseView.ABOVE_SHOWCASE);
-                    mShowCaseView.setStyle(R.style.CustomShowcaseTheme);
+                mShowCaseView.forceTextPosition(ShowcaseView.ABOVE_SHOWCASE);
+                mShowCaseView.setStyle(R.style.CustomShowcaseTheme);
 
-                    mShowCaseView.show();
-                    mShowCaseView.invalidate();
-                }
-            },500);
+                mShowCaseView.show();
+                mShowCaseView.invalidate();
+            }, 500);
 
         }
     }
@@ -272,7 +260,6 @@ public class CastServiceProvider {
             isVisible = true;
             ((ViewGroup) mActivity.getWindow().getDecorView()).removeView(mShowCaseView);
             mShowCaseView.hide();
-
             mShowCaseView = null;
         }
         return isVisible;
@@ -298,9 +285,7 @@ public class CastServiceProvider {
             castChooserDialog.dismiss();
         }
 
-        if (mCastHelper.isCastDeviceAvailable)
-
-        {
+        if (mCastHelper.isCastDeviceAvailable) {
             if (mCastHelper.isRemoteDeviceConnected() || (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null)) {
                 castAnimDrawable.stop();
                 Drawable selectedImageDrawable = mActivity.getResources().getDrawable(R.drawable.toolbar_cast_connected, null);
@@ -313,20 +298,15 @@ public class CastServiceProvider {
             }
         }
 
-        mMediaRouteButton.setOnClickListener(new View.OnClickListener()
+        mMediaRouteButton.setOnClickListener(v -> {
+            castDisconnectDialog = new CastDisconnectDialog(mActivity);
 
-        {
-            @Override
-            public void onClick(View v) {
-                castDisconnectDialog = new CastDisconnectDialog(mActivity);
-
-                if (mCastHelper.mSelectedDevice == null && mActivity != null) {
-                    castChooserDialog.setRoutes(mCastHelper.routes);
-                    castChooserDialog.show();
-                } else if (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null && mActivity != null) {
-                    castDisconnectDialog.setToBeDisconnectDevice(mCastHelper.mMediaRouter);
-                    castDisconnectDialog.show();
-                }
+            if (mCastHelper.mSelectedDevice == null && mActivity != null) {
+                castChooserDialog.setRoutes(mCastHelper.routes);
+                castChooserDialog.show();
+            } else if (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null && mActivity != null) {
+                castDisconnectDialog.setToBeDisconnectDevice(mCastHelper.mMediaRouter);
+                castDisconnectDialog.show();
             }
         });
     }
