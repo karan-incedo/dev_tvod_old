@@ -1950,7 +1950,14 @@ public class AppCMSPresenter {
                                                      AppCMSPresenter presenter,
                                                      final Action1<UserVideoDownloadStatus> responseAction,
                                                      String userId) {
-        long videoId = realmController.getDownloadByIdBelongstoUser(filmId, userId).getVideoId_DM();
+        DownloadVideoRealm downloadVideoRealm=realmController.getDownloadByIdBelongstoUser(filmId, userId);
+
+
+
+        if (downloadVideoRealm==null){  // fix for JIRA ticket SVFA-1419
+            return;
+        }
+           long videoId=downloadVideoRealm.getVideoId_DM();
 
         DownloadManager.Query query = new DownloadManager.Query();
         query.setFilterById(videoId);
@@ -1970,7 +1977,7 @@ public class AppCMSPresenter {
                     long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
                     int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
                     Log.d(TAG, "download progress =" + downloaded + " total-> " + totalSize + " " + downloadPercent);
-                    if (downloaded >= totalSize || downloadPercent > 100) {
+                    if (downloaded >= totalSize || downloadPercent > 100 ) {
                         if (currentActivity != null && isUserLoggedIn(currentActivity))
                             currentActivity.runOnUiThread(() -> appCMSUserDownloadVideoStatusCall
                                     .call(filmId, presenter, responseAction, getLoggedInUser(currentActivity)));

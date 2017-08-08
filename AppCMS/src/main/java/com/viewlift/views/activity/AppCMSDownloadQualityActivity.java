@@ -39,9 +39,11 @@ public class AppCMSDownloadQualityActivity extends AppCompatActivity {
         handoffReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-
-                Log.d(TAG, "Closing activity");
-                finish();
+               if (intent.getBooleanExtra(getString(R.string.close_self_key),true)) {
+                    Log.d(TAG, "Closing activity");
+                    finish();
+                }
+                //finish();
             }
         };
 
