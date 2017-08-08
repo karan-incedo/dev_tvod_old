@@ -408,7 +408,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     if (adapterData.get(i).getId().equals(currentSubscriptionSku)) {
                         adapterData.remove(i);
                         cullData(context, count + 1);
-                    } else if ((float) adapterData.get(0).getPlanDetails().get(0).getRecurringPaymentAmount() <=
+                    } else if ((float) adapterData.get(i).getPlanDetails().get(0).getRecurringPaymentAmount() <=
                             currentSubscriptionPrice) {
                         adapterData.remove(i);
                         cullData(context, count + 1);
