@@ -39,7 +39,6 @@ import android.util.Log;
 import android.util.LruCache;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethod;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -155,11 +154,8 @@ import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
-import com.viewlift.views.fragments.AppCMSEditProfileFragment;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
-import com.viewlift.views.fragments.AppCMSResetPasswordFragment;
-import com.viewlift.views.fragments.AppCMSSearchFragment;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -3602,7 +3598,7 @@ public class AppCMSPresenter {
             navigateToHomeToRefresh = true;
             launchNavigationPage();
 
-            CastHelper.getInstance(currentActivity.getApplicationContext()).castingLogout();
+            CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
             AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser(currentActivity));
         }
     }

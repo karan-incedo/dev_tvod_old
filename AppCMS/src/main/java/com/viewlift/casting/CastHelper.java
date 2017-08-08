@@ -58,10 +58,10 @@ public class CastHelper {
     private List<String> listRelatedVideosId;
     private List<String> listCompareRelatedVideosId;
 
-    public MediaRouteSelector mMediaRouteSelector;
+    private MediaRouteSelector mMediaRouteSelector;
     private MyMediaRouterCallback mMediaRouterCallback;
     private AppCMSPresenter appCMSPresenterComponenet;
-    public String appName;
+    private String appName;
     public List<Object> routes = new ArrayList<>();
     public boolean isCastDeviceAvailable = false;
     public boolean isCastDeviceConnected = false;
@@ -122,6 +122,7 @@ public class CastHelper {
             this.currentWatchedTime = currentWatchedTime;
         }
     }
+
 
     public void setCastDiscovery() {
         if (CastingUtils.IS_CHROMECAST_ENABLE) {
@@ -314,15 +315,8 @@ public class CastHelper {
             }
 
 
-            if (relateVideoId == null && binderPlayScreen != null) {
-                videoUrl = CastingUtils.getPlayingUrl(binderPlayScreen.getContentData());
-                if (videoUrl != null && !TextUtils.isEmpty(videoUrl)) {
-                    lauchSingeRemoteMedia(binderPlayScreen, videoUrl, filmId, currentPosition);
-                }else{
-                    CastingUtils.isMediaQueueLoaded = true;
-
-                }
-
+            if (relateVideoId == null && binderPlayScreen != null && CastingUtils.getPlayingUrl(binderPlayScreen.getContentData()) != null && !TextUtils.isEmpty(CastingUtils.getPlayingUrl(binderPlayScreen.getContentData()))) {
+                launchSingeRemoteMedia(binderPlayScreen, CastingUtils.getPlayingUrl(binderPlayScreen.getContentData()), filmId, currentPosition);
             } else {
                 callRelatedVideoData();
             }
@@ -348,13 +342,13 @@ public class CastHelper {
             }
         }
         if (videoUrl != null && !TextUtils.isEmpty(videoUrl)) {
-            lauchSingeRemoteMedia(binder, videoUrl, filmId, currentPosition);
+            launchSingeRemoteMedia(binder, videoUrl, filmId, currentPosition);
         }
 
     }
 
 
-    private void lauchSingeRemoteMedia(AppCMSVideoPageBinder binder, String videoPlayUrl, String filmId, long currentPosition) {
+    private void launchSingeRemoteMedia(AppCMSVideoPageBinder binder, String videoPlayUrl, String filmId, long currentPosition) {
 
         if (binder != null && binder.getContentData() != null && binder.getContentData().getGist() != null) {
             if (binder.getContentData().getGist().getPermalink() != null) {
@@ -633,6 +627,7 @@ public class CastHelper {
         });
     }
 
+
     private void castMediaListToRemoteLocation() {
         CastingUtils.isMediaQueueLoaded = true;
         if (getRemoteMediaClient() != null && listRelatedVideosDetails != null && listRelatedVideosDetails.size() > 0) {
@@ -649,9 +644,8 @@ public class CastHelper {
 
             videoUrl = CastingUtils.getPlayingUrl(binderPlayScreen.getContentData());
             if (videoUrl != null && !TextUtils.isEmpty(videoUrl)) {
-                lauchSingeRemoteMedia(binderPlayScreen, videoUrl, startingFilmId, currentMediaPosition);
+                launchSingeRemoteMedia(binderPlayScreen, videoUrl, startingFilmId, currentMediaPosition);
             }
-
         }
     }
 
@@ -828,7 +822,7 @@ public class CastHelper {
         return i;
     }
 
-    public void castingLogout() {
+    public void disconnectChromecastOnLogout() {
         if (CastContext.getSharedInstance(mAppContext).getSessionManager() != null) {
 
             try {
@@ -846,10 +840,6 @@ public class CastHelper {
         }
     }
 
-    public void stopPlayback() {
-        if (getRemoteMediaClient() != null) {
-            getRemoteMediaClient().stop();
-        }
-    }
+
 }
 
