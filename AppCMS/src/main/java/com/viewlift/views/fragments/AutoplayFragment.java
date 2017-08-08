@@ -160,7 +160,7 @@ public class AutoplayFragment extends Fragment {
             @Override
             public void onTick(long millisUntilFinished) {
                 if (isAdded() && isVisible() && tvCountdown != null) {
-                    int quantity = (int) (millisUntilFinished / 1000) - 1;
+                    int quantity = (int) (millisUntilFinished / 1000);
                     tvCountdown.setText(getResources().getQuantityString(R.plurals.countdown_seconds,
                             quantity, quantity));
                 }
