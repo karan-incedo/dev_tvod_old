@@ -1431,54 +1431,54 @@ public class AppCMSPresenter {
                 Intent googlePlayStoreCancelIntent = new Intent(Intent.ACTION_VIEW,
                         Uri.parse(currentActivity.getString(R.string.google_play_store_subscriptions_url)));
                 currentActivity.startActivity(googlePlayStoreCancelIntent);
-            }
 
-            if (currentActivity != null) {
-                if (!TextUtils.isEmpty(getActiveSubscriptionSku(currentActivity))) {
-                    SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
-                    subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
-                    subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
-                    subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
-                    subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency(currentActivity));
-                    subscriptionRequest.setPlanIdentifier(getActiveSubscriptionSku(currentActivity));
-                    subscriptionRequest.setPlanId(getActiveSubscriptionId(currentActivity));
-                    subscriptionRequest.setUserId(getLoggedInUser(currentActivity));
-                    subscriptionRequest.setReceipt(getActiveSubscriptionReceipt(currentActivity));
+                if (currentActivity != null) {
+                    if (!TextUtils.isEmpty(getActiveSubscriptionSku(currentActivity))) {
+                        SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
+                        subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
+                        subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
+                        subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
+                        subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency(currentActivity));
+                        subscriptionRequest.setPlanIdentifier(getActiveSubscriptionSku(currentActivity));
+                        subscriptionRequest.setPlanId(getActiveSubscriptionId(currentActivity));
+                        subscriptionRequest.setUserId(getLoggedInUser(currentActivity));
+                        subscriptionRequest.setReceipt(getActiveSubscriptionReceipt(currentActivity));
 
-                    Log.d(TAG, "Subscription request: " + gson.toJson(subscriptionRequest, SubscriptionRequest.class));
+                        Log.d(TAG, "Subscription request: " + gson.toJson(subscriptionRequest, SubscriptionRequest.class));
 
-                    try {
-                        appCMSSubscriptionPlanCall.call(
-                                currentActivity.getString(R.string.app_cms_cancel_subscription_api_url,
-                                        appCMSMain.getApiBaseUrl(),
-                                        appCMSMain.getInternalName(),
-                                        currentActivity.getString(R.string.app_cms_subscription_platform_key)),
-                                R.string.app_cms_subscription_plan_cancel_key,
-                                subscriptionRequest,
-                                apikey,
-                                getAuthToken(currentActivity),
-                                result -> {
-                                },
-                                appCMSSubscriptionPlanResults -> {
-                                    sendCloseOthersAction(null, false);
-                                    showDialog(DialogType.CANCEL_SUBSCRIPTION,
-                                            currentActivity.getString(R.string.app_cms_cancel_subscription_confirmation_message),
-                                            false,
-                                            null);
+                        try {
+                            appCMSSubscriptionPlanCall.call(
+                                    currentActivity.getString(R.string.app_cms_cancel_subscription_api_url,
+                                            appCMSMain.getApiBaseUrl(),
+                                            appCMSMain.getInternalName(),
+                                            currentActivity.getString(R.string.app_cms_subscription_platform_key)),
+                                    R.string.app_cms_subscription_plan_cancel_key,
+                                    subscriptionRequest,
+                                    apikey,
+                                    getAuthToken(currentActivity),
+                                    result -> {
+                                    },
+                                    appCMSSubscriptionPlanResults -> {
+                                        sendCloseOthersAction(null, false);
+                                        showDialog(DialogType.CANCEL_SUBSCRIPTION,
+                                                currentActivity.getString(R.string.app_cms_cancel_subscription_confirmation_message),
+                                                false,
+                                                null);
 
-                                    AppsFlyerUtils.subscriptionEvent(currentActivity,
-                                            false,
-                                            currentActivity.getString(R.string.app_cms_appsflyer_dev_key),
-                                            String.valueOf(appCMSSubscriptionPlanResults.getPlanDetails()
-                                                    .get(0).getRecurringPaymentAmount()),
-                                            subscriptionRequest.getPlanId(),
-                                            subscriptionRequest.getCurrencyCode());
-                                },
-                                currentUserPlan -> {
+                                        AppsFlyerUtils.subscriptionEvent(currentActivity,
+                                                false,
+                                                currentActivity.getString(R.string.app_cms_appsflyer_dev_key),
+                                                String.valueOf(appCMSSubscriptionPlanResults.getPlanDetails()
+                                                        .get(0).getRecurringPaymentAmount()),
+                                                subscriptionRequest.getPlanId(),
+                                                subscriptionRequest.getCurrencyCode());
+                                    },
+                                    currentUserPlan -> {
 
-                                });
-                    } catch (IOException e) {
-                        Log.e(TAG, "Failed to update user subscription status");
+                                    });
+                        } catch (IOException e) {
+                            Log.e(TAG, "Failed to update user subscription status");
+                        }
                     }
                 }
             }
