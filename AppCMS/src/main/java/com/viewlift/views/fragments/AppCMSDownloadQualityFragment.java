@@ -109,7 +109,6 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
 
             RecyclerView listDownloadQuality = (RecyclerView) pageView.findViewById(R.id.download_quality_selection_list);
             Button continueButton = (Button) pageView.findViewById(R.id.download_quality_continue_button);
-            Button cancelButton = (Button) pageView.findViewById(R.id.download_quality_cancel_button);
 
             ((AppCMSDownloadQualityAdapter) listDownloadQuality.getAdapter()).setItemClickListener(this);
 
@@ -122,8 +121,6 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
                 }
                 getActivity().finish();
             });
-
-            cancelButton.setOnClickListener(v -> getActivity().finish());
 
             pageView.setBackgroundColor(Color.TRANSPARENT);
         }

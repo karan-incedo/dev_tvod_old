@@ -1574,17 +1574,9 @@ public class ViewCreator {
                         componentViewResult.componentView.setId(R.id.autoplay_play_button);
                         break;
                     case PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY:
-                        Log.e(TAG, "PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY  " + component.getAction());
                         componentViewResult.componentView.setOnClickListener(v -> {
-                            if (!appCMSPresenter.launchButtonSelectedAction(null,
-                                    component.getAction(),
-                                    null,
-                                    null,
-                                    null,
-                                    false,
-                                    0,
-                                    null)) {
-                                Log.e(TAG, "Could not launch action: " +
+                            if (!appCMSPresenter.sendCloseOthersAction(null, true)){
+                                Log.e(TAG, "Could not perform close action: " +
                                         " action: " +
                                         component.getAction());
                             }
@@ -1594,11 +1586,7 @@ public class ViewCreator {
                     case PAGE_DOWNLOAD_QUALITY_CONTINUE_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.download_quality_continue_button);
                         break;
-                        
-                    case PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY:
-                         componentViewResult.componentView.setId(R.id.download_quality_cancel_button);
-                         break;
-                        
+
                     default:
                         boolean viewEnabled = true;
                         if (jsonValueKeyMap.get(component.getKey()) ==
