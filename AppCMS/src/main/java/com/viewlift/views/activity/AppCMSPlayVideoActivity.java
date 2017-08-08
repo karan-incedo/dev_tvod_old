@@ -140,10 +140,14 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 String bgColor = binder.getBgColor();
                 int playIndex = binder.getCurrentPlayingVideoIndex();
                 long watchedTime = gist.getWatchedTime();
-                String primaryCategory = gist.getPrimaryCategory().getTitle();
                 boolean playAds = binder.isPlayAds();
                 relateVideoIds = binder.getRelateVideoIds();
                 currentlyPlayingIndex = binder.getCurrentPlayingVideoIndex();
+                String primaryCategory = null;
+                if (gist.getPrimaryCategory() != null
+                        && !TextUtils.isEmpty(gist.getPrimaryCategory().getTitle())) {
+                    primaryCategory = gist.getPrimaryCategory().getTitle();
+                }
 
                 if (!TextUtils.isEmpty(bgColor)) {
                     appCMSPlayVideoPageContainer.setBackgroundColor(Color.parseColor(bgColor));
