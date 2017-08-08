@@ -32,6 +32,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -1891,22 +1894,14 @@ public class ViewCreator {
                                 component.getLayout(),
                                 ViewGroup.LayoutParams.WRAP_CONTENT);
                         if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
-                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                    moduleAPI.getContentData().get(0).getGist().getPosterImageUrl(),
-                                    viewWidth,
-                                    viewHeight);
                             Glide.with(context)
-                                    .load(imageUrl)
+                                    .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
                                     .override(viewWidth, viewHeight)
                                     .centerCrop()
                                     .into((ImageView) componentViewResult.componentView);
                         } else if (viewWidth > 0) {
-                            String videoImageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                    moduleAPI.getContentData().get(0).getGist().getVideoImageUrl(),
-                                    viewWidth,
-                                    viewHeight);
                             Glide.with(context)
-                                    .load(videoImageUrl)
+                                    .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                     .override(viewWidth, viewHeight)
                                     .centerCrop()
                                     .into((ImageView) componentViewResult.componentView);
