@@ -158,6 +158,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 fontColor,
                                 title,
                                 permaLink,
+                                binder.isTrailer(),
                                 hlsUrl,
                                 filmId,
                                 adsUrl,
