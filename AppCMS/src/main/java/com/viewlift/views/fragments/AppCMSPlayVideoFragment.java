@@ -92,12 +92,11 @@ public class AppCMSPlayVideoFragment extends Fragment
                     castPlayPosition = videoPlayerView.getCurrentPosition();
                 }
 
-
                 onClosePlayerEvent.onRemotePlayback(castPlayPosition,
                         castingModeChromecast,
                         sentBeaconPlay,
                         onApplicationEnded -> {
-                            System.out.println("on callback subscribe");
+
                         });
             }
         }
