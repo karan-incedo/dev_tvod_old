@@ -205,7 +205,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
-                    if (!handlingClose) {
+                    boolean closeSelf = intent.getBooleanExtra(getString(R.string.close_self_key),
+                            false);
+                    if (closeSelf && !handlingClose && appCMSBinderStack.size() > 1) {
                         handlingClose = true;
                         handleCloseAction();
                         for (String appCMSBinderKey : appCMSBinderStack) {
@@ -552,8 +554,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
             Log.d(TAG, "Back pressed - handling nav bar");
             handleNavbar(appCMSBinderMap.get(appCMSBinderStack.peek()));
-            Log.d(TAG, "Resetting previous AppCMS data: "
-                    + appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName());
+            if (appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName() != null) {
+                Log.d(TAG, "Resetting previous AppCMS data: "
+                        + appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName());
+            }
+
         }
 
         if (shouldPopStack(null) || closeActionPage) {
@@ -607,7 +612,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             return ((!TextUtils.isEmpty(newPageId) && appCMSPresenter.isPagePrimary(newPageId)) &&
                     !appCMSPresenter.isPagePrimary(appCMSBinderStack.peek()) &&
                     !waitingForSubscriptionFinalization() &&
-                    !onlyOneUserPageOnStack(newPageId));
+                    !atMostOneUserPageOnTopStack(newPageId));
         }
         return false;
     }
@@ -622,15 +627,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private boolean waitingForSubscriptionFinalization() {
         return (appCMSPresenter.isViewPlanPage(appCMSBinderStack.peek()) &&
-            !appCMSPresenter.isUserSubscribed(this));
+                !appCMSPresenter.isUserSubscribed(this));
     }
 
-    private boolean onlyOneUserPageOnStack(String newPageId) {
-        return ((newPageId == null &&
-                appCMSPresenter.isPageUser(appCMSBinderStack.peek())) ||
-                (newPageId != null &&
-                        (!appCMSPresenter.isPageUser(newPageId) ||
-                                !appCMSPresenter.isPageUser(appCMSBinderStack.peek()))));
+    private boolean atMostOneUserPageOnTopStack(String newPageId) {
+        return (newPageId == null ||
+                (appCMSPresenter.isPageUser(appCMSBinderStack.peek()) &&
+                        !appCMSPresenter.isPageUser(newPageId)) ||
+                (!appCMSPresenter.isPageUser(appCMSBinderStack.peek())) &&
+                        appCMSPresenter.isPageUser(newPageId));
     }
 
     private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder) {
@@ -654,7 +659,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 case NAVIGATION:
                     appCMSPageFragment =
                             AppCMSNavItemsFragment.newInstance(this,
-                                   appCMSBinder,
+                                    appCMSBinder,
                                     Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
                                     Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
                                     Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
@@ -847,12 +852,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
             int i = 0;
             while (((((i < distanceFromStackTop &&
-                            (!isBinderStackEmpty() &&
+                    (!isBinderStackEmpty() &&
                             !isBinderStackTopNull() &&
-                            !onlyOneUserPageOnStack(appCMSBinder.getPageId()) &&
+                            !atMostOneUserPageOnTopStack(appCMSBinder.getPageId()) &&
                             !leavingExtraPage)) &&
-                            ((!leavingExtraPage && shouldPopStack(appCMSBinder.getPageId())) || configurationChanged)) ||
-                            (appCMSBinder.shouldSendCloseAction() &&
+                    ((!leavingExtraPage && shouldPopStack(appCMSBinder.getPageId())) || configurationChanged)) ||
+                    (appCMSBinder.shouldSendCloseAction() &&
                             appCMSBinderStack.size() > 1 &&
                             i < appCMSBinderStack.size())))) {
                 Log.d(TAG, "Popping stack to getList to page item");
@@ -862,7 +867,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                 }
                 if ((i < distanceFromStackTop - 1) ||
-                        (!configurationChanged && !onlyOneUserPageOnStack(appCMSBinder.getPageId()))) {
+                        (!configurationChanged && !atMostOneUserPageOnTopStack(appCMSBinder.getPageId()))) {
                     handleBack(true,
                             false,
                             false,
@@ -926,7 +931,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                     case NONE:
                         if (poppedStack) {
-                            appCMSBinderStack.push(appCMSBinder.getPageId());
+                            if (appCMSBinderStack.search(appCMSBinder.getPageId()) < 0) {
+                                appCMSBinderStack.push(appCMSBinder.getPageId());
+                            }
                             appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
                         }
                         break;
@@ -1250,14 +1257,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         if (module.getContentData() != null &&
                                 module.getContentData().size() > 0) {
                             appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
-                                        if (appCMSHistoryResult != null) {
-                                            AppCMSPageAPI historyAPI =
-                                                    appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
-                                            historyAPI.getModules().get(0).setId(module.getId());
-                                            appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);
-                                            appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
-                                        }
-                                    });
+                                if (appCMSHistoryResult != null) {
+                                    AppCMSPageAPI historyAPI =
+                                            appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
+                                    historyAPI.getModules().get(0).setId(module.getId());
+                                    appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);
+                                    appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
+                                }
+                            });
                             updatedHistory = true;
                         }
                     }

@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -191,6 +192,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                         switch (downloadVideoRealm.getDownloadStatus()) {
                             case STATUS_SUCCESSFUL:
                                 holder.appCMSContinueWatchingDownloadStatusButton.setImageResource(R.drawable.ic_downloaded);
+                                holder.appCMSContinueWatchingDownloadStatusButton.setOnClickListener(null);
                                 break;
                             default:
                                 holder.appCMSContinueWatchingDownloadStatusButton.setVisibility(View.INVISIBLE);
@@ -216,6 +218,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             }
             loadImage(holder.itemView.getContext(), imageUrl.toString(), holder.appCMSContinueWatchingVideoImage);
 
+
             holder.itemView.setOnClickListener(v -> {
                 if (isDownload) {
                     playDownloaded(contentDatum,
@@ -225,6 +228,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     click(adapterData.get(position));
                 }
             });
+            holder.appCMSContinueWatchingButton.setOnClickListener(null);
 
 
             holder.appCMSContinueWatchingVideoImage.setOnClickListener(v -> {
@@ -314,6 +318,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             holder.appCMSContinueWatchingSize.setVisibility(View.GONE);
             holder.appCMSContinueWatchingSeparatorView.setVisibility(View.GONE);
             holder.appCMSContinueWatchingProgress.setVisibility(View.GONE);
+            holder.appCMSContinueWatchingDownloadStatusButton.setVisibility(View.GONE);
 
         }
     }
@@ -363,10 +368,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     null);
             return;
         }
+        boolean networkAvailable = appCMSPresenter.isNetworkConnected();
         String permalink = data.getGist().getPermalink();
         String action = context.getString(R.string.app_cms_action_watchvideo_key);
         String title = data.getGist() != null ? data.getGist().getTitle() : null;
-        String hlsUrl = data.getGist() != null ? data.getGist().getLocalFileUrl() : null;
+        String hlsUrl = (data.getGist() != null && networkAvailable) ? data.getGist().getLocalFileUrl() : null;
         String[] extraData = new String[4];
         extraData[0] = permalink;
         extraData[1] = hlsUrl;
@@ -737,6 +743,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         View itemView;
+
+        @BindView(R.id.app_cms_continue_watching_button_view)
+        LinearLayout appCMSContinueWatchingButton;
 
         @BindView(R.id.app_cms_continue_watching_video_image)
         ImageButton appCMSContinueWatchingVideoImage;
