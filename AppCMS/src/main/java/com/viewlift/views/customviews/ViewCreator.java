@@ -1717,6 +1717,28 @@ public class ViewCreator {
                             break;
 
                         case PAGE_AUTOPLAY_MOVIE_DISCRIPTION_KEY:
+                            String autoplayVideoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
+                            if (autoplayVideoDescription != null) {
+                                autoplayVideoDescription = autoplayVideoDescription.trim();
+                            }
+                            if (!TextUtils.isEmpty(autoplayVideoDescription)) {
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(autoplayVideoDescription));
+                                } else {
+                                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(autoplayVideoDescription, Html.FROM_HTML_MODE_COMPACT));
+                                }
+                            } else if (!BaseView.isLandscape(context)) {
+                                componentViewResult.shouldHideComponent = true;
+                            }
+                            ViewTreeObserver viewTreeObserver = componentViewResult.componentView.getViewTreeObserver();
+                            ViewCreatorMultiLineLayoutListener viewCreatorMultiLineLayoutListener =
+                                    new ViewCreatorMultiLineLayoutListener(((TextView) componentViewResult.componentView),
+                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                            autoplayVideoDescription,
+                                            appCMSPresenter,
+                                            true);
+                            viewTreeObserver.addOnGlobalLayoutListener(viewCreatorMultiLineLayoutListener);
+                            break;
                         case PAGE_VIDEO_DESCRIPTION_KEY:
                             String videoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
                             if (videoDescription != null) {
