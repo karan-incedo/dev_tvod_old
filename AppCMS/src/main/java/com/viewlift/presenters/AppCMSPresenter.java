@@ -857,11 +857,15 @@ public class AppCMSPresenter {
                                     navigateToSubscriptionPlansPage(null, null);
                                 }
                             } else if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                                if (getActiveSubscriptionProcessor(currentActivity)
-                                        .equalsIgnoreCase(currentActivity.getString(R.string.subscription_web_payment_processor_friendly))) {
-                                    showEntitlementDialog(DialogType.CANNOT_CANCEL_SUBSCRIPTION);
-                                } else {
-                                    sendSubscriptionCancellation();
+                                if (getActiveSubscriptionProcessor(currentActivity) != null) {
+                                    if (getActiveSubscriptionProcessor(currentActivity)
+                                            .equalsIgnoreCase(currentActivity
+                                                    .getString(R.string.subscription_web_payment_processor_friendly))) {
+                                        showEntitlementDialog(DialogType.CANNOT_CANCEL_SUBSCRIPTION);
+                                    } else {
+                                        sendSubscriptionCancellation();
+//                                        navigateToSubscriptionPlansPage(null, null);
+                                    }
                                 }
                             }
                         }
@@ -1596,7 +1600,7 @@ public class AppCMSPresenter {
         VideoAssets videoAssets = new VideoAssets();
         List<Mpeg> mpegs = new ArrayList<>();
 
-        String renditionValueArray[] = {"360p", "720p", "1080p"};
+        String renditionValueArray[] = {"1080p", "720p", "360p"};
         for (String renditionValue : renditionValueArray) {
             Mpeg mpeg = new Mpeg();
             mpeg.setRenditionValue(renditionValue);
