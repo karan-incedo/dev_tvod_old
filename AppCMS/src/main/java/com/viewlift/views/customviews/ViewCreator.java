@@ -118,7 +118,7 @@ public class ViewCreator {
                                 AppCMSPresenter appCMSPresenter,
                                 List<String> modulesToIgnore) {
         for (ModuleList module : appCMSPageUI.getModuleList()) {
-            if (!modulesToIgnore.contains(module.getView())) {
+            if (!modulesToIgnore.contains(module.getView()) && pageView!=null) {
                 ModuleView moduleView = pageView.getModuleViewWithModuleId(module.getId());
                 boolean shouldHideModule = false;
                 if (moduleView != null) {
@@ -1331,11 +1331,12 @@ public class ViewCreator {
 
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
-                        String userId = appCMSPresenter.getLoggedInUser(context);
-                        appCMSPresenter.getUserVideoDownloadStatus(
-                                moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
-                                        moduleAPI.getContentData().get(0), userId), userId);
-
+                        if (moduleAPI.getContentData() != null) {
+                            String userId = appCMSPresenter.getLoggedInUser(context);
+                            appCMSPresenter.getUserVideoDownloadStatus(
+                                    moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
+                                            moduleAPI.getContentData().get(0), userId), userId);
+                        }
                         componentViewResult.componentView.setVisibility(View.VISIBLE);
 
                         break;
@@ -1607,11 +1608,11 @@ public class ViewCreator {
                     case PAGE_DOWNLOAD_QUALITY_CONTINUE_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.download_quality_continue_button);
                         break;
-                        
+
                     case PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY:
                          componentViewResult.componentView.setId(R.id.download_quality_cancel_button);
                          break;
-                        
+
                     default:
                         componentViewResult.componentView.setOnClickListener(v -> {
                             String[] extraData = new String[1];

@@ -106,6 +106,7 @@ import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSRefreshIdentityAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSVideoDetailAsyncTask;
 import com.viewlift.models.network.background.tasks.PostAppCMSLoginRequestAsyncTask;
 import com.viewlift.models.network.components.AppCMSAPIComponent;
@@ -666,16 +667,17 @@ public class AppCMSPresenter {
                                               int currentlyPlayingIndex,
                                               List<String> relateVideoIds) {
         boolean result = false;
-        if (!isNetworkConnected()) {
+        boolean isVideoOffline = false;
+        try {
+            isVideoOffline = Boolean.parseBoolean(extraData[3]);
+        } catch (Exception e) {
+            Log.e(TAG, e.getLocalizedMessage());
+        }
+        if (!isNetworkConnected() && !isVideoOffline) { //checking isVideoOffline here to fix SVFA-1431 in offline mode
             showDialog(DialogType.NETWORK, null, false, null);
         } else {
             final AppCMSActionType actionType = actionToActionTypeMap.get(action);
-            boolean isVideoOffline = false;
-            try {
-                isVideoOffline = Boolean.parseBoolean(extraData[3]);
-            } catch (Exception e) {
-                Log.e(TAG, e.getLocalizedMessage());
-            }
+
             Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
 
         /*This is to enable offline video playback even if Internet is not available*/
@@ -849,18 +851,24 @@ public class AppCMSPresenter {
                         if (extraData != null && extraData.length > 0) {
                             String key = extraData[0];
                             if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
-                                if (getActiveSubscriptionProcessor(currentActivity)
-                                        .equalsIgnoreCase(currentActivity.getString(R.string.subscription_web_payment_processor_friendly))) {
-                                    showEntitlementDialog(DialogType.CANNOT_UPGRADE_SUBSCRIPTION);
-                                } else {
-                                    navigateToSubscriptionPlansPage(null, null);
+                                if (getActiveSubscriptionProcessor(currentActivity) != null) {
+                                    if (getActiveSubscriptionProcessor(currentActivity)
+                                            .equalsIgnoreCase(currentActivity
+                                                    .getString(R.string.subscription_web_payment_processor_friendly))) {
+                                        showEntitlementDialog(DialogType.CANNOT_UPGRADE_SUBSCRIPTION);
+                                    } else {
+                                        navigateToSubscriptionPlansPage(null, null);
+                                    }
                                 }
                             } else if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                                if (getActiveSubscriptionProcessor(currentActivity)
-                                        .equalsIgnoreCase(currentActivity.getString(R.string.subscription_web_payment_processor_friendly))) {
-                                    showEntitlementDialog(DialogType.CANNOT_CANCEL_SUBSCRIPTION);
-                                } else {
-                                    sendSubscriptionCancellation();
+                                if (getActiveSubscriptionProcessor(currentActivity) != null) {
+                                    if (getActiveSubscriptionProcessor(currentActivity)
+                                            .equalsIgnoreCase(currentActivity
+                                                    .getString(R.string.subscription_web_payment_processor_friendly))) {
+                                        showEntitlementDialog(DialogType.CANNOT_CANCEL_SUBSCRIPTION);
+                                    } else {
+                                        sendSubscriptionCancellation();
+                                    }
                                 }
                             }
                         }
@@ -1595,7 +1603,7 @@ public class AppCMSPresenter {
         VideoAssets videoAssets = new VideoAssets();
         List<Mpeg> mpegs = new ArrayList<>();
 
-        String renditionValueArray[] = {"360p", "720p", "1080p"};
+        String renditionValueArray[] = {"1080p", "720p", "360p"};
         for (String renditionValue : renditionValueArray) {
             Mpeg mpeg = new Mpeg();
             mpeg.setRenditionValue(renditionValue);
@@ -1678,6 +1686,26 @@ public class AppCMSPresenter {
 
         try {
             String downloadURL;
+
+            if (contentDatum.getStreamingInfo() == null) {
+
+                String url = currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        contentDatum.getGist().getId(),
+                        appCMSMain.getSite());
+
+                GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
+
+                new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
+                    if (appCMSStreamingInfo != null) {
+                        contentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
+                        System.out.println("straming URL : " + appCMSStreamingInfo.getStreamingInfo().getVideoAssets().getMpeg().size());
+                    }
+                }).execute(param);
+
+                System.out.println("straming URL : " + url);
+
+            }
 
             int bitrate = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
 

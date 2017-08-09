@@ -87,7 +87,12 @@ public class AppCMSPlayVideoFragment extends Fragment
         public void setRemotePlayBack(int castingModeChromecast) {
             if (onClosePlayerEvent != null) {
                 pauseVideo();
-                onClosePlayerEvent.onRemotePlayback(videoPlayerView.getCurrentPosition(),
+                long castPlayPosition = watchedTime * SECS_TO_MSECS;
+                if (!isCastConnected) {
+                    castPlayPosition = videoPlayerView.getCurrentPosition();
+                }
+
+                onClosePlayerEvent.onRemotePlayback(castPlayPosition,
                         castingModeChromecast,
                         sentBeaconPlay,
                         onApplicationEnded -> {
@@ -313,7 +318,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         try {
             castProvider = CastServiceProvider.getInstance(getActivity());
             castProvider.setRemotePlaybackCallback(callBackRemotePlayback);
-            isCastConnected = castProvider.playChromeCastPlaybackIfCastConnected();
+            isCastConnected = castProvider.isCastingConnected();
+            castProvider.playChromeCastPlaybackIfCastConnected();
             if (isCastConnected) {
                 getActivity().finish();
             } else {
