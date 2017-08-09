@@ -408,8 +408,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             if (!TextUtils.isEmpty(currentSubscriptionSku)) {
                 List<ContentDatum> culledData = new ArrayList<>();
                 for (int i = 0; i < adapterData.size(); i++) {
-                    if ((float) adapterData.get(i).getPlanDetails().get(0).getRecurringPaymentAmount() <=
-                            currentSubscriptionPrice) {
+                    if (currentSubscriptionPrice < (float) adapterData.get(i).getPlanDetails().get(0).getRecurringPaymentAmount()) {
                         culledData.add(adapterData.get(i));
                     }
                 }
