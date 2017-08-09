@@ -2621,7 +2621,7 @@ public class AppCMSPresenter {
                     deeplinkSearchQuery);
             if (!TextUtils.isEmpty(previousPageId) &&
                     !TextUtils.isEmpty(previousPageName)) {
-                checkForExistingSubscription(previousPageId, previousPageName);
+                checkForExistingSubscription();
             }
 
             if (!launchSuccess) {
@@ -2631,7 +2631,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void checkForExistingSubscription(String previousPageId, String previousPageName) {
+    public void checkForExistingSubscription() {
         if (currentActivity != null) {
             Bundle activeSubs = null;
             try {
@@ -4328,8 +4328,14 @@ public class AppCMSPresenter {
     public boolean upgradesAvailableForUser(String userId) {
         List<SubscriptionPlan> availableUpgradesForUser =
                 availableUpgradesForUser(userId);
-        if (availableUpgradesForUser != null) {
-            return (availableUpgradesForUser.size() > 0);
+        float activeSubscriptionPrice = getActiveSubscriptionPrice(currentActivity);
+        if (availableUpgradesForUser != null && activeSubscriptionPrice != 0.0f) {
+            for (int i = 0; i < availableUpgradesForUser.size(); i++) {
+                if (activeSubscriptionPrice <
+                        availableUpgradesForUser.get(i).getSubscriptionPrice()) {
+                    return true;
+                }
+            }
         }
         return false;
     }
