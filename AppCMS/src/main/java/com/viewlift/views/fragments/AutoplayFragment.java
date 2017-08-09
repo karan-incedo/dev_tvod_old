@@ -147,7 +147,9 @@ public class AutoplayFragment extends Fragment {
                         public void onResourceReady(GlideDrawable resource,
                                                     GlideAnimation<? super GlideDrawable>
                                                             glideAnimation) {
-                            pageView.setBackground(resource);
+                            if (isAdded() && isVisible()) {
+                                pageView.setBackground(resource);
+                            }
                         }
                     });
         }
