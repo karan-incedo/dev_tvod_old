@@ -39,6 +39,10 @@ public class SignInResponse {
     @Expose
     String picture;
 
+    @SerializedName("isSubscribed")
+    @Expose
+    boolean isSubscribed;
+
     public String getAuthorizationToken() {
         return authorizationToken;
     }
@@ -93,5 +97,13 @@ public class SignInResponse {
 
     public void setPicture(String picture) {
         this.picture = picture;
+    }
+
+    public boolean isSubscribed() {
+        return isSubscribed;
+    }
+
+    public void setSubscribed(boolean subscribed) {
+        isSubscribed = subscribed;
     }
 }

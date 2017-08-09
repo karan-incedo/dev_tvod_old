@@ -228,6 +228,7 @@ public class AppCMSPresenter {
     private static final String ACTIVE_SUBSCRIPTION_PLAN_NAME = "active_subscription_plan_name_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PRICE_NAME = "active_subscription_plan_price_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PROCESSOR_NAME = "active_subscription_payment_processor_key";
+    private static final String IS_USER_SUBSCRIBED = "is_user_subscribed_pref_key";
 
     private static final String USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME = "user_download_quality_pref";
 
@@ -3107,7 +3108,7 @@ public class AppCMSPresenter {
     }
 
     public boolean isUserSubscribed(Context context) {
-        return getActiveSubscriptionSku(context) != null;
+        return getIsUserSubscribed(context);
     }
 
     public String getPngPosterPath(String fileName) {
@@ -3485,6 +3486,22 @@ public class AppCMSPresenter {
                     context.getSharedPreferences(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME, 0);
             return sharedPreferences.edit().putString(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME,
                     googleAccessToken).commit();
+        }
+        return false;
+    }
+
+    public boolean getIsUserSubscribed(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(IS_USER_SUBSCRIBED, 0);
+            return sharedPrefs.getBoolean(IS_USER_SUBSCRIBED, false);
+        }
+        return false;
+    }
+
+    public boolean setIsUserSubscribed(Context context, boolean userSubscribed) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(IS_USER_SUBSCRIBED, 0);
+            return sharedPrefs.edit().putBoolean(IS_USER_SUBSCRIBED, userSubscribed).commit();
         }
         return false;
     }
@@ -4685,6 +4702,7 @@ public class AppCMSPresenter {
                         setLoggedInUser(currentActivity, signInResponse.getUserId());
                         setLoggedInUserName(currentActivity, signInResponse.getName());
                         setLoggedInUserEmail(currentActivity, signInResponse.getEmail());
+                        setIsUserSubscribed(currentActivity, signInResponse.isSubscribed());
 
                         if (signup) {
                             AppsFlyerUtils.registrationEvent(currentActivity, signInResponse.getUserId(),
