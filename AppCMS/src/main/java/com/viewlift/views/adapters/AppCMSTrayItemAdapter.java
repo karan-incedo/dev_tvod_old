@@ -192,6 +192,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                         switch (downloadVideoRealm.getDownloadStatus()) {
                             case STATUS_SUCCESSFUL:
                                 holder.appCMSContinueWatchingDownloadStatusButton.setImageResource(R.drawable.ic_downloaded);
+                                holder.appCMSContinueWatchingDownloadStatusButton.setOnClickListener(null);
                                 break;
                             default:
                                 holder.appCMSContinueWatchingDownloadStatusButton.setVisibility(View.INVISIBLE);
@@ -317,6 +318,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             holder.appCMSContinueWatchingSize.setVisibility(View.GONE);
             holder.appCMSContinueWatchingSeparatorView.setVisibility(View.GONE);
             holder.appCMSContinueWatchingProgress.setVisibility(View.GONE);
+            holder.appCMSContinueWatchingDownloadStatusButton.setVisibility(View.GONE);
 
         }
     }
