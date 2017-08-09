@@ -554,8 +554,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
             Log.d(TAG, "Back pressed - handling nav bar");
             handleNavbar(appCMSBinderMap.get(appCMSBinderStack.peek()));
-            Log.d(TAG, "Resetting previous AppCMS data: "
-                    + appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName());
+            if (appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName() != null) {
+                Log.d(TAG, "Resetting previous AppCMS data: "
+                        + appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName());
+            }
+
         }
 
         if (shouldPopStack(null) || closeActionPage) {
@@ -624,7 +627,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private boolean waitingForSubscriptionFinalization() {
         return (appCMSPresenter.isViewPlanPage(appCMSBinderStack.peek()) &&
-            !appCMSPresenter.isUserSubscribed(this));
+                !appCMSPresenter.isUserSubscribed(this));
     }
 
     private boolean atMostOneUserPageOnTopStack(String newPageId) {
@@ -656,7 +659,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 case NAVIGATION:
                     appCMSPageFragment =
                             AppCMSNavItemsFragment.newInstance(this,
-                                   appCMSBinder,
+                                    appCMSBinder,
                                     Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
                                     Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
                                     Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
@@ -849,12 +852,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
             int i = 0;
             while (((((i < distanceFromStackTop &&
-                            (!isBinderStackEmpty() &&
+                    (!isBinderStackEmpty() &&
                             !isBinderStackTopNull() &&
                             !atMostOneUserPageOnTopStack(appCMSBinder.getPageId()) &&
                             !leavingExtraPage)) &&
-                            ((!leavingExtraPage && shouldPopStack(appCMSBinder.getPageId())) || configurationChanged)) ||
-                            (appCMSBinder.shouldSendCloseAction() &&
+                    ((!leavingExtraPage && shouldPopStack(appCMSBinder.getPageId())) || configurationChanged)) ||
+                    (appCMSBinder.shouldSendCloseAction() &&
                             appCMSBinderStack.size() > 1 &&
                             i < appCMSBinderStack.size())))) {
                 Log.d(TAG, "Popping stack to getList to page item");
@@ -1254,14 +1257,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         if (module.getContentData() != null &&
                                 module.getContentData().size() > 0) {
                             appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
-                                        if (appCMSHistoryResult != null) {
-                                            AppCMSPageAPI historyAPI =
-                                                    appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
-                                            historyAPI.getModules().get(0).setId(module.getId());
-                                            appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);
-                                            appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
-                                        }
-                                    });
+                                if (appCMSHistoryResult != null) {
+                                    AppCMSPageAPI historyAPI =
+                                            appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
+                                    historyAPI.getModules().get(0).setId(module.getId());
+                                    appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);
+                                    appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
+                                }
+                            });
                             updatedHistory = true;
                         }
                     }
