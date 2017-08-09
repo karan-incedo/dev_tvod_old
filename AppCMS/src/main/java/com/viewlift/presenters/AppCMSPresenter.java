@@ -818,7 +818,7 @@ public class AppCMSPresenter {
                                 currentActivity.getResources().getText(R.string.send_to)));
                     }
                 } else if (actionType == AppCMSActionType.CLOSE) {
-                    sendCloseOthersAction(null, false);
+                    sendCloseOthersAction(null, true);
                 } else if (actionType == AppCMSActionType.LOGIN) {
                     Log.d(TAG, "Login action selected: " + extraData[0]);
                     closeSoftKeyboard();
@@ -978,12 +978,14 @@ public class AppCMSPresenter {
                                                                                 appCMSPageAPIAction.sendCloseAction,
                                                                                 appCMSPageAPIAction.searchQuery,
                                                                                 ExtraScreenType.NONE);
-                                                                        Intent updatePageIntent =
-                                                                                new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                                                        updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                                                                args);
-                                                                        currentActivity.sendBroadcast(updatePageIntent);
-                                                                        dismissOpenDialogs(null);
+                                                                        if (args != null) {
+                                                                            Intent updatePageIntent =
+                                                                                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                                                            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                                                                    args);
+                                                                            currentActivity.sendBroadcast(updatePageIntent);
+                                                                            dismissOpenDialogs(null);
+                                                                        }
                                                                     }
                                                                 }
                                                             });
@@ -1010,12 +1012,14 @@ public class AppCMSPresenter {
                                                         this.sendCloseAction,
                                                         this.searchQuery,
                                                         ExtraScreenType.NONE);
-                                                Intent updatePageIntent =
-                                                        new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                                updatePageIntent.putExtra(
-                                                        currentActivity.getString(R.string.app_cms_bundle_key),
-                                                        args);
-                                                currentActivity.sendBroadcast(updatePageIntent);
+                                                if (args != null) {
+                                                    Intent updatePageIntent =
+                                                            new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                                    updatePageIntent.putExtra(
+                                                            currentActivity.getString(R.string.app_cms_bundle_key),
+                                                            args);
+                                                    currentActivity.sendBroadcast(updatePageIntent);
+                                                }
                                             }
                                         } else {
                                             sendStopLoadingPageAction();
@@ -1051,12 +1055,14 @@ public class AppCMSPresenter {
                     false,
                     null,
                     ExtraScreenType.NAVIGATION);
-            Intent updatePageIntent =
-                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-            updatePageIntent.putExtra(
-                    currentActivity.getString(R.string.app_cms_bundle_key),
-                    args);
-            currentActivity.sendBroadcast(updatePageIntent);
+            if (args != null) {
+                Intent updatePageIntent =
+                        new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                updatePageIntent.putExtra(
+                        currentActivity.getString(R.string.app_cms_bundle_key),
+                        args);
+                currentActivity.sendBroadcast(updatePageIntent);
+            }
 
             result = true;
         }
@@ -1246,12 +1252,14 @@ public class AppCMSPresenter {
                     false,
                     null,
                     ExtraScreenType.SEARCH);
-            Intent updatePageIntent =
-                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-            updatePageIntent.putExtra(
-                    currentActivity.getString(R.string.app_cms_bundle_key),
-                    args);
-            currentActivity.sendBroadcast(updatePageIntent);
+            if (args != null) {
+                Intent updatePageIntent =
+                        new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                updatePageIntent.putExtra(
+                        currentActivity.getString(R.string.app_cms_bundle_key),
+                        args);
+                currentActivity.sendBroadcast(updatePageIntent);
+            }
         }
     }
 
@@ -1282,12 +1290,14 @@ public class AppCMSPresenter {
                     false,
                     null,
                     ExtraScreenType.RESET_PASSWORD);
-            Intent updatePageIntent =
-                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-            updatePageIntent.putExtra(
-                    currentActivity.getString(R.string.app_cms_bundle_key),
-                    args);
-            currentActivity.sendBroadcast(updatePageIntent);
+            if (args != null) {
+                Intent updatePageIntent =
+                        new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                updatePageIntent.putExtra(
+                        currentActivity.getString(R.string.app_cms_bundle_key),
+                        args);
+                currentActivity.sendBroadcast(updatePageIntent);
+            }
         }
     }
 
@@ -1309,12 +1319,14 @@ public class AppCMSPresenter {
                     false,
                     null,
                     ExtraScreenType.EDIT_PROFILE);
-            Intent updatePageIntent =
-                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-            updatePageIntent.putExtra(
-                    currentActivity.getString(R.string.app_cms_bundle_key),
-                    args);
-            currentActivity.sendBroadcast(updatePageIntent);
+            if (args != null) {
+                Intent updatePageIntent =
+                        new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                updatePageIntent.putExtra(
+                        currentActivity.getString(R.string.app_cms_bundle_key),
+                        args);
+                currentActivity.sendBroadcast(updatePageIntent);
+            }
         }
     }
 
@@ -1461,7 +1473,7 @@ public class AppCMSPresenter {
                                     result -> {
                                     },
                                     appCMSSubscriptionPlanResults -> {
-                                        sendCloseOthersAction(null, false);
+                                        sendCloseOthersAction(null, true);
 
                                         AppsFlyerUtils.subscriptionEvent(currentActivity,
                                                 false,
@@ -2165,12 +2177,14 @@ public class AppCMSPresenter {
                                                 false,
                                                 null,
                                                 ExtraScreenType.NONE);
-                                        Intent updatePageIntent =
-                                                new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                        updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                                args);
-                                        currentActivity.sendBroadcast(updatePageIntent);
-                                        dismissOpenDialogs(null);
+                                        if (args != null) {
+                                            Intent updatePageIntent =
+                                                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                                    args);
+                                            currentActivity.sendBroadcast(updatePageIntent);
+                                            dismissOpenDialogs(null);
+                                        }
                                     }
                                 }
                             });
@@ -2211,11 +2225,13 @@ public class AppCMSPresenter {
                             null,
                             ExtraScreenType.NONE);
 
-                    Intent downloadPageIntent =
-                            new Intent(AppCMSPresenter
-                                    .PRESENTER_NAVIGATE_ACTION);
-                    downloadPageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key), args);
-                    currentActivity.sendBroadcast(downloadPageIntent);
+                    if (args != null) {
+                        Intent downloadPageIntent =
+                                new Intent(AppCMSPresenter
+                                        .PRESENTER_NAVIGATE_ACTION);
+                        downloadPageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key), args);
+                        currentActivity.sendBroadcast(downloadPageIntent);
+                    }
                 }
             }
         }
@@ -2322,12 +2338,14 @@ public class AppCMSPresenter {
                                         false,
                                         null,
                                         ExtraScreenType.NONE);
-                                Intent watchlistPageIntent =
-                                        new Intent(AppCMSPresenter
-                                                .PRESENTER_NAVIGATE_ACTION);
-                                watchlistPageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                        args);
-                                currentActivity.sendBroadcast(watchlistPageIntent);
+                                if (args != null) {
+                                    Intent watchlistPageIntent =
+                                            new Intent(AppCMSPresenter
+                                                    .PRESENTER_NAVIGATE_ACTION);
+                                    watchlistPageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                            args);
+                                    currentActivity.sendBroadcast(watchlistPageIntent);
+                                }
                             }
                         }
                     });
@@ -2539,12 +2557,14 @@ public class AppCMSPresenter {
                                         null,
                                         ExtraScreenType.NONE);
 
-                                Intent historyPageIntent =
-                                        new Intent(AppCMSPresenter
-                                                .PRESENTER_NAVIGATE_ACTION);
-                                historyPageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                        args);
-                                currentActivity.sendBroadcast(historyPageIntent);
+                                if (args != null) {
+                                    Intent historyPageIntent =
+                                            new Intent(AppCMSPresenter
+                                                    .PRESENTER_NAVIGATE_ACTION);
+                                    historyPageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                            args);
+                                    currentActivity.sendBroadcast(historyPageIntent);
+                                }
                             }
                         }
                     });
@@ -2882,12 +2902,14 @@ public class AppCMSPresenter {
                                                                     appCMSPageAPIAction.sendCloseAction,
                                                                     appCMSPageAPIAction.searchQuery,
                                                                     ExtraScreenType.NONE);
-                                                            Intent updatePageIntent =
-                                                                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                                            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                                                    args);
-                                                            currentActivity.sendBroadcast(updatePageIntent);
-                                                            dismissOpenDialogs(null);
+                                                            if (args != null) {
+                                                                Intent updatePageIntent =
+                                                                        new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                                                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                                                        args);
+                                                                currentActivity.sendBroadcast(updatePageIntent);
+                                                                dismissOpenDialogs(null);
+                                                            }
                                                         }
                                                     }
                                                 });
@@ -2930,12 +2952,14 @@ public class AppCMSPresenter {
                                                 this.sendCloseAction,
                                                 this.searchQuery,
                                                 ExtraScreenType.NONE);
-                                        Intent updatePageIntent =
-                                                new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                        updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                                args);
-                                        currentActivity.sendBroadcast(updatePageIntent);
-                                        dismissOpenDialogs(null);
+                                        if (args != null) {
+                                            Intent updatePageIntent =
+                                                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                                    args);
+                                            currentActivity.sendBroadcast(updatePageIntent);
+                                            dismissOpenDialogs(null);
+                                        }
                                     }
                                 }
                             } else {
@@ -3020,7 +3044,7 @@ public class AppCMSPresenter {
     public void launchErrorActivity(Activity activity, PlatformType platformType) {
         if (platformType == PlatformType.ANDROID) {
             try {
-                sendCloseOthersAction(null, true);
+                sendCloseOthersAction(null, false);
                 Intent errorIntent = new Intent(activity, AppCMSErrorActivity.class);
                 activity.startActivity(errorIntent);
             } catch (Exception e) {
@@ -4746,23 +4770,26 @@ public class AppCMSPresenter {
                                          boolean sendCloseAction,
                                          Uri searchQuery,
                                          ExtraScreenType extraScreenType) {
-        Bundle args = new Bundle();
-        AppCMSBinder appCMSBinder = getAppCMSBinder(activity,
-                appCMSPageUI,
-                appCMSPageAPI,
-                pageID,
-                pageName,
-                pagePath,
-                screenName,
-                loadFromFile,
-                appbarPresent,
-                fullscreenEnabled,
-                navbarPresent,
-                sendCloseAction,
-                searchQuery,
-                extraScreenType);
-        args.putBinder(activity.getString(R.string.app_cms_binder_key), appCMSBinder);
-        return args;
+        if (activity != null) {
+            Bundle args = new Bundle();
+            AppCMSBinder appCMSBinder = getAppCMSBinder(activity,
+                    appCMSPageUI,
+                    appCMSPageAPI,
+                    pageID,
+                    pageName,
+                    pagePath,
+                    screenName,
+                    loadFromFile,
+                    appbarPresent,
+                    fullscreenEnabled,
+                    navbarPresent,
+                    sendCloseAction,
+                    searchQuery,
+                    extraScreenType);
+            args.putBinder(activity.getString(R.string.app_cms_binder_key), appCMSBinder);
+            return args;
+        }
+        return null;
     }
 
     private Bundle getAutoplayActivityBundle(Activity activity,
@@ -5412,14 +5439,16 @@ public class AppCMSPresenter {
                                                 false,
                                                 this.searchQuery,
                                                 ExtraScreenType.NONE);
-                                        Intent updatePageIntent =
-                                                new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                        updatePageIntent.putExtra(
-                                                currentActivity.getString(R.string.app_cms_bundle_key),
-                                                args);
-                                        currentActivity.sendBroadcast(updatePageIntent);
+                                        if (args != null) {
+                                            Intent updatePageIntent =
+                                                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                            updatePageIntent.putExtra(
+                                                    currentActivity.getString(R.string.app_cms_bundle_key),
+                                                    args);
+                                            currentActivity.sendBroadcast(updatePageIntent);
 
-                                        setNavItemToCurrentAction(currentActivity);
+                                            setNavItemToCurrentAction(currentActivity);
+                                        }
                                     }
                                 } else {
                                     sendStopLoadingPageAction();
@@ -5459,12 +5488,14 @@ public class AppCMSPresenter {
                             false,
                             searchQuery,
                             ExtraScreenType.NONE);
-                    Intent updatePageIntent =
-                            new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                    updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                            args);
-                    currentActivity.sendBroadcast(updatePageIntent);
-                    setNavItemToCurrentAction(currentActivity);
+                    if (args != null) {
+                        Intent updatePageIntent =
+                                new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                        updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                args);
+                        currentActivity.sendBroadcast(updatePageIntent);
+                        setNavItemToCurrentAction(currentActivity);
+                    }
                 }
 
                 loadingPage = false;
@@ -5510,10 +5541,12 @@ public class AppCMSPresenter {
                 ExtraScreenType.NONE);
 
         try {
-            Intent appCMSIntent = new Intent(activity, Class.forName(tvHomeScreenPackage));
-            appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
-            appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            activity.startActivity(appCMSIntent);
+            if (args != null) {
+                Intent appCMSIntent = new Intent(activity, Class.forName(tvHomeScreenPackage));
+                appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
+                appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                activity.startActivity(appCMSIntent);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -5773,11 +5806,13 @@ public class AppCMSPresenter {
                                             this.sendCloseAction,
                                             this.searchQuery,
                                             ExtraScreenType.NONE);
-                                    Intent updatePageIntent =
-                                            new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                    updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                            args);
-                                    currentActivity.sendBroadcast(updatePageIntent);
+                                    if (args != null) {
+                                        Intent updatePageIntent =
+                                                new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                        updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                                args);
+                                        currentActivity.sendBroadcast(updatePageIntent);
+                                    }
                                 } else {
                                     sendStopLoadingPageAction();
                                 }
