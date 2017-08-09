@@ -263,9 +263,14 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 for (int i = 0; i < navigation.getNavigationPrimary().size(); i++) {
                     NavigationPrimary navigationPrimary = navigation.getNavigationPrimary().get(i);
                     if (navigationPrimary.getAccessLevels() != null) {
-                        if ((!userLoggedIn && navigationPrimary.getAccessLevels().getLoggedOut() ||
-                                userLoggedIn && navigationPrimary.getAccessLevels().getLoggedIn() ||
-                                !userSubscribed && !navigationPrimary.getAccessLevels().getSubscribed())) {
+                        if ((!userSubscribed && !navigationPrimary.getAccessLevels().getSubscribed()) &&
+                                (!userLoggedIn && navigationPrimary.getAccessLevels().getLoggedOut() ||
+                                        userLoggedIn && navigationPrimary.getAccessLevels().getLoggedIn())) {
+                            totalItemCount++;
+                            numPrimaryItems++;
+                        } else if ((!userLoggedIn && navigationPrimary.getAccessLevels().getLoggedOut() ||
+                                userLoggedIn && navigationPrimary.getAccessLevels().getLoggedIn()) &&
+                                navigationPrimary.getAccessLevels().getSubscribed()) {
                             totalItemCount++;
                             numPrimaryItems++;
                         }

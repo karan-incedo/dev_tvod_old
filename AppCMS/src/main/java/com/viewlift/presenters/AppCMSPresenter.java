@@ -3683,6 +3683,7 @@ public class AppCMSPresenter {
             setActiveSubscriptionReceipt(currentActivity, null);
             setRefreshToken(currentActivity, null);
             setAuthToken(currentActivity, null);
+            setIsUserSubscribed(currentActivity, false);
 
             sendUpdateHistoryAction();
 
