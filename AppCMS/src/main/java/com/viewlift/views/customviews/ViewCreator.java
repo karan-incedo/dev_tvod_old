@@ -1767,7 +1767,11 @@ public class ViewCreator {
                             break;
 
                         case PAGE_AUTOPLAY_MOVIE_TITLE_KEY:
-                            if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
+                            if (moduleAPI.getContentData() != null &&
+                                    moduleAPI.getContentData().size() > 0 &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                    !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
                             }
                             ViewTreeObserver titleTextVto = componentViewResult.componentView.getViewTreeObserver();
@@ -1780,7 +1784,11 @@ public class ViewCreator {
                             break;
 
                         case PAGE_VIDEO_TITLE_KEY:
-                            if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
+                            if (moduleAPI.getContentData() != null &&
+                                    moduleAPI.getContentData().size() > 0 &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                    !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
                             }
                             titleTextVto = componentViewResult.componentView.getViewTreeObserver();
@@ -1799,7 +1807,11 @@ public class ViewCreator {
                             break;
 
                         case PAGE_VIDEO_AGE_LABEL_KEY:
-                            if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getParentalRating())) {
+                            if (moduleAPI.getContentData() != null &&
+                                    moduleAPI.getContentData().size() > 0 &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                    !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getParentalRating())) {
                                 String parentalRating = moduleAPI.getContentData().get(0).getParentalRating();
                                 String convertedRating = context.getString(R.string.age_rating_converted_default);
                                 if (parentalRating.contains(context.getString(R.string.age_rating_y7))) {
