@@ -2619,10 +2619,7 @@ public class AppCMSPresenter {
                     false,
                     false,
                     deeplinkSearchQuery);
-            if (!TextUtils.isEmpty(previousPageId) &&
-                    !TextUtils.isEmpty(previousPageName)) {
-                checkForExistingSubscription();
-            }
+            checkForExistingSubscription();
 
             if (!launchSuccess) {
                 Log.e(TAG, "Failed to launch page: " + subscriptionPage.getPageName());
@@ -2642,7 +2639,12 @@ public class AppCMSPresenter {
                             null);
                     ArrayList<String> subscribedSkus = activeSubs.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
                     if (subscribedSkus != null && subscribedSkus.size() > 0) {
-                        launchNavigationPage();
+                        showDialog(DialogType.EXISTING_SUBSCRIPTION,
+                                currentActivity.getString(R.string.app_cms_existing_subscription_error_message),
+                                false,
+                                () -> {
+                                    sendCloseOthersAction(null, true);
+                                });
                     }
                 }
             } catch (RemoteException e) {
