@@ -454,12 +454,6 @@ public class AppCMSPresenter {
         }
     }
 
-    public void setCurrentActivity(Activity activity) {
-        this.currentActivity = activity;
-        this.downloadManager = (DownloadManager) currentActivity.getSystemService(Context.DOWNLOAD_SERVICE);
-        this.realmController = RealmController.with(currentActivity);
-    }
-
     public void unsetCurrentActivity(Activity closedActivity) {
         if (currentActivity == closedActivity) {
             currentActivity = null;
@@ -852,10 +846,20 @@ public class AppCMSPresenter {
                     } else if (actionType == AppCMSActionType.MANAGE_SUBSCRIPTION) {
                         if (extraData != null && extraData.length > 0) {
                             String key = extraData[0];
-                            if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                                sendSubscriptionCancellation();
-                            } else if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
-                                navigateToSubscriptionPlansPage(null, null);
+                            if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
+                                if (getActiveSubscriptionProcessor(currentActivity)
+                                        .equalsIgnoreCase(currentActivity.getString(R.string.subscription_web_payment_processor_friendly))) {
+                                    showEntitlementDialog(DialogType.CANNOT_UPGRADE_SUBSCRIPTION);
+                                } else {
+                                    navigateToSubscriptionPlansPage(null, null);
+                                }
+                            } else if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
+                                if (getActiveSubscriptionProcessor(currentActivity)
+                                        .equalsIgnoreCase(currentActivity.getString(R.string.subscription_web_payment_processor_friendly))) {
+                                    showEntitlementDialog(DialogType.CANNOT_CANCEL_SUBSCRIPTION);
+                                } else {
+                                    sendSubscriptionCancellation();
+                                }
                             }
                         }
                     } else if (actionType == AppCMSActionType.HOME_PAGE) {
@@ -1564,7 +1568,6 @@ public class AppCMSPresenter {
         realmController.removeFromDB(downloadVideoRealm);
     }
 
-
     /**
      * This function will be called in two cases
      * 1) When 1st time downloading start
@@ -1902,18 +1905,19 @@ public class AppCMSPresenter {
         return getDownloadedFileSize(downloadVideoRealm.getVideoSize());
     }
 
-
     public DownloadVideoRealm getDownloadedVideo(String videoId) {
         return realmController.getDownloadByIdBelongstoUser(videoId, getLoggedInUser(currentActivity));
     }
-    public boolean isVideoDownloaded(String videoId){
-        DownloadVideoRealm downloadVideoRealm= realmController.getDownloadByIdBelongstoUser(videoId,getLoggedInUser(currentActivity));
-        if (downloadVideoRealm!=null && downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId)) {
+
+    public boolean isVideoDownloaded(String videoId) {
+        DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId, getLoggedInUser(currentActivity));
+        if (downloadVideoRealm != null && downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId)) {
             return true;
         }
 
         return false;
     }
+
     public String getDownloadedFileSize(long size) {
         String fileSize;
         DecimalFormat dec = new DecimalFormat("0");
@@ -3866,10 +3870,22 @@ public class AppCMSPresenter {
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             String title = currentActivity.getString(R.string.app_cms_login_required_title);
             String message = currentActivity.getString(R.string.app_cms_login_required_message);
+
             if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED) {
                 title = currentActivity.getString(R.string.app_cms_login_and_subscription_required_title);
                 message = currentActivity.getString(R.string.app_cms_login_and_subscription_required_message);
             }
+
+            if (dialogType == DialogType.CANNOT_UPGRADE_SUBSCRIPTION) {
+                title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
+                message = currentActivity.getString(R.string.app_cms_subscription_upgrade_for_web_user_dialog);
+            }
+
+            if (dialogType == DialogType.CANNOT_CANCEL_SUBSCRIPTION) {
+                title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
+                message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_web_user_dialog);
+            }
+
             AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
             builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
                     Integer.toHexString(textColor).substring(2),
@@ -3890,6 +3906,10 @@ public class AppCMSPresenter {
                             dialog.dismiss();
                             navigateToSubscriptionPlansPage(null, null);
                         });
+            } else if (dialogType == DialogType.CANNOT_UPGRADE_SUBSCRIPTION) {
+                builder.setPositiveButton("OK", null);
+            } else if (dialogType == DialogType.CANNOT_CANCEL_SUBSCRIPTION) {
+                builder.setPositiveButton("OK", null);
             } else {
                 builder.setPositiveButton(R.string.app_cms_subscription_button_text,
                         (dialog, which) -> {
@@ -4762,6 +4782,12 @@ public class AppCMSPresenter {
 
     public Activity getCurrentActivity() {
         return currentActivity;
+    }
+
+    public void setCurrentActivity(Activity activity) {
+        this.currentActivity = activity;
+        this.downloadManager = (DownloadManager) currentActivity.getSystemService(Context.DOWNLOAD_SERVICE);
+        this.realmController = RealmController.with(currentActivity);
     }
 
     private Bundle getPageActivityBundle(Activity activity,
@@ -5862,7 +5888,9 @@ public class AppCMSPresenter {
         SUBSCRIPTION_REQUIRED,
         LOGIN_AND_SUBSCRIPTION_REQUIRED,
         EXISTING_SUBSCRIPTION,
-        DOWNLOAD_INCOMPLETE
+        DOWNLOAD_INCOMPLETE,
+        CANNOT_UPGRADE_SUBSCRIPTION,
+        CANNOT_CANCEL_SUBSCRIPTION
     }
 
     public enum ExtraScreenType {
