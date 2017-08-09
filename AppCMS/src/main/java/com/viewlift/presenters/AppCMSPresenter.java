@@ -2158,7 +2158,7 @@ public class AppCMSPresenter {
                                                 loadFromFile,
                                                 false,
                                                 false,
-                                                true,
+                                                false,
                                                 false,
                                                 null,
                                                 ExtraScreenType.NONE);
@@ -2173,7 +2173,7 @@ public class AppCMSPresenter {
                                                 loadFromFile,
                                                 false,
                                                 false,
-                                                true,
+                                                false,
                                                 false,
                                                 null,
                                                 ExtraScreenType.NONE);
@@ -2205,7 +2205,7 @@ public class AppCMSPresenter {
                             loadFromFile,
                             false,
                             false,
-                            true,
+                            false,
                             false,
                             null,
                             ExtraScreenType.NONE);
@@ -2220,7 +2220,7 @@ public class AppCMSPresenter {
                             loadFromFile,
                             false,
                             false,
-                            true,
+                            false,
                             false,
                             null,
                             ExtraScreenType.NONE);
@@ -2275,7 +2275,7 @@ public class AppCMSPresenter {
                     true,
                     getPageId(appCMSPageUI), new AppCMSWatchlistAPIAction(false,
                             false,
-                            true,
+                            false,
                             appCMSPageUI,
                             pageId,
                             pageId,
@@ -2492,7 +2492,7 @@ public class AppCMSPresenter {
                     true,
                     getPageId(appCMSPageUI), new AppCMSHistoryAPIAction(false,
                             false,
-                            true,
+                            false,
                             appCMSPageUI,
                             pageId,
                             pageId,
