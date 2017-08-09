@@ -224,9 +224,9 @@
     <string name="app_cms_cancel_subscription_title">Cancel Subscription</string>
     <string name="app_cms_confirm_alert_dialog_button_text">OK</string>
     <string name="app_cms_cancel_alert_dialog_button_text">CANCEL</string>
-    <string name="app_cms_cancel_subscription_confirmation_message">You have cancelled your subscription.</string>
+    <string name="app_cms_cancel_subscription_confirmation_message">You have cancelled your subscription.</string>s
     <string name="app_cms_cancel_subscription_not_subscribed_message">You are currently not subscribed to any plans.</string>
-    <string name="app_cms_cancel_subscription_subscription_not_valid_message">Subscription is not valid.</string>
+    <string name="app_cms_cancel_subscription_subscription_not_valid_message">Please check that the device is registered with a valid Gmail account.</string>
     <string name="app_cms_subscribtion_title">Subscription</string>
     <string name="app_cms_download_quality_title">SET YOUR DOWNLOAD QUALITY</string>
     <string name="app_cms_downloas_setting_listner_key">app_cms_downloas_setting_listner_key</string>
@@ -254,7 +254,7 @@
     <string name="app_cms_negative_confirmation_button_text">NO</string>
     <string name="download_file_prefix">file:///</string>
 
-    //cast receiver
+    <!-- cast receiver -->
     <string name="chromecast_receiver_app_id">0974224E</string>
     <string name="app_cms_signup_invalid_email_and_password_message">Please enter a valid email and password.</string>
     <string name="app_cms_signup_invalid_email_message">Please enter a valid email.</string>

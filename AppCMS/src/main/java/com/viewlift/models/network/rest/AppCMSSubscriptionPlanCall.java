@@ -67,9 +67,9 @@ public class AppCMSSubscriptionPlanCall {
                             @Override
                             public void onResponse(@NonNull Call<List<AppCMSSubscriptionPlanResult>> call,
                                                    @NonNull Response<List<AppCMSSubscriptionPlanResult>> response) {
-                                if (response != null && response.body() != null) {
+                                try {
                                     Observable.just(response.body()).subscribe(planResultAction1);
-                                } else {
+                                } catch (Exception e) {
                                     Observable.just((List<AppCMSSubscriptionPlanResult>) null).subscribe(planResultAction1);
                                 }
                             }
@@ -78,6 +78,7 @@ public class AppCMSSubscriptionPlanCall {
                             public void onFailure(@NonNull Call<List<AppCMSSubscriptionPlanResult>> call,
                                                   @NonNull Throwable t) {
                                 Log.e(TAG, "onFailure: " + t.getMessage());
+                                Observable.just((List<AppCMSSubscriptionPlanResult>) null).subscribe(planResultAction1);
                             }
                         });
                 break;
@@ -86,9 +87,9 @@ public class AppCMSSubscriptionPlanCall {
                 appCMSSubscriptionPlanRest.getSubscribedPlan(url, authHeaders).enqueue(new Callback<AppCMSUserSubscriptionPlanResult>() {
                     @Override
                     public void onResponse(Call<AppCMSUserSubscriptionPlanResult> call, Response<AppCMSUserSubscriptionPlanResult> response) {
-                        if (response != null) {
+                        try {
                             Observable.just(response.body()).subscribe(userSubscriptionPlanResult);
-                        } else {
+                        } catch (Exception e) {
                             Observable.just((AppCMSUserSubscriptionPlanResult) null).subscribe(userSubscriptionPlanResult);
                         }
                     }
@@ -109,13 +110,18 @@ public class AppCMSSubscriptionPlanCall {
                             @Override
                             public void onResponse(@NonNull Call<AppCMSSubscriptionPlanResult> call,
                                                    @NonNull Response<AppCMSSubscriptionPlanResult> response) {
-                                Observable.just(response.body()).subscribe(resultAction1);
+                                try {
+                                    Observable.just(response.body()).subscribe(resultAction1);
+                                } catch (Exception e) {
+                                    Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
+                                }
                             }
 
                             @Override
                             public void onFailure(@NonNull Call<AppCMSSubscriptionPlanResult> call,
                                                   @NonNull Throwable t) {
                                 Log.e(TAG, "onFailure: " + t.getMessage());
+                                Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                             }
                         });
                 break;
@@ -128,7 +134,11 @@ public class AppCMSSubscriptionPlanCall {
                             @Override
                             public void onResponse(@NonNull Call<AppCMSSubscriptionPlanResult> call,
                                                    @NonNull Response<AppCMSSubscriptionPlanResult> response) {
-                                Observable.just(response.body()).subscribe(resultAction1);
+                                try {
+                                    Observable.just(response.body()).subscribe(resultAction1);
+                                } catch (Exception e) {
+                                    Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
+                                }
                             }
 
                             @Override
@@ -145,7 +155,11 @@ public class AppCMSSubscriptionPlanCall {
                             @Override
                             public void onResponse(@NonNull Call<AppCMSSubscriptionPlanResult> call,
                                                    @NonNull Response<AppCMSSubscriptionPlanResult> response) {
-                                Observable.just(response.body()).subscribe(resultAction1);
+                                try {
+                                    Observable.just(response.body()).subscribe(resultAction1);
+                                } catch (Exception e) {
+                                    Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
+                                }
                             }
 
                             @Override

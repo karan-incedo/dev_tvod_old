@@ -1600,7 +1600,10 @@ public class ViewCreator {
 
                         if (jsonValueKeyMap.get(component.getKey()) ==
                                 AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                            if (TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionSku(context))) {
+                            if (TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionSku(context)) ||
+                                    (!TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionProcessor(context)) &&
+                                    !appCMSPresenter.getActiveSubscriptionProcessor(context)
+                                            .equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly)))) {
                                 componentViewResult.componentView.setEnabled(false);
                                 componentViewResult.componentView.setVisibility(View.INVISIBLE);
                                 viewEnabled = false;
@@ -2464,6 +2467,8 @@ public class ViewCreator {
                 }
 
             } else {
+                appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
+                        UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId);
                 imageButton.setImageResource(R.drawable.ic_download);
                 imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());

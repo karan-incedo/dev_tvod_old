@@ -151,7 +151,7 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
         } else {
 
             getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            pageView.setBackgroundColor(getActivity().getResources().getColor(R.color.semiTransparentColor, null));
+//            pageView.setBackgroundColor(getActivity().getResources().getColor(R.color.semiTransparentColor, null));
             pageView.notifyAdaptersOfUpdate();
         }
 
