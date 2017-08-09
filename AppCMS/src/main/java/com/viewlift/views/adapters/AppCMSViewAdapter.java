@@ -106,7 +106,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 .getGeneral().getBlockTitleColor());
         this.isClickable = true;
 
-        cullData(context, 0);
+        cullData(context);
         sortPlanPricesInDescendingOrder();
     }
 
@@ -216,6 +216,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         notifyDataSetChanged();
         listView.setAdapter(this);
         listView.invalidate();
+
+        cullData(listView.getContext());
+
         notifyDataSetChanged();
     }
 
@@ -397,23 +400,20 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         itemView.setBackground(planBorder);
     }
 
-    private void cullData(Context context, int count) {
+    private void cullData(Context context) {
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY &&
-                adapterData != null &&
-                count < adapterData.size()) {
+                adapterData != null) {
             String currentSubscriptionSku = appCMSPresenter.getActiveSubscriptionSku(context);
             float currentSubscriptionPrice = appCMSPresenter.getActiveSubscriptionPrice(context);
             if (!TextUtils.isEmpty(currentSubscriptionSku)) {
+                List<ContentDatum> culledData = new ArrayList<>();
                 for (int i = 0; i < adapterData.size(); i++) {
-                    if (adapterData.get(i).getId().equals(currentSubscriptionSku)) {
-                        adapterData.remove(i);
-                        cullData(context, count + 1);
-                    } else if ((float) adapterData.get(i).getPlanDetails().get(0).getRecurringPaymentAmount() <=
+                    if ((float) adapterData.get(i).getPlanDetails().get(0).getRecurringPaymentAmount() <=
                             currentSubscriptionPrice) {
-                        adapterData.remove(i);
-                        cullData(context, count + 1);
+                        culledData.add(adapterData.get(i));
                     }
                 }
+                this.adapterData = culledData;
             }
         }
     }
