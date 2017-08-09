@@ -549,7 +549,7 @@ public class CastHelper {
                     }
 
                     binderPlayScreen.setCurrentPlayingVideoIndex(playIndexPosition);
-                    if (0 < playIndexPosition && playIndexPosition < listCompareRelatedVideosId.size()) {
+                    if (playIndexPosition < listCompareRelatedVideosId.size()) {
                         appCMSPresenterComponenet.playNextVideo(binderPlayScreen,
                                 binderPlayScreen.getCurrentPlayingVideoIndex(),
                                 currentMediaPosition);

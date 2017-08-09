@@ -207,7 +207,9 @@ public class ViewCreator {
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                                     if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_WATCH_TRAILER_KEY) {
-                                        if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
+                                        if (moduleAPI.getContentData() != null &&
+                                                moduleAPI.getContentData().size() > 0 &&
+                                                moduleAPI.getContentData().get(0).getContentDetails() != null &&
                                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers() != null &&
                                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers().size() > 0 &&
                                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0) != null &&
@@ -1591,11 +1593,11 @@ public class ViewCreator {
                     case PAGE_DOWNLOAD_QUALITY_CONTINUE_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.download_quality_continue_button);
                         break;
-                        
+
                     case PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY:
-                         componentViewResult.componentView.setId(R.id.download_quality_cancel_button);
-                         break;
-                        
+                        componentViewResult.componentView.setId(R.id.download_quality_cancel_button);
+                        break;
+
                     default:
                         boolean viewEnabled = true;
                         if (jsonValueKeyMap.get(component.getKey()) ==
@@ -1611,8 +1613,8 @@ public class ViewCreator {
                                 AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
                             if (TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionSku(context)) ||
                                     (!TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionProcessor(context)) &&
-                                    !appCMSPresenter.getActiveSubscriptionProcessor(context)
-                                            .equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly)))) {
+                                            !appCMSPresenter.getActiveSubscriptionProcessor(context)
+                                                    .equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly)))) {
                                 componentViewResult.componentView.setEnabled(false);
                                 componentViewResult.componentView.setVisibility(View.INVISIBLE);
                                 viewEnabled = false;
