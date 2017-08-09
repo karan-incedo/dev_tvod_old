@@ -1608,7 +1608,7 @@ public class ViewCreator {
                     case PAGE_DOWNLOAD_QUALITY_CONTINUE_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.download_quality_continue_button);
                         break;
-                        
+
                     case PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY:
                          componentViewResult.componentView.setId(R.id.download_quality_cancel_button);
                          break;
