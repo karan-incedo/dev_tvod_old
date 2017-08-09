@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -216,6 +217,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             }
             loadImage(holder.itemView.getContext(), imageUrl.toString(), holder.appCMSContinueWatchingVideoImage);
 
+
             holder.itemView.setOnClickListener(v -> {
                 if (isDownload) {
                     playDownloaded(contentDatum,
@@ -225,6 +227,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     click(adapterData.get(position));
                 }
             });
+            holder.appCMSContinueWatchingButton.setOnClickListener(null);
 
 
             holder.appCMSContinueWatchingVideoImage.setOnClickListener(v -> {
@@ -737,6 +740,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         View itemView;
+
+        @BindView(R.id.app_cms_continue_watching_button_view)
+        LinearLayout appCMSContinueWatchingButton;
 
         @BindView(R.id.app_cms_continue_watching_video_image)
         ImageButton appCMSContinueWatchingVideoImage;
