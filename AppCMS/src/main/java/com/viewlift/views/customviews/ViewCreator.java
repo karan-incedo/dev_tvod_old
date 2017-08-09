@@ -1605,7 +1605,7 @@ public class ViewCreator {
                                 componentViewResult.componentView.setVisibility(View.INVISIBLE);
                                 viewEnabled = false;
                             }
-                        }a
+                        }
 
                         if (jsonValueKeyMap.get(component.getKey()) ==
                                 AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
@@ -2484,6 +2484,8 @@ public class ViewCreator {
                 }
 
             } else {
+                appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
+                        UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId);
                 imageButton.setImageResource(R.drawable.ic_download);
                 imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());

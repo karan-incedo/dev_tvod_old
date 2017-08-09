@@ -139,7 +139,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 String adsUrl = binder.getAdsUrl();
                 String bgColor = binder.getBgColor();
                 int playIndex = binder.getCurrentPlayingVideoIndex();
-                long watchedTime = gist.getWatchedTime();
+                long watchedTime = intent.getLongExtra(getString(R.string.watched_time_key), 0L);
                 if(gist.getPrimaryCategory()!=null && gist.getPrimaryCategory().getTitle()!=null)
                  primaryCategory = gist.getPrimaryCategory().getTitle();
                 boolean playAds = binder.isPlayAds();
