@@ -65,6 +65,7 @@ import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenResponse;
+import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
@@ -2642,14 +2643,20 @@ public class AppCMSPresenter {
                             currentActivity.getPackageName(),
                             "subs",
                             null);
-                    ArrayList<String> subscribedSkus = activeSubs.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
-                    if (subscribedSkus != null && subscribedSkus.size() > 0) {
-                        showDialog(DialogType.EXISTING_SUBSCRIPTION,
-                                currentActivity.getString(R.string.app_cms_existing_subscription_error_message),
-                                false,
-                                () -> {
-                                    sendCloseOthersAction(null, true);
-                                });
+                    ArrayList<String> subscribedItemList = activeSubs.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
+                    if (subscribedItemList != null && subscribedItemList.size() > 0) {
+                        for (int i = 0; i < subscribedItemList.size(); i++) {
+                            InAppPurchaseData inAppPurchaseData = gson.fromJson(subscribedItemList.get(i),
+                                    InAppPurchaseData.class);
+                            if (inAppPurchaseData.isAutoRenewing()) {
+                                showDialog(DialogType.EXISTING_SUBSCRIPTION,
+                                        currentActivity.getString(R.string.app_cms_existing_subscription_error_message),
+                                        false,
+                                        () -> {
+                                            sendCloseOthersAction(null, true);
+                                        });
+                            }
+                        }
                     }
                 }
             } catch (RemoteException e) {

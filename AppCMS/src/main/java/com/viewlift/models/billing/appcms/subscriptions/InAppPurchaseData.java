@@ -6,6 +6,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class InAppPurchaseData {
 
+    @SerializedName("autoRenewing")
+    @Expose
+    private boolean autoRenewing;
     @SerializedName("orderId")
     @Expose
     private String orderId;
@@ -17,16 +20,24 @@ public class InAppPurchaseData {
     private String productId;
     @SerializedName("purchaseTime")
     @Expose
-    private Integer purchaseTime;
+    private long purchaseTime;
     @SerializedName("purchaseState")
     @Expose
-    private Integer purchaseState;
+    private long purchaseState;
     @SerializedName("developerPayload")
     @Expose
     private String developerPayload;
     @SerializedName("purchaseToken")
     @Expose
     private String purchaseToken;
+
+    public boolean isAutoRenewing() {
+        return autoRenewing;
+    }
+
+    public void setAutoRenewing(boolean autoRenewing) {
+        this.autoRenewing = autoRenewing;
+    }
 
     public String getOrderId() {
         return orderId;
@@ -52,19 +63,19 @@ public class InAppPurchaseData {
         this.productId = productId;
     }
 
-    public Integer getPurchaseTime() {
+    public long getPurchaseTime() {
         return purchaseTime;
     }
 
-    public void setPurchaseTime(Integer purchaseTime) {
+    public void setPurchaseTime(long purchaseTime) {
         this.purchaseTime = purchaseTime;
     }
 
-    public Integer getPurchaseState() {
+    public long getPurchaseState() {
         return purchaseState;
     }
 
-    public void setPurchaseState(Integer purchaseState) {
+    public void setPurchaseState(long purchaseState) {
         this.purchaseState = purchaseState;
     }
 
