@@ -363,10 +363,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     null);
             return;
         }
+        boolean networkAvailable = appCMSPresenter.isNetworkConnected();
         String permalink = data.getGist().getPermalink();
         String action = context.getString(R.string.app_cms_action_watchvideo_key);
         String title = data.getGist() != null ? data.getGist().getTitle() : null;
-        String hlsUrl = data.getGist() != null ? data.getGist().getLocalFileUrl() : null;
+        String hlsUrl = (data.getGist() != null && networkAvailable) ? data.getGist().getLocalFileUrl() : null;
         String[] extraData = new String[4];
         extraData[0] = permalink;
         extraData[1] = hlsUrl;
