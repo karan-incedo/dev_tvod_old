@@ -850,11 +850,14 @@ public class AppCMSPresenter {
                         if (extraData != null && extraData.length > 0) {
                             String key = extraData[0];
                             if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
-                                if (getActiveSubscriptionProcessor(currentActivity)
-                                        .equalsIgnoreCase(currentActivity.getString(R.string.subscription_web_payment_processor_friendly))) {
-                                    showEntitlementDialog(DialogType.CANNOT_UPGRADE_SUBSCRIPTION);
-                                } else {
-                                    navigateToSubscriptionPlansPage(null, null);
+                                if (getActiveSubscriptionProcessor(currentActivity) != null) {
+                                    if (getActiveSubscriptionProcessor(currentActivity)
+                                            .equalsIgnoreCase(currentActivity
+                                                    .getString(R.string.subscription_web_payment_processor_friendly))) {
+                                        showEntitlementDialog(DialogType.CANNOT_UPGRADE_SUBSCRIPTION);
+                                    } else {
+                                        navigateToSubscriptionPlansPage(null, null);
+                                    }
                                 }
                             } else if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
                                 if (getActiveSubscriptionProcessor(currentActivity) != null) {
@@ -864,7 +867,6 @@ public class AppCMSPresenter {
                                         showEntitlementDialog(DialogType.CANNOT_CANCEL_SUBSCRIPTION);
                                     } else {
                                         sendSubscriptionCancellation();
-//                                        navigateToSubscriptionPlansPage(null, null);
                                     }
                                 }
                             }
@@ -1684,23 +1686,23 @@ public class AppCMSPresenter {
         try {
             String downloadURL;
 
-            if(contentDatum.getStreamingInfo()==null){
+            if (contentDatum.getStreamingInfo() == null) {
 
                 String url = currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
                         appCMSMain.getApiBaseUrl(),
                         contentDatum.getGist().getId(),
                         appCMSMain.getSite());
 
-                GetAppCMSStreamingInfoAsyncTask.Params param= new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
+                GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
 
-                new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall,appCMSStreamingInfo ->{
-                    if (appCMSStreamingInfo!=null){
+                new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
+                    if (appCMSStreamingInfo != null) {
                         contentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
-                        System.out.println("straming URL : "+appCMSStreamingInfo.getStreamingInfo().getVideoAssets().getMpeg().size());
+                        System.out.println("straming URL : " + appCMSStreamingInfo.getStreamingInfo().getVideoAssets().getMpeg().size());
                     }
-                } ).execute(param);
+                }).execute(param);
 
-                System.out.println("straming URL : "+url);
+                System.out.println("straming URL : " + url);
 
             }
 
