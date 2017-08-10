@@ -26,6 +26,7 @@ import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
+import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
@@ -195,17 +196,32 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                 holder.appCMSContinueWatchingDownloadStatusButton.setOnClickListener(null);
                                 break;
                             default:
-                                holder.appCMSContinueWatchingDownloadStatusButton.setVisibility(View.INVISIBLE);
+                                holder.appCMSContinueWatchingDownloadStatusButton.setVisibility(View.GONE);
                                 break;
                         }
 
                     } else {
+                        if (contentDatum.getStreamingInfo() == null) { // This will make available Streaming info for all potential downloadable items in watchlist.
+
+
+                            String url = appCMSPresenter.getStreamingInfoURL(contentDatum.getGist().getId());
+
+                            GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
+
+                            new GetAppCMSStreamingInfoAsyncTask(appCMSPresenter.getAppCMSStreamingInfoCall(), appCMSStreamingInfo -> {
+                                if (appCMSStreamingInfo != null) {
+                                    contentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
+                                }
+                            }).execute(param);
+                        }
+
                         holder.appCMSContinueWatchingDownloadStatusButton.setImageResource(R.drawable.ic_download);
                         holder.appCMSContinueWatchingDownloadStatusButton.setOnClickListener(v -> {
                             if (appCMSPresenter.getUserDownloadQualityPref(holder.itemView.getContext()) != null
                                     && appCMSPresenter.getUserDownloadQualityPref(holder.itemView.getContext()).length() > 0) {
                                 appCMSPresenter.editDownload(contentDatum, new ViewCreator.UpdateDownloadImageIconAction((ImageButton) holder.appCMSContinueWatchingDownloadStatusButton, appCMSPresenter,
                                         contentDatum, appCMSPresenter.getLoggedInUser(holder.itemView.getContext())), true);
+
 
                             } else {
                                 appCMSPresenter.showDownloadQualityScreen(contentDatum, new ViewCreator.UpdateDownloadImageIconAction((ImageButton) holder.appCMSContinueWatchingDownloadStatusButton, appCMSPresenter,
@@ -361,6 +377,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     private void playDownloaded(ContentDatum data, Context context, List<String> relatedVideoIds) {
+
         if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
                     null,

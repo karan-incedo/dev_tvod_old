@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -245,8 +246,13 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 viewHolder.navItemLabel.setText(R.string.app_cms_sign_out_label);
                 viewHolder.navItemLabel.setTextColor(textColor);
                 viewHolder.itemView.setOnClickListener(v -> {
-                    appCMSPresenter.cancelInternalEvents();
-                    appCMSPresenter.logout();
+                    if (appCMSPresenter.isDownloadUnfinished()){
+
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD);
+                    }else {
+                        appCMSPresenter.cancelInternalEvents();
+                        appCMSPresenter.logout();
+                    }
                 });
             }
         }

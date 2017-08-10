@@ -313,6 +313,7 @@ public class AppCMSPresenter {
     private MetaPage splashPage;
     private MetaPage loginPage;
     private MetaPage downloadQualityPage;
+    private MetaPage downloadPage;
     private MetaPage homePage;
     private MetaPage subscriptionPage;
     private PlatformType platformType;
@@ -1578,6 +1579,15 @@ public class AppCMSPresenter {
         realmController.removeFromDB(downloadVideoRealm);
     }
 
+    public void removeDownloadAndLogout() {
+        for (DownloadVideoRealm downloadVideoRealm :
+                realmController.getAllUnfinishedDownloades(getLoggedInUser(currentActivity))) {
+            removeDownloadedFile(downloadVideoRealm.getVideoId());
+        }
+        cancelInternalEvents();
+        logout();
+    }
+
     /**
      * This function will be called in two cases
      * 1) When 1st time downloading start
@@ -1669,10 +1679,24 @@ public class AppCMSPresenter {
                              final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
 
         long enqueueId = 0L;
-        long thumbEnqueueId = downloadVideoImage(contentDatum.getGist().getVideoImageUrl(),
-                contentDatum.getGist().getId());
-        long posterEnqueueId = downloadPosterImage(contentDatum.getGist().getPosterImageUrl(),
-                contentDatum.getGist().getId());
+
+        if (contentDatum.getStreamingInfo() == null) { // This will handle the case if we get video streming info null at Video detail page.
+
+
+            String url = getStreamingInfoURL(contentDatum.getGist().getId());
+
+            GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
+
+            new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
+                if (appCMSStreamingInfo != null) {
+                    contentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
+                }
+            }).execute(param);
+
+            showDialog(DialogType.STREAMING_INFO_MISSING, null, false, null);
+            return;
+        }
+
         long ccEnqueueId = 0L;
         if (contentDatum.getContentDetails() != null &&
                 contentDatum.getContentDetails().getClosedCaptions() != null &&
@@ -1687,25 +1711,6 @@ public class AppCMSPresenter {
         try {
             String downloadURL;
 
-            if (contentDatum.getStreamingInfo() == null) {
-
-                String url = currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
-                        appCMSMain.getApiBaseUrl(),
-                        contentDatum.getGist().getId(),
-                        appCMSMain.getSite());
-
-                GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
-
-                new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
-                    if (appCMSStreamingInfo != null) {
-                        contentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
-                        System.out.println("straming URL : " + appCMSStreamingInfo.getStreamingInfo().getVideoAssets().getMpeg().size());
-                    }
-                }).execute(param);
-
-                System.out.println("straming URL : " + url);
-
-            }
 
             int bitrate = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
 
@@ -1760,6 +1765,10 @@ public class AppCMSPresenter {
 
             enqueueId = downloadManager.enqueue(downloadRequest);
 
+            long thumbEnqueueId = downloadVideoImage(contentDatum.getGist().getVideoImageUrl(),
+                    contentDatum.getGist().getId());
+            long posterEnqueueId = downloadPosterImage(contentDatum.getGist().getPosterImageUrl(),
+                    contentDatum.getGist().getId());
             /*
              * Inserting data in realm data object
              */
@@ -1777,6 +1786,7 @@ public class AppCMSPresenter {
                             contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
 
         } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
             showDialog(DialogType.DOWNLOAD_INCOMPLETE, e.getMessage(), false, null);
         } finally {
             appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), this,
@@ -1925,6 +1935,26 @@ public class AppCMSPresenter {
         }
         cursor.close();
         return uriLocal == null ? "data" : uriLocal;
+    }
+
+    public boolean isDownloadUnfinished() {
+
+        List<DownloadVideoRealm> unFinishedVideoList = getRealmController().getAllUnfinishedDownloades(getLoggedInUser(currentActivity));
+        if (unFinishedVideoList != null && unFinishedVideoList.size() > 0) {
+            return true;
+        }
+
+        return false;
+    }
+    public AppCMSStreamingInfoCall getAppCMSStreamingInfoCall(){
+        return appCMSStreamingInfoCall;
+    }
+    public String getStreamingInfoURL(String filmId){
+        String url = currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
+                appCMSMain.getApiBaseUrl(),
+                filmId,
+                appCMSMain.getSite());
+        return url;
     }
 
     public String getDownloadedFileSize(String filmId) {
@@ -3921,6 +3951,10 @@ public class AppCMSPresenter {
             String title = currentActivity.getString(R.string.app_cms_login_required_title);
             String message = currentActivity.getString(R.string.app_cms_login_required_message);
 
+            if (dialogType == DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD) {
+                title = currentActivity.getString(R.string.app_cms_logout_with_running_download_title);
+                message = currentActivity.getString(R.string.app_cms_logout_with_running_download_message);
+            }
             if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED) {
                 title = currentActivity.getString(R.string.app_cms_login_and_subscription_required_title);
                 message = currentActivity.getString(R.string.app_cms_login_and_subscription_required_message);
@@ -3944,7 +3978,18 @@ public class AppCMSPresenter {
                             Integer.toHexString(textColor).substring(2),
                             message)));
 
-            if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED) {
+            if (dialogType == DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD) {
+                builder.setPositiveButton("Yes",
+                        (dialog, which) -> {
+
+                            removeDownloadAndLogout();
+                            dialog.dismiss();
+                        });
+                builder.setNegativeButton("Cancel",
+                        (dialog, which) -> {
+                            dialog.dismiss();
+                        });
+            } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED) {
                 builder.setPositiveButton(R.string.app_cms_login_button_text,
                         (dialog, which) -> {
                             dialog.dismiss();
@@ -4034,6 +4079,7 @@ public class AppCMSPresenter {
                            String optionalMessage,
                            boolean showCancelButton,
                            final Action0 onDismissAction) {
+        boolean isNetwork = false;
         if (currentActivity != null) {
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
@@ -4074,8 +4120,12 @@ public class AppCMSPresenter {
                     title = currentActivity.getString(R.string.app_cms_download_incomplete_error_title);
                     message = currentActivity.getString(R.string.app_cms_download_incomplete_error_message);
                     break;
-
+                case STREAMING_INFO_MISSING:
+                    title = currentActivity.getString(R.string.app_cms_download_stream_info_error_title);
+                    message = currentActivity.getString(R.string.app_cms_download_streaming_info_error_message);
+                    break;
                 default:
+                    isNetwork = true;
                     title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
                     message = currentActivity.getString(R.string.app_cms_network_connectivity_error_message);
                     if (isNetworkConnected()) {
@@ -4099,7 +4149,21 @@ public class AppCMSPresenter {
                         });
                 builder.setNegativeButton(R.string.app_cms_cancel_alert_dialog_button_text,
                         (dialog, which) -> dialog.dismiss());
+            } else if (isNetwork) {
+                builder.setPositiveButton("Go To Downloads",
+                        (dialog, which) -> {
+                            dialog.dismiss();
+                            navigateToDownloadPage(downloadPage.getPageId(), downloadPage.getPageName(), downloadPage.getPageUI(), false);
+                        });
+                builder.setNegativeButton(R.string.app_cms_close_alert_dialog_button_text,
+                        (dialog, which) -> {
+                            dialog.dismiss();
+                            if (onDismissAction != null) {
+                                onDismissAction.call();
+                            }
+                        });
             } else {
+
                 builder.setNegativeButton(R.string.app_cms_close_alert_dialog_button_text,
                         (dialog, which) -> {
                             dialog.dismiss();
@@ -5227,9 +5291,13 @@ public class AppCMSPresenter {
             if (loginPageIndex >= 0) {
                 loginPage = metaPageList.get(loginPageIndex);
             }
-            int DownloadQualitysIndex = getdownloadQualityPage(metaPageList);
-            if (DownloadQualitysIndex >= 0) {
-                downloadQualityPage = metaPageList.get(DownloadQualitysIndex);
+            int downloadQualitysIndex = getdownloadQualityPage(metaPageList);
+            if (downloadQualitysIndex >= 0) {
+                downloadQualityPage = metaPageList.get(downloadQualitysIndex);
+            }
+            int downloadPageIndex = getDownloadPage(metaPageList);
+            if (downloadPageIndex >= 0) {
+                downloadPage = metaPageList.get(downloadPageIndex);
             }
             int homePageIndex = getHomePage(metaPageList);
             if (homePageIndex >= 0) {
@@ -5348,6 +5416,16 @@ public class AppCMSPresenter {
         for (int i = 0; i < metaPageList.size(); i++) {
             if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
                     == AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int getDownloadPage(List<MetaPage> metaPageList) {
+        for (int i = 0; i < metaPageList.size(); i++) {
+            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
+                    == AppCMSUIKeyType.ANDROID_DOWNLOAD_KEY) {
                 return i;
             }
         }
@@ -5946,10 +6024,12 @@ public class AppCMSPresenter {
         SUBSCRIBE,
         SUBSCRIPTION_REQUIRED,
         LOGIN_AND_SUBSCRIPTION_REQUIRED,
+        LOGOUT_WITH_RUNNING_DOWNLOAD,
         EXISTING_SUBSCRIPTION,
         DOWNLOAD_INCOMPLETE,
         CANNOT_UPGRADE_SUBSCRIPTION,
-        CANNOT_CANCEL_SUBSCRIPTION
+        CANNOT_CANCEL_SUBSCRIPTION,
+        STREAMING_INFO_MISSING
     }
 
     public enum ExtraScreenType {

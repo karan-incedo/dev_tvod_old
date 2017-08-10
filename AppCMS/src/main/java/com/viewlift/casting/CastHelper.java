@@ -835,7 +835,8 @@ public class CastHelper {
                 mSessionManagerListener = null;
                 CastContext.getSharedInstance(mAppContext).getSessionManager().endCurrentSession(true);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG,e.getMessage()); // getting crash by e.printStackTrace()
+
             }
         }
     }
