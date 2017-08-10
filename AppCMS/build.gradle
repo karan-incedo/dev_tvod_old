@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
-def final packageName = 'com.viewlift.hoichoi'
-def final customApplicationId = 'HoiChoi'
-def final hostName = "www.hoichoi.tv"
+def final packageName = 'air.com.snagfilms'
+def final customApplicationId = 'SnagFilms'
+def final hostName = "www.snagfilms.com"
 
 buildscript {
     repositories {
@@ -32,7 +32,7 @@ android {
         applicationId packageName
         minSdkVersion 23
         targetSdkVersion 25
-        versionCode 10
+        versionCode 3042062
         versionName "1.0.20"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 25

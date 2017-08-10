@@ -1,27 +1,58 @@
 {
   "project_info": {
-    "project_number": "525148171038",
-    "firebase_url": "https://hoichoi-1c6af.firebaseio.com",
-    "project_id": "hoichoi-1c6af",
-    "storage_bucket": "hoichoi-1c6af.appspot.com"
+    "project_number": "658336643300",
+    "firebase_url": "https://viewlift-cca78.firebaseio.com",
+    "project_id": "viewlift-cca78",
+    "storage_bucket": "viewlift-cca78.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:525148171038:android:1518edc0290a20d1",
+        "mobilesdk_app_id": "1:658336643300:android:4154e68b842b0501",
+        "android_client_info": {
+          "package_name": "air.com.snagfilms"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "658336643300-0tvn7bf28j77p8ru5vm9l6ktn0bqpugf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5IdCcQXLrgE_S-whXcc0WLBun6h7FLRA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:658336643300:android:1518edc0290a20d1",
         "android_client_info": {
           "package_name": "com.viewlift.hoichoi"
         }
       },
       "oauth_client": [
         {
-          "client_id": "525148171038-1dgfbunn8l27oilqldve5qg7cref8ua1.apps.googleusercontent.com",
+          "client_id": "658336643300-0tvn7bf28j77p8ru5vm9l6ktn0bqpugf.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAI3iLHa00xKudgoBr7B0xTmXxwyxYnvUc"
+          "current_key": "AIzaSyD5IdCcQXLrgE_S-whXcc0WLBun6h7FLRA"
         }
       ],
       "services": {
