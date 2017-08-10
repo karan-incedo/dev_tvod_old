@@ -1,19 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_cms_search_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <ImageButton
-        android:id="@+id/app_cms_close_button"
-        android:layout_width="@dimen/close_button_size"
-        android:layout_height="@dimen/close_button_size"
-        android:scaleType="fitCenter"
-        android:background="@android:color/transparent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="@dimen/close_button_margin"
-        android:src="@drawable/cancel" />
 
     <FrameLayout
         android:layout_width="@dimen/app_cms_search_bar_width"
@@ -28,7 +18,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <android.support.v7.widget.SearchView
-                android:id="@+id/app_cms_search_view"
+                android:id="@+id/app_cms_search_fragment_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"

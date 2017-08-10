@@ -141,6 +141,7 @@ public class AppCMSPageFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        appCMSPresenter.closeSoftKeyboard();
         appCMSBinder = null;
         pageView = null;
     }

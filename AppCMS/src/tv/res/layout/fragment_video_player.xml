@@ -35,6 +35,25 @@
             android:ellipsize="marquee"/>
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/app_cms_video_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:orientation="vertical">
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@android:color/white"
+            android:text="@string/loading_video_text"/>
+    </LinearLayout>
+
     <com.viewlift.views.customviews.VideoPlayerView
         android:id="@+id/app_cms_video_player_container"
         android:layout_width="match_parent"

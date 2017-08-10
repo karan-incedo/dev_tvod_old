@@ -5,7 +5,8 @@ import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import com.squareup.picasso.Picasso;
+
+import com.bumptech.glide.Glide;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -84,7 +85,7 @@ public class JumbotronPresenter extends CardPresenter {
 
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
                                 imageView.setPadding(gridImagePadding,gridImagePadding,gridImagePadding,gridImagePadding);
-                                Picasso.with(mContext)
+                                Glide.with(mContext)
                                         .load(contentData.getGist().getVideoImageUrl())
                                         .into(imageView);
 

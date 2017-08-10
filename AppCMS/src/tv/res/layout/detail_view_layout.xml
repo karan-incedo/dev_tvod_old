@@ -20,7 +20,6 @@
             android:maxLines="6"
             android:paddingRight="25dp"
             android:paddingTop="19dp"
-            android:text="@string/sample_text"
             android:textColor="#fff" />
 
         <TextView

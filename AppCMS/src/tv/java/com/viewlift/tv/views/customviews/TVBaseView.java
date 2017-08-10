@@ -20,9 +20,6 @@ import com.viewlift.tv.utility.Utils;
 
 import java.util.Map;
 
-
-import snagfilms.com.air.appcms.R;
-
 /**
  * Created by nitin.tyagi on 7/12/2017.
  */
@@ -51,7 +48,7 @@ public abstract class TVBaseView extends FrameLayout {
 
 
     public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
-        int runtime = (data.getGist().getRuntime() / 60);
+        long runtime = (data.getGist().getRuntime() / 60L);
         String year = data.getGist().getYear();
         String primaryCategory =
                 data.getGist().getPrimaryCategory() != null ?
@@ -198,7 +195,7 @@ public abstract class TVBaseView extends FrameLayout {
                 case PAGE_ADD_TO_WATCHLIST_KEY:
                 case PAGE_VIDEO_WATCH_TRAILER_KEY:
                     viewWidth = FrameLayout.LayoutParams.WRAP_CONTENT;
-                    int padding = childComponent.getPadding();
+                    int padding = childComponent.getTrayPadding();
                     view.setPadding(padding,padding,padding,padding);
                     break;
                 case PAGE_VIDEO_TITLE_KEY:

@@ -10,7 +10,6 @@ import com.vimeo.stag.UseStag;
 
 @UseStag
 public class FeatureDetail {
-
     @SerializedName("textToDisplay")
     @Expose
     private String textToDisplay;

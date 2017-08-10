@@ -28,6 +28,7 @@ import com.google.android.gms.cast.framework.media.ImagePicker;
 import com.google.android.gms.cast.framework.media.MediaIntentReceiver;
 import com.google.android.gms.cast.framework.media.NotificationOptions;
 import com.google.android.gms.common.images.WebImage;
+import com.viewlift.R;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,7 +54,7 @@ public class CastOptionsProvider implements OptionsProvider {
                 .build();
 
         return new CastOptions.Builder()
-                .setReceiverApplicationId(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
+                .setReceiverApplicationId(context.getResources().getString(R.string.chromecast_receiver_app_id))
                 .setCastMediaOptions(mediaOptions)
                 .build();
     }
@@ -70,6 +71,7 @@ public class CastOptionsProvider implements OptionsProvider {
             if ((mediaMetadata == null) || !mediaMetadata.hasImages()) {
                 return null;
             }
+
             List<WebImage> images = mediaMetadata.getImages();
             if (images.size() == 1) {
                 return images.get(0);

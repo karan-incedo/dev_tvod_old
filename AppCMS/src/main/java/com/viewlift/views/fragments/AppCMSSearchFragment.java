@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -62,20 +63,18 @@ public class AppCMSSearchFragment extends DialogFragment {
                 .appCMSPresenter();
 
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        appCMSSearchView = (SearchView) view.findViewById(R.id.app_cms_search_view);
-        appCMSSearchView.setQueryHint(getString(R.string.search_films));
-        appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
-        appCMSSearchView.setIconifiedByDefault(false);
-        appCMSSearchView.setFocusable(true);
-        appCMSSearchView.getSuggestionsAdapter();
-        appCMSSearchView.requestFocus();
-
-        SearchSuggestionsAdapter searchSuggestionsAdapter = new SearchSuggestionsAdapter(getContext(),
+        SearchSuggestionsAdapter searchSuggestionsAdapter = new SearchSuggestionsAdapter(getActivity(),
                 null,
                 searchManager.getSearchableInfo(getActivity().getComponentName()),
                 true);
 
+        appCMSSearchView = (SearchView) view.findViewById(R.id.app_cms_search_fragment_view);
+        appCMSSearchView.setQueryHint(getString(R.string.search_films));
+        appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         appCMSSearchView.setSuggestionsAdapter(searchSuggestionsAdapter);
+        appCMSSearchView.setIconifiedByDefault(false);
+        appCMSSearchView.requestFocus();
+        appCMSPresenter.showSoftKeyboard(appCMSSearchView);
 
         appCMSGoButton = (Button) view.findViewById(R.id.app_cms_search_button);
         appCMSGoButton.setBackgroundColor(0xff000000 + (int) buttonColor);
@@ -84,10 +83,7 @@ public class AppCMSSearchFragment extends DialogFragment {
         appCMSGoButton.setOnClickListener(v ->
                 appCMSPresenter.launchSearchResultsPage(appCMSSearchView.getQuery().toString()));
 
-        ImageButton closeButton = (ImageButton) view.findViewById(R.id.app_cms_close_button);
-        closeButton.setOnClickListener(v -> dismiss());
-
-        setBgColor((int) bgColor);
+        setBgColor((int) bgColor, view);
 
         if (!BaseView.isTablet(getContext())) {
             appCMSPresenter.restrictPortraitOnly();
@@ -97,42 +93,18 @@ public class AppCMSSearchFragment extends DialogFragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        setWindow();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        setWindow();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        appCMSPresenter.setNavItemToCurrentAction(getActivity());
-        dismiss();
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (!BaseView.isTablet(getContext())) {
+            appCMSPresenter.unrestrictPortraitOnly();
+        }
+        appCMSPresenter.closeSoftKeyboard();
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void setBgColor(int bgColor) {
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            Window window = dialog.getWindow();
-            window.setBackgroundDrawable(new ColorDrawable(bgColor));
-        }
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    private void setWindow() {
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            int width = ViewGroup.LayoutParams.MATCH_PARENT;
-            int height = ViewGroup.LayoutParams.MATCH_PARENT;
-            Window window = dialog.getWindow();
-            window.setLayout(width, height);
-            window.setGravity(Gravity.START);
-        }
+    private void setBgColor(int bgColor, View view) {
+        RelativeLayout appCMSNavigationMenuMainLayout =
+                (RelativeLayout) view.findViewById(R.id.app_cms_search_fragment);
+        appCMSNavigationMenuMainLayout.setBackgroundColor(bgColor);
     }
 }

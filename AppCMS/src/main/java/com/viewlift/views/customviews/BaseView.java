@@ -16,7 +16,6 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Mobile;
 import com.viewlift.models.data.appcms.ui.page.TabletLandscape;
 import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
-import com.viewlift.presenters.AppCMSActionType;
 
 import java.util.Map;
 
@@ -331,7 +330,10 @@ public abstract class BaseView extends FrameLayout {
                         lm = 0;
                     }
                     break;
-
+                case PAGE_DOWNLOAD_SETTING_TITLE_KEY:
+                    gravity = Gravity.CENTER_HORIZONTAL;
+                    bm = viewHeight / 2;
+                    break;
                 case PAGE_CAROUSEL_TITLE_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
                     if (isLandscape(getContext()) || !isTablet(getContext())) {
@@ -386,7 +388,7 @@ public abstract class BaseView extends FrameLayout {
                     break;
                 case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
                     if (isTablet(getContext())) {
-                        lm -= viewWidth * 1.2;
+                        lm -= viewWidth * 2.0;
                     }
                     break;
                 default:
@@ -425,7 +427,7 @@ public abstract class BaseView extends FrameLayout {
                 layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
                 layoutParams.setMargins(0, tm, 0, bm);
             } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY) {
-                tm  *= +1.6;
+                tm *= +1.6;
                 layoutParams.setMargins(lm, tm, rm, bm);
             }
         }
@@ -460,8 +462,18 @@ public abstract class BaseView extends FrameLayout {
             int xLargeScreenLayout =
                     (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK);
 
-            return (largeScreenLayout == Configuration.SCREENLAYOUT_SIZE_LARGE ||
-                    xLargeScreenLayout == Configuration.SCREENLAYOUT_SIZE_XLARGE);
+            if (largeScreenLayout == Configuration.SCREENLAYOUT_SIZE_LARGE ||
+                    xLargeScreenLayout == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+
+                DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+                float yInches = metrics.heightPixels / metrics.ydpi;
+                float xInches = metrics.widthPixels / metrics.xdpi;
+                double diagonalInches = Math.sqrt(xInches * xInches + yInches * yInches);
+
+                if (diagonalInches >= 6.5) {
+                    return true;
+                }
+            }
         }
         return false;
     }
@@ -787,6 +799,22 @@ public abstract class BaseView extends FrameLayout {
             }
         }
         return -1.0f;
+    }
+
+    public static int getDeviceWidth() {
+        return DEVICE_WIDTH;
+    }
+
+    public static void setDeviceWidth(int deviceWidth) {
+        DEVICE_WIDTH = deviceWidth;
+    }
+
+    public static int getDeviceHeight() {
+        return DEVICE_HEIGHT;
+    }
+
+    public static void setDeviceHeight(int deviceHeight) {
+        DEVICE_HEIGHT = deviceHeight;
     }
 
     protected void initializeComponentHasViewList(int size) {

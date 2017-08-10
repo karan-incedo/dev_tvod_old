@@ -22,9 +22,11 @@
 
     <!-- AppCMS Beacon API -->
     <string name="app_cms_beacon_url">https://%1$s/events?aid=%2$s&amp;cid=%3$s&amp;pfm=%4$s&amp;dp1=%5$s&amp;vid=%6$s&amp;url=%7$s&amp;ref=%8$s&amp;pa=%9$s&amp;vpos=%10$d&amp;uid=%11$s</string>
+    <string name="app_cms_beacon_chromecast_dp2_url">&amp;dp2=Chromecast</string>
     <string name="app_cms_beacon_platform">Android</string>
     <string name="app_cms_beacon_dpm_android">Standard Android OS</string>
     <string name="app_cms_beacon_video_player_parent_screen_name">VideoPlayer</string>
+    <string name="app_cms_beacon_casting_screen_name">CastingView</string>
 
     <!-- AppCMS Google Analytics -->
     <string name="app_cms_template_page_separator">&#160;-&#160;</string>
@@ -45,7 +47,7 @@
     <string name="app_cms_facebook_login_api_url">%1$s/identity/signin/facebook?site=%2$s</string>
 
     <!--AppCMS Google Login API-->
-    <string name="app_cms_google_login_api_url">%1$s/identity/signin/google</string>
+    <string name="app_cms_google_login_api_url">%1$s/identity/signin/google?device=android_phone&amp;site=%2$s</string>
 
     <!-- AppCMS User Identity API -->
     <string name="app_cms_user_identity_api_url">%1$s/identity/user?site=%2$s</string>
@@ -120,6 +122,8 @@
     <string name="app_cms_page_edit_profile_key">Edit Profile</string>
     <string name="app_cms_page_cancel_subscription_key">Cancel Subscription</string>
     <string name="app_cms_page_upgrade_subscription_key">Upgrade Subscription</string>
+    <string name="app_cms_page_background_image_view_key">backgroundImage</string>
+    <string name="app_cms_page_background_image_type_type">imageView</string>
 
     <string name="app_cms_page_history_module_key">AC History 01</string>
     <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>
@@ -139,6 +143,7 @@
     <string name="app_cms_page_video_play_button_key">playButton</string>
     <string name="app_cms_page_video_description_key">videoDescriptionText</string>dd
     <string name="app_cms_page_video_title_key">videoTitle</string>
+    <string name="app_cms_page_download_setting_title_key">DownloadQualityTitle</string>
     <string name="app_cms_page_video_subtitle_key">videoSubTitle</string>
     <string name="app_cms_page_video_ageLabel_key">ageLabel</string>
     <string name="app_cms_page_video_share_key">shareButton</string>
@@ -152,6 +157,8 @@
     <string name="app_cms_page_video_credits_directors">Directors</string>
     <string name="app_cms_page_video_credits_starring_key">Starring</string>
     <string name="app_cms_page_autoplay_module_key">AC AutoPlay 01</string>
+
+    <string name="app_cms_page_download_setting_module_key">AC DownloadSettings 01</string>
     <string name="app_cms_page_api_thumbnail_url_key">thumbnail</string>
     <string name="app_cms_page_api_title_key">title</string>
     <string name="app_cms_page_api_description_key">description</string>
@@ -184,6 +191,7 @@
     <!-- AppAppCMSPageUIPage names for Actions -->
     <string name="app_cms_pagename_authscreen_key">Authentication Screen</string>
     <string name="app_cms_pagename_splashscreen_key">Splash Screen</string>
+    <string name="app_cms_pagename_downloadsettingscreen_key">Download Settings</string>
     <string name="app_cms_pagename_homescreen_key">Home Page</string>
     <string name="app_cms_pagename_subscriptionscreen_key">View Plans</string>
     <string name="app_cms_pagename_historyscreen_key">My History</string>
@@ -202,6 +210,7 @@
     <string name="app_cms_action_watchtrailervideo_key">watchTrailer</string>
     <string name="app_cms_action_share_key">share</string>
     <string name="app_cms_action_close_key">close</string>
+    <string name="app_cms_action_cancel_key">cancel</string>
     <string name="app_cms_action_search_key">search</string>
     <string name="app_cms_action_login_key">login</string>
     <string name="app_cms_action_forgotpassword_key">forgotPassword</string>
@@ -209,6 +218,9 @@
     <string name="app_cms_action_signupfacebook_key">signupfacebook</string>
     <string name="app_cms_action_editprofile_key">editProfile</string>
     <string name="app_cms_action_managesubscription_key">manageSubscription</string>
+
+    <string name="app_cms_action_change_download_quality_key">changeDownloadQuality</string>
+    <!--<string name="app_cms_action_change_download_quality_key">Manage Download</string>-->
 
     <string name="app_cms_action_logingoogle_key">logingoogle</string>
     <string name="app_cms_action_signupgoogle_key">signupgoogle</string>
@@ -231,7 +243,7 @@
     <!-- AppCMS WatchList API -->
     <string name="app_cms_watchlist_api_url">%1$s/user/queues?site=%2$s&amp;userId=%3$s</string>
     <string name="app_cms_edit_watchlist_api_url">%1$s/user/queues?site=%2$s&amp;userId=%3$s&amp;contentIds=%4$s</string>
-    <string name="app_cms_clear_watchlist_api_url">%1$s/user/queues?site=%2$s&amp;userId=%3$s&amp;</string>
+    <string name="app_cms_clear_watchlist_api_url">%1$s/user/queues?site=%2$s&amp;userId=%3$s</string>
 
     <!--AppCMS History API-->
     <string name="app_cms_history_api_url">%1$s/content/video/history/user/%2$s?site=%3$s&amp;userId=%4$s&amp;offset=0</string>
@@ -260,7 +272,7 @@
     <string name="app_cms_cancel_subscription_api_url">%1$s/subscription/cancel?site=%2$s&amp;platform=%3$s</string>
 
     <!-- AppCMS Get Current Subscription API -->
-    <string name="app_cms_get_current_subscription_api_url">%1$s/subscription/user?userId=%2$s&amp;site=%3$s</string>
+    <string name="app_cms_get_current_subscription_api_url">%1$s/subscription/user?site=%2$s</string>
 
     <!-- AppCMS Navigation menu -->
     <string name="app_cms_menu_icon_name">menu_</string>
@@ -270,6 +282,7 @@
     <string name="app_cms_movies_icon_name">categories_page_categories</string>
     <string name="app_cms_movies_label">Movies</string>
     <string name="app_cms_search_icon_name">search_</string>
+    <string name="app_cms_search_label">Search</string>
 
     <!--AppCMS AnonymousAuthToken API -->
     <string name="app_cms_anonymous_auth_token_api_url">%1$s/identity/anonymous-token?site=%2$s</string>
@@ -278,7 +291,7 @@
     <string name="app_cms_image_with_resize_query">%1$s?impolicy=resize&amp;w=%2$d&amp;h=%3$d</string>
 
     <!--TV Specific-->
-    <string name="app_cms_header_view">headerView</string>
+    <string name="app_cms_header_view">headerView</string>`
     <string name="app_cms_videodetail_header_view">videoDetailHeader</string>
 
 
@@ -295,4 +308,17 @@
     <string name="app_cms_autoplay_cancel_button_key">cancelButton</string>
     <string name="app_cms_autoplay_playing_in_label_key">playInLabel</string>
     <string name="app_cms_autoplay_timer_label_key">timerLabel</string>
+
+    <string name="app_cms_download_started_mesage">%1$s has started downloading.</string>
+    <string name="app_cms_download_quality_cancel_button_key">cancelButton</string>
+    <string name="app_cms_download_quality_continue_button_key">continueButton</string>
+
+    <!-- AppCMS Payment Processor values -->
+    <string name="subscription_ios_payment_processor">iOS</string>
+    <string name="subscription_ios_payment_processor_friendly">iTunes</string>
+    <string name="subscription_android_payment_processor">Android</string>
+    <string name="subscription_android_payment_processor_friendly">Google Play</string>
+    <string name="subscription_web_payment_processor_friendly">Stripe</string>
+    <string name="subscription_no_payment_processor_friendly">None</string>
+    <string name="subscription_unknown_payment_processor_friendly">Unknown</string>
 </resources>

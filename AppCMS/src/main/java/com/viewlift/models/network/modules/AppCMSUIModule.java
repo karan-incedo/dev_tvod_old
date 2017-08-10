@@ -25,6 +25,8 @@ import com.viewlift.models.network.rest.AppCMSGoogleLoginCall;
 import com.viewlift.models.network.rest.AppCMSGoogleLoginRest;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSHistoryRest;
+import com.viewlift.models.network.rest.AppCMSIPGeoLocatorCall;
+import com.viewlift.models.network.rest.AppCMSIPGeoLocatorRest;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSMainUIRest;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
@@ -120,6 +122,10 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_AUTH_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_splashscreen_key),
                 AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_downloadsettingscreen_key),
+                AppCMSUIKeyType.ANDROID_DOWNLOAD_SETTINGS_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_title),
+                AppCMSUIKeyType.ANDROID_DOWNLOAD_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_homescreen_key),
                 AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_subscriptionscreen_key),
@@ -246,6 +252,10 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_upgrade_subscription_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_background_image_view_key),
+                AppCMSUIKeyType.PAGE_BACKGROUND_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_background_image_type_type),
+                AppCMSUIKeyType.PAGE_BACKGROUND_IMAGE_TYPE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_title_key),
                 AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY);
@@ -306,6 +316,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_DESCRIPTION_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_title_key),
                 AppCMSUIKeyType.PAGE_VIDEO_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_setting_title_key),
+                AppCMSUIKeyType.PAGE_DOWNLOAD_SETTING_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_subtitle_key),
                 AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_share_key),
@@ -338,6 +350,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_DETAIL_HEADER_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_autoplay_module_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_setting_module_key),
+                AppCMSUIKeyType.PAGE_DOWNLOAD_SETTING_MODULE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_back_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_BACK_KEY);
@@ -378,6 +392,12 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_timer_label_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_TIMER_LABEL_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_download_quality_continue_button_key),
+                AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CONTINUE_BUTTON_KEY);
+        
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_download_quality_cancel_button_key),
+                AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY);
+        
         jsonValueKeyMap.put("", AppCMSUIKeyType.PAGE_EMPTY_KEY);
         jsonValueKeyMap.put(null, AppCMSUIKeyType.PAGE_NULL_KEY);
     }
@@ -439,6 +459,9 @@ public class AppCMSUIModule {
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_close_key),
                 AppCMSActionType.CLOSE);
 
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_cancel_key),
+                AppCMSActionType.CLOSE);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_login_key),
                 AppCMSActionType.LOGIN);
 
@@ -474,6 +497,9 @@ public class AppCMSUIModule {
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_managesubscription_key),
                 AppCMSActionType.MANAGE_SUBSCRIPTION);
+
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_change_download_quality_key),
+                AppCMSActionType.CHANGE_DOWNLOAD_QUALITY);
     }
 
     @Provides
@@ -637,6 +663,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSIPGeoLocatorRest providesAppCMSIPGeoLocatorRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSIPGeoLocatorRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -750,6 +782,12 @@ public class AppCMSUIModule {
     @Singleton
     public GoogleCancelSubscriptionCall providesGoogleCancelSubscriptionCall(GoogleCancelSubscriptionRest googleCancelSubscriptionRest) {
         return new GoogleCancelSubscriptionCall(googleCancelSubscriptionRest);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSIPGeoLocatorCall providesAppCMSIPGeoLocatorCall(AppCMSIPGeoLocatorRest appCMSIPGeoLocatorRest) {
+        return new AppCMSIPGeoLocatorCall(appCMSIPGeoLocatorRest);
     }
 
     @Provides

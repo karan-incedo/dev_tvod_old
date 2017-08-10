@@ -8,16 +8,12 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
-import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
-import android.support.v17.leanback.app.BrowseFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -26,7 +22,6 @@ import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.util.LruCache;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -38,8 +33,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.GsonBuilder;
-import com.squareup.picasso.Picasso;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
@@ -47,26 +42,21 @@ import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
-import com.viewlift.models.data.appcms.ui.main.Content;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.ui.page.Settings;
+import com.viewlift.models.network.utility.MainUtils;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
-import com.viewlift.tv.views.fragment.AppCmsBrowseFragment;
 import com.viewlift.tv.views.presenter.AppCmsListRowPresenter;
 import com.viewlift.tv.views.presenter.CardPresenter;
 import com.viewlift.tv.views.presenter.JumbotronPresenter;
-import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
-import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.CreditBlocksView;
-import com.viewlift.views.customviews.DotSelectorView;
-import com.viewlift.views.customviews.LoginModule;
 import com.viewlift.views.customviews.ModuleView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.StarRating;
@@ -210,7 +200,7 @@ public class TVViewCreator {
                 mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
             }
 
-            ModuleList moduleList = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "carousel_ftv_component.json"), ModuleList.class);
+            ModuleList moduleList = new GsonBuilder().create().fromJson(MainUtils.loadJsonFromAssets(context, "carousel_ftv_component.json"), ModuleList.class);
             module = moduleList;
 
             for(Component component : module.getComponents()){
@@ -223,7 +213,7 @@ public class TVViewCreator {
                 mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
             }
 
-            ModuleList moduleList = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_component.json"), ModuleList.class);
+            ModuleList moduleList = new GsonBuilder().create().fromJson(MainUtils.loadJsonFromAssets(context, "tray_ftv_component.json"), ModuleList.class);
             module = moduleList;
 
             for(Component component : module.getComponents()){
@@ -540,7 +530,9 @@ public class TVViewCreator {
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
                                             extraData,
                                             moduleAPI.getContentData().get(0),
-                                            false)) {
+                                            false,
+                                            -1,
+                                            null)) {
                                         Log.e(TAG, "Could not launch action: " +
                                                 " permalink: " +
                                                 moduleAPI.getContentData().get(0).getGist().getPermalink() +
@@ -587,7 +579,9 @@ public class TVViewCreator {
                                                 moduleAPI.getContentData().get(0).getGist().getTitle(),
                                                 extraData,
                                                 moduleAPI.getContentData().get(0),
-                                                false)) {
+                                                false,
+                                                -1,
+                                                null)) {
                                             Log.e(TAG, "Could not launch action: " +
                                                     " permalink: " +
                                                     moduleAPI.getContentData().get(0).getGist().getPermalink() +
@@ -624,7 +618,9 @@ public class TVViewCreator {
                                         null,
                                         null,
                                         null,
-                                        false)) {
+                                        false,
+                                        -1,
+                                        null)) {
                                     Log.e(TAG, "Could not launch action: " +
                                             " action: " +
                                             component.getAction());
@@ -657,7 +653,9 @@ public class TVViewCreator {
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
                                             extraData,
                                             moduleAPI.getContentData().get(0),
-                                            false)) {
+                                            false,
+                                            -1,
+                                            null)) {
                                         Log.e(TAG, "Could not launch action: " +
                                                 " permalink: " +
                                                 moduleAPI.getContentData().get(0).getGist().getPermalink() +
@@ -815,19 +813,19 @@ public class TVViewCreator {
                                 component.getLayout(),
                                 ViewGroup.LayoutParams.WRAP_CONTENT);
                         if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
-                            Picasso.with(context)
+                            Glide.with(context)
                                     .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
-                                    .resize(viewWidth, viewHeight)
+                                    .override(viewWidth, viewHeight)
                                     .centerCrop()
                                     .into((ImageView) componentViewResult.componentView);
                         } else if (viewWidth > 0) {
-                            Picasso.with(context)
+                            Glide.with(context)
                                     .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                    .resize(viewWidth, viewHeight)
+                                    .override(viewWidth, viewHeight)
                                     .centerCrop()
                                     .into((ImageView) componentViewResult.componentView);
                         } else {
-                            Picasso.with(context)
+                            Glide.with(context)
                                     .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                     .into((ImageView) componentViewResult.componentView);
                         }
@@ -836,7 +834,7 @@ public class TVViewCreator {
 
                     default:
                         if (!TextUtils.isEmpty(component.getImageName())) {
-                            Picasso.with(context)
+                            Glide.with(context)
                                     .load(component.getImageName())
                                     .into((ImageView) componentViewResult.componentView);
                         }
@@ -1008,7 +1006,7 @@ public class TVViewCreator {
     }
 
     public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
-        int runtime = (data.getGist().getRuntime() / 60);
+        long runtime = (data.getGist().getRuntime() / 60L);
         String year = data.getGist().getYear();
         String primaryCategory =
                 data.getGist().getPrimaryCategory() != null ?

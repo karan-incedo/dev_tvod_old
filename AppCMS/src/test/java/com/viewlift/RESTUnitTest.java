@@ -110,7 +110,8 @@ public class RESTUnitTest {
                 null,
                 true,
                 PAGE_ID,
-                false);
+                false,
+                0);
         assertNotNull(appCMSPageAPI);
     }
 }

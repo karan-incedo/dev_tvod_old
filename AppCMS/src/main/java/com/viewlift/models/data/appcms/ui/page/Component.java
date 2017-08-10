@@ -145,6 +145,10 @@ public class Component implements ModuleWithComponents {
     @Expose
     boolean isViewProtected;
 
+    @SerializedName("selectedText")
+    @Expose
+    private String selectedText;
+
     boolean yAxisSetManually;
 
     public String getText() {
@@ -435,5 +439,13 @@ public class Component implements ModuleWithComponents {
     @Override
     public String getId() {
         return null;
+    }
+
+    public String getSelectedText() {
+        return selectedText;
+    }
+
+    public void setSelectedText(String selectedText) {
+        this.selectedText = selectedText;
     }
 }

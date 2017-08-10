@@ -1,40 +1,25 @@
 package com.viewlift.tv.views.presenter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.nfc.Tag;
-import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.Presenter;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.squareup.picasso.Picasso;
 import com.viewlift.models.data.appcms.api.ContentDatum;
-import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
-import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.tv.model.BrowseCompnentModule;
 import com.viewlift.tv.model.BrowseFragmentRowData;
-import com.viewlift.tv.views.fragment.AppCmsBrowseFragment;
 
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 import com.viewlift.R;
 
@@ -128,7 +113,7 @@ public class CardPresenter extends Presenter {
 
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
                                 imageView.setPadding(gridImagePadding,gridImagePadding,gridImagePadding,gridImagePadding);
-                                Picasso.with(mContext)
+                                Glide.with(mContext)
                                         .load(contentData.getGist().getPosterImageUrl())
                                         .placeholder(R.drawable.poster_image_placeholder)
                                         .into(imageView);

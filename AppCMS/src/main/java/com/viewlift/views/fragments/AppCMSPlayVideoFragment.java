@@ -2,7 +2,6 @@ package com.viewlift.views.fragments;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -24,7 +23,6 @@ import com.google.ads.interactivemedia.v3.api.AdsManager;
 import com.google.ads.interactivemedia.v3.api.AdsManagerLoadedEvent;
 import com.google.ads.interactivemedia.v3.api.AdsRequest;
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
-import com.google.ads.interactivemedia.v3.api.player.ContentProgressProvider;
 import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.gms.cast.framework.CastSession;
@@ -54,7 +52,9 @@ public class AppCMSPlayVideoFragment extends Fragment
     private String title;
     private String hlsUrl;
     private String permaLink;
+    private boolean isTrailer;
     private String filmId;
+    private String primaryCategory;
     private String imageUrl;
     private String parentScreenName;
     private String adsUrl;
@@ -63,9 +63,11 @@ public class AppCMSPlayVideoFragment extends Fragment
     private ImageButton videoPlayerViewDoneButton;
     private TextView videoPlayerTitleView;
     private VideoPlayerView videoPlayerView;
+    private LinearLayout videoLoadingProgress;
     private OnClosePlayerEvent onClosePlayerEvent;
     private BeaconPingThread beaconMessageThread;
     private long beaconMsgTimeoutMsec;
+    private boolean sentBeaconPlay;
 
     private ImaSdkFactory sdkFactory;
     private AdsLoader adsLoader;
@@ -80,6 +82,26 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
     };
     private boolean isAdDisplayed;
+    CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = new CastServiceProvider.ILaunchRemoteMedia() {
+        @Override
+        public void setRemotePlayBack(int castingModeChromecast) {
+            if (onClosePlayerEvent != null) {
+                pauseVideo();
+                long castPlayPosition = watchedTime * SECS_TO_MSECS;
+                if (!isCastConnected) {
+                    castPlayPosition = videoPlayerView.getCurrentPosition();
+                }
+
+                onClosePlayerEvent.onRemotePlayback(castPlayPosition,
+                        castingModeChromecast,
+                        sentBeaconPlay,
+                        onApplicationEnded -> {
+
+                        });
+            }
+        }
+    };
+    private int playIndex;
     private long watchedTime;
     private ImageButton mMediaRouteButton;
     private CastServiceProvider castProvider;
@@ -89,28 +111,34 @@ public class AppCMSPlayVideoFragment extends Fragment
     private boolean isCastConnected;
 
     public static AppCMSPlayVideoFragment newInstance(Context context,
+                                                      String primaryCategory,
                                                       String fontColor,
                                                       String title,
                                                       String permaLink,
+                                                      boolean isTrailer,
                                                       String hlsUrl,
                                                       String filmId,
                                                       String adsUrl,
                                                       boolean requestAds,
+                                                      int playIndex,
                                                       long watchedTime,
                                                       String imageUrl,
                                                       String closedCaptionUrl) {
         AppCMSPlayVideoFragment appCMSPlayVideoFragment = new AppCMSPlayVideoFragment();
         Bundle args = new Bundle();
         args.putString(context.getString(R.string.video_player_font_color_key), fontColor);
+        args.putString(context.getString(R.string.video_primary_category_key), primaryCategory);
         args.putString(context.getString(R.string.video_player_title_key), title);
         args.putString(context.getString(R.string.video_player_permalink_key), permaLink);
         args.putString(context.getString(R.string.video_player_hls_url_key), hlsUrl);
         args.putString(context.getString(R.string.video_layer_film_id_key), filmId);
         args.putString(context.getString(R.string.video_player_ads_url_key), adsUrl);
         args.putBoolean(context.getString(R.string.video_player_request_ads_key), requestAds);
+        args.putInt(context.getString(R.string.play_index_key), playIndex);
         args.putLong(context.getString(R.string.watched_time_key), watchedTime);
         args.putString(context.getString(R.string.played_movie_image_url), imageUrl);
         args.putString(context.getString(R.string.video_player_closed_caption_key), closedCaptionUrl);
+        args.putBoolean("isTrailer", isTrailer);
         appCMSPlayVideoFragment.setArguments(args);
         return appCMSPlayVideoFragment;
     }
@@ -123,7 +151,6 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
     }
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
 
@@ -133,34 +160,38 @@ public class AppCMSPlayVideoFragment extends Fragment
             fontColor = args.getString(getString(R.string.video_player_font_color_key));
             title = args.getString(getString(R.string.video_player_title_key));
             permaLink = args.getString(getString(R.string.video_player_permalink_key));
+            isTrailer = args.getBoolean("isTrailer");
             hlsUrl = args.getString(getContext().getString(R.string.video_player_hls_url_key));
             filmId = args.getString(getContext().getString(R.string.video_layer_film_id_key));
             adsUrl = args.getString(getContext().getString(R.string.video_player_ads_url_key));
             shouldRequestAds = args.getBoolean(getContext().getString(R.string.video_player_request_ads_key));
+            playIndex = args.getInt(getString(R.string.play_index_key));
             watchedTime = args.getLong(getContext().getString(R.string.watched_time_key));
             imageUrl = args.getString(getContext().getString(R.string.played_movie_image_url));
             closedCaptionUrl = args.getString(getContext().getString(R.string.video_player_closed_caption_key));
+            primaryCategory = args.getString(getString(R.string.video_primary_category_key));
         }
+
+        sentBeaconPlay = (0 < playIndex && watchedTime != 0);
 
         appCMSPresenter =
                 ((AppCMSApplication) getActivity().getApplication())
                         .getAppCMSPresenterComponent()
                         .appCMSPresenter();
 
-        beaconMsgTimeoutMsec =
-                getActivity().getResources().getInteger(R.integer.app_cms_beacon_timeout_msec);
+        beaconMsgTimeoutMsec = getActivity().getResources().getInteger(R.integer.app_cms_beacon_timeout_msec);
 
         parentScreenName = getContext().getString(R.string.app_cms_beacon_video_player_parent_screen_name);
         setRetainInstance(true);
 
-        AppsFlyerUtils.appsFlyerPlayEvent(getContext(),filmId, appCMSPresenter);
+        AppsFlyerUtils.filmViewingEvent(getContext(), primaryCategory, filmId, appCMSPresenter);
 
     }
 
-
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_video_player, container, false);
 
         videoPlayerInfoContainer =
@@ -170,7 +201,6 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         videoPlayerTitleView = (TextView) rootView.findViewById(R.id.app_cms_video_player_title_view);
 
-
         if (!TextUtils.isEmpty(title)) {
             videoPlayerTitleView.setText(title);
         }
@@ -179,86 +209,94 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
 
         videoPlayerViewDoneButton = (ImageButton) rootView.findViewById(R.id.app_cms_video_player_done_button);
-        videoPlayerViewDoneButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (onClosePlayerEvent != null) {
-                    videoPlayerView.releasePlayer();
-                    onClosePlayerEvent.closePlayer();
-                }
+        videoPlayerViewDoneButton.setOnClickListener(v -> {
+            if (onClosePlayerEvent != null) {
+                videoPlayerView.releasePlayer();
+                onClosePlayerEvent.closePlayer();
             }
         });
+
         videoPlayerViewDoneButton.setColorFilter(Color.parseColor(fontColor));
-
         videoPlayerInfoContainer.bringToFront();
-
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
+
+        videoLoadingProgress = (LinearLayout) rootView.findViewById(R.id.app_cms_video_loading);
 
         setCasting();
 
         if (!TextUtils.isEmpty(hlsUrl)) {
             videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference(getContext()));
+            videoPlayerView.getPlayerView().getSubtitleView()
+                    .setVisibility(appCMSPresenter.getClosedCaptionPreference(getContext())
+                            ? View.VISIBLE
+                            : View.GONE);
             videoPlayerView.setUri(Uri.parse(hlsUrl),
                     !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
             Log.i(TAG, "Playing video: " + hlsUrl);
         }
         videoPlayerView.setCurrentPosition(watchedTime * SECS_TO_MSECS);
-        videoPlayerView.setOnPlayerStateChanged(new Action1<VideoPlayerView.PlayerState>() {
-            @Override
-            public void call(VideoPlayerView.PlayerState playerState) {
-                if (playerState.getPlaybackState() == ExoPlayer.STATE_READY && !isCastConnected) {
-                    if (shouldRequestAds && !isAdDisplayed) {
-                        requestAds(adsUrl);
-                    } else {
-                        if (beaconMessageThread != null) {
-                            beaconMessageThread.sendBeaconPing = true;
-                            if (!beaconMessageThread.isAlive()) {
-                                beaconMessageThread.start();
-                            }
+        videoPlayerView.setOnPlayerStateChanged(playerState -> {
+            if (playerState.getPlaybackState() == ExoPlayer.STATE_READY && !isCastConnected) {
+                if (shouldRequestAds && !isAdDisplayed) {
+                    requestAds(adsUrl);
+                } else {
+                    if (beaconMessageThread != null) {
+                        beaconMessageThread.sendBeaconPing = true;
+                        if (!beaconMessageThread.isAlive()) {
+                            beaconMessageThread.start();
+                        }
+                        if (!sentBeaconPlay) {
+                            appCMSPresenter.sendBeaconPlayMessage(filmId,
+                                    permaLink,
+                                    parentScreenName,
+                                    videoPlayerView.getCurrentPosition(),
+                                    false);
+                            sentBeaconPlay = true;
                         }
                     }
-
-                } else if (playerState.getPlaybackState() == ExoPlayer.STATE_ENDED) {
-                    Log.d(TAG, "Video ended");
-                    if (shouldRequestAds && adsLoader != null) {
-                        adsLoader.contentComplete();
-                    }
-
-                    // close the player if current video is a trailer. We don't want to auto-play it
-                    if (onClosePlayerEvent != null &&
-                            permaLink.contains(
-                                    getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
-                        videoPlayerView.releasePlayer();
-                        onClosePlayerEvent.closePlayer();
-                        return;
-                    }
-
-                    if (onClosePlayerEvent != null && playerState.isPlayWhenReady()) {
-                        // tell the activity that the movie is finished
-                        onClosePlayerEvent.onMovieFinished();
-                    }
                 }
+                videoLoadingProgress.setVisibility(View.GONE);
+            } else if (playerState.getPlaybackState() == ExoPlayer.STATE_ENDED) {
+                Log.d(TAG, "Video ended");
+                if (shouldRequestAds && adsLoader != null) {
+                    adsLoader.contentComplete();
+                }
+
+                // close the player if current video is a trailer. We don't want to auto-play it
+                if (onClosePlayerEvent != null &&
+                        permaLink.contains(
+                                getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
+                    videoPlayerView.releasePlayer();
+                    onClosePlayerEvent.closePlayer();
+                    return;
+                }
+
+                if (onClosePlayerEvent != null && playerState.isPlayWhenReady()) {
+                    // tell the activity that the movie is finished
+                    onClosePlayerEvent.onMovieFinished();
+                }
+            } else if (playerState.getPlaybackState() == ExoPlayer.STATE_BUFFERING ||
+                    playerState.getPlaybackState() == ExoPlayer.STATE_IDLE) {
+                if (beaconMessageThread != null) {
+                    beaconMessageThread.sendBeaconPing = false;
+                }
+                videoLoadingProgress.setVisibility(View.GONE);
             }
         });
-        videoPlayerView.setOnPlayerControlsStateChanged(new Action1<Integer>() {
-            @Override
-            public void call(Integer visiblity) {
-                if (visiblity == View.GONE) {
-                    videoPlayerInfoContainer.setVisibility(View.GONE);
-                } else if (visiblity == View.VISIBLE) {
-                    videoPlayerInfoContainer.setVisibility(View.VISIBLE);
-                }
+        videoPlayerView.setOnPlayerControlsStateChanged(visibility -> {
+            if (visibility == View.GONE) {
+                videoPlayerInfoContainer.setVisibility(View.GONE);
+            } else if (visibility == View.VISIBLE) {
+                videoPlayerInfoContainer.setVisibility(View.VISIBLE);
             }
         });
 
-        videoPlayerView.setOnClosedCaptionButtonClicked(new Action1<Boolean>() {
-            @Override
-            public void call(Boolean isChecked) {
-                videoPlayerView.getPlayerView().getSubtitleView()
-                        .setVisibility(isChecked ? View.VISIBLE : View.GONE);
-                appCMSPresenter.setClosedCaptionPreference(getContext(), isChecked);
-            }
+        videoPlayerView.setOnClosedCaptionButtonClicked(isChecked -> {
+            videoPlayerView.getPlayerView().getSubtitleView()
+                    .setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            appCMSPresenter.setClosedCaptionPreference(getContext(), isChecked);
         });
+
         if (!shouldRequestAds) {
             videoPlayerView.startPlayer();
         }
@@ -266,19 +304,22 @@ public class AppCMSPlayVideoFragment extends Fragment
                 appCMSPresenter,
                 filmId,
                 permaLink,
+                isTrailer,
                 parentScreenName,
                 videoPlayerView);
 
+        videoLoadingProgress.bringToFront();
+        videoLoadingProgress.setVisibility(View.VISIBLE);
 
         return rootView;
     }
-
 
     private void setCasting() {
         try {
             castProvider = CastServiceProvider.getInstance(getActivity());
             castProvider.setRemotePlaybackCallback(callBackRemotePlayback);
-            isCastConnected = castProvider.playChromeCastPlaybackIfCastConnected();
+            isCastConnected = castProvider.isCastingConnected();
+            castProvider.playChromeCastPlaybackIfCastConnected();
             if (isCastConnected) {
                 getActivity().finish();
             } else {
@@ -318,8 +359,9 @@ public class AppCMSPlayVideoFragment extends Fragment
             videoPlayerView.pausePlayer();
         }
 
-        if (beaconMessageThread != null)
-            beaconMessageThread.runBeaconPing = false;
+        if (beaconMessageThread != null) {
+            beaconMessageThread.sendBeaconPing = false;
+        }
     }
 
     private void resumeVideo() {
@@ -327,13 +369,15 @@ public class AppCMSPlayVideoFragment extends Fragment
             adsManager.resume();
         } else {
             videoPlayerView.resumePlayer();
+            if (beaconMessageThread != null) {
+                beaconMessageThread.sendBeaconPing = true;
+            }
             Log.d(TAG, "Resuming playback");
         }
         if (castProvider != null) {
             castProvider.onActivityResume();
         }
     }
-
 
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
@@ -372,7 +416,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                     appCMSPresenter.sendBeaconPlayMessage(filmId,
                             permaLink,
                             parentScreenName,
-                            videoPlayerView.getCurrentPosition());
+                            videoPlayerView.getCurrentPosition(),
+                            false);
                 }
                 if (beaconMessageThread != null && !beaconMessageThread.isAlive()) {
                     beaconMessageThread.start();
@@ -405,10 +450,6 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
         adsLoader = null;
 
-        if (castProvider != null) {
-            castProvider.setRemotePlaybackCallback(null);
-        }
-
         super.onDestroyView();
     }
 
@@ -421,15 +462,12 @@ public class AppCMSPlayVideoFragment extends Fragment
             AdsRequest request = sdkFactory.createAdsRequest();
             request.setAdTagUrl(adTagUrl);
             request.setAdDisplayContainer(adDisplayContainer);
-            request.setContentProgressProvider(new ContentProgressProvider() {
-                @Override
-                public VideoProgressUpdate getContentProgress() {
-                    if (isAdDisplayed || videoPlayerView.getDuration() <= 0) {
-                        return VideoProgressUpdate.VIDEO_TIME_NOT_READY;
-                    }
-                    return new VideoProgressUpdate(videoPlayerView.getCurrentPosition(),
-                            videoPlayerView.getDuration());
+            request.setContentProgressProvider(() -> {
+                if (isAdDisplayed || videoPlayerView.getDuration() <= 0) {
+                    return VideoProgressUpdate.VIDEO_TIME_NOT_READY;
                 }
+                return new VideoProgressUpdate(videoPlayerView.getCurrentPosition(),
+                        videoPlayerView.getDuration());
             });
 
             adsLoader.requestAds(request);
@@ -443,17 +481,6 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
     }
 
-
-    CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = new CastServiceProvider.ILaunchRemoteMedia() {
-        @Override
-        public void setRemotePlayBack(int castingModeChromecast) {
-            if (onClosePlayerEvent != null) {
-                pauseVideo();
-                onClosePlayerEvent.onRemotePlayback(videoPlayerView.getCurrentPosition(), castingModeChromecast);
-            }
-        }
-    };
-
     public interface OnClosePlayerEvent {
         void closePlayer();
 
@@ -463,7 +490,10 @@ public class AppCMSPlayVideoFragment extends Fragment
          */
         void onMovieFinished();
 
-        void onRemotePlayback(long currentPosition, int castingMode);
+        void onRemotePlayback(long currentPosition,
+                              int castingMode,
+                              boolean sentBeaconPlay,
+                              Action1<CastHelper.OnApplicationEnded> onApplicationEndedAction);
     }
 
     private static class BeaconPingThread extends Thread {
@@ -475,11 +505,13 @@ public class AppCMSPlayVideoFragment extends Fragment
         VideoPlayerView videoPlayerView;
         boolean runBeaconPing;
         boolean sendBeaconPing;
+        boolean isTrailer;
 
         public BeaconPingThread(long beaconMsgTimeoutMsec,
                                 AppCMSPresenter appCMSPresenter,
                                 String filmId,
                                 String permaLink,
+                                boolean isTrailer,
                                 String parentScreenName,
                                 VideoPlayerView videoPlayerView) {
             this.beaconMsgTimeoutMsec = beaconMsgTimeoutMsec;
@@ -488,6 +520,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             this.permaLink = permaLink;
             this.parentScreenName = parentScreenName;
             this.videoPlayerView = videoPlayerView;
+            this.isTrailer = isTrailer;
         }
 
         public void run() {
@@ -500,9 +533,12 @@ public class AppCMSPlayVideoFragment extends Fragment
                             appCMSPresenter.sendBeaconPingMessage(filmId,
                                     permaLink,
                                     parentScreenName,
-                                    videoPlayerView.getCurrentPosition());
-                            appCMSPresenter.updateWatchedTime(filmId,
-                                    videoPlayerView.getCurrentPosition() / 1000);
+                                    videoPlayerView.getCurrentPosition(),
+                                    true);
+                            if (!isTrailer) {
+                                appCMSPresenter.updateWatchedTime(filmId,
+                                        videoPlayerView.getCurrentPosition() / 1000);
+                            }
                         }
                     }
                 } catch (InterruptedException e) {

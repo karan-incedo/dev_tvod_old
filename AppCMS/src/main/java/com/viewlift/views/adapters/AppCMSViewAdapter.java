@@ -12,8 +12,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
@@ -23,10 +25,9 @@ import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -80,6 +81,15 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         } else {
             this.adapterData = new ArrayList<>();
         }
+
+        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
+            if (appCMSPresenter.isUserLoggedIn(context)) {
+                List<SubscriptionPlan> availableSubscriptionPlans =
+                        appCMSPresenter.availableUpgradesForUser(appCMSPresenter.getLoggedInUser(context));
+                cullDataByAvailableUpgrades(availableSubscriptionPlans);
+            }
+        }
+
         this.defaultWidth = defaultWidth;
         this.defaultHeight = defaultHeight;
         this.useMarginsAsPercentages = true;
@@ -92,10 +102,12 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
         this.isSelected = false;
         this.unselectedColor = ContextCompat.getColor(context, android.R.color.white);
-        this.selectedColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+        this.selectedColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                .getGeneral().getBlockTitleColor());
         this.isClickable = true;
 
         cullData(context);
+        sortPlanPricesInDescendingOrder();
     }
 
     @Override
@@ -123,8 +135,11 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     setBorder(childView, unselectedColor);
                     if (childView instanceof CollectionGridItemView) {
                         ((CollectionGridItemView) childView).setSelectable(false);
-                        for (View collectionGridChild : ((CollectionGridItemView) childView).getViewsToUpdateOnClickEvent()) {
+                        for (View collectionGridChild : ((CollectionGridItemView) childView)
+                                .getViewsToUpdateOnClickEvent()) {
                             if (collectionGridChild instanceof Button) {
+                                Component childComponent = ((CollectionGridItemView) childView).matchComponentToView(collectionGridChild);
+                                ((TextView) collectionGridChild).setText(childComponent.getText());
                                 collectionGridChild.setBackgroundColor(ContextCompat.getColor(v.getContext(),
                                         R.color.disabledButtonColor));
                             }
@@ -134,8 +149,11 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 setBorder(v, selectedColor);
                 if (v instanceof CollectionGridItemView) {
                     ((CollectionGridItemView) v).setSelectable(true);
-                    for (View collectionGridChild : ((CollectionGridItemView) v).getViewsToUpdateOnClickEvent()) {
+                    for (View collectionGridChild : ((CollectionGridItemView) v)
+                            .getViewsToUpdateOnClickEvent()) {
                         if (collectionGridChild instanceof Button) {
+                            Component childComponent = ((CollectionGridItemView) v).matchComponentToView(collectionGridChild);
+                            ((TextView) collectionGridChild).setText(childComponent.getSelectedText());
                             collectionGridChild.setBackgroundColor(selectedColor);
                         }
                     }
@@ -156,6 +174,24 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             }
             bindView(holder.componentView, adapterData.get(position));
         }
+
+        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
+            int selectableIndex = -1;
+            for (int i = 0; i < adapterData.size(); i++) {
+                if (holder.componentView.isSelectable()) {
+                    selectableIndex = i;
+                }
+            }
+
+            if (selectableIndex == -1) {
+                selectableIndex = 0;
+            }
+
+            if (selectableIndex == position) {
+                holder.componentView.setSelectable(true);
+                holder.componentView.performClick();
+            }
+        }
     }
 
     @Override
@@ -174,9 +210,15 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         adapterData = null;
         notifyDataSetChanged();
         adapterData = contentData;
+
+        sortPlanPricesInDescendingOrder();
+
         notifyDataSetChanged();
         listView.setAdapter(this);
         listView.invalidate();
+
+        cullData(listView.getContext());
+
         notifyDataSetChanged();
     }
 
@@ -267,7 +309,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                             }
                             if (!appCMSPresenter.launchVideoPlayer(data,
                                     currentPlayingIndex,
-                                    relatedVideoIds)) {
+                                    relatedVideoIds,
+                                    -1)) {
                                 Log.e(TAG, "Could not launch play action: " +
                                         " filmId: " +
                                         filmId +
@@ -283,38 +326,35 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
-
+            //
         } else {
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (isClickable) {
-                        String permalink = data.getGist().getPermalink();
-                        String title = data.getGist().getTitle();
-                        Log.d(TAG, "Launching " + permalink + ":" + defaultAction);
-                        List<String> relatedVideoIds = null;
-                        if (data.getContentDetails() != null &&
-                                data.getContentDetails().getRelatedVideoIds() != null) {
-                            relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
-                        }
-                        int currentPlayingIndex = -1;
-                        if (relatedVideoIds == null) {
-                            currentPlayingIndex = 0;
-                        }
-                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                defaultAction,
-                                title,
-                                null,
-                                null,
-                                false,
-                                currentPlayingIndex,
-                                relatedVideoIds)) {
-                            Log.e(TAG, "Could not launch action: " +
-                                    " permalink: " +
-                                    permalink +
-                                    " action: " +
-                                    defaultAction);
-                        }
+            itemView.setOnClickListener(v -> {
+                if (isClickable) {
+                    String permalink = data.getGist().getPermalink();
+                    String title = data.getGist().getTitle();
+                    Log.d(TAG, "Launching " + permalink + ":" + defaultAction);
+                    List<String> relatedVideoIds = null;
+                    if (data.getContentDetails() != null &&
+                            data.getContentDetails().getRelatedVideoIds() != null) {
+                        relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
+                    }
+                    int currentPlayingIndex = -1;
+                    if (relatedVideoIds == null) {
+                        currentPlayingIndex = 0;
+                    }
+                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                            defaultAction,
+                            title,
+                            null,
+                            null,
+                            false,
+                            currentPlayingIndex,
+                            relatedVideoIds)) {
+                        Log.e(TAG, "Could not launch action: " +
+                                " permalink: " +
+                                permalink +
+                                " action: " +
+                                defaultAction);
                     }
                 }
             });
@@ -351,15 +391,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         return null;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        CollectionGridItemView componentView;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            this.componentView = (CollectionGridItemView) itemView;
-        }
-    }
-
     private void setBorder(View itemView,
                            int color) {
         GradientDrawable planBorder = new GradientDrawable();
@@ -375,19 +406,50 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             String currentSubscriptionSku = appCMSPresenter.getActiveSubscriptionSku(context);
             float currentSubscriptionPrice = appCMSPresenter.getActiveSubscriptionPrice(context);
             if (!TextUtils.isEmpty(currentSubscriptionSku)) {
-                List<Integer> elementIndicesToCull = new ArrayList<>();
+                List<ContentDatum> culledData = new ArrayList<>();
                 for (int i = 0; i < adapterData.size(); i++) {
-                    if (adapterData.get(i).getId().equals(currentSubscriptionSku)) {
-                        elementIndicesToCull.add(i);
-                    } else if ((float) adapterData.get(0).getPlanDetails().get(0).getRecurringPaymentAmount() <=
-                            currentSubscriptionPrice) {
-                        elementIndicesToCull.add(i);
+                    if (currentSubscriptionPrice < (float) adapterData.get(i).getPlanDetails().get(0).getRecurringPaymentAmount()) {
+                        culledData.add(adapterData.get(i));
                     }
                 }
-                for (int i = 0; i < elementIndicesToCull.size(); i++) {
-                    adapterData.remove((int) elementIndicesToCull.get(i));
+                this.adapterData = culledData;
+            }
+        }
+    }
+
+    private void sortPlanPricesInDescendingOrder() {
+        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY && adapterData != null) {
+
+            Collections.sort(adapterData,
+                    (datum1, datum2) -> Double.compare(datum1.getPlanDetails().get(0)
+                            .getRecurringPaymentAmount(), datum2.getPlanDetails().get(0)
+                            .getRecurringPaymentAmount()));
+
+            Collections.reverse(adapterData);
+        }
+    }
+
+    private void cullDataByAvailableUpgrades(List<SubscriptionPlan> availableSubscriptionPlans) {
+        List<ContentDatum> updatedData = new ArrayList<>();
+        if (availableSubscriptionPlans != null) {
+            for (ContentDatum contentDatum : adapterData) {
+                for (SubscriptionPlan subscriptionPlan : availableSubscriptionPlans) {
+                    if (!TextUtils.isEmpty(contentDatum.getIdentifier()) &&
+                            contentDatum.getIdentifier().equals(subscriptionPlan.getSku())) {
+                        updatedData.add(contentDatum);
+                    }
                 }
             }
+        }
+        this.adapterData = updatedData;
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        CollectionGridItemView componentView;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            this.componentView = (CollectionGridItemView) itemView;
         }
     }
 }

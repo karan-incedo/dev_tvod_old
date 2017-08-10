@@ -68,6 +68,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private AdsLoader adsLoader;
     private AdsManager adsManager;
     private boolean isAdDisplayed;
+    private String closedCaptionUrl;
 
     public interface OnClosePlayerEvent {
         void closePlayer();
@@ -107,7 +108,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                             appCMSPresenter.sendBeaconPingMessage(filmId,
                                     permaLink,
                                     parentScreenName,
-                                    videoPlayerView.getCurrentPosition());
+                                    videoPlayerView.getCurrentPosition(),
+                                    false);
                         }
                     }
                 } catch (InterruptedException e) {
@@ -124,7 +126,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                                                       String hlsUrl,
                                                       String filmId,
                                                       String adsUrl,
-                                                      boolean requestAds) {
+                                                      boolean requestAds,
+                                                      String closedCaptionUrl) {
         AppCMSPlayVideoFragment appCMSPlayVideoFragment = new AppCMSPlayVideoFragment();
         Bundle args = new Bundle();
         args.putString(context.getString(R.string.video_player_font_color_key), fontColor);
@@ -134,6 +137,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         args.putString(context.getString(R.string.video_layer_film_id_key), filmId);
         args.putString(context.getString(R.string.video_player_ads_url_key), adsUrl);
         args.putBoolean(context.getString(R.string.video_player_request_ads_key), requestAds);
+        args.putString(context.getString(R.string.video_player_closed_caption_key), closedCaptionUrl);
         appCMSPlayVideoFragment.setArguments(args);
         return appCMSPlayVideoFragment;
     }
@@ -158,6 +162,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             filmId = args.getString(getActivity().getString(R.string.video_layer_film_id_key));
             adsUrl = args.getString(getActivity().getString(R.string.video_player_ads_url_key));
             shouldRequestAds = args.getBoolean(getActivity().getString(R.string.video_player_request_ads_key));
+            closedCaptionUrl = args.getString(getActivity().getString(R.string.video_player_closed_caption_key));
         }
 
         appCMSPresenter =
@@ -205,7 +210,8 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
         if (!TextUtils.isEmpty(hlsUrl)) {
-            videoPlayerView.setUri(Uri.parse(hlsUrl));
+            videoPlayerView.setUri(Uri.parse(hlsUrl),
+                    !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
             Log.i(TAG, "Playing video: " + hlsUrl);
         }
         videoPlayerView.setOnPlayerStateChanged(new Action1<VideoPlayerView.PlayerState>() {
@@ -328,7 +334,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                     appCMSPresenter.sendBeaconPlayMessage(filmId,
                             permaLink,
                             parentScreenName,
-                            videoPlayerView.getCurrentPosition());
+                            videoPlayerView.getCurrentPosition(),
+                            false);
                 }
                 if (beaconMessageThread != null && !beaconMessageThread.isAlive()) {
                     beaconMessageThread.start();

@@ -27,6 +27,7 @@ import com.viewlift.models.network.modules.AppCMSSearchUrlData;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSSearchItemAdapter;
+import com.viewlift.views.adapters.SearchSuggestionsAdapter;
 
 import java.io.IOException;
 import java.util.List;
@@ -66,6 +67,14 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                                 .appCMSPresenter(),
                         null);
         appCMSSearchResultsView.setAdapter(appCMSSearchItemAdapter);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        @SuppressWarnings("ConstantConditions")
+        SearchSuggestionsAdapter searchSuggestionsAdapter = new SearchSuggestionsAdapter(this,
+                null,
+                searchManager.getSearchableInfo(getComponentName()),
+                true);
+
         appCMSSearchResultsView.requestFocus();
 
         AppCMSMain appCMSMain =
@@ -88,10 +97,11 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         registerReceiver(handoffReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
 
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         appCMSSearchView = (SearchView) findViewById(R.id.app_cms_searchbar);
         appCMSSearchView.setQueryHint(getString(R.string.search_films));
+        //noinspection ConstantConditions
         appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        appCMSSearchView.setSuggestionsAdapter(searchSuggestionsAdapter);
         appCMSSearchView.setIconifiedByDefault(false);
 
         LinearLayout appCMSSearchResultsContainer =

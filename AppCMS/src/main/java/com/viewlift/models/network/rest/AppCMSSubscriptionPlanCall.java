@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.SubscriptionRequest;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionPlanResult;
+import com.viewlift.models.data.appcms.subscriptions.AppCMSUserSubscriptionPlanResult;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -47,9 +48,11 @@ public class AppCMSSubscriptionPlanCall {
     public void call(String url, int subscriptionCallType, SubscriptionRequest request,
                      String apiKey, String authToken,
                      final Action1<List<AppCMSSubscriptionPlanResult>> planResultAction1,
-                     final Action1<AppCMSSubscriptionPlanResult> resultAction1)
+                     final Action1<AppCMSSubscriptionPlanResult> resultAction1,
+                     final Action1<AppCMSUserSubscriptionPlanResult> userSubscriptionPlanResult)
             throws IOException {
 
+        Log.d(TAG, "URL: " + url);
         authHeaders.clear();
         if (!TextUtils.isEmpty(apiKey) && !TextUtils.isEmpty(authToken)) {
             authHeaders.put("Authorization", authToken);
@@ -59,65 +62,83 @@ public class AppCMSSubscriptionPlanCall {
         switch (subscriptionCallType) {
 
             case R.string.app_cms_subscription_plan_list_key:
-                appCMSSubscriptionPlanRest.getPlanList(url)
+                appCMSSubscriptionPlanRest.getPlanList(url, authHeaders)
                         .enqueue(new Callback<List<AppCMSSubscriptionPlanResult>>() {
                             @Override
                             public void onResponse(@NonNull Call<List<AppCMSSubscriptionPlanResult>> call,
                                                    @NonNull Response<List<AppCMSSubscriptionPlanResult>> response) {
-                                Observable.just(response.body()).subscribe(planResultAction1);
+                                try {
+                                    Observable.just(response.body()).subscribe(planResultAction1);
+                                } catch (Exception e) {
+                                    Observable.just((List<AppCMSSubscriptionPlanResult>) null).subscribe(planResultAction1);
+                                }
                             }
 
                             @Override
                             public void onFailure(@NonNull Call<List<AppCMSSubscriptionPlanResult>> call,
                                                   @NonNull Throwable t) {
                                 Log.e(TAG, "onFailure: " + t.getMessage());
+                                Observable.just((List<AppCMSSubscriptionPlanResult>) null).subscribe(planResultAction1);
                             }
                         });
                 break;
 
             case R.string.app_cms_subscription_subscribed_plan_key:
-                appCMSSubscriptionPlanRest.getSubscribedPlan(url).enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
+                appCMSSubscriptionPlanRest.getSubscribedPlan(url, authHeaders).enqueue(new Callback<AppCMSUserSubscriptionPlanResult>() {
                     @Override
-                    public void onResponse(Call<AppCMSSubscriptionPlanResult> call, Response<AppCMSSubscriptionPlanResult> response) {
-                        if (response != null) {
-                            Observable.just(response.body()).subscribe(resultAction1);
-                        } else {
-                            Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
+                    public void onResponse(Call<AppCMSUserSubscriptionPlanResult> call, Response<AppCMSUserSubscriptionPlanResult> response) {
+                        try {
+                            Observable.just(response.body()).subscribe(userSubscriptionPlanResult);
+                        } catch (Exception e) {
+                            Observable.just((AppCMSUserSubscriptionPlanResult) null).subscribe(userSubscriptionPlanResult);
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<AppCMSSubscriptionPlanResult> call, Throwable t) {
+                    public void onFailure(Call<AppCMSUserSubscriptionPlanResult> call, Throwable t) {
                         Log.e(TAG, "onFailure: " + t.getMessage());
-                        Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
+                        Observable.just((AppCMSUserSubscriptionPlanResult) null).subscribe(userSubscriptionPlanResult);
                     }
                 });
                 break;
 
             case R.string.app_cms_subscription_plan_create_key:
+                authHeaders.put("Content-Type", "application/json");
+                Log.d(TAG, "Headers: " + authHeaders.toString());
                 appCMSSubscriptionPlanRest.createPlan(url, authHeaders, request)
                         .enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
                             @Override
                             public void onResponse(@NonNull Call<AppCMSSubscriptionPlanResult> call,
                                                    @NonNull Response<AppCMSSubscriptionPlanResult> response) {
-                                Observable.just(response.body()).subscribe(resultAction1);
+                                try {
+                                    Observable.just(response.body()).subscribe(resultAction1);
+                                } catch (Exception e) {
+                                    Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
+                                }
                             }
 
                             @Override
                             public void onFailure(@NonNull Call<AppCMSSubscriptionPlanResult> call,
                                                   @NonNull Throwable t) {
                                 Log.e(TAG, "onFailure: " + t.getMessage());
+                                Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                             }
                         });
                 break;
 
             case R.string.app_cms_subscription_plan_update_key:
+                authHeaders.put("Content-Type", "application/json");
+                Log.d(TAG, "Headers: " + authHeaders.toString());
                 appCMSSubscriptionPlanRest.updatePlan(url, authHeaders, request)
                         .enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
                             @Override
                             public void onResponse(@NonNull Call<AppCMSSubscriptionPlanResult> call,
                                                    @NonNull Response<AppCMSSubscriptionPlanResult> response) {
-                                Observable.just(response.body()).subscribe(resultAction1);
+                                try {
+                                    Observable.just(response.body()).subscribe(resultAction1);
+                                } catch (Exception e) {
+                                    Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
+                                }
                             }
 
                             @Override
@@ -134,7 +155,11 @@ public class AppCMSSubscriptionPlanCall {
                             @Override
                             public void onResponse(@NonNull Call<AppCMSSubscriptionPlanResult> call,
                                                    @NonNull Response<AppCMSSubscriptionPlanResult> response) {
-                                Observable.just(response.body()).subscribe(resultAction1);
+                                try {
+                                    Observable.just(response.body()).subscribe(resultAction1);
+                                } catch (Exception e) {
+                                    Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
+                                }
                             }
 
                             @Override

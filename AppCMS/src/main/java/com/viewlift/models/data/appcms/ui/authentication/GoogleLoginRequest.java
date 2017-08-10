@@ -11,7 +11,7 @@ import com.vimeo.stag.UseStag;
 @UseStag
 public class GoogleLoginRequest {
 
-    @SerializedName("token")
+    @SerializedName("googleToken")
     @Expose
     private String accessToken;
 

@@ -49,7 +49,11 @@ public class HeaderView extends TVBaseView {
         float viewWidth = Utils.getViewHeight(mContext ,mComponent.getLayout() ,DEFAULT_WIDTH );
         LayoutParams layoutParams= new LayoutParams((int)viewWidth , (int)viewHeight);
         setLayoutParams(layoutParams);
+        /** This is missing a resource R.color.video_detail_header
+         * This resource doesn't seem to be in any of the branches
+         * Merge issue: @Nitin Tyagi please fix
         setBackgroundColor(ContextCompat.getColor(mContext , R.color.video_detail_header));
+         */
     }
 
     @Override

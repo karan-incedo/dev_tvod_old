@@ -12,6 +12,8 @@ public class UserVideoDownloadStatus {
 
     private String videoUri;
     private String thumbUri;
+    private String posterUri;
+    private String subtitlesUri;
     private long videoSize;
 
 
@@ -61,5 +63,21 @@ public class UserVideoDownloadStatus {
 
     public void setVideoSize(long videoSize) {
         this.videoSize = videoSize;
+    }
+
+    public String getPosterUri() {
+        return posterUri;
+    }
+
+    public void setPosterUri(String posterUri) {
+        this.posterUri = posterUri;
+    }
+
+    public String getSubtitlesUri() {
+        return subtitlesUri;
+    }
+
+    public void setSubtitlesUri(String subtitlesUri) {
+        this.subtitlesUri = subtitlesUri;
     }
 }

@@ -17,7 +17,7 @@ import com.viewlift.views.modules.AppCMSPresenterModule;
 
 import io.fabric.sdk.android.Fabric;
 
-import static com.viewlift.analytics.AppsFlyerUtils.addDeviceInfo;
+import static com.viewlift.analytics.AppsFlyerUtils.trackInstallationEvent;
 
 /**
  * Created by viewlift on 5/4/17.
@@ -45,6 +45,7 @@ public class AppCMSApplication extends Application {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
                 appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
+                AppsFlyerUtils.appOpenEvent(activity);
             }
 
             @Override
@@ -76,15 +77,17 @@ public class AppCMSApplication extends Application {
             public void onActivityDestroyed(Activity activity) {
                 Log.d(TAG, "Activity being destroyed: " + activity.getLocalClassName());
                 appCMSPresenterComponent.appCMSPresenter().unsetCurrentActivity(activity);
+                appCMSPresenterComponent.appCMSPresenter().closeSoftKeyboard();
             }
         });
 
-        Fabric.with(this, new Crashlytics());
+        sendAnalytics();
+    }
 
-        //Initializing AppsFlyer
-        AppsFlyerLib.getInstance().startTracking(this,getString(R.string.app_cms_appsflyer_dev_key));
-        AppsFlyerUtils.uninstallApp(this, getString(R.string.GCM_SENDER_ID_APPFLYERS));
-        addDeviceInfo(this);
+    private void sendAnalytics() {
+        Fabric.with(this, new Crashlytics());
+        AppsFlyerLib.getInstance().startTracking(this, getString(R.string.app_cms_appsflyer_dev_key));
+        trackInstallationEvent(this);
     }
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {

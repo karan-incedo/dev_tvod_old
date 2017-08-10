@@ -78,7 +78,13 @@ public class SubscriptionMetaDataView extends LinearLayout {
                 new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
         setLayoutParams(layoutParams);
-        if (planDetailsIndex >= 0) {
+        if (planDetailsIndex >= 0 &&
+                moduleAPI.getContentData() != null &&
+                moduleAPI.getContentData().get(planDetailsIndex) != null &&
+                moduleAPI.getContentData().get(planDetailsIndex).getPlanDetails() != null &&
+                moduleAPI.getContentData().get(planDetailsIndex).getPlanDetails().size() > 0 &&
+                moduleAPI.getContentData().get(planDetailsIndex).getPlanDetails().get(0) != null &&
+                moduleAPI.getContentData().get(planDetailsIndex).getPlanDetails().get(0).getFeatureDetails() != null) {
             List<FeatureDetail> featureDetails =
                     moduleAPI.getContentData()
                             .get(planDetailsIndex)

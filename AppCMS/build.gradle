@@ -35,6 +35,8 @@ android {
         versionCode 10
         versionName "1.0.20"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        renderscriptTargetApi 25
+        renderscriptSupportModeEnabled true
     }
     flavorDimensions "green"
     productFlavors {
@@ -153,6 +155,7 @@ dependencies {
     compile "com.google.android.gms:play-services-analytics:$rootProject.ext.googlePlayServicesVersion"
     compile "com.google.android.gms:play-services-gcm:$rootProject.ext.googlePlayServicesVersion"
     compile "com.google.android.gms:play-services-auth:$rootProject.ext.googlePlayServicesVersion"
+    compile "jp.wasabeef:glide-transformations:$rootProject.ext.glideTransformationVersion"
     compile("com.crashlytics.sdk.android:crashlytics:$rootProject.ext.crashlyticsVersion") {
         transitive = true
     }
@@ -166,6 +169,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'customtabs'
     })
 
+    compile 'com.github.amlcurran.showcaseview:library:5.4.3'
+
     compile "com.apptentive:apptentive-android:$rootProject.ext.apptentiveVersion"
     provided "javax.annotation:jsr250-api:$rootProject.ext.jsr250_apiVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
@@ -177,6 +182,7 @@ dependencies {
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
 
     compile "com.appsflyer:af-android-sdk:$rootProject.ext.appsFlyerVersion"
+    compile "com.google.android.gms:play-services-tagmanager:$rootProject.ext.googlePlayServicesVersion"
 }
 
 apply plugin: 'com.google.gms.google-services'

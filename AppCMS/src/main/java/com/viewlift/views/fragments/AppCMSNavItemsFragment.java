@@ -1,24 +1,19 @@
 package com.viewlift.views.fragments;
 
-import android.app.Dialog;
+
 import android.content.Context;
-import android.content.res.Configuration;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
@@ -78,6 +73,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 appCMSPresenter,
                 appCMSBinder.getJsonValueKeyMap(),
                 appCMSBinder.isUserLoggedIn(),
+                appCMSBinder.isUserSubscribed(),
                 textColor);
         navItemsList.setAdapter(appCMSNavItemsAdapter);
         if (!BaseView.isTablet(getContext())) {
@@ -98,10 +94,8 @@ public class AppCMSNavItemsFragment extends DialogFragment {
             appCMSNavLoginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    dismiss();
                     if (appCMSPresenter != null) {
-                        appCMSPresenter.showMainFragmentView(true);
-                        appCMSPresenter.setNavItemToCurrentAction(getActivity());
+                        appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
                         appCMSPresenter.navigateToLoginPage();
                     }
                 }
@@ -120,11 +114,10 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 appCMSNavFreeTrialButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        dismiss();
                         if (appCMSPresenter != null) {
-                            appCMSPresenter.showMainFragmentView(true);
-                            appCMSPresenter.setNavItemToCurrentAction(getActivity());
-                            appCMSPresenter.navigateToSubscriptionPlansPage();
+                            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
+                            appCMSPresenter.navigateToSubscriptionPlansPage(appCMSBinder.getPageId(),
+                                    appCMSBinder.getPageName());
                         }
                     }
                 });
@@ -134,92 +127,22 @@ public class AppCMSNavItemsFragment extends DialogFragment {
             }
         }
 
-        ImageButton closeButton = (ImageButton) view.findViewById(R.id.app_cms_close_button);
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-                if (appCMSPresenter != null) {
-                    appCMSPresenter.showMainFragmentView(true);
-                    appCMSPresenter.setNavItemToCurrentAction(getActivity());
-                    appCMSPresenter.sendRefreshPageAction();
-                }
-            }
-        });
-
-        setBgColor(bgColor);
+        setBgColor(bgColor, view);
 
         return view;
     }
 
-    @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new Dialog(getActivity(), getTheme()) {
-            @Override
-            public void onBackPressed() {
-                dismiss();
-                if (appCMSPresenter != null) {
-                    appCMSPresenter.setNavItemToCurrentAction(getActivity());
-                    appCMSPresenter.showMainFragmentView(true);
-                    appCMSPresenter.sendRefreshPageAction();
-                }
-            }
-        };
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        setWindow();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        appCMSPresenter.dismissOpenDialogs(this);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (appCMSPresenter != null) {
-            appCMSPresenter.setNavItemToCurrentAction(getActivity());
-            if (appCMSNavItemsAdapter.isItemSelected()) {
-                appCMSPresenter.showMainFragmentView(true);
-            }
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (!BaseView.isTablet(getContext())) {
+            appCMSPresenter.unrestrictPortraitOnly();
         }
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (isVisible()) {
-            appCMSPresenter.launchNavigationPage(appCMSBinder.getPageName(),
-                    appCMSBinder.getPageId());
-        }
-    }
-
-    private void setBgColor(int bgColor) {
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            Window window = dialog.getWindow();
-            if (window != null) {
-                window.setBackgroundDrawable(new ColorDrawable(bgColor));
-            }
-        }
-    }
-
-    private void setWindow() {
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            int width = ViewGroup.LayoutParams.MATCH_PARENT;
-            int height = ViewGroup.LayoutParams.MATCH_PARENT;
-            Window window = dialog.getWindow();
-            if (window != null) {
-                window.setLayout(width, height);
-                window.setGravity(Gravity.START);
-            }
-        }
+    private void setBgColor(int bgColor, View view) {
+        RelativeLayout appCMSNavigationMenuMainLayout =
+                (RelativeLayout) view.findViewById(R.id.app_cms_navigation_menu_main_layout);
+        appCMSNavigationMenuMainLayout.setBackgroundColor(bgColor);
     }
 }

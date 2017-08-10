@@ -36,6 +36,7 @@ public class AppCMSVideoPageBinder extends Binder {
     private boolean playAds;
     private String fontColor;
     private boolean isLoggedIn;
+    private boolean isSubscribed;
     private int currentPlayingVideoIndex;
 
     public AppCMSVideoPageBinder(
@@ -57,6 +58,7 @@ public class AppCMSVideoPageBinder extends Binder {
             ContentDatum contentDatum,
             boolean isTrailer,
             boolean userLoggedIn,
+            boolean isSubscribed,
             List<String> relatedVideoIds,
             int currentlyPlayingIndex,
             boolean isOffline) {
@@ -78,6 +80,7 @@ public class AppCMSVideoPageBinder extends Binder {
         this.contentData = contentDatum;
         this.isTrailer = isTrailer;
         this.isLoggedIn = userLoggedIn;
+        this.isSubscribed = isSubscribed;
         this.relateVideoIds = relatedVideoIds;
         this.currentPlayingVideoIndex = currentlyPlayingIndex;
         this.isOffline = isOffline;
@@ -189,6 +192,14 @@ public class AppCMSVideoPageBinder extends Binder {
 
     public void setLoggedIn(boolean loggedIn) {
         isLoggedIn = loggedIn;
+    }
+
+    public boolean isSubscribed() {
+        return isSubscribed;
+    }
+
+    public void setSubscribed(boolean subscribed) {
+        isSubscribed = subscribed;
     }
 
     public void setCurrentPlayingVideoIndex(int currentPlayingVideoIndex) {
