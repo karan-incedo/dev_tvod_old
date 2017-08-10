@@ -231,6 +231,7 @@ public class AppCMSPresenter {
     private static final String ACTIVE_SUBSCRIPTION_PRICE_NAME = "active_subscription_plan_price_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PROCESSOR_NAME = "active_subscription_payment_processor_key";
     private static final String IS_USER_SUBSCRIBED = "is_user_subscribed_pref_key";
+    private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID = "existing_google_play_subscription_id_key";
 
     private static final String USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME = "user_download_quality_pref";
 
@@ -1456,7 +1457,8 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             String paymentProcessor = getActiveSubscriptionProcessor(currentActivity);
             if (!TextUtils.isEmpty(paymentProcessor) &&
-                    paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))) {
+                    (paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
+                    paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)))) {
                 Intent googlePlayStoreCancelIntent = new Intent(Intent.ACTION_VIEW,
                         Uri.parse(currentActivity.getString(R.string.google_play_store_subscriptions_url)));
                 currentActivity.startActivity(googlePlayStoreCancelIntent);
@@ -2678,7 +2680,7 @@ public class AppCMSPresenter {
                     false,
                     false,
                     deeplinkSearchQuery);
-            checkForExistingSubscription();
+            checkForExistingSubscription(true);
 
             if (!launchSuccess) {
                 Log.e(TAG, "Failed to launch page: " + subscriptionPage.getPageName());
@@ -2687,7 +2689,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void checkForExistingSubscription() {
+    public void checkForExistingSubscription(boolean showErrorDialogIfSubscriptionExists) {
         if (currentActivity != null) {
             Bundle activeSubs = null;
             try {
@@ -2699,15 +2701,20 @@ public class AppCMSPresenter {
                     ArrayList<String> subscribedItemList = activeSubs.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
                     if (subscribedItemList != null && subscribedItemList.size() > 0) {
                         for (int i = 0; i < subscribedItemList.size(); i++) {
-                            InAppPurchaseData inAppPurchaseData = gson.fromJson(subscribedItemList.get(i),
-                                    InAppPurchaseData.class);
-                            if (inAppPurchaseData.isAutoRenewing()) {
-                                showDialog(DialogType.EXISTING_SUBSCRIPTION,
-                                        currentActivity.getString(R.string.app_cms_existing_subscription_error_message),
-                                        false,
-                                        () -> {
-                                            sendCloseOthersAction(null, true);
-                                        });
+                            try {
+                                InAppPurchaseData inAppPurchaseData = gson.fromJson(subscribedItemList.get(i),
+                                        InAppPurchaseData.class);
+                                if (inAppPurchaseData.isAutoRenewing() && showErrorDialogIfSubscriptionExists) {
+                                    showDialog(DialogType.EXISTING_SUBSCRIPTION,
+                                            currentActivity.getString(R.string.app_cms_existing_subscription_error_message),
+                                            false,
+                                            () -> {
+                                                sendCloseOthersAction(null, true);
+                                            });
+                                    setExistingGooglePlaySubscriptionId(currentActivity, inAppPurchaseData.getProductId());
+                                }
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error parsing Google Play subscription data: " + e.toString());
                             }
                         }
                     }
@@ -3562,6 +3569,23 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public String getExistingGooglePlaySubscriptionId(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID, 0);
+            return sharedPrefs.getString(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID, null);
+        }
+        return null;
+    }
+
+    public boolean setExistingGooglePlaySubscriptionId(Context context,
+                                                       String existingGooglePlaySubscriptionId) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID, 0);
+            return sharedPrefs.edit().putString(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID, existingGooglePlaySubscriptionId).commit();
+        }
+        return false;
+    }
+
     public String getActiveSubscriptionSku(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(ACTIVE_SUBSCRIPTION_SKU, 0);
@@ -3705,6 +3729,7 @@ public class AppCMSPresenter {
             setRefreshToken(currentActivity, null);
             setAuthToken(currentActivity, null);
             setIsUserSubscribed(currentActivity, false);
+            setExistingGooglePlaySubscriptionId(currentActivity, null);
 
             sendUpdateHistoryAction();
 
@@ -4802,6 +4827,8 @@ public class AppCMSPresenter {
                         setLoggedInUserName(currentActivity, signInResponse.getName());
                         setLoggedInUserEmail(currentActivity, signInResponse.getEmail());
                         setIsUserSubscribed(currentActivity, signInResponse.isSubscribed());
+
+                        checkForExistingSubscription(false);
 
                         if (signup) {
                             AppsFlyerUtils.registrationEvent(currentActivity, signInResponse.getUserId(),

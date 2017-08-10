@@ -314,7 +314,11 @@
     <string name="app_cms_download_quality_continue_button_key">continueButton</string>
 
     <!-- AppCMS Payment Processor values -->
-    <string name="subscription_ios_payment_processor_friendly">iOS</string>
-    <string name="subscription_android_payment_processor_friendly">Android</string>
+    <string name="subscription_ios_payment_processor">iOS</string>
+    <string name="subscription_ios_payment_processor_friendly">iTunes</string>
+    <string name="subscription_android_payment_processor">Android</string>
+    <string name="subscription_android_payment_processor_friendly">Google Play</string>
     <string name="subscription_web_payment_processor_friendly">Stripe</string>
+    <string name="subscription_no_payment_processor_friendly">None</string>
+    <string name="subscription_unknown_payment_processor_friendly">Unknown</string>
 </resources>
