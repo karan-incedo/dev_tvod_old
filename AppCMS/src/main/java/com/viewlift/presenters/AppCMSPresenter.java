@@ -3967,8 +3967,8 @@ public class AppCMSPresenter {
     public void showEntitlementDialog(DialogType dialogType) {
         if (currentActivity != null) {
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
-            String title = currentActivity.getString(R.string.app_cms_login_required_title);
-            String message = currentActivity.getString(R.string.app_cms_login_required_message);
+            String title = currentActivity.getString(R.string.app_cms_subscription_required_title);
+            String message = currentActivity.getString(R.string.app_cms_subscription_required_message);
 
             if (dialogType == DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD) {
                 title = currentActivity.getString(R.string.app_cms_logout_with_running_download_title);
@@ -3987,6 +3987,11 @@ public class AppCMSPresenter {
             if (dialogType == DialogType.CANNOT_CANCEL_SUBSCRIPTION) {
                 title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
                 message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_web_user_dialog);
+            }
+
+            if (dialogType == DialogType.LOGIN_REQUIRED) {
+                title = currentActivity.getString(R.string.app_cms_login_required_title);
+                message = currentActivity.getString(R.string.app_cms_login_required_message);
             }
 
             AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
@@ -6043,6 +6048,7 @@ public class AppCMSPresenter {
         RESET_PASSWORD,
         CANCEL_SUBSCRIPTION,
         SUBSCRIBE,
+        LOGIN_REQUIRED,
         SUBSCRIPTION_REQUIRED,
         LOGIN_AND_SUBSCRIPTION_REQUIRED,
         LOGOUT_WITH_RUNNING_DOWNLOAD,
