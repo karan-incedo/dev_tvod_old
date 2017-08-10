@@ -1297,7 +1297,9 @@ public class ViewCreator {
                 } else if (appCMSPresenter.isActionGoogle(component.getAction())) {
                     applyBorderToComponent(context, componentViewResult.componentView, component,
                             ContextCompat.getColor(context, R.color.googleRed));
-                } else if (componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY
+                } else if (jsonValueKeyMap.get(moduleAPI.getModuleType())
+                        == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY
+                        && componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY
                         && component.getBorderWidth() != 0) {
                     applyBorderToComponent(
                             context,
@@ -1587,7 +1589,7 @@ public class ViewCreator {
                     case PAGE_AUTOPLAY_MOVIE_PLAY_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.autoplay_play_button);
                         break;
-                        
+
                     case PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY:
                         componentViewResult.componentView.setOnClickListener(v -> {
                             if (!appCMSPresenter.sendCloseOthersAction(null, true)){
@@ -1603,7 +1605,18 @@ public class ViewCreator {
                         break;
 
                     case PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY:
-                         componentViewResult.componentView.setId(R.id.download_quality_cancel_button);
+                        if (jsonValueKeyMap.get(moduleAPI.getModuleType())
+                                == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY) {
+                            componentViewResult.componentView.setOnClickListener(v -> {
+                                if (!appCMSPresenter.sendCloseOthersAction(null, true)) {
+                                    Log.e(TAG, "Could not perform close action: " +
+                                            " action: " +
+                                            component.getAction());
+                                }
+                            });
+                        } else {
+                            componentViewResult.componentView.setId(R.id.download_quality_cancel_button);
+                        }
                          break;
 
                     default:
