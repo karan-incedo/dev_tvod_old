@@ -357,7 +357,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         super.onStart();
         if (resumeInternalEvents) {
             appCMSPresenter.restartInternalEvents();
-            appCMSPresenter.showMainFragmentView(false);
         }
     }
 
@@ -503,6 +502,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.cancelInternalEvents();
             appCMSPresenter.onConfigurationChange(true);
             if (appCMSPresenter.isMainFragmentViewVisible()) {
+                if (!appCMSPresenter.isMainFragmentTransparent()) {
+                    appCMSPresenter.showMainFragmentView(true);
+                }
                 AppCMSBinder appCMSBinder = appCMSBinderStack.size() > 0 ?
                         appCMSBinderMap.get(appCMSBinderStack.peek()) :
                         null;
