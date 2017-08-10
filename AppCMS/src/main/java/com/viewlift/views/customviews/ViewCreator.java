@@ -32,6 +32,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -1587,18 +1590,11 @@ public class ViewCreator {
                     case PAGE_AUTOPLAY_MOVIE_PLAY_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.autoplay_play_button);
                         break;
+                        
                     case PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY:
-                        Log.e(TAG, "PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY  " + component.getAction());
                         componentViewResult.componentView.setOnClickListener(v -> {
-                            if (!appCMSPresenter.launchButtonSelectedAction(null,
-                                    component.getAction(),
-                                    null,
-                                    null,
-                                    null,
-                                    false,
-                                    0,
-                                    null)) {
-                                Log.e(TAG, "Could not launch action: " +
+                            if (!appCMSPresenter.sendCloseOthersAction(null, true)){
+                                Log.e(TAG, "Could not perform close action: " +
                                         " action: " +
                                         component.getAction());
                             }
@@ -1719,6 +1715,28 @@ public class ViewCreator {
                             break;
 
                         case PAGE_AUTOPLAY_MOVIE_DISCRIPTION_KEY:
+                            String autoplayVideoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
+                            if (autoplayVideoDescription != null) {
+                                autoplayVideoDescription = autoplayVideoDescription.trim();
+                            }
+                            if (!TextUtils.isEmpty(autoplayVideoDescription)) {
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(autoplayVideoDescription));
+                                } else {
+                                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(autoplayVideoDescription, Html.FROM_HTML_MODE_COMPACT));
+                                }
+                            } else if (!BaseView.isLandscape(context)) {
+                                componentViewResult.shouldHideComponent = true;
+                            }
+                            ViewTreeObserver viewTreeObserver = componentViewResult.componentView.getViewTreeObserver();
+                            ViewCreatorMultiLineLayoutListener viewCreatorMultiLineLayoutListener =
+                                    new ViewCreatorMultiLineLayoutListener(((TextView) componentViewResult.componentView),
+                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                            autoplayVideoDescription,
+                                            appCMSPresenter,
+                                            true);
+                            viewTreeObserver.addOnGlobalLayoutListener(viewCreatorMultiLineLayoutListener);
+                            break;
                         case PAGE_VIDEO_DESCRIPTION_KEY:
                             String videoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
                             if (videoDescription != null) {
@@ -1899,22 +1917,14 @@ public class ViewCreator {
                                 component.getLayout(),
                                 ViewGroup.LayoutParams.WRAP_CONTENT);
                         if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
-                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                    moduleAPI.getContentData().get(0).getGist().getPosterImageUrl(),
-                                    viewWidth,
-                                    viewHeight);
                             Glide.with(context)
-                                    .load(imageUrl)
+                                    .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
                                     .override(viewWidth, viewHeight)
                                     .centerCrop()
                                     .into((ImageView) componentViewResult.componentView);
                         } else if (viewWidth > 0) {
-                            String videoImageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                    moduleAPI.getContentData().get(0).getGist().getVideoImageUrl(),
-                                    viewWidth,
-                                    viewHeight);
                             Glide.with(context)
-                                    .load(videoImageUrl)
+                                    .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                     .override(viewWidth, viewHeight)
                                     .centerCrop()
                                     .into((ImageView) componentViewResult.componentView);
