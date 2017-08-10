@@ -4443,45 +4443,6 @@ public class AppCMSPresenter {
 
         googleAccessToken = null;
         googleUserId = null;
-
-        refreshSubscriptionData(() -> {
-            if (entitlementPendingVideoData != null) {
-                sendCloseOthersAction(null, true);
-                launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
-                        entitlementPendingVideoData.action,
-                        entitlementPendingVideoData.filmTitle,
-                        entitlementPendingVideoData.extraData,
-                        entitlementPendingVideoData.contentDatum,
-                        entitlementPendingVideoData.closeLauncher,
-                        entitlementPendingVideoData.currentlyPlayingIndex,
-                        entitlementPendingVideoData.relateVideoIds);
-                entitlementPendingVideoData.pagePath = null;
-                entitlementPendingVideoData.action = null;
-                entitlementPendingVideoData.filmTitle = null;
-                entitlementPendingVideoData.extraData = null;
-                entitlementPendingVideoData.contentDatum = null;
-                entitlementPendingVideoData.closeLauncher = false;
-                entitlementPendingVideoData.currentlyPlayingIndex = -1;
-                entitlementPendingVideoData.relateVideoIds = null;
-                entitlementPendingVideoData = null;
-            } else {
-                sendCloseOthersAction(null, true);
-                cancelInternalEvents();
-                restartInternalEvents();
-                NavigationPrimary homePageNavItem = findHomePageNavItem();
-                if (homePageNavItem != null) {
-                    navigateToPage(homePageNavItem.getPageId(),
-                            homePageNavItem.getTitle(),
-                            homePageNavItem.getUrl(),
-                            false,
-                            true,
-                            false,
-                            true,
-                            false,
-                            deeplinkSearchQuery);
-                }
-            }
-        });
     }
 
     public List<SubscriptionPlan> availableUpgradesForUser(String userId) {
