@@ -1573,6 +1573,7 @@ public class ViewCreator {
                     case PAGE_AUTOPLAY_MOVIE_PLAY_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.autoplay_play_button);
                         break;
+                        
                     case PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY:
                         componentViewResult.componentView.setOnClickListener(v -> {
                             if (!appCMSPresenter.sendCloseOthersAction(null, true)){
