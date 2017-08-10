@@ -122,9 +122,8 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
                 }
                 getActivity().finish();
             });
-
+            
             cancelButton.setOnClickListener(v -> getActivity().finish());
-
             pageView.setBackgroundColor(Color.TRANSPARENT);
         }
         return pageView;

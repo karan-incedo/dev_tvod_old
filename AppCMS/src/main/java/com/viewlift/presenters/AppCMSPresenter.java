@@ -2162,8 +2162,6 @@ public class AppCMSPresenter {
     public void navigateToDownloadPage(String pageId, String pageTitle, String url,
                                        boolean launchActivity) {
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
-            showMainFragmentView(false);
-
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
 
             AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
@@ -2329,8 +2327,6 @@ public class AppCMSPresenter {
                                         boolean launchActivity) {
 
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
-            showMainFragmentView(false);
-
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
 
             getWatchlistPageContent(appCMSMain.getApiBaseUrl(),
@@ -2547,7 +2543,6 @@ public class AppCMSPresenter {
                                       boolean launchActivity) {
 
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
-            showMainFragmentView(false);
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
 
             getHistoryPageContent(appCMSMain.getApiBaseUrl(),
@@ -2897,7 +2892,6 @@ public class AppCMSPresenter {
         boolean result = false;
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
             loadingPage = true;
-            showMainFragmentView(false);
             Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
             Log.d(TAG, "Search query (optional): " + searchQuery);
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);

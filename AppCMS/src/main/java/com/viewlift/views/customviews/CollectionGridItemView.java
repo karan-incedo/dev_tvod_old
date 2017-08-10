@@ -322,9 +322,22 @@ public class CollectionGridItemView extends BaseView {
                             }
                         }
 
-                        Locale locale = new Locale.Builder()
-                                .setRegion(data.getPlanDetails().get(planIndex).getCountryCode())
-                                .build();
+                        Locale locale = null;
+
+                        if (data.getPlanDetails() != null &&
+                                data.getPlanDetails().size() > 0 &&
+                                data.getPlanDetails().get(planIndex) != null &&
+                                data.getPlanDetails().get(planIndex).getCountryCode() != null) {
+                            try {
+                                locale = new Locale.Builder()
+                                        .setRegion(data.getPlanDetails().get(planIndex).getCountryCode())
+                                        .build();
+                            } catch (Exception e) {
+                                Log.e(TAG, "Could not parse locale: " + locale.getCountry());
+                            }
+                        } else {
+                            locale = getContext().getResources().getConfiguration().locale;
+                        }
 
                         Currency currency = Currency.getInstance(locale);
 

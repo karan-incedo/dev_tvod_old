@@ -120,7 +120,9 @@ public class AppsFlyerUtils {
 
         Map<String, Object> eventValue = new HashMap<>();
 
-        eventValue.put(AppsFlyerUtils.FILM_CATEGORY_EVENT_VALUE, category);
+        if (!TextUtils.isEmpty(category)) {
+            eventValue.put(AppsFlyerUtils.FILM_CATEGORY_EVENT_VALUE, category);
+        }
         eventValue.put(USER_ID_EVENT_VALUE, appCMSPresenter.getLoggedInUser(context));
         eventValue.put(FILM_ID_EVENT_VALUE, filmId);
         eventValue.put("true", true);
