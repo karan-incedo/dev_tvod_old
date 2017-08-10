@@ -232,13 +232,15 @@
     <string name="app_cms_downloas_setting_listner_key">app_cms_downloas_setting_listner_key</string>
 
     <string name="app_cms_subscription_title">Subscription</string>
-    <string name="app_cms_login_required_title">Subscription Required</string>
-    <string name="app_cms_login_required_message">Please subscribe to continue.</string>
+    <string name="app_cms_subscription_required_title">Subscription Required</string>
+    <string name="app_cms_subscription_required_message">Please subscribe to continue.</string>
     <string name="app_cms_login_and_subscription_required_title">Login and Subscription Required</string>
     <string name="app_cms_login_and_subscription_required_message">Please login or subscribe to continue.</string>
     <string name="app_cms_logout_with_running_download_title">Downloading video in progress</string>
     <string name="app_cms_logout_with_running_download_message">Logout will remove your current downloading videos, You can still access your already downloaded video after re-login. Do you want to continue.</string>
     <string name="app_cms_login_button_text">LOGIN</string>
+    <string name="app_cms_login_required_title">Login Required</string>
+    <string name="app_cms_login_required_message">Please login to continue.</string>
     <string name="app_cms_subscription_button_text">SUBSCRIBE</string>
     <string name="app_cast_overlay_text">Touch To Cast Videos On TV</string>
     <string name="app_cms_existing_subscription_error_message">The Play Store Google ID already has a subscription. Please sign into the app with an email and password that was used when the account was created.</string>
