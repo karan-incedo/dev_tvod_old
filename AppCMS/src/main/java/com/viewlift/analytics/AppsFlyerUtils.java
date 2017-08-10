@@ -11,6 +11,8 @@ import com.viewlift.presenters.AppCMSPresenter;
 import java.util.HashMap;
 import java.util.Map;
 
+import okhttp3.internal.Util;
+
 /**
  * Created by amit on 27/07/17.
  */
@@ -117,16 +119,14 @@ public class AppsFlyerUtils {
         eventValue.put(USER_ID_EVENT_VALUE, appCMSPresenter.getLoggedInUser(context));
         eventValue.put(FILM_ID_EVENT_VALUE, filmId);
         eventValue.put("true", true);
-        eventValue.put(AppsFlyerUtils.USER_REGISTER_STATE_EVENT_VALUE, true);
-//        eventValue.put(AppsFlyerUtils.USER_ENTITLEMENT_STATE_EVENT_VALUE, !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionId(context)));
+//        eventValue.put(AppsFlyerUtils.USER_REGISTER_STATE_EVENT_VALUE, true);
+        eventValue.put(AppsFlyerUtils.USER_ENTITLEMENT_STATE_EVENT_VALUE,
+                !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionId(context)));
 
         AppsFlyerLib.getInstance().trackEvent(context, FILM_VIEWING_EVENT_NAME, eventValue);
     }
 
-    public static void uninstallAppEvent(Application application, String GCM_PROJECT_KEY) {
-        Map<String, Object> eventValue = new HashMap<>();
-        eventValue.put("GCM Project Key", GCM_PROJECT_KEY);
-        AppsFlyerLib.getInstance().trackEvent(application, UNINSTALL_EVENT_NAME, eventValue);
-//        AppsFlyerLib.getInstance().setGCMProjectNumber(application, GCM_PROJECT_KEY);
+    public static void uninstallApp(Application application, String GCM_PROJECT_KEY) {
+        AppsFlyerLib.getInstance().setGCMProjectNumber(application, GCM_PROJECT_KEY);
     }
 }

@@ -90,13 +90,14 @@ public class RealmController {
         return realm.where(DownloadVideoRealm.class).contains("userId", userId).findAll();
     }
 
-    public RealmResults<DownloadVideoRealm> getAllUnfinishedDownloades() {
+    public RealmResults<DownloadVideoRealm> getAllUnfinishedDownloades(String userId) {
 
         String[] status = {String.valueOf(DownloadStatus.STATUS_FAILED),
                 String.valueOf(DownloadStatus.STATUS_PAUSED),
                 String.valueOf(DownloadStatus.STATUS_PENDING),
                 String.valueOf(DownloadStatus.STATUS_RUNNING)};
-        return realm.where(DownloadVideoRealm.class).in("downloadStatus", status).findAll();
+        return realm.where(DownloadVideoRealm.class).in("downloadStatus", status)
+                .equalTo("userId",userId).findAll();
 
     }
 

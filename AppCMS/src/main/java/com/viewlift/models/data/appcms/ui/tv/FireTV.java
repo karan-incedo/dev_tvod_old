@@ -17,8 +17,24 @@ public class FireTV {
 
     private String leftMargin;
 
+    private String bottomMargin;
+
+    private String fontSizeValue;
+
+    private int fontSize;
+
+    private Float fontSizeKey;
+
     public String getTopMargin() {
         return topMargin;
+    }
+
+    public String getBottomMargin() {
+        return bottomMargin;
+    }
+
+    public void setBottomMargin(String bottomMargin) {
+        this.bottomMargin = bottomMargin;
     }
 
     public void setTopMargin(String topMargin) {
@@ -107,6 +123,30 @@ public class FireTV {
     public void setLeftMargin (String leftMargin)
     {
         this.leftMargin = leftMargin;
+    }
+
+    public String getFontSizeValue() {
+        return fontSizeValue;
+    }
+
+    public void setFontSizeValue(String fontSizeValue) {
+        this.fontSizeValue = fontSizeValue;
+    }
+
+    public int getFontSize() {
+        return fontSize;
+    }
+
+    public void setFontSize(int fontSize) {
+        this.fontSize = fontSize;
+    }
+
+    public Float getFontSizeKey() {
+        return fontSizeKey;
+    }
+
+    public void setFontSizeKey(Float fontSizeKey) {
+        this.fontSizeKey = fontSizeKey;
     }
 
     @Override

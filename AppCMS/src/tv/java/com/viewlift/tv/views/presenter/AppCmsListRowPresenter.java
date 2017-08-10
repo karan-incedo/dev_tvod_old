@@ -2,6 +2,7 @@ package com.viewlift.tv.views.presenter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.v17.leanback.widget.FocusHighlight;
 import android.support.v17.leanback.widget.HorizontalGridView;
 import android.support.v17.leanback.widget.ListRow;
@@ -14,6 +15,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.tv.utility.Utils;
+
 import com.viewlift.tv.views.customviews.CustomHeaderItem;
 
 import com.viewlift.R;
@@ -25,6 +29,10 @@ import com.viewlift.R;
 public class AppCmsListRowPresenter extends ListRowPresenter {
 
     private Context mContext;
+    private AppCMSPresenter mAppCMSPresenter;
+    String textColor = null;
+    Typeface typeface = null;
+
 
     public AppCmsListRowPresenter(Context context){
         super(FocusHighlight.ZOOM_FACTOR_XSMALL);
@@ -44,7 +52,12 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
 
             LinearLayout headerTitleContainer =  ((LinearLayout)holder.getHeaderViewHolder().view);
             final RowHeaderView headerTitle = (RowHeaderView)headerTitleContainer.findViewById(R.id.row_header);
-            headerTitle.setTextColor(ContextCompat.getColor(mContext , R.color.heighlight_color));
+            if(null == textColor){
+                textColor = mAppCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor();
+            }
+            headerTitle.setTextColor(Color.parseColor(textColor));
+            //set Alpha for removing any shadow.
+            headerTitleContainer.setAlpha(1);
 
             //ListRowView and its layout Params.
             ListRowView listRowView = (ListRowView)holder.view;
@@ -62,7 +75,27 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
             int listRowRightmargin = customHeaderItem.getmListRowRightMargin();
             int listRowHeight =  customHeaderItem.getmListRowHeight();
 
-            Log.d("AppCmsListRowPresenter" , " Left Margin = " + listRowLeftmargin + " Right margin = "+listRowRightmargin + " Height = "+listRowHeight);
+            /**
+             * customHeaderItem does not have getFontSize()
+             * This needs to be added for this functionality to work
+             * Merge issue: @Nitin Tyagi please fix
+
+            headerTitle.setTextSize(customHeaderItem.getFontSize());
+             */
+
+            if(typeface == null)
+            /**
+             * customHeaderItem does not have getComponent()
+             * This needs to be added for this functionality to work
+             * Merge issue: @Nitin Tyagi please fix
+
+                typeface = Utils.getTypeFace(mContext , mAppCMSPresenter.getJsonValueKeyMap() ,
+                        customHeaderItem.getComponent());
+             */
+
+            if(null != typeface){
+                headerTitle.setTypeface(typeface);
+            }
 
             String listRowBackgroundColor = customHeaderItem.getmBackGroundColor();
 
@@ -82,7 +115,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
 
                 //set the background color
                 if(null != listRowBackgroundColor)
-                listRowView.setBackgroundColor(Color.parseColor(listRowBackgroundColor)/*ContextCompat.getColor(mContext,R.color.jumbotron_background_color)*/);
+                    listRowView.setBackgroundColor(Color.parseColor(listRowBackgroundColor)/*ContextCompat.getColor(mContext,R.color.jumbotron_background_color)*/);
 
                 //set the ListRow height and width.
                 listRowParam.height = listRowHeight/*listRowHeight*/;
@@ -104,6 +137,6 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
     @Override
     protected void onUnbindRowViewHolder(RowPresenter.ViewHolder holder) {
         super.onUnbindRowViewHolder(holder);
-       // ((ViewGroup)holder.view).removeAllViews();
+        // ((ViewGroup)holder.view).removeAllViews();
     }
 }

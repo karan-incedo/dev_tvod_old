@@ -34,6 +34,7 @@ import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
 import com.viewlift.models.network.modules.AppCMSSearchUrlData;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
+import com.viewlift.models.network.utility.MainUtils;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
@@ -87,7 +88,7 @@ public class AppCmsSearchFragment extends Fragment {
         EditText editText = (EditText)view.findViewById(R.id.appcms_et_search);
         editText.requestFocus();
 
-        moduleList = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(getActivity(), "tray_ftv_component.json"), ModuleList.class);
+        moduleList = new GsonBuilder().create().fromJson(MainUtils.loadJsonFromAssets(getActivity(), "tray_ftv_component.json"), ModuleList.class);
 
 
         editText.addTextChangedListener(new TextWatcher() {
@@ -317,7 +318,7 @@ public class AppCmsSearchFragment extends Fragment {
                         /*for(Component component1 : component.getComponents()){*/
 
                 if (null == mRowsAdapter) {
-                    AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
+                    AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context);
                     mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
                 }
 
@@ -338,7 +339,12 @@ public class AppCmsSearchFragment extends Fragment {
 
                 for (AppCMSSearchResult searchResult : appCMSSearchResults) {
                     BrowseFragmentRowData rowData = new BrowseFragmentRowData();
-                    rowData.contentData = searchResult.getContent();
+                    /**
+                     * There is no getContent() in the AppCMSSearchResult object
+                     * This class needs to be modified accordingly
+                     * Merge issue: @Nitin Tyagi please fix
+                     rowData.contentData = searchResult.getContent();
+                     **/
                     rowData.uiComponentList = component.getComponents();
                     traylistRowAdapter.add(rowData);
                     Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());

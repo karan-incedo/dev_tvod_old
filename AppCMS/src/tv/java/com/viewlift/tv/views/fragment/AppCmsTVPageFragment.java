@@ -95,8 +95,15 @@ public class AppCmsTVPageFragment extends Fragment {
 
 
         if((tvPageView.getChildrenContainer()).findViewById(R.id.appcms_browsefragment) != null){
+            AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(getActivity());
+
+            /**
+             * The new version of this class does not take the mRowsAdapter as an input to
+             * the newInstance() method
+             * Merge issue: @Nitin Tyagi could you please take a look at this and correct if necessary?
             AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(getActivity() ,
                     appCmsViewComponent.tvviewCreator().mRowsAdapter);
+             **/
             getChildFragmentManager().beginTransaction().replace(R.id.appcms_browsefragment ,browseFragment , "frag").commit();
         }
         return tvPageView;

@@ -236,6 +236,8 @@
     <string name="app_cms_login_required_message">Please subscribe to continue.</string>
     <string name="app_cms_login_and_subscription_required_title">Login and Subscription Required</string>
     <string name="app_cms_login_and_subscription_required_message">Please login or subscribe to continue.</string>
+    <string name="app_cms_logout_with_running_download_title">Downloading video in progress</string>
+    <string name="app_cms_logout_with_running_download_message">Logout will remove your current downloading videos, You can still access your already downloaded video after re-login. Do you want to continue.</string>
     <string name="app_cms_login_button_text">LOGIN</string>
     <string name="app_cms_subscription_button_text">SUBSCRIBE</string>
     <string name="app_cast_overlay_text">Touch To Cast Videos On TV</string>
@@ -243,6 +245,13 @@
     <string name="app_cms_existing_subscription_title">Existing Subscription</string>
     <string name="sent_beacon_play_key">sent_beacon_play</string>
     <string name="play_index_key">play_index</string>
+
+    <string name="app_cms_subscription_upgrade_cancel_title">You did not purchase the subscription through the Google Play store</string>
+    <string name="app_cms_subscription_upgrade_for_web_user_dialog">To upgrade your subscription, go to the My Account section on our website.</string>
+    <string name="app_cms_subscription_cancel_for_web_user_dialog">To cancel your subscription, go to the My Account section on our website.</string>
+
+    <string name="app_cms_download_stream_info_error_title">Streaming Info Error</string>
+    <string name="app_cms_download_streaming_info_error_message">Some error occurred with streaming info, Please try again.</string>
 
     <string name="app_cms_download_incomplete_error_title">Download Incomplete</string>
     <string name="app_cms_download_incomplete_error_message">Please wait until the download is completed.</string>

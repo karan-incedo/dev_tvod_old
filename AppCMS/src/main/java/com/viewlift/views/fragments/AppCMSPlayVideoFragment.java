@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
@@ -53,6 +52,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private String title;
     private String hlsUrl;
     private String permaLink;
+    private boolean isTrailer;
     private String filmId;
     private String primaryCategory;
     private String imageUrl;
@@ -87,7 +87,12 @@ public class AppCMSPlayVideoFragment extends Fragment
         public void setRemotePlayBack(int castingModeChromecast) {
             if (onClosePlayerEvent != null) {
                 pauseVideo();
-                onClosePlayerEvent.onRemotePlayback(videoPlayerView.getCurrentPosition(),
+                long castPlayPosition = watchedTime * SECS_TO_MSECS;
+                if (!isCastConnected) {
+                    castPlayPosition = videoPlayerView.getCurrentPosition();
+                }
+
+                onClosePlayerEvent.onRemotePlayback(castPlayPosition,
                         castingModeChromecast,
                         sentBeaconPlay,
                         onApplicationEnded -> {
@@ -110,6 +115,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                                                       String fontColor,
                                                       String title,
                                                       String permaLink,
+                                                      boolean isTrailer,
                                                       String hlsUrl,
                                                       String filmId,
                                                       String adsUrl,
@@ -121,7 +127,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         AppCMSPlayVideoFragment appCMSPlayVideoFragment = new AppCMSPlayVideoFragment();
         Bundle args = new Bundle();
         args.putString(context.getString(R.string.video_player_font_color_key), fontColor);
-        args.putString("video_primary_category", primaryCategory);
+        args.putString(context.getString(R.string.video_primary_category_key), primaryCategory);
         args.putString(context.getString(R.string.video_player_title_key), title);
         args.putString(context.getString(R.string.video_player_permalink_key), permaLink);
         args.putString(context.getString(R.string.video_player_hls_url_key), hlsUrl);
@@ -132,6 +138,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         args.putLong(context.getString(R.string.watched_time_key), watchedTime);
         args.putString(context.getString(R.string.played_movie_image_url), imageUrl);
         args.putString(context.getString(R.string.video_player_closed_caption_key), closedCaptionUrl);
+        args.putBoolean("isTrailer", isTrailer);
         appCMSPlayVideoFragment.setArguments(args);
         return appCMSPlayVideoFragment;
     }
@@ -153,6 +160,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             fontColor = args.getString(getString(R.string.video_player_font_color_key));
             title = args.getString(getString(R.string.video_player_title_key));
             permaLink = args.getString(getString(R.string.video_player_permalink_key));
+            isTrailer = args.getBoolean("isTrailer");
             hlsUrl = args.getString(getContext().getString(R.string.video_player_hls_url_key));
             filmId = args.getString(getContext().getString(R.string.video_layer_film_id_key));
             adsUrl = args.getString(getContext().getString(R.string.video_player_ads_url_key));
@@ -296,6 +304,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 appCMSPresenter,
                 filmId,
                 permaLink,
+                isTrailer,
                 parentScreenName,
                 videoPlayerView);
 
@@ -309,7 +318,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         try {
             castProvider = CastServiceProvider.getInstance(getActivity());
             castProvider.setRemotePlaybackCallback(callBackRemotePlayback);
-            isCastConnected = castProvider.playChromeCastPlaybackIfCastConnected();
+            isCastConnected = castProvider.isCastingConnected();
+            castProvider.playChromeCastPlaybackIfCastConnected();
             if (isCastConnected) {
                 getActivity().finish();
             } else {
@@ -495,11 +505,13 @@ public class AppCMSPlayVideoFragment extends Fragment
         VideoPlayerView videoPlayerView;
         boolean runBeaconPing;
         boolean sendBeaconPing;
+        boolean isTrailer;
 
         public BeaconPingThread(long beaconMsgTimeoutMsec,
                                 AppCMSPresenter appCMSPresenter,
                                 String filmId,
                                 String permaLink,
+                                boolean isTrailer,
                                 String parentScreenName,
                                 VideoPlayerView videoPlayerView) {
             this.beaconMsgTimeoutMsec = beaconMsgTimeoutMsec;
@@ -508,6 +520,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             this.permaLink = permaLink;
             this.parentScreenName = parentScreenName;
             this.videoPlayerView = videoPlayerView;
+            this.isTrailer = isTrailer;
         }
 
         public void run() {
@@ -522,8 +535,10 @@ public class AppCMSPlayVideoFragment extends Fragment
                                     parentScreenName,
                                     videoPlayerView.getCurrentPosition(),
                                     true);
-                            appCMSPresenter.updateWatchedTime(filmId,
-                                    videoPlayerView.getCurrentPosition() / 1000);
+                            if (!isTrailer) {
+                                appCMSPresenter.updateWatchedTime(filmId,
+                                        videoPlayerView.getCurrentPosition() / 1000);
+                            }
                         }
                     }
                 } catch (InterruptedException e) {
