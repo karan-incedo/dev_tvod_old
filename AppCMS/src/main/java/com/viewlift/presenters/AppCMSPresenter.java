@@ -2791,17 +2791,14 @@ public class AppCMSPresenter {
                     appCMSUserIdentityCall.callPost(url,
                             getAuthToken(currentActivity),
                             userIdentity,
-                            new Action1<UserIdentity>() {
-                                @Override
-                                public void call(UserIdentity userIdentity) {
-                                    if (userIdentity != null) {
-                                        setLoggedInUserName(currentActivity,
-                                                userIdentity.getName());
-                                        setLoggedInUserEmail(currentActivity,
-                                                userIdentity.getEmail());
-                                    }
-                                    sendRefreshPageAction();
+                            userIdentityResult -> {
+                                if (userIdentityResult != null) {
+                                    setLoggedInUserName(currentActivity,
+                                            userIdentityResult.getName());
+                                    setLoggedInUserEmail(currentActivity,
+                                            userIdentityResult.getEmail());
                                 }
+                                sendRefreshPageAction();
                             });
                 });
             } else {
@@ -4329,6 +4326,14 @@ public class AppCMSPresenter {
 
         if (launchType == LaunchType.SUBSCRIBE) {
             launchType = LaunchType.LOGIN_AND_SIGNUP;
+            String url = currentActivity.getString(R.string.app_cms_signup_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSMain.getInternalName());
+            startLoginAsyncTask(url,
+                    subscriptionUserEmail,
+                    subscriptionUserPassword,
+                    false,
+                    false);
         }
         if (signupFromFacebook) {
             setFacebookAccessToken(currentActivity,

@@ -75,7 +75,8 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                         hlsUrl,
                         filmId,
                         adsUrl,
-                        playAds);
+                        playAds,
+                        null);
         fragmentTransaction.add(R.id.app_cms_play_video_page_container,
                 appCMSPlayVideoFragment,
                 getString(R.string.video_fragment_tag_key));
