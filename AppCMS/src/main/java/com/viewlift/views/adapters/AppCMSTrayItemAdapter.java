@@ -233,9 +233,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             holder.itemView.getContext(),
                             getListOfUpcomingMovies(position));
                 } else {
-                    play(adapterData.get(position),
-                            holder.itemView.getContext()
-                                    .getString(R.string.app_cms_action_watchvideo_key));
+                    click(adapterData.get(position));
                 }
             });
 
