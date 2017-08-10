@@ -100,8 +100,12 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
+//    lintOptions {
+//        disable 'InvalidPackage'
+//    }
     lintOptions {
-        disable 'InvalidPackage'
+        checkReleaseBuilds false
+        abortOnError false
     }
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES.txt'
