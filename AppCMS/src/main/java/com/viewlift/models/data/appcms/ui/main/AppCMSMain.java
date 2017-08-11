@@ -83,7 +83,12 @@ public class AppCMSMain {
     @Expose
     long timestamp;
 
+    @SerializedName("socialMedia")
+    @Expose
+    SocialMedia socialMedia;
+
     @SerializedName("forceLogin")
+    @Expose
     boolean forceLogin;
 
     public String getId() {
@@ -252,5 +257,13 @@ public class AppCMSMain {
 
     public void setForceLogin(boolean forceLogin) {
         this.forceLogin = forceLogin;
+    }
+
+    public SocialMedia getSocialMedia() {
+        return socialMedia;
+    }
+
+    public void setSocialMedia(SocialMedia socialMedia) {
+        this.socialMedia = socialMedia;
     }
 }

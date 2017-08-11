@@ -1313,8 +1313,14 @@ public class ViewCreator {
                     applyBorderToComponent(context, componentViewResult.componentView, component,
                             ContextCompat.getColor(context, R.color.facebookBlue));
                 } else if (appCMSPresenter.isActionGoogle(component.getAction())) {
-                    applyBorderToComponent(context, componentViewResult.componentView, component,
-                            ContextCompat.getColor(context, R.color.googleRed));
+                    if (appCMSPresenter.getAppCMSMain().getSocialMedia() != null &&
+                            appCMSPresenter.getAppCMSMain().getSocialMedia().getGooglePlus() != null &&
+                            appCMSPresenter.getAppCMSMain().getSocialMedia().getGooglePlus().isSignin()) {
+                        applyBorderToComponent(context, componentViewResult.componentView, component,
+                                ContextCompat.getColor(context, R.color.googleRed));
+                    } else {
+                        componentViewResult.componentView.setVisibility(View.GONE);
+                    }
                 } else if (jsonValueKeyMap.get(moduleAPI.getModuleType())
                         == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY
                         && componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY
