@@ -2644,7 +2644,7 @@ public class AppCMSPresenter {
                             getLoggedInUser(currentActivity)),
                             getAuthToken(currentActivity),
                             history);
-                } catch (IOException e) {
+                } catch (IOException | NullPointerException e) {
                     Log.e(TAG, "getHistoryPageContent: " + e.toString());
                 }
             });
@@ -2661,7 +2661,7 @@ public class AppCMSPresenter {
                             getLoggedInUser(currentActivity)),
                             getAuthToken(currentActivity),
                             history);
-                } catch (IOException e) {
+                } catch (IOException | NullPointerException e) {
                     Log.e(TAG, "getHistoryPageContent: " + e.toString());
                 }
             });
