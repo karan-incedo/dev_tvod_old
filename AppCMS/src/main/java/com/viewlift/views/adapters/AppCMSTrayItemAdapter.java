@@ -387,13 +387,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         String permalink = data.getGist().getPermalink();
         String action = context.getString(R.string.app_cms_action_watchvideo_key);
         String title = data.getGist() != null ? data.getGist().getTitle() : null;
-        String hlsUrl = (data.getGist() != null && networkAvailable) ? data.getGist().getLocalFileUrl() : null;
+        String hlsUrl = (data.getGist().getLocalFileUrl() != null) ? data.getGist().getLocalFileUrl() : null; // Fix of SVFA-1275
         String[] extraData = new String[4];
         extraData[0] = permalink;
         extraData[1] = hlsUrl;
         extraData[2] = data.getGist() != null ? data.getGist().getId() : null;
         extraData[3] = "true"; // to know that this is an offline video
-        Log.d(TAG, "Launching " + permalink + ": " + action);
+        Log.d(TAG, "Launching " + permalink + ": " + action +":File:"+data.getGist().getLocalFileUrl());
 
         if (permalink == null ||
                 hlsUrl == null ||

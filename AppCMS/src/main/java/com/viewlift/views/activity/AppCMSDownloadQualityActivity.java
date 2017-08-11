@@ -28,26 +28,15 @@ public class AppCMSDownloadQualityActivity extends AppCompatActivity {
     private static final String TAG = AppCMSDownloadQualityActivity.class.getSimpleName();
     private AppCMSPresenter appCMSPresenter;
     private AppCMSDownloadQualityBinder binder;
-    private BroadcastReceiver handoffReceiver;
     private AppCMSDownloadQualityFragment downloadQualityFragment;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        handoffReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-               if (intent.getBooleanExtra(getString(R.string.close_self_key),true)) {
-                    Log.d(TAG, "Closing activity");
-                    finish();
-                }
-                //finish();
-            }
-        };
 
-        registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
         appCMSPresenter = ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
 
         Intent intent = getIntent();
@@ -61,6 +50,7 @@ public class AppCMSDownloadQualityActivity extends AppCompatActivity {
         if (downloadQualityFragment == null) {
             createFragment(binder);
         }
+
     }
 
     private void createFragment(AppCMSDownloadQualityBinder appCMSBinder) {
@@ -79,7 +69,6 @@ public class AppCMSDownloadQualityActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(handoffReceiver);
         downloadQualityFragment = null;
     }
 
