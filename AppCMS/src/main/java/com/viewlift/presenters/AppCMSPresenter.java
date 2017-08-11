@@ -530,6 +530,7 @@ public class AppCMSPresenter {
                                             action,
                                             appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
                                             null,
+                                            isVideoOffline,
                                             appCMSVideoDetail.getRecords().get(0),
                                             false,
                                             currentlyPlayingIndex,
@@ -558,6 +559,7 @@ public class AppCMSPresenter {
                             action,
                             contentDatum.getGist().getTitle(),
                             null,
+                            isVideoOffline,
                             contentDatum,
                             false,
                             currentlyPlayingIndex,
@@ -664,17 +666,13 @@ public class AppCMSPresenter {
                                               String action,
                                               String filmTitle,
                                               String[] extraData,
+                                              boolean isVideoOffline,
                                               ContentDatum contentDatum,
                                               final boolean closeLauncher,
                                               int currentlyPlayingIndex,
                                               List<String> relateVideoIds) {
         boolean result = false;
-        boolean isVideoOffline = false;
-        try {
-            isVideoOffline = Boolean.parseBoolean(extraData[3]);
-        } catch (Exception e) {
-            Log.e(TAG, e.getLocalizedMessage());
-        }
+
         if (!isNetworkConnected() && !isVideoOffline) { //checking isVideoOffline here to fix SVFA-1431 in offline mode
             showDialog(DialogType.NETWORK, null, false, null);
         } else {
