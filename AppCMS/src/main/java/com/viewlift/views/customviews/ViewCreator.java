@@ -2295,8 +2295,13 @@ public class ViewCreator {
                 int starColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
 
                 float starRating = 0.0f;
-                if (moduleAPI.getContentData().get(0).getGist().getAverageStarRating() != 0f) {
-                    starRating = moduleAPI.getContentData().get(0).getGist().getAverageStarRating();
+                if (moduleAPI.getContentData() != null &&
+                        moduleAPI.getContentData().size() > 0 &&
+                        moduleAPI.getContentData().get(0) != null &&
+                        moduleAPI.getContentData().get(0).getGist() != null) {
+                    if (moduleAPI.getContentData().get(0).getGist().getAverageStarRating() != 0f) {
+                        starRating = moduleAPI.getContentData().get(0).getGist().getAverageStarRating();
+                    }
                 }
                 componentViewResult.componentView = new StarRating(context,
                         starColor,
