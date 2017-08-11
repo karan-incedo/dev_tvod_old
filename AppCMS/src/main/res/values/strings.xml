@@ -271,5 +271,7 @@
     <string name="app_cms_signup_invalid_email_message">Please enter a valid email.</string>
     <string name="app_cms_signup_invalid_password_message">Please enter a valid password.</string>
     <string name="loading_video_text">Loading Video</string>
+    <string name="app_cms_download_write_external_storage_permission_rationale_message">May we request permission to access your external storage to download the video?</string>
+    <string name="app_cms_download_external_storage_write_permission_info_error_title">Download to External Storage</string>
 
 </resources>

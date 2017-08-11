@@ -11,6 +11,7 @@ import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -28,8 +29,10 @@ import android.os.Environment;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -61,6 +64,7 @@ import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.viewlift.Manifest;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
@@ -205,6 +209,7 @@ public class AppCMSPresenter {
     public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
 
     public static final int RC_PURCHASE_PLAY_STORE_ITEM = 1002;
+    public static final int REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS = 2002;
     public static final String PRESENTER_DIALOG_ACTION = "appcms_presenter_dialog_action";
     public static final String SEARCH_ACTION = "SEARCH_ACTION";
     private static final String TAG = "AppCMSPresenter";
@@ -350,6 +355,8 @@ public class AppCMSPresenter {
     private FirebaseAnalytics mFireBaseAnalytics;
     private boolean runUpdateDownloadIconTimer;
     private Timer updateDownloadIconTimer;
+    private ContentDatum downloadContentDatumAfterPermissionGranted;
+    private Action1<UserVideoDownloadStatus> downloadResultActionAfterPermissionGranted;
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -1603,59 +1610,65 @@ public class AppCMSPresenter {
     public void showDownloadQualityScreen(final ContentDatum contentDatum,
                                           final Action1<UserVideoDownloadStatus> resultAction1) {
 
-        AppCMSPageAPI apiData = new AppCMSPageAPI();
-        List<Module> moduleList = new ArrayList<>();
-        Module module = new Module();
+        if (!hasWriteExternalStoragePermission()) {
+            askForPermissionToDownloadToExternalStorage(true,
+                    contentDatum,
+                    resultAction1);
+        } else {
+            AppCMSPageAPI apiData = new AppCMSPageAPI();
+            List<Module> moduleList = new ArrayList<>();
+            Module module = new Module();
 
-        getUserDownloadQualityPref(currentActivity);
+            getUserDownloadQualityPref(currentActivity);
 
-        List<ContentDatum> contentData = new ArrayList<>();
-        ContentDatum contentDatumLocal = new ContentDatum();
-        StreamingInfo streamingInfo = new StreamingInfo();
-        VideoAssets videoAssets = new VideoAssets();
-        List<Mpeg> mpegs = new ArrayList<>();
+            List<ContentDatum> contentData = new ArrayList<>();
+            ContentDatum contentDatumLocal = new ContentDatum();
+            StreamingInfo streamingInfo = new StreamingInfo();
+            VideoAssets videoAssets = new VideoAssets();
+            List<Mpeg> mpegs = new ArrayList<>();
 
-        String renditionValueArray[] = {"1080p", "720p", "360p"};
-        for (String renditionValue : renditionValueArray) {
-            Mpeg mpeg = new Mpeg();
-            mpeg.setRenditionValue(renditionValue);
-            mpegs.add(mpeg);
+            String renditionValueArray[] = {"1080p", "720p", "360p"};
+            for (String renditionValue : renditionValueArray) {
+                Mpeg mpeg = new Mpeg();
+                mpeg.setRenditionValue(renditionValue);
+                mpegs.add(mpeg);
+            }
+
+            videoAssets.setMpeg(mpegs);
+            videoAssets.setType("videoAssets");
+
+            streamingInfo.setVideoAssets(videoAssets);
+            contentDatumLocal.setStreamingInfo(streamingInfo);
+
+            contentData.add(contentDatumLocal);
+            module.setContentData(contentData);
+
+            moduleList.add(module);
+            apiData.setModules(moduleList);
+
+            launchDownloadQualityActivity(currentActivity,
+                    navigationPages.get(downloadQualityPage.getPageId()),
+                    apiData,
+                    downloadQualityPage.getPageId(),
+                    downloadQualityPage.getPageName(),
+                    pageIdToPageNameMap.get(downloadQualityPage.getPageId()),
+                    loadFromFile,
+                    false,
+                    true,
+                    false,
+                    false,
+                    getAppCMSDownloadQualityBinder(currentActivity,
+                            navigationPages.get(downloadQualityPage.getPageId()),
+                            apiData,
+                            downloadQualityPage.getPageId(),
+                            downloadQualityPage.getPageName(),
+                            downloadQualityPage.getPageName(),
+                            loadFromFile,
+                            true,
+                            true,
+                            false,
+                            contentDatum, resultAction1));
         }
-
-        videoAssets.setMpeg(mpegs);
-        videoAssets.setType("videoAssets");
-
-        streamingInfo.setVideoAssets(videoAssets);
-        contentDatumLocal.setStreamingInfo(streamingInfo);
-
-        contentData.add(contentDatumLocal);
-        module.setContentData(contentData);
-
-        moduleList.add(module);
-        apiData.setModules(moduleList);
-
-        launchDownloadQualityActivity(currentActivity,
-                navigationPages.get(downloadQualityPage.getPageId()),
-                apiData,
-                downloadQualityPage.getPageId(),
-                downloadQualityPage.getPageName(),
-                pageIdToPageNameMap.get(downloadQualityPage.getPageId()),
-                loadFromFile,
-                false,
-                true,
-                false,
-                false,
-                getAppCMSDownloadQualityBinder(currentActivity,
-                        navigationPages.get(downloadQualityPage.getPageId()),
-                        apiData,
-                        downloadQualityPage.getPageId(),
-                        downloadQualityPage.getPageName(),
-                        downloadQualityPage.getPageName(),
-                        loadFromFile,
-                        true,
-                        true,
-                        false,
-                        contentDatum, resultAction1));
     }
 
     /**
@@ -1680,119 +1693,126 @@ public class AppCMSPresenter {
     public void editDownload(final ContentDatum contentDatum,
                              final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
 
-        long enqueueId = 0L;
+        if (!hasWriteExternalStoragePermission()) {
+            askForPermissionToDownloadToExternalStorage(true,
+                    contentDatum,
+                    resultAction1);
+        } else {
 
-        if (contentDatum.getStreamingInfo() == null) { // This will handle the case if we get video streming info null at Video detail page.
+            long enqueueId = 0L;
 
-
-            String url = getStreamingInfoURL(contentDatum.getGist().getId());
-
-            GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
-
-            new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
-                if (appCMSStreamingInfo != null) {
-                    contentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
-                }
-            }).execute(param);
-
-            showDialog(DialogType.STREAMING_INFO_MISSING, null, false, null);
-            return;
-        }
-
-        long ccEnqueueId = 0L;
-        if (contentDatum.getContentDetails() != null &&
-                contentDatum.getContentDetails().getClosedCaptions() != null &&
-                contentDatum.getContentDetails().getClosedCaptions().size() > 0 &&
-                contentDatum.getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
-            ccEnqueueId = downloadVideoSubtitles(contentDatum.getContentDetails()
-                    .getClosedCaptions().get(0).getUrl(), contentDatum.getGist().getId());
-        }
-
-        cancelDownloadIconTimerTask();
-
-        try {
-            String downloadURL;
+            if (contentDatum.getStreamingInfo() == null) { // This will handle the case if we get video streming info null at Video detail page.
 
 
-            int bitrate = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
+                String url = getStreamingInfoURL(contentDatum.getGist().getId());
 
-            String downloadQualityRendition = getUserDownloadQualityPref(currentActivity);
-            Map<String, String> urlRenditionMap = new HashMap<>();
-            for (Mpeg mpeg : contentDatum.getStreamingInfo().getVideoAssets().getMpeg()) {
-                urlRenditionMap.put(mpeg.getRenditionValue().replace("_", "").trim(),
-                        mpeg.getUrl());
-            }
-            downloadURL = urlRenditionMap.get(downloadQualityRendition);
+                GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
 
-            if (downloadQualityRendition != null) {
-                if (downloadURL == null && downloadQualityRendition.contains("360")) {
-                    if (urlRenditionMap.get("720p") != null) {
-                        downloadURL = urlRenditionMap.get("720p");
-                    } else if (urlRenditionMap.get("1080p") != null) {
-                        downloadURL = urlRenditionMap.get("1080p");
+                new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
+                    if (appCMSStreamingInfo != null) {
+                        contentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
                     }
-                } else if (downloadURL == null && downloadQualityRendition.contains("720")) {
-                    if (urlRenditionMap.get("360p") != null) {
-                        downloadURL = urlRenditionMap.get("360p");
-                    } else if (urlRenditionMap.get("1080p") != null) {
-                        downloadURL = urlRenditionMap.get("1080p");
-                    }
+                }).execute(param);
 
-                } else if (downloadURL == null && downloadQualityRendition.contains("1080")) {
-
-                    if (urlRenditionMap.get("720p") != null) {
-                        downloadURL = urlRenditionMap.get("720p");
-                    } else if (urlRenditionMap.get("360p") != null) {
-                        downloadURL = urlRenditionMap.get("360p");
-                    }
-                } else if (downloadURL == null) {
-                    //noinspection SuspiciousMethodCalls
-                    downloadURL = urlRenditionMap.get(urlRenditionMap.keySet().toArray()[0]);
-                }
-            } else {
-                downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+                showDialog(DialogType.STREAMING_INFO_MISSING, null, false, null);
+                return;
             }
 
-            downloadURL = downloadURL.replace("https:/", "http:/");
+            long ccEnqueueId = 0L;
+            if (contentDatum.getContentDetails() != null &&
+                    contentDatum.getContentDetails().getClosedCaptions() != null &&
+                    contentDatum.getContentDetails().getClosedCaptions().size() > 0 &&
+                    contentDatum.getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
+                ccEnqueueId = downloadVideoSubtitles(contentDatum.getContentDetails()
+                        .getClosedCaptions().get(0).getUrl(), contentDatum.getGist().getId());
+            }
 
-            DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
-                    .setTitle(contentDatum.getGist().getTitle())
-                    .setDescription(contentDatum.getGist().getDescription())
-                    .setAllowedOverRoaming(false)
-                    .setDestinationInExternalFilesDir(currentActivity, Environment.DIRECTORY_DOWNLOADS,
-                            contentDatum.getGist().getId() + MEDIA_SURFIX_MP4)
-                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                    .setVisibleInDownloadsUi(false)
-                    .setShowRunningNotification(true);
+            cancelDownloadIconTimerTask();
 
-            enqueueId = downloadManager.enqueue(downloadRequest);
+            try {
+                String downloadURL;
 
-            long thumbEnqueueId = downloadVideoImage(contentDatum.getGist().getVideoImageUrl(),
-                    contentDatum.getGist().getId());
-            long posterEnqueueId = downloadPosterImage(contentDatum.getGist().getPosterImageUrl(),
-                    contentDatum.getGist().getId());
+
+                int bitrate = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
+
+                String downloadQualityRendition = getUserDownloadQualityPref(currentActivity);
+                Map<String, String> urlRenditionMap = new HashMap<>();
+                for (Mpeg mpeg : contentDatum.getStreamingInfo().getVideoAssets().getMpeg()) {
+                    urlRenditionMap.put(mpeg.getRenditionValue().replace("_", "").trim(),
+                            mpeg.getUrl());
+                }
+                downloadURL = urlRenditionMap.get(downloadQualityRendition);
+
+                if (downloadQualityRendition != null) {
+                    if (downloadURL == null && downloadQualityRendition.contains("360")) {
+                        if (urlRenditionMap.get("720p") != null) {
+                            downloadURL = urlRenditionMap.get("720p");
+                        } else if (urlRenditionMap.get("1080p") != null) {
+                            downloadURL = urlRenditionMap.get("1080p");
+                        }
+                    } else if (downloadURL == null && downloadQualityRendition.contains("720")) {
+                        if (urlRenditionMap.get("360p") != null) {
+                            downloadURL = urlRenditionMap.get("360p");
+                        } else if (urlRenditionMap.get("1080p") != null) {
+                            downloadURL = urlRenditionMap.get("1080p");
+                        }
+
+                    } else if (downloadURL == null && downloadQualityRendition.contains("1080")) {
+
+                        if (urlRenditionMap.get("720p") != null) {
+                            downloadURL = urlRenditionMap.get("720p");
+                        } else if (urlRenditionMap.get("360p") != null) {
+                            downloadURL = urlRenditionMap.get("360p");
+                        }
+                    } else if (downloadURL == null) {
+                        //noinspection SuspiciousMethodCalls
+                        downloadURL = urlRenditionMap.get(urlRenditionMap.keySet().toArray()[0]);
+                    }
+                } else {
+                    downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+                }
+
+                downloadURL = downloadURL.replace("https:/", "http:/");
+
+                DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
+                        .setTitle(contentDatum.getGist().getTitle())
+                        .setDescription(contentDatum.getGist().getDescription())
+                        .setAllowedOverRoaming(false)
+                        .setDestinationInExternalFilesDir(currentActivity, Environment.DIRECTORY_DOWNLOADS,
+                                contentDatum.getGist().getId() + MEDIA_SURFIX_MP4)
+                        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                        .setVisibleInDownloadsUi(false)
+                        .setShowRunningNotification(true);
+
+                enqueueId = downloadManager.enqueue(downloadRequest);
+
+                long thumbEnqueueId = downloadVideoImage(contentDatum.getGist().getVideoImageUrl(),
+                        contentDatum.getGist().getId());
+                long posterEnqueueId = downloadPosterImage(contentDatum.getGist().getPosterImageUrl(),
+                        contentDatum.getGist().getId());
             /*
              * Inserting data in realm data object
              */
 
-            createLocalEntry(
-                    enqueueId,
-                    thumbEnqueueId,
-                    posterEnqueueId,
-                    ccEnqueueId,
-                    contentDatum,
-                    downloadURL);
+                createLocalEntry(
+                        enqueueId,
+                        thumbEnqueueId,
+                        posterEnqueueId,
+                        ccEnqueueId,
+                        contentDatum,
+                        downloadURL);
 
-            showToast(
-                    currentActivity.getString(R.string.app_cms_download_started_mesage,
-                            contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
+                showToast(
+                        currentActivity.getString(R.string.app_cms_download_started_mesage,
+                                contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
 
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-            showDialog(DialogType.DOWNLOAD_INCOMPLETE, e.getMessage(), false, null);
-        } finally {
-            appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), this,
-                    resultAction1, getLoggedInUser(currentActivity));
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage());
+                showDialog(DialogType.DOWNLOAD_INCOMPLETE, e.getMessage(), false, null);
+            } finally {
+                appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), this,
+                        resultAction1, getLoggedInUser(currentActivity));
+            }
         }
     }
 
@@ -4144,10 +4164,17 @@ public class AppCMSPresenter {
                     title = currentActivity.getString(R.string.app_cms_download_incomplete_error_title);
                     message = currentActivity.getString(R.string.app_cms_download_incomplete_error_message);
                     break;
+
                 case STREAMING_INFO_MISSING:
                     title = currentActivity.getString(R.string.app_cms_download_stream_info_error_title);
                     message = currentActivity.getString(R.string.app_cms_download_streaming_info_error_message);
                     break;
+
+                case REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_FOR_DOWNLOAD:
+                    title = currentActivity.getString(R.string.app_cms_download_external_storage_write_permission_info_error_title);
+                    message = optionalMessage;
+                    break;
+
                 default:
                     isNetwork = true;
                     title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
@@ -4876,6 +4903,52 @@ public class AppCMSPresenter {
                             onReadyAction.call();
                         }
                     }).execute(params);
+        }
+    }
+
+    public void askForPermissionToDownloadToExternalStorage(boolean checkToShowPermissionRationale,
+                                                            final ContentDatum contentDatum,
+                                                            final Action1<UserVideoDownloadStatus> resultAction1) {
+        downloadContentDatumAfterPermissionGranted = contentDatum;
+        downloadResultActionAfterPermissionGranted = resultAction1;
+        if (currentActivity != null && !hasWriteExternalStoragePermission()) {
+            if (checkToShowPermissionRationale &&
+                    ActivityCompat.shouldShowRequestPermissionRationale(currentActivity,
+                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                showDialog(DialogType.REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_FOR_DOWNLOAD,
+                        currentActivity.getString(R.string.app_cms_download_write_external_storage_permission_rationale_message),
+                        true,
+                        new Action0() {
+                            @Override
+                            public void call() {
+                                askForPermissionToDownloadToExternalStorage(false,
+                                        downloadContentDatumAfterPermissionGranted,
+                                        downloadResultActionAfterPermissionGranted);
+                            }
+                        });
+            } else {
+                ActivityCompat.requestPermissions(currentActivity,
+                        new String[] { android.Manifest.permission.WRITE_EXTERNAL_STORAGE },
+                        REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS);
+            }
+        }
+    }
+
+    public boolean hasWriteExternalStoragePermission() {
+        if (currentActivity != null) {
+            return (ContextCompat.checkSelfPermission(currentActivity,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                    PackageManager.PERMISSION_GRANTED);
+        }
+        return false;
+    }
+
+    public void resumeDownloadAfterPermissionGranted() {
+        if (downloadContentDatumAfterPermissionGranted != null &&
+                downloadResultActionAfterPermissionGranted != null) {
+            editDownload(downloadContentDatumAfterPermissionGranted,
+                    downloadResultActionAfterPermissionGranted,
+                    true);
         }
     }
 
@@ -6019,7 +6092,8 @@ public class AppCMSPresenter {
         DOWNLOAD_INCOMPLETE,
         CANNOT_UPGRADE_SUBSCRIPTION,
         CANNOT_CANCEL_SUBSCRIPTION,
-        STREAMING_INFO_MISSING
+        STREAMING_INFO_MISSING,
+        REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_FOR_DOWNLOAD
     }
 
     public enum ExtraScreenType {
