@@ -1081,11 +1081,29 @@ public class ViewCreator {
                             .setLayoutManager(new LinearLayoutManager(context,
                                     LinearLayoutManager.VERTICAL,
                                     false));
-                    List<Mpeg> mpegs = moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getMpeg();
+
+                    List<Mpeg> mpegs = null;
+                    if (moduleAPI.getContentData() != null &&
+                            moduleAPI.getContentData().size() > 0 &&
+                            moduleAPI.getContentData().get(0) != null &&
+                            moduleAPI.getContentData().get(0).getStreamingInfo() != null &&
+                            moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets() != null &&
+                            moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getMpeg() != null) {
+                        mpegs = moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getMpeg();
+                    } else {
+                        mpegs = new ArrayList<>();
+                    }
+
+                    List<Component> components = null;
+                    if (component.getComponents() != null) {
+                        components = component.getComponents();
+                    } else {
+                        components = new ArrayList<>();
+                    }
 
                     AppCMSDownloadQualityAdapter radioAdapter = new AppCMSDownloadQualityAdapter(context,
                             mpegs,
-                            component.getComponents(),
+                            components,
                             appCMSPresenter,
                             jsonValueKeyMap);
 
@@ -1333,7 +1351,10 @@ public class ViewCreator {
 
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
-                        if (moduleAPI.getContentData() != null) {
+                        if (moduleAPI.getContentData() != null &&
+                                moduleAPI.getContentData().size() > 0 &&
+                                moduleAPI.getContentData().get(0) != null &&
+                                moduleAPI.getContentData().get(0).getGist() != null) {
                             String userId = appCMSPresenter.getLoggedInUser(context);
                             appCMSPresenter.getUserVideoDownloadStatus(
                                     moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
@@ -1348,7 +1369,10 @@ public class ViewCreator {
                                 .setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
 
-                        if (moduleAPI.getContentData() != null) {
+                        if (moduleAPI.getContentData() != null &&
+                                moduleAPI.getContentData().size() > 0 &&
+                                moduleAPI.getContentData().get(0) != null &&
+                                moduleAPI.getContentData().get(0).getGist() != null) {
                             appCMSPresenter.getUserVideoStatus(
                                     moduleAPI.getContentData().get(0).getGist().getId(),
                                     new UpdateImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter, moduleAPI.getContentData()
@@ -1525,10 +1549,8 @@ public class ViewCreator {
                                         ViewGroup.LayoutParams.WRAP_CONTENT);
 
                         removeAllLayoutParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-                        componentViewResult.componentView.setLayoutParams(removeAllLayoutParams);
 
-                        final boolean isHistoryPage = jsonValueKeyMap.get(viewType)
-                                == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY;
+                        componentViewResult.componentView.setLayoutParams(removeAllLayoutParams);
 
                         componentViewResult.onInternalEvent = new OnInternalEvent() {
                             final View removeAllButton = componentViewResult.componentView;
@@ -1725,7 +1747,14 @@ public class ViewCreator {
                             break;
 
                         case PAGE_AUTOPLAY_MOVIE_DISCRIPTION_KEY:
-                            String autoplayVideoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
+                            String autoplayVideoDescription = null;
+                            if (moduleAPI.getContentData() != null &&
+                                    moduleAPI.getContentData().size() > 0 &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                    moduleAPI.getContentData().get(0).getGist().getDescription() != null) {
+                                autoplayVideoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
+                            }
                             if (autoplayVideoDescription != null) {
                                 autoplayVideoDescription = autoplayVideoDescription.trim();
                             }
@@ -1738,17 +1767,30 @@ public class ViewCreator {
                             } else if (!BaseView.isLandscape(context)) {
                                 componentViewResult.shouldHideComponent = true;
                             }
-                            ViewTreeObserver viewTreeObserver = componentViewResult.componentView.getViewTreeObserver();
-                            ViewCreatorMultiLineLayoutListener viewCreatorMultiLineLayoutListener =
-                                    new ViewCreatorMultiLineLayoutListener(((TextView) componentViewResult.componentView),
-                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                            autoplayVideoDescription,
-                                            appCMSPresenter,
-                                            true);
-                            viewTreeObserver.addOnGlobalLayoutListener(viewCreatorMultiLineLayoutListener);
+                            if (moduleAPI.getContentData() != null &&
+                                    moduleAPI.getContentData().size() > 0 &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                     !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
+                                ViewTreeObserver viewTreeObserver = componentViewResult.componentView.getViewTreeObserver();
+                                ViewCreatorMultiLineLayoutListener viewCreatorMultiLineLayoutListener =
+                                        new ViewCreatorMultiLineLayoutListener(((TextView) componentViewResult.componentView),
+                                                moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                                autoplayVideoDescription,
+                                                appCMSPresenter,
+                                                true);
+                                viewTreeObserver.addOnGlobalLayoutListener(viewCreatorMultiLineLayoutListener);
+                            }
                             break;
                         case PAGE_VIDEO_DESCRIPTION_KEY:
-                            String videoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
+                            String videoDescription = null;
+                            if (moduleAPI.getContentData() != null &&
+                                    moduleAPI.getContentData().size() > 0 &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                    moduleAPI.getContentData().get(0).getGist().getDescription() != null) {
+                                videoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
+                            }
                             if (videoDescription != null) {
                                 videoDescription = videoDescription.trim();
                             }
@@ -1761,14 +1803,20 @@ public class ViewCreator {
                             } else if (!BaseView.isLandscape(context)) {
                                 componentViewResult.shouldHideComponent = true;
                             }
-                            ViewTreeObserver textVto = componentViewResult.componentView.getViewTreeObserver();
-                            ViewCreatorMultiLineLayoutListener viewCreatorLayoutListener =
-                                    new ViewCreatorMultiLineLayoutListener(((TextView) componentViewResult.componentView),
-                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                            videoDescription,
-                                            appCMSPresenter,
-                                            false);
-                            textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
+                            if (moduleAPI.getContentData() != null &&
+                                    moduleAPI.getContentData().size() > 0 &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                    moduleAPI.getContentData().get(0).getGist().getTitle() != null) {
+                                ViewTreeObserver textVto = componentViewResult.componentView.getViewTreeObserver();
+                                ViewCreatorMultiLineLayoutListener viewCreatorLayoutListener =
+                                        new ViewCreatorMultiLineLayoutListener(((TextView) componentViewResult.componentView),
+                                                moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                                videoDescription,
+                                                appCMSPresenter,
+                                                false);
+                                textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
+                            }
                             break;
 
                         case PAGE_AUTOPLAY_MOVIE_TITLE_KEY:
@@ -1806,9 +1854,13 @@ public class ViewCreator {
 
                         case PAGE_VIDEO_SUBTITLE_KEY:
                         case PAGE_AUTOPLAY_MOVIE_SUBHEADING_KEY:
-                            setViewWithSubtitle(context,
-                                    moduleAPI.getContentData().get(0),
-                                    componentViewResult.componentView);
+                            if (moduleAPI.getContentData() != null &&
+                                    moduleAPI.getContentData().size() > 0 &&
+                                    moduleAPI.getContentData().get(0) != null) {
+                                setViewWithSubtitle(context,
+                                        moduleAPI.getContentData().get(0),
+                                        componentViewResult.componentView);
+                            }
                             break;
 
                         case PAGE_VIDEO_AGE_LABEL_KEY:
@@ -1927,66 +1979,80 @@ public class ViewCreator {
                 componentViewResult.componentView = new ImageView(context);
                 switch (componentKey) {
                     case PAGE_AUTOPLAY_MOVIE_IMAGE_KEY:
-                        int viewWidth = (int) BaseView.getViewWidth(context,
-                                component.getLayout(),
-                                ViewGroup.LayoutParams.WRAP_CONTENT);
-                        int viewHeight = (int) BaseView.getViewHeight(context,
-                                component.getLayout(),
-                                ViewGroup.LayoutParams.WRAP_CONTENT);
-                        if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
-                            Glide.with(context)
-                                    .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
-                                    .override(viewWidth, viewHeight)
-                                    .centerCrop()
-                                    .into((ImageView) componentViewResult.componentView);
-                        } else if (viewWidth > 0) {
-                            Glide.with(context)
-                                    .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                    .override(viewWidth, viewHeight)
-                                    .centerCrop()
-                                    .into((ImageView) componentViewResult.componentView);
-                        } else {
-                            Glide.with(context)
-                                    .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                    .into((ImageView) componentViewResult.componentView);
+                        if (moduleAPI.getContentData() != null &&
+                                moduleAPI.getContentData().size() > 0 &&
+                                moduleAPI.getContentData().get(0) != null &&
+                                moduleAPI.getContentData().get(0).getGist() != null &&
+                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()) &&
+                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
+                            int viewWidth = (int) BaseView.getViewWidth(context,
+                                    component.getLayout(),
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
+                            int viewHeight = (int) BaseView.getViewHeight(context,
+                                    component.getLayout(),
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
+                            if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
+                                Glide.with(context)
+                                        .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
+                                        .override(viewWidth, viewHeight)
+                                        .centerCrop()
+                                        .into((ImageView) componentViewResult.componentView);
+                            } else if (viewWidth > 0) {
+                                Glide.with(context)
+                                        .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                        .override(viewWidth, viewHeight)
+                                        .centerCrop()
+                                        .into((ImageView) componentViewResult.componentView);
+                            } else {
+                                Glide.with(context)
+                                        .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                        .into((ImageView) componentViewResult.componentView);
+                            }
+                            componentViewResult.useWidthOfScreen = false;
                         }
-                        componentViewResult.useWidthOfScreen = false;
                         break;
 
                     case PAGE_VIDEO_IMAGE_KEY:
-                        viewWidth = BaseView.isLandscape(context) ?
-                                ViewGroup.LayoutParams.WRAP_CONTENT :
-                                context.getResources().getDisplayMetrics().widthPixels;
-                        viewHeight = (int) BaseView.getViewHeight(context,
-                                component.getLayout(),
-                                ViewGroup.LayoutParams.WRAP_CONTENT);
-                        if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
-                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                    moduleAPI.getContentData().get(0).getGist().getPosterImageUrl(),
-                                    viewWidth,
-                                    viewHeight);
-                            Glide.with(context)
-                                    .load(imageUrl)
-                                    .override(viewWidth, viewHeight)
-                                    .centerCrop()
-                                    .into((ImageView) componentViewResult.componentView);
-                        } else if (viewWidth > 0) {
-                            String videoImageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                    moduleAPI.getContentData().get(0).getGist().getVideoImageUrl(),
-                                    viewWidth,
-                                    viewHeight);
-                            Glide.with(context)
-                                    .load(videoImageUrl)
-                                    .override(viewWidth, viewHeight)
-                                    .centerCrop()
-                                    .into((ImageView) componentViewResult.componentView);
-                        } else {
-                            Glide.with(context)
-                                    .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                    .fitCenter()
-                                    .into((ImageView) componentViewResult.componentView);
+                        if (moduleAPI.getContentData() != null &&
+                                moduleAPI.getContentData().size() > 0 &&
+                                moduleAPI.getContentData().get(0) != null &&
+                                moduleAPI.getContentData().get(0).getGist() != null &&
+                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()) &&
+                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
+                            int viewWidth = BaseView.isLandscape(context) ?
+                                    ViewGroup.LayoutParams.WRAP_CONTENT :
+                                    context.getResources().getDisplayMetrics().widthPixels;
+                            int viewHeight = (int) BaseView.getViewHeight(context,
+                                    component.getLayout(),
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
+                            if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
+                                String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                        moduleAPI.getContentData().get(0).getGist().getPosterImageUrl(),
+                                        viewWidth,
+                                        viewHeight);
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .override(viewWidth, viewHeight)
+                                        .centerCrop()
+                                        .into((ImageView) componentViewResult.componentView);
+                            } else if (viewWidth > 0) {
+                                String videoImageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                        moduleAPI.getContentData().get(0).getGist().getVideoImageUrl(),
+                                        viewWidth,
+                                        viewHeight);
+                                Glide.with(context)
+                                        .load(videoImageUrl)
+                                        .override(viewWidth, viewHeight)
+                                        .centerCrop()
+                                        .into((ImageView) componentViewResult.componentView);
+                            } else {
+                                Glide.with(context)
+                                        .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                        .fitCenter()
+                                        .into((ImageView) componentViewResult.componentView);
+                            }
+                            componentViewResult.useWidthOfScreen = !BaseView.isLandscape(context);
                         }
-                        componentViewResult.useWidthOfScreen = !BaseView.isLandscape(context);
                         break;
 
                     default:
@@ -2109,7 +2175,10 @@ public class ViewCreator {
                 String starringTitle = null;
                 StringBuilder starringListSb = new StringBuilder();
 
-                if (moduleAPI.getContentData().get(0).getCreditBlocks() != null) {
+                if (moduleAPI.getContentData() != null &&
+                        moduleAPI.getContentData().size() > 0 &&
+                        moduleAPI.getContentData().get(0) != null &&
+                        moduleAPI.getContentData().get(0).getCreditBlocks() != null) {
                     for (CreditBlock creditBlock : moduleAPI.getContentData().get(0).getCreditBlocks()) {
                         AppCMSUIKeyType creditBlockType = jsonValueKeyMap.get(creditBlock.getTitle());
                         if (creditBlockType != null &&
