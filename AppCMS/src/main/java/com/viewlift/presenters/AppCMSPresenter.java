@@ -1621,7 +1621,8 @@ public class AppCMSPresenter {
                                           final Action1<UserVideoDownloadStatus> resultAction1) {
         downloadContentDatumAfterPermissionGranted = null;
         downloadResultActionAfterPermissionGranted = null;
-        if (!hasWriteExternalStoragePermission()) {
+        if (isPreferedStorageLocationSDCard(currentActivity) &&
+                !hasWriteExternalStoragePermission()) {
             requestDownloadQualityScreen = true;
             askForPermissionToDownloadToExternalStorage(true,
                     contentDatum,
@@ -5009,16 +5010,13 @@ public class AppCMSPresenter {
     }
 
     public void resumeDownloadAfterPermissionGranted() {
-        if (downloadContentDatumAfterPermissionGranted != null &&
-                downloadResultActionAfterPermissionGranted != null) {
-            if (requestDownloadQualityScreen) {
-                showDownloadQualityScreen(downloadContentDatumAfterPermissionGranted,
-                        downloadResultActionAfterPermissionGranted);
-            } else {
-                editDownload(downloadContentDatumAfterPermissionGranted,
-                        downloadResultActionAfterPermissionGranted,
-                        true);
-            }
+        if (requestDownloadQualityScreen) {
+            showDownloadQualityScreen(downloadContentDatumAfterPermissionGranted,
+                    downloadResultActionAfterPermissionGranted);
+        } else {
+            editDownload(downloadContentDatumAfterPermissionGranted,
+                    downloadResultActionAfterPermissionGranted,
+                    true);
         }
     }
 
