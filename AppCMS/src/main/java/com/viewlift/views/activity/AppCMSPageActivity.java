@@ -72,6 +72,7 @@ import java.util.Stack;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.functions.Action0;
 import rx.functions.Action1;
 
 /**
@@ -130,6 +131,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private ServiceConnection inAppBillingServiceConn;
     private FirebaseAnalytics mFireBaseAnalytics;
     private boolean handlingClose;
+    private int itemsToUpdate;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -190,7 +192,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         processDeepLink(intent.getData());
                     }
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION)) {
-                    updateData();
+                    updateData(null);
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION)) {
                     AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
                     handleLaunchPageAction(appCMSBinder,
@@ -499,25 +501,26 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (appCMSPresenter != null) {
-            updateData();
-            appCMSPresenter.cancelInternalEvents();
-            appCMSPresenter.onConfigurationChange(true);
-            if (appCMSPresenter.isMainFragmentViewVisible()) {
-                if (!appCMSPresenter.isMainFragmentTransparent()) {
-                    appCMSPresenter.showMainFragmentView(true);
+            updateData(() -> {
+                appCMSPresenter.cancelInternalEvents();
+                    appCMSPresenter.onConfigurationChange(true);
+                    if (appCMSPresenter.isMainFragmentViewVisible()) {
+                    if (!appCMSPresenter.isMainFragmentTransparent()) {
+                        appCMSPresenter.showMainFragmentView(true);
+                    }
+                    AppCMSBinder appCMSBinder = appCMSBinderStack.size() > 0 ?
+                            appCMSBinderMap.get(appCMSBinderStack.peek()) :
+                            null;
+                    if (appCMSBinder != null) {
+                        appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
+                                + BaseView.isLandscape(this));
+                        handleLaunchPageAction(appCMSBinder,
+                                true,
+                                false,
+                                false);
+                    }
                 }
-                AppCMSBinder appCMSBinder = appCMSBinderStack.size() > 0 ?
-                        appCMSBinderMap.get(appCMSBinderStack.peek()) :
-                        null;
-                if (appCMSBinder != null) {
-                    appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
-                            + BaseView.isLandscape(this));
-                    handleLaunchPageAction(appCMSBinder,
-                            true,
-                            false,
-                            false);
-                }
-            }
+            });
         }
     }
 
@@ -1085,9 +1088,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 null);
     }
 
-    private void updateData() {
+    private void updateData(Action0 onReadyAction) {
         final AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+
         if (appCMSPresenter != null) {
+            itemsToUpdate = appCMSBinderStack.size();
             for (String appCMSBinderKey : appCMSBinderMap.keySet()) {
                 final AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderKey);
                 if (appCMSBinder != null) {
@@ -1097,6 +1102,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getScreenName());
                         usePageIdQueryParam = false;
                     }
+                    itemsToUpdate++;
                     appCMSPresenter.getPageIdContent(appCMSMain.getApiBaseUrl(),
                             endPoint,
                             appCMSMain.getInternalName(),
@@ -1129,6 +1135,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                     if (!updatedHistory) {
                                         appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
                                     }
+                                }
+                                itemsToUpdate--;
+                                if (itemsToUpdate == 0 && onReadyAction != null) {
+                                    onReadyAction.call();
                                 }
                             });
                 }
