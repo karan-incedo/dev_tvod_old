@@ -619,6 +619,7 @@ public class AppCMSPresenter {
             try {
                 DownloadVideoRealm downloadedVideo = realmController.getDownloadById(filmId);
                 downloadedVideo.setWatchedTime(watchedTime);
+                downloadedVideo.setLastWatchDate(new Date().getTime());
                 realmController.updateDownload(downloadedVideo);
             } catch (Exception e) {
                 Log.e(TAG, "Film " + filmId + " has not been downloaded");
@@ -747,7 +748,6 @@ public class AppCMSPresenter {
                             }
                             playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), requestAds);
 
-                            if (isVideoOffline) {
                                 if (contentDatum != null &&
                                         contentDatum.getGist() != null &&
                                         !TextUtils.isEmpty(contentDatum.getGist().getId())) {
@@ -755,13 +755,34 @@ public class AppCMSPresenter {
                                     try {
                                         DownloadVideoRealm downloadedVideo = realmController.getDownloadById(filmId);
                                         if (downloadedVideo != null) {
-                                            contentDatum.getGist().setWatchedTime(downloadedVideo.getWatchedTime());
+                                            if (isVideoOffline) {
+                                                Date now = new Date();
+                                                long timeAfterDownloadMsec = now.getTime() -
+                                                        downloadedVideo.getLastWatchDate();
+
+                                                timeAfterDownloadMsec /= (1000 * 60 * 60* 24);
+
+                                                if (timeAfterDownloadMsec >= 30) {
+                                                    showDialog(DialogType.DOWNLOAD_NOT_AVAILABLE,
+                                                            currentActivity.getString(R.string.app_cms_download_limit_message),
+                                                            false,
+                                                            null);
+                                                    return false;
+                                                }
+
+                                                contentDatum.getGist().setWatchedTime(downloadedVideo.getWatchedTime());
+                                            }
+                                            if (isNetworkConnected() && !downloadedVideo.isSyncedWithServer()) {
+                                                updateWatchedTime(filmId, downloadedVideo.getWatchedTime());
+                                                downloadedVideo.setSyncedWithServer(true);
+                                            } else if (!isNetworkConnected() && isVideoOffline) {
+                                                downloadedVideo.setSyncedWithServer(false);
+                                            }
                                         }
                                     } catch (Exception e) {
                                         Log.e(TAG, "Film " + filmId + " has not been downloaded");
                                     }
                                 }
-                            }
 
                             if (contentDatum != null &&
                                     contentDatum.getGist() != null &&
@@ -4267,6 +4288,11 @@ public class AppCMSPresenter {
                     message = optionalMessage;
                     break;
 
+                case DOWNLOAD_NOT_AVAILABLE:
+                    title = currentActivity.getString(R.string.app_cms_download_unavailable_error_title);
+                    message = optionalMessage;
+                    break;
+
                 default:
                     isNetwork = true;
                     title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
@@ -6187,7 +6213,8 @@ public class AppCMSPresenter {
         CANNOT_UPGRADE_SUBSCRIPTION,
         CANNOT_CANCEL_SUBSCRIPTION,
         STREAMING_INFO_MISSING,
-        REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_FOR_DOWNLOAD
+        REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_FOR_DOWNLOAD,
+        DOWNLOAD_NOT_AVAILABLE
     }
 
     public enum ExtraScreenType {

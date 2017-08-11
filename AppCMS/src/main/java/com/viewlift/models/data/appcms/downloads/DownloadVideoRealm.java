@@ -48,6 +48,7 @@ public class DownloadVideoRealm extends RealmObject {
     private String subtitlesFileURL;
     private String userId;
     private long watchedTime;
+    private boolean isSyncedWithServer;
 
     public String getVideoId() {
         return videoId;
@@ -271,6 +272,14 @@ public class DownloadVideoRealm extends RealmObject {
 
     public void setWatchedTime(long watchedTime) {
         this.watchedTime = watchedTime;
+    }
+
+    public boolean isSyncedWithServer() {
+        return isSyncedWithServer;
+    }
+
+    public void setSyncedWithServer(boolean syncedWithServer) {
+        isSyncedWithServer = syncedWithServer;
     }
 
     public ContentDatum convertToContentDatum(String userId) {
