@@ -11,6 +11,7 @@ import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -28,8 +29,11 @@ import android.os.Environment;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -61,6 +65,7 @@ import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.viewlift.Manifest;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
@@ -96,6 +101,7 @@ import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
+import com.viewlift.models.data.appcms.ui.main.Content;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
@@ -159,18 +165,24 @@ import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 
+import org.w3c.dom.Text;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -178,6 +190,8 @@ import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -205,6 +219,7 @@ public class AppCMSPresenter {
     public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
 
     public static final int RC_PURCHASE_PLAY_STORE_ITEM = 1002;
+    public static final int REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS = 2002;
     public static final String PRESENTER_DIALOG_ACTION = "appcms_presenter_dialog_action";
     public static final String SEARCH_ACTION = "SEARCH_ACTION";
     private static final String TAG = "AppCMSPresenter";
@@ -234,6 +249,7 @@ public class AppCMSPresenter {
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID = "existing_google_play_subscription_id_key";
 
     private static final String USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME = "user_download_quality_pref";
+    private static final String USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME = "user_download_sd_card_pref";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String ANONYMOUS_AUTH_TOKEN_PREF_NAME = "anonymous_auth_token_pref_key";
@@ -350,6 +366,9 @@ public class AppCMSPresenter {
     private FirebaseAnalytics mFireBaseAnalytics;
     private boolean runUpdateDownloadIconTimer;
     private Timer updateDownloadIconTimer;
+    private ContentDatum downloadContentDatumAfterPermissionGranted;
+    private Action1<UserVideoDownloadStatus> downloadResultActionAfterPermissionGranted;
+    private boolean requestDownloadQualityScreen;
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -597,6 +616,14 @@ public class AppCMSPresenter {
                             sendUpdateHistoryAction();
                         }
                     });
+            try {
+                DownloadVideoRealm downloadedVideo = realmController.getDownloadById(filmId);
+                downloadedVideo.setWatchedTime(watchedTime);
+                downloadedVideo.setLastWatchDate(new Date().getTime());
+                realmController.updateDownload(downloadedVideo);
+            } catch (Exception e) {
+                Log.e(TAG, "Film " + filmId + " has not been downloaded");
+            }
         }
     }
 
@@ -682,7 +709,7 @@ public class AppCMSPresenter {
 
             Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
 
-        /*This is to enable offline video playback even if Internet is not available*/
+            /*This is to enable offline video playback even if Internet is not available*/
             if (!(actionType == AppCMSActionType.PLAY_VIDEO_PAGE && isVideoOffline) && !isNetworkConnected()) {
                 showDialog(DialogType.NETWORK, null, false, null);
             } else if (currentActivity != null && !loadingPage) {
@@ -720,6 +747,43 @@ public class AppCMSPresenter {
                                 requestAds = false;
                             }
                             playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), requestAds);
+
+                                if (contentDatum != null &&
+                                        contentDatum.getGist() != null &&
+                                        !TextUtils.isEmpty(contentDatum.getGist().getId())) {
+                                    String filmId = contentDatum.getGist().getId();
+                                    try {
+                                        DownloadVideoRealm downloadedVideo = realmController.getDownloadById(filmId);
+                                        if (downloadedVideo != null) {
+                                            if (isVideoOffline) {
+                                                Date now = new Date();
+                                                long timeAfterDownloadMsec = now.getTime() -
+                                                        downloadedVideo.getLastWatchDate();
+
+                                                timeAfterDownloadMsec /= (1000 * 60 * 60* 24);
+
+                                                if (timeAfterDownloadMsec >= 30) {
+                                                    showDialog(DialogType.DOWNLOAD_NOT_AVAILABLE,
+                                                            currentActivity.getString(R.string.app_cms_download_limit_message),
+                                                            false,
+                                                            null);
+                                                    return false;
+                                                }
+
+                                                contentDatum.getGist().setWatchedTime(downloadedVideo.getWatchedTime());
+                                            }
+                                            if (isNetworkConnected() && !downloadedVideo.isSyncedWithServer()) {
+                                                updateWatchedTime(filmId, downloadedVideo.getWatchedTime());
+                                                downloadedVideo.setSyncedWithServer(true);
+                                            } else if (!isNetworkConnected() && isVideoOffline) {
+                                                downloadedVideo.setSyncedWithServer(false);
+                                            }
+                                        }
+                                    } catch (Exception e) {
+                                        Log.e(TAG, "Film " + filmId + " has not been downloaded");
+                                    }
+                                }
+
                             if (contentDatum != null &&
                                     contentDatum.getGist() != null &&
                                     contentDatum.getGist().getWatchedTime() != 0) {
@@ -1602,60 +1666,69 @@ public class AppCMSPresenter {
      */
     public void showDownloadQualityScreen(final ContentDatum contentDatum,
                                           final Action1<UserVideoDownloadStatus> resultAction1) {
+        downloadContentDatumAfterPermissionGranted = null;
+        downloadResultActionAfterPermissionGranted = null;
+        if (isPreferedStorageLocationSDCard(currentActivity) &&
+                !hasWriteExternalStoragePermission()) {
+            requestDownloadQualityScreen = true;
+            askForPermissionToDownloadToExternalStorage(true,
+                    contentDatum,
+                    resultAction1);
+        } else {
+            AppCMSPageAPI apiData = new AppCMSPageAPI();
+            List<Module> moduleList = new ArrayList<>();
+            Module module = new Module();
 
-        AppCMSPageAPI apiData = new AppCMSPageAPI();
-        List<Module> moduleList = new ArrayList<>();
-        Module module = new Module();
+            getUserDownloadQualityPref(currentActivity);
 
-        getUserDownloadQualityPref(currentActivity);
+            List<ContentDatum> contentData = new ArrayList<>();
+            ContentDatum contentDatumLocal = new ContentDatum();
+            StreamingInfo streamingInfo = new StreamingInfo();
+            VideoAssets videoAssets = new VideoAssets();
+            List<Mpeg> mpegs = new ArrayList<>();
 
-        List<ContentDatum> contentData = new ArrayList<>();
-        ContentDatum contentDatumLocal = new ContentDatum();
-        StreamingInfo streamingInfo = new StreamingInfo();
-        VideoAssets videoAssets = new VideoAssets();
-        List<Mpeg> mpegs = new ArrayList<>();
+            String renditionValueArray[] = {"1080p", "720p", "360p"};
+            for (String renditionValue : renditionValueArray) {
+                Mpeg mpeg = new Mpeg();
+                mpeg.setRenditionValue(renditionValue);
+                mpegs.add(mpeg);
+            }
 
-        String renditionValueArray[] = {"1080p", "720p", "360p"};
-        for (String renditionValue : renditionValueArray) {
-            Mpeg mpeg = new Mpeg();
-            mpeg.setRenditionValue(renditionValue);
-            mpegs.add(mpeg);
+            videoAssets.setMpeg(mpegs);
+            videoAssets.setType("videoAssets");
+
+            streamingInfo.setVideoAssets(videoAssets);
+            contentDatumLocal.setStreamingInfo(streamingInfo);
+
+            contentData.add(contentDatumLocal);
+            module.setContentData(contentData);
+
+            moduleList.add(module);
+            apiData.setModules(moduleList);
+
+            launchDownloadQualityActivity(currentActivity,
+                    navigationPages.get(downloadQualityPage.getPageId()),
+                    apiData,
+                    downloadQualityPage.getPageId(),
+                    downloadQualityPage.getPageName(),
+                    pageIdToPageNameMap.get(downloadQualityPage.getPageId()),
+                    loadFromFile,
+                    false,
+                    true,
+                    false,
+                    false,
+                    getAppCMSDownloadQualityBinder(currentActivity,
+                            navigationPages.get(downloadQualityPage.getPageId()),
+                            apiData,
+                            downloadQualityPage.getPageId(),
+                            downloadQualityPage.getPageName(),
+                            downloadQualityPage.getPageName(),
+                            loadFromFile,
+                            true,
+                            true,
+                            false,
+                            contentDatum, resultAction1));
         }
-
-        videoAssets.setMpeg(mpegs);
-        videoAssets.setType("videoAssets");
-
-        streamingInfo.setVideoAssets(videoAssets);
-        contentDatumLocal.setStreamingInfo(streamingInfo);
-
-        contentData.add(contentDatumLocal);
-        module.setContentData(contentData);
-
-        moduleList.add(module);
-        apiData.setModules(moduleList);
-
-        launchDownloadQualityActivity(currentActivity,
-                navigationPages.get(downloadQualityPage.getPageId()),
-                apiData,
-                downloadQualityPage.getPageId(),
-                downloadQualityPage.getPageName(),
-                pageIdToPageNameMap.get(downloadQualityPage.getPageId()),
-                loadFromFile,
-                false,
-                true,
-                false,
-                false,
-                getAppCMSDownloadQualityBinder(currentActivity,
-                        navigationPages.get(downloadQualityPage.getPageId()),
-                        apiData,
-                        downloadQualityPage.getPageId(),
-                        downloadQualityPage.getPageName(),
-                        downloadQualityPage.getPageName(),
-                        loadFromFile,
-                        true,
-                        true,
-                        false,
-                        contentDatum, resultAction1));
     }
 
     /**
@@ -1679,120 +1752,138 @@ public class AppCMSPresenter {
 
     public void editDownload(final ContentDatum contentDatum,
                              final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
+        downloadContentDatumAfterPermissionGranted = null;
+        downloadResultActionAfterPermissionGranted = null;
 
-        long enqueueId = 0L;
+        if (isPreferedStorageLocationSDCard(currentActivity) &&
+                !hasWriteExternalStoragePermission()) {
+            requestDownloadQualityScreen = false;
+            askForPermissionToDownloadToExternalStorage(true,
+                    contentDatum,
+                    resultAction1);
+        } else {
 
-        if (contentDatum.getStreamingInfo() == null) { // This will handle the case if we get video streming info null at Video detail page.
+            long enqueueId = 0L;
 
-
-            String url = getStreamingInfoURL(contentDatum.getGist().getId());
-
-            GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
-
-            new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
-                if (appCMSStreamingInfo != null) {
-                    contentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
-                }
-            }).execute(param);
-
-            showDialog(DialogType.STREAMING_INFO_MISSING, null, false, null);
-            return;
-        }
-
-        long ccEnqueueId = 0L;
-        if (contentDatum.getContentDetails() != null &&
-                contentDatum.getContentDetails().getClosedCaptions() != null &&
-                contentDatum.getContentDetails().getClosedCaptions().size() > 0 &&
-                contentDatum.getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
-            ccEnqueueId = downloadVideoSubtitles(contentDatum.getContentDetails()
-                    .getClosedCaptions().get(0).getUrl(), contentDatum.getGist().getId());
-        }
-
-        cancelDownloadIconTimerTask();
-
-        try {
-            String downloadURL;
+            if (contentDatum.getStreamingInfo() == null) { // This will handle the case if we get video streming info null at Video detail page.
 
 
-            int bitrate = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
+                String url = getStreamingInfoURL(contentDatum.getGist().getId());
 
-            String downloadQualityRendition = getUserDownloadQualityPref(currentActivity);
-            Map<String, String> urlRenditionMap = new HashMap<>();
-            for (Mpeg mpeg : contentDatum.getStreamingInfo().getVideoAssets().getMpeg()) {
-                urlRenditionMap.put(mpeg.getRenditionValue().replace("_", "").trim(),
-                        mpeg.getUrl());
-            }
-            downloadURL = urlRenditionMap.get(downloadQualityRendition);
+                GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
 
-            if (downloadQualityRendition != null) {
-                if (downloadURL == null && downloadQualityRendition.contains("360")) {
-                    if (urlRenditionMap.get("720p") != null) {
-                        downloadURL = urlRenditionMap.get("720p");
-                    } else if (urlRenditionMap.get("1080p") != null) {
-                        downloadURL = urlRenditionMap.get("1080p");
+                new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
+                    if (appCMSStreamingInfo != null) {
+                        contentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
                     }
-                } else if (downloadURL == null && downloadQualityRendition.contains("720")) {
-                    if (urlRenditionMap.get("360p") != null) {
-                        downloadURL = urlRenditionMap.get("360p");
-                    } else if (urlRenditionMap.get("1080p") != null) {
-                        downloadURL = urlRenditionMap.get("1080p");
-                    }
+                }).execute(param);
 
-                } else if (downloadURL == null && downloadQualityRendition.contains("1080")) {
-
-                    if (urlRenditionMap.get("720p") != null) {
-                        downloadURL = urlRenditionMap.get("720p");
-                    } else if (urlRenditionMap.get("360p") != null) {
-                        downloadURL = urlRenditionMap.get("360p");
-                    }
-                } else if (downloadURL == null) {
-                    //noinspection SuspiciousMethodCalls
-                    downloadURL = urlRenditionMap.get(urlRenditionMap.keySet().toArray()[0]);
-                }
-            } else {
-                downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+                showDialog(DialogType.STREAMING_INFO_MISSING, null, false, null);
+                return;
             }
 
-            downloadURL = downloadURL.replace("https:/", "http:/");
+            long ccEnqueueId = 0L;
+            if (contentDatum.getContentDetails() != null &&
+                    contentDatum.getContentDetails().getClosedCaptions() != null &&
+                    contentDatum.getContentDetails().getClosedCaptions().size() > 0 &&
+                    contentDatum.getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
+                ccEnqueueId = downloadVideoSubtitles(contentDatum.getContentDetails()
+                        .getClosedCaptions().get(0).getUrl(), contentDatum.getGist().getId());
+            }
 
-            DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
-                    .setTitle(contentDatum.getGist().getTitle())
-                    .setDescription(contentDatum.getGist().getDescription())
-                    .setAllowedOverRoaming(false)
-                    .setDestinationInExternalFilesDir(currentActivity, Environment.DIRECTORY_DOWNLOADS,
-                            contentDatum.getGist().getId() + MEDIA_SURFIX_MP4)
-                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                    .setVisibleInDownloadsUi(false)
-                    .setShowRunningNotification(true);
+            cancelDownloadIconTimerTask();
 
-            enqueueId = downloadManager.enqueue(downloadRequest);
+            try {
+                String downloadURL;
 
-            long thumbEnqueueId = downloadVideoImage(contentDatum.getGist().getVideoImageUrl(),
-                    contentDatum.getGist().getId());
-            long posterEnqueueId = downloadPosterImage(contentDatum.getGist().getPosterImageUrl(),
-                    contentDatum.getGist().getId());
+
+                int bitrate = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
+
+                String downloadQualityRendition = getUserDownloadQualityPref(currentActivity);
+                Map<String, String> urlRenditionMap = new HashMap<>();
+                for (Mpeg mpeg : contentDatum.getStreamingInfo().getVideoAssets().getMpeg()) {
+                    urlRenditionMap.put(mpeg.getRenditionValue().replace("_", "").trim(),
+                            mpeg.getUrl());
+                }
+                downloadURL = urlRenditionMap.get(downloadQualityRendition);
+
+                if (downloadQualityRendition != null) {
+                    if (downloadURL == null && downloadQualityRendition.contains("360")) {
+                        if (urlRenditionMap.get("720p") != null) {
+                            downloadURL = urlRenditionMap.get("720p");
+                        } else if (urlRenditionMap.get("1080p") != null) {
+                            downloadURL = urlRenditionMap.get("1080p");
+                        }
+                    } else if (downloadURL == null && downloadQualityRendition.contains("720")) {
+                        if (urlRenditionMap.get("360p") != null) {
+                            downloadURL = urlRenditionMap.get("360p");
+                        } else if (urlRenditionMap.get("1080p") != null) {
+                            downloadURL = urlRenditionMap.get("1080p");
+                        }
+
+                    } else if (downloadURL == null && downloadQualityRendition.contains("1080")) {
+
+                        if (urlRenditionMap.get("720p") != null) {
+                            downloadURL = urlRenditionMap.get("720p");
+                        } else if (urlRenditionMap.get("360p") != null) {
+                            downloadURL = urlRenditionMap.get("360p");
+                        }
+                    } else if (downloadURL == null) {
+                        //noinspection SuspiciousMethodCalls
+                        downloadURL = urlRenditionMap.get(urlRenditionMap.keySet().toArray()[0]);
+                    }
+                } else {
+                    downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+                }
+
+                downloadURL = downloadURL.replace("https:/", "http:/");
+
+                DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
+                        .setTitle(contentDatum.getGist().getTitle())
+                        .setDescription(contentDatum.getGist().getDescription())
+                        .setAllowedOverRoaming(false)
+                        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                        .setVisibleInDownloadsUi(false)
+                        .setShowRunningNotification(true);
+
+                if (isPreferedStorageLocationSDCard(currentActivity)){
+                    downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity,Environment.DIRECTORY_DOWNLOADS),
+                            contentDatum.getGist().getId() + MEDIA_SURFIX_MP4)));
+                }
+                else{
+                    downloadRequest.setDestinationInExternalFilesDir(currentActivity, Environment.DIRECTORY_DOWNLOADS,
+                            contentDatum.getGist().getId() + MEDIA_SURFIX_MP4);
+                }
+
+                enqueueId = downloadManager.enqueue(downloadRequest);
+
+                long thumbEnqueueId = downloadVideoImage(contentDatum.getGist().getVideoImageUrl(),
+                        contentDatum.getGist().getId());
+                long posterEnqueueId = downloadPosterImage(contentDatum.getGist().getPosterImageUrl(),
+                        contentDatum.getGist().getId());
             /*
              * Inserting data in realm data object
              */
 
-            createLocalEntry(
-                    enqueueId,
-                    thumbEnqueueId,
-                    posterEnqueueId,
-                    ccEnqueueId,
-                    contentDatum,
-                    downloadURL);
+                createLocalEntry(
+                        enqueueId,
+                        thumbEnqueueId,
+                        posterEnqueueId,
+                        ccEnqueueId,
+                        contentDatum,
+                        downloadURL);
 
-            showToast(
-                    currentActivity.getString(R.string.app_cms_download_started_mesage,
-                            contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
+                showToast(
+                        currentActivity.getString(R.string.app_cms_download_started_mesage,
+                                contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
 
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-            showDialog(DialogType.DOWNLOAD_INCOMPLETE, e.getMessage(), false, null);
-        } finally {
-            appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), this,
-                    resultAction1, getLoggedInUser(currentActivity));
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage());
+                showDialog(DialogType.DOWNLOAD_INCOMPLETE, e.getMessage(), false, null);
+            } finally {
+                appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), this,
+                        resultAction1, getLoggedInUser(currentActivity));
+            }
         }
     }
 
@@ -1860,9 +1951,17 @@ public class AppCMSPresenter {
                     .setTitle(filename)
                     .setDescription(filename)
                     .setAllowedOverRoaming(false)
-                    .setDestinationInExternalFilesDir(currentActivity, "thumbs", filename + MEDIA_SURFIX_JPG)
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
+
+            if (isPreferedStorageLocationSDCard(currentActivity)){
+                downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity,"thumbs"),
+                        filename + MEDIA_SURFIX_JPG)));
+            }
+            else{
+                downloadRequest.setDestinationInExternalFilesDir(currentActivity, "thumbs",
+                        filename + MEDIA_SURFIX_JPG);
+            }
             enqueueId = downloadManager.enqueue(downloadRequest);
 
 
@@ -1892,9 +1991,18 @@ public class AppCMSPresenter {
                     .setTitle(filename)
                     .setDescription(filename)
                     .setAllowedOverRoaming(false)
-                    .setDestinationInExternalFilesDir(currentActivity, "posters", filename + MEDIA_SURFIX_JPG)
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
+
+            if (isPreferedStorageLocationSDCard(currentActivity)){
+                downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity,"posters"),
+                        filename + MEDIA_SURFIX_JPG)));
+            }
+            else{
+                downloadRequest.setDestinationInExternalFilesDir(currentActivity, "posters",
+                        filename + MEDIA_SURFIX_JPG);
+            }
+
             enqueueId = downloadManager.enqueue(downloadRequest);
 
 
@@ -1914,9 +2022,18 @@ public class AppCMSPresenter {
                     .setTitle(filename)
                     .setDescription(filename)
                     .setAllowedOverRoaming(false)
-                    .setDestinationInExternalFilesDir(currentActivity, "closedCaptions", filename + MEDIA_SUFFIX_SRT)
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
+
+            if (isPreferedStorageLocationSDCard(currentActivity)){
+                downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity,"closedCaptions"),
+                        filename + MEDIA_SUFFIX_SRT)));
+            }
+            else{
+                downloadRequest.setDestinationInExternalFilesDir(currentActivity, "closedCaptions",
+                        filename + MEDIA_SUFFIX_SRT);
+            }
+
             enqueueId = downloadManager.enqueue(downloadRequest);
 
 
@@ -2644,7 +2761,7 @@ public class AppCMSPresenter {
                             getLoggedInUser(currentActivity)),
                             getAuthToken(currentActivity),
                             history);
-                } catch (IOException e) {
+                } catch (IOException | NullPointerException e) {
                     Log.e(TAG, "getHistoryPageContent: " + e.toString());
                 }
             });
@@ -2661,7 +2778,7 @@ public class AppCMSPresenter {
                             getLoggedInUser(currentActivity)),
                             getAuthToken(currentActivity),
                             history);
-                } catch (IOException e) {
+                } catch (IOException | NullPointerException e) {
                     Log.e(TAG, "getHistoryPageContent: " + e.toString());
                 }
             });
@@ -3243,18 +3360,34 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public String getUserDownloadQualityPref(Context context) {
-        if (context != null) {
-            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, 0);
-            return sharedPrefs.getString(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, null);
-        }
-        return null;
-    }
 
     public String getAnonymousUserToken(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(ANONYMOUS_AUTH_TOKEN_PREF_NAME, 0);
             return sharedPrefs.getString(ANONYMOUS_AUTH_TOKEN_PREF_NAME, null);
+        }
+        return null;
+    }
+
+    public boolean isPreferedStorageLocationSDCard(Context context){
+        if (context!=null){
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, 0);
+            return sharedPrefs.getBoolean(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, true);
+        }
+        return false;
+    }
+    public boolean setPreferedStorageLocationSDCard(Context context, boolean downloadPref) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, 0);
+            return sharedPrefs.edit().putBoolean(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME,
+                    downloadPref).commit() && setLoggedInTime(context);
+        }
+        return false;
+    }
+    public String getUserDownloadQualityPref(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, 0);
+            return sharedPrefs.getString(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, null);
         }
         return null;
     }
@@ -4144,10 +4277,22 @@ public class AppCMSPresenter {
                     title = currentActivity.getString(R.string.app_cms_download_incomplete_error_title);
                     message = currentActivity.getString(R.string.app_cms_download_incomplete_error_message);
                     break;
+
                 case STREAMING_INFO_MISSING:
                     title = currentActivity.getString(R.string.app_cms_download_stream_info_error_title);
                     message = currentActivity.getString(R.string.app_cms_download_streaming_info_error_message);
                     break;
+
+                case REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_FOR_DOWNLOAD:
+                    title = currentActivity.getString(R.string.app_cms_download_external_storage_write_permission_info_error_title);
+                    message = optionalMessage;
+                    break;
+
+                case DOWNLOAD_NOT_AVAILABLE:
+                    title = currentActivity.getString(R.string.app_cms_download_unavailable_error_title);
+                    message = optionalMessage;
+                    break;
+
                 default:
                     isNetwork = true;
                     title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
@@ -4443,45 +4588,6 @@ public class AppCMSPresenter {
 
         googleAccessToken = null;
         googleUserId = null;
-
-        refreshSubscriptionData(() -> {
-            if (entitlementPendingVideoData != null) {
-                sendCloseOthersAction(null, true);
-                launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
-                        entitlementPendingVideoData.action,
-                        entitlementPendingVideoData.filmTitle,
-                        entitlementPendingVideoData.extraData,
-                        entitlementPendingVideoData.contentDatum,
-                        entitlementPendingVideoData.closeLauncher,
-                        entitlementPendingVideoData.currentlyPlayingIndex,
-                        entitlementPendingVideoData.relateVideoIds);
-                entitlementPendingVideoData.pagePath = null;
-                entitlementPendingVideoData.action = null;
-                entitlementPendingVideoData.filmTitle = null;
-                entitlementPendingVideoData.extraData = null;
-                entitlementPendingVideoData.contentDatum = null;
-                entitlementPendingVideoData.closeLauncher = false;
-                entitlementPendingVideoData.currentlyPlayingIndex = -1;
-                entitlementPendingVideoData.relateVideoIds = null;
-                entitlementPendingVideoData = null;
-            } else {
-                sendCloseOthersAction(null, true);
-                cancelInternalEvents();
-                restartInternalEvents();
-                NavigationPrimary homePageNavItem = findHomePageNavItem();
-                if (homePageNavItem != null) {
-                    navigateToPage(homePageNavItem.getPageId(),
-                            homePageNavItem.getTitle(),
-                            homePageNavItem.getUrl(),
-                            false,
-                            true,
-                            false,
-                            true,
-                            false,
-                            deeplinkSearchQuery);
-                }
-            }
-        });
     }
 
     public List<SubscriptionPlan> availableUpgradesForUser(String userId) {
@@ -4852,6 +4958,8 @@ public class AppCMSPresenter {
                         } else {
                             refreshSubscriptionData(() -> {
                                 if (entitlementPendingVideoData != null) {
+                                    navigateToHomeToRefresh = false;
+                                    sendRefreshPageAction();
                                     sendCloseOthersAction(null, true);
                                     launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
                                             entitlementPendingVideoData.action,
@@ -4861,7 +4969,7 @@ public class AppCMSPresenter {
                                             entitlementPendingVideoData.closeLauncher,
                                             entitlementPendingVideoData.currentlyPlayingIndex,
                                             entitlementPendingVideoData.relateVideoIds);
-                                    entitlementPendingVideoData.pagePath = null;
+                                        entitlementPendingVideoData.pagePath = null;
                                     entitlementPendingVideoData.action = null;
                                     entitlementPendingVideoData.filmTitle = null;
                                     entitlementPendingVideoData.extraData = null;
@@ -4913,6 +5021,54 @@ public class AppCMSPresenter {
                             onReadyAction.call();
                         }
                     }).execute(params);
+        }
+    }
+
+    public void askForPermissionToDownloadToExternalStorage(boolean checkToShowPermissionRationale,
+                                                            final ContentDatum contentDatum,
+                                                            final Action1<UserVideoDownloadStatus> resultAction1) {
+        downloadContentDatumAfterPermissionGranted = contentDatum;
+        downloadResultActionAfterPermissionGranted = resultAction1;
+        if (currentActivity != null && !hasWriteExternalStoragePermission()) {
+            if (checkToShowPermissionRationale &&
+                    ActivityCompat.shouldShowRequestPermissionRationale(currentActivity,
+                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                showDialog(DialogType.REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_FOR_DOWNLOAD,
+                        currentActivity.getString(R.string.app_cms_download_write_external_storage_permission_rationale_message),
+                        true,
+                        new Action0() {
+                            @Override
+                            public void call() {
+                                askForPermissionToDownloadToExternalStorage(false,
+                                        downloadContentDatumAfterPermissionGranted,
+                                        downloadResultActionAfterPermissionGranted);
+                            }
+                        });
+            } else {
+                ActivityCompat.requestPermissions(currentActivity,
+                        new String[] { android.Manifest.permission.WRITE_EXTERNAL_STORAGE },
+                        REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS);
+            }
+        }
+    }
+
+    public boolean hasWriteExternalStoragePermission() {
+        if (currentActivity != null) {
+            return (ContextCompat.checkSelfPermission(currentActivity,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                    PackageManager.PERMISSION_GRANTED);
+        }
+        return false;
+    }
+
+    public void resumeDownloadAfterPermissionGranted() {
+        if (requestDownloadQualityScreen) {
+            showDownloadQualityScreen(downloadContentDatumAfterPermissionGranted,
+                    downloadResultActionAfterPermissionGranted);
+        } else {
+            editDownload(downloadContentDatumAfterPermissionGranted,
+                    downloadResultActionAfterPermissionGranted,
+                    true);
         }
     }
 
@@ -6056,7 +6212,9 @@ public class AppCMSPresenter {
         DOWNLOAD_INCOMPLETE,
         CANNOT_UPGRADE_SUBSCRIPTION,
         CANNOT_CANCEL_SUBSCRIPTION,
-        STREAMING_INFO_MISSING
+        STREAMING_INFO_MISSING,
+        REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_FOR_DOWNLOAD,
+        DOWNLOAD_NOT_AVAILABLE
     }
 
     public enum ExtraScreenType {
@@ -6246,5 +6404,103 @@ public class AppCMSPresenter {
         boolean closeLauncher;
         int currentlyPlayingIndex;
         List<String> relateVideoIds;
+    }
+
+    public String  getSDCardPath(Context context,String dirName){
+        String  dirPath=getSDCardPath(context)+File.separator+dirName;
+        File dir =new File( dirPath);
+        if (!dir.isDirectory())
+        dir.mkdirs();
+
+        return dir.getAbsolutePath();
+
+    }
+
+    public String getSDCardPath(Context context){
+        File baseSDCardDir=null;
+        String [] dirs=getStorageDirectories(context);
+
+
+            baseSDCardDir=new File(dirs[0]+File.separator+appCMSMain.getDomainName());
+
+
+        return baseSDCardDir.getAbsolutePath();
+    }
+
+   public String[] physicalPaths={
+           "/storage/sdcard0", "/storage/sdcard1", // Motorola Xoom
+           "/storage/extsdcard", // Samsung SGS3
+           "/storage/sdcard0/external_sdcard", // User request
+           "/mnt/extsdcard", "/mnt/sdcard/external_sd", // Samsung galaxy family
+           "/mnt/external_sd", "/mnt/media_rw/sdcard1", // 4.4.2 on CyanogenMod S3
+           "/removable/microsd", // Asus transformer prime
+           "/mnt/emmc", "/storage/external_SD", // LG
+           "/storage/ext_sd", // HTC One Max
+           "/storage/removable/sdcard1", // Sony Xperia Z1
+           "/data/sdext", "/data/sdext2", "/data/sdext3", "/data/sdext4", "/sdcard1", // Sony Xperia Z
+           "/sdcard2", // HTC One M8s
+           "/storage/microsd" // ASUS ZenFone 2
+   };
+
+  public String[] getStorageDirectories(Context context) {
+      HashSet<String> paths = new HashSet<String>();
+      String rawExternalStorage = System.getenv("EXTERNAL_STORAGE");
+        String rawSecondaryStoragesStr = System.getenv("SECONDARY_STORAGE");
+      String rawEmulatedStorageTarget = System.getenv("EMULATED_STORAGE_TARGET");
+        if (TextUtils.isEmpty(rawEmulatedStorageTarget)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+                List<String> results = new ArrayList<String>();
+                File[] externalDirs = context.getExternalFilesDirs(null);
+                for (File file : externalDirs) {
+                    String path = null;
+                    try {
+                        path = file.getPath().split("/Android")[0];
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        path = null;
+                    }
+                    if (path != null) {
+                        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Environment.isExternalStorageRemovable(file))
+                                || rawSecondaryStoragesStr != null && rawSecondaryStoragesStr.contains(path)) {
+                            results.add(path);
+                        }
+                    }
+                }
+
+                paths.addAll(results);
+
+            } else {
+                if (TextUtils.isEmpty(rawExternalStorage)) {
+                    boolean b = paths.addAll(Arrays.asList( physicalPaths));
+                } else {
+                    paths.add(rawExternalStorage);
+                }
+            }
+        } else {
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+
+            String[] folders = Pattern.compile("/").split(path);
+            String lastFolder = folders[folders.length - 1];
+            boolean isDigit = false;
+            try {
+                Integer.valueOf(lastFolder);
+                isDigit = true;
+            } catch (NumberFormatException ignored) {
+            }
+
+            String rawUserId = isDigit? lastFolder : "";
+            if (TextUtils.isEmpty(rawUserId)) {
+                paths.add(rawEmulatedStorageTarget);
+            } else {
+                paths.add(rawEmulatedStorageTarget + File.separator + rawUserId);
+            }
+        }
+
+        if (!TextUtils.isEmpty(rawSecondaryStoragesStr)) {
+            String[] rawSecondaryStorages = rawSecondaryStoragesStr.split(File.pathSeparator);
+            Collections.addAll(paths, rawSecondaryStorages);
+        }
+        return paths.toArray(new String[paths.size()]);
     }
 }

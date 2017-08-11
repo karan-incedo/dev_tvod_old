@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
@@ -72,6 +73,7 @@ import java.util.Stack;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.functions.Action0;
 import rx.functions.Action1;
 
 /**
@@ -468,6 +470,20 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case AppCMSPresenter.REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    appCMSPresenter.resumeDownloadAfterPermissionGranted();
+                }
+                break;
+
+            default:
+        }
+    }
+
     @SuppressWarnings("ConstantConditions")
     @Override
     public void onError(AppCMSBinder appCMSBinder) {
@@ -823,8 +839,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
         int lastBackstackEntry = getSupportFragmentManager().getBackStackEntryCount();
         boolean poppedStack = false;
-        if (!configurationChanged &&
-                !appCMSBinder.shouldSendCloseAction() &&
+        if (!appCMSBinder.shouldSendCloseAction() &&
                 lastBackstackEntry > 0 &&
                 (appCMSBinder.getPageId() + BaseView.isLandscape(this))
                         .equals(getSupportFragmentManager()
@@ -1086,6 +1101,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void updateData() {
         final AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+
         if (appCMSPresenter != null) {
             for (String appCMSBinderKey : appCMSBinderMap.keySet()) {
                 final AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderKey);
@@ -1249,7 +1265,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         @Override
         public void call(AppCMSPageAPI appCMSPageAPI) {
-            boolean updatedHistory = false;
             userLoggedIn = appCMSPresenter.isUserLoggedIn(appCMSPresenter.getCurrentActivity());
             if (userLoggedIn && appCMSPageAPI != null) {
                 for (Module module : appCMSPageAPI.getModules()) {
@@ -1267,13 +1282,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                     appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
                                 }
                             });
-                            updatedHistory = true;
                         }
                     }
                 }
-            }
-            if (!updatedHistory) {
-                appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
             }
         }
     }

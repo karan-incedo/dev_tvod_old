@@ -144,6 +144,12 @@ public class RealmController {
         realm.commitTransaction();
     }
 
+    public void updateDownload(DownloadVideoRealm downloadVideoRealm) {
+        realm.beginTransaction();
+        realm.insertOrUpdate(downloadVideoRealm);
+        realm.commitTransaction();
+    }
+
     public void addSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
         realm.beginTransaction();
         realm.insertOrUpdate(subscriptionPlan);
