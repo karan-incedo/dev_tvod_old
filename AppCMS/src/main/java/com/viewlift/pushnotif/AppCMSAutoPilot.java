@@ -20,10 +20,10 @@ public class AppCMSAutoPilot extends Autopilot {
     @Override
     public AirshipConfigOptions createAirshipConfigOptions(@NonNull Context context) {
         return new AirshipConfigOptions.Builder()
-                .setDevelopmentAppKey("")
-                .setDevelopmentAppSecret("")
-//                .setProductionAppKey("")
-//                .setProductionAppSecret("")
+                .setDevelopmentAppKey(" ")
+                .setDevelopmentAppSecret(" ")
+//                .setProductionAppKey(" ")
+//                .setProductionAppSecret(" ")
                 .setInProduction(!BuildConfig.DEBUG)
                 .setGcmSender(context.getString(R.string.default_web_client_id))
                 .setNotificationIcon(R.mipmap.app_logo)
