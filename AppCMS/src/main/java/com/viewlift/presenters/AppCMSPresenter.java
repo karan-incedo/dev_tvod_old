@@ -28,6 +28,7 @@ import android.os.Environment;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -96,6 +97,7 @@ import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
+import com.viewlift.models.data.appcms.ui.main.Content;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
@@ -165,12 +167,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -178,6 +184,8 @@ import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -234,6 +242,7 @@ public class AppCMSPresenter {
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID = "existing_google_play_subscription_id_key";
 
     private static final String USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME = "user_download_quality_pref";
+    private static final String USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME = "user_download_sd_card_pref";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String ANONYMOUS_AUTH_TOKEN_PREF_NAME = "anonymous_auth_token_pref_key";
@@ -1698,7 +1707,7 @@ public class AppCMSPresenter {
             showDialog(DialogType.STREAMING_INFO_MISSING, null, false, null);
             return;
         }
-
+        setPreferdStorageLocationSDCard(currentActivity,true);
         long ccEnqueueId = 0L;
         if (contentDatum.getContentDetails() != null &&
                 contentDatum.getContentDetails().getClosedCaptions() != null &&
@@ -1755,15 +1764,26 @@ public class AppCMSPresenter {
 
             downloadURL = downloadURL.replace("https:/", "http:/");
 
+
             DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
                     .setTitle(contentDatum.getGist().getTitle())
                     .setDescription(contentDatum.getGist().getDescription())
                     .setAllowedOverRoaming(false)
-                    .setDestinationInExternalFilesDir(currentActivity, Environment.DIRECTORY_DOWNLOADS,
-                            contentDatum.getGist().getId() + MEDIA_SURFIX_MP4)
                     .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
+
+            if (isPreferdStorageLocationSDCard(currentActivity)){
+                downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity,Environment.DIRECTORY_DOWNLOADS),
+                        contentDatum.getGist().getId() + MEDIA_SURFIX_MP4)));
+            }
+            else{
+                downloadRequest.setDestinationInExternalFilesDir(currentActivity, Environment.DIRECTORY_DOWNLOADS,
+                        contentDatum.getGist().getId() + MEDIA_SURFIX_MP4);
+            }
+
+
+
 
             enqueueId = downloadManager.enqueue(downloadRequest);
 
@@ -1860,9 +1880,17 @@ public class AppCMSPresenter {
                     .setTitle(filename)
                     .setDescription(filename)
                     .setAllowedOverRoaming(false)
-                    .setDestinationInExternalFilesDir(currentActivity, "thumbs", filename + MEDIA_SURFIX_JPG)
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
+
+            if (isPreferdStorageLocationSDCard(currentActivity)){
+                downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity,"thumbs"),
+                        filename + MEDIA_SURFIX_JPG)));
+            }
+            else{
+                downloadRequest.setDestinationInExternalFilesDir(currentActivity, "thumbs",
+                        filename + MEDIA_SURFIX_JPG);
+            }
             enqueueId = downloadManager.enqueue(downloadRequest);
 
 
@@ -1892,9 +1920,18 @@ public class AppCMSPresenter {
                     .setTitle(filename)
                     .setDescription(filename)
                     .setAllowedOverRoaming(false)
-                    .setDestinationInExternalFilesDir(currentActivity, "posters", filename + MEDIA_SURFIX_JPG)
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
+
+            if (isPreferdStorageLocationSDCard(currentActivity)){
+                downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity,"posters"),
+                        filename + MEDIA_SURFIX_JPG)));
+            }
+            else{
+                downloadRequest.setDestinationInExternalFilesDir(currentActivity, "posters",
+                        filename + MEDIA_SURFIX_JPG);
+            }
+
             enqueueId = downloadManager.enqueue(downloadRequest);
 
 
@@ -1914,9 +1951,18 @@ public class AppCMSPresenter {
                     .setTitle(filename)
                     .setDescription(filename)
                     .setAllowedOverRoaming(false)
-                    .setDestinationInExternalFilesDir(currentActivity, "closedCaptions", filename + MEDIA_SUFFIX_SRT)
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
+
+            if (isPreferdStorageLocationSDCard(currentActivity)){
+                downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity,"closedCaptions"),
+                        filename + MEDIA_SUFFIX_SRT)));
+            }
+            else{
+                downloadRequest.setDestinationInExternalFilesDir(currentActivity, "closedCaptions",
+                        filename + MEDIA_SUFFIX_SRT);
+            }
+
             enqueueId = downloadManager.enqueue(downloadRequest);
 
 
@@ -3243,18 +3289,34 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public String getUserDownloadQualityPref(Context context) {
-        if (context != null) {
-            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, 0);
-            return sharedPrefs.getString(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, null);
-        }
-        return null;
-    }
 
     public String getAnonymousUserToken(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(ANONYMOUS_AUTH_TOKEN_PREF_NAME, 0);
             return sharedPrefs.getString(ANONYMOUS_AUTH_TOKEN_PREF_NAME, null);
+        }
+        return null;
+    }
+
+    public boolean isPreferdStorageLocationSDCard(Context context){
+        if (context!=null){
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, 0);
+            return sharedPrefs.getBoolean(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, false);
+        }
+        return false;
+    }
+    public boolean setPreferdStorageLocationSDCard(Context context, boolean downloadPref) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, 0);
+            return sharedPrefs.edit().putBoolean(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME,
+                    downloadPref).commit() && setLoggedInTime(context);
+        }
+        return false;
+    }
+    public String getUserDownloadQualityPref(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, 0);
+            return sharedPrefs.getString(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, null);
         }
         return null;
     }
@@ -6207,5 +6269,103 @@ public class AppCMSPresenter {
         boolean closeLauncher;
         int currentlyPlayingIndex;
         List<String> relateVideoIds;
+    }
+
+    public String  getSDCardPath(Context context,String dirName){
+        String  dirPath=getSDCardPath(context)+File.separator+dirName;
+        File dir =new File( dirPath);
+        if (!dir.isDirectory())
+        dir.mkdirs();
+
+        return dir.getAbsolutePath();
+
+    }
+
+    public String getSDCardPath(Context context){
+        File baseSDCardDir=null;
+        String [] dirs=getStorageDirectories(context);
+
+
+            baseSDCardDir=new File(dirs[0]+File.separator+appCMSMain.getDomainName());
+
+
+        return baseSDCardDir.getAbsolutePath();
+    }
+
+   public String[] physicalPaths={
+           "/storage/sdcard0", "/storage/sdcard1", // Motorola Xoom
+           "/storage/extsdcard", // Samsung SGS3
+           "/storage/sdcard0/external_sdcard", // User request
+           "/mnt/extsdcard", "/mnt/sdcard/external_sd", // Samsung galaxy family
+           "/mnt/external_sd", "/mnt/media_rw/sdcard1", // 4.4.2 on CyanogenMod S3
+           "/removable/microsd", // Asus transformer prime
+           "/mnt/emmc", "/storage/external_SD", // LG
+           "/storage/ext_sd", // HTC One Max
+           "/storage/removable/sdcard1", // Sony Xperia Z1
+           "/data/sdext", "/data/sdext2", "/data/sdext3", "/data/sdext4", "/sdcard1", // Sony Xperia Z
+           "/sdcard2", // HTC One M8s
+           "/storage/microsd" // ASUS ZenFone 2
+   };
+
+  public String[] getStorageDirectories(Context context) {
+      HashSet<String> paths = new HashSet<String>();
+      String rawExternalStorage = System.getenv("EXTERNAL_STORAGE");
+        String rawSecondaryStoragesStr = System.getenv("SECONDARY_STORAGE");
+      String rawEmulatedStorageTarget = System.getenv("EMULATED_STORAGE_TARGET");
+        if (TextUtils.isEmpty(rawEmulatedStorageTarget)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+                List<String> results = new ArrayList<String>();
+                File[] externalDirs = context.getExternalFilesDirs(null);
+                for (File file : externalDirs) {
+                    String path = null;
+                    try {
+                        path = file.getPath().split("/Android")[0];
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        path = null;
+                    }
+                    if (path != null) {
+                        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Environment.isExternalStorageRemovable(file))
+                                || rawSecondaryStoragesStr != null && rawSecondaryStoragesStr.contains(path)) {
+                            results.add(path);
+                        }
+                    }
+                }
+
+                paths.addAll(results);
+
+            } else {
+                if (TextUtils.isEmpty(rawExternalStorage)) {
+                    boolean b = paths.addAll(Arrays.asList( physicalPaths));
+                } else {
+                    paths.add(rawExternalStorage);
+                }
+            }
+        } else {
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+
+            String[] folders = Pattern.compile("/").split(path);
+            String lastFolder = folders[folders.length - 1];
+            boolean isDigit = false;
+            try {
+                Integer.valueOf(lastFolder);
+                isDigit = true;
+            } catch (NumberFormatException ignored) {
+            }
+
+            String rawUserId = isDigit? lastFolder : "";
+            if (TextUtils.isEmpty(rawUserId)) {
+                paths.add(rawEmulatedStorageTarget);
+            } else {
+                paths.add(rawEmulatedStorageTarget + File.separator + rawUserId);
+            }
+        }
+
+        if (!TextUtils.isEmpty(rawSecondaryStoragesStr)) {
+            String[] rawSecondaryStorages = rawSecondaryStoragesStr.split(File.pathSeparator);
+            Collections.addAll(paths, rawSecondaryStorages);
+        }
+        return paths.toArray(new String[paths.size()]);
     }
 }
