@@ -1707,7 +1707,7 @@ public class AppCMSPresenter {
             showDialog(DialogType.STREAMING_INFO_MISSING, null, false, null);
             return;
         }
-        setPreferdStorageLocationSDCard(currentActivity,true);
+
         long ccEnqueueId = 0L;
         if (contentDatum.getContentDetails() != null &&
                 contentDatum.getContentDetails().getClosedCaptions() != null &&
@@ -1773,7 +1773,7 @@ public class AppCMSPresenter {
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
 
-            if (isPreferdStorageLocationSDCard(currentActivity)){
+            if (isPreferedStorageLocationSDCard(currentActivity)){
                 downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity,Environment.DIRECTORY_DOWNLOADS),
                         contentDatum.getGist().getId() + MEDIA_SURFIX_MP4)));
             }
@@ -1883,7 +1883,7 @@ public class AppCMSPresenter {
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
 
-            if (isPreferdStorageLocationSDCard(currentActivity)){
+            if (isPreferedStorageLocationSDCard(currentActivity)){
                 downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity,"thumbs"),
                         filename + MEDIA_SURFIX_JPG)));
             }
@@ -1923,7 +1923,7 @@ public class AppCMSPresenter {
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
 
-            if (isPreferdStorageLocationSDCard(currentActivity)){
+            if (isPreferedStorageLocationSDCard(currentActivity)){
                 downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity,"posters"),
                         filename + MEDIA_SURFIX_JPG)));
             }
@@ -1954,7 +1954,7 @@ public class AppCMSPresenter {
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
 
-            if (isPreferdStorageLocationSDCard(currentActivity)){
+            if (isPreferedStorageLocationSDCard(currentActivity)){
                 downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity,"closedCaptions"),
                         filename + MEDIA_SUFFIX_SRT)));
             }
@@ -3298,14 +3298,14 @@ public class AppCMSPresenter {
         return null;
     }
 
-    public boolean isPreferdStorageLocationSDCard(Context context){
+    public boolean isPreferedStorageLocationSDCard(Context context){
         if (context!=null){
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, 0);
             return sharedPrefs.getBoolean(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, false);
         }
         return false;
     }
-    public boolean setPreferdStorageLocationSDCard(Context context, boolean downloadPref) {
+    public boolean setPreferedStorageLocationSDCard(Context context, boolean downloadPref) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, 0);
             return sharedPrefs.edit().putBoolean(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME,
