@@ -366,6 +366,7 @@ public class AppCMSPresenter {
     private Timer updateDownloadIconTimer;
     private ContentDatum downloadContentDatumAfterPermissionGranted;
     private Action1<UserVideoDownloadStatus> downloadResultActionAfterPermissionGranted;
+    private boolean requestDownloadQualityScreen;
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -1618,8 +1619,10 @@ public class AppCMSPresenter {
      */
     public void showDownloadQualityScreen(final ContentDatum contentDatum,
                                           final Action1<UserVideoDownloadStatus> resultAction1) {
-
+        downloadContentDatumAfterPermissionGranted = null;
+        downloadResultActionAfterPermissionGranted = null;
         if (!hasWriteExternalStoragePermission()) {
+            requestDownloadQualityScreen = true;
             askForPermissionToDownloadToExternalStorage(true,
                     contentDatum,
                     resultAction1);
@@ -1701,9 +1704,12 @@ public class AppCMSPresenter {
 
     public void editDownload(final ContentDatum contentDatum,
                              final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
+        downloadContentDatumAfterPermissionGranted = null;
+        downloadResultActionAfterPermissionGranted = null;
 
         if (isPreferedStorageLocationSDCard(currentActivity) &&
                 !hasWriteExternalStoragePermission()) {
+            requestDownloadQualityScreen = false;
             askForPermissionToDownloadToExternalStorage(true,
                     contentDatum,
                     resultAction1);
@@ -5005,11 +5011,14 @@ public class AppCMSPresenter {
     public void resumeDownloadAfterPermissionGranted() {
         if (downloadContentDatumAfterPermissionGranted != null &&
                 downloadResultActionAfterPermissionGranted != null) {
-            editDownload(downloadContentDatumAfterPermissionGranted,
-                    downloadResultActionAfterPermissionGranted,
-                    true);
-            downloadContentDatumAfterPermissionGranted = null;
-            downloadResultActionAfterPermissionGranted = null;
+            if (requestDownloadQualityScreen) {
+                showDownloadQualityScreen(downloadContentDatumAfterPermissionGranted,
+                        downloadResultActionAfterPermissionGranted);
+            } else {
+                editDownload(downloadContentDatumAfterPermissionGranted,
+                        downloadResultActionAfterPermissionGranted,
+                        true);
+            }
         }
     }
 
