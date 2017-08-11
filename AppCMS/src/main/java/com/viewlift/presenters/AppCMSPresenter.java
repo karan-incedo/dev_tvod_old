@@ -682,7 +682,7 @@ public class AppCMSPresenter {
 
             Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
 
-        /*This is to enable offline video playback even if Internet is not available*/
+            /*This is to enable offline video playback even if Internet is not available*/
             if (!(actionType == AppCMSActionType.PLAY_VIDEO_PAGE && isVideoOffline) && !isNetworkConnected()) {
                 showDialog(DialogType.NETWORK, null, false, null);
             } else if (currentActivity != null && !loadingPage) {
@@ -4813,6 +4813,8 @@ public class AppCMSPresenter {
                         } else {
                             refreshSubscriptionData(() -> {
                                 if (entitlementPendingVideoData != null) {
+                                    navigateToHomeToRefresh = false;
+                                    sendRefreshPageAction();
                                     sendCloseOthersAction(null, true);
                                     launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
                                             entitlementPendingVideoData.action,
@@ -4822,7 +4824,7 @@ public class AppCMSPresenter {
                                             entitlementPendingVideoData.closeLauncher,
                                             entitlementPendingVideoData.currentlyPlayingIndex,
                                             entitlementPendingVideoData.relateVideoIds);
-                                    entitlementPendingVideoData.pagePath = null;
+                                        entitlementPendingVideoData.pagePath = null;
                                     entitlementPendingVideoData.action = null;
                                     entitlementPendingVideoData.filmTitle = null;
                                     entitlementPendingVideoData.extraData = null;
