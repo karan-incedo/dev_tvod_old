@@ -1702,7 +1702,8 @@ public class AppCMSPresenter {
     public void editDownload(final ContentDatum contentDatum,
                              final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
 
-        if (!hasWriteExternalStoragePermission()) {
+        if (isPreferedStorageLocationSDCard(currentActivity) &&
+                !hasWriteExternalStoragePermission()) {
             askForPermissionToDownloadToExternalStorage(true,
                     contentDatum,
                     resultAction1);
@@ -3317,7 +3318,7 @@ public class AppCMSPresenter {
     public boolean isPreferedStorageLocationSDCard(Context context){
         if (context!=null){
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, 0);
-            return sharedPrefs.getBoolean(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, false);
+            return sharedPrefs.getBoolean(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, true);
         }
         return false;
     }
@@ -5007,6 +5008,8 @@ public class AppCMSPresenter {
             editDownload(downloadContentDatumAfterPermissionGranted,
                     downloadResultActionAfterPermissionGranted,
                     true);
+            downloadContentDatumAfterPermissionGranted = null;
+            downloadResultActionAfterPermissionGranted = null;
         }
     }
 
