@@ -499,6 +499,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (appCMSPresenter != null) {
+            updateData();
             appCMSPresenter.cancelInternalEvents();
             appCMSPresenter.onConfigurationChange(true);
             if (appCMSPresenter.isMainFragmentViewVisible()) {
