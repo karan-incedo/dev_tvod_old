@@ -165,6 +165,8 @@ import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 
+import org.w3c.dom.Text;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -614,6 +616,13 @@ public class AppCMSPresenter {
                             sendUpdateHistoryAction();
                         }
                     });
+            try {
+                DownloadVideoRealm downloadedVideo = realmController.getDownloadById(filmId);
+                downloadedVideo.setWatchedTime(watchedTime);
+                realmController.updateDownload(downloadedVideo);
+            } catch (Exception e) {
+                Log.e(TAG, "Film " + filmId + " has not been downloaded");
+            }
         }
     }
 
@@ -737,6 +746,23 @@ public class AppCMSPresenter {
                                 requestAds = false;
                             }
                             playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), requestAds);
+
+                            if (isVideoOffline) {
+                                if (contentDatum != null &&
+                                        contentDatum.getGist() != null &&
+                                        !TextUtils.isEmpty(contentDatum.getGist().getId())) {
+                                    String filmId = contentDatum.getGist().getId();
+                                    try {
+                                        DownloadVideoRealm downloadedVideo = realmController.getDownloadById(filmId);
+                                        if (downloadedVideo != null) {
+                                            contentDatum.getGist().setWatchedTime(downloadedVideo.getWatchedTime());
+                                        }
+                                    } catch (Exception e) {
+                                        Log.e(TAG, "Film " + filmId + " has not been downloaded");
+                                    }
+                                }
+                            }
+
                             if (contentDatum != null &&
                                     contentDatum.getGist() != null &&
                                     contentDatum.getGist().getWatchedTime() != 0) {

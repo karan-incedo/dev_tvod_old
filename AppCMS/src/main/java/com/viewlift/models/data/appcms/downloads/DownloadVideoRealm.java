@@ -47,7 +47,7 @@ public class DownloadVideoRealm extends RealmObject {
     private String posterFileURL;
     private String subtitlesFileURL;
     private String userId;
-
+    private long watchedTime;
 
     public String getVideoId() {
         return videoId;
@@ -265,6 +265,14 @@ public class DownloadVideoRealm extends RealmObject {
         this.userId = userId;
     }
 
+    public long getWatchedTime() {
+        return watchedTime;
+    }
+
+    public void setWatchedTime(long watchedTime) {
+        this.watchedTime = watchedTime;
+    }
+
     public ContentDatum convertToContentDatum(String userId) {
         ContentDatum data = new ContentDatum();
         Gist gist = new Gist();
@@ -288,6 +296,7 @@ public class DownloadVideoRealm extends RealmObject {
         gist.setDownloadStatus(getDownloadStatus());
         gist.setRuntime(getVideoDuration());
 
+        gist.setWatchedTime(getWatchedTime());
 
         data.setGist(gist);
         data.setShowQueue(true);
