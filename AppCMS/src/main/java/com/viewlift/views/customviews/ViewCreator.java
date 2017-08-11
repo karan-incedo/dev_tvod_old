@@ -1385,7 +1385,10 @@ public class ViewCreator {
                         break;
 
                     case PAGE_VIDEO_WATCH_TRAILER_KEY:
-                        if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
+                        if (moduleAPI.getContentData() != null &&
+                                moduleAPI.getContentData().size() > 0 &&
+                                moduleAPI.getContentData().get(0) != null &&
+                                moduleAPI.getContentData().get(0).getContentDetails() != null &&
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers() != null &&
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers().size() > 0 &&
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0) != null &&
