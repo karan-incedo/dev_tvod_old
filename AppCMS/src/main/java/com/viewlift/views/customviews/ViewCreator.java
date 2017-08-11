@@ -118,7 +118,7 @@ public class ViewCreator {
                                 AppCMSPresenter appCMSPresenter,
                                 List<String> modulesToIgnore) {
         for (ModuleList module : appCMSPageUI.getModuleList()) {
-            if (!modulesToIgnore.contains(module.getView()) && pageView!=null) {
+            if (!modulesToIgnore.contains(module.getView()) && pageView != null) {
                 ModuleView moduleView = pageView.getModuleViewWithModuleId(module.getId());
                 boolean shouldHideModule = false;
                 if (moduleView != null) {
@@ -222,14 +222,14 @@ public class ViewCreator {
                                                 extraData[0] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink();
                                                 extraData[1] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls();
                                                 extraData[2] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId();
-                                                    if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
-                                                            component.getAction(),
-                                                                    moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                                extraData,
+                                                if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
+                                                        component.getAction(),
+                                                        moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                                        extraData,
                                                         moduleAPI.getContentData().get(0),
-                                                            false,
-                                                                    -1,
-                                                                    null)) {
+                                                        false,
+                                                        -1,
+                                                        null)) {
                                                     Log.e(TAG, "Could not launch action: " +
                                                             " permalink: " +
                                                             moduleAPI.getContentData().get(0).getGist().getPermalink() +
@@ -384,7 +384,7 @@ public class ViewCreator {
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_AGE_LABEL_KEY) {
                                         if (moduleAPI.getContentData() != null &&
                                                 moduleAPI.getContentData().size() > 0 &&
-                                                moduleAPI.getContentData().get(0)  != null &&
+                                                moduleAPI.getContentData().get(0) != null &&
                                                 moduleAPI.getContentData().get(0).getParentalRating() != null &&
                                                 !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getParentalRating())) {
                                             String parentalRating = moduleAPI.getContentData().get(0).getParentalRating();
@@ -1617,7 +1617,7 @@ public class ViewCreator {
 
                     case PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY:
                         componentViewResult.componentView.setOnClickListener(v -> {
-                            if (!appCMSPresenter.sendCloseOthersAction(null, true)){
+                            if (!appCMSPresenter.sendCloseOthersAction(null, true)) {
                                 Log.e(TAG, "Could not perform close action: " +
                                         " action: " +
                                         component.getAction());
@@ -1630,19 +1630,13 @@ public class ViewCreator {
                         break;
 
                     case PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY:
-                        if (jsonValueKeyMap.get(moduleAPI.getModuleType())
-                                == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY) {
-                            componentViewResult.componentView.setOnClickListener(v -> {
-                                if (!appCMSPresenter.sendCloseOthersAction(null, true)) {
-                                    Log.e(TAG, "Could not perform close action: " +
-                                            " action: " +
-                                            component.getAction());
-                                }
-                            });
-                        } else {
-                            componentViewResult.componentView.setId(R.id.download_quality_cancel_button);
-                        }
-                         break;
+                        componentViewResult.componentView.setId(R.id.download_quality_cancel_button);
+                        applyBorderToComponent(
+                                context,
+                                componentViewResult.componentView,
+                                component,
+                                -1);
+                        break;
 
                     default:
                         componentViewResult.componentView.setOnClickListener(v -> {
