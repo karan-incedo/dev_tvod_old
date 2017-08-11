@@ -1102,7 +1102,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getScreenName());
                         usePageIdQueryParam = false;
                     }
-                    itemsToUpdate++;
                     appCMSPresenter.getPageIdContent(appCMSMain.getApiBaseUrl(),
                             endPoint,
                             appCMSMain.getInternalName(),
