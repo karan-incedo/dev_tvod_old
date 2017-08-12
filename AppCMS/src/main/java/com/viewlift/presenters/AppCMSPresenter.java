@@ -4099,6 +4099,7 @@ public class AppCMSPresenter {
 
     public void showEntitlementDialog(DialogType dialogType) {
         if (currentActivity != null) {
+            String positiveButtonText = currentActivity.getString(R.string.app_cms_subscription_button_text);
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             String title = currentActivity.getString(R.string.app_cms_subscription_required_title);
             String message = currentActivity.getString(R.string.app_cms_subscription_required_message);
@@ -4125,6 +4126,7 @@ public class AppCMSPresenter {
             if (dialogType == DialogType.LOGIN_REQUIRED) {
                 title = currentActivity.getString(R.string.app_cms_login_required_title);
                 message = currentActivity.getString(R.string.app_cms_login_required_message);
+                positiveButtonText = currentActivity.getString(R.string.app_cms_login_button_text);
             }
 
             AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
@@ -4163,7 +4165,7 @@ public class AppCMSPresenter {
             } else if (dialogType == DialogType.CANNOT_CANCEL_SUBSCRIPTION) {
                 builder.setPositiveButton("OK", null);
             } else {
-                builder.setPositiveButton(R.string.app_cms_subscription_button_text,
+                builder.setPositiveButton(positiveButtonText,
                         (dialog, which) -> {
                             dialog.dismiss();
                             navigateToSubscriptionPlansPage(null, null);
