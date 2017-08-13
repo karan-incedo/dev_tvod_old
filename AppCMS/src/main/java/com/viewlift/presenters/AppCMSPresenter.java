@@ -2816,7 +2816,7 @@ public class AppCMSPresenter {
                             "subs",
                             null);
                     ArrayList<String> subscribedItemList = activeSubs.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
-             a       if (subscribedItemList != null && subscribedItemList.size() > 0) {
+                    if (subscribedItemList != null && subscribedItemList.size() > 0) {
                         for (int i = 0; i < subscribedItemList.size(); i++) {
                             try {
                                 InAppPurchaseData inAppPurchaseData = gson.fromJson(subscribedItemList.get(i),
