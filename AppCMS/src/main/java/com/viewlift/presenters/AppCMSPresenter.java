@@ -4331,19 +4331,6 @@ public class AppCMSPresenter {
                         });
                 builder.setNegativeButton(R.string.app_cms_cancel_alert_dialog_button_text,
                         (dialog, which) -> dialog.dismiss());
-            } else if (isNetwork) {
-                builder.setPositiveButton("Go To Downloads",
-                        (dialog, which) -> {
-                            dialog.dismiss();
-                            navigateToDownloadPage(downloadPage.getPageId(), downloadPage.getPageName(), downloadPage.getPageUI(), false);
-                        });
-                builder.setNegativeButton(R.string.app_cms_close_alert_dialog_button_text,
-                        (dialog, which) -> {
-                            dialog.dismiss();
-                            if (onDismissAction != null) {
-                                onDismissAction.call();
-                            }
-                        });
             } else {
 
                 builder.setNegativeButton(R.string.app_cms_close_alert_dialog_button_text,
