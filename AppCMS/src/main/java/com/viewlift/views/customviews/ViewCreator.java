@@ -2067,6 +2067,7 @@ public class ViewCreator {
                                     .load(component.getImageName())
                                     .into((ImageView) componentViewResult.componentView);
                         }
+                        ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_CENTER);
                 }
                 break;
 

@@ -23,8 +23,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+import com.bumptech.glide.signature.StringSignature;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -233,10 +235,14 @@ public class CollectionGridItemView extends BaseView {
                                 childViewHeight);
                         Log.d(TAG, "Loading image: " + imageUrl);
                         try {
+                            final int imageWidth = deviceWidth;
+                            final int imageHeight = childViewHeight;
+                            StringBuilder imageMetaData = new StringBuilder();
+                            imageMetaData.append(imageUrl);
+                            imageMetaData.append(System.currentTimeMillis() / 60000);
                             Glide.with(context)
                                     .load(imageUrl)
-                                    .override(deviceWidth, childViewHeight)
-                                    .centerCrop()
+                                    .signature(new StringSignature(imageMetaData.toString()))
                                     .transform(new BitmapTransformation(context) {
                                         @Override
                                         public String getId() {
@@ -245,25 +251,23 @@ public class CollectionGridItemView extends BaseView {
 
                                         @Override
                                         protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
-                                            int width = toTransform.getWidth();
-                                            int height = toTransform.getHeight();
                                             Bitmap sourceWithGradient =
-                                                    Bitmap.createBitmap(width,
-                                                            height,
-                                                            Bitmap.Config.ARGB_8888);
+                                                    Bitmap.createScaledBitmap(toTransform,
+                                                            imageWidth,
+                                                            imageHeight,
+                                                            false);
                                             Canvas canvas = new Canvas(sourceWithGradient);
-                                            canvas.drawBitmap(toTransform, 0, 0, null);
                                             Paint paint = new Paint();
                                             LinearGradient shader = new LinearGradient(0,
                                                     0,
                                                     0,
-                                                    height,
+                                                    imageHeight,
                                                     0xFFFFFFFF,
                                                     0xFF000000,
                                                     Shader.TileMode.CLAMP);
                                             paint.setShader(shader);
                                             paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
-                                            canvas.drawRect(0, 0, width, height, paint);
+                                            canvas.drawRect(0, 0, imageWidth, imageHeight, paint);
                                             toTransform.recycle();
                                             paint = null;
                                             return sourceWithGradient;
