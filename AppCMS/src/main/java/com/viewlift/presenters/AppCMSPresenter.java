@@ -667,7 +667,11 @@ public class AppCMSPresenter {
         }
     }
 
-    public void signinAnonymousUser(final Activity activity, final AppCMSMain main, int tryCount) {
+    public void signinAnonymousUser(final Activity activity,
+                                    final AppCMSMain main,
+                                    int tryCount,
+                                    Uri searchQuery,
+                                    PlatformType platformType) {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_anonymous_auth_token_api_url,
                     main.getApiBaseUrl(),
@@ -676,9 +680,16 @@ public class AppCMSPresenter {
                 if (anonymousAuthTokenResponse != null) {
                     setAnonymousUserToken(currentActivity, anonymousAuthTokenResponse.getAuthorizationToken());
                     if (tryCount == 0) {
-                        getAppCMSAndroid(activity,
-                                main,
-                                tryCount + 1);
+                        if (platformType == PlatformType.ANDROID) {
+                            getAppCMSAndroid(activity,
+                                    main,
+                                    tryCount + 1);
+                        } else if (platformType == PlatformType.TV) {
+                            getAppCMSTV(activity,
+                                    main,
+                                    searchQuery,
+                                    tryCount + 1);
+                        }
                     } else {
                         showDialog(DialogType.NETWORK, null, false, null);
                     }
@@ -5384,7 +5395,7 @@ public class AppCMSPresenter {
                                     getAppCMSAndroid(activity, main, 0);
                                     break;
                                 case TV:
-                                    getAppCMSTV(activity, main, null);
+                                    getAppCMSTV(activity, main, null, 0 );
                                     break;
                                 default:
                             }
@@ -5397,7 +5408,7 @@ public class AppCMSPresenter {
 
     private void getAppCMSAndroid(final Activity activity, final AppCMSMain main, int tryCount) {
         if (!isUserLoggedIn(currentActivity) && tryCount == 0) {
-            signinAnonymousUser(activity, main, tryCount);
+            signinAnonymousUser(activity, main, tryCount, null, PlatformType.ANDROID);
         } else if (isUserLoggedIn(currentActivity) && shouldRefreshAuthToken() && tryCount == 0) {
             refreshIdentity(getRefreshToken(activity),
                     () -> getAppCMSAndroid(activity, main, tryCount + 1));
@@ -5676,53 +5687,63 @@ public class AppCMSPresenter {
         pageIdToPageNameMap.clear();
     }
 
-    private void getAppCMSTV(final Activity activity, final AppCMSMain main, final Uri searchQuery) {
-        GetAppCMSAndroidUIAsyncTask.Params params =
-                new GetAppCMSAndroidUIAsyncTask.Params.Builder()
-                        .url(activity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                main.getAndroid(),
-                                main.getTimestamp()))
-                        .loadFromFile(loadFromFile)
-                        .build();
-        Log.d(TAG, "Params: " + main.getAndroid() + " " + loadFromFile);
-        new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
-            if (appCMSAndroidUI == null ||
-                    appCMSAndroidUI.getMetaPages() == null ||
-                    appCMSAndroidUI.getMetaPages().size() < 1) {
-                Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
-                launchErrorActivity(activity, PlatformType.TV);
-            } else {
-                //TODO : change navigation object as per TV.
-                Navigation navigationTV = new GsonBuilder().create().fromJson
-                        (MainUtils.loadJsonFromAssets(currentActivity, "navigation.json"), Navigation.class);
+    private void getAppCMSTV(final Activity activity,
+                             final AppCMSMain main,
+                             final Uri searchQuery,
+                             int tryCount) {
+        if (!isUserLoggedIn(currentActivity) && tryCount == 0) {
+            signinAnonymousUser(activity, main, tryCount, searchQuery, PlatformType.TV);
+        } else if (isUserLoggedIn(currentActivity) && shouldRefreshAuthToken() && tryCount == 0) {
+            refreshIdentity(getRefreshToken(activity),
+                    () -> getAppCMSAndroid(activity, main, tryCount + 1));
+        } else {
+            GetAppCMSAndroidUIAsyncTask.Params params =
+                    new GetAppCMSAndroidUIAsyncTask.Params.Builder()
+                            .url(activity.getString(R.string.app_cms_url_with_appended_timestamp,
+                                    main.getAndroid(),
+                                    main.getTimestamp()))
+                            .loadFromFile(loadFromFile)
+                            .build();
+            Log.d(TAG, "Params: " + main.getAndroid() + " " + loadFromFile);
+            new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
+                if (appCMSAndroidUI == null ||
+                        appCMSAndroidUI.getMetaPages() == null ||
+                        appCMSAndroidUI.getMetaPages().size() < 1) {
+                    Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
+                    launchErrorActivity(activity, PlatformType.TV);
+                } else {
+                    //TODO : change navigation object as per TV.
+                    Navigation navigationTV = new GsonBuilder().create().fromJson
+                            (MainUtils.loadJsonFromAssets(currentActivity, "navigation.json"), Navigation.class);
 
-                navigation = navigationTV; //appCMSAndroidUI.getNavigation();
-                queueMetaPages(appCMSAndroidUI.getMetaPages());
-                final MetaPage firstPage = pagesToProcess.peek();
-                Log.d(TAG, "Processing meta pages queue");
-                processMetaPagesQueue(activity,
-                        main,
-                        loadFromFile,
-                        new Action0() {
-                            @Override
-                            public void call() {
-                                Log.d(TAG, "Launching first page: " + firstPage.getPageName());
-                                cancelInternalEvents();
-                                NavigationPrimary homePageNav = findHomePageNavItem();
-                                boolean launchSuccess = navigateToTVPage(homePageNav.getPageId(),
-                                        homePageNav.getTitle(),
-                                        homePageNav.getUrl(),
-                                        true,
-                                        searchQuery);
-                                if (!launchSuccess) {
-                                    Log.e(TAG, "Failed to launch page: "
-                                            + firstPage.getPageName());
-                                    launchErrorActivity(currentActivity, PlatformType.TV);
+                    navigation = navigationTV; //appCMSAndroidUI.getNavigation();
+                    queueMetaPages(appCMSAndroidUI.getMetaPages());
+                    final MetaPage firstPage = pagesToProcess.peek();
+                    Log.d(TAG, "Processing meta pages queue");
+                    processMetaPagesQueue(activity,
+                            main,
+                            loadFromFile,
+                            new Action0() {
+                                @Override
+                                public void call() {
+                                    Log.d(TAG, "Launching first page: " + firstPage.getPageName());
+                                    cancelInternalEvents();
+                                    NavigationPrimary homePageNav = findHomePageNavItem();
+                                    boolean launchSuccess = navigateToTVPage(homePageNav.getPageId(),
+                                            homePageNav.getTitle(),
+                                            homePageNav.getUrl(),
+                                            true,
+                                            searchQuery);
+                                    if (!launchSuccess) {
+                                        Log.e(TAG, "Failed to launch page: "
+                                                + firstPage.getPageName());
+                                        launchErrorActivity(currentActivity, PlatformType.TV);
+                                    }
                                 }
-                            }
-                        });
-            }
-        }).execute(params);
+                            });
+                }
+            }).execute(params);
+        }
     }
 
     public boolean navigateToTVPage(String pageId,
