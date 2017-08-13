@@ -1321,7 +1321,9 @@ public class ViewCreator {
                             appCMSPresenter.getAppCMSMain().getSocialMedia().getGooglePlus().isSignin()) {
                         applyBorderToComponent(context, componentViewResult.componentView, component,
                                 ContextCompat.getColor(context, R.color.googleRed));
-                    } else {
+                    } else if (appCMSPresenter.getAppCMSMain().getSocialMedia() == null ||
+                            appCMSPresenter.getAppCMSMain().getSocialMedia().getGooglePlus() == null ||
+                            !appCMSPresenter.getAppCMSMain().getSocialMedia().getGooglePlus().isSignin()) {
                         componentViewResult.componentView.setVisibility(View.GONE);
                     }
                 } else if (jsonValueKeyMap.get(moduleAPI.getModuleType())
