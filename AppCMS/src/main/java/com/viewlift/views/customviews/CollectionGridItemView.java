@@ -236,6 +236,7 @@ public class CollectionGridItemView extends BaseView {
                             Glide.with(context)
                                     .load(imageUrl)
                                     .override(deviceWidth, childViewHeight)
+                                    .centerCrop()
                                     .transform(new BitmapTransformation(context) {
                                         @Override
                                         public String getId() {

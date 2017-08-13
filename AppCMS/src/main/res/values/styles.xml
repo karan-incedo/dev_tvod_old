@@ -27,10 +27,10 @@
         </item>
     </style>
 
-    <style name="TransparentTheme" parent="@style/AppTheme">
+    <style name="TransparentTheme" parent="AppTheme">
 
-        <!--  <item name="android:background">@android:color/transparent</item>
-          <item name="background">@null</item>-->
+         <item name="android:background">@color/semiTransparentColor</item>
+          <item name="background">@null</item>
 
         <item name="android:windowBackground">@android:color/transparent</item>
 

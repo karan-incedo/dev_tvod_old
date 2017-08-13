@@ -124,7 +124,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (adapterData != null && adapterData.size() > 0) {
-            final ContentDatum contentDatum = adapterData.get(position);
+            ContentDatum contentDatum = adapterData.get(position);
 
             StringBuffer imageUrl;
             if (isDownload) {
@@ -215,25 +215,18 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             }).execute(param);
                         }
 
-                        holder.appCMSContinueWatchingDownloadStatusButton.setImageResource(R.drawable.ic_download);
-                        holder.appCMSContinueWatchingDownloadStatusButton.setOnClickListener(v -> {
-                            if (appCMSPresenter.getUserDownloadQualityPref(holder.itemView.getContext()) != null
-                                    && appCMSPresenter.getUserDownloadQualityPref(holder.itemView.getContext()).length() > 0) {
-                                appCMSPresenter.editDownload(contentDatum, new ViewCreator.UpdateDownloadImageIconAction((ImageButton) holder.appCMSContinueWatchingDownloadStatusButton, appCMSPresenter,
-                                        contentDatum, appCMSPresenter.getLoggedInUser(holder.itemView.getContext())), true);
-
-
-                            } else {
-                                appCMSPresenter.showDownloadQualityScreen(contentDatum, new ViewCreator.UpdateDownloadImageIconAction((ImageButton) holder.appCMSContinueWatchingDownloadStatusButton, appCMSPresenter,
-                                        contentDatum, appCMSPresenter.getLoggedInUser(holder.itemView.getContext())));
-                            }
-                        });
+                        appCMSPresenter.getUserVideoDownloadStatus(
+                                contentDatum.getGist().getId(),
+                                new ViewCreator.UpdateDownloadImageIconAction((ImageButton) holder.appCMSContinueWatchingDownloadStatusButton,
+                                        appCMSPresenter,
+                                        contentDatum,
+                                        appCMSPresenter.getLoggedInUser(holder.itemView.getContext())),
+                                appCMSPresenter.getLoggedInUser(holder.itemView.getContext()));
                     }
 
                 }
             }
             loadImage(holder.itemView.getContext(), imageUrl.toString(), holder.appCMSContinueWatchingVideoImage);
-
 
             holder.itemView.setOnClickListener(v -> {
                 if (isDownload) {

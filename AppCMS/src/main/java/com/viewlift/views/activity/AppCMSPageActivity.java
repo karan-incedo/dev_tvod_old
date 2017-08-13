@@ -347,10 +347,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        if (!handlingClose) {
+        if (!handlingClose && !isPageLoading()) {
             handlingClose = true;
             handleCloseAction();
             handlingClose = false;
+        } else if (isPageLoading()) {
+            pageLoading(false);
         }
     }
 
@@ -554,6 +556,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSTabNavContainer.getChildAt(i).setEnabled(true);
             }
         }
+    }
+
+    private boolean isPageLoading() {
+        return (loadingProgressBar.getVisibility() == View.VISIBLE);
     }
 
     private void handleBack(boolean popBinderStack,
