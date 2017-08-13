@@ -1,59 +1,64 @@
 package com.viewlift.tv.views.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.ListRow;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
 import com.google.gson.GsonBuilder;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
-import com.viewlift.models.data.appcms.api.ContentDatum;
-import com.viewlift.models.data.appcms.api.Gist;
-import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.firetvcustomkeyboard.CustomKeyboard;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
-import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.Component;
-import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
-import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
 import com.viewlift.models.network.modules.AppCMSSearchUrlData;
-import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
-import com.viewlift.models.network.utility.MainUtils;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
-import com.viewlift.tv.views.component.AppCmsTvSearchComponent;
-import com.viewlift.tv.views.component.DaggerAppCmsTvSearchComponent;
 import com.viewlift.tv.views.customviews.CustomHeaderItem;
-import com.viewlift.tv.views.customviews.TVPageView;
 import com.viewlift.tv.views.presenter.AppCmsListRowPresenter;
 import com.viewlift.tv.views.presenter.CardPresenter;
-import com.viewlift.tv.views.presenter.JumbotronPresenter;
-import com.viewlift.views.activity.AppCMSSearchActivity;
+import com.viewlift.views.binders.RetryCallBinder;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.RunnableFuture;
 
 import javax.inject.Inject;
 
@@ -80,81 +85,240 @@ public class AppCmsSearchFragment extends Fragment {
     private int trayIndex = -1;
     private ArrayObjectAdapter mRowsAdapter;
     private AppCMSPresenter appCMSPresenter;
+    TextView noSearchTextView;
+    TextView searchPrevious;
+    private TextView searchOne, searchTwo, searchThree;
+    private Button btnClearHistory;
+    private EditText editText;
+    private LinearLayout llView;
+    private boolean clrbtnFlag;
+
+    private Typeface openSansSemiBoldTypeFace;
+    private Typeface openSansExtraBoldTypeFace;
+    private Typeface openSansRegularTypeface;
+    private CustomKeyboard customKeyboard;
+
+    private ProgressBar progressBar;
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        bindSearchComponent();
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.appcms_search_view , null);
-        EditText editText = (EditText)view.findViewById(R.id.appcms_et_search);
-        editText.requestFocus();
 
-        moduleList = new GsonBuilder().create().fromJson(MainUtils.loadJsonFromAssets(getActivity(), "tray_ftv_component.json"), ModuleList.class);
+        setTypeFaceValue();
+        noSearchTextView = (TextView)view.findViewById(R.id.appcms_no_search_result);
+        noSearchTextView.setVisibility(View.GONE);
 
+        llView = (LinearLayout)view.findViewById(R.id.ll_view);
+        editText = (EditText)view.findViewById(R.id.appcms_et_search);
+        editText.setFocusable(false);
+
+        searchPrevious = (TextView)view.findViewById(R.id.search_previous);
+        searchOne = (TextView)view.findViewById(R.id.search_history_one);
+        searchTwo = (TextView)view.findViewById(R.id.search_history_two);
+        searchThree = (TextView)view.findViewById(R.id.search_history_three);
+        btnClearHistory = (Button)view.findViewById(R.id.btn_clear_history);
+        progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+        progressBar.getIndeterminateDrawable().
+                setColorFilter(Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter)) ,
+                        PorterDuff.Mode.MULTIPLY
+                );
+
+        customKeyboard = (CustomKeyboard)view.findViewById(R.id.appcms_keyboard);
+        customKeyboard.setFocusColor(Utils.getFocusColor(getActivity() , appCMSPresenter));
+        customKeyboard.requestFocus();
+
+        if(null != openSansRegularTypeface)
+            editText.setTypeface(openSansRegularTypeface);
+        if(null != openSansExtraBoldTypeFace)
+            searchPrevious.setTypeface(openSansExtraBoldTypeFace);
+        if(null != openSansSemiBoldTypeFace) {
+            noSearchTextView.setTypeface(openSansSemiBoldTypeFace);
+            searchOne.setTypeface(openSansSemiBoldTypeFace);
+            searchTwo.setTypeface(openSansSemiBoldTypeFace);
+            searchThree.setTypeface(openSansSemiBoldTypeFace);
+            btnClearHistory.setTypeface(openSansSemiBoldTypeFace);
+        }
+
+        moduleList = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(getActivity(), "tray_ftv_component.json"), ModuleList.class);
 
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                System.out.println("BOY beforeTextChanged === ="  + charSequence.toString());
             }
-
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                System.out.println("BOY onTextChanged === ="  + charSequence.toString());
             }
-
-
             @Override
             public void afterTextChanged(Editable editable) {
                 if (lastSearchedString.equals(editable.toString())) {
                     return;
                 }
-                int timeElapsedAfterLastSearch = (int) (SystemClock.elapsedRealtime() - mLastClickTime);
-                if (editable.length() >= 3) {
-                   /* if (Utils.isConnected(mActivity))*/ {
-                        if (timeElapsedAfterLastSearch > SEARCH_THRESHOLD) {
-                            isCallToBeMade = false;
-                           // hideNoResultsFound();
-
-                            if (null != searchTask
-                                    && searchTask.getStatus() == AsyncTask.Status.RUNNING) {
-                                searchTask.cancel(true);
-                            }
-
-                            searchTask = new SearchAsyncTask(searchDataObserver, appCMSSearchCall);
-
-                            String searchString = "";
-                            try {
-                                searchString = URLDecoder.decode(editable.toString(), "UTF-8");
-                            }catch(Exception e){
-
-                            }
-                            lastSearchedString = searchString;
-
-                            final String url = getUrl(lastSearchedString);
-
-                            searchTask.execute(url);
-                            mLastClickTime = SystemClock.elapsedRealtime();
-                        } else {
-                            // we lost a hit, even the length was >= 3.
-                            // wait for 3 sec and make an API call if user doesn't search anything
-                            isCallToBeMade = true;
-                            hit(editable.toString());
-                        }
-                    }/* else {
-                        //listener.showInternetDisconnectedDialog(RfixSearchFragment.this);
-                        //RETRY_WHAT = RETRY_ON_SEARCHING;
-                    }*/
-                } else {
-//                adapter.setData(new ArrayList<>());
-                    //searchVerticalGridFragment.clearData();
-                    lastSearchedString = "";
-                    //btnSort.setVisibility(View.INVISIBLE);
+                if (editable.length() >= 3){
+                    if(appCMSPresenter.isNetworkConnected()){
+                        handler.removeCallbacks(searcRunnable);
+                        handler.postDelayed(searcRunnable,3000);
+                        progressBar.setVisibility(View.VISIBLE);
+                    }else{
+                        appCMSPresenter.searchRetryDialog(editable.toString());
+                    }
+                }else{
+                    if(null != mRowsAdapter){
+                        mRowsAdapter.clear();
+                    }
+                    progressBar.setVisibility(View.INVISIBLE);
                 }
+            }
+        });
+
+        btnClearHistory.setOnClickListener(onClickListener);
+        searchOne.setOnClickListener(onClickListener);
+        searchTwo.setOnClickListener(onClickListener);
+        searchThree.setOnClickListener(onClickListener);
+
+        searchOne.setTextColor(Utils.getTextColorDrawable(getActivity() ,
+               appCMSPresenter));
+        searchTwo.setTextColor(Utils.getTextColorDrawable(getActivity() ,
+                appCMSPresenter));
+        searchThree.setTextColor(Utils.getTextColorDrawable(getActivity() ,
+                appCMSPresenter));
+
+
+        Component component = new Component();
+        component.setBorderColor(Utils.getColor(getActivity(),Integer.toHexString(ContextCompat.getColor(getActivity() ,
+                R.color.btn_color_with_opacity))));
+        component.setBorderWidth(4);
+
+        btnClearHistory.setBackground(Utils.setButtonBackgroundSelector(getActivity() ,
+                Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter)),
+                component));
+
+        btnClearHistory.setTextColor(Utils.getButtonTextColorDrawable(
+                Utils.getColor(getActivity(),Integer.toHexString(ContextCompat.getColor(getActivity() ,
+                        R.color.btn_color_with_opacity)))
+                ,
+                Utils.getColor(getActivity() , Integer.toHexString(ContextCompat.getColor(getActivity() ,
+                        android.R.color.white)))
+        ));
+
+        btnClearHistory.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                switch (keyEvent.getKeyCode()){
+                    case KeyEvent.KEYCODE_DPAD_UP:
+                    if(keyEvent.getAction() == KeyEvent.ACTION_DOWN){
+                        customKeyboard.setFocusOnGroup();
+                        return true;
+                    }
+                }
+                return false;
             }
         });
         return view;
     }
 
+    View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()){
+                case R.id.search_history_one :
+                case R.id.search_history_two:
+                case R.id.search_history_three:
+                    TextView textView = (TextView)view;
+                    editText.setText(textView.getText());
+                    break;
+                case R.id.btn_clear_history:
+                    llView.setVisibility(View.INVISIBLE);
+                    appCMSPresenter.clearSearchResultsSharePreference();
+
+                    if(clrbtnFlag) {
+                        List<String> result = null;
+                        result = appCMSPresenter.getSearchResultsFromSharePreference();
+                        if(result == null)
+                            result = new ArrayList<String>();
+
+                        result.add(lastSearchedString);
+                        appCMSPresenter.setSearchResultsOnSharePreference(result);
+                    }
+
+
+                    break;
+            }
+
+        }
+    };
+
+    private void setTypeFaceValue(){
+        if(null == openSansSemiBoldTypeFace) {
+            Component openSansSemiBoldComp = new Component();
+            openSansSemiBoldComp.setFontFamily(getString(R.string.app_cms_page_font_family_key));
+            openSansSemiBoldComp.setFontWeight(getString(R.string.app_cms_page_font_semibold_key));
+            openSansSemiBoldTypeFace = Utils.getTypeFace(getActivity(), appCMSPresenter.getJsonValueKeyMap(), openSansSemiBoldComp);
+        }
+        if(null == openSansExtraBoldTypeFace) {
+            Component openSansExtraBoldComp = new Component();
+            openSansExtraBoldComp.setFontFamily(getString(R.string.app_cms_page_font_family_key));
+            openSansExtraBoldComp.setFontWeight(getString(R.string.app_cms_page_font_extrabold_key));
+            openSansExtraBoldTypeFace = Utils.getTypeFace(getActivity(), appCMSPresenter.getJsonValueKeyMap(), openSansExtraBoldComp);
+        }
+        if(null == openSansRegularTypeface) {
+            Component openSansRegularComp = new Component();
+            openSansRegularComp.setFontFamily(getString(R.string.app_cms_page_font_family_key));
+            openSansRegularTypeface = Utils.getTypeFace(getActivity(), appCMSPresenter.getJsonValueKeyMap(), openSansRegularComp);
+        }
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        List<String> resultForTv = appCMSPresenter.getSearchResultsFromSharePreference();
+
+        if (resultForTv != null && resultForTv.size() > 0) {
+            llView.setVisibility(View.VISIBLE);
+            if(resultForTv.size() > 3) {
+                resultForTv.remove(resultForTv.iterator().next());
+            }
+            setSearchValueOnView(resultForTv, resultForTv.size());
+        } else {
+            llView.setVisibility(View.INVISIBLE);
+        }
+        setFocusSequence();
+    }
+
+
+    /**
+     * Handle the key press event on the keyboard.
+     * All the events are handled viz. space, number/alphabets and back presses
+     *
+     * @param v instance of the view on which the keyPressed is called
+     */
+    public void keyPressed(View v) {
+        if (v instanceof Button) {
+            editText.append(" ");
+        } else if (v instanceof TextView) {
+            CharSequence text = ((TextView) v).getText();
+            editText.append(text);
+        } else if (v instanceof ImageButton) {
+            String s = editText.getText().toString();
+            if (s.length() > 0)
+                editText.setText(s.substring(0, s.length() - 1));
+        }
+    }
+
+    private void setFocusSequence(){
+        searchOne.setNextFocusRightId(searchTwo.getVisibility() == View.VISIBLE ? R.id.search_history_two : R.id.btn_clear_history);
+        searchTwo.setNextFocusRightId(searchThree.getVisibility() == View.VISIBLE? R.id.search_history_three : R.id.btn_clear_history);
+        btnClearHistory.setNextFocusLeftId(searchThree.getVisibility() == View.VISIBLE ? R.id.search_history_three
+                : ((searchTwo.getVisibility() == View.VISIBLE  ?
+                R.id.search_history_two : R.id.search_history_one)));
+
+    }
 
     private String getUrl(String url){
         return getString(R.string.app_cms_search_api_url,
@@ -166,12 +330,10 @@ public class AppCmsSearchFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        bindSearchComponent();
     }
 
 
     private void bindSearchComponent(){
-
         appCMSPresenter =
                 ((AppCMSApplication) getActivity().getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
 
@@ -191,44 +353,111 @@ public class AppCmsSearchFragment extends Fragment {
                 mRowsAdapter.clear();
                 mRowsAdapter = null;
             }
-            setAdapter(appCMSSearchResults);
+            if(null != appCMSSearchResults && appCMSSearchResults.size() > 0){
+                clrbtnFlag = true;
+                noSearchTextView.setVisibility(View.GONE);
+                addSearchValueInSharePref();
+                List<String> resultForTv = appCMSPresenter.getSearchResultsFromSharePreference();
+                if (resultForTv != null && resultForTv.size() > 0) {
+                    if(resultForTv.size() > 1){
+                        llView.setVisibility(View.VISIBLE);
+                        setSearchValueOnView(resultForTv, resultForTv.size() - 1);
+                    } else {
+                        llView.setVisibility(View.INVISIBLE);
+                    }
+                }
+                setAdapter(appCMSSearchResults);
+                customKeyboard.requestFocus();
+            }else{
+                clrbtnFlag = false;
+                noSearchTextView.setText(getString(R.string.app_cms_no_search_result , lastSearchedString).toUpperCase());
+                noSearchTextView.setVisibility(View.VISIBLE);
+
+                List<String> resultForTv = appCMSPresenter.getSearchResultsFromSharePreference();
+                if (resultForTv != null && resultForTv.size() > 0) {
+                    llView.setVisibility(View.VISIBLE);
+                    if(resultForTv.size() > 3) {
+                        resultForTv.remove(resultForTv.iterator().next());
+                    }
+                    setSearchValueOnView(resultForTv, resultForTv.size());
+                }
+            }
+
+            setFocusSequence();
+            progressBar.setVisibility(View.INVISIBLE);
         }
+
     };
 
 
-    /**
-     * Say for example we missed a API hit because the time threshold wasn't elapsed yet, so if user
-     * doesn't change again then nothing happens, therefore waiting for 3 seconds if user has
-     * changed something, if yes (by checking {@link #isCallToBeMade}) make an API call else
-     * do nothing
-     *
-     * @param s the string used to query
-     */
-    private void hit(final String s) {
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (isCallToBeMade) {
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                //hideNoResultsFound();
-                                if (searchTask != null && searchTask.getStatus() == AsyncTask.Status.RUNNING) {
-                                    searchTask.cancel(true);
-                                }
-                                searchTask = new SearchAsyncTask(searchDataObserver,appCMSSearchCall);
-                                final String url = getUrl(s);
-                                searchTask.execute(url);
+    public void hideSoftKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
+    }
 
-                                mLastClickTime = SystemClock.elapsedRealtime();
-                            }
-                        });
-                    }
+    private void setSearchValueOnView(List<String> resultForTv, int size){
+        for (int i = 0; i < size; i++) {
+            if(i == 0){
+                searchOne.setText(resultForTv.get(i).trim().toString().toUpperCase());
+                searchTwo.setVisibility(View.INVISIBLE);
+                searchThree.setVisibility(View.INVISIBLE);
+            } else if(i == 1){
+                searchTwo.setVisibility(View.VISIBLE);
+                searchThree.setVisibility(View.INVISIBLE);
+                searchTwo.setText(resultForTv.get(i).trim().toString().toUpperCase());
+            } else if(i == 2){
+                searchThree.setVisibility(View.VISIBLE);
+                searchThree.setText(resultForTv.get(i).trim().toString().toUpperCase());
+            }
+        }
+    }
+
+    private void addSearchValueInSharePref(){
+        List<String> result = appCMSPresenter.getSearchResultsFromSharePreference();
+        if(result == null) {
+            List<String> list = new ArrayList<String>();
+            list.add(lastSearchedString);
+            appCMSPresenter.setSearchResultsOnSharePreference(list);
+        } else {
+            if (!result.isEmpty() && result.size() == 4) {
+                result.remove(result.iterator().next());
+            }
+            for(int i = 0; i < result.size(); i++) {
+                if(lastSearchedString.trim().equalsIgnoreCase(result.get(i).trim())){
+                    result.remove(result.get(i));
+                    break;
                 }
             }
-        }, 3000);
+            result.add(lastSearchedString);
+            appCMSPresenter.setSearchResultsOnSharePreference(result);
+        }
+
     }
+
+    Handler handler = new Handler();
+    Runnable searcRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if(editText.getText().toString().trim().length() > 2) {
+                try {
+                    if (searchTask != null && searchTask.getStatus() == AsyncTask.Status.RUNNING) {
+                        searchTask.cancel(true);
+                    }
+                    searchTask = new SearchAsyncTask(searchDataObserver, appCMSSearchCall);
+                    String encodedString  = URLEncoder.encode(editText.getText().toString().trim() , "UTF-8");
+                    String secondEncoding = URLEncoder.encode(encodedString , "UTF-8");
+
+                    final String url = getUrl(secondEncoding);
+                    System.out.println("Search result == " + editText.getText().toString().trim() + "url = " + url);
+                    lastSearchedString = editText.getText().toString().trim();
+                    searchTask.execute(url);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
+
 
 
     private static class SearchAsyncTask extends AsyncTask<String, Void, List<AppCMSSearchResult>> {
@@ -259,7 +488,12 @@ public class AppCmsSearchFragment extends Fragment {
         }
     }
 
-
+    private Context mContext;
+    @Override
+    public void onAttach(Context context) {
+        mContext = context;
+        super.onAttach(context);
+    }
 
     private void setAdapter(List<AppCMSSearchResult> appCMSSearchResults){
         if(null != moduleList){
@@ -276,7 +510,7 @@ public class AppCmsSearchFragment extends Fragment {
 
         if(null != mRowsAdapter && mRowsAdapter.size() > 0){
             {
-                AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(getActivity());
+                AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(mContext);
                 browseFragment.setAdapter(mRowsAdapter);
                 getChildFragmentManager().beginTransaction().replace(R.id.appcms_search_results_container ,browseFragment ,"frag").commit();
             }
@@ -284,6 +518,7 @@ public class AppCmsSearchFragment extends Fragment {
     }
 
 
+    private CustomHeaderItem customHeaderItem = null;
     public void createTrayModule(final Context context,
                                  final Component component,
                                  List<AppCMSSearchResult> appCMSSearchResults,
@@ -291,8 +526,6 @@ public class AppCmsSearchFragment extends Fragment {
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                  final AppCMSPresenter appCMSPresenter,
                                  boolean isCarousel) {
-
-        CustomHeaderItem customHeaderItem = null;
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
         if (componentType == null) {
             componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
@@ -305,30 +538,24 @@ public class AppCmsSearchFragment extends Fragment {
             case PAGE_LABEL_KEY:
                 switch (componentKey) {
                     case PAGE_TRAY_TITLE_KEY:
-                        customHeaderItem = new CustomHeaderItem(context, trayIndex++, "RESULT FOR " + lastSearchedString);
+                        customHeaderItem = null;
+                        customHeaderItem = new CustomHeaderItem(context, trayIndex++,
+                                getString(R.string.app_cms_search_result_header , lastSearchedString.toUpperCase()));
                         customHeaderItem.setmIsCarousal(isCarousel);
                         customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
                         customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
                         customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
                         customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
+                        customHeaderItem.setFontFamily(component.getFontFamily());
+                        customHeaderItem.setFontWeight(component.getFontWeight());
+                        customHeaderItem.setFontSize(component.getLayout().getTv().getFontSize());
                         break;
                 }
                 break;
             case PAGE_COLLECTIONGRID_KEY:
-                        /*for(Component component1 : component.getComponents()){*/
-
                 if (null == mRowsAdapter) {
-                    AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context);
+                    AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
                     mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
-                }
-
-                if (customHeaderItem == null) {
-                    customHeaderItem = new CustomHeaderItem(context, trayIndex++, "RESULT FOR " + lastSearchedString);
-                    customHeaderItem.setmIsCarousal(false);
-                    customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-                    customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-                    customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
-                    customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
                 }
                 CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
                         Integer.valueOf(component.getLayout().getTv().getHeight()),
@@ -339,19 +566,33 @@ public class AppCmsSearchFragment extends Fragment {
 
                 for (AppCMSSearchResult searchResult : appCMSSearchResults) {
                     BrowseFragmentRowData rowData = new BrowseFragmentRowData();
-                    /**
-                     * There is no getContent() in the AppCMSSearchResult object
-                     * This class needs to be modified accordingly
-                     * Merge issue: @Nitin Tyagi please fix
-                     rowData.contentData = searchResult.getContent();
-                     **/
+                    rowData.contentData = searchResult.getContent();
                     rowData.uiComponentList = component.getComponents();
                     traylistRowAdapter.add(rowData);
                     Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
                 }
-
                 mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
                 break;
+        }
+    }
+
+    public void searchResult(String searchQuery){
+        try {
+            handler.removeCallbacks(searcRunnable);
+            if (searchTask != null && searchTask.getStatus() == AsyncTask.Status.RUNNING) {
+                searchTask.cancel(true);
+            }
+            searchTask = new SearchAsyncTask(searchDataObserver, appCMSSearchCall);
+
+            String encodedString = URLEncoder.encode(searchQuery.trim(), "UTF-8");
+            String secondEncoding = URLEncoder.encode(encodedString, "UTF-8");
+
+            final String url = getUrl(secondEncoding);
+            System.out.println("Search result == " + editText.getText().toString().trim());
+            lastSearchedString = editText.getText().toString().trim();
+            searchTask.execute(url);
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

@@ -1,5 +1,8 @@
 package com.viewlift.models.data.appcms.ui.tv;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by nitin.tyagi on 7/5/2017.
  */
@@ -17,17 +20,37 @@ public class FireTV {
 
     private String leftMargin;
 
-    private String bottomMargin;
+    public Float getFontSizeKey() {
+        return fontSizeKey;
+    }
 
-    private String fontSizeValue;
+    public void setFontSizeKey(Float fontSizeKey) {
+        this.fontSizeKey = fontSizeKey;
+    }
+
+    public Float getFontSizeValue() {
+        return fontSizeValue;
+    }
+
+    public void setFontSizeValue(Float fontSizeValue) {
+        this.fontSizeValue = fontSizeValue;
+    }
+
+    @SerializedName("fontSizeKey")
+    @Expose
+    private Float fontSizeKey;
+    @SerializedName("fontSizeValue")
+    @Expose
+    private Float fontSizeValue;
+    public int getFontSize() {
+        return fontSize;
+    }
+
+    public void setFontSize(int fontSize) {
+        this.fontSize = fontSize;
+    }
 
     private int fontSize;
-
-    private Float fontSizeKey;
-
-    public String getTopMargin() {
-        return topMargin;
-    }
 
     public String getBottomMargin() {
         return bottomMargin;
@@ -35,6 +58,12 @@ public class FireTV {
 
     public void setBottomMargin(String bottomMargin) {
         this.bottomMargin = bottomMargin;
+    }
+
+    private String bottomMargin;
+
+    public String getTopMargin() {
+        return topMargin;
     }
 
     public void setTopMargin(String topMargin) {
@@ -123,30 +152,6 @@ public class FireTV {
     public void setLeftMargin (String leftMargin)
     {
         this.leftMargin = leftMargin;
-    }
-
-    public String getFontSizeValue() {
-        return fontSizeValue;
-    }
-
-    public void setFontSizeValue(String fontSizeValue) {
-        this.fontSizeValue = fontSizeValue;
-    }
-
-    public int getFontSize() {
-        return fontSize;
-    }
-
-    public void setFontSize(int fontSize) {
-        this.fontSize = fontSize;
-    }
-
-    public Float getFontSizeKey() {
-        return fontSizeKey;
-    }
-
-    public void setFontSizeKey(Float fontSizeKey) {
-        this.fontSizeKey = fontSizeKey;
     }
 
     @Override

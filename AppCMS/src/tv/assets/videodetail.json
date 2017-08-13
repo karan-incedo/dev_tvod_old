@@ -53,7 +53,6 @@
           "textAlignment": "right",
           "type": "label",
           "textColor": "#ffffff",
-          "fontWeight": "Semibold",
           "key": "videoSubTitle"
         }
       ],
@@ -65,9 +64,9 @@
       "layout": {
         "ftv": {
           "yAxis": 120,
-          "xAxis": 982,
+          "xAxis": 1080,
           "width": 747,
-          "height": 419,
+          "height": 420,
           "padding" : 4
         }
       },
@@ -79,7 +78,7 @@
       "layout": {
         "ftv": {
           "yAxis": 260,
-          "xAxis": 1330,
+          "xAxis": 1410,
           "width": 113,
           "height": 130
         }
@@ -113,17 +112,19 @@
           "leftMargin": 95,
           "yAxis": 477,
           "height": 62,
+          "width":270,
           "fontSize": 12
         }
       },
+      "letterSpacing":0.12,
       "padding": 15,
-      "borderColor": "ffffff",
+      "borderColor": "#66ffffff",
       "fontFamily": "OpenSans",
       "borderWidth": 4,
       "action": "watchTrailer",
       "text": "WATCH TRAILER",
       "type": "button",
-      "textColor": "ffffff",
+      "textColor": "#ffffff",
       "fontWeight": "Semibold",
       "key": "watchTrailer"
     },
@@ -132,7 +133,7 @@
         "ftv": {
           "xAxis": 95,
           "yAxis": 120,
-          "width": 768,
+          "width": 800,
           "fontSize": 15,
           "height": 240
         }
@@ -148,7 +149,7 @@
           "fontSizeKey": 15,
           "yAxis": 342,
           "xAxis": 95,
-          "width": 768,
+          "width": 800,
           "height": 100,
           "fontSizeValue": 15
         }

@@ -79,6 +79,17 @@ public class AppCMSMain {
     @Expose
     String android;
 
+    public String getFireTv() {
+        return fireTv;
+    }
+
+    public void setFireTv(String fireTv) {
+        this.fireTv = fireTv;
+    }
+
+    @SerializedName("fireTv")
+    @Expose
+    private String fireTv;
     @SerializedName("timestamp")
     @Expose
     long timestamp;

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="appcms_focusColor">#008ee0</color>
+    <color name="appcms_keyboard_select_layout_bg_color">#999999</color>
+    <color name="appcms_btn_default_border_color">#666666</color>
+    <color name="appcms_keyboard_select_layout_text_bg_color">#30FFFFFF</color>
+</resources>
