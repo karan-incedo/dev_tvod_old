@@ -351,6 +351,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             handlingClose = true;
             handleCloseAction();
             handlingClose = false;
+        } else if (isPageLoading()) {
+            pageLoading(false);
         }
     }
 
