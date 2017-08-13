@@ -184,8 +184,6 @@ dependencies {
 
     compile 'com.appsflyer:af-android-sdk:4.6.7@aar'
     compile "com.google.android.gms:play-services-tagmanager:$rootProject.ext.googlePlayServicesVersion"
-
-    compile project(path: ':firetvcustomkeyboard')
 }
 
 apply plugin: 'com.google.gms.google-services'
