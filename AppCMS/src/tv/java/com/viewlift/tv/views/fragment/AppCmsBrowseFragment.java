@@ -10,6 +10,7 @@ import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.Row;
 import android.support.v17.leanback.widget.RowPresenter;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,10 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
+
+import java.util.List;
+
+import com.viewlift.R;
 
 /**
  * Created by nitin.tyagi on 6/29/2017.
@@ -67,7 +72,6 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
 
         setOnItemViewClickedListener(new ItemViewClickedListener());
         setOnItemViewSelectedListener(new ItemViewSelectedListener());
-        // requestFocus(false);
     }
 
 
@@ -85,16 +89,12 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     BrowseFragmentRowData rowData = null;
     public void pushedPlayKey() {
         if (null != rowData) {
-
             ((AppCmsHomeActivity)getActivity()).pageLoading(true);
             String filmId = rowData.contentData.getGist().getId();
             String permaLink = rowData.contentData.getGist().getPermalink();
             String title = rowData.contentData.getGist().getTitle();
 
-            if (!appCMSPresenter.launchVideoPlayer(rowData.contentData,
-                    -1,
-                    rowData.contentData.getContentDetails().getRelatedVideoIds(),
-                    0)) {
+            if (!appCMSPresenter.launchTVVideoPlayer(filmId, permaLink, title , rowData.contentData)) {
                 ((AppCmsHomeActivity)getActivity()).pageLoading(false);
                 Log.e(TAG, "Could not launch play action: " +
                         " filmId: " +
@@ -104,7 +104,23 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                         " title: " +
                         title);
             }
+
+         /*   if (!appCMSPresenter.launchVideoPlayer(rowData.contentData , -1 , null , 0)) {
+                ((AppCmsHomeActivity)getActivity()).pageLoading(false);
+                Log.e(TAG, "Could not launch play action: " +
+                        " filmId: " +
+                        filmId +
+                        " permaLink: " +
+                        permaLink +
+                        " title: " +
+                        title);
+            }*/
+
         }
+    }
+
+    public boolean hasFocus() {
+        return (null != view && view.hasFocus());
     }
 
     private class ItemViewClickedListener implements OnItemViewClickedListener {
@@ -158,7 +174,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
 
             rowData = (BrowseFragmentRowData)item;
             if(rowData != null)
-                data = rowData.contentData;
+             data = rowData.contentData;
             //Log.d(TAG , "Clicked StreamInfo = " + rowData.contentData.getGist().getTitle());
         }
     }

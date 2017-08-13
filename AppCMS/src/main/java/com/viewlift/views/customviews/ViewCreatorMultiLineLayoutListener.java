@@ -1,12 +1,19 @@
 package com.viewlift.views.customviews;
 
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
+import android.support.v4.content.ContextCompat;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
@@ -70,6 +77,16 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
                         public void onClick(View widget) {
                             appCMSPresenter.showMoreDialog(title, fullText);
                         }
+
+                        @Override
+                        public void updateDrawState(TextPaint ds) {
+                            if(appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV){
+                                ds.setUnderlineText(false);
+                                ds.setColor(ContextCompat.getColor(textView.getContext() , android.R.color.white));
+                            }else{
+                                super.updateDrawState(ds);
+                            }
+                        }
                     };
                     spannableTextWithMore.setSpan(clickableSpan,
                             spannableTextWithMore.length() - CLICKABLE_CHAR_COUNT,
@@ -84,5 +101,31 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
             textView.setEllipsize(TextUtils.TruncateAt.END);
         }
         textView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+    }
+
+
+    /**
+     * this method will set span on SpnabbleString i.e om MORE when there will be a focus on description text.
+     * This Methos is for TV specific.
+     * @param textView
+     * @param hasFocus
+     * @param textColor
+     */
+    public void setSpanOnFocus(TextView textView, boolean hasFocus , int textColor){
+        Spannable wordToSpan = new SpannableString(textView.getText().toString());
+        ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(
+                Color.parseColor( appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor())
+        );
+
+        int length = wordToSpan.length();
+        if (hasFocus) {
+            wordToSpan.setSpan(new StyleSpan(Typeface.BOLD), length - CLICKABLE_CHAR_COUNT, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            wordToSpan.setSpan(foregroundColorSpan, length - CLICKABLE_CHAR_COUNT, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        } else {
+            wordToSpan.setSpan(new StyleSpan(Typeface.BOLD), length - CLICKABLE_CHAR_COUNT, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            wordToSpan.setSpan(new ForegroundColorSpan(textColor), length - CLICKABLE_CHAR_COUNT, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        textView.setText(wordToSpan);
     }
 }

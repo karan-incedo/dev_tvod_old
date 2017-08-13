@@ -94,6 +94,13 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         init(context, null, 0);
     }
 
+
+
+    public SimpleExoPlayer getPlayer() {
+        return player;
+    }
+
+
     public VideoPlayerView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs, 0);

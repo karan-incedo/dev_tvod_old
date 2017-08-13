@@ -69,7 +69,7 @@ public class CustomProgressBar {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
             View view = inflater.inflate(R.layout.progress_dialog, null);
             TextView txtViewMessage = (TextView)view.findViewById(R.id.text_loading);
-            txtViewMessage.setText(message);
+            txtViewMessage.setText("");
             dialog.setContentView(view);
             dialog.getWindow()
                     .setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));

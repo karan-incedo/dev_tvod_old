@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
@@ -20,6 +21,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.viewlift.AppCMSApplication;
@@ -75,8 +77,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                         hlsUrl,
                         filmId,
                         adsUrl,
-                        playAds,
-                        null);
+                        playAds);
         fragmentTransaction.add(R.id.app_cms_play_video_page_container,
                 appCMSPlayVideoFragment,
                 getString(R.string.video_fragment_tag_key));
@@ -110,6 +111,11 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
            // appCMSPresenter.showErrorDialog(AppCMSPresenter.Error.NETWORK, null); //TODO : need to show error dialog.
             finish();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     @Override
