@@ -26,12 +26,14 @@ import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.gms.cast.framework.CastSession;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.VideoPlayerView;
 
 import rx.functions.Action1;
@@ -72,6 +74,8 @@ public class AppCMSPlayVideoFragment extends Fragment
     private ImaSdkFactory sdkFactory;
     private AdsLoader adsLoader;
     private AdsManager adsManager;
+    private static final String PLAYER_SCREEN_NAME = "Player Screen";
+
     AdsLoader.AdsLoadedListener listenerAdsLoaded = new AdsLoader.AdsLoadedListener() {
         @Override
         public void onAdsManagerLoaded(AdsManagerLoadedEvent adsManagerLoadedEvent) {
@@ -208,6 +212,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             videoPlayerTitleView.setTextColor(Color.parseColor(fontColor));
         }
 
+        sendFirebaseAnalyticsEvents(title);
+
         videoPlayerViewDoneButton = (ImageButton) rootView.findViewById(R.id.app_cms_video_player_done_button);
         videoPlayerViewDoneButton.setOnClickListener(v -> {
             if (onClosePlayerEvent != null) {
@@ -313,6 +319,18 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         return rootView;
     }
+
+    private void sendFirebaseAnalyticsEvents(String screenVideoName) {
+        if (screenVideoName == null)
+            return;
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, PLAYER_SCREEN_NAME + "-" + screenVideoName);
+        //Logs an app event.
+        appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+        //Sets whether analytics collection is enabled for this app on this device.
+        appCMSPresenter.getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
+    }
+
 
     private void setCasting() {
         try {
