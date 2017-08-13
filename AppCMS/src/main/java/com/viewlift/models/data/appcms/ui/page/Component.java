@@ -144,7 +144,10 @@ public class Component implements ModuleWithComponents {
     @SerializedName("protected")
     @Expose
     boolean isViewProtected;
-    private String selectedText;
+	
+    @SerializedName("selectedText")
+    @Expose
+    String selectedText;
 
     public int getPadding() {
         return padding;
