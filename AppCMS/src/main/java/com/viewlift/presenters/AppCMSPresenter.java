@@ -30,6 +30,7 @@ import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -100,6 +101,7 @@ import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
+import com.viewlift.models.data.appcms.ui.main.Content;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
@@ -163,16 +165,20 @@ import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 
+import org.w3c.dom.Text;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -185,6 +191,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -2814,15 +2821,13 @@ public class AppCMSPresenter {
                             try {
                                 InAppPurchaseData inAppPurchaseData = gson.fromJson(subscribedItemList.get(i),
                                         InAppPurchaseData.class);
-                                if (inAppPurchaseData.isAutoRenewing()) {
-                                    if (showErrorDialogIfSubscriptionExists) {
-                                        showDialog(DialogType.EXISTING_SUBSCRIPTION,
-                                                currentActivity.getString(R.string.app_cms_existing_subscription_error_message),
-                                                false,
-                                                () -> {
-                                                    sendCloseOthersAction(null, true);
-                                                });
-                                    }
+                                if (inAppPurchaseData.isAutoRenewing() && showErrorDialogIfSubscriptionExists) {
+                                    showDialog(DialogType.EXISTING_SUBSCRIPTION,
+                                            currentActivity.getString(R.string.app_cms_existing_subscription_error_message),
+                                            false,
+                                            () -> {
+                                                sendCloseOthersAction(null, true);
+                                            });
                                     setExistingGooglePlaySubscriptionId(currentActivity, inAppPurchaseData.getProductId());
                                 }
                             } catch (Exception e) {
