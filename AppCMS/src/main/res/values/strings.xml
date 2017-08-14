@@ -281,7 +281,10 @@
     <string name="app_cms_search_value_size_key">app_cms_search_value_size</string>
     <string name="app_cms_search_value_key">app_cms_search_value_</string>
     <string name="app_cms_no_search_result">NO RESULTS FOR \"%1$s\"</string>
-    <string name="app_cms_search_result_header">RESULTS FOR \"%1$s\"</string>
+    <plurals name="app_cms_search_result_header">
+        <item quantity="one" >RESULT FOR \"%1$s\"</item>
+        <item quantity="other" >RESULTS FOR \"%1$s\"</item>
+    </plurals>
     <string name="retryCallBinderKey">retryCallBinderKey</string>
     <string name="retryCallBundleKey">retryCallBundleKey</string>
 

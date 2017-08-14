@@ -289,6 +289,8 @@ public class AppCmsSearchFragment extends Fragment {
             llView.setVisibility(View.INVISIBLE);
         }
         setFocusSequence();
+        if(mRowsAdapter == null || (mRowsAdapter != null && mRowsAdapter.size() == 0))
+        customKeyboard.requestFocus();
     }
 
 
@@ -367,7 +369,6 @@ public class AppCmsSearchFragment extends Fragment {
                     }
                 }
                 setAdapter(appCMSSearchResults);
-                customKeyboard.requestFocus();
             }else{
                 clrbtnFlag = false;
                 noSearchTextView.setText(getString(R.string.app_cms_no_search_result , lastSearchedString).toUpperCase());
@@ -540,7 +541,10 @@ public class AppCmsSearchFragment extends Fragment {
                     case PAGE_TRAY_TITLE_KEY:
                         customHeaderItem = null;
                         customHeaderItem = new CustomHeaderItem(context, trayIndex++,
-                                getString(R.string.app_cms_search_result_header , lastSearchedString.toUpperCase()));
+                                getResources().getQuantityString(R.plurals.app_cms_search_result_header ,
+                                        appCMSSearchResults.size(),
+                                        lastSearchedString.toUpperCase())
+                                );
                         customHeaderItem.setmIsCarousal(isCarousel);
                         customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
                         customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
