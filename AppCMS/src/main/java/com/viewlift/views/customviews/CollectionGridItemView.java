@@ -237,6 +237,7 @@ public class CollectionGridItemView extends BaseView {
                         try {
                             final int imageWidth = deviceWidth;
                             final int imageHeight = childViewHeight;
+                            final ImageView imageView = (ImageView) view;
                             StringBuilder imageMetaData = new StringBuilder();
                             imageMetaData.append(imageUrl);
                             imageMetaData.append(System.currentTimeMillis() / 60000);
@@ -251,12 +252,33 @@ public class CollectionGridItemView extends BaseView {
 
                                         @Override
                                         protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
-                                            Bitmap sourceWithGradient =
-                                                    Bitmap.createScaledBitmap(toTransform,
-                                                            imageWidth,
-                                                            imageHeight,
-                                                            false);
+                                            int width = toTransform.getWidth();
+                                            int height = toTransform.getHeight();
+                                            Bitmap sourceWithGradient = null;
+
+                                            boolean scaleImageUp = false;
+                                            if (width < imageWidth &&
+                                                    height < imageHeight) {
+                                                sourceWithGradient =
+                                                        Bitmap.createScaledBitmap(toTransform,
+                                                                imageWidth,
+                                                                imageHeight,
+                                                                false);
+                                                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                                                scaleImageUp = true;
+                                            } else {
+                                                sourceWithGradient = Bitmap.createBitmap(width,
+                                                        height,
+                                                        Bitmap.Config.ARGB_8888);
+                                                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                                            }
+
                                             Canvas canvas = new Canvas(sourceWithGradient);
+
+                                            if (!scaleImageUp) {
+                                                canvas.drawBitmap(toTransform, 0, 0, null);
+                                            }
+
                                             Paint paint = new Paint();
                                             LinearGradient shader = new LinearGradient(0,
                                                     0,
