@@ -260,9 +260,11 @@ public class CollectionGridItemView extends BaseView {
                                             if (width < imageWidth &&
                                                     height < imageHeight) {
                                                 scaleImageUp = true;
+                                                float widthToHeightRatio =
+                                                        (float) width / (float) height;
                                                 sourceWithGradient =
                                                         Bitmap.createScaledBitmap(toTransform,
-                                                                imageWidth,
+                                                                (int) (imageHeight * widthToHeightRatio),
                                                                 imageHeight,
                                                                 false);
                                             } else {
