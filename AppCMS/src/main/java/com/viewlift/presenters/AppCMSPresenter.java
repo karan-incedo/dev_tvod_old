@@ -207,6 +207,7 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
+import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.PAGE_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SEARCH_RETRY_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.VIDEO_ACTION;
 
@@ -4472,7 +4473,11 @@ public class AppCMSPresenter {
                         appCMSMain.getBeacon().getApiBaseUrl(),
                         URLEncoder.encode(appCMSMain.getBeacon().getSiteName(), utfEncoding),
                         URLEncoder.encode(appCMSMain.getBeacon().getClientId(), utfEncoding),
-                        URLEncoder.encode(currentActivity.getString(R.string.app_cms_beacon_platform),
+
+                        URLEncoder.encode(
+                                (platformType == PlatformType.TV) ?
+                                        currentActivity.getString(R.string.app_cms_beacon_tvplatform) :
+                                        currentActivity.getString(R.string.app_cms_beacon_platform),
                                 utfEncoding),
                         URLEncoder.encode(currentActivity.getString(R.string.app_cms_beacon_dpm_android),
                                 utfEncoding),
@@ -5766,6 +5771,10 @@ public class AppCMSPresenter {
                                 public void call() {
                                     Log.d(TAG, "Launching first page: " + firstPage.getPageName());
                                     cancelInternalEvents();
+
+                                    Intent logoAnimIntent = new Intent(AppCMSPresenter.ACTION_LOGO_ANIMATION);
+                                    currentActivity.sendBroadcast(logoAnimIntent);
+
                                     NavigationPrimary homePageNav = findHomePageNavItem();
                                     boolean launchSuccess = navigateToTVPage(homePageNav.getPageId(),
                                             homePageNav.getTitle(),
@@ -5800,6 +5809,19 @@ public class AppCMSPresenter {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
 
             if (appCMSPageAPI == null) {
+                //check internet connection here.
+                if(!isNetworkConnected()){
+                    RetryCallBinder retryCallBinder = getRetryCallBinder(url , null,
+                            pageTitle , null,
+                            null  , launchActivity , pageId,PAGE_ACTION);
+                    Bundle bundle = new Bundle();
+                    bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey) , retryCallBinder);
+                    Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+                    args.putExtra(currentActivity.getString(R.string.retryCallBundleKey) , bundle);
+                    currentActivity.sendBroadcast(args);
+                    return false;
+                }
+
                 getPageIdContent(appCMSMain.getApiBaseUrl(),
                         pageIdToPageAPIUrlMap.get(pageId),
                         appCMSMain.getInternalName(),
