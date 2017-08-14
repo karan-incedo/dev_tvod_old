@@ -52,7 +52,7 @@
           "numberOfLines": 1,
           "textAlignment": "right",
           "type": "label",
-          "textColor": "#ffffff",
+          "textColor": "#66ffffff",
           "key": "videoSubTitle"
         }
       ],

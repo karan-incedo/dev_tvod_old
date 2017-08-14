@@ -289,6 +289,8 @@ public class AppCmsSearchFragment extends Fragment {
             llView.setVisibility(View.INVISIBLE);
         }
         setFocusSequence();
+        if(mRowsAdapter == null || (mRowsAdapter != null && mRowsAdapter.size() == 0))
+        customKeyboard.requestFocus();
     }
 
 
@@ -367,7 +369,6 @@ public class AppCmsSearchFragment extends Fragment {
                     }
                 }
                 setAdapter(appCMSSearchResults);
-                customKeyboard.requestFocus();
             }else{
                 clrbtnFlag = false;
                 noSearchTextView.setText(getString(R.string.app_cms_no_search_result , lastSearchedString).toUpperCase());

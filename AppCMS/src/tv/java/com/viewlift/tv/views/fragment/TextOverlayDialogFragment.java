@@ -9,10 +9,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 
@@ -61,7 +63,7 @@ public class TextOverlayDialogFragment extends AbsDialogFragment {
         Button btnClose = (Button) mView.findViewById(R.id.btn_close);
         TextView tvTitle = (TextView) mView.findViewById(R.id.text_overlay_title);
         TextView tvDescription = (TextView) mView.findViewById(R.id.text_overlay_description);
-
+        ScrollView scrollView = (ScrollView)mView.findViewById(R.id.scrollview);
 
         /*Request focus on the description */
         //tvDescription.requestFocus();
@@ -119,6 +121,25 @@ public class TextOverlayDialogFragment extends AbsDialogFragment {
             }
         });
 
+        btnClose.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                int keyCode = keyEvent.getKeyCode();
+                switch(keyCode){
+                    case KeyEvent.KEYCODE_DPAD_UP:
+                        if(keyEvent.getAction() == KeyEvent.ACTION_DOWN){
+                            if(scrollView.canScrollVertically(View.SCROLL_AXIS_VERTICAL)
+                                    || scrollView.canScrollVertically(View.NO_ID)){
+                                tvDescription.requestFocus();
+                            }else{
+                                btnClose.requestFocus();
+                            }
+                            return true;
+                        }
+                }
+                return false;
+            }
+        });
         return mView;
     }
 
