@@ -242,7 +242,6 @@ public class CollectionGridItemView extends BaseView {
                             imageMetaData.append(System.currentTimeMillis() / 60000);
                             Glide.with(context)
                                     .load(imageUrl)
-                                    .signature(new StringSignature(imageMetaData.toString()))
                                     .transform(new BitmapTransformation(context) {
                                         @Override
                                         public String getId() {
@@ -251,12 +250,32 @@ public class CollectionGridItemView extends BaseView {
 
                                         @Override
                                         protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
-                                            Bitmap sourceWithGradient =
-                                                    Bitmap.createScaledBitmap(toTransform,
-                                                            imageWidth,
-                                                            imageHeight,
-                                                            false);
+                                            int width = toTransform.getWidth();
+                                            int height = toTransform.getHeight();
+
+                                            boolean scaleImageUp = false;
+
+                                            Bitmap sourceWithGradient;
+                                            if (width < imageWidth &&
+                                                    height < imageHeight) {
+                                                scaleImageUp = true;
+                                                sourceWithGradient =
+                                                        Bitmap.createScaledBitmap(toTransform,
+                                                                imageWidth,
+                                                                imageHeight,
+                                                                false);
+                                            } else {
+                                                sourceWithGradient =
+                                                        Bitmap.createBitmap(width,
+                                                                height,
+                                                                Bitmap.Config.ARGB_8888);
+                                            }
+
                                             Canvas canvas = new Canvas(sourceWithGradient);
+                                            if (!scaleImageUp) {
+                                                canvas.drawBitmap(toTransform, 0, 0, null);
+                                            }
+
                                             Paint paint = new Paint();
                                             LinearGradient shader = new LinearGradient(0,
                                                     0,
