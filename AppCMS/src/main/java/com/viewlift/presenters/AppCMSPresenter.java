@@ -206,6 +206,7 @@ import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Action1;
 
+import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SEARCH_RETRY_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.VIDEO_ACTION;
 
@@ -694,7 +695,6 @@ public class AppCMSPresenter {
                         } else if (platformType == PlatformType.TV) {
                             getAppCMSTV(activity,
                                     main,
-                                    searchQuery,
                                     tryCount + 1);
                         }
                     } else {
@@ -5428,7 +5428,7 @@ public class AppCMSPresenter {
                                     getAppCMSAndroid(activity, main, 0);
                                     break;
                                 case TV:
-                                    getAppCMSTV(activity, main, null, 0 );
+                                    getAppCMSTV(activity, main, 0 );
                                     break;
                                 default:
                             }
@@ -5722,13 +5722,12 @@ public class AppCMSPresenter {
 
     private void getAppCMSTV(final Activity activity,
                              final AppCMSMain main,
-                             final Uri searchQuery,
                              int tryCount) {
         if (!isUserLoggedIn(currentActivity) && tryCount == 0) {
-            signinAnonymousUser(activity, main, tryCount, searchQuery, PlatformType.TV);
+            signinAnonymousUser(activity, main, tryCount, null, PlatformType.TV);
         } else if (isUserLoggedIn(currentActivity) && shouldRefreshAuthToken() && tryCount == 0) {
             refreshIdentity(getRefreshToken(activity),
-                    () -> getAppCMSAndroid(activity, main, tryCount + 1));
+                    () -> getAppCMSTV(activity, main, tryCount + 1));
         } else {
             GetAppCMSAndroidUIAsyncTask.Params params =
                     new GetAppCMSAndroidUIAsyncTask.Params.Builder()
@@ -5745,11 +5744,17 @@ public class AppCMSPresenter {
                     Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
                     launchErrorActivity(activity, PlatformType.TV);
                 } else {
-                    //TODO : change navigation object as per TV.
-                    Navigation navigationTV = new GsonBuilder().create().fromJson
-                            (MainUtils.loadJsonFromAssets(currentActivity, "navigation.json"), Navigation.class);
+                    if(appCMSAndroidUI.getAnalytics() != null) {
+                        initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
+                    }
+                    navigation = appCMSAndroidUI.getNavigation();
+                    //add search in navigation item.
+                    NavigationPrimary searcNav  = new NavigationPrimary();
+                    searcNav.setPageId(currentActivity.getString(R.string.app_cms_search_label));
+                    searcNav.setTitle(currentActivity.getString(R.string.app_cms_search_label));
+                    navigation.getNavigationPrimary().add(searcNav);
 
-                    navigation = navigationTV; //appCMSAndroidUI.getNavigation();
+
                     queueMetaPages(appCMSAndroidUI.getMetaPages());
                     final MetaPage firstPage = pagesToProcess.peek();
                     Log.d(TAG, "Processing meta pages queue");
@@ -5766,7 +5771,7 @@ public class AppCMSPresenter {
                                             homePageNav.getTitle(),
                                             homePageNav.getUrl(),
                                             true,
-                                            searchQuery);
+                                            null);
                                     if (!launchSuccess) {
                                         Log.e(TAG, "Failed to launch page: "
                                                 + firstPage.getPageName());
@@ -6067,7 +6072,14 @@ public class AppCMSPresenter {
         boolean result = false;
         Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
         if (!isNetworkConnected()) {
-            showDialog(DialogType.NETWORK, null, false, null); //TODO : Need to change Error Dialog for TV.
+            RetryCallBinder retryCallBinder = getRetryCallBinder(pagePath , action,
+                    filmTitle , extraData,
+                    null  , closeLauncher , null,BUTTON_ACTION);
+            Bundle bundle = new Bundle();
+            bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey) , retryCallBinder);
+            Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+            args.putExtra(currentActivity.getString(R.string.retryCallBundleKey) , bundle);
+            currentActivity.sendBroadcast(args);
         } else if (currentActivity != null && !loadingPage) {
             AppCMSActionType actionType = actionToActionTypeMap.get(action);
             if (actionType == null) {
