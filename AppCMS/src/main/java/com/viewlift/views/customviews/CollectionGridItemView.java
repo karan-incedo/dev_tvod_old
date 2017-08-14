@@ -242,6 +242,7 @@ public class CollectionGridItemView extends BaseView {
                             imageMetaData.append(System.currentTimeMillis() / 60000);
                             Glide.with(context)
                                     .load(imageUrl)
+                                    .signature(new StringSignature(imageMetaData.toString()))
                                     .transform(new BitmapTransformation(context) {
                                         @Override
                                         public String getId() {
