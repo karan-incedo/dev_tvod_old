@@ -540,7 +540,10 @@ public class AppCmsSearchFragment extends Fragment {
                     case PAGE_TRAY_TITLE_KEY:
                         customHeaderItem = null;
                         customHeaderItem = new CustomHeaderItem(context, trayIndex++,
-                                getString(R.string.app_cms_search_result_header , lastSearchedString.toUpperCase()));
+                                getResources().getQuantityString(R.plurals.app_cms_search_result_header ,
+                                        appCMSSearchResults.size(),
+                                        lastSearchedString.toUpperCase())
+                                );
                         customHeaderItem.setmIsCarousal(isCarousel);
                         customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
                         customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
