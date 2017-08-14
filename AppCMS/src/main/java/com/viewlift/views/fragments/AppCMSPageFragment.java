@@ -10,9 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
+import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
 import com.viewlift.views.components.DaggerAppCMSViewComponent;
 import com.viewlift.views.customviews.BaseView;
@@ -36,6 +38,7 @@ public class AppCMSPageFragment extends Fragment {
     private AppCMSPresenter appCMSPresenter;
     private AppCMSBinder appCMSBinder;
     private PageView pageView;
+    private String videoPageName = "Video Page";
 
     public interface OnPageCreation {
         void onSuccess(AppCMSBinder appCMSBinder);
@@ -107,6 +110,12 @@ public class AppCMSPageFragment extends Fragment {
         if (container != null) {
             container.removeAllViews();
         }
+        /**
+         * Here we are sending analytics for the screen views. Here we will log the events for
+         * the Screen which will come on AppCMSPageActivity.
+         */
+        sendFirebaseAnalyticsEvents(appCMSBinder);
+
         return pageView;
     }
 
@@ -122,6 +131,25 @@ public class AppCMSPageFragment extends Fragment {
             }
         }
     }
+
+    private void sendFirebaseAnalyticsEvents(AppCMSBinder appCMSVideoPageBinder) {
+        if (appCMSVideoPageBinder == null)
+            return;
+        Bundle bundle = new Bundle();
+        if (!appCMSVideoPageBinder.isUserLoggedIn()) {
+            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, appCMSVideoPageBinder.getScreenName());
+        } else {
+            if (appCMSVideoPageBinder.getScreenName().matches(videoPageName))
+                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, appCMSVideoPageBinder.getScreenName() + "-" + appCMSVideoPageBinder.getPageName());
+            else
+                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, appCMSVideoPageBinder.getScreenName());
+        }
+        //Logs an app event.
+        appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+        //Sets whether analytics collection is enabled for this app on this device.
+        appCMSPresenter.getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
+    }
+
 
     @Override
     public void onResume() {
