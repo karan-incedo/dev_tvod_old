@@ -276,4 +276,16 @@
     <string name="app_cms_download_limit_message">Download is only available for 30 days after it has been downloaded.</string>
     <string name="app_cms_download_unavailable_error_title">Download Unavailable</string>
 
+    <!-- search result values -->
+    <string name="app_cms_search_sharepref_key">app_cms_sharepref_result</string>
+    <string name="app_cms_search_value_size_key">app_cms_search_value_size</string>
+    <string name="app_cms_search_value_key">app_cms_search_value_</string>
+    <string name="app_cms_no_search_result">NO RESULTS FOR \"%1$s\"</string>
+    <plurals name="app_cms_search_result_header">
+        <item quantity="one" >RESULT FOR \"%1$s\"</item>
+        <item quantity="other" >RESULTS FOR \"%1$s\"</item>
+    </plurals>
+    <string name="retryCallBinderKey">retryCallBinderKey</string>
+    <string name="retryCallBundleKey">retryCallBundleKey</string>
+
 </resources>

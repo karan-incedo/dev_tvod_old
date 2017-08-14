@@ -3,9 +3,12 @@ package com.viewlift.tv.views.fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -23,12 +26,15 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
+import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 
@@ -50,6 +56,8 @@ public class AppCmsNavigationFragment extends Fragment {
     private int textColor = -1;
     private int bgColor = -1;
     private static OnNavigationVisibilityListener navigationVisibilityListener;
+    private Typeface extraBoldTypeFace , semiBoldTypeFace;
+    private Component extraBoldComp , semiBoldComp;
 
     public static AppCmsNavigationFragment newInstance(Context context,
                                                        OnNavigationVisibilityListener listener,
@@ -82,6 +90,7 @@ public class AppCmsNavigationFragment extends Fragment {
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
+
         mRecyclerView = (RecyclerView) view.findViewById(R.id.navRecylerView);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         NavigationAdapter navigationAdapter = new NavigationAdapter(getActivity(), textColor, bgColor,
@@ -93,6 +102,27 @@ public class AppCmsNavigationFragment extends Fragment {
         return view;
     }
 
+
+    private void setTypeFaceValue(AppCMSPresenter appCMSPresenter){
+
+        if(null == extraBoldTypeFace) {
+            extraBoldComp = new Component();
+            extraBoldComp.setFontFamily(getResources().getString(R.string.app_cms_page_font_family_key));
+            extraBoldComp.setFontWeight(getResources().getString(R.string.app_cms_page_font_extrabold_key));
+            extraBoldTypeFace = Utils.getTypeFace(getActivity(), appCMSPresenter.getJsonValueKeyMap()
+                    , extraBoldComp);
+        }
+
+        if(null == semiBoldTypeFace) {
+            semiBoldComp = new Component();
+            semiBoldComp.setFontFamily(getResources().getString(R.string.app_cms_page_font_family_key));
+            semiBoldComp.setFontWeight(getResources().getString(R.string.app_cms_page_font_semibold_key));
+            semiBoldTypeFace = Utils.getTypeFace(getActivity(), appCMSPresenter.getJsonValueKeyMap()
+                    , semiBoldComp);
+        }
+    }
+
+
     public void setFocusable(boolean hasFocus) {
         if (null != mRecyclerView) {
             if(hasFocus)
@@ -101,14 +131,14 @@ public class AppCmsNavigationFragment extends Fragment {
                 mRecyclerView.clearFocus();
         }
     }
-    public void setSelectorColor() {
+   /* public void setSelectorColor() {
         LayerDrawable layerDrawable = (LayerDrawable) ContextCompat.getDrawable(getActivity(), R.drawable.navigation_selector);
         GradientDrawable topshape = (GradientDrawable) layerDrawable.findDrawableByLayerId(R.id.navigationTopColor);
         GradientDrawable bottomShape = (GradientDrawable) layerDrawable.findDrawableByLayerId(R.id.navigationBottomColor);
         if(bgColor != -1)
             topshape.setColor(bgColor);
         bottomShape.setColor(ContextCompat.getColor(getActivity(), R.color.appcms_nav_background));
-    }
+    }*/
 
     private String mSelectedPageId = null;
     public void setSelectedPageId(String selectedPageId) {
@@ -144,7 +174,7 @@ public class AppCmsNavigationFragment extends Fragment {
             this.navigation = navigation;
             this.isuserLoggedIn = userLoggedIn;
             this.appCmsPresenter = appCMSPresenter;
-            setSelectorColor();
+          //  setSelectorColor();
         }
 
 
@@ -164,7 +194,7 @@ public class AppCmsNavigationFragment extends Fragment {
         @Override
         public void onBindViewHolder(NavItemHolder holder, final int position) {
             final NavigationPrimary primary = (NavigationPrimary)getItem(position);
-            holder.navItemView.setText(primary.getTitle().toString());
+            holder.navItemView.setText(primary.getTitle().toString().toUpperCase());
             Log.d("NavigationAdapter", primary.getTitle().toString());
 
 
@@ -182,16 +212,29 @@ public class AppCmsNavigationFragment extends Fragment {
             holder.navItemlayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+                    Log.d("Navigation Click = ", primary.getTitle().toString());
+
                     navigationVisibilityListener.showNavigation(false);
-                    if (!appCmsPresenter.navigateToTVPage(primary.getPageId(),
-                            primary.getTitle(),
-                            primary.getUrl(),
-                            false,
-                            null)) {
-                    }
+                    //getActivity().sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                    ((AppCmsHomeActivity)getActivity()).pageLoading(true);
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_search_label))){
+                                appCmsPresenter.openSearch();
+                                ((AppCmsHomeActivity)getActivity()).pageLoading(false);
+                            }else if (!appCmsPresenter.navigateToTVPage(primary.getPageId(),
+                                    primary.getTitle(),
+                                    primary.getUrl(),
+                                    false,
+                                    null)) {
+                            }
+                        }
+                    } , 500);
                 }
             });
-
         }
 
         @Override
@@ -208,21 +251,23 @@ public class AppCmsNavigationFragment extends Fragment {
 
             public NavItemHolder(View itemView) {
                 super(itemView);
+                setTypeFaceValue(appCmsPresenter);
                 navItemView = (TextView) itemView.findViewById(R.id.nav_item_label);
                 navItemlayout = (RelativeLayout) itemView.findViewById(R.id.nav_item_layout);
-                navItemView.setTextColor(textColor);
+                navItemlayout.setBackground(Utils.getNavigationSelector(mContext , appCmsPresenter));
+                navItemView.setTextColor(Color.parseColor(Utils.getTextColor(mContext,appCmsPresenter)));
+                navItemView.setTypeface(semiBoldTypeFace);
                 navItemlayout.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                     @Override
                     public void onFocusChange(View view, boolean hasFocus) {
 
                         String text = navItemView.getText().toString();
                         if (hasFocus) {
-                            navItemView.setText(text);
-                            navItemView.setTypeface(Typeface.DEFAULT_BOLD);
-
+                            navItemView.setText(text.toUpperCase());
+                            navItemView.setTypeface(extraBoldTypeFace);
                         } else {
-                            navItemView.setText(text);
-                            navItemView.setTypeface(Typeface.DEFAULT);
+                            navItemView.setText(text.toUpperCase());
+                            navItemView.setTypeface(semiBoldTypeFace);
                         }
                     }
                 });

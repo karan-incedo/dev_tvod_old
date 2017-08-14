@@ -2,6 +2,10 @@ package com.viewlift.models.data.appcms.search;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.Gist;
+import com.viewlift.models.data.appcms.api.StreamingInfo;
+import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.vimeo.stag.UseStag;
 
 import java.util.List;
@@ -523,5 +527,25 @@ public class AppCMSSearchResult {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+
+    public ContentDatum getContent(){
+        ContentDatum contentDatum = new ContentDatum();
+        Gist gist = new Gist();
+        gist.setTitle(getTitle());
+        gist.setPosterImageUrl(getPosterImage().getUrl());
+        gist.setPermalink(getPermalink());
+        gist.setId(getId());
+
+        VideoAssets videoAssets = new VideoAssets();
+        videoAssets.setHls(getVideoAssets().get(0).getHls());
+        StreamingInfo streamingInfo = new StreamingInfo();
+        streamingInfo.setVideoAssets(videoAssets);
+
+
+        contentDatum.setStreamingInfo(streamingInfo);
+        contentDatum.setGist(gist);
+        return contentDatum;
     }
 }

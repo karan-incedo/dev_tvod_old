@@ -12,6 +12,7 @@ import java.util.Map;
 
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.models.network.rest.AppCMSSearchCall;
 
 /**
  * Created by viewlift on 5/4/17.
@@ -37,6 +38,16 @@ public class AppCMSBinder extends Binder {
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private Uri searchQuery;
 
+    public AppCMSSearchCall getAppCMSSearchCall() {
+        return appCMSSearchCall;
+    }
+
+    public void setAppCMSSearchCall(AppCMSSearchCall appCMSSearchCall) {
+        this.appCMSSearchCall = appCMSSearchCall;
+    }
+
+    private AppCMSSearchCall appCMSSearchCall;
+
     public AppCMSBinder(AppCMSMain appCMSMain,
                         AppCMSPageUI appCMSPageUI,
                         AppCMSPageAPI appCMSPageAPI,
@@ -54,7 +65,8 @@ public class AppCMSBinder extends Binder {
                         boolean userSubscribed,
                         AppCMSPresenter.ExtraScreenType extraScreenType,
                         Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                        Uri searchQuery) {
+                        Uri searchQuery ,
+                        AppCMSSearchCall appCMSSearchCall) {
         this.appCMSMain = appCMSMain;
         this.appCMSPageUI = appCMSPageUI;
         this.appCMSPageAPI = appCMSPageAPI;
@@ -73,6 +85,7 @@ public class AppCMSBinder extends Binder {
         this.userSubscribed = userSubscribed;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.searchQuery = searchQuery;
+        this.appCMSSearchCall = appCMSSearchCall;
     }
 
     public AppCMSMain getAppCMSMain() {

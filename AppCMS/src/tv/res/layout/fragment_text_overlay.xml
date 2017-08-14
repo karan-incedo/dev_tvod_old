@@ -4,7 +4,7 @@
     android:id="@+id/fragment_text_overlay"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark"
+    android:background="@color/dialog_bg_color"
     android:clickable="true"
     android:focusable="true"
     android:layout_gravity="center"
@@ -14,8 +14,8 @@
     <RelativeLayout
         android:id="@+id/top_layout"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginTop="20dp"
+        android:layout_height="125dp"
+        android:layout_marginTop="41dp"
         >
 
         <TextView
@@ -44,37 +44,34 @@
                 android:layout_centerHorizontal="true"
                 android:textSize="15sp"
                 android:textColor="#ffffff"
-                android:lineSpacingExtra="4.3sp"
-                android:layout_marginLeft="28dp"
-                android:layout_marginRight="28dp"
-                android:text=""
+                android:layout_marginLeft="42dp"
+                android:layout_marginRight="42dp"
                 android:focusable="true"
                 android:nextFocusDown="@+id/btn_close"
                 android:nextFocusLeft="@null"
                 android:nextFocusRight="@null"
                 android:nextFocusUp="@null"
-                android:layout_marginBottom="100dp"/>
+                />
         </ScrollView>
 
     </RelativeLayout>
 
     <Button
         android:id="@+id/btn_close"
-        android:layout_width="85dp"
-        android:layout_height="20dp"
+        android:layout_width="128dp"
+        android:layout_height="31dp"
         android:layout_below="@+id/top_layout"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="30dp"
-        android:layout_alignParentBottom="true"
+        android:layout_marginTop="47dp"
+        android:layout_marginBottom="40dp"
         android:textSize="12sp"
-        android:textColor="#ffffff"
-        android:text="Close"
+        android:textColor="@color/btn_color_with_opacity"
+        android:text="@string/app_cms_close_alert_dialog_button_text"
         android:gravity="center"
-        android:background="@color/heighlight_color"
         android:nextFocusDown="@null"
         android:nextFocusLeft="@null"
         android:nextFocusRight="@null"
+        android:letterSpacing="0.12"
         android:nextFocusUp="@+id/text_overlay_description" />
 
 </RelativeLayout>

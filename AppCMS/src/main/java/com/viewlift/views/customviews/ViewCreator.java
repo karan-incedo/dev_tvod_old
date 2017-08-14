@@ -1304,11 +1304,11 @@ public class ViewCreator {
                 }
 
                 if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand()
-                        .getGeneral().getTextColor())) {
+                        .getCta().getPrimary().getTextColor())) {
                     if (componentViewResult.componentView instanceof TextView) {
                         ((TextView) componentViewResult.componentView).setTextColor(
                                 Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain()
-                                        .getBrand().getGeneral().getTextColor())));
+                                        .getBrand().getCta().getPrimary().getTextColor())));
                     }
                 }
 
@@ -1321,7 +1321,9 @@ public class ViewCreator {
                             appCMSPresenter.getAppCMSMain().getSocialMedia().getGooglePlus().isSignin()) {
                         applyBorderToComponent(context, componentViewResult.componentView, component,
                                 ContextCompat.getColor(context, R.color.googleRed));
-                    } else {
+                    } else if (appCMSPresenter.getAppCMSMain().getSocialMedia() == null ||
+                            appCMSPresenter.getAppCMSMain().getSocialMedia().getGooglePlus() == null ||
+                            !appCMSPresenter.getAppCMSMain().getSocialMedia().getGooglePlus().isSignin()) {
                         componentViewResult.componentView.setVisibility(View.GONE);
                     }
                 } else if (jsonValueKeyMap.get(moduleAPI.getModuleType())
@@ -2067,6 +2069,7 @@ public class ViewCreator {
                                     .load(component.getImageName())
                                     .into((ImageView) componentViewResult.componentView);
                         }
+                        ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_CENTER);
                 }
                 break;
 

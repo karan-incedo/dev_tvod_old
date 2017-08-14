@@ -60,7 +60,6 @@ public class AppCMSTVPageViewModule {
     }
 
     @Provides
-    @Singleton
     @Nullable
     public TVPageView providesViewFromPage(TVViewCreator viewCreator) {
         return viewCreator.generatePage(context,
