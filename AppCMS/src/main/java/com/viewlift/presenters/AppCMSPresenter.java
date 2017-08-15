@@ -3984,7 +3984,7 @@ public class AppCMSPresenter {
             }
 
             navigateToHomeToRefresh = true;
-            launchNavigationPage();
+            navigateToHomePage();
 
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
             AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser(currentActivity));
