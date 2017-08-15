@@ -248,6 +248,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_plan_processor_value_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_download_quality_value_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_edit_profile_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_EDIT_PROFILE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_cancel_subscription_key),

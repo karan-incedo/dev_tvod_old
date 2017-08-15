@@ -127,6 +127,7 @@
     <string name="app_cms_page_upgrade_subscribe_button_text">SUBSCRIBE</string>
     <string name="app_cms_page_background_image_view_key">backgroundImage</string>
     <string name="app_cms_page_background_image_type_type">imageView</string>
+    <string name="app_cms_page_settings_download_quality_value_key">downloadQualityValue</string>
 
     <string name="app_cms_page_history_module_key">AC History 01</string>
     <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>

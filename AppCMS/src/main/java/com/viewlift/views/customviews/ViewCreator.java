@@ -599,6 +599,8 @@ public class ViewCreator {
                                                 } else {
                                                     ((TextView) settingsView).setText("");
                                                 }
+                                            } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY) {
+                                                ((TextView) settingsView).setText(appCMSPresenter.getUserDownloadQualityPref(context));
                                             } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
                                                 if (paymentProcessor == null &&
                                                         TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionId(context))) {
@@ -2016,6 +2018,10 @@ public class ViewCreator {
                                 ((TextView) componentViewResult.componentView).setText("");
                             }
 
+                            break;
+
+                        case PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY:
+                            ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getUserDownloadQualityPref(context));
                             break;
 
                         case PAGE_SETTINGS_TITLE_KEY:

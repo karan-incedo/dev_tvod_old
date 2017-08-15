@@ -5097,6 +5097,12 @@ public class AppCMSPresenter {
                                     sendCloseOthersAction(null, true);
                                     cancelInternalEvents();
                                     restartInternalEvents();
+
+                                    if (TextUtils.isEmpty(getUserDownloadQualityPref(currentActivity))) {
+                                        setUserDownloadQualityPref(currentActivity,
+                                                currentActivity.getString(R.string.app_cms_default_download_quality));
+                                    }
+
                                     NavigationPrimary homePageNavItem = findHomePageNavItem();
                                     if (homePageNavItem != null) {
                                         cancelInternalEvents();
