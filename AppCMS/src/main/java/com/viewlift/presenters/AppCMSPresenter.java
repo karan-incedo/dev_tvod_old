@@ -2840,13 +2840,15 @@ public class AppCMSPresenter {
                             try {
                                 InAppPurchaseData inAppPurchaseData = gson.fromJson(subscribedItemList.get(i),
                                         InAppPurchaseData.class);
-                                if (inAppPurchaseData.isAutoRenewing() && showErrorDialogIfSubscriptionExists) {
-                                    showDialog(DialogType.EXISTING_SUBSCRIPTION,
-                                            currentActivity.getString(R.string.app_cms_existing_subscription_error_message),
-                                            false,
-                                            () -> {
-                                                sendCloseOthersAction(null, true);
-                                            });
+                                if (inAppPurchaseData.isAutoRenewing()) {
+                                    if (showErrorDialogIfSubscriptionExists) {
+                                        showDialog(DialogType.EXISTING_SUBSCRIPTION,
+                                                currentActivity.getString(R.string.app_cms_existing_subscription_error_message),
+                                                false,
+                                                () -> {
+                                                    sendCloseOthersAction(null, true);
+                                                });
+                                    }
                                     setExistingGooglePlaySubscriptionId(currentActivity, inAppPurchaseData.getProductId());
                                 }
                             } catch (Exception e) {
