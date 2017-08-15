@@ -360,7 +360,7 @@ public class CollectionGridItemView extends BaseView {
                                         .setRegion(data.getPlanDetails().get(planIndex).getCountryCode())
                                         .build();
                             } catch (Exception e) {
-                                Log.e(TAG, "Could not parse locale: " + locale.getCountry());
+                                Log.e(TAG, "Could not parse locale");
                             }
                         } else {
                             locale = getContext().getResources().getConfiguration().locale;
