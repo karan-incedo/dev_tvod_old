@@ -935,7 +935,8 @@ public class AppCMSPresenter {
                         if (extraData != null && extraData.length > 0) {
                             String key = extraData[0];
                             if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
-                                if (getActiveSubscriptionProcessor(currentActivity) != null) {
+                                if (getActiveSubscriptionProcessor(currentActivity) != null ||
+                                        !TextUtils.isEmpty(getExistingGooglePlaySubscriptionId(currentActivity))) {
                                     if (getActiveSubscriptionProcessor(currentActivity)
                                             .equalsIgnoreCase(currentActivity
                                                     .getString(R.string.subscription_web_payment_processor_friendly))) {
@@ -945,7 +946,8 @@ public class AppCMSPresenter {
                                     }
                                 }
                             } else if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                                if (getActiveSubscriptionProcessor(currentActivity) != null) {
+                                if (getActiveSubscriptionProcessor(currentActivity) != null ||
+                                        !TextUtils.isEmpty(getExistingGooglePlaySubscriptionId(currentActivity))) {
                                     if (getActiveSubscriptionProcessor(currentActivity)
                                             .equalsIgnoreCase(currentActivity
                                                     .getString(R.string.subscription_web_payment_processor_friendly))) {
