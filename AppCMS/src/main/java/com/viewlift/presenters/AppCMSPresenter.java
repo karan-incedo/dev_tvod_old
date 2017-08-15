@@ -4648,6 +4648,49 @@ public class AppCMSPresenter {
                                     subscriptionRequest.getPlanId(),
                                     subscriptionRequest.getCurrencyCode());
                         }
+                        setActiveSubscriptionSku(currentActivity, skuToPurchase);
+                        setActiveSubscriptionId(currentActivity, planToPurchase);
+                        setActiveSubscriptionCurrency(currentActivity, currencyOfPlanToPurchase);
+                        setActiveSubscriptionPlanName(currentActivity, planToPurchaseName);
+                        setActiveSubscriptionPrice(currentActivity, String.valueOf(planToPurchasePrice));
+                        skuToPurchase = null;
+                        planToPurchase = null;
+                        currencyOfPlanToPurchase = null;
+                        planToPurchaseName = null;
+                        planToPurchasePrice = 0.0f;
+
+                        if (launchType == LaunchType.SUBSCRIBE) {
+                            launchType = LaunchType.LOGIN_AND_SIGNUP;
+                            String url = currentActivity.getString(R.string.app_cms_signin_api_url,
+                                    appCMSMain.getApiBaseUrl(),
+                                    appCMSMain.getInternalName());
+                            startLoginAsyncTask(url,
+                                    subscriptionUserEmail,
+                                    subscriptionUserPassword,
+                                    false,
+                                    false,
+                                    true);
+                        }
+                        if (signupFromFacebook) {
+                            setFacebookAccessToken(currentActivity,
+                                    facebookAccessToken,
+                                    facebookUserId,
+                                    facebookUsername,
+                                    facebookEmail);
+                        } else if (isSignupFromGoogle) {
+                            setGoogleAccessToken(currentActivity,
+                                    googleAccessToken,
+                                    googleUserId,
+                                    googleUsername,
+                                    googleEmail);
+                        }
+                        subscriptionUserEmail = null;
+                        subscriptionUserPassword = null;
+                        facebookAccessToken = null;
+                        facebookUserId = null;
+
+                        googleAccessToken = null;
+                        googleUserId = null;
                     },
                     planResult -> {
 
@@ -4655,49 +4698,6 @@ public class AppCMSPresenter {
         } catch (IOException e) {
             Log.e(TAG, "Failed to update user subscription status");
         }
-
-        setActiveSubscriptionSku(currentActivity, skuToPurchase);
-        setActiveSubscriptionId(currentActivity, planToPurchase);
-        setActiveSubscriptionCurrency(currentActivity, currencyOfPlanToPurchase);
-        setActiveSubscriptionPlanName(currentActivity, planToPurchaseName);
-        setActiveSubscriptionPrice(currentActivity, String.valueOf(planToPurchasePrice));
-        skuToPurchase = null;
-        planToPurchase = null;
-        currencyOfPlanToPurchase = null;
-        planToPurchaseName = null;
-        planToPurchasePrice = 0.0f;
-
-        if (launchType == LaunchType.SUBSCRIBE) {
-            launchType = LaunchType.LOGIN_AND_SIGNUP;
-            String url = currentActivity.getString(R.string.app_cms_signin_api_url,
-                    appCMSMain.getApiBaseUrl(),
-                    appCMSMain.getInternalName());
-            startLoginAsyncTask(url,
-                    subscriptionUserEmail,
-                    subscriptionUserPassword,
-                    false,
-                    false);
-        }
-        if (signupFromFacebook) {
-            setFacebookAccessToken(currentActivity,
-                    facebookAccessToken,
-                    facebookUserId,
-                    facebookUsername,
-                    facebookEmail);
-        } else if (isSignupFromGoogle) {
-            setGoogleAccessToken(currentActivity,
-                    googleAccessToken,
-                    googleUserId,
-                    googleUsername,
-                    googleEmail);
-        }
-        subscriptionUserEmail = null;
-        subscriptionUserPassword = null;
-        facebookAccessToken = null;
-        facebookUserId = null;
-
-        googleAccessToken = null;
-        googleUserId = null;
     }
 
     public List<SubscriptionPlan> availableUpgradesForUser(String userId) {
@@ -4771,7 +4771,8 @@ public class AppCMSPresenter {
                         email,
                         password,
                         true,
-                        launchType == LaunchType.SUBSCRIBE);
+                        launchType == LaunchType.SUBSCRIBE,
+                        false);
             }
         }
     }
@@ -4975,6 +4976,7 @@ public class AppCMSPresenter {
                     email,
                     password,
                     false,
+                    false,
                     false);
         }
     }
@@ -5027,7 +5029,8 @@ public class AppCMSPresenter {
                                      String email,
                                      String password,
                                      boolean signup,
-                                     boolean followWithSubscription) {
+                                     boolean followWithSubscription,
+                                     boolean suppressErrorMessages) {
         PostAppCMSLoginRequestAsyncTask.Params params = new PostAppCMSLoginRequestAsyncTask.Params
                 .Builder()
                 .url(url)
@@ -5039,12 +5042,14 @@ public class AppCMSPresenter {
                     if (signInResponse == null) {
                         // Show log error
                         Log.e(TAG, "Email and password are not valid.");
-                        if (signup) {
-                            showDialog(DialogType.SIGNUP, currentActivity.getString(
-                                    R.string.app_cms_error_user_already_exists), false, null);
-                        } else {
-                            showDialog(DialogType.SIGNIN, currentActivity.getString(
-                                    R.string.app_cms_error_email_password), false, null);
+                        if (!suppressErrorMessages) {
+                            if (signup) {
+                                showDialog(DialogType.SIGNUP, currentActivity.getString(
+                                        R.string.app_cms_error_user_already_exists), false, null);
+                            } else {
+                                showDialog(DialogType.SIGNIN, currentActivity.getString(
+                                        R.string.app_cms_error_email_password), false, null);
+                            }
                         }
                     } else {
                         setRefreshToken(currentActivity, signInResponse.getRefreshToken());
