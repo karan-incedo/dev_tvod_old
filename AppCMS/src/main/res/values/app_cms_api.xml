@@ -119,10 +119,12 @@
     <string name="app_cms_page_settings_name_value_key">nameValue</string>
     <string name="app_cms_page_settings_email_value_key">emailValue</string>
     <string name="app_cms_page_settings_plan_value_key">planValue</string>
+    <string name="app_cms_page_settings_plan_processor_title_key">paymentProcess</string>
     <string name="app_cms_page_settings_plan_processor_value_key">paymentProcessorValue</string>
     <string name="app_cms_page_edit_profile_key">Edit Profile</string>
     <string name="app_cms_page_cancel_subscription_key">Cancel Subscription</string>
     <string name="app_cms_page_upgrade_subscription_key">Upgrade Subscription</string>
+    <string name="app_cms_page_upgrade_subscribe_button_text">SUBSCRIBE</string>
     <string name="app_cms_page_background_image_view_key">backgroundImage</string>
     <string name="app_cms_page_background_image_type_type">imageView</string>
 
@@ -321,5 +323,6 @@
     <string name="subscription_android_payment_processor_friendly">Google Play</string>
     <string name="subscription_web_payment_processor_friendly">Stripe</string>
     <string name="subscription_no_payment_processor_friendly">None</string>
+    <string name="subscription_unsubscribed_plan_value">Unsubscribed</string>
     <string name="subscription_unknown_payment_processor_friendly">Unknown</string>
 </resources>

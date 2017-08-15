@@ -30,7 +30,6 @@ import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -64,13 +63,12 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.viewlift.Manifest;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenResponse;
 import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
+import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
@@ -102,7 +100,6 @@ import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
-import com.viewlift.models.data.appcms.ui.main.Content;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
@@ -149,7 +146,6 @@ import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
-import com.viewlift.models.network.utility.MainUtils;
 import com.viewlift.views.activity.AppCMSDownloadQualityActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
@@ -167,20 +163,18 @@ import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 
-import org.w3c.dom.Text;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -193,7 +187,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -253,7 +246,9 @@ public class AppCMSPresenter {
     private static final String ACTIVE_SUBSCRIPTION_PRICE_NAME = "active_subscription_plan_price_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PROCESSOR_NAME = "active_subscription_payment_processor_key";
     private static final String IS_USER_SUBSCRIBED = "is_user_subscribed_pref_key";
-    private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID = "existing_google_play_subscription_id_key";
+    private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_DESCRIPTION = "existing_google_play_subscription_title_pref_key";
+    private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID = "existing_google_play_subscription_id_key_pref_key";
+    private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_PRICE = "existing_google_play_subscription_price_pref_key";
 
     private static final String USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME = "user_download_quality_pref";
     private static final String USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME = "user_download_sd_card_pref";
@@ -778,9 +773,7 @@ public class AppCMSPresenter {
                                                 long timeAfterDownloadMsec = System.currentTimeMillis() -
                                                         downloadedVideo.getDownloadDate();
 
-                                                timeAfterDownloadMsec /= (1000 * 60 * 60* 24);
-
-                                                if (timeAfterDownloadMsec >= 30) {
+                                                if ((timeAfterDownloadMsec / (1000 * 60 * 60* 24)) >= 30) {
                                                     showDialog(DialogType.DOWNLOAD_NOT_AVAILABLE,
                                                             currentActivity.getString(R.string.app_cms_download_limit_message),
                                                             false,
@@ -935,26 +928,29 @@ public class AppCMSPresenter {
                         if (extraData != null && extraData.length > 0) {
                             String key = extraData[0];
                             if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
-                                if (getActiveSubscriptionProcessor(currentActivity) != null ||
-                                        !TextUtils.isEmpty(getExistingGooglePlaySubscriptionId(currentActivity))) {
-                                    if (getActiveSubscriptionProcessor(currentActivity)
-                                            .equalsIgnoreCase(currentActivity
-                                                    .getString(R.string.subscription_web_payment_processor_friendly))) {
-                                        showEntitlementDialog(DialogType.CANNOT_UPGRADE_SUBSCRIPTION);
+                                String paymentProcessor = getActiveSubscriptionProcessor(currentActivity);
+                                if ((!TextUtils.isEmpty(paymentProcessor) &&
+                                        (!paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
+                                        !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)))) &&
+                                        !TextUtils.isEmpty(getExistingGooglePlaySubscriptionId(currentActivity)) &&
+                                        !upgradesAvailableForUser(getLoggedInUser(currentActivity))) {
+                                    if (!upgradesAvailableForUser(getLoggedInUser(currentActivity))) {
+                                        showEntitlementDialog(DialogType.UPGRADE_UNAVAILABLE);
                                     } else {
-                                        navigateToSubscriptionPlansPage(null, null);
+                                        showEntitlementDialog(DialogType.CANNOT_UPGRADE_SUBSCRIPTION);
                                     }
+                                } else {
+                                    navigateToSubscriptionPlansPage(null, null);
                                 }
                             } else if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                                if (getActiveSubscriptionProcessor(currentActivity) != null ||
-                                        !TextUtils.isEmpty(getExistingGooglePlaySubscriptionId(currentActivity))) {
-                                    if (getActiveSubscriptionProcessor(currentActivity)
-                                            .equalsIgnoreCase(currentActivity
-                                                    .getString(R.string.subscription_web_payment_processor_friendly))) {
-                                        showEntitlementDialog(DialogType.CANNOT_CANCEL_SUBSCRIPTION);
-                                    } else {
-                                        sendSubscriptionCancellation();
-                                    }
+                                String paymentProcessor = getActiveSubscriptionProcessor(currentActivity);
+                                if ((!TextUtils.isEmpty(paymentProcessor) &&
+                                        (!paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
+                                        !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)))) ||
+                                        TextUtils.isEmpty(getExistingGooglePlaySubscriptionId(currentActivity))) {
+                                    showEntitlementDialog(DialogType.CANNOT_CANCEL_SUBSCRIPTION);
+                                } else {
+                                    sendSubscriptionCancellation();
                                 }
                             }
                         }
@@ -1540,9 +1536,10 @@ public class AppCMSPresenter {
     public void sendSubscriptionCancellation() {
         if (currentActivity != null) {
             String paymentProcessor = getActiveSubscriptionProcessor(currentActivity);
-            if (!TextUtils.isEmpty(paymentProcessor) &&
+            if (!TextUtils.isEmpty(getExistingGooglePlaySubscriptionId(currentActivity)) ||
+                    (!TextUtils.isEmpty(paymentProcessor) &&
                     (paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
-                    paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)))) {
+                    paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) {
                 Intent googlePlayStoreCancelIntent = new Intent(Intent.ACTION_VIEW,
                         Uri.parse(currentActivity.getString(R.string.google_play_store_subscriptions_url)));
                 currentActivity.startActivity(googlePlayStoreCancelIntent);
@@ -1579,7 +1576,7 @@ public class AppCMSPresenter {
                                         AppsFlyerUtils.subscriptionEvent(currentActivity,
                                                 false,
                                                 currentActivity.getString(R.string.app_cms_appsflyer_dev_key),
-                                                String.valueOf(getActiveSubscriptionPrice(currentActivity)),
+                                                getActiveSubscriptionPrice(currentActivity),
                                                 subscriptionRequest.getPlanId(),
                                                 subscriptionRequest.getCurrencyCode());
                                     },
@@ -2831,18 +2828,22 @@ public class AppCMSPresenter {
             Bundle activeSubs = null;
             try {
                 if (inAppBillingService != null) {
+
                     activeSubs = inAppBillingService.getPurchases(3,
                             currentActivity.getPackageName(),
                             "subs",
                             null);
                     ArrayList<String> subscribedItemList = activeSubs.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
                     if (subscribedItemList != null && subscribedItemList.size() > 0) {
+                        boolean subscriptionPresent = false;
                         for (int i = 0; i < subscribedItemList.size(); i++) {
                             try {
                                 InAppPurchaseData inAppPurchaseData = gson.fromJson(subscribedItemList.get(i),
                                         InAppPurchaseData.class);
                                 if (inAppPurchaseData.isAutoRenewing()) {
-                                    if (showErrorDialogIfSubscriptionExists) {
+                                    subscriptionPresent = true;
+                                    if (showErrorDialogIfSubscriptionExists &&
+                                            !isUserLoggedIn(currentActivity)) {
                                         showDialog(DialogType.EXISTING_SUBSCRIPTION,
                                                 currentActivity.getString(R.string.app_cms_existing_subscription_error_message),
                                                 false,
@@ -2850,11 +2851,36 @@ public class AppCMSPresenter {
                                                     sendCloseOthersAction(null, true);
                                                 });
                                     }
+
+                                    ArrayList<String> skuList = new ArrayList<>();
+                                    skuList.add(inAppPurchaseData.getProductId());
+                                    Bundle skuListBundle = new Bundle();
+                                    skuListBundle.putStringArrayList("ITEM_ID_LIST", skuList);
+                                    Bundle skuListBundleResult = inAppBillingService.getSkuDetails(3,
+                                            currentActivity.getPackageName(),
+                                            "subs",
+                                            skuListBundle);
+                                    ArrayList<String> skuDetailsList =
+                                            skuListBundleResult.getStringArrayList("DETAILS_LIST");
+
+                                    if (skuDetailsList != null && skuDetailsList.size() > 0) {
+                                        SkuDetails skuDetails = gson.fromJson(skuDetailsList.get(0),
+                                                SkuDetails.class);
+                                        setExistingGooglePlaySubscriptionDescription(currentActivity, skuDetails.getDescription());
+
+                                        setExistingGooglePlaySubscriptionPrice(currentActivity, skuDetails.getPrice());
+                                    }
+
                                     setExistingGooglePlaySubscriptionId(currentActivity, inAppPurchaseData.getProductId());
                                 }
                             } catch (Exception e) {
                                 Log.e(TAG, "Error parsing Google Play subscription data: " + e.toString());
                             }
+                        }
+                        if (!subscriptionPresent) {
+                            setExistingGooglePlaySubscriptionDescription(currentActivity, null);
+                            setExistingGooglePlaySubscriptionPrice(currentActivity, null);
+                            setExistingGooglePlaySubscriptionId(currentActivity, null);
                         }
                     }
                 }
@@ -3724,6 +3750,69 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public String getExistingGooglePlaySubscriptionDescription(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_DESCRIPTION,
+                    0);
+            return sharedPrefs.getString(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_DESCRIPTION, null);
+        }
+        return null;
+    }
+
+    public boolean setExistingGooglePlaySubscriptionDescription(Context context,
+                                                                String existingGooglePlaySubscriptionDescription) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_DESCRIPTION, 0);
+            return sharedPrefs.edit().putString(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_DESCRIPTION,
+                    existingGooglePlaySubscriptionDescription).commit();
+        }
+        return false;
+    }
+
+    public double parseActiveSubscriptionPrice(Context context) {
+        try {
+            String activeSubscriptionPrice = getActiveSubscriptionPrice(context);
+            if (!TextUtils.isEmpty(activeSubscriptionPrice)) {
+                return NumberFormat.getCurrencyInstance().parse(activeSubscriptionPrice).doubleValue();
+            }
+
+        } catch (NumberFormatException | ParseException | NullPointerException e) {
+            Log.e(TAG, "Error parsing price from Google Play subscription data: " + e.toString());
+        }
+        return 0.0;
+    }
+
+    public double parseExistingGooglePlaySubscriptionPrice(Context context) {
+        try {
+            String existingGooglePlaySubscriptionPrice = getExistingGooglePlaySubscriptionPrice(context);
+            if (!TextUtils.isEmpty(existingGooglePlaySubscriptionPrice)) {
+                return NumberFormat.getCurrencyInstance().parse(existingGooglePlaySubscriptionPrice).doubleValue();
+            }
+
+        } catch (NumberFormatException | ParseException | NullPointerException e) {
+            Log.e(TAG, "Error parsing price from Google Play subscription data: " + e.toString());
+        }
+        return 0.0;
+    }
+
+    public String getExistingGooglePlaySubscriptionPrice(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_PRICE, 0);
+            return sharedPrefs.getString(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_PRICE, null);
+        }
+        return null;
+    }
+
+    public boolean setExistingGooglePlaySubscriptionPrice(Context context,
+                                                          String existingGooglePlaySubscriptionPrice) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_PRICE, 0);
+            return sharedPrefs.edit().putString(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_PRICE,
+                    existingGooglePlaySubscriptionPrice).commit();
+        }
+        return false;
+    }
+
     public String getExistingGooglePlaySubscriptionId(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID, 0);
@@ -3805,18 +3894,18 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public float getActiveSubscriptionPrice(Context context) {
+    public String getActiveSubscriptionPrice(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(ACTIVE_SUBSCRIPTION_PRICE_NAME, 0);
-            return sharedPrefs.getFloat(ACTIVE_SUBSCRIPTION_PRICE_NAME, 0.0f);
+            return sharedPrefs.getString(ACTIVE_SUBSCRIPTION_PRICE_NAME, null);
         }
-        return 0.0f;
+        return null;
     }
 
-    private boolean setActiveSubscriptionPrice(Context context, float subscriptionPrice) {
+    private boolean setActiveSubscriptionPrice(Context context, String subscriptionPrice) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(ACTIVE_SUBSCRIPTION_PRICE_NAME, 0);
-            return sharedPrefs.edit().putFloat(ACTIVE_SUBSCRIPTION_PRICE_NAME, subscriptionPrice).commit();
+            return sharedPrefs.edit().putString(ACTIVE_SUBSCRIPTION_PRICE_NAME, subscriptionPrice).commit();
         }
         return false;
     }
@@ -3876,7 +3965,7 @@ public class AppCMSPresenter {
             setLoggedInUser(currentActivity, null);
             setLoggedInUserName(currentActivity, null);
             setLoggedInUserEmail(currentActivity, null);
-            setActiveSubscriptionPrice(currentActivity, 0.0f);
+            setActiveSubscriptionPrice(currentActivity, null);
             setActiveSubscriptionId(currentActivity, null);
             setActiveSubscriptionSku(currentActivity, null);
             setActiveSubscriptionPlanName(currentActivity, null);
@@ -4140,6 +4229,11 @@ public class AppCMSPresenter {
                 message = currentActivity.getString(R.string.app_cms_subscription_upgrade_for_web_user_dialog);
             }
 
+            if (dialogType == DialogType.UPGRADE_UNAVAILABLE) {
+                title = currentActivity.getString(R.string.app_cms_subscription_upgrade_unavailable_title);
+                message = currentActivity.getString(R.string.app_cms_subscription_upgrade_unavailable_user_dialog);
+            }
+
             if (dialogType == DialogType.CANNOT_CANCEL_SUBSCRIPTION) {
                 title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
                 message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_web_user_dialog);
@@ -4182,7 +4276,8 @@ public class AppCMSPresenter {
                             dialog.dismiss();
                             navigateToSubscriptionPlansPage(null, null);
                         });
-            } else if (dialogType == DialogType.CANNOT_UPGRADE_SUBSCRIPTION) {
+            } else if (dialogType == DialogType.CANNOT_UPGRADE_SUBSCRIPTION ||
+                    dialogType == DialogType.UPGRADE_UNAVAILABLE) {
                 builder.setPositiveButton("OK", null);
             } else if (dialogType == DialogType.CANNOT_CANCEL_SUBSCRIPTION) {
                 builder.setPositiveButton("OK", null);
@@ -4565,7 +4660,7 @@ public class AppCMSPresenter {
         setActiveSubscriptionId(currentActivity, planToPurchase);
         setActiveSubscriptionCurrency(currentActivity, currencyOfPlanToPurchase);
         setActiveSubscriptionPlanName(currentActivity, planToPurchaseName);
-        setActiveSubscriptionPrice(currentActivity, planToPurchasePrice);
+        setActiveSubscriptionPrice(currentActivity, String.valueOf(planToPurchasePrice));
         skuToPurchase = null;
         planToPurchase = null;
         currencyOfPlanToPurchase = null;
@@ -4617,7 +4712,7 @@ public class AppCMSPresenter {
     public boolean upgradesAvailableForUser(String userId) {
         List<SubscriptionPlan> availableUpgradesForUser =
                 availableUpgradesForUser(userId);
-        float activeSubscriptionPrice = getActiveSubscriptionPrice(currentActivity);
+        double activeSubscriptionPrice = parseActiveSubscriptionPrice(currentActivity);
         if (availableUpgradesForUser != null && activeSubscriptionPrice != 0.0f) {
             for (int i = 0; i < availableUpgradesForUser.size(); i++) {
                 if (activeSubscriptionPrice <
@@ -4743,14 +4838,7 @@ public class AppCMSPresenter {
                                                     subscriptionPlan.setSku(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
                                                     userSubscriptionPlan.setSubscriptionPlan(subscriptionPlan);
 
-                                                    RealmList<SubscriptionPlan> availableUpgradeSubscriptionPlans =
-                                                            new RealmList<>();
-                                                    RealmResults<SubscriptionPlan> allAvailableSubscriptionPlans =
-                                                            realmController.getAllSubscriptionPlans();
-                                                    if (allAvailableSubscriptionPlans != null) {
-                                                        availableUpgradeSubscriptionPlans.addAll(allAvailableSubscriptionPlans);
-                                                    }
-                                                    userSubscriptionPlan.setAvailableUpgrades(availableUpgradeSubscriptionPlans);
+                                                    userSubscriptionPlan.setAvailableUpgrades(getAvailableUpgradePlans(realmController.getAllSubscriptionPlans()));
                                                     realmController.addUserSubscriptionPlan(userSubscriptionPlan);
 
                                                     setActiveSubscriptionSku(currentActivity,
@@ -4762,9 +4850,9 @@ public class AppCMSPresenter {
                                                                     .get(0).getRecurringPaymentCurrencyCode());
                                                     setActiveSubscriptionPlanName(currentActivity,
                                                             appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
-                                                    setActiveSubscriptionPrice(currentActivity, (float)
-                                                            appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()
-                                                                    .get(0).getRecurringPaymentAmount());
+                                                    setActiveSubscriptionPrice(currentActivity,
+                                                            String.valueOf(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()
+                                                                    .get(0).getRecurringPaymentAmount()));
                                                     setActiveSubscriptionProcessor(currentActivity,
                                                             appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler());
                                                 }
@@ -4836,14 +4924,7 @@ public class AppCMSPresenter {
                                     subscriptionPlan.setSku(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
                                     userSubscriptionPlan.setSubscriptionPlan(subscriptionPlan);
 
-                                    RealmList<SubscriptionPlan> availableUpgradeSubscriptionPlans =
-                                            new RealmList<>();
-                                    RealmResults<SubscriptionPlan> allAvailableSubscriptionPlans =
-                                            realmController.getAllSubscriptionPlans();
-                                    if (allAvailableSubscriptionPlans != null) {
-                                        availableUpgradeSubscriptionPlans.addAll(allAvailableSubscriptionPlans);
-                                    }
-                                    userSubscriptionPlan.setAvailableUpgrades(availableUpgradeSubscriptionPlans);
+                                    userSubscriptionPlan.setAvailableUpgrades(getAvailableUpgradePlans(realmController.getAllSubscriptionPlans()));
                                     realmController.addUserSubscriptionPlan(userSubscriptionPlan);
 
                                     setActiveSubscriptionSku(currentActivity,
@@ -4855,9 +4936,9 @@ public class AppCMSPresenter {
                                                     .get(0).getRecurringPaymentCurrencyCode());
                                     setActiveSubscriptionPlanName(currentActivity,
                                             appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
-                                    setActiveSubscriptionPrice(currentActivity, (float)
-                                            appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()
-                                                    .get(0).getRecurringPaymentAmount());
+                                    setActiveSubscriptionPrice(currentActivity,
+                                            String.valueOf(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()
+                                                    .get(0).getRecurringPaymentAmount()));
                                     setActiveSubscriptionProcessor(currentActivity,
                                             appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler());
                                 }
@@ -4910,6 +4991,25 @@ public class AppCMSPresenter {
 
     public void setLaunchType(LaunchType launchType) {
         this.launchType = launchType;
+    }
+
+    private RealmList<SubscriptionPlan> getAvailableUpgradePlans(RealmResults<SubscriptionPlan> availablePlans) {
+        RealmList<SubscriptionPlan> availableUpgrades = new RealmList<>();
+        if (currentActivity != null && availablePlans != null) {
+            double existingSubscriptionPrice = parseActiveSubscriptionPrice(currentActivity);
+            if (existingSubscriptionPrice == 0.0) {
+                existingSubscriptionPrice = parseExistingGooglePlaySubscriptionPrice(currentActivity);
+            }
+
+            if (existingSubscriptionPrice != 0.0) {
+                for (SubscriptionPlan subscriptionPlan : availablePlans) {
+                    if (existingSubscriptionPrice < subscriptionPlan.getSubscriptionPrice()) {
+                        availableUpgrades.add(subscriptionPlan);
+                    }
+                }
+            }
+        }
+        return availableUpgrades;
     }
 
     private void refreshGoogleAccessToken(Action1<GoogleRefreshTokenResponse> readyAction) {
@@ -6308,6 +6408,7 @@ public class AppCMSPresenter {
         EXISTING_SUBSCRIPTION,
         DOWNLOAD_INCOMPLETE,
         CANNOT_UPGRADE_SUBSCRIPTION,
+        UPGRADE_UNAVAILABLE,
         CANNOT_CANCEL_SUBSCRIPTION,
         STREAMING_INFO_MISSING,
         REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_FOR_DOWNLOAD,

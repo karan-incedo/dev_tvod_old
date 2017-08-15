@@ -244,6 +244,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_VALUE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_plan_value_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_PLAN_VALUE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_plan_processor_title_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_plan_processor_value_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_edit_profile_key),
