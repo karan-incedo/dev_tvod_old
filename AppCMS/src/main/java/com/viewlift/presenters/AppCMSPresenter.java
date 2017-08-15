@@ -4669,7 +4669,7 @@ public class AppCMSPresenter {
 
         if (launchType == LaunchType.SUBSCRIBE) {
             launchType = LaunchType.LOGIN_AND_SIGNUP;
-            String url = currentActivity.getString(R.string.app_cms_signup_api_url,
+            String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                     appCMSMain.getApiBaseUrl(),
                     appCMSMain.getInternalName());
             startLoginAsyncTask(url,
