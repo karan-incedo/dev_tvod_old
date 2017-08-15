@@ -628,7 +628,7 @@ public class AppCMSPresenter {
             try {
                 DownloadVideoRealm downloadedVideo = realmController.getDownloadById(filmId);
                 downloadedVideo.setWatchedTime(watchedTime);
-                downloadedVideo.setLastWatchDate(new Date().getTime());
+                downloadedVideo.setLastWatchDate(System.currentTimeMillis());
                 realmController.updateDownload(downloadedVideo);
             } catch (Exception e) {
                 Log.e(TAG, "Film " + filmId + " has not been downloaded");
@@ -775,9 +775,8 @@ public class AppCMSPresenter {
                                         DownloadVideoRealm downloadedVideo = realmController.getDownloadById(filmId);
                                         if (downloadedVideo != null) {
                                             if (isVideoOffline) {
-                                                Date now = new Date();
-                                                long timeAfterDownloadMsec = now.getTime() -
-                                                        downloadedVideo.getLastWatchDate();
+                                                long timeAfterDownloadMsec = System.currentTimeMillis() -
+                                                        downloadedVideo.getDownloadDate();
 
                                                 timeAfterDownloadMsec /= (1000 * 60 * 60* 24);
 
