@@ -222,14 +222,13 @@ public class AppCMSPresenter {
     public static final int REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS = 2002;
     public static final String PRESENTER_DIALOG_ACTION = "appcms_presenter_dialog_action";
     public static final String SEARCH_ACTION = "SEARCH_ACTION";
+    public static final String ERROR_DIALOG_ACTION = "appcms_error_dialog_action";
+    public static final String ACTION_LOGO_ANIMATION = "appcms_logo_animation";
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String CASTING_OVERLAY_PREF_NAME = "cast_intro_pref";
-
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
-
     private static final String CAST_SHARED_PREF_NAME = "cast_shown";
-
     private static final String USER_NAME_SHARED_PREF_NAME = "user_name_pref";
     private static final String USER_EMAIL_SHARED_PREF_NAME = "user_email_pref";
     private static final String REFRESH_TOKEN_SHARED_PREF_NAME = "refresh_token_pref";
@@ -249,15 +248,10 @@ public class AppCMSPresenter {
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_DESCRIPTION = "existing_google_play_subscription_title_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID = "existing_google_play_subscription_id_key_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_PRICE = "existing_google_play_subscription_price_pref_key";
-
     private static final String USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME = "user_download_quality_pref";
     private static final String USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME = "user_download_sd_card_pref";
-
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String ANONYMOUS_AUTH_TOKEN_PREF_NAME = "anonymous_auth_token_pref_key";
-    public static final String ERROR_DIALOG_ACTION = "appcms_error_dialog_action";
-    public static final String ACTION_LOGO_ANIMATION = "appcms_logo_animation";
-
     private static final long MILLISECONDS_PER_SECOND = 1000L;
     private static final long SECONDS_PER_MINUTE = 60L;
     private static final long MAX_SESSION_DURATION_IN_MINUTES = 30L;
@@ -298,7 +292,20 @@ public class AppCMSPresenter {
     private final AppCMSSubscriptionCall appCMSSubscriptionCall;
     private final AppCMSSubscriptionPlanCall appCMSSubscriptionPlanCall;
     private final AppCMSAnonymousAuthTokenCall appCMSAnonymousAuthTokenCall;
-
+    public String[] physicalPaths = {
+            "/storage/sdcard0", "/storage/sdcard1", // Motorola Xoom
+            "/storage/extsdcard", // Samsung SGS3
+            "/storage/sdcard0/external_sdcard", // User request
+            "/mnt/extsdcard", "/mnt/sdcard/external_sd", // Samsung galaxy family
+            "/mnt/external_sd", "/mnt/media_rw/sdcard1", // 4.4.2 on CyanogenMod S3
+            "/removable/microsd", // Asus transformer prime
+            "/mnt/emmc", "/storage/external_SD", // LG
+            "/storage/ext_sd", // HTC One Max
+            "/storage/removable/sdcard1", // Sony Xperia Z1
+            "/data/sdext", "/data/sdext2", "/data/sdext3", "/data/sdext4", "/sdcard1", // Sony Xperia Z
+            "/sdcard2", // HTC One M8s
+            "/storage/microsd" // ASUS ZenFone 2
+    };
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
@@ -318,7 +325,6 @@ public class AppCMSPresenter {
     private List<Action1<Boolean>> onOrientationChangeHandlers;
     private Map<String, List<OnInternalEvent>> onActionInternalEvents;
     private Stack<String> currentActions;
-
     private AppCMSSearchUrlComponent appCMSSearchUrlComponent;
     private DownloadManager downloadManager;
     private RealmController realmController;
@@ -549,14 +555,14 @@ public class AppCMSPresenter {
                                     if (watchedTime >= 0) {
                                         appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(watchedTime);
                                     }
-                                        launchButtonSelectedAction(appCMSVideoDetail.getRecords().get(0).getGist().getPermalink(),
-                                                action,
-                                                appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
-                                                null,
-                                                appCMSVideoDetail.getRecords().get(0),
-                                                false,
-                                                currentlyPlayingIndex,
-                                                appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds());
+                                    launchButtonSelectedAction(appCMSVideoDetail.getRecords().get(0).getGist().getPermalink(),
+                                            action,
+                                            appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
+                                            null,
+                                            appCMSVideoDetail.getRecords().get(0),
+                                            false,
+                                            currentlyPlayingIndex,
+                                            appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds());
                                 } else {
                                     entitlementPendingVideoData = new EntitlementPendingVideoData();
                                     entitlementPendingVideoData.action = action;
@@ -576,15 +582,15 @@ public class AppCMSPresenter {
                     if (watchedTime >= 0) {
                         contentDatum.getGist().setWatchedTime(watchedTime);
                     }
-                        launchButtonSelectedAction(
-                                contentDatum.getGist().getPermalink(),
-                                action,
-                                contentDatum.getGist().getTitle(),
-                                null,
-                                contentDatum,
-                                false,
-                                currentlyPlayingIndex,
-                                relateVideoIds);
+                    launchButtonSelectedAction(
+                            contentDatum.getGist().getPermalink(),
+                            action,
+                            contentDatum.getGist().getTitle(),
+                            null,
+                            contentDatum,
+                            false,
+                            currentlyPlayingIndex,
+                            relateVideoIds);
                 } else {
                     entitlementPendingVideoData = new EntitlementPendingVideoData();
                     entitlementPendingVideoData.action = action;
@@ -767,38 +773,38 @@ public class AppCMSPresenter {
                             }
                             playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), requestAds);
 
-                                if (contentDatum != null &&
-                                        contentDatum.getGist() != null &&
-                                        !TextUtils.isEmpty(contentDatum.getGist().getId())) {
-                                    String filmId = contentDatum.getGist().getId();
-                                    try {
-                                        DownloadVideoRealm downloadedVideo = realmController.getDownloadById(filmId);
-                                        if (downloadedVideo != null) {
-                                            if (isVideoOffline) {
-                                                long timeAfterDownloadMsec = System.currentTimeMillis() -
-                                                        downloadedVideo.getDownloadDate();
+                            if (contentDatum != null &&
+                                    contentDatum.getGist() != null &&
+                                    !TextUtils.isEmpty(contentDatum.getGist().getId())) {
+                                String filmId = contentDatum.getGist().getId();
+                                try {
+                                    DownloadVideoRealm downloadedVideo = realmController.getDownloadById(filmId);
+                                    if (downloadedVideo != null) {
+                                        if (isVideoOffline) {
+                                            long timeAfterDownloadMsec = System.currentTimeMillis() -
+                                                    downloadedVideo.getDownloadDate();
 
-                                                if ((timeAfterDownloadMsec / (1000 * 60 * 60* 24)) >= 30) {
-                                                    showDialog(DialogType.DOWNLOAD_NOT_AVAILABLE,
-                                                            currentActivity.getString(R.string.app_cms_download_limit_message),
-                                                            false,
-                                                            null);
-                                                    return false;
-                                                }
+                                            if ((timeAfterDownloadMsec / (1000 * 60 * 60 * 24)) >= 30) {
+                                                showDialog(DialogType.DOWNLOAD_NOT_AVAILABLE,
+                                                        currentActivity.getString(R.string.app_cms_download_limit_message),
+                                                        false,
+                                                        null);
+                                                return false;
+                                            }
 
-                                                contentDatum.getGist().setWatchedTime(downloadedVideo.getWatchedTime());
-                                            }
-                                            if (isNetworkConnected() && !downloadedVideo.isSyncedWithServer()) {
-                                                updateWatchedTime(filmId, downloadedVideo.getWatchedTime());
-                                                downloadedVideo.setSyncedWithServer(true);
-                                            } else if (!isNetworkConnected() && isVideoOffline) {
-                                                downloadedVideo.setSyncedWithServer(false);
-                                            }
+                                            contentDatum.getGist().setWatchedTime(downloadedVideo.getWatchedTime());
                                         }
-                                    } catch (Exception e) {
-                                        Log.e(TAG, "Film " + filmId + " has not been downloaded");
+                                        if (isNetworkConnected() && !downloadedVideo.isSyncedWithServer()) {
+                                            updateWatchedTime(filmId, downloadedVideo.getWatchedTime());
+                                            downloadedVideo.setSyncedWithServer(true);
+                                        } else if (!isNetworkConnected() && isVideoOffline) {
+                                            downloadedVideo.setSyncedWithServer(false);
+                                        }
                                     }
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Film " + filmId + " has not been downloaded");
                                 }
+                            }
 
                             if (contentDatum != null &&
                                     contentDatum.getGist() != null &&
@@ -936,7 +942,7 @@ public class AppCMSPresenter {
                                 String paymentProcessor = getActiveSubscriptionProcessor(currentActivity);
                                 if ((!TextUtils.isEmpty(paymentProcessor) &&
                                         (!paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
-                                        !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)))) &&
+                                                !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)))) &&
                                         !TextUtils.isEmpty(getExistingGooglePlaySubscriptionId(currentActivity)) &&
                                         !upgradesAvailableForUser(getLoggedInUser(currentActivity))) {
                                     if (!upgradesAvailableForUser(getLoggedInUser(currentActivity))) {
@@ -951,7 +957,7 @@ public class AppCMSPresenter {
                                 String paymentProcessor = getActiveSubscriptionProcessor(currentActivity);
                                 if ((!TextUtils.isEmpty(paymentProcessor) &&
                                         (!paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
-                                        !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)))) ||
+                                                !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)))) ||
                                         TextUtils.isEmpty(getExistingGooglePlaySubscriptionId(currentActivity))) {
                                     showEntitlementDialog(DialogType.CANNOT_CANCEL_SUBSCRIPTION);
                                 } else {
@@ -1543,8 +1549,8 @@ public class AppCMSPresenter {
             String paymentProcessor = getActiveSubscriptionProcessor(currentActivity);
             if (!TextUtils.isEmpty(getExistingGooglePlaySubscriptionId(currentActivity)) ||
                     (!TextUtils.isEmpty(paymentProcessor) &&
-                    (paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
-                    paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) {
+                            (paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
+                                    paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) {
                 Intent googlePlayStoreCancelIntent = new Intent(Intent.ACTION_VIEW,
                         Uri.parse(currentActivity.getString(R.string.google_play_store_subscriptions_url)));
                 currentActivity.startActivity(googlePlayStoreCancelIntent);
@@ -1868,11 +1874,10 @@ public class AppCMSPresenter {
                         .setVisibleInDownloadsUi(false)
                         .setShowRunningNotification(true);
 
-                if (isPreferedStorageLocationSDCard(currentActivity)){
-                    downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity,Environment.DIRECTORY_DOWNLOADS),
+                if (isPreferedStorageLocationSDCard(currentActivity)) {
+                    downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, Environment.DIRECTORY_DOWNLOADS),
                             contentDatum.getGist().getId() + MEDIA_SURFIX_MP4)));
-                }
-                else{
+                } else {
                     downloadRequest.setDestinationInExternalFilesDir(currentActivity, Environment.DIRECTORY_DOWNLOADS,
                             contentDatum.getGist().getId() + MEDIA_SURFIX_MP4);
                 }
@@ -1977,11 +1982,10 @@ public class AppCMSPresenter {
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
 
-            if (isPreferedStorageLocationSDCard(currentActivity)){
-                downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity,"thumbs"),
+            if (isPreferedStorageLocationSDCard(currentActivity)) {
+                downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, "thumbs"),
                         filename + MEDIA_SURFIX_JPG)));
-            }
-            else{
+            } else {
                 downloadRequest.setDestinationInExternalFilesDir(currentActivity, "thumbs",
                         filename + MEDIA_SURFIX_JPG);
             }
@@ -2017,11 +2021,10 @@ public class AppCMSPresenter {
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
 
-            if (isPreferedStorageLocationSDCard(currentActivity)){
-                downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity,"posters"),
+            if (isPreferedStorageLocationSDCard(currentActivity)) {
+                downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, "posters"),
                         filename + MEDIA_SURFIX_JPG)));
-            }
-            else{
+            } else {
                 downloadRequest.setDestinationInExternalFilesDir(currentActivity, "posters",
                         filename + MEDIA_SURFIX_JPG);
             }
@@ -2048,11 +2051,10 @@ public class AppCMSPresenter {
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
 
-            if (isPreferedStorageLocationSDCard(currentActivity)){
-                downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity,"closedCaptions"),
+            if (isPreferedStorageLocationSDCard(currentActivity)) {
+                downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, "closedCaptions"),
                         filename + MEDIA_SUFFIX_SRT)));
-            }
-            else{
+            } else {
                 downloadRequest.setDestinationInExternalFilesDir(currentActivity, "closedCaptions",
                         filename + MEDIA_SUFFIX_SRT);
             }
@@ -2088,10 +2090,12 @@ public class AppCMSPresenter {
 
         return false;
     }
-    public AppCMSStreamingInfoCall getAppCMSStreamingInfoCall(){
+
+    public AppCMSStreamingInfoCall getAppCMSStreamingInfoCall() {
         return appCMSStreamingInfoCall;
     }
-    public String getStreamingInfoURL(String filmId){
+
+    public String getStreamingInfoURL(String filmId) {
         String url = currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
                 appCMSMain.getApiBaseUrl(),
                 filmId,
@@ -3414,7 +3418,6 @@ public class AppCMSPresenter {
         return false;
     }
 
-
     public String getAnonymousUserToken(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(ANONYMOUS_AUTH_TOKEN_PREF_NAME, 0);
@@ -3423,13 +3426,14 @@ public class AppCMSPresenter {
         return null;
     }
 
-    public boolean isPreferedStorageLocationSDCard(Context context){
-        if (context!=null){
+    public boolean isPreferedStorageLocationSDCard(Context context) {
+        if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, 0);
             return sharedPrefs.getBoolean(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, false);
         }
         return false;
     }
+
     public boolean setPreferedStorageLocationSDCard(Context context, boolean downloadPref) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, 0);
@@ -3438,10 +3442,11 @@ public class AppCMSPresenter {
         }
         return false;
     }
+
     public String getUserDownloadQualityPref(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, 0);
-            return sharedPrefs.getString(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, null);
+            return sharedPrefs.getString(getLoggedInUser(context), null);
         }
         return null;
     }
@@ -3449,8 +3454,8 @@ public class AppCMSPresenter {
     public boolean setUserDownloadQualityPref(Context context, String downloadQuality) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, 0);
-            return sharedPrefs.edit().putString(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME,
-                    downloadQuality).commit() && setLoggedInTime(context);
+            return sharedPrefs.edit().putString(getLoggedInUser(context), downloadQuality).commit()
+                    && setLoggedInTime(context);
         }
         return false;
     }
@@ -4645,16 +4650,16 @@ public class AppCMSPresenter {
                     },
                     appCMSSubscriptionPlanResult -> {
                         if (appCMSSubscriptionPlanResult != null) {
-                            Log.d(TAG, "Subscription response: " + gson.toJson(appCMSSubscriptionPlanResult, AppCMSSubscriptionPlanResult.class));
-
-                            AppsFlyerUtils.subscriptionEvent(currentActivity,
-                                    true,
-                                    currentActivity.getString(R.string.app_cms_appsflyer_dev_key),
-                                    String.valueOf(planToPurchasePrice),
-                                    subscriptionRequest.getPlanId(),
-                                    subscriptionRequest.getCurrencyCode());
+                            Log.d(TAG, "Subscription response: " + gson.toJson(appCMSSubscriptionPlanResult,
+                                    AppCMSSubscriptionPlanResult.class));
                         }
                         setActiveSubscriptionSku(currentActivity, skuToPurchase);
+                        AppsFlyerUtils.subscriptionEvent(currentActivity,
+                                true,
+                                currentActivity.getString(R.string.app_cms_appsflyer_dev_key),
+                                String.valueOf(planToPurchasePrice),
+                                subscriptionRequest.getPlanId(),
+                                subscriptionRequest.getCurrencyCode());
                         setActiveSubscriptionId(currentActivity, planToPurchase);
                         setActiveSubscriptionCurrency(currentActivity, currencyOfPlanToPurchase);
                         setActiveSubscriptionPlanName(currentActivity, planToPurchaseName);
@@ -5067,6 +5072,11 @@ public class AppCMSPresenter {
 
                         checkForExistingSubscription(false);
 
+                        if (TextUtils.isEmpty(getUserDownloadQualityPref(currentActivity))) {
+                            setUserDownloadQualityPref(currentActivity,
+                                    currentActivity.getString(R.string.app_cms_default_download_quality));
+                        }
+
                         if (signup) {
                             AppsFlyerUtils.registrationEvent(currentActivity, signInResponse.getUserId(),
                                     currentActivity.getString(R.string.app_cms_appsflyer_dev_key));
@@ -5095,7 +5105,7 @@ public class AppCMSPresenter {
                                             entitlementPendingVideoData.closeLauncher,
                                             entitlementPendingVideoData.currentlyPlayingIndex,
                                             entitlementPendingVideoData.relateVideoIds);
-                                        entitlementPendingVideoData.pagePath = null;
+                                    entitlementPendingVideoData.pagePath = null;
                                     entitlementPendingVideoData.action = null;
                                     entitlementPendingVideoData.filmTitle = null;
                                     entitlementPendingVideoData.extraData = null;
@@ -5178,7 +5188,7 @@ public class AppCMSPresenter {
                         });
             } else {
                 ActivityCompat.requestPermissions(currentActivity,
-                        new String[] { android.Manifest.permission.WRITE_EXTERNAL_STORAGE },
+                        new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS);
             }
         }
@@ -5320,17 +5330,16 @@ public class AppCMSPresenter {
                 resultAction);
     }
 
-
-  public void searchRetryDialog(String searchTerm){
+    public void searchRetryDialog(String searchTerm) {
         RetryCallBinder retryCallBinder = getRetryCallBinder(null, null,
-                searchTerm,null,
+                searchTerm, null,
                 null, false,
-                null,SEARCH_RETRY_ACTION
+                null, SEARCH_RETRY_ACTION
         );
         Bundle bundle = new Bundle();
-        bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey) , retryCallBinder);
+        bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
         Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
-        args.putExtra(currentActivity.getString(R.string.retryCallBundleKey) , bundle);
+        args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
         currentActivity.sendBroadcast(args);
     }
 
@@ -5339,10 +5348,10 @@ public class AppCMSPresenter {
                                                String filmTitle,
                                                String[] extraData,
                                                ContentDatum contentDatum,
-                                               boolean closeLauncher ,
+                                               boolean closeLauncher,
                                                String filmId,
-                                               RETRY_TYPE retry_type){
-        RetryCallBinder retryCallBinder= new RetryCallBinder();
+                                               RETRY_TYPE retry_type) {
+        RetryCallBinder retryCallBinder = new RetryCallBinder();
         retryCallBinder.setPagePath(pagePath);
         retryCallBinder.setAction(action);
         retryCallBinder.setFilmTitle(filmTitle);
@@ -5353,8 +5362,6 @@ public class AppCMSPresenter {
         retryCallBinder.setFilmId(filmId);
         return retryCallBinder;
     }
-
-
 
     private AppCMSBinder getAppCMSBinder(Activity activity,
                                          AppCMSPageUI appCMSPageUI,
@@ -5553,7 +5560,7 @@ public class AppCMSPresenter {
                                     getAppCMSAndroid(activity, main, 0);
                                     break;
                                 case TV:
-                                    getAppCMSTV(activity, main, 0 );
+                                    getAppCMSTV(activity, main, 0);
                                     break;
                                 default:
                             }
@@ -5869,12 +5876,12 @@ public class AppCMSPresenter {
                     Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
                     launchErrorActivity(activity, PlatformType.TV);
                 } else {
-                    if(appCMSAndroidUI.getAnalytics() != null) {
+                    if (appCMSAndroidUI.getAnalytics() != null) {
                         initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
                     }
                     navigation = appCMSAndroidUI.getNavigation();
                     //add search in navigation item.
-                    NavigationPrimary searcNav  = new NavigationPrimary();
+                    NavigationPrimary searcNav = new NavigationPrimary();
                     searcNav.setPageId(currentActivity.getString(R.string.app_cms_search_label));
                     searcNav.setTitle(currentActivity.getString(R.string.app_cms_search_label));
                     navigation.getNavigationPrimary().add(searcNav);
@@ -5930,14 +5937,14 @@ public class AppCMSPresenter {
 
             if (appCMSPageAPI == null) {
                 //check internet connection here.
-                if(!isNetworkConnected()){
-                    RetryCallBinder retryCallBinder = getRetryCallBinder(url , null,
-                            pageTitle , null,
-                            null  , launchActivity , pageId,PAGE_ACTION);
+                if (!isNetworkConnected()) {
+                    RetryCallBinder retryCallBinder = getRetryCallBinder(url, null,
+                            pageTitle, null,
+                            null, launchActivity, pageId, PAGE_ACTION);
                     Bundle bundle = new Bundle();
-                    bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey) , retryCallBinder);
+                    bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
                     Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
-                    args.putExtra(currentActivity.getString(R.string.retryCallBundleKey) , bundle);
+                    args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
                     currentActivity.sendBroadcast(args);
                     return false;
                 }
@@ -6214,13 +6221,13 @@ public class AppCMSPresenter {
         boolean result = false;
         Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
         if (!isNetworkConnected()) {
-            RetryCallBinder retryCallBinder = getRetryCallBinder(pagePath , action,
-                    filmTitle , extraData,
-                    null  , closeLauncher , null,BUTTON_ACTION);
+            RetryCallBinder retryCallBinder = getRetryCallBinder(pagePath, action,
+                    filmTitle, extraData,
+                    null, closeLauncher, null, BUTTON_ACTION);
             Bundle bundle = new Bundle();
-            bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey) , retryCallBinder);
+            bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
             Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
-            args.putExtra(currentActivity.getString(R.string.retryCallBundleKey) , bundle);
+            args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
             currentActivity.sendBroadcast(args);
         } else if (currentActivity != null && !loadingPage) {
             AppCMSActionType actionType = actionToActionTypeMap.get(action);
@@ -6399,6 +6406,198 @@ public class AppCMSPresenter {
         return platformType;
     }
 
+    public String getSDCardPath(Context context, String dirName) {
+        String dirPath = getSDCardPath(context) + File.separator + dirName;
+        File dir = new File(dirPath);
+        if (!dir.isDirectory())
+            dir.mkdirs();
+
+        return dir.getAbsolutePath();
+
+    }
+
+    public String getSDCardPath(Context context) {
+        File baseSDCardDir = null;
+        String[] dirs = getStorageDirectories(context);
+
+
+        baseSDCardDir = new File(dirs[0] + File.separator + appCMSMain.getDomainName());
+
+
+        return baseSDCardDir.getAbsolutePath();
+    }
+
+    public String[] getStorageDirectories(Context context) {
+        HashSet<String> paths = new HashSet<String>();
+        String rawExternalStorage = System.getenv("EXTERNAL_STORAGE");
+        String rawSecondaryStoragesStr = System.getenv("SECONDARY_STORAGE");
+        String rawEmulatedStorageTarget = System.getenv("EMULATED_STORAGE_TARGET");
+        if (TextUtils.isEmpty(rawEmulatedStorageTarget)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+                List<String> results = new ArrayList<String>();
+                File[] externalDirs = context.getExternalFilesDirs(null);
+                for (File file : externalDirs) {
+                    String path = null;
+                    try {
+                        path = file.getPath().split("/Android")[0];
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        path = null;
+                    }
+                    if (path != null) {
+                        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Environment.isExternalStorageRemovable(file))
+                                || rawSecondaryStoragesStr != null && rawSecondaryStoragesStr.contains(path)) {
+                            results.add(path);
+                        }
+                    }
+                }
+
+                paths.addAll(results);
+
+            } else {
+                if (TextUtils.isEmpty(rawExternalStorage)) {
+                    boolean b = paths.addAll(Arrays.asList(physicalPaths));
+                } else {
+                    paths.add(rawExternalStorage);
+                }
+            }
+        } else {
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+
+            String[] folders = Pattern.compile("/").split(path);
+            String lastFolder = folders[folders.length - 1];
+            boolean isDigit = false;
+            try {
+                Integer.valueOf(lastFolder);
+                isDigit = true;
+            } catch (NumberFormatException ignored) {
+            }
+
+            String rawUserId = isDigit ? lastFolder : "";
+            if (TextUtils.isEmpty(rawUserId)) {
+                paths.add(rawEmulatedStorageTarget);
+            } else {
+                paths.add(rawEmulatedStorageTarget + File.separator + rawUserId);
+            }
+        }
+
+        if (!TextUtils.isEmpty(rawSecondaryStoragesStr)) {
+            String[] rawSecondaryStorages = rawSecondaryStoragesStr.split(File.pathSeparator);
+            Collections.addAll(paths, rawSecondaryStorages);
+        }
+        return paths.toArray(new String[paths.size()]);
+    }
+
+    public void setSearchResultsOnSharePreference(List<String> searchValues) {
+        if (currentActivity == null)
+            return;
+        SharedPreferences sharePref = currentActivity.getSharedPreferences(
+                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharePref.edit();
+        editor.putInt(currentActivity.getString(R.string.app_cms_search_value_size_key), searchValues.size());
+        for (int i = 0; i < searchValues.size(); i++) {
+            editor.remove(currentActivity.getString(R.string.app_cms_search_value_key) + i);
+            editor.putString(currentActivity.getString(R.string.app_cms_search_value_key) + i, searchValues.get(i));
+        }
+        editor.commit();
+    }
+
+    public List<String> getSearchResultsFromSharePreference() {
+        if (currentActivity == null)
+            return null;
+        List<String> searchValues = new ArrayList<String>();
+        SharedPreferences sharePref = currentActivity.getSharedPreferences(
+                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
+        int size = sharePref.getInt(currentActivity.getString(R.string.app_cms_search_value_size_key), 0);
+        for (int i = 0; i < size; i++) {
+            searchValues.add(sharePref.getString(currentActivity.getString(R.string.app_cms_search_value_key) + i, null));
+        }
+        return searchValues;
+    }
+
+    public void clearSearchResultsSharePreference() {
+        if (currentActivity == null)
+            return;
+        SharedPreferences sharePref = currentActivity.getSharedPreferences(
+                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
+        sharePref.edit().clear().commit();
+    }
+
+    public void openSearch() {
+        Intent updateHistoryIntent = new Intent(SEARCH_ACTION);
+        currentActivity.sendBroadcast(updateHistoryIntent);
+    }
+
+    public boolean launchTVVideoPlayer(final String filmId,
+                                       final String pagePath,
+                                       final String filmTitle,
+                                       final ContentDatum contentDatum) {
+        boolean result = false;
+
+
+        if (!isNetworkConnected() && platformType == PlatformType.TV) {
+            RetryCallBinder retryCallBinder = getRetryCallBinder(pagePath, null,
+                    filmTitle, null,
+                    contentDatum, false,
+                    filmId, VIDEO_ACTION
+            );
+
+            Bundle bundle = new Bundle();
+            bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
+            Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+            args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+            currentActivity.sendBroadcast(args);
+        } else if (currentActivity != null &&
+                !loadingPage && appCMSMain != null &&
+                !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
+                !TextUtils.isEmpty(appCMSMain.getInternalName())) {
+            result = true;
+            final String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
+            String url = currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    filmId,
+                    appCMSMain.getInternalName());
+            GetAppCMSStreamingInfoAsyncTask.Params params =
+                    new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
+            new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall,
+                    new Action1<AppCMSStreamingInfo>() {
+                        @Override
+                        public void call(AppCMSStreamingInfo appCMSStreamingInfo) {
+                            String[] extraData = new String[3];
+                            if (appCMSStreamingInfo != null &&
+                                    appCMSStreamingInfo.getStreamingInfo() != null) {
+                                StreamingInfo streamingInfo = appCMSStreamingInfo.getStreamingInfo();
+                                extraData[0] = pagePath;
+                                if (streamingInfo.getVideoAssets() != null &&
+                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getHls())) {
+                                    extraData[1] = streamingInfo.getVideoAssets().getHls();
+                                } else if (streamingInfo.getVideoAssets() != null &&
+                                        streamingInfo.getVideoAssets().getMpeg() != null &&
+                                        streamingInfo.getVideoAssets().getMpeg().size() > 0 &&
+                                        streamingInfo.getVideoAssets().getMpeg().get(0) != null &&
+                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getMpeg().get(0).getUrl())) {
+                                    extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
+                                }
+                                extraData[2] = filmId;
+                                if (!TextUtils.isEmpty(extraData[1])) {
+
+                                    if (platformType == PlatformType.TV) {
+                                        launchTVButtonSelectedAction(pagePath,
+                                                action,
+                                                filmTitle,
+                                                extraData,
+                                                false);
+                                    }
+
+                                }
+                            }
+                        }
+                    }).execute(params);
+        }
+        return result;
+    }
+
     public enum LaunchType {
         SUBSCRIBE, LOGIN_AND_SIGNUP
     }
@@ -6432,8 +6631,8 @@ public class AppCMSPresenter {
         DOWNLOAD_NOT_AVAILABLE
     }
 
- public enum RETRY_TYPE{
-        VIDEO_ACTION , BUTTON_ACTION , PAGE_ACTION , SEARCH_RETRY_ACTION
+    public enum RETRY_TYPE {
+        VIDEO_ACTION, BUTTON_ACTION, PAGE_ACTION, SEARCH_RETRY_ACTION
     }
 
     public enum ExtraScreenType {
@@ -6623,215 +6822,6 @@ public class AppCMSPresenter {
         boolean closeLauncher;
         int currentlyPlayingIndex;
         List<String> relateVideoIds;
-    }
-
-    public String  getSDCardPath(Context context,String dirName){
-        String  dirPath=getSDCardPath(context)+File.separator+dirName;
-        File dir =new File( dirPath);
-        if (!dir.isDirectory())
-        dir.mkdirs();
-
-        return dir.getAbsolutePath();
-
-    }
-
-    public String getSDCardPath(Context context){
-        File baseSDCardDir=null;
-        String [] dirs=getStorageDirectories(context);
-
-
-            baseSDCardDir=new File(dirs[0]+File.separator+appCMSMain.getDomainName());
-
-
-        return baseSDCardDir.getAbsolutePath();
-    }
-
-   public String[] physicalPaths={
-           "/storage/sdcard0", "/storage/sdcard1", // Motorola Xoom
-           "/storage/extsdcard", // Samsung SGS3
-           "/storage/sdcard0/external_sdcard", // User request
-           "/mnt/extsdcard", "/mnt/sdcard/external_sd", // Samsung galaxy family
-           "/mnt/external_sd", "/mnt/media_rw/sdcard1", // 4.4.2 on CyanogenMod S3
-           "/removable/microsd", // Asus transformer prime
-           "/mnt/emmc", "/storage/external_SD", // LG
-           "/storage/ext_sd", // HTC One Max
-           "/storage/removable/sdcard1", // Sony Xperia Z1
-           "/data/sdext", "/data/sdext2", "/data/sdext3", "/data/sdext4", "/sdcard1", // Sony Xperia Z
-           "/sdcard2", // HTC One M8s
-           "/storage/microsd" // ASUS ZenFone 2
-   };
-
-  public String[] getStorageDirectories(Context context) {
-      HashSet<String> paths = new HashSet<String>();
-      String rawExternalStorage = System.getenv("EXTERNAL_STORAGE");
-        String rawSecondaryStoragesStr = System.getenv("SECONDARY_STORAGE");
-      String rawEmulatedStorageTarget = System.getenv("EMULATED_STORAGE_TARGET");
-        if (TextUtils.isEmpty(rawEmulatedStorageTarget)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-                List<String> results = new ArrayList<String>();
-                File[] externalDirs = context.getExternalFilesDirs(null);
-                for (File file : externalDirs) {
-                    String path = null;
-                    try {
-                        path = file.getPath().split("/Android")[0];
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        path = null;
-                    }
-                    if (path != null) {
-                        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Environment.isExternalStorageRemovable(file))
-                                || rawSecondaryStoragesStr != null && rawSecondaryStoragesStr.contains(path)) {
-                            results.add(path);
-                        }
-                    }
-                }
-
-                paths.addAll(results);
-
-            } else {
-                if (TextUtils.isEmpty(rawExternalStorage)) {
-                    boolean b = paths.addAll(Arrays.asList( physicalPaths));
-                } else {
-                    paths.add(rawExternalStorage);
-                }
-            }
-        } else {
-            String path = Environment.getExternalStorageDirectory().getAbsolutePath();
-
-            String[] folders = Pattern.compile("/").split(path);
-            String lastFolder = folders[folders.length - 1];
-            boolean isDigit = false;
-            try {
-                Integer.valueOf(lastFolder);
-                isDigit = true;
-            } catch (NumberFormatException ignored) {
-            }
-
-            String rawUserId = isDigit? lastFolder : "";
-            if (TextUtils.isEmpty(rawUserId)) {
-                paths.add(rawEmulatedStorageTarget);
-            } else {
-                paths.add(rawEmulatedStorageTarget + File.separator + rawUserId);
-            }
-        }
-
-        if (!TextUtils.isEmpty(rawSecondaryStoragesStr)) {
-            String[] rawSecondaryStorages = rawSecondaryStoragesStr.split(File.pathSeparator);
-            Collections.addAll(paths, rawSecondaryStorages);
-        }
-        return paths.toArray(new String[paths.size()]);
-    }
-
-    public void setSearchResultsOnSharePreference(List<String> searchValues){
-        if(currentActivity == null)
-            return;
-        SharedPreferences sharePref = currentActivity.getSharedPreferences(
-                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharePref.edit();
-        editor.putInt(currentActivity.getString(R.string.app_cms_search_value_size_key), searchValues.size());
-        for(int i = 0;i < searchValues.size(); i++) {
-            editor.remove(currentActivity.getString(R.string.app_cms_search_value_key) + i);
-            editor.putString(currentActivity.getString(R.string.app_cms_search_value_key) + i, searchValues.get(i));
-        }
-        editor.commit();
-    }
-
-    public List<String> getSearchResultsFromSharePreference(){
-        if(currentActivity == null)
-            return null;
-        List<String> searchValues = new ArrayList<String>();
-        SharedPreferences sharePref = currentActivity.getSharedPreferences(
-                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
-        int size = sharePref.getInt(currentActivity.getString(R.string.app_cms_search_value_size_key), 0);
-        for(int i = 0; i < size; i++) {
-            searchValues.add(sharePref.getString(currentActivity.getString(R.string.app_cms_search_value_key) + i, null));
-        }
-        return searchValues;
-    }
-
-    public void clearSearchResultsSharePreference(){
-        if(currentActivity == null)
-            return ;
-        SharedPreferences sharePref = currentActivity.getSharedPreferences(
-                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
-        sharePref.edit().clear().commit();
-    }
-
-
-    public void openSearch(){
-        Intent updateHistoryIntent = new Intent(SEARCH_ACTION);
-        currentActivity.sendBroadcast(updateHistoryIntent);
-    }
-
-    public boolean launchTVVideoPlayer(final String filmId,
-                                     final String pagePath,
-                                     final String filmTitle,
-                                     final ContentDatum contentDatum) {
-        boolean result = false;
-
-
-        if(!isNetworkConnected() && platformType == PlatformType.TV){
-            RetryCallBinder retryCallBinder = getRetryCallBinder(pagePath, null,
-                    filmTitle,null,
-                    contentDatum, false,
-                    filmId,VIDEO_ACTION
-            );
-
-            Bundle bundle = new Bundle();
-            bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey) , retryCallBinder);
-            Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
-            args.putExtra(currentActivity.getString(R.string.retryCallBundleKey) , bundle);
-            currentActivity.sendBroadcast(args);
-        }
-        else if (currentActivity != null &&
-                !loadingPage && appCMSMain != null &&
-                !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
-                !TextUtils.isEmpty(appCMSMain.getInternalName())) {
-            result = true;
-            final String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
-            String url = currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
-                    appCMSMain.getApiBaseUrl(),
-                    filmId,
-                    appCMSMain.getInternalName());
-            GetAppCMSStreamingInfoAsyncTask.Params params =
-                    new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
-            new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall,
-                    new Action1<AppCMSStreamingInfo>() {
-                        @Override
-                        public void call(AppCMSStreamingInfo appCMSStreamingInfo) {
-                            String[] extraData = new String[3];
-                            if (appCMSStreamingInfo != null &&
-                                    appCMSStreamingInfo.getStreamingInfo() != null) {
-                                StreamingInfo streamingInfo = appCMSStreamingInfo.getStreamingInfo();
-                                extraData[0] = pagePath;
-                                if (streamingInfo.getVideoAssets() != null &&
-                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getHls())) {
-                                    extraData[1] = streamingInfo.getVideoAssets().getHls();
-                                } else if (streamingInfo.getVideoAssets() != null &&
-                                        streamingInfo.getVideoAssets().getMpeg() != null &&
-                                        streamingInfo.getVideoAssets().getMpeg().size() > 0 &&
-                                        streamingInfo.getVideoAssets().getMpeg().get(0) != null &&
-                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getMpeg().get(0).getUrl())) {
-                                    extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
-                                }
-                                extraData[2] = filmId;
-                                if (!TextUtils.isEmpty(extraData[1])) {
-
-                                    if(platformType == PlatformType.TV){
-                                        launchTVButtonSelectedAction(pagePath,
-                                                action,
-                                                filmTitle,
-                                                extraData,
-                                                false);
-                                    }
-
-                                }
-                            }
-                        }
-                    }).execute(params);
-        }
-        return result;
     }
 
 
