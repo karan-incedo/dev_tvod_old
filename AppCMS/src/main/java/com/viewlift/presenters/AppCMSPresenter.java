@@ -701,7 +701,13 @@ public class AppCMSPresenter {
                     } else {
                         showDialog(DialogType.NETWORK, null, false, null);
                     }
-                }
+                }else{
+                        if (platformType == PlatformType.TV) {
+                            getAppCMSTV(activity,
+                                    main,
+                                    tryCount + 1);
+                        }
+                    }
             });
         }
     }

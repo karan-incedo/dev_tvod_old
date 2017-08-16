@@ -31,6 +31,7 @@ public class AppCmsTvErrorFragment extends AbsDialogFragment {
     AppCMSPresenter appCMSPresenter;
     private ErrorFragmentListener mErrorFragmentListener;
     Button btnRetry;
+    boolean shouldRegisterInternetReciever = true;
 
     public AppCmsTvErrorFragment(){
 
@@ -57,6 +58,7 @@ public class AppCmsTvErrorFragment extends AbsDialogFragment {
 
         final Bundle bundle = getArguments();
         final boolean shouldRetry = bundle.getBoolean(getString(R.string.retry_key));
+        shouldRegisterInternetReciever = bundle.getBoolean(getString(R.string.register_internet_receiver_key));
 
 
         appCMSPresenter =
@@ -138,6 +140,7 @@ public class AppCmsTvErrorFragment extends AbsDialogFragment {
             }
         });
 
+        if(shouldRegisterInternetReciever)
         getActivity().registerReceiver(networkReciever ,
                 new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
 
@@ -145,6 +148,7 @@ public class AppCmsTvErrorFragment extends AbsDialogFragment {
 
     @Override
     public void onPause() {
+        if(shouldRegisterInternetReciever)
         getActivity().unregisterReceiver(networkReciever);
         super.onPause();
     }
