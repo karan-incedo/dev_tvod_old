@@ -2850,7 +2850,32 @@ public class AppCMSPresenter {
                             try {
                                 InAppPurchaseData inAppPurchaseData = gson.fromJson(subscribedItemList.get(i),
                                         InAppPurchaseData.class);
-                                if (inAppPurchaseData.isAutoRenewing()) {
+
+                                ArrayList<String> skuList = new ArrayList<>();
+                                skuList.add(inAppPurchaseData.getProductId());
+                                Bundle skuListBundle = new Bundle();
+                                skuListBundle.putStringArrayList("ITEM_ID_LIST", skuList);
+                                Bundle skuListBundleResult = inAppBillingService.getSkuDetails(3,
+                                        currentActivity.getPackageName(),
+                                        "subs",
+                                        skuListBundle);
+                                ArrayList<String> skuDetailsList =
+                                        skuListBundleResult.getStringArrayList("DETAILS_LIST");
+
+                                boolean subscriptionExpired = false;
+                                if (skuDetailsList != null && skuDetailsList.size() > 0) {
+                                    SkuDetails skuDetails = gson.fromJson(skuDetailsList.get(0),
+                                            SkuDetails.class);
+                                    setExistingGooglePlaySubscriptionDescription(currentActivity, skuDetails.getDescription());
+
+                                    setExistingGooglePlaySubscriptionPrice(currentActivity, skuDetails.getPrice());
+
+                                    subscriptionExpired = !existingSubscriptionExpired(inAppPurchaseData, skuDetails);
+                                }
+
+                                setExistingGooglePlaySubscriptionId(currentActivity, inAppPurchaseData.getProductId());
+
+                                if (inAppPurchaseData.isAutoRenewing() && !subscriptionExpired) {
                                     subscriptionPresent = true;
                                     if (showErrorDialogIfSubscriptionExists &&
                                             !isUserLoggedIn(currentActivity)) {
@@ -2861,27 +2886,6 @@ public class AppCMSPresenter {
                                                     sendCloseOthersAction(null, true);
                                                 });
                                     }
-
-                                    ArrayList<String> skuList = new ArrayList<>();
-                                    skuList.add(inAppPurchaseData.getProductId());
-                                    Bundle skuListBundle = new Bundle();
-                                    skuListBundle.putStringArrayList("ITEM_ID_LIST", skuList);
-                                    Bundle skuListBundleResult = inAppBillingService.getSkuDetails(3,
-                                            currentActivity.getPackageName(),
-                                            "subs",
-                                            skuListBundle);
-                                    ArrayList<String> skuDetailsList =
-                                            skuListBundleResult.getStringArrayList("DETAILS_LIST");
-
-                                    if (skuDetailsList != null && skuDetailsList.size() > 0) {
-                                        SkuDetails skuDetails = gson.fromJson(skuDetailsList.get(0),
-                                                SkuDetails.class);
-                                        setExistingGooglePlaySubscriptionDescription(currentActivity, skuDetails.getDescription());
-
-                                        setExistingGooglePlaySubscriptionPrice(currentActivity, skuDetails.getPrice());
-                                    }
-
-                                    setExistingGooglePlaySubscriptionId(currentActivity, inAppPurchaseData.getProductId());
                                 }
                             } catch (Exception e) {
                                 Log.e(TAG, "Error parsing Google Play subscription data: " + e.toString());
@@ -2899,6 +2903,11 @@ public class AppCMSPresenter {
                         + getActiveSubscriptionSku(currentActivity));
             }
         }
+    }
+
+    private boolean existingSubscriptionExpired(InAppPurchaseData inAppPurchaseData,
+                                                SkuDetails skuDetails) {
+        return false;
     }
 
     public void navigateToHomePage() {
