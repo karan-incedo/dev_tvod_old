@@ -52,7 +52,7 @@ public class AppCMSLeanbackActivity extends Activity implements AppCmsTvErrorFra
                 Uri.parse(""),
                 AppCMSPresenter.PlatformType.TV);
         }else{
-            showErrorFragment();
+            showErrorFragment(true);
         }
     }
 
@@ -78,7 +78,9 @@ public class AppCMSLeanbackActivity extends Activity implements AppCmsTvErrorFra
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(AppCMSPresenter.ERROR_DIALOG_ACTION)){
-                showErrorFragment();
+                Bundle bundle = intent.getBundleExtra(getString(R.string.retryCallBundleKey));
+                boolean shouldRetry = bundle.getBoolean(getString(R.string.retry_key));
+                showErrorFragment(shouldRetry);
             }else if(intent.getAction().equals(AppCMSPresenter.ACTION_LOGO_ANIMATION)){
                 startLogoAnimation();
                 new Handler().postDelayed(new Runnable() {
@@ -123,10 +125,11 @@ public class AppCMSLeanbackActivity extends Activity implements AppCmsTvErrorFra
         });
     }
 
-    public void showErrorFragment(){
+    public void showErrorFragment(boolean shouldRegisterInternetReciever){
         CustomProgressBar.getInstance(this).dismissProgressDialog();
         Bundle bundle = new Bundle();
         bundle.putBoolean(getString(R.string.retry_key) , true);
+        bundle.putBoolean(getString(R.string.register_internet_receiver_key) , true);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         AppCmsTvErrorFragment errorActivityFragment = AppCmsTvErrorFragment.newInstance(
                 bundle);

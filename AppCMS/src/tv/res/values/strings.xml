@@ -19,6 +19,7 @@
     <string name="font_open_sans">OpenSans</string>
     <string name="font_open_sans_semibold">OpenSans-Semibold</string>
     <string name="retry_key">RETRY</string>
+    <string name="register_internet_receiver_key">shouldRegisterInternetReciever</string>
     <string name="error_dialog_fragment_tag">ErrorDialog</string>
 
     <string name="no_inernet_error">There is an error loading %1$s. Please check your Internet Connection and try again later</string>
