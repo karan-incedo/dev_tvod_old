@@ -147,15 +147,16 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         holder.appCMSContinueWatchingDeleteButton,
                                         appCMSPresenter,
                                         userVideoDownloadStatus -> {
-                                            if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
-                                                holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.ic_deleteicon);
-                                                loadImage(holder.itemView.getContext(), userVideoDownloadStatus.getThumbUri(), holder.appCMSContinueWatchingVideoImage);
-                                                holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
-                                            } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_RUNNING) {
-                                                holder.appCMSContinueWatchingSize.setText("Cancel");
+                                            if (userVideoDownloadStatus != null) {
+                                                if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
+                                                    holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.ic_deleteicon);
+                                                    loadImage(holder.itemView.getContext(), userVideoDownloadStatus.getThumbUri(), holder.appCMSContinueWatchingVideoImage);
+                                                    holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
+                                                } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_RUNNING) {
+                                                    holder.appCMSContinueWatchingSize.setText("Cancel");
+                                                }
+                                                contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
                                             }
-                                            contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
-
                                         },
                                         appCMSPresenter.getLoggedInUser(holder.itemView.getContext()));
 
