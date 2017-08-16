@@ -1683,12 +1683,23 @@ public class ViewCreator {
                         break;
 
                     case PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY:
-                        componentViewResult.componentView.setId(R.id.download_quality_cancel_button);
-                        applyBorderToComponent(
-                                context,
-                                componentViewResult.componentView,
-                                component,
-                                -1);
+                        if (jsonValueKeyMap.get(moduleAPI.getModuleType())
+                                == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY) {
+                            componentViewResult.componentView.setOnClickListener(v -> {
+                                if (!appCMSPresenter.sendCloseOthersAction(null, true)) {
+                                    Log.e(TAG, "Could not perform close action: " +
+                                            " action: " +
+                                            component.getAction());
+                                }
+                            });
+                        } else {
+                            componentViewResult.componentView.setId(R.id.download_quality_cancel_button);
+                            applyBorderToComponent(
+                                    context,
+                                    componentViewResult.componentView,
+                                    component,
+                                    -1);
+                        }
                         break;
 
                     default:

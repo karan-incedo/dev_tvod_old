@@ -282,8 +282,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             });*/
 
             if (contentDatum.getGist() != null) {
-                holder.appCMSContinueWatchingDuration.setText(String.valueOf(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
-                        + " " + String.valueOf(holder.itemView.getContext().getString(R.string.mins_abbreviation)));
+                holder.appCMSContinueWatchingDuration.setText(holder.itemView.getContext()
+                        .getString(R.string._mins_abbreviation,
+                                (contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)));
             }
             if (contentDatum.getGist().getWatchedPercentage() > 0) {
                 holder.appCMSContinueWatchingProgress.setVisibility(View.VISIBLE);
@@ -295,7 +296,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 long runTime =
                         contentDatum.getGist().getRuntime();
                 if (watchedTime > 0 && runTime > 0) {
-                    long percentageWatched = watchedTime / runTime;
+                    long percentageWatched = watchedTime * 100 / runTime;
                     holder.appCMSContinueWatchingProgress
                             .setProgress((int) percentageWatched);
                     holder.appCMSContinueWatchingProgress.setVisibility(View.VISIBLE);
