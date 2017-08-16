@@ -19,6 +19,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
+import android.icu.util.TimeUnit;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
@@ -162,6 +163,11 @@ import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 
+import org.threeten.bp.Duration;
+import org.threeten.bp.Instant;
+import org.threeten.bp.temporal.ChronoUnit;
+import org.threeten.bp.temporal.TemporalUnit;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -185,6 +191,7 @@ import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -2823,14 +2830,14 @@ public class AppCMSPresenter {
             Bundle activeSubs = null;
             try {
                 if (inAppBillingService != null) {
-
                     activeSubs = inAppBillingService.getPurchases(3,
                             currentActivity.getPackageName(),
                             "subs",
                             null);
                     ArrayList<String> subscribedItemList = activeSubs.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
+
                     if (subscribedItemList != null && !subscribedItemList.isEmpty()) {
-                        boolean subscriptionPresent = false;
+                        boolean subscriptionExpired = true;
                         for (int i = 0; i < subscribedItemList.size(); i++) {
                             try {
                                 InAppPurchaseData inAppPurchaseData = gson.fromJson(subscribedItemList.get(i),
@@ -2846,8 +2853,6 @@ public class AppCMSPresenter {
                                         skuListBundle);
                                 ArrayList<String> skuDetailsList =
                                         skuListBundleResult.getStringArrayList("DETAILS_LIST");
-
-                                boolean subscriptionExpired = false;
                                 if (skuDetailsList != null && !skuDetailsList.isEmpty()) {
                                     SkuDetails skuDetails = gson.fromJson(skuDetailsList.get(0),
                                             SkuDetails.class);
@@ -2855,13 +2860,12 @@ public class AppCMSPresenter {
 
                                     setExistingGooglePlaySubscriptionPrice(currentActivity, skuDetails.getPrice());
 
-                                    subscriptionExpired = !existingSubscriptionExpired(inAppPurchaseData, skuDetails);
+                                    subscriptionExpired = existingSubscriptionExpired(inAppPurchaseData, skuDetails);
                                 }
 
                                 setExistingGooglePlaySubscriptionId(currentActivity, inAppPurchaseData.getProductId());
 
-                                if (inAppPurchaseData.isAutoRenewing() && !subscriptionExpired) {
-                                    subscriptionPresent = true;
+                                if (inAppPurchaseData.isAutoRenewing() || !subscriptionExpired) {
                                     if (showErrorDialogIfSubscriptionExists &&
                                             !isUserLoggedIn(currentActivity)) {
                                         showDialog(DialogType.EXISTING_SUBSCRIPTION,
@@ -2874,7 +2878,7 @@ public class AppCMSPresenter {
                                 Log.e(TAG, "Error parsing Google Play subscription data: " + e.toString());
                             }
                         }
-                        if (!subscriptionPresent) {
+                        if (subscriptionExpired) {
                             setExistingGooglePlaySubscriptionDescription(currentActivity, null);
                             setExistingGooglePlaySubscriptionPrice(currentActivity, null);
                             setExistingGooglePlaySubscriptionId(currentActivity, null);
@@ -2890,6 +2894,40 @@ public class AppCMSPresenter {
 
     private boolean existingSubscriptionExpired(InAppPurchaseData inAppPurchaseData,
                                                 SkuDetails skuDetails) {
+        try {
+            Instant subscribedPurchaseTime = Instant.ofEpochMilli(inAppPurchaseData.getPurchaseTime());
+            Instant nowTime = Instant.now();
+            Instant subscribedExpirationTime = Instant.from(subscribedPurchaseTime);
+            String subscriptionPeriod = skuDetails.getSubscriptionPeriod();
+            final String SUBS_PERIOD_REGEX = "P(([0-9]+)[yY])?(([0-9]+)[mM])?(([0-9]+)[wW])?(([0-9]+)[dD])?";
+            if (subscriptionPeriod.matches(SUBS_PERIOD_REGEX)) {
+                Matcher subscriptionPeriodMatcher = Pattern.compile(SUBS_PERIOD_REGEX).matcher(subscriptionPeriod);
+                if (subscriptionPeriodMatcher.group(2) != null) {
+                    subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(2)),
+                            ChronoUnit.YEARS);
+                }
+                if (subscriptionPeriodMatcher.group(4) != null) {
+                    subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(4)),
+                            ChronoUnit.MONTHS);
+                }
+                if (subscriptionPeriodMatcher.group(6) != null) {
+                    subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(6)),
+                            ChronoUnit.WEEKS);
+                }
+                if (subscriptionPeriodMatcher.group(8) != null) {
+                    subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(8)),
+                            ChronoUnit.DAYS);
+                }
+
+                Duration betweenSubscribedTimeAndNowTime =
+                        Duration.between(subscribedPurchaseTime, nowTime);
+                Duration betweenSubscribedTimeAndExpirationTime =
+                        Duration.between(subscribedPurchaseTime, subscribedExpirationTime);
+                return betweenSubscribedTimeAndExpirationTime.compareTo(betweenSubscribedTimeAndNowTime) < 0;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "");
+        }
         return false;
     }
 
