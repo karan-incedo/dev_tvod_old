@@ -43,6 +43,7 @@ android {
         mobile {
             dimension = "green"
             minSdkVersion 23
+            compileSdkVersion 23
             targetSdkVersion 25
         }
         tv {
@@ -103,7 +104,8 @@ android {
         unitTests.returnDefaultValues = true
     }
     lintOptions {
-        disable 'InvalidPackage'
+        checkReleaseBuilds false
+        abortOnError false
     }
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES.txt'

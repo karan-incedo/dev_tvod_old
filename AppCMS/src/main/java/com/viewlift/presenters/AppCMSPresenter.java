@@ -2222,7 +2222,7 @@ public class AppCMSPresenter {
             paint.setColor(Color.DKGRAY);
             paint.setStrokeWidth(iv2.getWidth() / 10);
             paint.setStyle(Paint.Style.STROKE);
-            canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 2, paint);
+            canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 4, paint);// Fix SVFA-1561 changed  -2 to -4
 
             int tintColor = Color.parseColor((this.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
             paint.setColor(tintColor);
@@ -2230,7 +2230,7 @@ public class AppCMSPresenter {
             paint.setStyle(Paint.Style.FILL);
             final RectF oval = new RectF();
             paint.setStyle(Paint.Style.STROKE);
-            oval.set(2, 2, iv2.getWidth() - 2, iv2.getHeight() - 2);
+            oval.set(4, 4, iv2.getWidth() - 4, iv2.getHeight() - 4); //Fix SVFA-1561  change 2 to 4
             canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
 
 
@@ -3397,7 +3397,7 @@ public class AppCMSPresenter {
     public boolean isPreferedStorageLocationSDCard(Context context){
         if (context!=null){
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, 0);
-            return sharedPrefs.getBoolean(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, true);
+            return sharedPrefs.getBoolean(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, false);
         }
         return false;
     }
