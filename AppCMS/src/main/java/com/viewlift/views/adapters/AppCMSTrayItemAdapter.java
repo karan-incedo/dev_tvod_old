@@ -474,9 +474,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }
 
-            int tintColor = Color.parseColor(getColor(viewHolder.itemView.getContext(),
-                    appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
-
             switch (componentType) {
                 case PAGE_BUTTON_KEY:
                     switch (componentKey) {
