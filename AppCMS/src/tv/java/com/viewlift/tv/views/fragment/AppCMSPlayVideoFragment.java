@@ -1,7 +1,11 @@
 package com.viewlift.tv.views.fragment;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -49,7 +53,7 @@ import rx.functions.Action1;
  */
 
 public class AppCMSPlayVideoFragment extends Fragment
-        implements AdErrorEvent.AdErrorListener, AdEvent.AdEventListener{
+        implements AdErrorEvent.AdErrorListener, AdEvent.AdEventListener, AppCmsTvErrorFragment.ErrorFragmentListener{
     private static final String TAG = "PlayVideoFragment";
 
     private AppCMSPresenter appCMSPresenter;
@@ -75,7 +79,9 @@ public class AppCMSPlayVideoFragment extends Fragment
     private ImaSdkFactory sdkFactory;
     private AdsLoader adsLoader;
     private AdsManager adsManager;
-    private boolean isAdDisplayed;
+    private boolean isAdDisplayed, isADPlay;
+    AppCmsTvErrorFragment errorActivityFragment;
+    boolean networkConnect, networkDisconnect = true;
 
     public interface OnClosePlayerEvent {
         void closePlayer();
@@ -241,10 +247,11 @@ public class AppCMSPlayVideoFragment extends Fragment
                     case ExoPlayer.STATE_READY:
                         text += "";
                         playBackStateLayout.setVisibility(View.GONE);
-                        if (shouldRequestAds) {
+                        if (shouldRequestAds && !isADPlay) {
                             requestAds(adsUrl);
+                            isADPlay = true;
                         } else {
-                            videoPlayerView.resumePlayer();
+                            //videoPlayerView.resumePlayer();
                         }
                         break;
                     case ExoPlayer.STATE_ENDED:
@@ -315,6 +322,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             videoPlayerView.resumePlayer();
             Log.d(TAG, "Resuming playback");
         }
+        getActivity().registerReceiver(networkReciever , new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+
         super.onResume();
     }
 
@@ -325,6 +334,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         } else {
             videoPlayerView.pausePlayer();
         }
+        getActivity().unregisterReceiver(networkReciever);
         super.onPause();
     }
 
@@ -433,4 +443,46 @@ public class AppCMSPlayVideoFragment extends Fragment
         playerView.showController();
         return playerView.dispatchMediaKeyEvent(event);
     }
+
+    BroadcastReceiver networkReciever = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (action != null && action.equalsIgnoreCase("android.net.conn.CONNECTIVITY_CHANGE")){
+                if(appCMSPresenter.isNetworkConnected()){
+                    //TODO:resume the video.
+                    if(networkConnect) {
+                        networkDisconnect = true;
+                        if (!TextUtils.isEmpty(hlsUrl)) {
+                            videoPlayerView.sendPlayerPosition(videoPlayerView.getPlayer().getCurrentPosition());
+                            videoPlayerView.setUriOnConnection(Uri.parse(hlsUrl), null);
+                        }
+                    }
+                } else {
+                    if(networkDisconnect) {
+                        networkConnect = true;
+                        networkDisconnect = false;
+                        Bundle bundle = new Bundle();
+                        bundle.putBoolean(getString(R.string.retry_key), false);
+                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                        errorActivityFragment = AppCmsTvErrorFragment.newInstance(
+                                bundle);
+                        errorActivityFragment.setErrorListener(AppCMSPlayVideoFragment.this);
+                        errorActivityFragment.show(ft, getString(R.string.error_dialog_fragment_tag));
+                    }
+                }
+            }
+        }
+    };
+
+    @Override
+    public void onErrorScreenClose() {
+        errorActivityFragment.dismiss();
+    }
+
+    @Override
+    public void onRetry(Bundle bundle) {
+
+    }
+
 }

@@ -50,6 +50,7 @@
     <string name="app_cms_data_error_message">Data is currently unavailable.  Please try again later.</string>
     <string name="app_cms_close_alert_dialog_button_text">CLOSE</string>
     <string name="text_plain_mime_type">text/plain</string>
+    <string name="app_cms_ok_alert_dialog_button_text">OK</string>
 
     <!-- Age rating values -->
     <string name="age_rating_y">Y</string>

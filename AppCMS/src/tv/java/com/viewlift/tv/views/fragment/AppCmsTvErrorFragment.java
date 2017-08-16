@@ -116,6 +116,13 @@ public class AppCmsTvErrorFragment extends AbsDialogFragment {
             }
         });
 
+        if(!shouldRetry) {
+            btnRetry.setVisibility(View.INVISIBLE);
+            btnClose.setText(getResources().getString(R.string.app_cms_ok_alert_dialog_button_text));
+        } else {
+            btnClose.setText(getResources().getString(R.string.app_cms_close_alert_dialog_button_text));
+        }
+
         parentLayout.setBackgroundColor(Color.parseColor(backGroundColor));
         return view;
     }
