@@ -21,6 +21,7 @@
     <string name="menu_navigation_key">menu_navigation</string>
     <string name="ellipse_char">&#8230;</string>
     <string name="mins_abbreviation">MINS</string>
+    <string name="_mins_abbreviation">%d MINS</string>
     <string name="text_separator">&#160;|&#160;</string>
     <string name="color_hash_prefix">#</string>
     <string name="string_with_ellipse">%1$s&#8230;</string>

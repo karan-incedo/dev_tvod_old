@@ -620,14 +620,19 @@ public class AppCMSPresenter {
                             sendUpdateHistoryAction();
                         }
                     });
-            try {
-                DownloadVideoRealm downloadedVideo = realmController.getDownloadById(filmId);
-                downloadedVideo.setWatchedTime(watchedTime);
-                downloadedVideo.setLastWatchDate(System.currentTimeMillis());
-                realmController.updateDownload(downloadedVideo);
-            } catch (Exception e) {
-                Log.e(TAG, "Film " + filmId + " has not been downloaded");
-            }
+            currentActivity.runOnUiThread(() -> {
+                try {
+                    // copyFromRealm is used to get an unmanaged in-memory copy of an already
+                    // persisted RealmObject
+                    DownloadVideoRealm downloadedVideo = realmController.getRealm()
+                            .copyFromRealm(realmController.getDownloadById(filmId));
+                    downloadedVideo.setWatchedTime(watchedTime);
+                    downloadedVideo.setLastWatchDate(System.currentTimeMillis());
+                    realmController.updateDownload(downloadedVideo);
+                } catch (Exception e) {
+                    Log.e(TAG, "Film " + filmId + " has not been downloaded");
+                }
+            });
         }
     }
 
@@ -1930,6 +1935,7 @@ public class AppCMSPresenter {
         downloadVideoRealm.setVideoWebURL(downloadURL);
         downloadVideoRealm.setDownloadDate(System.currentTimeMillis());
         downloadVideoRealm.setVideoDuration(contentDatum.getGist().getRuntime());
+        downloadVideoRealm.setWatchedTime(contentDatum.getGist().getWatchedTime());
 
         downloadVideoRealm.setPermalink(contentDatum.getGist().getPermalink());
         downloadVideoRealm.setDownloadStatus(DownloadStatus.STATUS_PENDING);
