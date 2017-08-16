@@ -72,7 +72,6 @@ import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
 import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
-import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
@@ -657,13 +656,10 @@ public class AppCMSPresenter {
     public void getUserVideoStatus(String filmId, Action1<UserVideoStatusResponse> responseAction) {
         if (shouldRefreshAuthToken()) {
             refreshIdentity(getRefreshToken(currentActivity),
-                    new Action0() {
-                        @Override
-                        public void call() {
-                            String url = currentActivity.getString(R.string.app_cms_video_status_api_url,
-                                    appCMSMain.getApiBaseUrl(), filmId, appCMSMain.getInternalName());
-                            appCMSUserVideoStatusCall.call(url, getAuthToken(currentActivity), responseAction);
-                        }
+                    () -> {
+                        String url = currentActivity.getString(R.string.app_cms_video_status_api_url,
+                                appCMSMain.getApiBaseUrl(), filmId, appCMSMain.getInternalName());
+                        appCMSUserVideoStatusCall.call(url, getAuthToken(currentActivity), responseAction);
                     });
         } else {
             String url = currentActivity.getString(R.string.app_cms_video_status_api_url,
@@ -1049,7 +1045,7 @@ public class AppCMSPresenter {
                                                     if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY ||
                                                             moduleType == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
                                                         if (module.getContentData() != null &&
-                                                                module.getContentData().size() > 0) {
+                                                                !module.getContentData().isEmpty()) {
                                                             loadingHistory = true;
                                                             getHistoryData(appCMSHistoryResult -> {
                                                                 if (appCMSHistoryResult != null) {
@@ -1515,7 +1511,7 @@ public class AppCMSPresenter {
                 ArrayList<String> subscribedSkus = activeSubs.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
 
                 Bundle buyIntentBundle;
-                if (subscribedSkus != null && subscribedSkus.size() > 0) {
+                if (subscribedSkus != null && !subscribedSkus.isEmpty()) {
                     buyIntentBundle = inAppBillingService.getBuyIntentToReplaceSkus(5,
                             currentActivity.getPackageName(),
                             subscribedSkus,
@@ -1722,7 +1718,7 @@ public class AppCMSPresenter {
             VideoAssets videoAssets = new VideoAssets();
             List<Mpeg> mpegs = new ArrayList<>();
 
-            String renditionValueArray[] = {"1080p", "720p", "360p"};
+            String[] renditionValueArray = {"1080p", "720p", "360p"};
             for (String renditionValue : renditionValueArray) {
                 Mpeg mpeg = new Mpeg();
                 mpeg.setRenditionValue(renditionValue);
@@ -1798,10 +1794,9 @@ public class AppCMSPresenter {
                     resultAction1);
         } else {
 
-            long enqueueId = 0L;
+            long enqueueId;
 
-            if (contentDatum.getStreamingInfo() == null) { // This will handle the case if we get video streming info null at Video detail page.
-
+            if (contentDatum.getStreamingInfo() == null) { // This will handle the case if we get video streaming info null at Video detail page.
 
                 String url = getStreamingInfoURL(contentDatum.getGist().getId());
 
@@ -1820,7 +1815,7 @@ public class AppCMSPresenter {
             long ccEnqueueId = 0L;
             if (contentDatum.getContentDetails() != null &&
                     contentDatum.getContentDetails().getClosedCaptions() != null &&
-                    contentDatum.getContentDetails().getClosedCaptions().size() > 0 &&
+                    !contentDatum.getContentDetails().getClosedCaptions().isEmpty() &&
                     contentDatum.getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
                 ccEnqueueId = downloadVideoSubtitles(contentDatum.getContentDetails()
                         .getClosedCaptions().get(0).getUrl(), contentDatum.getGist().getId());
@@ -2091,11 +2086,7 @@ public class AppCMSPresenter {
     public boolean isDownloadUnfinished() {
 
         List<DownloadVideoRealm> unFinishedVideoList = getRealmController().getAllUnfinishedDownloades(getLoggedInUser(currentActivity));
-        if (unFinishedVideoList != null && unFinishedVideoList.size() > 0) {
-            return true;
-        }
-
-        return false;
+        return unFinishedVideoList != null && !unFinishedVideoList.isEmpty();
     }
 
     public AppCMSStreamingInfoCall getAppCMSStreamingInfoCall() {
@@ -2103,11 +2094,10 @@ public class AppCMSPresenter {
     }
 
     public String getStreamingInfoURL(String filmId) {
-        String url = currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
+        return currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
                 appCMSMain.getApiBaseUrl(),
                 filmId,
                 appCMSMain.getSite());
-        return url;
     }
 
     public String getDownloadedFileSize(String filmId) {
@@ -2124,11 +2114,7 @@ public class AppCMSPresenter {
 
     public boolean isVideoDownloaded(String videoId) {
         DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId, getLoggedInUser(currentActivity));
-        if (downloadVideoRealm != null && downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId)) {
-            return true;
-        }
-
-        return false;
+        return downloadVideoRealm != null && downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId);
     }
 
     public String getDownloadedFileSize(long size) {
@@ -2163,7 +2149,6 @@ public class AppCMSPresenter {
             long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
             long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
             downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
-
         }
 
         c.close();
@@ -2349,7 +2334,7 @@ public class AppCMSPresenter {
                     if (jsonValueKeyMap.get(module1.getModuleType()) ==
                             AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
                         if (module1.getContentData() != null &&
-                                module1.getContentData().size() > 0) {
+                                !module1.getContentData().isEmpty()) {
                             loadingHistory = true;
                             getHistoryData(appCMSHistoryResult -> {
                                 if (appCMSHistoryResult != null) {
@@ -2850,7 +2835,8 @@ public class AppCMSPresenter {
                             "subs",
                             null);
                     ArrayList<String> subscribedItemList = activeSubs.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
-                    if (subscribedItemList != null && subscribedItemList.size() > 0) {
+
+                    if (subscribedItemList != null && !subscribedItemList.isEmpty()) {
                         boolean subscriptionExpired = true;
                         for (int i = 0; i < subscribedItemList.size(); i++) {
                             try {
@@ -2867,8 +2853,7 @@ public class AppCMSPresenter {
                                         skuListBundle);
                                 ArrayList<String> skuDetailsList =
                                         skuListBundleResult.getStringArrayList("DETAILS_LIST");
-
-                                if (skuDetailsList != null && skuDetailsList.size() > 0) {
+                                if (skuDetailsList != null && !skuDetailsList.isEmpty()) {
                                     SkuDetails skuDetails = gson.fromJson(skuDetailsList.get(0),
                                             SkuDetails.class);
                                     setExistingGooglePlaySubscriptionDescription(currentActivity, skuDetails.getDescription());
@@ -2886,9 +2871,7 @@ public class AppCMSPresenter {
                                         showDialog(DialogType.EXISTING_SUBSCRIPTION,
                                                 currentActivity.getString(R.string.app_cms_existing_subscription_error_message),
                                                 false,
-                                                () -> {
-                                                    sendCloseOthersAction(null, true);
-                                                });
+                                                () -> sendCloseOthersAction(null, true));
                                     }
                                 }
                             } catch (Exception e) {
@@ -3029,33 +3012,13 @@ public class AppCMSPresenter {
         }
     }
 
+    @SuppressWarnings("unused")
     public void updateUserData(final String username,
                                final String email,
+                               final String password,
                                final Action1<UserIdentity> userIdentityAction) {
         if (currentActivity != null) {
-            if (shouldRefreshAuthToken()) {
-                callRefreshIdentity(() -> {
-                    String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
-                            appCMSMain.getApiBaseUrl(),
-                            appCMSMain.getInternalName());
-                    UserIdentity userIdentity = new UserIdentity();
-                    userIdentity.setName(username);
-                    userIdentity.setEmail(email);
-                    userIdentity.setId(getLoggedInUser(currentActivity));
-                    appCMSUserIdentityCall.callPost(url,
-                            getAuthToken(currentActivity),
-                            userIdentity,
-                            userIdentityResult -> {
-                                if (userIdentityResult != null) {
-                                    setLoggedInUserName(currentActivity,
-                                            userIdentityResult.getName());
-                                    setLoggedInUserEmail(currentActivity,
-                                            userIdentityResult.getEmail());
-                                }
-                                sendRefreshPageAction();
-                            });
-                });
-            } else {
+            callRefreshIdentity(() -> {
                 String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
                         appCMSMain.getApiBaseUrl(),
                         appCMSMain.getInternalName());
@@ -3063,19 +3026,21 @@ public class AppCMSPresenter {
                 userIdentity.setName(username);
                 userIdentity.setEmail(email);
                 userIdentity.setId(getLoggedInUser(currentActivity));
+                userIdentity.setPassword(password);
                 appCMSUserIdentityCall.callPost(url,
                         getAuthToken(currentActivity),
                         userIdentity,
-                        userIdentity1 -> {
-                            if (userIdentity1 != null) {
+                        userIdentityResult -> {
+                            if (userIdentityResult != null) {
                                 setLoggedInUserName(currentActivity,
-                                        userIdentity1.getName());
+                                        userIdentityResult.getName());
                                 setLoggedInUserEmail(currentActivity,
-                                        userIdentity1.getEmail());
-                                sendRefreshPageAction();
+                                        userIdentityResult.getEmail());
                             }
+                            sendRefreshPageAction();
+                            userIdentityAction.call(userIdentityResult);
                         });
-            }
+            });
         }
     }
 
@@ -3151,7 +3116,7 @@ public class AppCMSPresenter {
                                         if (jsonValueKeyMap.get(module.getModuleType()) ==
                                                 AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
                                             if (module.getContentData() != null &&
-                                                    module.getContentData().size() > 0) {
+                                                    !module.getContentData().isEmpty()) {
                                                 loadingHistory = true;
                                                 getHistoryData(appCMSHistoryResult -> {
                                                     if (appCMSHistoryResult != null) {
@@ -3324,12 +3289,7 @@ public class AppCMSPresenter {
             showDialog(DialogType.NETWORK,
                     null,
                     false,
-                    new Action0() {
-                        @Override
-                        public void call() {
-                            sendCloseOthersAction(null, false);
-                        }
-                    });
+                    () -> sendCloseOthersAction(null, false));
         }
     }
 
@@ -3779,8 +3739,6 @@ public class AppCMSPresenter {
                                     }
                                 }
                             });
-                        } else {
-
                         }
                     });
 
@@ -4050,7 +4008,7 @@ public class AppCMSPresenter {
     }
 
     public void addInternalEvent(OnInternalEvent onInternalEvent) {
-        if (currentActions.size() > 0 &&
+        if (!currentActions.isEmpty() &&
                 !TextUtils.isEmpty(currentActions.peek()) &&
                 onActionInternalEvents.get(currentActions.peek()) != null) {
             onActionInternalEvents.get(currentActions.peek()).add(onInternalEvent);
@@ -4058,7 +4016,7 @@ public class AppCMSPresenter {
     }
 
     public void clearOnInternalEvents() {
-        if (currentActions.size() > 0 &&
+        if (!currentActions.isEmpty() &&
                 !TextUtils.isEmpty(currentActions.peek()) &&
                 onActionInternalEvents.get(currentActions.peek()) != null) {
             onActionInternalEvents.get(currentActions.peek()).clear();
@@ -4067,7 +4025,7 @@ public class AppCMSPresenter {
 
     public @Nullable
     List<OnInternalEvent> getOnInternalEvents() {
-        if (currentActions.size() > 0 &&
+        if (!currentActions.isEmpty() &&
                 !TextUtils.isEmpty(currentActions.peek()) &&
                 onActionInternalEvents.get(currentActions.peek()) != null) {
             return onActionInternalEvents.get(currentActions.peek());
@@ -4076,7 +4034,7 @@ public class AppCMSPresenter {
     }
 
     public void restartInternalEvents() {
-        if (currentActions.size() > 0) {
+        if (!currentActions.isEmpty()) {
             Log.d(TAG, "Restarting internal events");
             List<OnInternalEvent> onInternalEvents = onActionInternalEvents.get(currentActions.peek());
             if (onInternalEvents != null) {
@@ -4089,7 +4047,7 @@ public class AppCMSPresenter {
     }
 
     public void cancelInternalEvents() {
-        if (currentActions.size() > 0) {
+        if (!currentActions.isEmpty()) {
             List<OnInternalEvent> onInternalEvents = onActionInternalEvents.get(currentActions.peek());
             if (onInternalEvents != null) {
                 for (OnInternalEvent onInternalEvent : onInternalEvents) {
@@ -4100,7 +4058,7 @@ public class AppCMSPresenter {
     }
 
     public void popActionInternalEvents() {
-        if (currentActions.size() > 0) {
+        if (!currentActions.isEmpty()) {
             Log.d(TAG, "Stack size - Popping action internal events: " + currentActions.size());
             currentActions.pop();
             Log.d(TAG, "Stack size - Popped action internal events: " + currentActions.size());
@@ -4108,7 +4066,7 @@ public class AppCMSPresenter {
     }
 
     public NavigationPrimary findHomePageNavItem() {
-        if (navigation.getNavigationPrimary().size() >= 1) {
+        if (!navigation.getNavigationPrimary().isEmpty()) {
             return navigation.getNavigationPrimary().get(0);
         }
         return null;
@@ -4186,12 +4144,9 @@ public class AppCMSPresenter {
     }
 
     public boolean isPageNavigationPage(String pageId) {
-        if (currentActivity != null &&
+        return currentActivity != null &&
                 !TextUtils.isEmpty(pageId) &&
-                pageId.equals(currentActivity.getString(R.string.app_cms_navigation_page_tag))) {
-            return true;
-        }
-        return false;
+                pageId.equals(currentActivity.getString(R.string.app_cms_navigation_page_tag));
     }
 
     public boolean isPageUser(String pageId) {
@@ -4693,7 +4648,7 @@ public class AppCMSPresenter {
                     apikey,
                     getAuthToken(currentActivity),
                     result -> {
-
+                        //
                     },
                     appCMSSubscriptionPlanResult -> {
                         if (appCMSSubscriptionPlanResult != null) {
@@ -4751,7 +4706,7 @@ public class AppCMSPresenter {
                         googleUserId = null;
                     },
                     planResult -> {
-
+                        //
                     });
         } catch (IOException e) {
             Log.e(TAG, "Failed to update user subscription status");
@@ -4839,90 +4794,89 @@ public class AppCMSPresenter {
         if (currentActivity != null && isUserLoggedIn(currentActivity)) {
             if (shouldRefreshAuthToken()) {
                 refreshIdentity(getRefreshToken(currentActivity),
-                        new Action0() {
-                            @Override
-                            public void call() {
-                                try {
-                                    appCMSSubscriptionPlanCall.call(
-                                            currentActivity.getString(R.string.app_cms_subscription_plan_list_api_url,
-                                                    appCMSMain.getApiBaseUrl(),
-                                                    appCMSMain.getInternalName()),
-                                            R.string.app_cms_subscription_plan_list_key,
-                                            null,
-                                            apikey,
-                                            getAuthToken(currentActivity),
-                                            appCMSSubscriptionPlanResultList -> {
-                                                for (AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResult : appCMSSubscriptionPlanResultList) {
-                                                    SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
-                                                    subscriptionPlan.setSku(appCMSSubscriptionPlanResult.getIdentifier());
-                                                    subscriptionPlan.setPlanId(appCMSSubscriptionPlanResult.getId());
-                                                    subscriptionPlan.setSubscriptionPrice(
-                                                            appCMSSubscriptionPlanResult
-                                                                    .getPlanDetails()
-                                                                    .get(0)
-                                                                    .getRecurringPaymentAmount());
-                                                    createSubscriptionPlan(subscriptionPlan);
-                                                }
-                                                subscriptionPlans = getExistingSubscriptionPlans();
-                                            },
-                                            appCMSSubscriptionPlanResult -> {
-
-                                            },
-                                            appCMSUserSubscriptionResult -> {
-
-                                            });
-                                    appCMSSubscriptionPlanCall.call(
-                                            currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
-                                                    appCMSMain.getApiBaseUrl(),
-                                                    appCMSMain.getInternalName()),
-                                            R.string.app_cms_subscription_subscribed_plan_key,
-                                            null,
-                                            apikey,
-                                            getAuthToken(currentActivity),
-                                            listResult -> {
-                                            },
-                                            singleResult -> {
-                                            },
-                                            appCMSSubscriptionPlanResult -> {
-                                                if (appCMSSubscriptionPlanResult != null &&
-                                                        appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails() != null) {
-
-                                                    UserSubscriptionPlan userSubscriptionPlan = new UserSubscriptionPlan();
-                                                    userSubscriptionPlan.setUserId(getLoggedInUser(currentActivity));
-                                                    userSubscriptionPlan.setPlanReceipt(appCMSSubscriptionPlanResult.getSubscriptionInfo().getReceipt());
-                                                    userSubscriptionPlan.setPaymentHandler(appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler());
-                                                    SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
-                                                    subscriptionPlan.setSubscriptionPrice(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails().get(0).getRecurringPaymentAmount());
-                                                    subscriptionPlan.setPlanId(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
-                                                    subscriptionPlan.setSku(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
-                                                    userSubscriptionPlan.setSubscriptionPlan(subscriptionPlan);
-
-                                                    userSubscriptionPlan.setAvailableUpgrades(getAvailableUpgradePlans(realmController.getAllSubscriptionPlans()));
-                                                    realmController.addUserSubscriptionPlan(userSubscriptionPlan);
-
-                                                    setActiveSubscriptionSku(currentActivity,
-                                                            appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
-                                                    setActiveSubscriptionId(currentActivity,
-                                                            appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
-                                                    setActiveSubscriptionCurrency(currentActivity,
-                                                            appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()
-                                                                    .get(0).getRecurringPaymentCurrencyCode());
-                                                    setActiveSubscriptionPlanName(currentActivity,
-                                                            appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
-                                                    setActiveSubscriptionPrice(currentActivity,
-                                                            String.valueOf(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()
-                                                                    .get(0).getRecurringPaymentAmount()));
-                                                    setActiveSubscriptionProcessor(currentActivity,
-                                                            appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler());
-                                                }
-                                                if (onRefreshReadyAction != null) {
-                                                    onRefreshReadyAction.call();
-                                                }
+                        () -> {
+                            try {
+                                appCMSSubscriptionPlanCall.call(
+                                        currentActivity.getString(R.string.app_cms_subscription_plan_list_api_url,
+                                                appCMSMain.getApiBaseUrl(),
+                                                appCMSMain.getInternalName()),
+                                        R.string.app_cms_subscription_plan_list_key,
+                                        null,
+                                        apikey,
+                                        getAuthToken(currentActivity),
+                                        appCMSSubscriptionPlanResultList -> {
+                                            for (AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResult : appCMSSubscriptionPlanResultList) {
+                                                SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
+                                                subscriptionPlan.setSku(appCMSSubscriptionPlanResult.getIdentifier());
+                                                subscriptionPlan.setPlanId(appCMSSubscriptionPlanResult.getId());
+                                                subscriptionPlan.setSubscriptionPrice(
+                                                        appCMSSubscriptionPlanResult
+                                                                .getPlanDetails()
+                                                                .get(0)
+                                                                .getRecurringPaymentAmount());
+                                                createSubscriptionPlan(subscriptionPlan);
                                             }
-                                    );
-                                } catch (Exception e) {
-                                    Log.e(TAG, "getSubscriptionPageContent: " + e.toString());
-                                }
+                                            subscriptionPlans = getExistingSubscriptionPlans();
+                                        },
+                                        appCMSSubscriptionPlanResult -> {
+                                            //
+                                        },
+                                        appCMSUserSubscriptionResult -> {
+                                            //
+                                        });
+                                appCMSSubscriptionPlanCall.call(
+                                        currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
+                                                appCMSMain.getApiBaseUrl(),
+                                                appCMSMain.getInternalName()),
+                                        R.string.app_cms_subscription_subscribed_plan_key,
+                                        null,
+                                        apikey,
+                                        getAuthToken(currentActivity),
+                                        listResult -> {
+                                            //
+                                        },
+                                        singleResult -> {
+                                            //
+                                        },
+                                        appCMSSubscriptionPlanResult -> {
+                                            if (appCMSSubscriptionPlanResult != null &&
+                                                    appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails() != null) {
+
+                                                UserSubscriptionPlan userSubscriptionPlan = new UserSubscriptionPlan();
+                                                userSubscriptionPlan.setUserId(getLoggedInUser(currentActivity));
+                                                userSubscriptionPlan.setPlanReceipt(appCMSSubscriptionPlanResult.getSubscriptionInfo().getReceipt());
+                                                userSubscriptionPlan.setPaymentHandler(appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler());
+                                                SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
+                                                subscriptionPlan.setSubscriptionPrice(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails().get(0).getRecurringPaymentAmount());
+                                                subscriptionPlan.setPlanId(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
+                                                subscriptionPlan.setSku(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
+                                                userSubscriptionPlan.setSubscriptionPlan(subscriptionPlan);
+
+                                                userSubscriptionPlan.setAvailableUpgrades(getAvailableUpgradePlans(realmController.getAllSubscriptionPlans()));
+                                                realmController.addUserSubscriptionPlan(userSubscriptionPlan);
+
+                                                setActiveSubscriptionSku(currentActivity,
+                                                        appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
+                                                setActiveSubscriptionId(currentActivity,
+                                                        appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
+                                                setActiveSubscriptionCurrency(currentActivity,
+                                                        appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()
+                                                                .get(0).getRecurringPaymentCurrencyCode());
+                                                setActiveSubscriptionPlanName(currentActivity,
+                                                        appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
+                                                setActiveSubscriptionPrice(currentActivity,
+                                                        String.valueOf(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()
+                                                                .get(0).getRecurringPaymentAmount()));
+                                                setActiveSubscriptionProcessor(currentActivity,
+                                                        appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler());
+                                            }
+                                            if (onRefreshReadyAction != null) {
+                                                onRefreshReadyAction.call();
+                                            }
+                                        }
+                                );
+                            } catch (Exception e) {
+                                Log.e(TAG, "getSubscriptionPageContent: " + e.toString());
                             }
                         });
             } else {
@@ -4952,10 +4906,10 @@ public class AppCMSPresenter {
                                 }
                             },
                             appCMSSubscriptionPlanResult -> {
-
+                                //
                             },
                             appCMSUserSubscriptionResult -> {
-
+                                //
                             });
                     appCMSSubscriptionPlanCall.call(
                             currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
@@ -4966,8 +4920,10 @@ public class AppCMSPresenter {
                             apikey,
                             getAuthToken(currentActivity),
                             listResult -> {
+                                //
                             },
                             singleResult -> {
+                                //
                             },
                             appCMSSubscriptionPlanResult -> {
                                 if (appCMSSubscriptionPlanResult != null &&
@@ -5225,14 +5181,9 @@ public class AppCMSPresenter {
                 showDialog(DialogType.REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_FOR_DOWNLOAD,
                         currentActivity.getString(R.string.app_cms_download_write_external_storage_permission_rationale_message),
                         true,
-                        new Action0() {
-                            @Override
-                            public void call() {
-                                askForPermissionToDownloadToExternalStorage(false,
-                                        downloadContentDatumAfterPermissionGranted,
-                                        downloadResultActionAfterPermissionGranted);
-                            }
-                        });
+                        () -> askForPermissionToDownloadToExternalStorage(false,
+                                downloadContentDatumAfterPermissionGranted,
+                                downloadResultActionAfterPermissionGranted));
             } else {
                 ActivityCompat.requestPermissions(currentActivity,
                         new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
@@ -5266,7 +5217,7 @@ public class AppCMSPresenter {
     }
 
     public void setNavItemToCurrentAction(Activity activity) {
-        if (activity != null && currentActions != null && currentActions.size() > 0) {
+        if (activity != null && currentActions != null && !currentActions.isEmpty()) {
             Intent setNavigationItemIntent = new Intent(PRESENTER_RESET_NAVIGATION_ITEM_ACTION);
             setNavigationItemIntent.putExtra(activity.getString(R.string.navigation_item_key),
                     currentActions.peek());
@@ -5397,7 +5348,7 @@ public class AppCMSPresenter {
                                                ContentDatum contentDatum,
                                                boolean closeLauncher,
                                                String filmId,
-                                               RETRY_TYPE retry_type) {
+                                               RETRY_TYPE retryType) {
         RetryCallBinder retryCallBinder = new RetryCallBinder();
         retryCallBinder.setPagePath(pagePath);
         retryCallBinder.setAction(action);
@@ -5405,7 +5356,7 @@ public class AppCMSPresenter {
         retryCallBinder.setExtraData(extraData);
         retryCallBinder.setContentDatum(contentDatum);
         retryCallBinder.setCloselauncher(closeLauncher);
-        retryCallBinder.setRetry_type(retry_type);
+        retryCallBinder.setRetry_type(retryType);
         retryCallBinder.setFilmId(filmId);
         return retryCallBinder;
     }
@@ -5636,7 +5587,7 @@ public class AppCMSPresenter {
             new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
                 if (appCMSAndroidUI == null ||
                         appCMSAndroidUI.getMetaPages() == null ||
-                        appCMSAndroidUI.getMetaPages().size() < 1) {
+                        appCMSAndroidUI.getMetaPages().isEmpty()) {
                     Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
                     launchErrorActivity(activity, platformType);
                 } else {
@@ -5693,7 +5644,7 @@ public class AppCMSPresenter {
         if (pagesToProcess == null) {
             pagesToProcess = new ConcurrentLinkedQueue<>();
         }
-        if (metaPageList.size() > 0) {
+        if (!metaPageList.isEmpty()) {
             int loginPageIndex = getSigninPage(metaPageList);
             if (loginPageIndex >= 0) {
                 loginPage = metaPageList.get(loginPageIndex);
@@ -5772,7 +5723,7 @@ public class AppCMSPresenter {
                         Log.d(TAG, "Action: " + action + "  PageAPI URL: "
                                 + metaPage.getPageAPI());
                     }
-                    if (pagesToProcess.size() > 0) {
+                    if (!pagesToProcess.isEmpty()) {
                         processMetaPagesQueue(activity,
                                 main,
                                 loadFromFile,
@@ -5919,7 +5870,7 @@ public class AppCMSPresenter {
             new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
                 if (appCMSAndroidUI == null ||
                         appCMSAndroidUI.getMetaPages() == null ||
-                        appCMSAndroidUI.getMetaPages().size() < 1) {
+                        appCMSAndroidUI.getMetaPages().isEmpty()) {
                     Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
                     launchErrorActivity(activity, PlatformType.TV);
                 } else {
@@ -5928,11 +5879,10 @@ public class AppCMSPresenter {
                     }
                     navigation = appCMSAndroidUI.getNavigation();
                     //add search in navigation item.
-                    NavigationPrimary searcNav = new NavigationPrimary();
-                    searcNav.setPageId(currentActivity.getString(R.string.app_cms_search_label));
-                    searcNav.setTitle(currentActivity.getString(R.string.app_cms_search_label));
-                    navigation.getNavigationPrimary().add(searcNav);
-
+                    NavigationPrimary searchNav = new NavigationPrimary();
+                    searchNav.setPageId(currentActivity.getString(R.string.app_cms_search_label));
+                    searchNav.setTitle(currentActivity.getString(R.string.app_cms_search_label));
+                    navigation.getNavigationPrimary().add(searchNav);
 
                     queueMetaPages(appCMSAndroidUI.getMetaPages());
                     final MetaPage firstPage = pagesToProcess.peek();
@@ -5940,26 +5890,23 @@ public class AppCMSPresenter {
                     processMetaPagesQueue(activity,
                             main,
                             loadFromFile,
-                            new Action0() {
-                                @Override
-                                public void call() {
-                                    Log.d(TAG, "Launching first page: " + firstPage.getPageName());
-                                    cancelInternalEvents();
+                            () -> {
+                                Log.d(TAG, "Launching first page: " + firstPage.getPageName());
+                                cancelInternalEvents();
 
-                                    Intent logoAnimIntent = new Intent(AppCMSPresenter.ACTION_LOGO_ANIMATION);
-                                    currentActivity.sendBroadcast(logoAnimIntent);
+                                Intent logoAnimIntent = new Intent(AppCMSPresenter.ACTION_LOGO_ANIMATION);
+                                currentActivity.sendBroadcast(logoAnimIntent);
 
-                                    NavigationPrimary homePageNav = findHomePageNavItem();
-                                    boolean launchSuccess = navigateToTVPage(homePageNav.getPageId(),
-                                            homePageNav.getTitle(),
-                                            homePageNav.getUrl(),
-                                            true,
-                                            null);
-                                    if (!launchSuccess) {
-                                        Log.e(TAG, "Failed to launch page: "
-                                                + firstPage.getPageName());
-                                        launchErrorActivity(currentActivity, PlatformType.TV);
-                                    }
+                                NavigationPrimary homePageNav = findHomePageNavItem();
+                                boolean launchSuccess = navigateToTVPage(homePageNav.getPageId(),
+                                        homePageNav.getTitle(),
+                                        homePageNav.getUrl(),
+                                        true,
+                                        null);
+                                if (!launchSuccess) {
+                                    Log.e(TAG, "Failed to launch page: "
+                                            + firstPage.getPageName());
+                                    launchErrorActivity(currentActivity, PlatformType.TV);
                                 }
                             });
                 }
@@ -6475,17 +6422,17 @@ public class AppCMSPresenter {
     }
 
     public String[] getStorageDirectories(Context context) {
-        HashSet<String> paths = new HashSet<String>();
+        HashSet<String> paths = new HashSet<>();
         String rawExternalStorage = System.getenv("EXTERNAL_STORAGE");
-        String rawSecondaryStoragesStr = System.getenv("SECONDARY_STORAGE");
+        String rawSecondaryStorageStr = System.getenv("SECONDARY_STORAGE");
         String rawEmulatedStorageTarget = System.getenv("EMULATED_STORAGE_TARGET");
         if (TextUtils.isEmpty(rawEmulatedStorageTarget)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-                List<String> results = new ArrayList<String>();
+                List<String> results = new ArrayList<>();
                 File[] externalDirs = context.getExternalFilesDirs(null);
                 for (File file : externalDirs) {
-                    String path = null;
+                    String path;
                     try {
                         path = file.getPath().split("/Android")[0];
                     } catch (Exception e) {
@@ -6494,7 +6441,7 @@ public class AppCMSPresenter {
                     }
                     if (path != null) {
                         if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Environment.isExternalStorageRemovable(file))
-                                || rawSecondaryStoragesStr != null && rawSecondaryStoragesStr.contains(path)) {
+                                || rawSecondaryStorageStr != null && rawSecondaryStorageStr.contains(path)) {
                             results.add(path);
                         }
                     }
@@ -6519,6 +6466,7 @@ public class AppCMSPresenter {
                 Integer.valueOf(lastFolder);
                 isDigit = true;
             } catch (NumberFormatException ignored) {
+                //
             }
 
             String rawUserId = isDigit ? lastFolder : "";
@@ -6529,8 +6477,8 @@ public class AppCMSPresenter {
             }
         }
 
-        if (!TextUtils.isEmpty(rawSecondaryStoragesStr)) {
-            String[] rawSecondaryStorages = rawSecondaryStoragesStr.split(File.pathSeparator);
+        if (!TextUtils.isEmpty(rawSecondaryStorageStr)) {
+            String[] rawSecondaryStorages = rawSecondaryStorageStr.split(File.pathSeparator);
             Collections.addAll(paths, rawSecondaryStorages);
         }
         return paths.toArray(new String[paths.size()]);
@@ -6553,7 +6501,7 @@ public class AppCMSPresenter {
     public List<String> getSearchResultsFromSharePreference() {
         if (currentActivity == null)
             return null;
-        List<String> searchValues = new ArrayList<String>();
+        List<String> searchValues = new ArrayList<>();
         SharedPreferences sharePref = currentActivity.getSharedPreferences(
                 currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
         int size = sharePref.getInt(currentActivity.getString(R.string.app_cms_search_value_size_key), 0);
@@ -6608,36 +6556,33 @@ public class AppCMSPresenter {
             GetAppCMSStreamingInfoAsyncTask.Params params =
                     new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
             new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall,
-                    new Action1<AppCMSStreamingInfo>() {
-                        @Override
-                        public void call(AppCMSStreamingInfo appCMSStreamingInfo) {
-                            String[] extraData = new String[3];
-                            if (appCMSStreamingInfo != null &&
-                                    appCMSStreamingInfo.getStreamingInfo() != null) {
-                                StreamingInfo streamingInfo = appCMSStreamingInfo.getStreamingInfo();
-                                extraData[0] = pagePath;
-                                if (streamingInfo.getVideoAssets() != null &&
-                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getHls())) {
-                                    extraData[1] = streamingInfo.getVideoAssets().getHls();
-                                } else if (streamingInfo.getVideoAssets() != null &&
-                                        streamingInfo.getVideoAssets().getMpeg() != null &&
-                                        streamingInfo.getVideoAssets().getMpeg().size() > 0 &&
-                                        streamingInfo.getVideoAssets().getMpeg().get(0) != null &&
-                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getMpeg().get(0).getUrl())) {
-                                    extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
-                                }
-                                extraData[2] = filmId;
-                                if (!TextUtils.isEmpty(extraData[1])) {
+                    appCMSStreamingInfo -> {
+                        String[] extraData = new String[3];
+                        if (appCMSStreamingInfo != null &&
+                                appCMSStreamingInfo.getStreamingInfo() != null) {
+                            StreamingInfo streamingInfo = appCMSStreamingInfo.getStreamingInfo();
+                            extraData[0] = pagePath;
+                            if (streamingInfo.getVideoAssets() != null &&
+                                    !TextUtils.isEmpty(streamingInfo.getVideoAssets().getHls())) {
+                                extraData[1] = streamingInfo.getVideoAssets().getHls();
+                            } else if (streamingInfo.getVideoAssets() != null &&
+                                    streamingInfo.getVideoAssets().getMpeg() != null &&
+                                    !streamingInfo.getVideoAssets().getMpeg().isEmpty() &&
+                                    streamingInfo.getVideoAssets().getMpeg().get(0) != null &&
+                                    !TextUtils.isEmpty(streamingInfo.getVideoAssets().getMpeg().get(0).getUrl())) {
+                                extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
+                            }
+                            extraData[2] = filmId;
+                            if (!TextUtils.isEmpty(extraData[1])) {
 
-                                    if (platformType == PlatformType.TV) {
-                                        launchTVButtonSelectedAction(pagePath,
-                                                action,
-                                                filmTitle,
-                                                extraData,
-                                                false);
-                                    }
-
+                                if (platformType == PlatformType.TV) {
+                                    launchTVButtonSelectedAction(pagePath,
+                                            action,
+                                            filmTitle,
+                                            extraData,
+                                            false);
                                 }
+
                             }
                         }
                     }).execute(params);
@@ -6718,7 +6663,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private static abstract class AppCMSPageAPIAction implements Action1<AppCMSPageAPI> {
+    private abstract static class AppCMSPageAPIAction implements Action1<AppCMSPageAPI> {
         boolean appbarPresent;
         boolean fullscreenEnabled;
         boolean navbarPresent;
@@ -6756,7 +6701,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private static abstract class AppCMSWatchlistAPIAction implements Action1<AppCMSWatchlistResult> {
+    private abstract static class AppCMSWatchlistAPIAction implements Action1<AppCMSWatchlistResult> {
         boolean appbarPresent;
         boolean fullscreenEnabled;
         boolean navbarPresent;
@@ -6791,7 +6736,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private static abstract class AppCMSHistoryAPIAction implements Action1<AppCMSHistoryResult> {
+    private abstract static class AppCMSHistoryAPIAction implements Action1<AppCMSHistoryResult> {
         boolean appbarPresent;
         boolean fullscreenEnabled;
         boolean navbarPresent;
@@ -6826,7 +6771,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private static abstract class AppCMSSubscriptionAPIAction
+    private abstract static class AppCMSSubscriptionAPIAction
             implements Action1<AppCMSSubscriptionResult> {
 
         boolean appbarPresent;
