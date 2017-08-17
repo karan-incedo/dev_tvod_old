@@ -441,7 +441,7 @@ public class AppCmsSearchFragment extends Fragment {
     Runnable searcRunnable = new Runnable() {
         @Override
         public void run() {
-            if(editText.getText().toString().trim().length() > 2) {
+            if(editText.getText().toString().length() > 2) {
                 try {
                     if (searchTask != null && searchTask.getStatus() == AsyncTask.Status.RUNNING) {
                         searchTask.cancel(true);
