@@ -15,19 +15,4 @@ public class AppCMSAutoPilot extends Autopilot {
     public void onAirshipReady(@NonNull UAirship airship) {
         airship.getPushManager().setUserNotificationsEnabled(true);
     }
-
-    @Nullable
-    @Override
-    public AirshipConfigOptions createAirshipConfigOptions(@NonNull Context context) {
-        return new AirshipConfigOptions.Builder()
-                .setDevelopmentAppKey("")
-                .setDevelopmentAppSecret("")
-//                .setProductionAppKey("")
-//                .setProductionAppSecret("")
-                .setInProduction(!BuildConfig.DEBUG)
-                .setGcmSender(context.getString(R.string.default_web_client_id))
-                .setNotificationIcon(R.mipmap.app_logo)
-                .setNotificationAccentColor(context.getColor(R.color.colorAccent))
-                .build();
-    }
 }
