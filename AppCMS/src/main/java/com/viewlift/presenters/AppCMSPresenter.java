@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -28,6 +29,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.RemoteException;
+import android.os.StatFs;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -1762,6 +1764,36 @@ public class AppCMSPresenter {
         }
     }
 
+    public long getRemainingDownloadSize() {
+        List<DownloadVideoRealm> remainDownloads = getRealmController().getAllUnfinishedDownloades(getLoggedInUser(currentActivity));
+        long bytesRemainDownload = 0l;
+        for (DownloadVideoRealm downloadVideoRealm : remainDownloads) {
+
+            DownloadManager.Query query = new DownloadManager.Query();
+            query.setFilterById(downloadVideoRealm.getVideoId_DM());
+            Cursor c = downloadManager.query(query);
+            if (c != null && c.moveToFirst()) {
+                long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                totalSize -= downloaded;
+                bytesRemainDownload += totalSize;
+            }
+            c.close();
+
+        }
+        return bytesRemainDownload / (1024l * 1024l);
+    }
+
+    public long getMegabytesAvailable(File f) {
+        StatFs stat = new StatFs(f.getPath());
+        long bytesAvailable = 0;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
+            bytesAvailable = (long) stat.getBlockSizeLong() * (long) stat.getAvailableBlocksLong();
+        else
+            bytesAvailable = (long) stat.getBlockSize() * (long) stat.getAvailableBlocks();
+        return bytesAvailable / (1024l * 1024l);
+    }
+
     /**
      * Implementation of download manager gives us facility of Async downloading of multiple video
      * Its pre built feature of the download manager
@@ -1785,6 +1817,11 @@ public class AppCMSPresenter {
                              final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
         downloadContentDatumAfterPermissionGranted = null;
         downloadResultActionAfterPermissionGranted = null;
+        // Check for low storage.  If there is low storage, the native library will not be
+        // downloaded, so detection will not become operational.
+        IntentFilter lowstorageFilter = new IntentFilter(Intent.ACTION_DEVICE_STORAGE_LOW);
+        boolean hasLowStorage = currentActivity.registerReceiver(null, lowstorageFilter) != null;
+
 
         if (isPreferedStorageLocationSDCard(currentActivity) &&
                 !hasWriteExternalStoragePermission()) {
@@ -1792,6 +1829,11 @@ public class AppCMSPresenter {
             askForPermissionToDownloadToExternalStorage(true,
                     contentDatum,
                     resultAction1);
+        } else if (hasLowStorage) {
+            showDialog(DialogType.DOWNLOAD_FAILED, currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null);
+
+            Log.w(TAG, currentActivity.getString(R.string.app_cms_download_failed_error_message));
+            return;
         } else {
 
             long enqueueId;
@@ -2094,6 +2136,7 @@ public class AppCMSPresenter {
     }
 
     public String getStreamingInfoURL(String filmId) {
+
         return currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
                 appCMSMain.getApiBaseUrl(),
                 filmId,
@@ -2158,9 +2201,11 @@ public class AppCMSPresenter {
     public synchronized void updateDownloadingStatus(String filmId, final ImageView imageView,
                                                      AppCMSPresenter presenter,
                                                      final Action1<UserVideoDownloadStatus> responseAction,
-                                                     String userId) {
+                                                     String userId, boolean isFromDownload) {
         long videoId = -1L;
-        cancelDownloadIconTimerTask();
+        if (!isFromDownload) {   //Fix of SVFA-1621
+            cancelDownloadIconTimerTask();
+        }
         try {
             videoId = realmController.getDownloadByIdBelongstoUser(filmId, userId).getVideoId_DM();
             DownloadManager.Query query = new DownloadManager.Query();
@@ -2171,26 +2216,32 @@ public class AppCMSPresenter {
              */
             runUpdateDownloadIconTimer = true;
             updateDownloadIconTimer = new Timer();
+
             updateDownloadIconTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    Cursor c = downloadManager.query(query);
-                    if (c != null && c.moveToFirst()) {
-                        downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-                        long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-                        long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-                        int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
-                        Log.d(TAG, "download progress =" + downloaded + " total-> " + totalSize + " " + downloadPercent);
-                        if (downloaded >= totalSize || downloadPercent > 100) {
-                            if (currentActivity != null && isUserLoggedIn(currentActivity))
-                                currentActivity.runOnUiThread(() -> appCMSUserDownloadVideoStatusCall
-                                        .call(filmId, presenter, responseAction, getLoggedInUser(currentActivity)));
-                            this.cancel();
-                        } else {
-                            if (currentActivity != null && runUpdateDownloadIconTimer)
-                                currentActivity.runOnUiThread(() -> circularImageBar(imageView, downloadPercent));
+                    try {
+                        Cursor c = downloadManager.query(query);
+                        if (c != null && c.moveToFirst()) {
+                            downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                            long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                            long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                            c.close();
+                            int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
+                            Log.d(TAG, "download progress =" + downloaded + " total-> " + totalSize + " " + downloadPercent);
+                            if (downloaded >= totalSize || downloadPercent > 100) {
+                                if (currentActivity != null && isUserLoggedIn(currentActivity))
+                                    currentActivity.runOnUiThread(() -> appCMSUserDownloadVideoStatusCall
+                                            .call(filmId, presenter, responseAction, getLoggedInUser(currentActivity)));
+                                this.cancel();
+                            } else {
+                                if (currentActivity != null && runUpdateDownloadIconTimer)
+                                    currentActivity.runOnUiThread(() -> circularImageBar(imageView, downloadPercent));
+                            }
+
                         }
-                        c.close();
+                    } catch (Exception exception) {
+
                     }
                 }
             }, 500, 1000);
@@ -2297,9 +2348,29 @@ public class AppCMSPresenter {
         }
     }
 
+    public boolean isMemorySpaceAvailable() {
+        Log.d(TAG, getRemainingDownloadSize() + "  Available storage space:=  " + getMegabytesAvailable(Environment.getExternalStorageDirectory()));
+        File storagePath = null;
+        if (!isPreferedStorageLocationSDCard(currentActivity)) {
+            storagePath = Environment.getExternalStorageDirectory();
+        } else {
+            storagePath = new File(getStorageDirectories(currentActivity)[0]);
+        }
+        if (getMegabytesAvailable(storagePath) > getRemainingDownloadSize()) {
+            return true;
+
+        }
+        return false;
+    }
+
     public void navigateToDownloadPage(String pageId, String pageTitle, String url,
                                        boolean launchActivity) {
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
+
+            if (!isMemorySpaceAvailable()) {
+                showDialog(DialogType.DOWNLOAD_FAILED, currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null);
+            }
+
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
 
             AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
@@ -4424,7 +4495,10 @@ public class AppCMSPresenter {
                     title = currentActivity.getString(R.string.app_cms_download_unavailable_error_title);
                     message = optionalMessage;
                     break;
-
+                case DOWNLOAD_FAILED:
+                    title = currentActivity.getString(R.string.app_cms_download_failed_error_title);
+                    message = optionalMessage;
+                    break;
                 default:
                     isNetwork = true;
                     title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
@@ -5328,6 +5402,9 @@ public class AppCMSPresenter {
                 resultAction);
     }
 
+
+
+
     public void searchRetryDialog(String searchTerm) {
         RetryCallBinder retryCallBinder = getRetryCallBinder(null, null,
                 searchTerm, null,
@@ -5349,6 +5426,7 @@ public class AppCMSPresenter {
                                                boolean closeLauncher,
                                                String filmId,
                                                RETRY_TYPE retryType) {
+
         RetryCallBinder retryCallBinder = new RetryCallBinder();
         retryCallBinder.setPagePath(pagePath);
         retryCallBinder.setAction(action);
@@ -5360,6 +5438,8 @@ public class AppCMSPresenter {
         retryCallBinder.setFilmId(filmId);
         return retryCallBinder;
     }
+
+
 
     private AppCMSBinder getAppCMSBinder(Activity activity,
                                          AppCMSPageUI appCMSPageUI,
@@ -5883,6 +5963,7 @@ public class AppCMSPresenter {
                     searchNav.setPageId(currentActivity.getString(R.string.app_cms_search_label));
                     searchNav.setTitle(currentActivity.getString(R.string.app_cms_search_label));
                     navigation.getNavigationPrimary().add(searchNav);
+
 
                     queueMetaPages(appCMSAndroidUI.getMetaPages());
                     final MetaPage firstPage = pagesToProcess.peek();
@@ -6620,7 +6701,8 @@ public class AppCMSPresenter {
         CANNOT_CANCEL_SUBSCRIPTION,
         STREAMING_INFO_MISSING,
         REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_FOR_DOWNLOAD,
-        DOWNLOAD_NOT_AVAILABLE
+        DOWNLOAD_NOT_AVAILABLE,
+        DOWNLOAD_FAILED
     }
 
     public enum RETRY_TYPE {
@@ -6815,6 +6897,216 @@ public class AppCMSPresenter {
         int currentlyPlayingIndex;
         List<String> relateVideoIds;
     }
+
+
+    public String getSDCardPath(Context context, String dirName) {
+        String dirPath = getSDCardPath(context) + File.separator + dirName;
+        File dir = new File(dirPath);
+        if (!dir.isDirectory())
+            dir.mkdirs();
+
+        return dir.getAbsolutePath();
+
+    }
+
+    public String getSDCardPath(Context context) {
+        File baseSDCardDir = null;
+        String[] dirs = getStorageDirectories(context);
+
+
+        baseSDCardDir = new File(dirs[0] + File.separator + appCMSMain.getDomainName());
+
+
+        return baseSDCardDir.getAbsolutePath();
+    }
+
+    public String[] physicalPaths = {
+            "/storage/sdcard0", "/storage/sdcard1", // Motorola Xoom
+            "/storage/extsdcard", // Samsung SGS3
+            "/storage/sdcard0/external_sdcard", // User request
+            "/mnt/extsdcard", "/mnt/sdcard/external_sd", // Samsung galaxy family
+            "/mnt/external_sd", "/mnt/media_rw/sdcard1", // 4.4.2 on CyanogenMod S3
+            "/removable/microsd", // Asus transformer prime
+            "/mnt/emmc", "/storage/external_SD", // LG
+            "/storage/ext_sd", // HTC One Max
+            "/storage/removable/sdcard1", // Sony Xperia Z1
+            "/data/sdext", "/data/sdext2", "/data/sdext3", "/data/sdext4", "/sdcard1", // Sony Xperia Z
+            "/sdcard2", // HTC One M8s
+            "/storage/microsd" // ASUS ZenFone 2
+    };
+
+    public String[] getStorageDirectories(Context context) {
+        HashSet<String> paths = new HashSet<String>();
+        String rawExternalStorage = System.getenv("EXTERNAL_STORAGE");
+        String rawSecondaryStoragesStr = System.getenv("SECONDARY_STORAGE");
+        String rawEmulatedStorageTarget = System.getenv("EMULATED_STORAGE_TARGET");
+        if (TextUtils.isEmpty(rawEmulatedStorageTarget)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+                List<String> results = new ArrayList<String>();
+                File[] externalDirs = context.getExternalFilesDirs(null);
+                for (File file : externalDirs) {
+                    String path = null;
+                    try {
+                        path = file.getPath().split("/Android")[0];
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        path = null;
+                    }
+                    if (path != null) {
+                        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Environment.isExternalStorageRemovable(file))
+                                || rawSecondaryStoragesStr != null && rawSecondaryStoragesStr.contains(path)) {
+                            results.add(path);
+                        }
+                    }
+                }
+
+                paths.addAll(results);
+
+            } else {
+                if (TextUtils.isEmpty(rawExternalStorage)) {
+                    boolean b = paths.addAll(Arrays.asList(physicalPaths));
+                } else {
+                    paths.add(rawExternalStorage);
+                }
+            }
+        } else {
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+
+            String[] folders = Pattern.compile("/").split(path);
+            String lastFolder = folders[folders.length - 1];
+            boolean isDigit = false;
+            try {
+                Integer.valueOf(lastFolder);
+                isDigit = true;
+            } catch (NumberFormatException ignored) {
+            }
+
+            String rawUserId = isDigit ? lastFolder : "";
+            if (TextUtils.isEmpty(rawUserId)) {
+                paths.add(rawEmulatedStorageTarget);
+            } else {
+                paths.add(rawEmulatedStorageTarget + File.separator + rawUserId);
+            }
+        }
+
+        if (!TextUtils.isEmpty(rawSecondaryStoragesStr)) {
+            String[] rawSecondaryStorages = rawSecondaryStoragesStr.split(File.pathSeparator);
+            Collections.addAll(paths, rawSecondaryStorages);
+        }
+        return paths.toArray(new String[paths.size()]);
+    }
+
+    public void setSearchResultsOnSharePreference(List<String> searchValues) {
+        if (currentActivity == null)
+            return;
+        SharedPreferences sharePref = currentActivity.getSharedPreferences(
+                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharePref.edit();
+        editor.putInt(currentActivity.getString(R.string.app_cms_search_value_size_key), searchValues.size());
+        for (int i = 0; i < searchValues.size(); i++) {
+            editor.remove(currentActivity.getString(R.string.app_cms_search_value_key) + i);
+            editor.putString(currentActivity.getString(R.string.app_cms_search_value_key) + i, searchValues.get(i));
+        }
+        editor.commit();
+    }
+
+    public List<String> getSearchResultsFromSharePreference() {
+        if (currentActivity == null)
+            return null;
+        List<String> searchValues = new ArrayList<String>();
+        SharedPreferences sharePref = currentActivity.getSharedPreferences(
+                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
+        int size = sharePref.getInt(currentActivity.getString(R.string.app_cms_search_value_size_key), 0);
+        for (int i = 0; i < size; i++) {
+            searchValues.add(sharePref.getString(currentActivity.getString(R.string.app_cms_search_value_key) + i, null));
+        }
+        return searchValues;
+    }
+
+    public void clearSearchResultsSharePreference() {
+        if (currentActivity == null)
+            return;
+        SharedPreferences sharePref = currentActivity.getSharedPreferences(
+                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
+        sharePref.edit().clear().commit();
+    }
+
+
+    public void openSearch() {
+        Intent updateHistoryIntent = new Intent(SEARCH_ACTION);
+        currentActivity.sendBroadcast(updateHistoryIntent);
+    }
+
+    public boolean launchTVVideoPlayer(final String filmId,
+                                       final String pagePath,
+                                       final String filmTitle,
+                                       final ContentDatum contentDatum) {
+        boolean result = false;
+
+
+        if (!isNetworkConnected() && platformType == PlatformType.TV) {
+            RetryCallBinder retryCallBinder = getRetryCallBinder(pagePath, null,
+                    filmTitle, null,
+                    contentDatum, false,
+                    filmId, VIDEO_ACTION
+            );
+
+            Bundle bundle = new Bundle();
+            bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
+            Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+            args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+            currentActivity.sendBroadcast(args);
+        } else if (currentActivity != null &&
+                !loadingPage && appCMSMain != null &&
+                !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
+                !TextUtils.isEmpty(appCMSMain.getInternalName())) {
+            result = true;
+            final String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
+            String url = currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    filmId,
+                    appCMSMain.getInternalName());
+            GetAppCMSStreamingInfoAsyncTask.Params params =
+                    new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
+            new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall,
+                    new Action1<AppCMSStreamingInfo>() {
+                        @Override
+                        public void call(AppCMSStreamingInfo appCMSStreamingInfo) {
+                            String[] extraData = new String[3];
+                            if (appCMSStreamingInfo != null &&
+                                    appCMSStreamingInfo.getStreamingInfo() != null) {
+                                StreamingInfo streamingInfo = appCMSStreamingInfo.getStreamingInfo();
+                                extraData[0] = pagePath;
+                                if (streamingInfo.getVideoAssets() != null &&
+                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getHls())) {
+                                    extraData[1] = streamingInfo.getVideoAssets().getHls();
+                                } else if (streamingInfo.getVideoAssets() != null &&
+                                        streamingInfo.getVideoAssets().getMpeg() != null &&
+                                        streamingInfo.getVideoAssets().getMpeg().size() > 0 &&
+                                        streamingInfo.getVideoAssets().getMpeg().get(0) != null &&
+                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getMpeg().get(0).getUrl())) {
+                                    extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
+                                }
+                                extraData[2] = filmId;
+                                if (!TextUtils.isEmpty(extraData[1])) {
+
+                                    if (platformType == PlatformType.TV) {
+                                        launchTVButtonSelectedAction(pagePath,
+                                                action,
+                                                filmTitle,
+                                                extraData,
+                                                false);
+                                    }
+
+                                }
+                            }
+                        }
+                    }).execute(params);
+        }
+        return result;
+    }
+
 
 
 }

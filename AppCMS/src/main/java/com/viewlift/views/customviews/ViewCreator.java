@@ -2675,17 +2675,18 @@ public class ViewCreator {
 
                     case STATUS_PENDING:
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId);
+                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId,false);
                         imageButton.setOnClickListener(null);
                         break;
 
                     case STATUS_RUNNING:
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId);
+                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId,false);
                         imageButton.setOnClickListener(null);
                         break;
 
                     case STATUS_SUCCESSFUL:
+                        appCMSPresenter.cancelDownloadIconTimerTask(); //Fix of SVFA-1621
                         imageButton.setImageResource(R.drawable.ic_downloaded);
                         imageButton.setOnClickListener(null);
                         break;
@@ -2697,7 +2698,7 @@ public class ViewCreator {
 
             } else {
                 appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                        UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId);
+                        UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId,false);
                 imageButton.setImageResource(R.drawable.ic_download);
                 imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
