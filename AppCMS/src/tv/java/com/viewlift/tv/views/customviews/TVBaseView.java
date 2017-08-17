@@ -201,6 +201,7 @@ public abstract class TVBaseView extends FrameLayout {
                     view.setPadding(padding,padding,padding,padding);
                     break;
                 case PAGE_VIDEO_TITLE_KEY:
+                case PAGE_VIDEO_SUBTITLE_KEY:
                     viewWidth = DEVICE_WIDTH/2;
                     break;
                 default:

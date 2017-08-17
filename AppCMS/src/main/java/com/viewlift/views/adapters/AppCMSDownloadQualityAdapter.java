@@ -32,6 +32,8 @@ public class AppCMSDownloadQualityAdapter extends AppCMSDownloadRadioAdapter<Mpe
         this.appCMSPresenter = appCMSPresenter;
         this.components = components;
         this.jsonValueKeyMap = jsonValueKeyMap;
+        this.tintColor = Color.parseColor(getColor(context,
+                appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
 
         if (appCMSPresenter.getUserDownloadQualityPref(context) != null) {
             for (Integer i = 0; i < items.size(); i++) {
@@ -61,9 +63,6 @@ public class AppCMSDownloadQualityAdapter extends AppCMSDownloadRadioAdapter<Mpe
             if (componentKey == null) {
                 componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }
-
-            int tintColor = Color.parseColor(getColor(viewHolder.mText.getContext(),
-                    appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
 
             switch (componentType) {
                 case PAGE_LABEL_KEY:

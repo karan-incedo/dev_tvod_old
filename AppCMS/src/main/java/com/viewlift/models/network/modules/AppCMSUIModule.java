@@ -262,6 +262,13 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_BACKGROUND_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_background_image_type_type),
                 AppCMSUIKeyType.PAGE_BACKGROUND_IMAGE_TYPE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_app_version_value_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_APP_VERSION_VALUE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_togglebutton_key),
+                AppCMSUIKeyType.PAGE_TOGGLE_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_autoplay_toggle_button_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_title_key),
                 AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY);
@@ -400,10 +407,10 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_download_quality_continue_button_key),
                 AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CONTINUE_BUTTON_KEY);
-
+        
         jsonValueKeyMap.put(context.getString(R.string.app_cms_download_quality_cancel_button_key),
                 AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY);
-
+        
         jsonValueKeyMap.put("", AppCMSUIKeyType.PAGE_EMPTY_KEY);
         jsonValueKeyMap.put(null, AppCMSUIKeyType.PAGE_NULL_KEY);
     }

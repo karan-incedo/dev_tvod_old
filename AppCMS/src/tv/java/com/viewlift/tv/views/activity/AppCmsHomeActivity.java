@@ -164,6 +164,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         pageLoading(false);
         Bundle bundle = intent.getBundleExtra(getString(R.string.retryCallBundleKey));
         bundle.putBoolean(getString(R.string.retry_key) , true);
+        bundle.putBoolean(getString(R.string.register_internet_receiver_key) , true);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         AppCmsTvErrorFragment newFragment = AppCmsTvErrorFragment.newInstance(
                 bundle);

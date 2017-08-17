@@ -59,6 +59,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     protected boolean isWatchlist;
     RecyclerView mRecyclerView;
     private List<OnInternalEvent> receivers;
+    private int tintColor;
 
     public AppCMSTrayItemAdapter(Context context,
                                  List<ContentDatum> adapterData,
@@ -87,7 +88,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
         this.receivers = new ArrayList<>();
 
-        if (adapterData != null && !adapterData.isEmpty()) {
+        this.tintColor = Color.parseColor(getColor(context,
+                appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
+
+        if (adapterData != null && adapterData.size() > 0) {
             sendEvent(null);
         }
     }
@@ -146,19 +150,17 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         holder.appCMSContinueWatchingDeleteButton,
                                         appCMSPresenter,
                                         userVideoDownloadStatus -> {
-
-                                            if (userVideoDownloadStatus != null) {
-                                                if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
-                                                    holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.ic_deleteicon);
-                                                    holder.appCMSContinueWatchingDeleteButton.setVisibility(View.VISIBLE);
-                                                    loadImage(holder.itemView.getContext(), userVideoDownloadStatus.getThumbUri(), holder.appCMSContinueWatchingVideoImage);
-                                                    holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
-                                                } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_RUNNING) {
-                                                    holder.appCMSContinueWatchingSize.setText("Cancel");
-                                                }
-                                                contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
-
+                                            if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
+                                                holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.ic_deleteicon));
+                                                holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
+                                                holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+                                                loadImage(holder.itemView.getContext(), userVideoDownloadStatus.getThumbUri(), holder.appCMSContinueWatchingVideoImage);
+                                                holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
+                                            } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_RUNNING) {
+                                                holder.appCMSContinueWatchingSize.setText("Cancel");
                                             }
+                                            contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
+
                                         },
                                         appCMSPresenter.getLoggedInUser(holder.itemView.getContext()), true);
 
@@ -172,8 +174,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             break;
 
                         case STATUS_SUCCESSFUL:
-                            holder.appCMSContinueWatchingDeleteButton.setImageResource(R.drawable.ic_deleteicon);
-                            holder.appCMSContinueWatchingDeleteButton.setVisibility(View.VISIBLE);
+                            holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.ic_deleteicon));
+                            holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
+                            holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                             break;
 
                         default:
@@ -285,9 +288,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             });*/
 
             if (contentDatum.getGist() != null) {
-                holder.appCMSContinueWatchingDuration.setText(holder.itemView.getContext()
-                        .getString(R.string._mins_abbreviation,
-                                (contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)));
+                holder.appCMSContinueWatchingDuration.setText(String.valueOf(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
+                        + " " + String.valueOf(holder.itemView.getContext().getString(R.string.mins_abbreviation)));
             }
             if (contentDatum.getGist().getWatchedPercentage() > 0) {
                 holder.appCMSContinueWatchingProgress.setVisibility(View.VISIBLE);
@@ -470,9 +472,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }
 
-            int tintColor = Color.parseColor(getColor(viewHolder.itemView.getContext(),
-                    appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
-
             switch (componentType) {
                 case PAGE_BUTTON_KEY:
                     switch (componentKey) {
@@ -497,6 +496,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         viewHolder.appCMSContinueWatchingSelectToDownloadButton,
                                         component);
                             }
+                            viewHolder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(viewHolder.itemView.getContext(), R.drawable.ic_deleteicon));
                             viewHolder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
                             viewHolder.appCMSContinueWatchingSelectToDownloadButton.getBackground().setTint(tintColor);
                             viewHolder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);

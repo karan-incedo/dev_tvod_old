@@ -107,7 +107,7 @@ public class AppCMSPageAPICall {
         }
 
         if (appCMSPageAPI == null && tryCount == 0) {
-            call(context,
+            return call(context,
                     baseUrl,
                     endpoint,
                     siteId,
