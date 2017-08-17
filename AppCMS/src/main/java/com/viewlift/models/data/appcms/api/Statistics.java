@@ -13,7 +13,7 @@ public class Statistics {
 
     @SerializedName("tmdbRatingAvg")
     @Expose
-    int tmdbRatingAvg;
+    double tmdbRatingAvg;
 
     @SerializedName("averageViewerGrade")
     @Expose
@@ -27,11 +27,11 @@ public class Statistics {
         this.tmdbRatingCount = tmdbRatingCount;
     }
 
-    public int getTmdbRatingAvg() {
+    public double getTmdbRatingAvg() {
         return tmdbRatingAvg;
     }
 
-    public void setTmdbRatingAvg(int tmdbRatingAvg) {
+    public void setTmdbRatingAvg(double tmdbRatingAvg) {
         this.tmdbRatingAvg = tmdbRatingAvg;
     }
 

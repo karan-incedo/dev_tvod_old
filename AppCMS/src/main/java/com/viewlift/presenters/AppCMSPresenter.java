@@ -32,6 +32,7 @@ import android.os.StatFs;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -65,6 +66,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.viewlift.Manifest;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
@@ -102,6 +105,7 @@ import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
+import com.viewlift.models.data.appcms.ui.main.Content;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
@@ -149,6 +153,7 @@ import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
+import com.viewlift.models.network.utility.MainUtils;
 import com.viewlift.views.activity.AppCMSDownloadQualityActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
@@ -170,18 +175,22 @@ import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
 import org.threeten.bp.temporal.ChronoUnit;
 
+import org.w3c.dom.Text;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -195,6 +204,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -235,8 +245,11 @@ public class AppCMSPresenter {
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String CASTING_OVERLAY_PREF_NAME = "cast_intro_pref";
+
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
+
     private static final String CAST_SHARED_PREF_NAME = "cast_shown";
+
     private static final String USER_NAME_SHARED_PREF_NAME = "user_name_pref";
     private static final String USER_EMAIL_SHARED_PREF_NAME = "user_email_pref";
     private static final String REFRESH_TOKEN_SHARED_PREF_NAME = "refresh_token_pref";
@@ -258,8 +271,10 @@ public class AppCMSPresenter {
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_PRICE = "existing_google_play_subscription_price_pref_key";
     private static final String USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME = "user_download_quality_pref";
     private static final String USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME = "user_download_sd_card_pref";
+
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String ANONYMOUS_AUTH_TOKEN_PREF_NAME = "anonymous_auth_token_pref_key";
+
     private static final long MILLISECONDS_PER_SECOND = 1000L;
     private static final long SECONDS_PER_MINUTE = 60L;
     private static final long MAX_SESSION_DURATION_IN_MINUTES = 30L;
@@ -320,6 +335,7 @@ public class AppCMSPresenter {
     private List<Action1<Boolean>> onOrientationChangeHandlers;
     private Map<String, List<OnInternalEvent>> onActionInternalEvents;
     private Stack<String> currentActions;
+
     private AppCMSSearchUrlComponent appCMSSearchUrlComponent;
     private DownloadManager downloadManager;
     private RealmController realmController;
@@ -700,7 +716,13 @@ public class AppCMSPresenter {
                     } else {
                         showDialog(DialogType.NETWORK, null, false, null);
                     }
-                }
+                }else{
+                        if (platformType == PlatformType.TV) {
+                            getAppCMSTV(activity,
+                                    main,
+                                    tryCount + 1);
+                        }
+                    }
             });
         }
     }
@@ -3808,6 +3830,8 @@ public class AppCMSPresenter {
                                     }
                                 }
                             });
+                        } else {
+
                         }
                     });
 
@@ -4363,6 +4387,12 @@ public class AppCMSPresenter {
                 builder.setPositiveButton("OK", null);
             } else if (dialogType == DialogType.CANNOT_CANCEL_SUBSCRIPTION) {
                 builder.setPositiveButton("OK", null);
+            } else if (dialogType == DialogType.LOGIN_REQUIRED) {
+                builder.setPositiveButton(positiveButtonText,
+                        (dialog, which) -> {
+                            dialog.dismiss();
+                            navigateToLoginPage();
+                        });
             } else {
                 builder.setPositiveButton(positiveButtonText,
                         (dialog, which) -> {
@@ -5405,16 +5435,16 @@ public class AppCMSPresenter {
     }
 
 
-    public void searchRetryDialog(String searchTerm) {
+  public void searchRetryDialog(String searchTerm){
         RetryCallBinder retryCallBinder = getRetryCallBinder(null, null,
-                searchTerm, null,
+                searchTerm,null,
                 null, false,
-                null, SEARCH_RETRY_ACTION
+                null,SEARCH_RETRY_ACTION
         );
         Bundle bundle = new Bundle();
-        bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
+        bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey) , retryCallBinder);
         Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
-        args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+        args.putExtra(currentActivity.getString(R.string.retryCallBundleKey) , bundle);
         currentActivity.sendBroadcast(args);
     }
 
@@ -5423,21 +5453,21 @@ public class AppCMSPresenter {
                                                String filmTitle,
                                                String[] extraData,
                                                ContentDatum contentDatum,
-                                               boolean closeLauncher,
+                                               boolean closeLauncher ,
                                                String filmId,
-                                               RETRY_TYPE retryType) {
-
-        RetryCallBinder retryCallBinder = new RetryCallBinder();
+                                               RETRY_TYPE retry_type){
+        RetryCallBinder retryCallBinder= new RetryCallBinder();
         retryCallBinder.setPagePath(pagePath);
         retryCallBinder.setAction(action);
         retryCallBinder.setFilmTitle(filmTitle);
         retryCallBinder.setExtraData(extraData);
         retryCallBinder.setContentDatum(contentDatum);
         retryCallBinder.setCloselauncher(closeLauncher);
-        retryCallBinder.setRetry_type(retryType);
+        retryCallBinder.setRetry_type(retry_type);
         retryCallBinder.setFilmId(filmId);
         return retryCallBinder;
     }
+
 
 
     private AppCMSBinder getAppCMSBinder(Activity activity,
@@ -5637,7 +5667,7 @@ public class AppCMSPresenter {
                                     getAppCMSAndroid(activity, main, 0);
                                     break;
                                 case TV:
-                                    getAppCMSTV(activity, main, 0);
+                                    getAppCMSTV(activity, main, 0 );
                                     break;
                                 default:
                             }

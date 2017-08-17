@@ -1119,6 +1119,10 @@ public class ViewCreator {
         String paymentProcessor = appCMSPresenter.getActiveSubscriptionProcessor(context);
 
         AppCMSUIKeyType moduleType = jsonValueKeyMap.get(viewType);
+
+        int tintColor = Color.parseColor(getColor(context,
+                appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
+
         switch (componentType) {
             case PAGE_TABLE_VIEW_KEY:
                 if (moduleType == AppCMSUIKeyType.PAGE_DOWNLOAD_SETTING_MODULE_KEY) {
@@ -1394,9 +1398,6 @@ public class ViewCreator {
                         applyBorderToComponent(context, componentViewResult.componentView, component, -1);
                     }
                 }
-
-                int tintColor = Color.parseColor(getColor(context,
-                        appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
 
                 switch (componentKey) {
                     case PAGE_BUTTON_SWITCH_KEY:
@@ -2456,6 +2457,13 @@ public class ViewCreator {
                         pageView,
                         jsonValueKeyMap,
                         appCMSPresenter);
+                break;
+
+            case PAGE_TOGGLE_BUTTON_KEY:
+                componentViewResult.componentView = new Switch(context);
+                ((Switch) componentViewResult.componentView).getTrackDrawable().setTint(Color.parseColor(
+                        appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                ((Switch) componentViewResult.componentView).setTrackTintMode(PorterDuff.Mode.MULTIPLY);
                 break;
 
             default:
