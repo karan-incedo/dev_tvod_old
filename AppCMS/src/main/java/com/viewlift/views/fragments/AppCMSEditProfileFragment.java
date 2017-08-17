@@ -77,13 +77,15 @@ public class AppCMSEditProfileFragment extends DialogFragment {
                             appCMSPresenter.updateUserData(appCMSEditProfileNameInput.getText().toString(),
                                     appCMSEditProfileEmailInput.getText().toString(),
                                     password.getText().toString(),
-                                    userIdentity ->
-                                            // NO-OP - just close window
-                                            appCMSPresenter.sendCloseOthersAction(null, true));
+                                    userIdentity -> {
+                                        //
+                                    }
+                            );
                         }
-                        dialog.dismiss();
+                        appCMSPresenter.sendCloseOthersAction(null, true);
                     })
-                    .setNegativeButton("Cancel", (dialog, position) -> dialog.cancel())
+                    .setNegativeButton("Cancel", (dialog, position) ->
+                            appCMSPresenter.sendCloseOthersAction(null, true))
                     .create()
                     .show();
         });
