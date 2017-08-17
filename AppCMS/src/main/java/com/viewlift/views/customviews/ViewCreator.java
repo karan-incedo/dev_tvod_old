@@ -586,8 +586,7 @@ public class ViewCreator {
                                                         ((TextView) settingsView).setText(context.getString(R.string.subscription_ios_payment_processor_friendly));
                                                     } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_web_payment_processor_friendly))) {
                                                         ((TextView) settingsView).setText(context.getString(R.string.subscription_web_payment_processor_friendly));
-                                                    } else if (!TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionId(context)) ||
-                                                            paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor)) ||
+                                                    } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor)) ||
                                                             paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly))) {
                                                         ((TextView) settingsView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
                                                     } else {

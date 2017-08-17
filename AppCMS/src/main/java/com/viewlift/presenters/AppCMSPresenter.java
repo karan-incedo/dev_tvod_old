@@ -76,7 +76,6 @@ import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
 import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
-import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
@@ -121,7 +120,6 @@ import com.viewlift.models.network.background.tasks.GetAppCMSVideoDetailAsyncTas
 import com.viewlift.models.network.background.tasks.PostAppCMSLoginRequestAsyncTask;
 import com.viewlift.models.network.components.AppCMSAPIComponent;
 import com.viewlift.models.network.components.AppCMSSearchUrlComponent;
-
 import com.viewlift.models.network.components.DaggerAppCMSAPIComponent;
 import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
 import com.viewlift.models.network.modules.AppCMSAPIModule;
@@ -315,7 +313,20 @@ public class AppCMSPresenter {
     private final AppCMSSubscriptionCall appCMSSubscriptionCall;
     private final AppCMSSubscriptionPlanCall appCMSSubscriptionPlanCall;
     private final AppCMSAnonymousAuthTokenCall appCMSAnonymousAuthTokenCall;
-
+    public String[] physicalPaths = {
+            "/storage/sdcard0", "/storage/sdcard1", // Motorola Xoom
+            "/storage/extsdcard", // Samsung SGS3
+            "/storage/sdcard0/external_sdcard", // User request
+            "/mnt/extsdcard", "/mnt/sdcard/external_sd", // Samsung galaxy family
+            "/mnt/external_sd", "/mnt/media_rw/sdcard1", // 4.4.2 on CyanogenMod S3
+            "/removable/microsd", // Asus transformer prime
+            "/mnt/emmc", "/storage/external_SD", // LG
+            "/storage/ext_sd", // HTC One Max
+            "/storage/removable/sdcard1", // Sony Xperia Z1
+            "/data/sdext", "/data/sdext2", "/data/sdext3", "/data/sdext4", "/sdcard1", // Sony Xperia Z
+            "/sdcard2", // HTC One M8s
+            "/storage/microsd" // ASUS ZenFone 2
+    };
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
@@ -3103,7 +3114,7 @@ public class AppCMSPresenter {
         }
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings("ConstantConditions")
     public void updateUserData(final String username,
                                final String email,
                                final String password,
@@ -3127,6 +3138,11 @@ public class AppCMSPresenter {
                                         userIdentityResult.getName());
                                 setLoggedInUserEmail(currentActivity,
                                         userIdentityResult.getEmail());
+                                setAuthToken(currentActivity, userIdentityResult.getAuthorizationToken());
+                                setRefreshToken(currentActivity, userIdentityResult.getRefreshToken());
+                            } else {
+                                String errorMessage = userIdentityResult.getError();
+                                Toast.makeText(currentActivity, errorMessage, Toast.LENGTH_LONG).show();
                             }
                             sendRefreshPageAction();
                             userIdentityAction.call(userIdentityResult);
@@ -5434,7 +5450,6 @@ public class AppCMSPresenter {
                 resultAction);
     }
 
-
   public void searchRetryDialog(String searchTerm){
         RetryCallBinder retryCallBinder = getRetryCallBinder(null, null,
                 searchTerm,null,
@@ -5467,8 +5482,6 @@ public class AppCMSPresenter {
         retryCallBinder.setFilmId(filmId);
         return retryCallBinder;
     }
-
-
 
     private AppCMSBinder getAppCMSBinder(Activity activity,
                                          AppCMSPageUI appCMSPageUI,
@@ -6510,6 +6523,205 @@ public class AppCMSPresenter {
         return platformType;
     }
 
+    public boolean isRemoveableSDCardAvailable() {
+        if (currentActivity != null) {
+            if (getStorageDirectories(currentActivity).length >= 1) {
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    public String getSDCardPath(Context context, String dirName) {
+        String dirPath = getSDCardPath(context) + File.separator + dirName;
+        File dir = new File(dirPath);
+        if (!dir.isDirectory())
+            dir.mkdirs();
+
+        return dir.getAbsolutePath();
+
+    }
+
+    public String getSDCardPath(Context context) {
+        File baseSDCardDir = null;
+        String[] dirs = getStorageDirectories(context);
+
+
+        baseSDCardDir = new File(dirs[0] + File.separator + appCMSMain.getDomainName());
+
+
+        return baseSDCardDir.getAbsolutePath();
+    }
+
+    public String[] getStorageDirectories(Context context) {
+        HashSet<String> paths = new HashSet<String>();
+        String rawExternalStorage = System.getenv("EXTERNAL_STORAGE");
+        String rawSecondaryStoragesStr = System.getenv("SECONDARY_STORAGE");
+        String rawEmulatedStorageTarget = System.getenv("EMULATED_STORAGE_TARGET");
+        if (TextUtils.isEmpty(rawEmulatedStorageTarget)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+                List<String> results = new ArrayList<String>();
+                File[] externalDirs = context.getExternalFilesDirs(null);
+                for (File file : externalDirs) {
+                    String path = null;
+                    try {
+                        path = file.getPath().split("/Android")[0];
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        path = null;
+                    }
+                    if (path != null) {
+                        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Environment.isExternalStorageRemovable(file))
+                                || rawSecondaryStoragesStr != null && rawSecondaryStoragesStr.contains(path)) {
+                            results.add(path);
+                        }
+                    }
+                }
+
+                paths.addAll(results);
+
+            } else {
+                if (TextUtils.isEmpty(rawExternalStorage)) {
+                    boolean b = paths.addAll(Arrays.asList(physicalPaths));
+                } else {
+                    paths.add(rawExternalStorage);
+                }
+            }
+        } else {
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+
+            String[] folders = Pattern.compile("/").split(path);
+            String lastFolder = folders[folders.length - 1];
+            boolean isDigit = false;
+            try {
+                Integer.valueOf(lastFolder);
+                isDigit = true;
+            } catch (NumberFormatException ignored) {
+            }
+
+            String rawUserId = isDigit ? lastFolder : "";
+            if (TextUtils.isEmpty(rawUserId)) {
+                paths.add(rawEmulatedStorageTarget);
+            } else {
+                paths.add(rawEmulatedStorageTarget + File.separator + rawUserId);
+            }
+        }
+
+        if (!TextUtils.isEmpty(rawSecondaryStoragesStr)) {
+            String[] rawSecondaryStorages = rawSecondaryStoragesStr.split(File.pathSeparator);
+            Collections.addAll(paths, rawSecondaryStorages);
+        }
+        return paths.toArray(new String[paths.size()]);
+    }
+
+    public void setSearchResultsOnSharePreference(List<String> searchValues) {
+        if (currentActivity == null)
+            return;
+        SharedPreferences sharePref = currentActivity.getSharedPreferences(
+                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharePref.edit();
+        editor.putInt(currentActivity.getString(R.string.app_cms_search_value_size_key), searchValues.size());
+        for (int i = 0; i < searchValues.size(); i++) {
+            editor.remove(currentActivity.getString(R.string.app_cms_search_value_key) + i);
+            editor.putString(currentActivity.getString(R.string.app_cms_search_value_key) + i, searchValues.get(i));
+        }
+        editor.commit();
+    }
+
+    public List<String> getSearchResultsFromSharePreference() {
+        if (currentActivity == null)
+            return null;
+        List<String> searchValues = new ArrayList<String>();
+        SharedPreferences sharePref = currentActivity.getSharedPreferences(
+                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
+        int size = sharePref.getInt(currentActivity.getString(R.string.app_cms_search_value_size_key), 0);
+        for (int i = 0; i < size; i++) {
+            searchValues.add(sharePref.getString(currentActivity.getString(R.string.app_cms_search_value_key) + i, null));
+        }
+        return searchValues;
+    }
+
+    public void clearSearchResultsSharePreference() {
+        if (currentActivity == null)
+            return;
+        SharedPreferences sharePref = currentActivity.getSharedPreferences(
+                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
+        sharePref.edit().clear().commit();
+    }
+
+    public void openSearch() {
+        Intent updateHistoryIntent = new Intent(SEARCH_ACTION);
+        currentActivity.sendBroadcast(updateHistoryIntent);
+    }
+
+    public boolean launchTVVideoPlayer(final String filmId,
+                                       final String pagePath,
+                                       final String filmTitle,
+                                       final ContentDatum contentDatum) {
+        boolean result = false;
+
+
+        if (!isNetworkConnected() && platformType == PlatformType.TV) {
+            RetryCallBinder retryCallBinder = getRetryCallBinder(pagePath, null,
+                    filmTitle, null,
+                    contentDatum, false,
+                    filmId, VIDEO_ACTION
+            );
+
+            Bundle bundle = new Bundle();
+            bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
+            Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+            args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+            currentActivity.sendBroadcast(args);
+        } else if (currentActivity != null &&
+                !loadingPage && appCMSMain != null &&
+                !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
+                !TextUtils.isEmpty(appCMSMain.getInternalName())) {
+            result = true;
+            final String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
+            String url = currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    filmId,
+                    appCMSMain.getInternalName());
+            GetAppCMSStreamingInfoAsyncTask.Params params =
+                    new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
+            new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall,
+                    appCMSStreamingInfo -> {
+                        String[] extraData = new String[3];
+                        if (appCMSStreamingInfo != null &&
+                                appCMSStreamingInfo.getStreamingInfo() != null) {
+                            StreamingInfo streamingInfo = appCMSStreamingInfo.getStreamingInfo();
+                            extraData[0] = pagePath;
+                            if (streamingInfo.getVideoAssets() != null &&
+                                    !TextUtils.isEmpty(streamingInfo.getVideoAssets().getHls())) {
+                                extraData[1] = streamingInfo.getVideoAssets().getHls();
+                            } else if (streamingInfo.getVideoAssets() != null &&
+                                    streamingInfo.getVideoAssets().getMpeg() != null &&
+                                    !streamingInfo.getVideoAssets().getMpeg().isEmpty() &&
+                                    streamingInfo.getVideoAssets().getMpeg().get(0) != null &&
+                                    !TextUtils.isEmpty(streamingInfo.getVideoAssets().getMpeg().get(0).getUrl())) {
+                                extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
+                            }
+                            extraData[2] = filmId;
+                            if (!TextUtils.isEmpty(extraData[1])) {
+
+                                if (platformType == PlatformType.TV) {
+                                    launchTVButtonSelectedAction(pagePath,
+                                            action,
+                                            filmTitle,
+                                            extraData,
+                                            false);
+                                }
+
+                            }
+                        }
+                    }).execute(params);
+        }
+        return result;
+    }
+
     public enum LaunchType {
         SUBSCRIBE, LOGIN_AND_SIGNUP
     }
@@ -6736,224 +6948,6 @@ public class AppCMSPresenter {
         boolean closeLauncher;
         int currentlyPlayingIndex;
         List<String> relateVideoIds;
-    }
-
-    public boolean isRemoveableSDCardAvailable() {
-        if (currentActivity != null) {
-            if (getStorageDirectories(currentActivity).length >= 1) {
-                return true;
-            }
-
-        }
-        return false;
-    }
-
-    public String getSDCardPath(Context context, String dirName) {
-        String dirPath = getSDCardPath(context) + File.separator + dirName;
-        File dir = new File(dirPath);
-        if (!dir.isDirectory())
-            dir.mkdirs();
-
-        return dir.getAbsolutePath();
-
-    }
-
-    public String getSDCardPath(Context context) {
-        File baseSDCardDir = null;
-        String[] dirs = getStorageDirectories(context);
-
-
-        baseSDCardDir = new File(dirs[0] + File.separator + appCMSMain.getDomainName());
-
-
-        return baseSDCardDir.getAbsolutePath();
-    }
-
-    public String[] physicalPaths = {
-            "/storage/sdcard0", "/storage/sdcard1", // Motorola Xoom
-            "/storage/extsdcard", // Samsung SGS3
-            "/storage/sdcard0/external_sdcard", // User request
-            "/mnt/extsdcard", "/mnt/sdcard/external_sd", // Samsung galaxy family
-            "/mnt/external_sd", "/mnt/media_rw/sdcard1", // 4.4.2 on CyanogenMod S3
-            "/removable/microsd", // Asus transformer prime
-            "/mnt/emmc", "/storage/external_SD", // LG
-            "/storage/ext_sd", // HTC One Max
-            "/storage/removable/sdcard1", // Sony Xperia Z1
-            "/data/sdext", "/data/sdext2", "/data/sdext3", "/data/sdext4", "/sdcard1", // Sony Xperia Z
-            "/sdcard2", // HTC One M8s
-            "/storage/microsd" // ASUS ZenFone 2
-    };
-
-    public String[] getStorageDirectories(Context context) {
-        HashSet<String> paths = new HashSet<String>();
-        String rawExternalStorage = System.getenv("EXTERNAL_STORAGE");
-        String rawSecondaryStoragesStr = System.getenv("SECONDARY_STORAGE");
-        String rawEmulatedStorageTarget = System.getenv("EMULATED_STORAGE_TARGET");
-        if (TextUtils.isEmpty(rawEmulatedStorageTarget)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-                List<String> results = new ArrayList<String>();
-                File[] externalDirs = context.getExternalFilesDirs(null);
-                for (File file : externalDirs) {
-                    String path = null;
-                    try {
-                        path = file.getPath().split("/Android")[0];
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        path = null;
-                    }
-                    if (path != null) {
-                        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Environment.isExternalStorageRemovable(file))
-                                || rawSecondaryStoragesStr != null && rawSecondaryStoragesStr.contains(path)) {
-                            results.add(path);
-                        }
-                    }
-                }
-
-                paths.addAll(results);
-
-            } else {
-                if (TextUtils.isEmpty(rawExternalStorage)) {
-                    boolean b = paths.addAll(Arrays.asList(physicalPaths));
-                } else {
-                    paths.add(rawExternalStorage);
-                }
-            }
-        } else {
-            String path = Environment.getExternalStorageDirectory().getAbsolutePath();
-
-            String[] folders = Pattern.compile("/").split(path);
-            String lastFolder = folders[folders.length - 1];
-            boolean isDigit = false;
-            try {
-                Integer.valueOf(lastFolder);
-                isDigit = true;
-            } catch (NumberFormatException ignored) {
-            }
-
-            String rawUserId = isDigit ? lastFolder : "";
-            if (TextUtils.isEmpty(rawUserId)) {
-                paths.add(rawEmulatedStorageTarget);
-            } else {
-                paths.add(rawEmulatedStorageTarget + File.separator + rawUserId);
-            }
-        }
-
-        if (!TextUtils.isEmpty(rawSecondaryStoragesStr)) {
-            String[] rawSecondaryStorages = rawSecondaryStoragesStr.split(File.pathSeparator);
-            Collections.addAll(paths, rawSecondaryStorages);
-        }
-        return paths.toArray(new String[paths.size()]);
-    }
-
-    public void setSearchResultsOnSharePreference(List<String> searchValues) {
-        if (currentActivity == null)
-            return;
-        SharedPreferences sharePref = currentActivity.getSharedPreferences(
-                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharePref.edit();
-        editor.putInt(currentActivity.getString(R.string.app_cms_search_value_size_key), searchValues.size());
-        for (int i = 0; i < searchValues.size(); i++) {
-            editor.remove(currentActivity.getString(R.string.app_cms_search_value_key) + i);
-            editor.putString(currentActivity.getString(R.string.app_cms_search_value_key) + i, searchValues.get(i));
-        }
-        editor.commit();
-    }
-
-    public List<String> getSearchResultsFromSharePreference() {
-        if (currentActivity == null)
-            return null;
-        List<String> searchValues = new ArrayList<String>();
-        SharedPreferences sharePref = currentActivity.getSharedPreferences(
-                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
-        int size = sharePref.getInt(currentActivity.getString(R.string.app_cms_search_value_size_key), 0);
-        for (int i = 0; i < size; i++) {
-            searchValues.add(sharePref.getString(currentActivity.getString(R.string.app_cms_search_value_key) + i, null));
-        }
-        return searchValues;
-    }
-
-    public void clearSearchResultsSharePreference() {
-        if (currentActivity == null)
-            return;
-        SharedPreferences sharePref = currentActivity.getSharedPreferences(
-                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
-        sharePref.edit().clear().commit();
-    }
-
-
-    public void openSearch() {
-        Intent updateHistoryIntent = new Intent(SEARCH_ACTION);
-        currentActivity.sendBroadcast(updateHistoryIntent);
-    }
-
-    public boolean launchTVVideoPlayer(final String filmId,
-                                       final String pagePath,
-                                       final String filmTitle,
-                                       final ContentDatum contentDatum) {
-        boolean result = false;
-
-
-        if (!isNetworkConnected() && platformType == PlatformType.TV) {
-            RetryCallBinder retryCallBinder = getRetryCallBinder(pagePath, null,
-                    filmTitle, null,
-                    contentDatum, false,
-                    filmId, VIDEO_ACTION
-            );
-
-            Bundle bundle = new Bundle();
-            bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
-            Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
-            args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
-            currentActivity.sendBroadcast(args);
-        } else if (currentActivity != null &&
-                !loadingPage && appCMSMain != null &&
-                !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
-                !TextUtils.isEmpty(appCMSMain.getInternalName())) {
-            result = true;
-            final String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
-            String url = currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
-                    appCMSMain.getApiBaseUrl(),
-                    filmId,
-                    appCMSMain.getInternalName());
-            GetAppCMSStreamingInfoAsyncTask.Params params =
-                    new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
-            new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall,
-                    new Action1<AppCMSStreamingInfo>() {
-                        @Override
-                        public void call(AppCMSStreamingInfo appCMSStreamingInfo) {
-                            String[] extraData = new String[3];
-                            if (appCMSStreamingInfo != null &&
-                                    appCMSStreamingInfo.getStreamingInfo() != null) {
-                                StreamingInfo streamingInfo = appCMSStreamingInfo.getStreamingInfo();
-                                extraData[0] = pagePath;
-                                if (streamingInfo.getVideoAssets() != null &&
-                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getHls())) {
-                                    extraData[1] = streamingInfo.getVideoAssets().getHls();
-                                } else if (streamingInfo.getVideoAssets() != null &&
-                                        streamingInfo.getVideoAssets().getMpeg() != null &&
-                                        streamingInfo.getVideoAssets().getMpeg().size() > 0 &&
-                                        streamingInfo.getVideoAssets().getMpeg().get(0) != null &&
-                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getMpeg().get(0).getUrl())) {
-                                    extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
-                                }
-                                extraData[2] = filmId;
-                                if (!TextUtils.isEmpty(extraData[1])) {
-
-                                    if (platformType == PlatformType.TV) {
-                                        launchTVButtonSelectedAction(pagePath,
-                                                action,
-                                                filmTitle,
-                                                extraData,
-                                                false);
-                                    }
-
-                                }
-                            }
-                        }
-                    }).execute(params);
-        }
-        return result;
     }
 
 
