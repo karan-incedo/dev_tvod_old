@@ -2479,20 +2479,35 @@ public class ViewCreator {
     private Module matchModuleAPIToModuleUI(ModuleList module, AppCMSPageAPI appCMSPageAPI,
                                             Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
         if (appCMSPageAPI != null && appCMSPageAPI.getModules() != null) {
-            switch (jsonValueKeyMap.get(module.getView())) {
-                case PAGE_HISTORY_MODULE_KEY:
-                case PAGE_WATCHLIST_MODULE_KEY:
-                case PAGE_AUTOPLAY_MODULE_KEY:
-                case PAGE_DOWNLOAD_SETTING_MODULE_KEY:
-                case PAGE_DOWNLOAD_MODULE_KEY:
-                    if (appCMSPageAPI.getModules() != null
-                            && !appCMSPageAPI.getModules().isEmpty()) {
-                        return appCMSPageAPI.getModules().get(0);
-                    }
-                    break;
+            if (AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
+                if (appCMSPageAPI.getModules() != null && !appCMSPageAPI.getModules().isEmpty()) {
+                    return appCMSPageAPI.getModules().get(0);
+                }
+            }
 
-                default:
-                    //
+            if (AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
+                if (appCMSPageAPI.getModules() != null && !appCMSPageAPI.getModules().isEmpty()) {
+                    return appCMSPageAPI.getModules().get(0);
+                }
+            }
+
+            if (AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
+                if (appCMSPageAPI.getModules() != null && !appCMSPageAPI.getModules().isEmpty()) {
+                    return appCMSPageAPI.getModules().get(0);
+                }
+            }
+
+            if (AppCMSUIKeyType.PAGE_DOWNLOAD_SETTING_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
+                if (appCMSPageAPI.getModules() != null && !appCMSPageAPI.getModules().isEmpty()) {
+
+                    return appCMSPageAPI.getModules().get(0);
+                }
+            }
+
+            if (AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
+                if (appCMSPageAPI.getModules() != null && !appCMSPageAPI.getModules().isEmpty()) {
+                    return appCMSPageAPI.getModules().get(0);
+                }
             }
 
             for (Module moduleAPI : appCMSPageAPI.getModules()) {
