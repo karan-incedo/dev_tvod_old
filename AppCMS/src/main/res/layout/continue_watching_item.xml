@@ -118,11 +118,12 @@
 
                 <ImageButton
                     android:id="@+id/app_cms_continue_watching_delete_button"
+
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:background="@android:color/transparent"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/ic_deleteicon" />
+                     />
 
             </FrameLayout>
 

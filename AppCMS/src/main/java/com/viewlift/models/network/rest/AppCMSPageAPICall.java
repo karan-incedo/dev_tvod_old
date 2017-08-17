@@ -95,6 +95,7 @@ public class AppCMSPageAPICall {
             if (!TextUtils.isEmpty(authToken)) {
                 headersMap.put("Authorization", authToken);
             }
+            Log.d(TAG, "AppCMSPageAPICall Authorization val "+headersMap.toString());
             appCMSPageAPI = appCMSPageAPIRest.get(urlWithContent, headersMap).execute().body();
             if (filename != null) {
                 appCMSPageAPI = writePageToFile(filename, appCMSPageAPI);

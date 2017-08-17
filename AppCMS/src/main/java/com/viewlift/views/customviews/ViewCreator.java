@@ -25,10 +25,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -1329,8 +1331,11 @@ public class ViewCreator {
             case PAGE_BUTTON_KEY:
                 if (componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY &&
+                        componentKey != AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) {
                     componentViewResult.componentView = new Button(context);
+                } else if (componentKey == AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY) {
+                    componentViewResult.componentView = new Switch(context);
                 } else {
                     componentViewResult.componentView = new ImageButton(context);
                 }
@@ -1341,6 +1346,7 @@ public class ViewCreator {
                     } else if (moduleAPI.getSettings() != null &&
                             !moduleAPI.getSettings().getHideTitle() &&
                             !TextUtils.isEmpty(moduleAPI.getTitle()) &&
+                            componentKey != AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY &&
                             componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY) {
                         ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
                     }
@@ -1393,6 +1399,30 @@ public class ViewCreator {
                         appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
 
                 switch (componentKey) {
+                    case PAGE_BUTTON_SWITCH_KEY:
+
+                        if (appCMSPresenter.isPreferedStorageLocationSDCard(context)) {
+                            ((Switch) componentViewResult.componentView).setChecked(true);
+                        } else {
+                            ((Switch) componentViewResult.componentView).setChecked(false);
+                        }
+
+                        ((Switch) componentViewResult.componentView).setOnCheckedChangeListener((buttonView, isChecked) -> {
+                            if (isChecked) {
+                                if (appCMSPresenter.isRemoveableSDCardAvailable()) {
+                                    appCMSPresenter.setPreferedStorageLocationSDCard(context, true);
+                                } else {
+                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SD_CARD_NOT_AVAILABLE, null, false, null);
+                                    buttonView.setChecked(false);
+                                }
+                            } else {
+                                appCMSPresenter.setPreferedStorageLocationSDCard(context, false);
+                            }
+
+                        });
+
+
+                        break;
                     case PAGE_AUTOPLAY_BACK_KEY:
                         componentViewResult.componentView.setVisibility(View.GONE);
                         break;
@@ -1846,7 +1876,7 @@ public class ViewCreator {
                                     moduleAPI.getContentData().size() > 0 &&
                                     moduleAPI.getContentData().get(0) != null &&
                                     moduleAPI.getContentData().get(0).getGist() != null &&
-                                     !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
+                                    !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
                                 ViewTreeObserver viewTreeObserver = componentViewResult.componentView.getViewTreeObserver();
                                 ViewCreatorMultiLineLayoutListener viewCreatorMultiLineLayoutListener =
                                         new ViewCreatorMultiLineLayoutListener(((TextView) componentViewResult.componentView),
@@ -2675,17 +2705,18 @@ public class ViewCreator {
 
                     case STATUS_PENDING:
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId);
+                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
                         imageButton.setOnClickListener(null);
                         break;
 
                     case STATUS_RUNNING:
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId);
+                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
                         imageButton.setOnClickListener(null);
                         break;
 
                     case STATUS_SUCCESSFUL:
+                        appCMSPresenter.cancelDownloadIconTimerTask(); //Fix of SVFA-1621
                         imageButton.setImageResource(R.drawable.ic_downloaded);
                         imageButton.setOnClickListener(null);
                         break;
@@ -2697,7 +2728,7 @@ public class ViewCreator {
 
             } else {
                 appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                        UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId);
+                        UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
                 imageButton.setImageResource(R.drawable.ic_download);
                 imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
