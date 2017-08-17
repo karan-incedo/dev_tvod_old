@@ -865,10 +865,12 @@ public class ViewCreator {
             boolean hideModule = false;
             boolean modulesHasHiddenComponent = false;
 
+            AdjustOtherState adjustOthers = AdjustOtherState.IGNORE;
             pageView.addModuleViewWithModuleId(module.getId(), moduleView);
             if (module.getComponents() != null) {
                 for (int i = 0; i < module.getComponents().size(); i++) {
                     Component component = module.getComponents().get(i);
+
                     createComponentView(context,
                             component,
                             module.getLayout(),
@@ -880,9 +882,14 @@ public class ViewCreator {
                             false,
                             module.getView());
 
+                    if (adjustOthers == AdjustOtherState.INITIATED) {
+                        adjustOthers = AdjustOtherState.ADJUST_OTHERS;
+                    }
+
                     if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
                         componentViewResult.shouldHideComponent = true;
                         componentViewResult.componentView.setVisibility(View.GONE);
+                        adjustOthers = AdjustOtherState.INITIATED;
                     }
 
                     if (componentViewResult.shouldHideModule) {
@@ -944,7 +951,8 @@ public class ViewCreator {
                                     componentViewResult.useMarginsAsPercentagesOverride,
                                     componentViewResult.useWidthOfScreen,
                                     module.getView());
-                            if (componentViewResult.shouldHideComponent) {
+                            if ((adjustOthers == AdjustOtherState.IGNORE && componentViewResult.shouldHideComponent) ||
+                                    adjustOthers == AdjustOtherState.ADJUST_OTHERS) {
                                 moduleView.addChildComponentAndView(component, componentView);
                             } else {
                                 moduleView.setComponentHasView(i, false);
@@ -2591,6 +2599,12 @@ public class ViewCreator {
         boolean shouldHideModule;
         boolean addToPageView;
         boolean shouldHideComponent;
+    }
+
+    private enum AdjustOtherState {
+        IGNORE,
+        INITIATED,
+        ADJUST_OTHERS
     }
 
     public static class UpdateImageIconAction implements Action1<UserVideoStatusResponse> {
