@@ -25,7 +25,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -873,6 +872,7 @@ public class ViewCreator {
             if (module.getComponents() != null) {
                 for (int i = 0; i < module.getComponents().size(); i++) {
                     Component component = module.getComponents().get(i);
+
                     createComponentView(context,
                             component,
                             module.getLayout(),
@@ -883,6 +883,11 @@ public class ViewCreator {
                             appCMSPresenter,
                             false,
                             module.getView());
+
+                    if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
+                        componentViewResult.shouldHideComponent = true;
+                        componentViewResult.componentView.setVisibility(View.GONE);
+                    }
 
                     if (componentViewResult.shouldHideModule) {
                         hideModule = true;
@@ -2069,6 +2074,10 @@ public class ViewCreator {
 
                         case PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY:
                             ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getUserDownloadQualityPref(context));
+                            break;
+
+                        case PAGE_SETTINGS_APP_VERSION_VALUE_KEY:
+                            ((TextView) componentViewResult.componentView).setText(context.getString(R.string.app_cms_app_version));
                             break;
 
                         case PAGE_SETTINGS_TITLE_KEY:
