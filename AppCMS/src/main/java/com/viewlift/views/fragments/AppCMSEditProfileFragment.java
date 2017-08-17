@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -81,9 +80,8 @@ public class AppCMSEditProfileFragment extends DialogFragment {
                                     userIdentity ->
                                             // NO-OP - just close window
                                             appCMSPresenter.sendCloseOthersAction(null, true));
-                        } else {
-                            Toast.makeText(view.getContext(), "Password cannot be empty", Toast.LENGTH_SHORT).show();
                         }
+                        dialog.dismiss();
                     })
                     .setNegativeButton("Cancel", (dialog, position) -> dialog.cancel())
                     .create()
