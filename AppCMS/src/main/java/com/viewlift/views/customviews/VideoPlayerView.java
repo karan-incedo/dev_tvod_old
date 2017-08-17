@@ -87,6 +87,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     private long resumePosition;
     protected DataSource.Factory mediaDataSourceFactory;
     protected String userAgent;
+    private long mCurrentPlayerPosition;
 
     public VideoPlayerView(Context context) {
         super(context);
@@ -121,6 +122,17 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     public void setOnClosedCaptionButtonClicked(Action1<Boolean> onClosedCaptionButtonClicked) {
         this.onClosedCaptionButtonClicked = onClosedCaptionButtonClicked;
     }
+
+    public void setUriOnConnection(Uri uri, Uri closedCaptionUri) {
+        this.uri = uri;
+        try {
+            player.prepare(buildMediaSource(uri, closedCaptionUri));
+            player.seekTo(mCurrentPlayerPosition);
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "Unsupported video format for URI: " + uri.toString());
+        }
+    }
+
 
     public void setUri(Uri videoUri, Uri closedCaptionUri) {
         this.uri = videoUri;
@@ -355,7 +367,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
 
     @Override
     public void onPlayerError(ExoPlaybackException e) {
-
+        mCurrentPlayerPosition = player.getCurrentPosition();
     }
 
     @Override
@@ -366,5 +378,9 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     @Override
     public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
 
+    }
+
+    public void sendPlayerPosition(long position){
+        mCurrentPlayerPosition = position;
     }
 }

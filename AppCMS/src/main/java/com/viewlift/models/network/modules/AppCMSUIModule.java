@@ -257,6 +257,11 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_background_image_type_type),
                 AppCMSUIKeyType.PAGE_BACKGROUND_IMAGE_TYPE_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_togglebutton_key),
+                AppCMSUIKeyType.PAGE_TOGGLE_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_autoplay_toggle_button_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_title_key),
                 AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_priceinfo_key),

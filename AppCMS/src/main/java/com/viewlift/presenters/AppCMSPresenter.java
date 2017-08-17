@@ -4189,6 +4189,12 @@ public class AppCMSPresenter {
                 builder.setPositiveButton("OK", null);
             } else if (dialogType == DialogType.CANNOT_CANCEL_SUBSCRIPTION) {
                 builder.setPositiveButton("OK", null);
+            } else if (dialogType == DialogType.LOGIN_REQUIRED) {
+                builder.setPositiveButton(positiveButtonText,
+                        (dialog, which) -> {
+                            dialog.dismiss();
+                            navigateToLoginPage();
+                        });
             } else {
                 builder.setPositiveButton(positiveButtonText,
                         (dialog, which) -> {
