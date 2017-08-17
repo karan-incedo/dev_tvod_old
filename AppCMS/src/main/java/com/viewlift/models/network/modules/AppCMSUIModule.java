@@ -377,7 +377,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_SUBHEADING_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_movie_description_key),
-                AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_DISCRIPTION_KEY);
+                AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_DESCRIPTION_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_movie_star_rating_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_STAR_RATING_KEY);
