@@ -3107,6 +3107,7 @@ public class AppCMSPresenter {
                 userIdentity.setEmail(email);
                 userIdentity.setId(getLoggedInUser(currentActivity));
                 userIdentity.setPassword(password);
+
                 appCMSUserIdentityCall.callPost(url,
                         getAuthToken(currentActivity),
                         userIdentity,
@@ -3118,12 +3119,21 @@ public class AppCMSPresenter {
                                         userIdentityResult.getEmail());
                                 setAuthToken(currentActivity, userIdentityResult.getAuthorizationToken());
                                 setRefreshToken(currentActivity, userIdentityResult.getRefreshToken());
-                            } else {
-                                String errorMessage = userIdentityResult.getError();
-                                Toast.makeText(currentActivity, errorMessage, Toast.LENGTH_LONG).show();
+//                            } else {
+//                                String errorMessage = userIdentityResult.getError();
+//                                Toast.makeText(currentActivity, errorMessage, Toast.LENGTH_LONG).show();
                             }
                             sendRefreshPageAction();
                             userIdentityAction.call(userIdentityResult);
+                        }, errorBody -> {
+                            try {
+                                UserIdentity userIdentityError = gson.fromJson(errorBody.string(),
+                                        UserIdentity.class);
+                                Toast.makeText(currentActivity, userIdentityError.getError(), Toast.LENGTH_LONG).show();
+
+                            } catch (IOException e) {
+                                Log.e(TAG, "Invalid JSON object: " + e.toString());
+                            }
                         });
             });
         }

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -48,13 +49,18 @@ public class AppCMSUserIdentityCall {
     public void callPost(String url,
                          String authToken,
                          UserIdentity userIdentity,
-                         final Action1<UserIdentity> userIdentityAction) {
+                         final Action1<UserIdentity> userIdentityAction,
+                         final Action1<ResponseBody> userErrorAction) {
         authHeaders.put("Authorization", authToken);
         appCMSUserIdentityRest.post(url, authHeaders, userIdentity).enqueue(new Callback<UserIdentity>() {
             @Override
             public void onResponse(@NonNull Call<UserIdentity> call,
                                    @NonNull Response<UserIdentity> response) {
-                Observable.just(response.body()).subscribe(userIdentityAction);
+                if (response.body() != null) {
+                    Observable.just(response.body()).subscribe(userIdentityAction);
+                } else {
+                    Observable.just(response.errorBody()).subscribe(userErrorAction);
+                }
             }
 
             @Override
