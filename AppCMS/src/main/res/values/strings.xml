@@ -21,6 +21,7 @@
     <string name="menu_navigation_key">menu_navigation</string>
     <string name="ellipse_char">&#8230;</string>
     <string name="mins_abbreviation">MINS</string>
+    <string name="_mins_abbreviation">%d MINS</string>
     <string name="text_separator">&#160;|&#160;</string>
     <string name="color_hash_prefix">#</string>
     <string name="string_with_ellipse">%1$s&#8230;</string>
@@ -249,6 +250,8 @@
     <string name="sent_beacon_play_key">sent_beacon_play</string>
     <string name="play_index_key">play_index</string>
 
+    <string name="app_cms_subscription_upgrade_unavailable_title">Upgrade Unavailable</string>
+    <string name="app_cms_subscription_upgrade_unavailable_user_dialog">There are currently no plans available for upgrade for the plan you are currently subscribed.</string>
     <string name="app_cms_subscription_upgrade_cancel_title">You did not purchase the subscription through the Google Play store</string>
     <string name="app_cms_subscription_upgrade_for_web_user_dialog">To upgrade your subscription, go to the My Account section on our website.</string>
     <string name="app_cms_subscription_cancel_for_web_user_dialog">To cancel your subscription, go to the My Account section on our website.</string>
@@ -276,6 +279,10 @@
     <string name="app_cms_download_external_storage_write_permission_info_error_title">Download to External Storage</string>
     <string name="app_cms_download_limit_message">Download is only available for 30 days after it has been downloaded.</string>
     <string name="app_cms_download_unavailable_error_title">Download Unavailable</string>
+    <string name="app_cms_download_failed_error_title">Download Failed</string>
+    <string name="app_cms_download_failed_error_message">Cannot be downloaded due to low device storage, Please manage space in your storage area and try again.</string>
+    <string name="app_cms_sdCard_unavailable_error_title">SDCard Unavailable</string>
+    <string name="app_cms_sdCard_unavailable_error_message">Please insert SDCard in device if it supports for removeable media.  </string>
 
     <!-- search result values -->
     <string name="app_cms_search_sharepref_key">app_cms_sharepref_result</string>
@@ -288,5 +295,6 @@
     </plurals>
     <string name="retryCallBinderKey">retryCallBinderKey</string>
     <string name="retryCallBundleKey">retryCallBundleKey</string>
+    <string name="app_cms_default_download_quality">720p</string>
 
 </resources>

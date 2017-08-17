@@ -106,18 +106,16 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             titleKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
                         }
 
-                        boolean navbarPresent = true;
                         if (titleKey == AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY) {
-                            navbarPresent = false;
-                        }
-
-                        if (!appCMSPresenter.navigateToPage(navigationPrimary.getPageId(),
+                            appCMSPresenter.navigateToSubscriptionPlansPage(null,
+                                    null);
+                        } else if (!appCMSPresenter.navigateToPage(navigationPrimary.getPageId(),
                                 navigationPrimary.getTitle(),
                                 navigationPrimary.getUrl(),
                                 false,
                                 true,
                                 false,
-                                navbarPresent,
+                                true,
                                 false,
                                 null)) {
                             Log.e(TAG, "Could not navigate to page with Title: " +
