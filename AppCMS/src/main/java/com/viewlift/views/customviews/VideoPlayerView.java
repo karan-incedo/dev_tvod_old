@@ -81,7 +81,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
 
     public interface FinishListener
     {
-        void onFinishCallback();
+        void onFinishCallback(String message);
     }
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
 
@@ -416,7 +416,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         if (error.getMessage().contains("404") && !isLoadedNext) {
             if ((player.getCurrentPosition() + 5000) >= player.getDuration()) {
                 isLoadedNext = true;
-                mFinishListener.onFinishCallback();
+                mFinishListener.onFinishCallback(error.getMessage());
             }
         }
     }

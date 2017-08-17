@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
 import com.google.ads.interactivemedia.v3.api.AdErrorEvent;
@@ -503,9 +504,12 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     @Override
-    public void onFinishCallback() {
+    public void onFinishCallback(String message) {
         videoPlayerView.releasePlayer();
         onClosePlayerEvent.closePlayer();
+        if (!TextUtils.isEmpty(message)) {
+            Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+        }
     }
 
     public interface OnClosePlayerEvent {
