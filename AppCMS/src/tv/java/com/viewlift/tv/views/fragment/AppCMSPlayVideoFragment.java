@@ -26,6 +26,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
 import com.google.ads.interactivemedia.v3.api.AdErrorEvent;
@@ -52,8 +53,8 @@ import rx.functions.Action1;
  * Created by viewlift on 6/14/17.
  */
 
-public class AppCMSPlayVideoFragment extends Fragment
-        implements AdErrorEvent.AdErrorListener, AdEvent.AdEventListener, AppCmsTvErrorFragment.ErrorFragmentListener{
+public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.AdErrorListener,
+        AdEvent.AdEventListener, AppCmsTvErrorFragment.ErrorFragmentListener, VideoPlayerView.FinishListener{
     private static final String TAG = "PlayVideoFragment";
 
     private AppCMSPresenter appCMSPresenter;
@@ -241,10 +242,12 @@ public class AppCMSPlayVideoFragment extends Fragment
                 String text = "";
                 switch(playerState.getPlaybackState()) {
                     case ExoPlayer.STATE_BUFFERING:
+                        Log.d(TAG, "Video STATE_BUFFERING");
                         text += "buffering...";
                         playBackStateLayout.setVisibility(View.VISIBLE);
                         break;
                     case ExoPlayer.STATE_READY:
+                        Log.d(TAG, "Video STATE_READY");
                         text += "";
                         playBackStateLayout.setVisibility(View.GONE);
                         if (shouldRequestAds && !isADPlay) {
@@ -255,7 +258,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                         }
                         break;
                     case ExoPlayer.STATE_ENDED:
-                        Log.d(TAG, "Video ended");
+                        Log.d(TAG, "Video STATE_ENDED");
                         playBackStateLayout.setVisibility(View.GONE);
                         if (shouldRequestAds) {
                             adsLoader.contentComplete();
@@ -316,6 +319,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     @Override
     public void onResume() {
+        videoPlayerView.setListener(this);
         if (shouldRequestAds && adsManager != null && isAdDisplayed) {
             adsManager.resume();
         } else {
@@ -485,4 +489,8 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     }
 
+    @Override
+    public void onFinishCallback() {
+        getActivity().finish();
+    }
 }
