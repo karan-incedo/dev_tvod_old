@@ -142,12 +142,23 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         boolean result = false;
         if(event.getAction() == KeyEvent.ACTION_DOWN ){
             result =  appCMSPlayVideoFragment.showController(event);
-        } else if (event.getKeyCode() == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE){
-            appCMSPlayVideoPageContainer.findViewById(R.id.exo_pause).requestFocus();
-        } else if (event.getKeyCode() == KeyEvent.KEYCODE_MEDIA_REWIND){
-            appCMSPlayVideoPageContainer.findViewById(R.id.exo_rew).requestFocus();
-        } else if (event.getKeyCode() == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD){
-            appCMSPlayVideoPageContainer.findViewById(R.id.exo_ffwd).requestFocus();
+            switch (event.getKeyCode()){
+                case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                    if(null != appCMSPlayVideoPageContainer){
+                        appCMSPlayVideoPageContainer.findViewById(R.id.exo_pause).requestFocus();
+                    }
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_REWIND:
+                    if(null != appCMSPlayVideoPageContainer){
+                        appCMSPlayVideoPageContainer.findViewById(R.id.exo_rew).requestFocus();
+                    }
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                    if(null != appCMSPlayVideoPageContainer){
+                        appCMSPlayVideoPageContainer.findViewById(R.id.exo_ffwd).requestFocus();
+                    }
+                    break;
+            }
         }
         return super.dispatchKeyEvent(event) || result;
     }
