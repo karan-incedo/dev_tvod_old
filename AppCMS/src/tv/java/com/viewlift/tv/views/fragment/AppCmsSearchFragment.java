@@ -168,6 +168,7 @@ public class AppCmsSearchFragment extends Fragment {
                         appCMSPresenter.searchRetryDialog(editable.toString());
                     }
                 }else{
+                    lastSearchedString = "";
                     if(null != mRowsAdapter){
                         mRowsAdapter.clear();
                     }
