@@ -43,7 +43,9 @@ import rx.functions.Action1;
  */
 
 public class AppCMSPlayVideoFragment extends Fragment
-        implements AdErrorEvent.AdErrorListener, AdEvent.AdEventListener {
+        implements AdErrorEvent.AdErrorListener,
+        AdEvent.AdEventListener,
+        VideoPlayerView.FinishListener {
     private static final String TAG = "PlayVideoFragment";
 
     private static final long SECS_TO_MSECS = 1000L;
@@ -225,6 +227,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerViewDoneButton.setColorFilter(Color.parseColor(fontColor));
         videoPlayerInfoContainer.bringToFront();
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
+        videoPlayerView.setListener(this);
 
         videoLoadingProgress = (LinearLayout) rootView.findViewById(R.id.app_cms_video_loading);
 
@@ -497,6 +500,12 @@ public class AppCMSPlayVideoFragment extends Fragment
                         videoPlayerView.getCurrentPosition());
             }
         }
+    }
+
+    @Override
+    public void onFinishCallback() {
+        videoPlayerView.releasePlayer();
+        onClosePlayerEvent.closePlayer();
     }
 
     public interface OnClosePlayerEvent {
