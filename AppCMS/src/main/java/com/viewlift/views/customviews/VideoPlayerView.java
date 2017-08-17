@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -23,6 +24,7 @@ import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.source.AdaptiveMediaSourceEventListener;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
@@ -41,6 +43,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
@@ -52,11 +55,13 @@ import rx.Observable;
 import rx.functions.Action1;
 import com.viewlift.R;
 
+import java.io.IOException;
+
 /**
  * Created by viewlift on 5/31/17.
  */
 
-public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListener {
+public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListener, AdaptiveMediaSourceEventListener {
     private static final String TAG = "VideoPlayerFragment";
     private ToggleButton ccToggleButton;
     private boolean isClosedCaptionEnabled = false;
@@ -74,6 +79,10 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         }
     }
 
+    public interface FinishListener
+    {
+        void onFinishCallback();
+    }
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
 
     private Uri uri;
@@ -88,6 +97,8 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     protected DataSource.Factory mediaDataSourceFactory;
     protected String userAgent;
     private long mCurrentPlayerPosition;
+    private FinishListener mFinishListener;
+    boolean isLoadedNext;
 
     public VideoPlayerView(Context context) {
         super(context);
@@ -309,8 +320,8 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
             case C.TYPE_HLS:
                 return new HlsMediaSource(uri,
                         mediaDataSourceFactory,
-                        null,
-                        null);
+                        new Handler(),
+                        this);
             case C.TYPE_OTHER:
                 return new ExtractorMediaSource(uri,
                         mediaDataSourceFactory,
@@ -382,5 +393,45 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
 
     public void sendPlayerPosition(long position){
         mCurrentPlayerPosition = position;
+    }
+
+    @Override
+    public void onLoadStarted(DataSpec dataSpec, int dataType, int trackType, Format trackFormat, int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs, long mediaEndTimeMs, long elapsedRealtimeMs) {
+
+    }
+
+    @Override
+    public void onLoadCompleted(DataSpec dataSpec, int dataType, int trackType, Format trackFormat, int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs, long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs, long bytesLoaded) {
+
+    }
+
+    @Override
+    public void onLoadCanceled(DataSpec dataSpec, int dataType, int trackType, Format trackFormat, int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs, long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs, long bytesLoaded) {
+
+    }
+
+    @Override
+    public void onLoadError(DataSpec dataSpec, int dataType, int trackType, Format trackFormat, int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs, long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs, long bytesLoaded, IOException error, boolean wasCanceled) {
+        Log.d(TAG, "onLoadError : "+error.getMessage());
+        if (error.getMessage().contains("404") && !isLoadedNext) {
+            if ((player.getCurrentPosition() + 5000) >= player.getDuration()) {
+                isLoadedNext = true;
+                mFinishListener.onFinishCallback();
+            }
+        }
+    }
+
+    @Override
+    public void onUpstreamDiscarded(int trackType, long mediaStartTimeMs, long mediaEndTimeMs) {
+
+    }
+
+    @Override
+    public void onDownstreamFormatChanged(int trackType, Format trackFormat, int trackSelectionReason, Object trackSelectionData, long mediaTimeMs) {
+
+    }
+
+    public void setListener (VideoPlayerView.FinishListener finishListener){
+        mFinishListener = finishListener;
     }
 }

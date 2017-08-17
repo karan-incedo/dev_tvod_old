@@ -24,7 +24,7 @@
     <dimen name="tray_list_row_padding_top">-10dp</dimen>
     <dimen name="tray_list_row_padding_left">-13dp</dimen>
 
-    <dimen name="footer_logo_height">34dp</dimen>
+    <dimen name="footer_logo_height">24dp</dimen>
     <dimen name="footer_logo_width">120dp</dimen>
     <dimen name="footer_logo_margin_right">30dp</dimen>
     <dimen name="footer_logo_margin_bottom">14dp</dimen>

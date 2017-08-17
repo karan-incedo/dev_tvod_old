@@ -114,11 +114,11 @@ public class AppCMSLeanbackActivity extends Activity implements AppCmsTvErrorFra
                 translateY.setDuration(1500);
                 translateY.start();
 
-                ObjectAnimator anim = ObjectAnimator.ofFloat(logo,"scaleX",0.49f);
+                ObjectAnimator anim = ObjectAnimator.ofFloat(logo,"scaleX",0.50f);
                 anim.setDuration(1500); // duration 3 seconds
                 anim.start();
 
-                ObjectAnimator anim2 = ObjectAnimator.ofFloat(logo,"scaleY",0.49f);
+                ObjectAnimator anim2 = ObjectAnimator.ofFloat(logo,"scaleY",0.50f);
                 anim2.setDuration(1500); // duration 3 seconds
                 anim2.start();
             }
