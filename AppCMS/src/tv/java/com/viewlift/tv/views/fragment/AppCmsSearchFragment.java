@@ -172,6 +172,7 @@ public class AppCmsSearchFragment extends Fragment {
                     if(null != mRowsAdapter){
                         mRowsAdapter.clear();
                     }
+                    noSearchTextView.setVisibility(View.GONE);
                     progressBar.setVisibility(View.INVISIBLE);
                 }
             }
@@ -462,7 +463,7 @@ public class AppCmsSearchFragment extends Fragment {
 
 
 
-    private static class SearchAsyncTask extends AsyncTask<String, Void, List<AppCMSSearchResult>> {
+    private class SearchAsyncTask extends AsyncTask<String, Void, List<AppCMSSearchResult>> {
         final Action1<List<AppCMSSearchResult>> dataReadySubscriber;
         final AppCMSSearchCall appCMSSearchCall;
 
@@ -486,7 +487,9 @@ public class AppCmsSearchFragment extends Fragment {
 
         @Override
         protected void onPostExecute(List<AppCMSSearchResult> result) {
-            Observable.just(result).subscribe(dataReadySubscriber);
+            if(isAdded()) {
+                Observable.just(result).subscribe(dataReadySubscriber);
+            }
         }
     }
 
