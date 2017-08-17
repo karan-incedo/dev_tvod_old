@@ -64,9 +64,6 @@ public class AppCMSDownloadQualityAdapter extends AppCMSDownloadRadioAdapter<Mpe
                 componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }
 
-            int tintColor = Color.parseColor(getColor(viewHolder.mText.getContext(),
-                    appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
-
             switch (componentType) {
                 case PAGE_LABEL_KEY:
                 case PAGE_TEXTVIEW_KEY:
