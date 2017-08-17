@@ -67,6 +67,7 @@
     <string name="app_cms_main_svod_service_type_key">SVOD</string>
     <string name="app_cms_android_navigation_key">navigation</string>
     <string name="app_cms_page_button_key">button</string>
+    <string name="app_cms_page_button_switch_key">switchToSdCard</string>
     <string name="app_cms_page_image_key">image</string>
     <string name="app_cms_page_label_key">label</string>
     <string name="app_cms_page_collection_grid_key">collectionGrid</string>
@@ -224,6 +225,7 @@
     <string name="app_cms_action_managesubscription_key">manageSubscription</string>
 
     <string name="app_cms_action_change_download_quality_key">changeDownloadQuality</string>
+    <string name="app_cms_action_change_download_storage_location_key">changeStorageLocation</string>
     <!--<string name="app_cms_action_change_download_quality_key">Manage Download</string>-->
 
     <string name="app_cms_action_logingoogle_key">logingoogle</string>

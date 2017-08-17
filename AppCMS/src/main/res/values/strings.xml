@@ -280,7 +280,8 @@
     <string name="app_cms_download_unavailable_error_title">Download Unavailable</string>
     <string name="app_cms_download_failed_error_title">Download Failed</string>
     <string name="app_cms_download_failed_error_message">Cannot be downloaded due to low device storage, Please manage space in your storage area and try again.</string>
-
+    <string name="app_cms_sdCard_unavailable_error_title">SDCard Unavailable</string>
+    <string name="app_cms_sdCard_unavailable_error_message">Please insert SDCard in device if it supports for removeable media.  </string>
 
     <!-- search result values -->
     <string name="app_cms_search_sharepref_key">app_cms_sharepref_result</string>
