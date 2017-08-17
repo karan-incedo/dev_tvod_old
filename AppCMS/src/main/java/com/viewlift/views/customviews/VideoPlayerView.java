@@ -97,7 +97,8 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     protected DataSource.Factory mediaDataSourceFactory;
     protected String userAgent;
     private long mCurrentPlayerPosition;
-    FinishListener mFinishListener;
+    private FinishListener mFinishListener;
+    boolean isLoadedNext;
 
     public VideoPlayerView(Context context) {
         super(context);
@@ -412,8 +413,11 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     @Override
     public void onLoadError(DataSpec dataSpec, int dataType, int trackType, Format trackFormat, int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs, long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs, long bytesLoaded, IOException error, boolean wasCanceled) {
         Log.d(TAG, "onLoadError : "+error.getMessage());
-        if ((player.getCurrentPosition() + 5000) >= player.getDuration()) {
-            mFinishListener.onFinishCallback();
+        if (error.getMessage().contains("404") && !isLoadedNext) {
+            if ((player.getCurrentPosition() + 5000) >= player.getDuration()) {
+                isLoadedNext = true;
+                mFinishListener.onFinishCallback();
+            }
         }
     }
 
