@@ -29,6 +29,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -1076,6 +1077,10 @@ public class ViewCreator {
         }
 
         AppCMSUIKeyType moduleType = jsonValueKeyMap.get(viewType);
+
+        int tintColor = Color.parseColor(getColor(context,
+                appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
+
         switch (componentType) {
             case PAGE_TABLE_VIEW_KEY:
                 if (moduleType == AppCMSUIKeyType.PAGE_DOWNLOAD_SETTING_MODULE_KEY) {
@@ -1347,9 +1352,6 @@ public class ViewCreator {
                         applyBorderToComponent(context, componentViewResult.componentView, component, -1);
                     }
                 }
-
-                int tintColor = Color.parseColor(getColor(context,
-                        appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
 
                 switch (componentKey) {
                     case PAGE_AUTOPLAY_BACK_KEY:
@@ -2336,6 +2338,13 @@ public class ViewCreator {
                         pageView,
                         jsonValueKeyMap,
                         appCMSPresenter);
+                break;
+
+            case PAGE_TOGGLE_BUTTON_KEY:
+                componentViewResult.componentView = new Switch(context);
+                ((Switch) componentViewResult.componentView).getTrackDrawable().setTint(Color.parseColor(
+                        appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                ((Switch) componentViewResult.componentView).setTrackTintMode(PorterDuff.Mode.MULTIPLY);
                 break;
 
             default:
