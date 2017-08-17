@@ -40,13 +40,14 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
 
     private BroadcastReceiver handoffReceiver;
     private AppCMSPresenter appCMSPresenter;
+    FrameLayout appCMSPlayVideoPageContainer;
 
     private AppCMSPlayVideoFragment appCMSPlayVideoFragment;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_player_page);
-        FrameLayout appCMSPlayVideoPageContainer =
+        appCMSPlayVideoPageContainer =
                 (FrameLayout) findViewById(R.id.app_cms_play_video_page_container);
 
         Intent intent = getIntent();
@@ -141,6 +142,12 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         boolean result = false;
         if(event.getAction() == KeyEvent.ACTION_DOWN ){
             result =  appCMSPlayVideoFragment.showController(event);
+        } else if (event.getKeyCode() == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE){
+            appCMSPlayVideoPageContainer.findViewById(R.id.exo_pause).requestFocus();
+        } else if (event.getKeyCode() == KeyEvent.KEYCODE_MEDIA_REWIND){
+            appCMSPlayVideoPageContainer.findViewById(R.id.exo_rew).requestFocus();
+        } else if (event.getKeyCode() == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD){
+            appCMSPlayVideoPageContainer.findViewById(R.id.exo_ffwd).requestFocus();
         }
         return super.dispatchKeyEvent(event) || result;
     }
