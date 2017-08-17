@@ -51,6 +51,7 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.models.data.appcms.ui.page.Settings;
+import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
@@ -579,8 +580,7 @@ public class ViewCreator {
                                                     ((TextView) settingsView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
                                                 }
                                             } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY) {
-                                                if (paymentProcessor != null ||
-                                                        !TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionId(context))) {
+                                                if (paymentProcessor != null) {
                                                     if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor)) ||
                                                             paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor_friendly))) {
                                                         ((TextView) settingsView).setText(context.getString(R.string.subscription_ios_payment_processor_friendly));
@@ -593,6 +593,8 @@ public class ViewCreator {
                                                     } else {
                                                         ((TextView) settingsView).setText(context.getString(R.string.subscription_unknown_payment_processor_friendly));
                                                     }
+                                                } else if (!TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionId(context))) {
+                                                    ((TextView) settingsView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
                                                 } else {
                                                     ((TextView) settingsView).setText("");
                                                 }
@@ -878,6 +880,11 @@ public class ViewCreator {
                             appCMSPresenter,
                             false,
                             module.getView());
+
+                    if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
+                        componentViewResult.shouldHideComponent = true;
+                        componentViewResult.componentView.setVisibility(View.GONE);
+                    }
 
                     if (componentViewResult.shouldHideModule) {
                         hideModule = true;
@@ -2069,6 +2076,10 @@ public class ViewCreator {
                             ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getUserDownloadQualityPref(context));
                             break;
 
+                        case PAGE_SETTINGS_APP_VERSION_VALUE_KEY:
+                            ((TextView) componentViewResult.componentView).setText(context.getString(R.string.app_cms_app_version));
+                            break;
+
                         case PAGE_SETTINGS_TITLE_KEY:
                             ((TextView) componentViewResult.componentView)
                                     .setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
@@ -2463,7 +2474,9 @@ public class ViewCreator {
                 componentViewResult.componentView = new Switch(context);
                 ((Switch) componentViewResult.componentView).getTrackDrawable().setTint(Color.parseColor(
                         appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
-                ((Switch) componentViewResult.componentView).setTrackTintMode(PorterDuff.Mode.MULTIPLY);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                    ((Switch) componentViewResult.componentView).setTrackTintMode(PorterDuff.Mode.MULTIPLY);
+                }
                 break;
 
             default:
@@ -2487,20 +2500,22 @@ public class ViewCreator {
     private Module matchModuleAPIToModuleUI(ModuleList module, AppCMSPageAPI appCMSPageAPI,
                                             Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
         if (appCMSPageAPI != null && appCMSPageAPI.getModules() != null) {
-            switch (jsonValueKeyMap.get(module.getView())) {
-                case PAGE_HISTORY_MODULE_KEY:
-                case PAGE_WATCHLIST_MODULE_KEY:
-                case PAGE_AUTOPLAY_MODULE_KEY:
-                case PAGE_DOWNLOAD_SETTING_MODULE_KEY:
-                case PAGE_DOWNLOAD_MODULE_KEY:
-                    if (appCMSPageAPI.getModules() != null
-                            && !appCMSPageAPI.getModules().isEmpty()) {
-                        return appCMSPageAPI.getModules().get(0);
-                    }
-                    break;
+            if (jsonValueKeyMap.get(module.getView()) != null) {
+                switch (jsonValueKeyMap.get(module.getView())) {
+                    case PAGE_HISTORY_MODULE_KEY:
+                    case PAGE_WATCHLIST_MODULE_KEY:
+                    case PAGE_AUTOPLAY_MODULE_KEY:
+                    case PAGE_DOWNLOAD_SETTING_MODULE_KEY:
+                    case PAGE_DOWNLOAD_MODULE_KEY:
+                        if (appCMSPageAPI.getModules() != null
+                                && !appCMSPageAPI.getModules().isEmpty()) {
+                            return appCMSPageAPI.getModules().get(0);
+                        }
+                        break;
 
-                default:
-                    //
+                    default:
+                        //
+                }
             }
 
             for (Module moduleAPI : appCMSPageAPI.getModules()) {

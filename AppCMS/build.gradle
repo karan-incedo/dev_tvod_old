@@ -4,6 +4,7 @@ apply plugin: 'realm-android'
 def final packageName = 'com.viewlift.hoichoi'
 def final customApplicationId = 'HoiChoi'
 def final hostName = "www.hoichoi.tv"
+def final appVersionName = "1.0.35"
 
 buildscript {
     repositories {
@@ -33,7 +34,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 25
         versionCode 12
-        versionName "1.0.35"
+        versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 25
         renderscriptSupportModeEnabled true
@@ -49,6 +50,8 @@ android {
         tv {
             minSdkVersion 21
             compileSdkVersion 25
+            versionCode 105
+            versionName "1.0.5"
             dimension = "green"
             aaptOptions {
                 cruncherEnabled = false
@@ -85,6 +88,7 @@ android {
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
             resValue "string", "app_cms_app_host_name", "${hostName}"
+            resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
         release {
@@ -95,6 +99,7 @@ android {
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
             resValue "string", "app_cms_app_host_name", "${hostName}"
+            resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
     }

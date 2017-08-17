@@ -262,6 +262,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_BACKGROUND_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_background_image_type_type),
                 AppCMSUIKeyType.PAGE_BACKGROUND_IMAGE_TYPE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_app_version_value_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_APP_VERSION_VALUE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_togglebutton_key),
                 AppCMSUIKeyType.PAGE_TOGGLE_BUTTON_KEY);
