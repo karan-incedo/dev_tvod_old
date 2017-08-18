@@ -266,6 +266,7 @@ public class AppCMSPresenter {
     private static final String ACTIVE_SUBSCRIPTION_PRICE_NAME = "active_subscription_plan_price_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PROCESSOR_NAME = "active_subscription_payment_processor_key";
     private static final String IS_USER_SUBSCRIBED = "is_user_subscribed_pref_key";
+    private static final String AUTO_PLAY_ENABLED_PREF_NAME = "autoplay_enabled_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_DESCRIPTION = "existing_google_play_subscription_title_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID = "existing_google_play_subscription_id_key_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_SUSPENDED = "existing_google_play_subscription_suspended_pref_key";
@@ -879,6 +880,11 @@ public class AppCMSPresenter {
                         String backgroundColor = appCMSMain.getBrand()
                                 .getGeneral()
                                 .getBackgroundColor();
+
+                        if (!getAutoplayEnabledUserPref(currentActivity)) {
+                            relateVideoIds = null;
+                            currentlyPlayingIndex = -1;
+                        }
 
                         AppCMSVideoPageBinder appCMSVideoPageBinder =
                                 getAppCMSVideoPageBinder(currentActivity,
@@ -3865,6 +3871,22 @@ public class AppCMSPresenter {
                     context.getSharedPreferences(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME, 0);
             return sharedPreferences.edit().putString(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME,
                     googleAccessToken).commit();
+        }
+        return false;
+    }
+
+    public boolean getAutoplayEnabledUserPref(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(AUTO_PLAY_ENABLED_PREF_NAME, 0);
+            return sharedPrefs.getBoolean(AUTO_PLAY_ENABLED_PREF_NAME, true);
+        }
+        return false;
+    }
+
+    public boolean setAutoplayEnabledUserPref(Context context, boolean autoplayEnabled) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(AUTO_PLAY_ENABLED_PREF_NAME, 0);
+            return sharedPrefs.edit().putBoolean(getLoggedInUser(currentActivity), autoplayEnabled).commit();
         }
         return false;
     }
