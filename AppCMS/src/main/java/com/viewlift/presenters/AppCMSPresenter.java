@@ -32,7 +32,6 @@ import android.os.StatFs;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -43,6 +42,7 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -66,8 +66,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.viewlift.Manifest;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
@@ -79,7 +77,6 @@ import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
-import com.viewlift.models.data.appcms.api.FeatureDetail;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Mpeg;
 import com.viewlift.models.data.appcms.api.Settings;
@@ -105,9 +102,7 @@ import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
-import com.viewlift.models.data.appcms.ui.main.Content;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
-import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.models.data.appcms.watchlist.AppCMSWatchlistResult;
@@ -153,7 +148,6 @@ import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
-import com.viewlift.models.network.utility.MainUtils;
 import com.viewlift.views.activity.AppCMSDownloadQualityActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
@@ -175,22 +169,18 @@ import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
 import org.threeten.bp.temporal.ChronoUnit;
 
-import org.w3c.dom.Text;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -204,7 +194,6 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -731,13 +720,13 @@ public class AppCMSPresenter {
                     } else {
                         showDialog(DialogType.NETWORK, null, false, null);
                     }
-                }else{
-                        if (platformType == PlatformType.TV) {
-                            getAppCMSTV(activity,
-                                    main,
-                                    tryCount + 1);
-                        }
+                } else {
+                    if (platformType == PlatformType.TV) {
+                        getAppCMSTV(activity,
+                                main,
+                                tryCount + 1);
                     }
+                }
             });
         }
     }
@@ -758,13 +747,13 @@ public class AppCMSPresenter {
             Log.e(TAG, e.getLocalizedMessage());
         }
         if (!isNetworkConnected() && !isVideoOffline) { //checking isVideoOffline here to fix SVFA-1431 in offline mode
-           // showDialog(DialogType.NETWORK, null, false, null);
-            showDialog(DialogType.NETWORK, currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download), true, new Action0() { // Fix of SVFA-1435
-                @Override
-                public void call() {
-                    navigateToDownloadPage(downloadPage.getPageId(),downloadPage.getPageName(),downloadPage.getPageUI(),false);
-                }
-            });
+            // showDialog(DialogType.NETWORK, null, false, null);
+            // Fix of SVFA-1435
+            showDialog(DialogType.NETWORK,
+                    currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download),
+                    true,
+                    () -> navigateToDownloadPage(downloadPage.getPageId(),
+                            downloadPage.getPageName(), downloadPage.getPageUI(), false));
         } else {
             final AppCMSActionType actionType = actionToActionTypeMap.get(action);
 
@@ -1686,6 +1675,11 @@ public class AppCMSPresenter {
                     addToWatchlistResult -> {
                         try {
                             Observable.just(addToWatchlistResult).subscribe(resultAction1);
+                            if (add) {
+                                displayWatchlistToast("Added to Watchlist");
+                            } else {
+                                displayWatchlistToast("Removed from Watchlist");
+                            }
                         } catch (Exception e) {
                             Log.e(TAG, "addToWatchlistContent: " + e.toString());
                         }
@@ -1693,6 +1687,12 @@ public class AppCMSPresenter {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void displayWatchlistToast(String toastMessage) {
+        Toast toast = Toast.makeText(currentActivity, toastMessage, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.show();
     }
 
     public void removeDownloadedFile(String filmId, final Action1<UserVideoDownloadStatus> resultAction1) {
@@ -2293,7 +2293,7 @@ public class AppCMSPresenter {
             updateDownloadIconTimer.cancel();
             updateDownloadIconTimer.purge();
         }*/
-        if (downloadProgressTimerList != null && downloadProgressTimerList.size() > 0) {
+        if (downloadProgressTimerList != null && !downloadProgressTimerList.isEmpty()) {
             for (Timer downloadProgress : downloadProgressTimerList) {
                 downloadProgress.cancel();
                 downloadProgress.purge();
@@ -4603,10 +4603,9 @@ public class AppCMSPresenter {
                 default:
                     isNetwork = true;
                     title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
-                    if (optionalMessage!=null)
-                    {
+                    if (optionalMessage != null) {
                         message = optionalMessage;
-                    }else {
+                    } else {
                         message = currentActivity.getString(R.string.app_cms_network_connectivity_error_message);
                     }
                     if (isNetworkConnected()) {
@@ -5512,16 +5511,16 @@ public class AppCMSPresenter {
                 resultAction);
     }
 
-  public void searchRetryDialog(String searchTerm){
+    public void searchRetryDialog(String searchTerm) {
         RetryCallBinder retryCallBinder = getRetryCallBinder(null, null,
-                searchTerm,null,
+                searchTerm, null,
                 null, false,
-                null,SEARCH_RETRY_ACTION
+                null, SEARCH_RETRY_ACTION
         );
         Bundle bundle = new Bundle();
-        bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey) , retryCallBinder);
+        bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
         Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
-        args.putExtra(currentActivity.getString(R.string.retryCallBundleKey) , bundle);
+        args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
         currentActivity.sendBroadcast(args);
     }
 
@@ -5530,10 +5529,10 @@ public class AppCMSPresenter {
                                                String filmTitle,
                                                String[] extraData,
                                                ContentDatum contentDatum,
-                                               boolean closeLauncher ,
+                                               boolean closeLauncher,
                                                String filmId,
-                                               RETRY_TYPE retry_type){
-        RetryCallBinder retryCallBinder= new RetryCallBinder();
+                                               RETRY_TYPE retry_type) {
+        RetryCallBinder retryCallBinder = new RetryCallBinder();
         retryCallBinder.setPagePath(pagePath);
         retryCallBinder.setAction(action);
         retryCallBinder.setFilmTitle(filmTitle);
@@ -5742,7 +5741,7 @@ public class AppCMSPresenter {
                                     getAppCMSAndroid(activity, main, 0);
                                     break;
                                 case TV:
-                                    getAppCMSTV(activity, main, 0 );
+                                    getAppCMSTV(activity, main, 0);
                                     break;
                                 default:
                             }
