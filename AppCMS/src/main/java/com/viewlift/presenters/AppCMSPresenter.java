@@ -125,6 +125,7 @@ import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSGoogleLoginCall;
@@ -290,6 +291,8 @@ public class AppCMSPresenter {
     private final GoogleRefreshTokenCall googleRefreshTokenCall;
     private final GoogleCancelSubscriptionCall googleCancelSubscriptionCall;
 
+    private final AppCMSCCAvenueCall appCMSCCAvenueCall;
+
     private final AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final Map<String, String> pageNameToActionMap;
@@ -431,6 +434,8 @@ public class AppCMSPresenter {
 
                            AppCMSAddToWatchlistCall appCMSAddToWatchlistCall,
 
+                           AppCMSCCAvenueCall appCMSCCAvenueCall,
+
                            Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                            Map<String, String> pageNameToActionMap,
                            Map<String, AppCMSPageUI> actionToPageMap,
@@ -464,6 +469,8 @@ public class AppCMSPresenter {
         this.appCMSUserDownloadVideoStatusCall = appCMSUserDownloadVideoStatusCall;
 
         this.appCMSAddToWatchlistCall = appCMSAddToWatchlistCall;
+
+        this.appCMSCCAvenueCall = appCMSCCAvenueCall;
 
         this.appCMSWatchlistCall = appCMSWatchlistCall;
         this.appCMSHistoryCall = appCMSHistoryCall;
