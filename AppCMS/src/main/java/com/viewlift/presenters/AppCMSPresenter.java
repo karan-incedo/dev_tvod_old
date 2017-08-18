@@ -4829,6 +4829,7 @@ public class AppCMSPresenter {
                                     subscriptionUserPassword,
                                     false,
                                     false,
+                                    true,
                                     true);
                         }
                         if (signupFromFacebook) {
@@ -4932,6 +4933,7 @@ public class AppCMSPresenter {
                         password,
                         true,
                         launchType == LaunchType.SUBSCRIBE,
+                        false,
                         false);
             }
         }
@@ -5130,6 +5132,7 @@ public class AppCMSPresenter {
                     password,
                     false,
                     false,
+                    false,
                     false);
         }
     }
@@ -5183,7 +5186,8 @@ public class AppCMSPresenter {
                                      String password,
                                      boolean signup,
                                      boolean followWithSubscription,
-                                     boolean suppressErrorMessages) {
+                                     boolean suppressErrorMessages,
+                                     boolean forceSubscribed) {
         PostAppCMSLoginRequestAsyncTask.Params params = new PostAppCMSLoginRequestAsyncTask.Params
                 .Builder()
                 .url(url)
@@ -5210,7 +5214,12 @@ public class AppCMSPresenter {
                         setLoggedInUser(currentActivity, signInResponse.getUserId());
                         setLoggedInUserName(currentActivity, signInResponse.getName());
                         setLoggedInUserEmail(currentActivity, signInResponse.getEmail());
-                        setIsUserSubscribed(currentActivity, signInResponse.isSubscribed());
+
+                        if (forceSubscribed) {
+                            setIsUserSubscribed(currentActivity, true);
+                        } else {
+                            setIsUserSubscribed(currentActivity, signInResponse.isSubscribed());
+                        }
 
                         checkForExistingSubscription(false);
 
