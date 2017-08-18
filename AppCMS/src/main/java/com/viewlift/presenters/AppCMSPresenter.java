@@ -76,10 +76,10 @@ import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
 import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
-import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
+import com.viewlift.models.data.appcms.api.FeatureDetail;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Mpeg;
 import com.viewlift.models.data.appcms.api.Settings;
@@ -107,6 +107,7 @@ import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.main.Content;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
+import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.models.data.appcms.watchlist.AppCMSWatchlistResult;
@@ -121,7 +122,6 @@ import com.viewlift.models.network.background.tasks.GetAppCMSVideoDetailAsyncTas
 import com.viewlift.models.network.background.tasks.PostAppCMSLoginRequestAsyncTask;
 import com.viewlift.models.network.components.AppCMSAPIComponent;
 import com.viewlift.models.network.components.AppCMSSearchUrlComponent;
-
 import com.viewlift.models.network.components.DaggerAppCMSAPIComponent;
 import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
 import com.viewlift.models.network.modules.AppCMSAPIModule;
@@ -266,8 +266,10 @@ public class AppCMSPresenter {
     private static final String ACTIVE_SUBSCRIPTION_PRICE_NAME = "active_subscription_plan_price_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PROCESSOR_NAME = "active_subscription_payment_processor_key";
     private static final String IS_USER_SUBSCRIBED = "is_user_subscribed_pref_key";
+    private static final String AUTO_PLAY_ENABLED_PREF_NAME = "autoplay_enabled_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_DESCRIPTION = "existing_google_play_subscription_title_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID = "existing_google_play_subscription_id_key_pref_key";
+    private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_SUSPENDED = "existing_google_play_subscription_suspended_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_PRICE = "existing_google_play_subscription_price_pref_key";
     private static final String USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME = "user_download_quality_pref";
     private static final String USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME = "user_download_sd_card_pref";
@@ -315,7 +317,20 @@ public class AppCMSPresenter {
     private final AppCMSSubscriptionCall appCMSSubscriptionCall;
     private final AppCMSSubscriptionPlanCall appCMSSubscriptionPlanCall;
     private final AppCMSAnonymousAuthTokenCall appCMSAnonymousAuthTokenCall;
-
+    public String[] physicalPaths = {
+            "/storage/sdcard0", "/storage/sdcard1", // Motorola Xoom
+            "/storage/extsdcard", // Samsung SGS3
+            "/storage/sdcard0/external_sdcard", // User request
+            "/mnt/extsdcard", "/mnt/sdcard/external_sd", // Samsung galaxy family
+            "/mnt/external_sd", "/mnt/media_rw/sdcard1", // 4.4.2 on CyanogenMod S3
+            "/removable/microsd", // Asus transformer prime
+            "/mnt/emmc", "/storage/external_SD", // LG
+            "/storage/ext_sd", // HTC One Max
+            "/storage/removable/sdcard1", // Sony Xperia Z1
+            "/data/sdext", "/data/sdext2", "/data/sdext3", "/data/sdext4", "/sdcard1", // Sony Xperia Z
+            "/sdcard2", // HTC One M8s
+            "/storage/microsd" // ASUS ZenFone 2
+    };
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
@@ -743,7 +758,13 @@ public class AppCMSPresenter {
             Log.e(TAG, e.getLocalizedMessage());
         }
         if (!isNetworkConnected() && !isVideoOffline) { //checking isVideoOffline here to fix SVFA-1431 in offline mode
-            showDialog(DialogType.NETWORK, null, false, null);
+           // showDialog(DialogType.NETWORK, null, false, null);
+            showDialog(DialogType.NETWORK, currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download), true, new Action0() { // Fix of SVFA-1435
+                @Override
+                public void call() {
+                    navigateToDownloadPage(downloadPage.getPageId(),downloadPage.getPageName(),downloadPage.getPageUI(),false);
+                }
+            });
         } else {
             final AppCMSActionType actionType = actionToActionTypeMap.get(action);
 
@@ -866,6 +887,11 @@ public class AppCMSPresenter {
                                 .getGeneral()
                                 .getBackgroundColor();
 
+                        if (!getAutoplayEnabledUserPref(currentActivity)) {
+                            relateVideoIds = null;
+                            currentlyPlayingIndex = -1;
+                        }
+
                         AppCMSVideoPageBinder appCMSVideoPageBinder =
                                 getAppCMSVideoPageBinder(currentActivity,
                                         null,
@@ -958,7 +984,7 @@ public class AppCMSPresenter {
                                 if ((!TextUtils.isEmpty(paymentProcessor) &&
                                         (!paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
                                                 !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)))) &&
-                                        !TextUtils.isEmpty(getExistingGooglePlaySubscriptionId(currentActivity)) &&
+                                        isExistingGooglePlaySubscriptionSuspended(currentActivity) &&
                                         !upgradesAvailableForUser(getLoggedInUser(currentActivity))) {
                                     if (!upgradesAvailableForUser(getLoggedInUser(currentActivity))) {
                                         showEntitlementDialog(DialogType.UPGRADE_UNAVAILABLE);
@@ -2969,11 +2995,8 @@ public class AppCMSPresenter {
                                 Log.e(TAG, "Error parsing Google Play subscription data: " + e.toString());
                             }
                         }
-                        if (subscriptionExpired) {
-                            setExistingGooglePlaySubscriptionDescription(currentActivity, null);
-                            setExistingGooglePlaySubscriptionPrice(currentActivity, null);
-                            setExistingGooglePlaySubscriptionId(currentActivity, null);
-                        }
+
+                        setExistingGooglePlaySubscriptionSuspended(currentActivity, subscriptionExpired);
                     }
                 }
             } catch (RemoteException e) {
@@ -3103,7 +3126,7 @@ public class AppCMSPresenter {
         }
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings("ConstantConditions")
     public void updateUserData(final String username,
                                final String email,
                                final String password,
@@ -3118,6 +3141,7 @@ public class AppCMSPresenter {
                 userIdentity.setEmail(email);
                 userIdentity.setId(getLoggedInUser(currentActivity));
                 userIdentity.setPassword(password);
+
                 appCMSUserIdentityCall.callPost(url,
                         getAuthToken(currentActivity),
                         userIdentity,
@@ -3127,9 +3151,23 @@ public class AppCMSPresenter {
                                         userIdentityResult.getName());
                                 setLoggedInUserEmail(currentActivity,
                                         userIdentityResult.getEmail());
+                                setAuthToken(currentActivity, userIdentityResult.getAuthorizationToken());
+                                setRefreshToken(currentActivity, userIdentityResult.getRefreshToken());
+//                            } else {
+//                                String errorMessage = userIdentityResult.getError();
+//                                Toast.makeText(currentActivity, errorMessage, Toast.LENGTH_LONG).show();
                             }
                             sendRefreshPageAction();
                             userIdentityAction.call(userIdentityResult);
+                        }, errorBody -> {
+                            try {
+                                UserIdentity userIdentityError = gson.fromJson(errorBody.string(),
+                                        UserIdentity.class);
+                                Toast.makeText(currentActivity, userIdentityError.getError(), Toast.LENGTH_LONG).show();
+
+                            } catch (IOException e) {
+                                Log.e(TAG, "Invalid JSON object: " + e.toString());
+                            }
                         });
             });
         }
@@ -3843,6 +3881,22 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public boolean getAutoplayEnabledUserPref(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(AUTO_PLAY_ENABLED_PREF_NAME, 0);
+            return sharedPrefs.getBoolean(AUTO_PLAY_ENABLED_PREF_NAME, true);
+        }
+        return false;
+    }
+
+    public boolean setAutoplayEnabledUserPref(Context context, boolean autoplayEnabled) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(AUTO_PLAY_ENABLED_PREF_NAME, 0);
+            return sharedPrefs.edit().putBoolean(getLoggedInUser(currentActivity), autoplayEnabled).commit();
+        }
+        return false;
+    }
+
     public boolean getIsUserSubscribed(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(IS_USER_SUBSCRIBED, 0);
@@ -3935,6 +3989,22 @@ public class AppCMSPresenter {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID, 0);
             return sharedPrefs.edit().putString(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID, existingGooglePlaySubscriptionId).commit();
+        }
+        return false;
+    }
+
+    public boolean isExistingGooglePlaySubscriptionSuspended(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_SUSPENDED, 0);
+            return sharedPrefs.getBoolean(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_SUSPENDED, false);
+        }
+        return false;
+    }
+
+    public boolean setExistingGooglePlaySubscriptionSuspended(Context context, boolean existingSubscriptionSuspended) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_SUSPENDED, 0);
+            return sharedPrefs.edit().putBoolean(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_SUSPENDED, existingSubscriptionSuspended).commit();
         }
         return false;
     }
@@ -4533,7 +4603,12 @@ public class AppCMSPresenter {
                 default:
                     isNetwork = true;
                     title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
-                    message = currentActivity.getString(R.string.app_cms_network_connectivity_error_message);
+                    if (optionalMessage!=null)
+                    {
+                        message = optionalMessage;
+                    }else {
+                        message = currentActivity.getString(R.string.app_cms_network_connectivity_error_message);
+                    }
                     if (isNetworkConnected()) {
                         title = currentActivity.getString(R.string.app_cms_data_error_title);
                         message = currentActivity.getString(R.string.app_cms_data_error_message);
@@ -4787,6 +4862,7 @@ public class AppCMSPresenter {
                                     subscriptionUserPassword,
                                     false,
                                     false,
+                                    true,
                                     true);
                         }
                         if (signupFromFacebook) {
@@ -4890,6 +4966,7 @@ public class AppCMSPresenter {
                         password,
                         true,
                         launchType == LaunchType.SUBSCRIBE,
+                        false,
                         false);
             }
         }
@@ -4901,34 +4978,31 @@ public class AppCMSPresenter {
                 refreshIdentity(getRefreshToken(currentActivity),
                         () -> {
                             try {
-                                appCMSSubscriptionPlanCall.call(
-                                        currentActivity.getString(R.string.app_cms_subscription_plan_list_api_url,
-                                                appCMSMain.getApiBaseUrl(),
-                                                appCMSMain.getInternalName()),
-                                        R.string.app_cms_subscription_plan_list_key,
-                                        null,
-                                        apikey,
-                                        getAuthToken(currentActivity),
-                                        appCMSSubscriptionPlanResultList -> {
-                                            for (AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResult : appCMSSubscriptionPlanResultList) {
-                                                SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
-                                                subscriptionPlan.setSku(appCMSSubscriptionPlanResult.getIdentifier());
-                                                subscriptionPlan.setPlanId(appCMSSubscriptionPlanResult.getId());
-                                                subscriptionPlan.setSubscriptionPrice(
-                                                        appCMSSubscriptionPlanResult
-                                                                .getPlanDetails()
-                                                                .get(0)
-                                                                .getRecurringPaymentAmount());
-                                                createSubscriptionPlan(subscriptionPlan);
+                                getPageIdContent(appCMSMain.getApiBaseUrl(),
+                                        pageIdToPageAPIUrlMap.get(subscriptionPage.getPageId()),
+                                        appCMSMain.getInternalName(),
+                                        true,
+                                        subscriptionPage.getPageId(),
+                                        appCMSPageAPI -> {
+                                            for (Module module : appCMSPageAPI.getModules()) {
+                                                if (!TextUtils.isEmpty(module.getModuleType()) &&
+                                                        module.getModuleType().equals(currentActivity.getString(R.string.app_cms_view_plan_module_key))) {
+                                                    if (module.getContentData() != null &&
+                                                            !module.getContentData().isEmpty()) {
+                                                        for (ContentDatum contentDatum : module.getContentData()) {
+                                                            SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
+                                                            subscriptionPlan.setSku(contentDatum.getIdentifier());
+                                                            subscriptionPlan.setPlanId(contentDatum.getId());
+                                                            if (!contentDatum.getPlanDetails().isEmpty()) {
+                                                                subscriptionPlan.setSubscriptionPrice(contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount());
+                                                            }
+                                                            createSubscriptionPlan(subscriptionPlan);
+                                                        }
+                                                    }
+                                                }
                                             }
-                                            subscriptionPlans = getExistingSubscriptionPlans();
-                                        },
-                                        appCMSSubscriptionPlanResult -> {
-                                            //
-                                        },
-                                        appCMSUserSubscriptionResult -> {
-                                            //
                                         });
+
                                 appCMSSubscriptionPlanCall.call(
                                         currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
                                                 appCMSMain.getApiBaseUrl(),
@@ -4986,36 +5060,31 @@ public class AppCMSPresenter {
                         });
             } else {
                 try {
-                    appCMSSubscriptionPlanCall.call(
-                            currentActivity.getString(R.string.app_cms_subscription_plan_list_api_url,
-                                    appCMSMain.getApiBaseUrl(),
-                                    appCMSMain.getInternalName()),
-                            R.string.app_cms_subscription_plan_list_key,
-                            null,
-                            apikey,
-                            getAuthToken(currentActivity),
-                            appCMSSubscriptionPlanResultList -> {
-                                if (appCMSSubscriptionPlanResultList != null) {
-                                    for (AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResult : appCMSSubscriptionPlanResultList) {
-                                        SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
-                                        subscriptionPlan.setSku(appCMSSubscriptionPlanResult.getIdentifier());
-                                        subscriptionPlan.setPlanId(appCMSSubscriptionPlanResult.getId());
-                                        subscriptionPlan.setSubscriptionPrice(
-                                                appCMSSubscriptionPlanResult
-                                                        .getPlanDetails()
-                                                        .get(0)
-                                                        .getRecurringPaymentAmount());
-                                        createSubscriptionPlan(subscriptionPlan);
+                    getPageIdContent(appCMSMain.getApiBaseUrl(),
+                            pageIdToPageAPIUrlMap.get(subscriptionPage.getPageId()),
+                            appCMSMain.getInternalName(),
+                            true,
+                            subscriptionPage.getPageId(),
+                            appCMSPageAPI -> {
+                                for (Module module : appCMSPageAPI.getModules()) {
+                                    if (!TextUtils.isEmpty(module.getModuleType()) &&
+                                            module.getModuleType().equals(currentActivity.getString(R.string.app_cms_view_plan_module_key))) {
+                                        if (module.getContentData() != null &&
+                                                !module.getContentData().isEmpty()) {
+                                            for (ContentDatum contentDatum : module.getContentData()) {
+                                                SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
+                                                subscriptionPlan.setSku(contentDatum.getIdentifier());
+                                                subscriptionPlan.setPlanId(contentDatum.getId());
+                                                if (!contentDatum.getPlanDetails().isEmpty()) {
+                                                    subscriptionPlan.setSubscriptionPrice(contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount());
+                                                }
+                                                createSubscriptionPlan(subscriptionPlan);
+                                            }
+                                        }
                                     }
-                                    subscriptionPlans = getExistingSubscriptionPlans();
                                 }
-                            },
-                            appCMSSubscriptionPlanResult -> {
-                                //
-                            },
-                            appCMSUserSubscriptionResult -> {
-                                //
                             });
+
                     appCMSSubscriptionPlanCall.call(
                             currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
                                     appCMSMain.getApiBaseUrl(),
@@ -5096,6 +5165,7 @@ public class AppCMSPresenter {
                     password,
                     false,
                     false,
+                    false,
                     false);
         }
     }
@@ -5149,7 +5219,8 @@ public class AppCMSPresenter {
                                      String password,
                                      boolean signup,
                                      boolean followWithSubscription,
-                                     boolean suppressErrorMessages) {
+                                     boolean suppressErrorMessages,
+                                     boolean forceSubscribed) {
         PostAppCMSLoginRequestAsyncTask.Params params = new PostAppCMSLoginRequestAsyncTask.Params
                 .Builder()
                 .url(url)
@@ -5176,7 +5247,12 @@ public class AppCMSPresenter {
                         setLoggedInUser(currentActivity, signInResponse.getUserId());
                         setLoggedInUserName(currentActivity, signInResponse.getName());
                         setLoggedInUserEmail(currentActivity, signInResponse.getEmail());
-                        setIsUserSubscribed(currentActivity, signInResponse.isSubscribed());
+
+                        if (forceSubscribed) {
+                            setIsUserSubscribed(currentActivity, true);
+                        } else {
+                            setIsUserSubscribed(currentActivity, signInResponse.isSubscribed());
+                        }
 
                         checkForExistingSubscription(false);
 
@@ -5434,7 +5510,6 @@ public class AppCMSPresenter {
                 resultAction);
     }
 
-
   public void searchRetryDialog(String searchTerm){
         RetryCallBinder retryCallBinder = getRetryCallBinder(null, null,
                 searchTerm,null,
@@ -5467,8 +5542,6 @@ public class AppCMSPresenter {
         retryCallBinder.setFilmId(filmId);
         return retryCallBinder;
     }
-
-
 
     private AppCMSBinder getAppCMSBinder(Activity activity,
                                          AppCMSPageUI appCMSPageUI,
@@ -6510,6 +6583,205 @@ public class AppCMSPresenter {
         return platformType;
     }
 
+    public boolean isRemoveableSDCardAvailable() {
+        if (currentActivity != null) {
+            if (getStorageDirectories(currentActivity).length >= 1) {
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    public String getSDCardPath(Context context, String dirName) {
+        String dirPath = getSDCardPath(context) + File.separator + dirName;
+        File dir = new File(dirPath);
+        if (!dir.isDirectory())
+            dir.mkdirs();
+
+        return dir.getAbsolutePath();
+
+    }
+
+    public String getSDCardPath(Context context) {
+        File baseSDCardDir = null;
+        String[] dirs = getStorageDirectories(context);
+
+
+        baseSDCardDir = new File(dirs[0] + File.separator + appCMSMain.getDomainName());
+
+
+        return baseSDCardDir.getAbsolutePath();
+    }
+
+    public String[] getStorageDirectories(Context context) {
+        HashSet<String> paths = new HashSet<String>();
+        String rawExternalStorage = System.getenv("EXTERNAL_STORAGE");
+        String rawSecondaryStoragesStr = System.getenv("SECONDARY_STORAGE");
+        String rawEmulatedStorageTarget = System.getenv("EMULATED_STORAGE_TARGET");
+        if (TextUtils.isEmpty(rawEmulatedStorageTarget)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+                List<String> results = new ArrayList<String>();
+                File[] externalDirs = context.getExternalFilesDirs(null);
+                for (File file : externalDirs) {
+                    String path = null;
+                    try {
+                        path = file.getPath().split("/Android")[0];
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        path = null;
+                    }
+                    if (path != null) {
+                        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Environment.isExternalStorageRemovable(file))
+                                || rawSecondaryStoragesStr != null && rawSecondaryStoragesStr.contains(path)) {
+                            results.add(path);
+                        }
+                    }
+                }
+
+                paths.addAll(results);
+
+            } else {
+                if (TextUtils.isEmpty(rawExternalStorage)) {
+                    boolean b = paths.addAll(Arrays.asList(physicalPaths));
+                } else {
+                    paths.add(rawExternalStorage);
+                }
+            }
+        } else {
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+
+            String[] folders = Pattern.compile("/").split(path);
+            String lastFolder = folders[folders.length - 1];
+            boolean isDigit = false;
+            try {
+                Integer.valueOf(lastFolder);
+                isDigit = true;
+            } catch (NumberFormatException ignored) {
+            }
+
+            String rawUserId = isDigit ? lastFolder : "";
+            if (TextUtils.isEmpty(rawUserId)) {
+                paths.add(rawEmulatedStorageTarget);
+            } else {
+                paths.add(rawEmulatedStorageTarget + File.separator + rawUserId);
+            }
+        }
+
+        if (!TextUtils.isEmpty(rawSecondaryStoragesStr)) {
+            String[] rawSecondaryStorages = rawSecondaryStoragesStr.split(File.pathSeparator);
+            Collections.addAll(paths, rawSecondaryStorages);
+        }
+        return paths.toArray(new String[paths.size()]);
+    }
+
+    public void setSearchResultsOnSharePreference(List<String> searchValues) {
+        if (currentActivity == null)
+            return;
+        SharedPreferences sharePref = currentActivity.getSharedPreferences(
+                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharePref.edit();
+        editor.putInt(currentActivity.getString(R.string.app_cms_search_value_size_key), searchValues.size());
+        for (int i = 0; i < searchValues.size(); i++) {
+            editor.remove(currentActivity.getString(R.string.app_cms_search_value_key) + i);
+            editor.putString(currentActivity.getString(R.string.app_cms_search_value_key) + i, searchValues.get(i));
+        }
+        editor.commit();
+    }
+
+    public List<String> getSearchResultsFromSharePreference() {
+        if (currentActivity == null)
+            return null;
+        List<String> searchValues = new ArrayList<String>();
+        SharedPreferences sharePref = currentActivity.getSharedPreferences(
+                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
+        int size = sharePref.getInt(currentActivity.getString(R.string.app_cms_search_value_size_key), 0);
+        for (int i = 0; i < size; i++) {
+            searchValues.add(sharePref.getString(currentActivity.getString(R.string.app_cms_search_value_key) + i, null));
+        }
+        return searchValues;
+    }
+
+    public void clearSearchResultsSharePreference() {
+        if (currentActivity == null)
+            return;
+        SharedPreferences sharePref = currentActivity.getSharedPreferences(
+                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
+        sharePref.edit().clear().commit();
+    }
+
+    public void openSearch() {
+        Intent updateHistoryIntent = new Intent(SEARCH_ACTION);
+        currentActivity.sendBroadcast(updateHistoryIntent);
+    }
+
+    public boolean launchTVVideoPlayer(final String filmId,
+                                       final String pagePath,
+                                       final String filmTitle,
+                                       final ContentDatum contentDatum) {
+        boolean result = false;
+
+
+        if (!isNetworkConnected() && platformType == PlatformType.TV) {
+            RetryCallBinder retryCallBinder = getRetryCallBinder(pagePath, null,
+                    filmTitle, null,
+                    contentDatum, false,
+                    filmId, VIDEO_ACTION
+            );
+
+            Bundle bundle = new Bundle();
+            bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
+            Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+            args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+            currentActivity.sendBroadcast(args);
+        } else if (currentActivity != null &&
+                !loadingPage && appCMSMain != null &&
+                !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
+                !TextUtils.isEmpty(appCMSMain.getInternalName())) {
+            result = true;
+            final String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
+            String url = currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    filmId,
+                    appCMSMain.getInternalName());
+            GetAppCMSStreamingInfoAsyncTask.Params params =
+                    new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
+            new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall,
+                    appCMSStreamingInfo -> {
+                        String[] extraData = new String[3];
+                        if (appCMSStreamingInfo != null &&
+                                appCMSStreamingInfo.getStreamingInfo() != null) {
+                            StreamingInfo streamingInfo = appCMSStreamingInfo.getStreamingInfo();
+                            extraData[0] = pagePath;
+                            if (streamingInfo.getVideoAssets() != null &&
+                                    !TextUtils.isEmpty(streamingInfo.getVideoAssets().getHls())) {
+                                extraData[1] = streamingInfo.getVideoAssets().getHls();
+                            } else if (streamingInfo.getVideoAssets() != null &&
+                                    streamingInfo.getVideoAssets().getMpeg() != null &&
+                                    !streamingInfo.getVideoAssets().getMpeg().isEmpty() &&
+                                    streamingInfo.getVideoAssets().getMpeg().get(0) != null &&
+                                    !TextUtils.isEmpty(streamingInfo.getVideoAssets().getMpeg().get(0).getUrl())) {
+                                extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
+                            }
+                            extraData[2] = filmId;
+                            if (!TextUtils.isEmpty(extraData[1])) {
+
+                                if (platformType == PlatformType.TV) {
+                                    launchTVButtonSelectedAction(pagePath,
+                                            action,
+                                            filmTitle,
+                                            extraData,
+                                            false);
+                                }
+
+                            }
+                        }
+                    }).execute(params);
+        }
+        return result;
+    }
+
     public enum LaunchType {
         SUBSCRIBE, LOGIN_AND_SIGNUP
     }
@@ -6736,224 +7008,6 @@ public class AppCMSPresenter {
         boolean closeLauncher;
         int currentlyPlayingIndex;
         List<String> relateVideoIds;
-    }
-
-    public boolean isRemoveableSDCardAvailable() {
-        if (currentActivity != null) {
-            if (getStorageDirectories(currentActivity).length >= 1) {
-                return true;
-            }
-
-        }
-        return false;
-    }
-
-    public String getSDCardPath(Context context, String dirName) {
-        String dirPath = getSDCardPath(context) + File.separator + dirName;
-        File dir = new File(dirPath);
-        if (!dir.isDirectory())
-            dir.mkdirs();
-
-        return dir.getAbsolutePath();
-
-    }
-
-    public String getSDCardPath(Context context) {
-        File baseSDCardDir = null;
-        String[] dirs = getStorageDirectories(context);
-
-
-        baseSDCardDir = new File(dirs[0] + File.separator + appCMSMain.getDomainName());
-
-
-        return baseSDCardDir.getAbsolutePath();
-    }
-
-    public String[] physicalPaths = {
-            "/storage/sdcard0", "/storage/sdcard1", // Motorola Xoom
-            "/storage/extsdcard", // Samsung SGS3
-            "/storage/sdcard0/external_sdcard", // User request
-            "/mnt/extsdcard", "/mnt/sdcard/external_sd", // Samsung galaxy family
-            "/mnt/external_sd", "/mnt/media_rw/sdcard1", // 4.4.2 on CyanogenMod S3
-            "/removable/microsd", // Asus transformer prime
-            "/mnt/emmc", "/storage/external_SD", // LG
-            "/storage/ext_sd", // HTC One Max
-            "/storage/removable/sdcard1", // Sony Xperia Z1
-            "/data/sdext", "/data/sdext2", "/data/sdext3", "/data/sdext4", "/sdcard1", // Sony Xperia Z
-            "/sdcard2", // HTC One M8s
-            "/storage/microsd" // ASUS ZenFone 2
-    };
-
-    public String[] getStorageDirectories(Context context) {
-        HashSet<String> paths = new HashSet<String>();
-        String rawExternalStorage = System.getenv("EXTERNAL_STORAGE");
-        String rawSecondaryStoragesStr = System.getenv("SECONDARY_STORAGE");
-        String rawEmulatedStorageTarget = System.getenv("EMULATED_STORAGE_TARGET");
-        if (TextUtils.isEmpty(rawEmulatedStorageTarget)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-                List<String> results = new ArrayList<String>();
-                File[] externalDirs = context.getExternalFilesDirs(null);
-                for (File file : externalDirs) {
-                    String path = null;
-                    try {
-                        path = file.getPath().split("/Android")[0];
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        path = null;
-                    }
-                    if (path != null) {
-                        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Environment.isExternalStorageRemovable(file))
-                                || rawSecondaryStoragesStr != null && rawSecondaryStoragesStr.contains(path)) {
-                            results.add(path);
-                        }
-                    }
-                }
-
-                paths.addAll(results);
-
-            } else {
-                if (TextUtils.isEmpty(rawExternalStorage)) {
-                    boolean b = paths.addAll(Arrays.asList(physicalPaths));
-                } else {
-                    paths.add(rawExternalStorage);
-                }
-            }
-        } else {
-            String path = Environment.getExternalStorageDirectory().getAbsolutePath();
-
-            String[] folders = Pattern.compile("/").split(path);
-            String lastFolder = folders[folders.length - 1];
-            boolean isDigit = false;
-            try {
-                Integer.valueOf(lastFolder);
-                isDigit = true;
-            } catch (NumberFormatException ignored) {
-            }
-
-            String rawUserId = isDigit ? lastFolder : "";
-            if (TextUtils.isEmpty(rawUserId)) {
-                paths.add(rawEmulatedStorageTarget);
-            } else {
-                paths.add(rawEmulatedStorageTarget + File.separator + rawUserId);
-            }
-        }
-
-        if (!TextUtils.isEmpty(rawSecondaryStoragesStr)) {
-            String[] rawSecondaryStorages = rawSecondaryStoragesStr.split(File.pathSeparator);
-            Collections.addAll(paths, rawSecondaryStorages);
-        }
-        return paths.toArray(new String[paths.size()]);
-    }
-
-    public void setSearchResultsOnSharePreference(List<String> searchValues) {
-        if (currentActivity == null)
-            return;
-        SharedPreferences sharePref = currentActivity.getSharedPreferences(
-                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharePref.edit();
-        editor.putInt(currentActivity.getString(R.string.app_cms_search_value_size_key), searchValues.size());
-        for (int i = 0; i < searchValues.size(); i++) {
-            editor.remove(currentActivity.getString(R.string.app_cms_search_value_key) + i);
-            editor.putString(currentActivity.getString(R.string.app_cms_search_value_key) + i, searchValues.get(i));
-        }
-        editor.commit();
-    }
-
-    public List<String> getSearchResultsFromSharePreference() {
-        if (currentActivity == null)
-            return null;
-        List<String> searchValues = new ArrayList<String>();
-        SharedPreferences sharePref = currentActivity.getSharedPreferences(
-                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
-        int size = sharePref.getInt(currentActivity.getString(R.string.app_cms_search_value_size_key), 0);
-        for (int i = 0; i < size; i++) {
-            searchValues.add(sharePref.getString(currentActivity.getString(R.string.app_cms_search_value_key) + i, null));
-        }
-        return searchValues;
-    }
-
-    public void clearSearchResultsSharePreference() {
-        if (currentActivity == null)
-            return;
-        SharedPreferences sharePref = currentActivity.getSharedPreferences(
-                currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
-        sharePref.edit().clear().commit();
-    }
-
-
-    public void openSearch() {
-        Intent updateHistoryIntent = new Intent(SEARCH_ACTION);
-        currentActivity.sendBroadcast(updateHistoryIntent);
-    }
-
-    public boolean launchTVVideoPlayer(final String filmId,
-                                       final String pagePath,
-                                       final String filmTitle,
-                                       final ContentDatum contentDatum) {
-        boolean result = false;
-
-
-        if (!isNetworkConnected() && platformType == PlatformType.TV) {
-            RetryCallBinder retryCallBinder = getRetryCallBinder(pagePath, null,
-                    filmTitle, null,
-                    contentDatum, false,
-                    filmId, VIDEO_ACTION
-            );
-
-            Bundle bundle = new Bundle();
-            bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
-            Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
-            args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
-            currentActivity.sendBroadcast(args);
-        } else if (currentActivity != null &&
-                !loadingPage && appCMSMain != null &&
-                !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
-                !TextUtils.isEmpty(appCMSMain.getInternalName())) {
-            result = true;
-            final String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
-            String url = currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
-                    appCMSMain.getApiBaseUrl(),
-                    filmId,
-                    appCMSMain.getInternalName());
-            GetAppCMSStreamingInfoAsyncTask.Params params =
-                    new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
-            new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall,
-                    new Action1<AppCMSStreamingInfo>() {
-                        @Override
-                        public void call(AppCMSStreamingInfo appCMSStreamingInfo) {
-                            String[] extraData = new String[3];
-                            if (appCMSStreamingInfo != null &&
-                                    appCMSStreamingInfo.getStreamingInfo() != null) {
-                                StreamingInfo streamingInfo = appCMSStreamingInfo.getStreamingInfo();
-                                extraData[0] = pagePath;
-                                if (streamingInfo.getVideoAssets() != null &&
-                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getHls())) {
-                                    extraData[1] = streamingInfo.getVideoAssets().getHls();
-                                } else if (streamingInfo.getVideoAssets() != null &&
-                                        streamingInfo.getVideoAssets().getMpeg() != null &&
-                                        streamingInfo.getVideoAssets().getMpeg().size() > 0 &&
-                                        streamingInfo.getVideoAssets().getMpeg().get(0) != null &&
-                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getMpeg().get(0).getUrl())) {
-                                    extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
-                                }
-                                extraData[2] = filmId;
-                                if (!TextUtils.isEmpty(extraData[1])) {
-
-                                    if (platformType == PlatformType.TV) {
-                                        launchTVButtonSelectedAction(pagePath,
-                                                action,
-                                                filmTitle,
-                                                extraData,
-                                                false);
-                                    }
-
-                                }
-                            }
-                        }
-                    }).execute(params);
-        }
-        return result;
     }
 
 

@@ -490,7 +490,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     }
 
     @Override
-    public void onFinishCallback() {
+    public void onFinishCallback(String message) {
         getActivity().finish();
     }
 }

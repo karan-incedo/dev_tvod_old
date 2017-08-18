@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
 import com.google.ads.interactivemedia.v3.api.AdErrorEvent;
@@ -43,7 +44,9 @@ import rx.functions.Action1;
  */
 
 public class AppCMSPlayVideoFragment extends Fragment
-        implements AdErrorEvent.AdErrorListener, AdEvent.AdEventListener {
+        implements AdErrorEvent.AdErrorListener,
+        AdEvent.AdEventListener,
+        VideoPlayerView.FinishListener {
     private static final String TAG = "PlayVideoFragment";
 
     private static final long SECS_TO_MSECS = 1000L;
@@ -225,6 +228,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerViewDoneButton.setColorFilter(Color.parseColor(fontColor));
         videoPlayerInfoContainer.bringToFront();
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
+        videoPlayerView.setListener(this);
 
         videoLoadingProgress = (LinearLayout) rootView.findViewById(R.id.app_cms_video_loading);
 
@@ -496,6 +500,15 @@ public class AppCMSPlayVideoFragment extends Fragment
                         parentScreenName,
                         videoPlayerView.getCurrentPosition());
             }
+        }
+    }
+
+    @Override
+    public void onFinishCallback(String message) {
+        videoPlayerView.releasePlayer();
+        onClosePlayerEvent.closePlayer();
+        if (!TextUtils.isEmpty(message)) {
+            Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
         }
     }
 

@@ -73,7 +73,6 @@ import java.util.Stack;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.functions.Action0;
 import rx.functions.Action1;
 
 /**
@@ -494,7 +493,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     + appCMSBinder.getPageName() + " - " + appCMSBinder.getPageId());
         }
 
-        if (appCMSBinderStack.size() > 0 && appCMSBinderStack.peek().equals(appCMSBinder.getPageId())) {
+        if (!appCMSBinderStack.isEmpty() && appCMSBinderStack.peek().equals(appCMSBinder.getPageId())) {
             try {
                 getSupportFragmentManager().popBackStackImmediate();
             } catch (IllegalStateException e) {
@@ -503,7 +502,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             handleBack(true, false, false, true);
         }
 
-        if (appCMSBinderStack.size() > 0) {
+        if (!appCMSBinderStack.isEmpty()) {
             handleLaunchPageAction(appCMSBinderMap.get(appCMSBinderStack.peek()),
                     false,
                     false,
@@ -523,7 +522,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (!appCMSPresenter.isMainFragmentTransparent()) {
                     appCMSPresenter.showMainFragmentView(true);
                 }
-                AppCMSBinder appCMSBinder = appCMSBinderStack.size() > 0 ?
+                AppCMSBinder appCMSBinder = !appCMSBinderStack.isEmpty() ?
                         appCMSBinderMap.get(appCMSBinderStack.peek()) :
                         null;
                 if (appCMSBinder != null) {
@@ -566,7 +565,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             boolean closeActionPage,
                             boolean recurse,
                             boolean popActionStack) {
-        if (popBinderStack && appCMSBinderStack.size() > 0) {
+        if (popBinderStack && !appCMSBinderStack.isEmpty()) {
             appCMSBinderMap.remove(appCMSBinderStack.peek());
             appCMSBinderStack.pop();
             if (popActionStack) {
@@ -574,7 +573,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
-        if (appCMSBinderStack.size() > 0) {
+        if (!appCMSBinderStack.isEmpty()) {
             updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
             Log.d(TAG, "Back pressed - handling nav bar");
             handleNavbar(appCMSBinderMap.get(appCMSBinderStack.peek()));
@@ -594,7 +593,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (recurse) {
                 Log.d(TAG, "Handling back - recursive op");
                 handleBack(popBinderStack,
-                        closeActionPage && appCMSBinderStack.size() > 0,
+                        closeActionPage && !appCMSBinderStack.isEmpty(),
                         recurse,
                         popActionStack);
             }
@@ -604,7 +603,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void resume() {
         appCMSPresenter.restartInternalEvents();
 
-        if (appCMSBinderStack != null && appCMSBinderStack.size() > 0) {
+        if (appCMSBinderStack != null && !appCMSBinderStack.isEmpty()) {
             Log.d(TAG, "Activity resumed - resetting nav item");
             selectNavItem(appCMSBinderStack.peek());
         }
@@ -642,7 +641,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private boolean isBinderStackEmpty() {
-        return appCMSBinderStack.size() == 0;
+        return appCMSBinderStack.isEmpty();
     }
 
     private boolean isBinderStackTopNull() {
@@ -784,7 +783,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void handleNavbar(AppCMSBinder appCMSBinder) {
         if (appCMSBinder != null) {
             final Navigation navigation = appCMSBinder.getNavigation();
-            if (navigation.getNavigationPrimary().size() == 0 || !appCMSBinder.isNavbarPresent()) {
+            if (navigation.getNavigationPrimary().isEmpty() || !appCMSBinder.isNavbarPresent()) {
                 appCMSTabNavContainer.setVisibility(View.GONE);
             } else {
                 appCMSTabNavContainer.setVisibility(View.VISIBLE);
@@ -874,7 +873,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
             Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
             int i = 0;
-            while (((((i < distanceFromStackTop &&
+            while ((((i < distanceFromStackTop &&
                     (!isBinderStackEmpty() &&
                             !isBinderStackTopNull() &&
                             !atMostOneUserPageOnTopStack(appCMSBinder.getPageId()) &&
@@ -882,7 +881,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     ((!leavingExtraPage && shouldPopStack(appCMSBinder.getPageId())) || configurationChanged)) ||
                     (appCMSBinder.shouldSendCloseAction() &&
                             appCMSBinderStack.size() > 1 &&
-                            i < appCMSBinderStack.size())))) {
+                            i < appCMSBinderStack.size()))) {
                 Log.d(TAG, "Popping stack to getList to page item");
                 try {
                     getSupportFragmentManager().popBackStackImmediate();
@@ -998,7 +997,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         menuNavBarItemView.setLabel(getString(R.string.app_cms_menu_label));
         menuNavBarItemView.setHighlightColor(highlightColor);
         menuNavBarItemView.setOnClickListener(v -> {
-            if (appCMSBinderStack.size() > 0) {
+            if (!appCMSBinderStack.isEmpty()) {
                 if (!appCMSPresenter.launchNavigationPage()) {
                     Log.e(TAG, "Could not launch navigation page!");
                 } else {
@@ -1109,8 +1108,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         final AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
 
         if (appCMSPresenter != null) {
-            for (String appCMSBinderKey : appCMSBinderMap.keySet()) {
-                final AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderKey);
+            for (Map.Entry<String, AppCMSBinder> appCMSBinderEntry : appCMSBinderMap.entrySet()) {
+                final AppCMSBinder appCMSBinder = appCMSBinderEntry.getValue();
                 if (appCMSBinder != null) {
                     String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
                     boolean usePageIdQueryParam = true;
@@ -1132,7 +1131,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                             if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY ||
                                                     moduleType == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
                                                 if (module.getContentData() != null &&
-                                                        module.getContentData().size() > 0) {
+                                                        !module.getContentData().isEmpty()) {
                                                     appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
                                                         if (appCMSHistoryResult != null) {
                                                             AppCMSPageAPI historyAPI =
@@ -1213,7 +1212,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void handleCloseAction() {
         Log.d(TAG, "Received Presenter Close Action: fragment count = "
                 + getSupportFragmentManager().getBackStackEntryCount());
-        if (appCMSBinderStack.size() > 0) {
+        if (!appCMSBinderStack.isEmpty()) {
             try {
                 getSupportFragmentManager().popBackStackImmediate();
             } catch (IllegalStateException e) {
@@ -1232,7 +1231,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     appCMSPresenter.isPageAVideoPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getScreenName()),
                     true);
 
-            if (appCMSBinderStack.size() == 0) {
+            if (appCMSBinderStack.isEmpty()) {
                 finishAffinity();
                 return;
             }
@@ -1278,7 +1277,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY ||
                             moduleType == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
                         if (module.getContentData() != null &&
-                                module.getContentData().size() > 0) {
+                                !module.getContentData().isEmpty()) {
                             appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
                                 if (appCMSHistoryResult != null) {
                                     AppCMSPageAPI historyAPI =
