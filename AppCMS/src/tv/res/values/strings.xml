@@ -27,4 +27,10 @@
 
     <string name="video_image_key">video_image_key</string>
 
+
+    <plurals name="mins_abbreviation">
+        <item quantity="one" >MIN</item>
+        <item quantity="other" >MINS</item>
+    </plurals>
+
 </resources>

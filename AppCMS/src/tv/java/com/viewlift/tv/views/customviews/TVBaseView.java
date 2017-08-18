@@ -63,7 +63,7 @@ public abstract class TVBaseView extends FrameLayout {
                 !TextUtils.isEmpty(primaryCategory);
         StringBuffer infoText = new StringBuffer();
         if (runtime > 0) {
-            infoText.append(runtime + " "+ context.getString(R.string.mins_abbreviation));
+            infoText.append(runtime + " " + context.getResources().getQuantityString(R.plurals.mins_abbreviation , (int)runtime));
         }
         if (appendFirstSep) {
             infoText.append(context.getString(R.string.text_separator));
