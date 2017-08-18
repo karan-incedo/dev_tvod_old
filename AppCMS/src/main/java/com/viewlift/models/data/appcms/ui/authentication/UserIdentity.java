@@ -55,6 +55,10 @@ public class UserIdentity {
     @Expose
     String name;
 
+    @SerializedName("password")
+    @Expose
+    String password;
+
     public Raw getRaw() {
         return raw;
     }
@@ -149,5 +153,13 @@ public class UserIdentity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

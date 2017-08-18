@@ -1,6 +1,8 @@
 package com.viewlift.views.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +11,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.viewlift.R;
+import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.List;
 
@@ -24,10 +27,12 @@ public abstract class AppCMSDownloadRadioAdapter<T> extends RecyclerView.Adapter
     List<T> mItems;
     private ItemClickListener itemClickListener;
     private Context mContext;
+    protected int tintColor;
 
-    public AppCMSDownloadRadioAdapter(Context context, List<T> items) {
-        mContext = context;
-        mItems = items;
+    public AppCMSDownloadRadioAdapter(Context context,
+                                      List<T> items) {
+        this.mContext = context;
+        this.mItems = items;
     }
 
     @Override
@@ -75,6 +80,9 @@ public abstract class AppCMSDownloadRadioAdapter<T> extends RecyclerView.Adapter
             };
             itemView.setOnClickListener(clickListener);
             mRadio.setOnClickListener(clickListener);
+            if (mRadio.getButtonDrawable() != null) {
+                mRadio.getButtonDrawable().setColorFilter(tintColor, PorterDuff.Mode.MULTIPLY);
+            }
         }
     }
 }

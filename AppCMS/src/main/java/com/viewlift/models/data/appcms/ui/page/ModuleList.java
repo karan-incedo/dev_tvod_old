@@ -35,6 +35,10 @@ public class ModuleList implements ModuleWithComponents {
     @Expose
     String type;
 
+    @SerializedName("svod")
+    @Expose
+    boolean svod;
+
     public String getId() {
         return id;
     }
@@ -81,5 +85,14 @@ public class ModuleList implements ModuleWithComponents {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    @Override
+    public boolean isSvod() {
+        return svod;
+    }
+
+    public void setSvod(boolean svod) {
+        this.svod = svod;
     }
 }

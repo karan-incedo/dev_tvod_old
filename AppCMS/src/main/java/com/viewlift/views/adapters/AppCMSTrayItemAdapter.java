@@ -163,7 +163,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                             contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
 
                                         },
-                                        appCMSPresenter.getLoggedInUser(holder.itemView.getContext()));
+                                        appCMSPresenter.getLoggedInUser(holder.itemView.getContext()),true);
 
                                 holder.appCMSContinueWatchingSize.setText("Cancel".toUpperCase());
                                 holder.appCMSContinueWatchingSize.setOnClickListener(v -> delete(contentDatum));
@@ -303,7 +303,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 long runTime =
                         contentDatum.getGist().getRuntime();
                 if (watchedTime > 0 && runTime > 0) {
-                    long percentageWatched = watchedTime / runTime;
+                    long percentageWatched = watchedTime * 100 / runTime;
                     holder.appCMSContinueWatchingProgress
                             .setProgress((int) percentageWatched);
                     holder.appCMSContinueWatchingProgress.setVisibility(View.VISIBLE);

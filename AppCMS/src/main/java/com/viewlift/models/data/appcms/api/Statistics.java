@@ -31,7 +31,7 @@ public class Statistics {
         return tmdbRatingAvg;
     }
 
-    public void setTmdbRatingAvg(int tmdbRatingAvg) {
+    public void setTmdbRatingAvg(double tmdbRatingAvg) {
         this.tmdbRatingAvg = tmdbRatingAvg;
     }
 

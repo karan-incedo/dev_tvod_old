@@ -177,6 +177,12 @@ public class LoginModule extends ModuleView {
                             public void onClick(View v) {
                                 selectChild(1);
                                 unselectChild(0);
+                                if (appCMSPresenter.isAppSVOD()) {
+                                    appCMSPresenter.sendCloseOthersAction(null,
+                                            true);
+                                    appCMSPresenter.navigateToSubscriptionPlansPage(null,
+                                            null);
+                                }
                             }
                         });
 
