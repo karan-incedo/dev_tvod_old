@@ -211,46 +211,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 } else {
                     imageUrl = new StringBuffer();
                 }
-
-                if (isWatchlist && contentDatum.getGist() != null) {
-                    holder.appCMSContinueWatchingDownloadStatusButton.setVisibility(View.VISIBLE);
-                    if (appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId())) {
-                        DownloadVideoRealm downloadVideoRealm = appCMSPresenter.getDownloadedVideo(contentDatum.getGist().getId());
-                        switch (downloadVideoRealm.getDownloadStatus()) {
-                            case STATUS_SUCCESSFUL:
-                                holder.appCMSContinueWatchingDownloadStatusButton.setImageResource(R.drawable.ic_downloaded);
-                                holder.appCMSContinueWatchingDownloadStatusButton.setOnClickListener(null);
-                                break;
-                            default:
-                                holder.appCMSContinueWatchingDownloadStatusButton.setVisibility(View.GONE);
-                                break;
-                        }
-
-                    } else {
-                        if (contentDatum.getStreamingInfo() == null) { // This will make available Streaming info for all potential downloadable items in watchlist.
-
-
-                            String url = appCMSPresenter.getStreamingInfoURL(contentDatum.getGist().getId());
-
-                            GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
-
-                            new GetAppCMSStreamingInfoAsyncTask(appCMSPresenter.getAppCMSStreamingInfoCall(), appCMSStreamingInfo -> {
-                                if (appCMSStreamingInfo != null) {
-                                    contentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
-                                }
-                            }).execute(param);
-                        }
-
-                        appCMSPresenter.getUserVideoDownloadStatus(
-                                contentDatum.getGist().getId(),
-                                new ViewCreator.UpdateDownloadImageIconAction((ImageButton) holder.appCMSContinueWatchingDownloadStatusButton,
-                                        appCMSPresenter,
-                                        contentDatum,
-                                        userId),
-                                userId);
-                    }
-
-                }
             }
             loadImage(holder.itemView.getContext(), imageUrl.toString(), holder.appCMSContinueWatchingVideoImage);
 

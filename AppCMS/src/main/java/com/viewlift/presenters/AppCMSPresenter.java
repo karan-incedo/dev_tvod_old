@@ -5066,19 +5066,21 @@ public class AppCMSPresenter {
                             true,
                             subscriptionPage.getPageId(),
                             appCMSPageAPI -> {
-                                for (Module module : appCMSPageAPI.getModules()) {
-                                    if (!TextUtils.isEmpty(module.getModuleType()) &&
-                                            module.getModuleType().equals(currentActivity.getString(R.string.app_cms_view_plan_module_key))) {
-                                        if (module.getContentData() != null &&
-                                                !module.getContentData().isEmpty()) {
-                                            for (ContentDatum contentDatum : module.getContentData()) {
-                                                SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
-                                                subscriptionPlan.setSku(contentDatum.getIdentifier());
-                                                subscriptionPlan.setPlanId(contentDatum.getId());
-                                                if (!contentDatum.getPlanDetails().isEmpty()) {
-                                                    subscriptionPlan.setSubscriptionPrice(contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount());
+                                if (appCMSPageAPI != null && appCMSPageAPI.getModules() != null) {
+                                    for (Module module : appCMSPageAPI.getModules()) {
+                                        if (!TextUtils.isEmpty(module.getModuleType()) &&
+                                                module.getModuleType().equals(currentActivity.getString(R.string.app_cms_view_plan_module_key))) {
+                                            if (module.getContentData() != null &&
+                                                    !module.getContentData().isEmpty()) {
+                                                for (ContentDatum contentDatum : module.getContentData()) {
+                                                    SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
+                                                    subscriptionPlan.setSku(contentDatum.getIdentifier());
+                                                    subscriptionPlan.setPlanId(contentDatum.getId());
+                                                    if (!contentDatum.getPlanDetails().isEmpty()) {
+                                                        subscriptionPlan.setSubscriptionPrice(contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount());
+                                                    }
+                                                    createSubscriptionPlan(subscriptionPlan);
                                                 }
-                                                createSubscriptionPlan(subscriptionPlan);
                                             }
                                         }
                                     }
