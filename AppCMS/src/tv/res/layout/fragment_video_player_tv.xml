@@ -10,6 +10,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:orientation="vertical"
+        android:gravity="center_vertical"
         android:background="@color/appcms_shadow_color">
         <Button
             android:id="@+id/app_cms_video_player_done_button"
@@ -30,7 +31,6 @@
             android:background="@android:color/transparent"
             android:fadingEdge="horizontal"
             android:layout_marginLeft="10dp"
-            android:gravity="center_vertical"
             android:singleLine="true"
             android:ellipsize="marquee"/>
     </LinearLayout>
