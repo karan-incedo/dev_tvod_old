@@ -60,6 +60,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     RecyclerView mRecyclerView;
     private List<OnInternalEvent> receivers;
     private int tintColor;
+    private String userId;
 
     public AppCMSTrayItemAdapter(Context context,
                                  List<ContentDatum> adapterData,
@@ -90,6 +91,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
         this.tintColor = Color.parseColor(getColor(context,
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
+        this.userId=appCMSPresenter.getLoggedInUser(context);
 
         if (adapterData != null && adapterData.size() > 0) {
             sendEvent(null);
@@ -146,6 +148,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                         case STATUS_PENDING:
                         case STATUS_RUNNING:
                             if (contentDatum.getGist() != null) {
+                                holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(ContextCompat.getColor(holder.itemView.getContext(),R.color.transparentColor)); // Fix of SVFA-1662
+                                holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+
                                 appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
                                         holder.appCMSContinueWatchingDeleteButton,
                                         appCMSPresenter,
@@ -154,15 +159,20 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                                 holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.ic_deleteicon));
                                                 holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
                                                 holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+                                                holder.appCMSContinueWatchingDeleteButton.invalidate();
                                                 loadImage(holder.itemView.getContext(), userVideoDownloadStatus.getThumbUri(), holder.appCMSContinueWatchingVideoImage);
                                                 holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
+                                                contentDatum.getGist().setLocalFileUrl(userVideoDownloadStatus.getVideoUri());   // Fix of SVFA-1707
                                             } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_RUNNING) {
                                                 holder.appCMSContinueWatchingSize.setText("Cancel");
                                             }
                                             contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
 
+
                                         },
-                                        appCMSPresenter.getLoggedInUser(holder.itemView.getContext()), true);
+                                        userId, true);
+
+
 
                                 holder.appCMSContinueWatchingSize.setText("Cancel".toUpperCase());
                                 holder.appCMSContinueWatchingSize.setOnClickListener(v -> delete(contentDatum));
@@ -181,8 +191,16 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
                         default:
                             //
+                            break;
+                    }
+                    DownloadVideoRealm downloadVideoRealm= appCMSPresenter.getRealmController().getDownloadByIdBelongstoUser(contentDatum.getGist().getId(),userId); // fix of SVFA-1707
+                    if (downloadVideoRealm.getWatchedTime()>contentDatum.getGist().getWatchedTime());
+                    {
+                        contentDatum.getGist().setWatchedTime(downloadVideoRealm.getWatchedTime());
                     }
                 }
+
+
 
             } else {
                 if (contentDatum.getGist() != null) {
@@ -228,8 +246,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                 new ViewCreator.UpdateDownloadImageIconAction((ImageButton) holder.appCMSContinueWatchingDownloadStatusButton,
                                         appCMSPresenter,
                                         contentDatum,
-                                        appCMSPresenter.getLoggedInUser(holder.itemView.getContext())),
-                                appCMSPresenter.getLoggedInUser(holder.itemView.getContext()));
+                                        userId),
+                                userId);
                     }
 
                 }

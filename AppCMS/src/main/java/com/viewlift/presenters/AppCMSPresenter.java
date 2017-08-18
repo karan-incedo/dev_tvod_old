@@ -758,7 +758,13 @@ public class AppCMSPresenter {
             Log.e(TAG, e.getLocalizedMessage());
         }
         if (!isNetworkConnected() && !isVideoOffline) { //checking isVideoOffline here to fix SVFA-1431 in offline mode
-            showDialog(DialogType.NETWORK, null, false, null);
+           // showDialog(DialogType.NETWORK, null, false, null);
+            showDialog(DialogType.NETWORK, currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download), true, new Action0() { // Fix of SVFA-1435
+                @Override
+                public void call() {
+                    navigateToDownloadPage(downloadPage.getPageId(),downloadPage.getPageName(),downloadPage.getPageUI(),false);
+                }
+            });
         } else {
             final AppCMSActionType actionType = actionToActionTypeMap.get(action);
 
@@ -4597,7 +4603,12 @@ public class AppCMSPresenter {
                 default:
                     isNetwork = true;
                     title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
-                    message = currentActivity.getString(R.string.app_cms_network_connectivity_error_message);
+                    if (optionalMessage!=null)
+                    {
+                        message = optionalMessage;
+                    }else {
+                        message = currentActivity.getString(R.string.app_cms_network_connectivity_error_message);
+                    }
                     if (isNetworkConnected()) {
                         title = currentActivity.getString(R.string.app_cms_data_error_title);
                         message = currentActivity.getString(R.string.app_cms_data_error_message);
