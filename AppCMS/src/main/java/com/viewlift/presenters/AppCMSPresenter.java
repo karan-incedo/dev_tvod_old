@@ -3377,10 +3377,12 @@ public class AppCMSPresenter {
             Intent stopLoadingPageIntent =
                     new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
             currentActivity.sendBroadcast(stopLoadingPageIntent);
-            showDialog(DialogType.NETWORK,
-                    null,
-                    false,
-                    () -> sendCloseOthersAction(null, false));
+            if(platformType == PlatformType.ANDROID) {
+                showDialog(DialogType.NETWORK,
+                        null,
+                        false,
+                        () -> sendCloseOthersAction(null, false));
+            }
         }
     }
 
@@ -3395,8 +3397,12 @@ public class AppCMSPresenter {
             }
         } else if (platformType == PlatformType.TV) {
             try {
-                Intent errorIntent = new Intent(activity, Class.forName(tvErrorScreenPackage));
-                activity.startActivity(errorIntent);
+                Log.d(TAG , "Internet Connection launchErrorActivity = "+isNetworkConnected());
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(currentActivity.getString(R.string.retry_key) , true);
+                Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+                args.putExtra(currentActivity.getString(R.string.retryCallBundleKey) , bundle);
+                currentActivity.sendBroadcast(args);
             } catch (Exception e) {
                 Log.e(TAG, "DialogType launching TV DialogType Activity");
             }
@@ -5645,6 +5651,7 @@ public class AppCMSPresenter {
     private void getAppCMSSite(final Activity activity,
                                final AppCMSMain main,
                                final PlatformType platformType) {
+        Log.d(TAG , "Internet Connection getAppCmsSite = "+isNetworkConnected());
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_site_api_url,
                     main.getApiBaseUrl(),
@@ -5962,6 +5969,7 @@ public class AppCMSPresenter {
     private void getAppCMSTV(final Activity activity,
                              final AppCMSMain main,
                              int tryCount) {
+        Log.d(TAG , "Internet Connection getAppCMSTV = "+isNetworkConnected());
         if (!isUserLoggedIn(currentActivity) && tryCount == 0) {
             signinAnonymousUser(activity, main, tryCount, null, PlatformType.TV);
         } else if (isUserLoggedIn(currentActivity) && shouldRefreshAuthToken() && tryCount == 0) {
@@ -6001,6 +6009,15 @@ public class AppCMSPresenter {
                             main,
                             loadFromFile,
                             () -> {
+                                Log.d(TAG , "Internet Connection Launching first page = "+isNetworkConnected());
+                                if(!isNetworkConnected()){
+                                    Bundle bundle = new Bundle();
+                                    bundle.putBoolean(currentActivity.getString(R.string.retry_key) , true);
+                                    Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+                                    args.putExtra(currentActivity.getString(R.string.retryCallBundleKey) , bundle);
+                                    currentActivity.sendBroadcast(args);
+                                    return;
+                                }
                                 Log.d(TAG, "Launching first page: " + firstPage.getPageName());
                                 cancelInternalEvents();
 
@@ -6041,6 +6058,7 @@ public class AppCMSPresenter {
 
             if (appCMSPageAPI == null) {
                 //check internet connection here.
+                Log.d(TAG , "Internet Connection navigateToTVPage = "+isNetworkConnected());
                 if (!isNetworkConnected()) {
                     RetryCallBinder retryCallBinder = getRetryCallBinder(url, null,
                             pageTitle, null,
@@ -6120,6 +6138,16 @@ public class AppCMSPresenter {
                                 } else {
                                     sendStopLoadingPageAction();
                                     setNavItemToCurrentAction(currentActivity);
+
+                                    RetryCallBinder retryCallBinder = getRetryCallBinder(url, null,
+                                            pageTitle, null,
+                                            null, launchActivity, pageId, PAGE_ACTION);
+                                    Bundle bundle = new Bundle();
+                                    bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
+                                    Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+                                    args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+                                    currentActivity.sendBroadcast(args);
+                                    return;
                                 }
                                 loadingPage = false;
                             }
