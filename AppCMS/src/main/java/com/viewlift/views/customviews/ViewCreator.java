@@ -2065,20 +2065,20 @@ public class ViewCreator {
                             break;
 
                         case PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY:
-                            if (paymentProcessor != null ||
-                                    !TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionId(context))) {
-                                if (!TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionId(context)) ||
-                                        paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor)) ||
-                                        paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly))) {
-                                    ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
-                                } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor)) ||
+                            if (paymentProcessor != null) {
+                                if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor)) ||
                                         paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor_friendly))) {
                                     ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_ios_payment_processor_friendly));
                                 } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_web_payment_processor_friendly))) {
                                     ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_web_payment_processor_friendly));
+                                } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor)) ||
+                                        paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly))) {
+                                    ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
                                 } else {
                                     ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_unknown_payment_processor_friendly));
                                 }
+                            } else if (!TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionId(context))) {
+                                ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
                             } else {
                                 ((TextView) componentViewResult.componentView).setText("");
                             }

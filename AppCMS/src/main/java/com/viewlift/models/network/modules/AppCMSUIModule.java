@@ -18,6 +18,8 @@ import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenRest;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
+import com.viewlift.models.network.rest.AppCMSCCAvenueRest;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryRest;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginRest;
@@ -682,6 +684,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSCCAvenueRest providesAppCMSAvenueRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSCCAvenueRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -801,6 +809,11 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSIPGeoLocatorCall providesAppCMSIPGeoLocatorCall(AppCMSIPGeoLocatorRest appCMSIPGeoLocatorRest) {
         return new AppCMSIPGeoLocatorCall(appCMSIPGeoLocatorRest);
+    }
+
+    @Provides
+    public AppCMSCCAvenueCall providesAppCMSCCAvenueCall(AppCMSCCAvenueRest appCMSCCAvenueRest) {
+        return new AppCMSCCAvenueCall(appCMSCCAvenueRest);
     }
 
     @Provides

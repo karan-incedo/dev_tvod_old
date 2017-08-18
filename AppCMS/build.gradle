@@ -4,7 +4,7 @@ apply plugin: 'realm-android'
 def final packageName = 'air.com.snagfilms'
 def final customApplicationId = 'SnagFilms'
 def final hostName = "www.snagfilms.com"
-def final appVersionName = "1.0.20"
+def final appVersionName = "1.0.21"
 
 buildscript {
     repositories {
@@ -33,7 +33,7 @@ android {
         applicationId packageName
         minSdkVersion 23
         targetSdkVersion 25
-        versionCode 3042062
+        versionCode 3042063
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 25
