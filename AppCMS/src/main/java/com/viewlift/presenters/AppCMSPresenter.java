@@ -748,12 +748,12 @@ public class AppCMSPresenter {
         }
         if (!isNetworkConnected() && !isVideoOffline) { //checking isVideoOffline here to fix SVFA-1431 in offline mode
             // showDialog(DialogType.NETWORK, null, false, null);
-            showDialog(DialogType.NETWORK, currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download), true, new Action0() { // Fix of SVFA-1435
-                @Override
-                public void call() {
-                    navigateToDownloadPage(downloadPage.getPageId(), downloadPage.getPageName(), downloadPage.getPageUI(), false);
-                }
-            });
+            // Fix of SVFA-1435
+            showDialog(DialogType.NETWORK,
+                    currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download),
+                    true,
+                    () -> navigateToDownloadPage(downloadPage.getPageId(),
+                            downloadPage.getPageName(), downloadPage.getPageUI(), false));
         } else {
             final AppCMSActionType actionType = actionToActionTypeMap.get(action);
 
@@ -1690,8 +1690,7 @@ public class AppCMSPresenter {
     }
 
     private void displayWatchlistToast(String toastMessage) {
-        Toast toast = Toast.makeText(currentActivity, toastMessage,
-                Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(currentActivity, toastMessage, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
         toast.show();
     }
@@ -2294,7 +2293,7 @@ public class AppCMSPresenter {
             updateDownloadIconTimer.cancel();
             updateDownloadIconTimer.purge();
         }*/
-        if (downloadProgressTimerList != null && downloadProgressTimerList.size() > 0) {
+        if (downloadProgressTimerList != null && !downloadProgressTimerList.isEmpty()) {
             for (Timer downloadProgress : downloadProgressTimerList) {
                 downloadProgress.cancel();
                 downloadProgress.purge();
