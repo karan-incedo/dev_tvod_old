@@ -268,6 +268,7 @@ public class AppCMSPresenter {
     private static final String IS_USER_SUBSCRIBED = "is_user_subscribed_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_DESCRIPTION = "existing_google_play_subscription_title_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID = "existing_google_play_subscription_id_key_pref_key";
+    private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_SUSPENDED = "existing_google_play_subscription_suspended_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_PRICE = "existing_google_play_subscription_price_pref_key";
     private static final String USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME = "user_download_quality_pref";
     private static final String USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME = "user_download_sd_card_pref";
@@ -971,7 +972,7 @@ public class AppCMSPresenter {
                                 if ((!TextUtils.isEmpty(paymentProcessor) &&
                                         (!paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
                                                 !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)))) &&
-                                        !TextUtils.isEmpty(getExistingGooglePlaySubscriptionId(currentActivity)) &&
+                                        isExistingGooglePlaySubscriptionSuspended(currentActivity) &&
                                         !upgradesAvailableForUser(getLoggedInUser(currentActivity))) {
                                     if (!upgradesAvailableForUser(getLoggedInUser(currentActivity))) {
                                         showEntitlementDialog(DialogType.UPGRADE_UNAVAILABLE);
@@ -2982,11 +2983,8 @@ public class AppCMSPresenter {
                                 Log.e(TAG, "Error parsing Google Play subscription data: " + e.toString());
                             }
                         }
-                        if (subscriptionExpired) {
-                            setExistingGooglePlaySubscriptionDescription(currentActivity, null);
-                            setExistingGooglePlaySubscriptionPrice(currentActivity, null);
-                            setExistingGooglePlaySubscriptionId(currentActivity, null);
-                        }
+
+                        setExistingGooglePlaySubscriptionSuspended(currentActivity, subscriptionExpired);
                     }
                 }
             } catch (RemoteException e) {
@@ -3963,6 +3961,22 @@ public class AppCMSPresenter {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID, 0);
             return sharedPrefs.edit().putString(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID, existingGooglePlaySubscriptionId).commit();
+        }
+        return false;
+    }
+
+    public boolean isExistingGooglePlaySubscriptionSuspended(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_SUSPENDED, 0);
+            return sharedPrefs.getBoolean(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_SUSPENDED, false);
+        }
+        return false;
+    }
+
+    public boolean setExistingGooglePlaySubscriptionSuspended(Context context, boolean existingSubscriptionSuspended) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_SUSPENDED, 0);
+            return sharedPrefs.edit().putBoolean(EXISTING_GOOGLE_PLAY_SUBSCRIPTION_SUSPENDED, existingSubscriptionSuspended).commit();
         }
         return false;
     }

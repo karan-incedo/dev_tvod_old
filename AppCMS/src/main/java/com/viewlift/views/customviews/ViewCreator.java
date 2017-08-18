@@ -604,7 +604,8 @@ public class ViewCreator {
                                                         TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionId(context))) {
                                                     ((TextView) settingsView).setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
                                                     settingsView.setVisibility(View.VISIBLE);
-                                                } else {
+                                                } else if (appCMSPresenter.isExistingGooglePlaySubscriptionSuspended(context) ||
+                                                        !appCMSPresenter.upgradesAvailableForUser(appCMSPresenter.getLoggedInUser(context))) {
                                                     settingsView.setVisibility(View.GONE);
                                                 }
                                             } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
