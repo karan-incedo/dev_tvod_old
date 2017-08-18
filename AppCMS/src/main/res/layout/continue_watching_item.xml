@@ -111,19 +111,11 @@
                 android:layout_gravity="top|center_horizontal">
 
                 <ImageButton
-                    android:id="@+id/app_cms_continue_watching_select_to_download_button"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:background="@android:color/transparent" />
-
-                <ImageButton
                     android:id="@+id/app_cms_continue_watching_delete_button"
-
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:background="@android:color/transparent"
-                    android:scaleType="fitCenter"
-                     />
+                    android:scaleType="fitCenter" />
 
             </FrameLayout>
 
