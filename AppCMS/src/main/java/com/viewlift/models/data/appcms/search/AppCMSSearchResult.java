@@ -539,7 +539,7 @@ public class AppCMSSearchResult {
         gist.setId(getId());
 
         VideoAssets videoAssets = new VideoAssets();
-        videoAssets.setHls(getVideoAssets().get(0).getHls());
+        videoAssets.setHls(getVideoAssets() != null ? getVideoAssets().get(0).getHls() : null);
         StreamingInfo streamingInfo = new StreamingInfo();
         streamingInfo.setVideoAssets(videoAssets);
 
