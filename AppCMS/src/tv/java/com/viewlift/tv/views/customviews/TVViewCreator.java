@@ -232,7 +232,7 @@ public class TVViewCreator {
             return null;
         } else if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())) {
 
-            /*module = new GsonBuilder().create().
+           /* module = new GsonBuilder().create().
                     fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);*/
 
             moduleView = new TVModuleView<>(context, module);

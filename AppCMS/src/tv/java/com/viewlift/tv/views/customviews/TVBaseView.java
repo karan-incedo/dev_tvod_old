@@ -22,6 +22,7 @@ import com.viewlift.tv.utility.Utils;
 import java.util.Map;
 
 
+
 /**
  * Created by nitin.tyagi on 7/12/2017.
  */
@@ -78,7 +79,7 @@ public abstract class TVBaseView extends FrameLayout {
             infoText.append(primaryCategory.toUpperCase());
         }
         ((TextView) view).setText(infoText.toString());
-        view.setAlpha(0.6f);
+         view.setAlpha(0.6f);
         ((TextView) view).setLetterSpacing(LETTER_SPACING);
 
     }
@@ -145,6 +146,8 @@ public abstract class TVBaseView extends FrameLayout {
 
 
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
+        AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
+
         if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
                 componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY ) {
             if (viewWidth < 0) {
@@ -155,10 +158,16 @@ public abstract class TVBaseView extends FrameLayout {
                 AppCMSUIKeyType textAlignment = jsonValueKeyMap.get(childComponent.getTextAlignment());
                 switch(textAlignment){
                     case PAGE_TEXTALIGNMENT_LEFT_KEY:
-                        gravity = Gravity.LEFT;
+                        gravity = Gravity.LEFT ;
+                        if(componentKey == AppCMSUIKeyType.PAGE_VIDEO_TITLE_KEY){
+                            gravity = Gravity.LEFT | Gravity.CENTER;
+                        }
                         break;
                     case PAGE_TEXTALIGNMENT_RIGHT_KEY:
-                        gravity = Gravity.RIGHT;
+                        gravity = Gravity.RIGHT ;
+                        if(componentKey == AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY){
+                            gravity = Gravity.RIGHT | Gravity.CENTER;
+                        }
                         break;
                     case PAGE_TEXTALIGNMENT_CENTER_KEY:
                         gravity = Gravity.CENTER;
@@ -168,7 +177,6 @@ public abstract class TVBaseView extends FrameLayout {
             }
 
 
-            AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
             if (componentKey == null) {
                 componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }
