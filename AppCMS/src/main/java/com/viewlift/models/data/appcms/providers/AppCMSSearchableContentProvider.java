@@ -103,10 +103,10 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                             cursor = new MatrixCursor(SUGGESTION_COLUMN_NAMES, searchResultList.size());
 
                             for (int i = 0; i < searchResultList.size(); i++) {
-                                Uri permalinkUri = Uri.parse(searchResultList.get(i).getPermalink());
+                                Uri permalinkUri = Uri.parse(searchResultList.get(i).getGist().getPermalink());
                                 String filmUri = permalinkUri.getLastPathSegment();
-                                String runtime = String.valueOf(searchResultList.get(i).getRuntime());
-                                String searchHintResult = searchResultList.get(i).getTitle() +
+                                String runtime = String.valueOf(searchResultList.get(i).getGist().getRuntime());
+                                String searchHintResult = searchResultList.get(i).getGist().getTitle() +
                                         "," +
                                         runtime +
                                         "," +
@@ -115,13 +115,13 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                                         permalinkUri;
 
                                 Object[] rowResult = {i,
-                                        searchResultList.get(i).getTitle(),
-                                        searchResultList.get(i).getRuntime() / 60,
+                                        searchResultList.get(i).getGist().getTitle(),
+                                        searchResultList.get(i).getGist().getRuntime()/ 60,
                                         searchHintResult};
 
                                 cursor.addRow(rowResult);
-                                Log.d(TAG, searchResultList.get(i).getTitle());
-                                Log.d(TAG, String.valueOf(searchResultList.get(i).getRuntime())
+                                Log.d(TAG, searchResultList.get(i).getGist().getTitle());
+                                Log.d(TAG, String.valueOf(searchResultList.get(i).getGist().getRuntime())
                                         + " seconds");
                             }
                         } else {
