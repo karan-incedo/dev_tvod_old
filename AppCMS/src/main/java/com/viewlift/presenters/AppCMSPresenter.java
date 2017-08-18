@@ -4160,6 +4160,7 @@ public class AppCMSPresenter {
             setAuthToken(currentActivity, null);
             setIsUserSubscribed(currentActivity, false);
             setExistingGooglePlaySubscriptionId(currentActivity, null);
+            setActiveSubscriptionProcessor(currentActivity, null);
 
             sendUpdateHistoryAction();
 

@@ -192,8 +192,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             break;
                     }
                     DownloadVideoRealm downloadVideoRealm = appCMSPresenter.getRealmController().getDownloadByIdBelongstoUser(contentDatum.getGist().getId(), userId); // fix of SVFA-1707
-                    if (downloadVideoRealm.getWatchedTime() > contentDatum.getGist().getWatchedTime()) {
-                        contentDatum.getGist().setWatchedTime(downloadVideoRealm.getWatchedTime());
+                    if (contentDatum != null && contentDatum.getGist() != null) {
+                        if (downloadVideoRealm.getWatchedTime() > contentDatum.getGist().getWatchedTime()) {
+                            contentDatum.getGist().setWatchedTime(downloadVideoRealm.getWatchedTime());
+                        }
                     }
                 }
 
