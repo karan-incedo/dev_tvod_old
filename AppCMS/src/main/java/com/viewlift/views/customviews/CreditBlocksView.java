@@ -143,15 +143,6 @@ public class CreditBlocksView extends RelativeLayout {
                            String directorList,
                            String starringListTitle,
                            String starringList) {
-        if (TextUtils.isEmpty(directorListTitle) || TextUtils.isEmpty(directorList)) {
-            directorListTitleView.setVisibility(View.GONE);
-            directorListView.setVisibility(View.GONE);
-        }
-        if (TextUtils.isEmpty(starringListTitle) || TextUtils.isEmpty(starringList)) {
-            starringListTitleView.setVisibility(View.GONE);
-            starringListView.setVisibility(View.GONE);
-        }
-
         if (!TextUtils.isEmpty(directorListTitle) && !TextUtils.isEmpty(directorList) &&
                 directorListTitleView != null &&
                 directorListView != null) {
