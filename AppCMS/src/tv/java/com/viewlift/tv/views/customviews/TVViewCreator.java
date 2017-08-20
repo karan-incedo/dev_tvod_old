@@ -1093,7 +1093,23 @@ public class TVViewCreator {
                         Utils.getFontSizeKey(context, component.getLayout()),
                         Utils.getFontSizeValue(context, component.getLayout()));
                 componentViewResult.componentView.setFocusable(false);
-                break;
+
+           try {
+               if (TextUtils.isEmpty(directorListSb.toString())) {
+                   ((CreditBlocksView) componentViewResult.componentView).getChildAt(0).setVisibility(View.GONE);
+                   ((CreditBlocksView) componentViewResult.componentView).getChildAt(1).setVisibility(View.GONE);
+               }
+
+
+               if (TextUtils.isEmpty(starringListSb.toString())) {
+                   ((CreditBlocksView) componentViewResult.componentView).getChildAt(2).setVisibility(View.GONE);
+                   ((CreditBlocksView) componentViewResult.componentView).getChildAt(3).setVisibility(View.GONE);
+               }
+           }catch (Exception e){
+               e.printStackTrace();
+           }
+           break;
+
             case PAGE_TEXTFIELD_KEY:
                 componentViewResult.componentView = new TextInputLayout(context);
                 TextInputEditText textInputEditText = new TextInputEditText(context);

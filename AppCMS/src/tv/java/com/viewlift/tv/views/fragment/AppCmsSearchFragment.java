@@ -441,7 +441,7 @@ public class AppCmsSearchFragment extends Fragment {
     Runnable searcRunnable = new Runnable() {
         @Override
         public void run() {
-            if(editText.getText().toString().trim().length() > 2) {
+            if(editText.getText().toString().length() > 2) {
                 try {
                     if (searchTask != null && searchTask.getStatus() == AsyncTask.Status.RUNNING) {
                         searchTask.cancel(true);
@@ -517,11 +517,16 @@ public class AppCmsSearchFragment extends Fragment {
             {
                 AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(mContext);
                 browseFragment.setAdapter(mRowsAdapter);
-                getChildFragmentManager().beginTransaction().replace(R.id.appcms_search_results_container ,browseFragment ,"frag").commit();
+                getChildFragmentManager().beginTransaction().replace(R.id.appcms_search_results_container ,browseFragment ,"frag").commitAllowingStateLoss();
             }
         }
     }
 
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+
+    }
 
     private CustomHeaderItem customHeaderItem = null;
     public void createTrayModule(final Context context,

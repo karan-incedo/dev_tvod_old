@@ -25,7 +25,7 @@
     <string name="text_separator">&#160;|&#160;</string>
     <string name="color_hash_prefix">#</string>
     <string name="string_with_ellipse">%1$s&#8230;</string>
-    <string name="string_with_ellipse_and_more">%1$s&#8230;MORE</string>
+    <string name="string_with_ellipse_and_more">%1$s&#8230; MORE</string>
     <string name="text_with_color"><![CDATA[<font color=\'#%1$s\'>%2$s</font>]]></string>
     <string name="video_player_hls_url_key">video_player_hls_url</string>
     <string name="video_layer_film_id_key">film_id</string>

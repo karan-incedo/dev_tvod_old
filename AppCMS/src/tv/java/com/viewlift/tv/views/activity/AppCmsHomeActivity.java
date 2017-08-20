@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -59,12 +60,13 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     private Map<String, AppCMSBinder> appCMSBinderMap;
     private static final String DIALOG_FRAGMENT_TAG = "text_overlay";
     private AppCmsTvSearchComponent appCMSSearchUrlComponent;
+    private boolean isActive;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        isActive = true;
         Bundle args = getIntent().getBundleExtra(getString(R.string.app_cms_bundle_key));
         AppCMSBinder appCMSBinder = (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
         updatedAppCMSBinder = appCMSBinder;
@@ -113,11 +115,9 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     try {
                         updatedAppCMSBinder =
                                 (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
-                        /*if (isActive)*/ {
+                     if (isActive) {
                             handleLaunchPageAction(updatedAppCMSBinder);
-
                             //appCMSPresenter.sendStopLoadingPageAction(); //stop the progress bar..
-
                         }
                     } catch (ClassCastException e) {
                         Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
@@ -157,6 +157,23 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_DIALOG_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.SEARCH_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.ERROR_DIALOG_ACTION));
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isActive = true;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isActive = false;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
 
     }
 
@@ -349,7 +366,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             String tag = getTag(appCMSBinder);
-            fragmentTransaction.replace(R.id.home_placeholder ,appCMSPageFragment,tag).addToBackStack(tag).commit();
+            fragmentTransaction.replace(R.id.home_placeholder ,appCMSPageFragment,tag).addToBackStack(tag).commitAllowingStateLoss();
         }else{
             if(null != appCMSPresenter)
                 appCMSPresenter.sendStopLoadingPageAction();

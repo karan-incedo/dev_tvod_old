@@ -107,7 +107,7 @@ public class AppCmsTVPageFragment extends Fragment {
                 && getChildFragmentManager().findFragmentByTag(mAppCMSBinder.getScreenName()) == null){
             AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(getActivity());
             browseFragment.setAdapter(appCmsViewComponent.tvviewCreator().mRowsAdapter);
-            getChildFragmentManager().beginTransaction().replace(R.id.appcms_browsefragment ,browseFragment ,mAppCMSBinder.getScreenName()).commit();
+            getChildFragmentManager().beginTransaction().replace(R.id.appcms_browsefragment ,browseFragment ,mAppCMSBinder.getScreenName()).commitAllowingStateLoss();
         }
         return tvPageView;
     }
@@ -126,6 +126,11 @@ public class AppCmsTVPageFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        //super.onSaveInstanceState(outState);
+    }
 
     public void requestFocus(){
         new Handler().postDelayed(new Runnable() {
