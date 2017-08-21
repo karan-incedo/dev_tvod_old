@@ -160,13 +160,13 @@ public abstract class TVBaseView extends FrameLayout {
                     case PAGE_TEXTALIGNMENT_LEFT_KEY:
                         gravity = Gravity.LEFT ;
                         if(componentKey == AppCMSUIKeyType.PAGE_VIDEO_TITLE_KEY){
-                            gravity = Gravity.LEFT | Gravity.CENTER;
+                            gravity = Gravity.LEFT | Gravity.CENTER_VERTICAL;
                         }
                         break;
                     case PAGE_TEXTALIGNMENT_RIGHT_KEY:
                         gravity = Gravity.RIGHT ;
                         if(componentKey == AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY){
-                            gravity = Gravity.RIGHT | Gravity.CENTER;
+                            gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL;
                         }
                         break;
                     case PAGE_TEXTALIGNMENT_CENTER_KEY:
