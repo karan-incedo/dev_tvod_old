@@ -1,5 +1,7 @@
 package com.viewlift.models.network.rest;
 
+import android.support.annotation.NonNull;
+
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 
 import java.util.HashMap;
@@ -7,11 +9,12 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import rx.functions.Action1;
 import rx.Observable;
+import rx.functions.Action1;
 
 /**
  * Created by viewlift on 7/6/17.
@@ -31,12 +34,13 @@ public class AppCMSUserIdentityCall {
         authHeaders.put("Authorization", authToken);
         appCMSUserIdentityRest.get(url, authHeaders).enqueue(new Callback<UserIdentity>() {
             @Override
-            public void onResponse(Call<UserIdentity> call, Response<UserIdentity> response) {
+            public void onResponse(@NonNull Call<UserIdentity> call,
+                                   @NonNull Response<UserIdentity> response) {
                 Observable.just(response.body()).subscribe(userIdentityAction);
             }
 
             @Override
-            public void onFailure(Call<UserIdentity> call, Throwable t) {
+            public void onFailure(@NonNull Call<UserIdentity> call, @NonNull Throwable t) {
                 Observable.just((UserIdentity) null).subscribe(userIdentityAction);
             }
         });
@@ -45,16 +49,22 @@ public class AppCMSUserIdentityCall {
     public void callPost(String url,
                          String authToken,
                          UserIdentity userIdentity,
-                         final Action1<UserIdentity> userIdentityAction) {
+                         final Action1<UserIdentity> userIdentityAction,
+                         final Action1<ResponseBody> userErrorAction) {
         authHeaders.put("Authorization", authToken);
         appCMSUserIdentityRest.post(url, authHeaders, userIdentity).enqueue(new Callback<UserIdentity>() {
             @Override
-            public void onResponse(Call<UserIdentity> call, Response<UserIdentity> response) {
-                Observable.just(response.body()).subscribe(userIdentityAction);
+            public void onResponse(@NonNull Call<UserIdentity> call,
+                                   @NonNull Response<UserIdentity> response) {
+                if (response.body() != null) {
+                    Observable.just(response.body()).subscribe(userIdentityAction);
+                } else {
+                    Observable.just(response.errorBody()).subscribe(userErrorAction);
+                }
             }
 
             @Override
-            public void onFailure(Call<UserIdentity> call, Throwable t) {
+            public void onFailure(@NonNull Call<UserIdentity> call, @NonNull Throwable t) {
                 Observable.just((UserIdentity) null).subscribe(userIdentityAction);
             }
         });

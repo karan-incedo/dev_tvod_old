@@ -3,33 +3,35 @@ package com.viewlift.models.billing.appcms.subscriptions;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class InAppPurchaseData {
 
     @SerializedName("autoRenewing")
     @Expose
-    private boolean autoRenewing;
+    boolean autoRenewing;
     @SerializedName("orderId")
     @Expose
-    private String orderId;
+    String orderId;
     @SerializedName("packageName")
     @Expose
-    private String packageName;
+    String packageName;
     @SerializedName("productId")
     @Expose
-    private String productId;
+    String productId;
     @SerializedName("purchaseTime")
     @Expose
-    private long purchaseTime;
+    long purchaseTime;
     @SerializedName("purchaseState")
     @Expose
-    private long purchaseState;
+    long purchaseState;
     @SerializedName("developerPayload")
     @Expose
-    private String developerPayload;
+    String developerPayload;
     @SerializedName("purchaseToken")
     @Expose
-    private String purchaseToken;
+    String purchaseToken;
 
     public boolean isAutoRenewing() {
         return autoRenewing;

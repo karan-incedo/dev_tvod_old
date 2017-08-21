@@ -12,12 +12,14 @@ import android.support.v17.leanback.widget.RowHeaderView;
 import android.support.v17.leanback.widget.RowPresenter;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
-
 import com.viewlift.tv.views.customviews.CustomHeaderItem;
 
 import com.viewlift.R;
@@ -32,24 +34,22 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
     private AppCMSPresenter mAppCMSPresenter;
     String textColor = null;
     Typeface typeface = null;
+    float headerTileLetterSpacing = 0.11f;
 
-
-    public AppCmsListRowPresenter(Context context){
+    public AppCmsListRowPresenter(Context context , AppCMSPresenter appCMSPresenter){
         super(FocusHighlight.ZOOM_FACTOR_XSMALL);
         mContext = context;
         setShadowEnabled(false);
         setSelectEffectEnabled(false);
+        mAppCMSPresenter  = appCMSPresenter;
+        textColor = mAppCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor();
     }
-
-
 
     @Override
     protected void onBindRowViewHolder(RowPresenter.ViewHolder holder, Object item) {
         super.onBindRowViewHolder(holder, item);
 
-
         if(null != holder.getRow()){
-
             LinearLayout headerTitleContainer =  ((LinearLayout)holder.getHeaderViewHolder().view);
             final RowHeaderView headerTitle = (RowHeaderView)headerTitleContainer.findViewById(R.id.row_header);
             if(null == textColor){
@@ -58,15 +58,27 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
             headerTitle.setTextColor(Color.parseColor(textColor));
             //set Alpha for removing any shadow.
             headerTitleContainer.setAlpha(1);
+            //set the letter spacing.
+            headerTitle.setLetterSpacing(headerTileLetterSpacing);
 
             //ListRowView and its layout Params.
             ListRowView listRowView = (ListRowView)holder.view;
             LinearLayout.LayoutParams listRowParam = ( LinearLayout.LayoutParams)listRowView.getLayoutParams();
 
-
             //Horizontal GridView and its layout Params.
             HorizontalGridView horizontalGridView = listRowView.getGridView();
             LinearLayout.LayoutParams horizontalGrLayoutParams = ( LinearLayout.LayoutParams)horizontalGridView.getLayoutParams();
+
+            //HeaderTitle layout Params.
+            LinearLayout.LayoutParams headerTitleContainerLayoutParams = ( LinearLayout.LayoutParams)headerTitleContainer.getLayoutParams();
+
+
+            horizontalGridView.setOnKeyListener(new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                    return false;
+                }
+            });
 
 
             ListRow rowItem = (ListRow) item;
@@ -75,24 +87,12 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
             int listRowRightmargin = customHeaderItem.getmListRowRightMargin();
             int listRowHeight =  customHeaderItem.getmListRowHeight();
 
-            /**
-             * customHeaderItem does not have getFontSize()
-             * This needs to be added for this functionality to work
-             * Merge issue: @Nitin Tyagi please fix
-
             headerTitle.setTextSize(customHeaderItem.getFontSize());
-             */
 
-            if(typeface == null)
-            /**
-             * customHeaderItem does not have getComponent()
-             * This needs to be added for this functionality to work
-             * Merge issue: @Nitin Tyagi please fix
-
-                typeface = Utils.getTypeFace(mContext , mAppCMSPresenter.getJsonValueKeyMap() ,
+            if(typeface == null) {
+                typeface = Utils.getTypeFace(mContext, mAppCMSPresenter.getJsonValueKeyMap(),
                         customHeaderItem.getComponent());
-             */
-
+            }
             if(null != typeface){
                 headerTitle.setTypeface(typeface);
             }
@@ -101,6 +101,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
 
             boolean isCarousal = customHeaderItem.ismIsCarousal();
 
+            Log.d("AppCmsListRowPresenter" , "isCarousal = "+isCarousal + " Title = "+headerTitle.getText().toString());
             if(isCarousal){
                 headerTitleContainer.setVisibility(View.GONE);
                 headerTitle.setVisibility(View.GONE);
@@ -110,13 +111,13 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
                 horizontalGridView.setItemSpacing(horizontalSpacing);
 
                 //set the HorizontalGrid Layout Params..
-                horizontalGrLayoutParams.setMargins(listRowLeftmargin, 15 , listRowRightmargin,0);
+                horizontalGrLayoutParams.setMargins(listRowLeftmargin, 0 , listRowRightmargin,0);
                 horizontalGridView.setLayoutParams(horizontalGrLayoutParams);
 
                 //set the background color
                 if(null != listRowBackgroundColor)
-                    listRowView.setBackgroundColor(Color.parseColor(listRowBackgroundColor)/*ContextCompat.getColor(mContext,R.color.jumbotron_background_color)*/);
-
+                //listRowView.setBackgroundColor(Color.parseColor(listRowBackgroundColor)/*ContextCompat.getColor(mContext,R.color.jumbotron_background_color)*/);
+                    listRowView.setBackgroundColor(ContextCompat.getColor(mContext , android.R.color.transparent));
                 //set the ListRow height and width.
                 listRowParam.height = listRowHeight/*listRowHeight*/;
                 listRowParam.width =  LinearLayout.LayoutParams.MATCH_PARENT;
@@ -124,12 +125,22 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
 
             }else{
                 headerTitleContainer.setVisibility(View.VISIBLE);
+                headerTitle.setVisibility(View.VISIBLE);
                 int paddingTop = (int)mContext.getResources().getDimension(R.dimen.tray_list_row_padding_top);
-                horizontalGrLayoutParams.topMargin = paddingTop;
+                int paddingLeft =(int)mContext.getResources().getDimension(R.dimen.tray_list_row_padding_left);
+                int horizontalSpacing = (int)mContext.getResources().getDimension(R.dimen.tray_grid_item_spacing);
+
+                horizontalGrLayoutParams.setMargins(paddingLeft, paddingTop , 0,0);
                 horizontalGridView.setLayoutParams(horizontalGrLayoutParams);
+                horizontalGridView.setItemSpacing(horizontalSpacing);
+
+                headerTitleContainerLayoutParams.setMargins(paddingLeft , 0 , 0 , 0);
+                headerTitleContainer.setLayoutParams(headerTitleContainerLayoutParams);
+
                 //set the ListRow height and width.
                 listRowParam.height = listRowHeight;
                 listRowParam.width =  LinearLayout.LayoutParams.MATCH_PARENT;
+                listRowView.setBackgroundColor(ContextCompat.getColor(mContext , android.R.color.transparent));
             }
         }
     }
@@ -137,6 +148,5 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
     @Override
     protected void onUnbindRowViewHolder(RowPresenter.ViewHolder holder) {
         super.onUnbindRowViewHolder(holder);
-        // ((ViewGroup)holder.view).removeAllViews();
     }
 }

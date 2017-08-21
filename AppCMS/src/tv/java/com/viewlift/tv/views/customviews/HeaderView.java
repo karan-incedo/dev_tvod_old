@@ -2,6 +2,7 @@ package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.View;
@@ -49,11 +50,7 @@ public class HeaderView extends TVBaseView {
         float viewWidth = Utils.getViewHeight(mContext ,mComponent.getLayout() ,DEFAULT_WIDTH );
         LayoutParams layoutParams= new LayoutParams((int)viewWidth , (int)viewHeight);
         setLayoutParams(layoutParams);
-        /** This is missing a resource R.color.video_detail_header
-         * This resource doesn't seem to be in any of the branches
-         * Merge issue: @Nitin Tyagi please fix
         setBackgroundColor(ContextCompat.getColor(mContext , R.color.video_detail_header));
-         */
     }
 
     @Override
@@ -117,6 +114,10 @@ public class HeaderView extends TVBaseView {
                     }
                 }
                 ((TextView)componentView).setTextColor(textColor);
+                Typeface typeface = Utils.getTypeFace(mContext , mJsonValueKeyMap , component );
+                if(null != typeface){
+                    ((TextView) componentView).setTypeface(typeface);
+                }
                 switch (componentKey) {
                     case PAGE_VIDEO_TITLE_KEY:
                         if (!TextUtils.isEmpty(mModuleData.getContentData().get(0).getGist().getTitle())) {

@@ -3,13 +3,17 @@ package com.viewlift.tv.views.fragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v17.leanback.app.BrowseFragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
+import com.bumptech.glide.Glide;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Module;
@@ -19,6 +23,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseCompnentModule;
 import com.viewlift.tv.views.component.AppCMSTVViewComponent;
 import com.viewlift.tv.views.component.DaggerAppCMSTVViewComponent;
+import com.viewlift.tv.views.customviews.TVModuleView;
 import com.viewlift.tv.views.customviews.TVPageView;
 import com.viewlift.tv.views.module.AppCMSTVPageViewModule;
 import com.viewlift.views.binders.AppCMSBinder;
@@ -41,11 +46,13 @@ public class AppCmsTVPageFragment extends Fragment {
     private AppCMSPresenter appCMSPresenter;
     private AppCMSTVViewComponent appCmsViewComponent;
     private TVPageView tvPageView;
+    public String mPageId ;
 
     public static AppCmsTVPageFragment newInstance(Context context , AppCMSBinder appCMSBinder){
         AppCmsTVPageFragment appCmsTVPageFragment = new AppCmsTVPageFragment();
         Bundle bundle = new Bundle();
         bundle.putBinder("app_cms_binder" , appCMSBinder);
+        appCmsTVPageFragment.mPageId = appCMSBinder.getScreenName();
         appCmsTVPageFragment.setArguments(bundle);
         return appCmsTVPageFragment;
     }
@@ -61,9 +68,6 @@ public class AppCmsTVPageFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-       // super.onCreateView(inflater, container, savedInstanceState);
-        View _rootView = inflater.inflate(R.layout.appcms_tv_page_fragment ,null);
-        pageContainer = (FrameLayout)_rootView.findViewById(R.id.page_container);
 
         Bundle bundle = getArguments();
         mAppCMSBinder = (AppCMSBinder)bundle.getBinder("app_cms_binder");
@@ -71,6 +75,12 @@ public class AppCmsTVPageFragment extends Fragment {
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
+
+        //clear the Adapter.
+        if(null != appCmsViewComponent && null != appCmsViewComponent.tvviewCreator()
+                && null != appCmsViewComponent.tvviewCreator().mRowsAdapter){
+               appCmsViewComponent.tvviewCreator().mRowsAdapter.clear();
+        }
 
         if (appCmsViewComponent == null && mAppCMSBinder != null) {
             appCmsViewComponent = buildAppCMSViewComponent();
@@ -78,117 +88,94 @@ public class AppCmsTVPageFragment extends Fragment {
 
 
         if (appCmsViewComponent != null) {
-            tvPageView = appCmsViewComponent.appCMSTVPageView();
+             tvPageView = appCmsViewComponent.appCMSTVPageView();
         } else {
             tvPageView = null;
         }
 
-       /* if (tvPageView != null) {
+        if (tvPageView != null) {
             if (tvPageView.getParent() != null) {
                 ((ViewGroup) tvPageView.getParent()).removeAllViews();
             }
             //onPageCreation.onSuccess(appCMSBinder);
-        }*/
+        }
         if (container != null) {
             container.removeAllViews();
         }
 
-
-        if((tvPageView.getChildrenContainer()).findViewById(R.id.appcms_browsefragment) != null){
+        if((tvPageView.getChildrenContainer()).findViewById(R.id.appcms_browsefragment) != null
+                && getChildFragmentManager().findFragmentByTag(mAppCMSBinder.getScreenName()) == null){
             AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(getActivity());
-
-            /**
-             * The new version of this class does not take the mRowsAdapter as an input to
-             * the newInstance() method
-             * Merge issue: @Nitin Tyagi could you please take a look at this and correct if necessary?
-            AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(getActivity() ,
-                    appCmsViewComponent.tvviewCreator().mRowsAdapter);
-             **/
-            getChildFragmentManager().beginTransaction().replace(R.id.appcms_browsefragment ,browseFragment , "frag").commit();
+            browseFragment.setAdapter(appCmsViewComponent.tvviewCreator().mRowsAdapter);
+            getChildFragmentManager().beginTransaction().replace(R.id.appcms_browsefragment ,browseFragment ,mAppCMSBinder.getScreenName()).commit();
         }
         return tvPageView;
-
-
-        /*listModule();
-
-        if(null != traymoduleLists){
-           AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(getActivity() , traymoduleLists);
-           getChildFragmentManager().beginTransaction().replace(R.id.page_container,browseFragment,"browse").commit();
-        }*/
-
-       // return _rootView;
     }
 
 
     @Override
     public void onResume() {
         super.onResume();
+        requestFocus();
+        if(null != appCMSPresenter)
         appCMSPresenter.sendStopLoadingPageAction();
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
     }
 
-    List<BrowseCompnentModule> traymoduleLists;
-    private void listModule(){
-        AppCMSPageUI appCMSPageUI = mAppCMSBinder.getAppCMSPageUI();
-        AppCMSPageAPI appCMSPageAPI = mAppCMSBinder.getAppCMSPageAPI();
-        List<String> moduleToIgnore = Arrays.asList(getResources().getStringArray(R.array.app_cms_modules_to_ignore));
-        List<String> trayModuleList = Arrays.asList(getResources().getStringArray(R.array.app_cms_tray_modules));
-        List<String> detailModuleList = Arrays.asList(getResources().getStringArray(R.array.app_cms_detail_module));
-        traymoduleLists = new ArrayList<>();
-        List<BrowseCompnentModule> detailModuleLists = new ArrayList<>();
 
-
-        for(int i = 0 ; i <appCMSPageUI.getModuleList().size() ; i++){
-            //ModuleList is the UI of Single ModuleWithComponents like tray module or Crausol ModuleWithComponents.
-            ModuleList module = appCMSPageUI.getModuleList().get(i);
-            if(trayModuleList.contains(module.getView())){
-                BrowseCompnentModule browseCompnentModule = new BrowseCompnentModule();
-                browseCompnentModule.position = i;
-                browseCompnentModule.moduleUI = module;
-
-                for(int j=0 ; j < appCMSPageAPI.getModules().size(); j++){
-                    if(appCMSPageAPI.getModules().get(j).getId().equalsIgnoreCase(module.getId())){
-                        browseCompnentModule.moduleData = appCMSPageAPI.getModules().get(j);// assign module data.
-                        traymoduleLists.add(browseCompnentModule);
-                        break;
-                    }
+    public void requestFocus(){
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ViewGroup ChildContaineer = (ViewGroup)(tvPageView.getChildrenContainer());
+                int childcount = 0;
+                if(null != ChildContaineer){
+                    childcount = ChildContaineer.getChildCount() ;
                 }
+                for(int i =0 ; i<childcount; i++){
+                    if(ChildContaineer.getChildAt(0) instanceof  TVModuleView){
+                        TVModuleView tvModuleView = (TVModuleView)ChildContaineer.getChildAt(0);
+                        ViewGroup moduleChildContaineer = tvModuleView.getChildrenContainer();
+                        int moduleChild = moduleChildContaineer.getChildCount();
 
-            }else if(detailModuleList.contains(module.getView())){
-                BrowseCompnentModule browseCompnentModule = new BrowseCompnentModule();
-                browseCompnentModule.position = i;
-                browseCompnentModule.moduleUI = module;
-
-                for(int j = 0 ; j <appCMSPageAPI.getModules().size() ; j++){
-                    if(appCMSPageAPI.getModules().get(j).getId().equalsIgnoreCase(module.getId())){
-                        browseCompnentModule.moduleData = appCMSPageAPI.getModules().get(j);// assign module data.
-                        detailModuleLists.add(browseCompnentModule);
+                        for(int j = 0; j < moduleChild; j++){
+                            View view = moduleChildContaineer.getChildAt(j);
+                            if(null != view){
+                                System.out.println("View isFocusable == "+view.isFocusable() + "TAG =  = == " + (view.getTag() != null ? view.getTag().toString() : null));
+                                if (null != view.getTag() &&
+                                        view.getTag().toString().equalsIgnoreCase(getString(R.string.video_image_key))){
+                                    ((FrameLayout)view).getChildAt(0).requestFocus();
+                                    break;
+                                }
+                                else if(view.isFocusable()){
+                                    view.requestFocus();
+                                    break;
+                                }else{
+                                    view.clearFocus();
+                                }
+                            }
+                        }
                     }
                 }
             }
-        }
+        } , 10);
     }
 
+    @Override
+    public void onDestroyView() {
+        if(tvPageView != null)
+            tvPageView.setBackground(null);
+        super.onDestroyView();
+    }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
-        Bundle bundle = getArguments();
-        mAppCMSBinder = (AppCMSBinder)bundle.getBinder("app_cms_binder");
-
-        appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
-                .getAppCMSPresenterComponent()
-                .appCMSPresenter();
-
-
-        appCmsViewComponent = buildAppCMSViewComponent();
     }
-
 
     public AppCMSTVViewComponent buildAppCMSViewComponent() {
         return DaggerAppCMSTVViewComponent.builder()

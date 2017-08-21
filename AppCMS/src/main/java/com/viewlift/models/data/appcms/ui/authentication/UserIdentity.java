@@ -55,6 +55,26 @@ public class UserIdentity {
     @Expose
     String name;
 
+    @SerializedName("password")
+    @Expose
+    String password;
+
+    @SerializedName("authorizationToken")
+    @Expose
+    String authorizationToken;
+
+    @SerializedName("refreshToken")
+    @Expose
+    String refreshToken;
+
+    @SerializedName("isSubscribed")
+    @Expose
+    boolean isSubscribed;
+
+    @SerializedName("error")
+    @Expose
+    String error;
+
     public Raw getRaw() {
         return raw;
     }
@@ -149,5 +169,45 @@ public class UserIdentity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getAuthorizationToken() {
+        return authorizationToken;
+    }
+
+    public void setAuthorizationToken(String authorizationToken) {
+        this.authorizationToken = authorizationToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public boolean isSubscribed() {
+        return isSubscribed;
+    }
+
+    public void setSubscribed(boolean subscribed) {
+        isSubscribed = subscribed;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 }

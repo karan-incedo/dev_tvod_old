@@ -106,18 +106,16 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             titleKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
                         }
 
-                        boolean navbarPresent = true;
                         if (titleKey == AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY) {
-                            navbarPresent = false;
-                        }
-
-                        if (!appCMSPresenter.navigateToPage(navigationPrimary.getPageId(),
+                            appCMSPresenter.navigateToSubscriptionPlansPage(null,
+                                    null);
+                        } else if (!appCMSPresenter.navigateToPage(navigationPrimary.getPageId(),
                                 navigationPrimary.getTitle(),
                                 navigationPrimary.getUrl(),
                                 false,
                                 true,
                                 false,
-                                navbarPresent,
+                                true,
                                 false,
                                 null)) {
                             Log.e(TAG, "Could not navigate to page with Title: " +
@@ -135,9 +133,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 for (int j = 0; j <= (i - indexOffset) && j < navigation.getNavigationUser().size(); j++) {
                     if (navigation.getNavigationUser().get(j).getAccessLevels() != null) {
                         if ((userLoggedIn && !navigation.getNavigationUser().get(j).getAccessLevels().getLoggedIn()) ||
-                                (!userLoggedIn && !navigation.getNavigationUser().get(j).getAccessLevels().getLoggedOut()) ||
-                                (!userSubscribed && navigation.getNavigationFooter().get(j).getAccessLevels().getSubscribed()) ||
-                                        (userSubscribed && !navigation.getNavigationFooter().get(j).getAccessLevels().getSubscribed())) {
+                                (!userLoggedIn && !navigation.getNavigationUser().get(j).getAccessLevels().getLoggedOut())) {
                             indexOffset--;
                         }
                     }
@@ -151,9 +147,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
 
                 if (navigationUser.getAccessLevels() != null) {
                     if (userLoggedIn && navigationUser.getAccessLevels().getLoggedIn() ||
-                            (!userLoggedIn && navigationUser.getAccessLevels().getLoggedOut()) &&
-                                    ((!userSubscribed && !navigationUser.getAccessLevels().getSubscribed()) ||
-                                            (userSubscribed && navigationUser.getAccessLevels().getSubscribed()))) {
+                            !userLoggedIn && navigationUser.getAccessLevels().getLoggedOut()) {
                         viewHolder.navItemLabel.setText(navigationUser.getTitle().toUpperCase());
                         viewHolder.navItemLabel.setTextColor(textColor);
                         viewHolder.itemView.setOnClickListener(v -> {
@@ -288,10 +282,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 for (int i = 0; i < navigation.getNavigationUser().size(); i++) {
                     NavigationUser navigationUser = navigation.getNavigationUser().get(i);
                     if (navigationUser.getAccessLevels() != null) {
-                        if ((!userLoggedIn && navigation.getNavigationUser().get(i).getAccessLevels().getLoggedOut() ||
-                                userLoggedIn && navigation.getNavigationUser().get(i).getAccessLevels().getLoggedIn()) &&
-                                ((!userSubscribed && !navigationUser.getAccessLevels().getSubscribed()) ||
-                                        (userSubscribed && navigationUser.getAccessLevels().getSubscribed()))) {
+                        if (!userLoggedIn && navigation.getNavigationUser().get(i).getAccessLevels().getLoggedOut() ||
+                                userLoggedIn && navigation.getNavigationUser().get(i).getAccessLevels().getLoggedIn()) {
                             totalItemCount++;
                             numUserItems++;
                         }

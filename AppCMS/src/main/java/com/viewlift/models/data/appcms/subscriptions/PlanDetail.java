@@ -47,7 +47,7 @@ public class PlanDetail {
 
     @SerializedName("scheduledFromDate")
     @Expose
-    long scheduledFromDate;
+    String scheduledFromDate;
 
     @SerializedName("supportedDevices")
     @Expose
@@ -129,11 +129,11 @@ public class PlanDetail {
         isDefault = aDefault;
     }
 
-    public long getScheduledFromDate() {
+    public String getScheduledFromDate() {
         return scheduledFromDate;
     }
 
-    public void setScheduledFromDate(long scheduledFromDate) {
+    public void setScheduledFromDate(String scheduledFromDate) {
         this.scheduledFromDate = scheduledFromDate;
     }
 

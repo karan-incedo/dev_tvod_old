@@ -53,10 +53,23 @@
         android:layout_height="@dimen/footer_logo_height"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="@dimen/footer_logo_padding"
-        android:layout_marginRight="@dimen/footer_logo_padding"
-        android:background="@drawable/snagfilms_app_logo"
+        android:background="@drawable/logo"
+        android:layout_marginBottom="@dimen/footer_logo_margin_bottom"
+        android:layout_marginRight="@dimen/footer_logo_margin_right"
         android:layout_gravity="right"/>
+
+
+    <ImageView
+        android:id="@+id/info_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/info_icon"
+        android:layout_marginBottom="@dimen/footer_info_icon_margin_bottom"
+        android:layout_marginLeft="@dimen/footer_logo_margin_right"
+        />
+
 
 
 </RelativeLayout>

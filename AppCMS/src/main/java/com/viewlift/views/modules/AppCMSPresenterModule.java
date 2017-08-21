@@ -9,6 +9,7 @@ import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSGoogleLoginCall;
@@ -79,6 +80,8 @@ public class AppCMSPresenterModule {
                                                    GoogleCancelSubscriptionCall googleCancelSubscriptionCall,
                                                    AppCMSAddToWatchlistCall appCMSAddToWatchlistCall,
 
+                                                   AppCMSCCAvenueCall appCMSCCAvenueCall,
+
                                                    AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall,
                                                    AppCMSUserVideoStatusCall appCMSUserVideoStatusCall,
                                                    AppCMSUserDownloadVideoStatusCall appCMSUserDownloadVideoStatusCall,
@@ -121,6 +124,8 @@ public class AppCMSPresenterModule {
                 appCMSUserDownloadVideoStatusCall,
 
                 appCMSAddToWatchlistCall,
+
+                appCMSCCAvenueCall,
 
                 jsonValueKeyMap,
                 pageNameToActionMap,

@@ -18,6 +18,8 @@ import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenRest;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
+import com.viewlift.models.network.rest.AppCMSCCAvenueRest;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryRest;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginRest;
@@ -140,6 +142,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_HISTORY_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_settings_page_title_text),
                 AppCMSUIKeyType.ANDROID_SETTINGS_NAV_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_button_switch_key),
+                AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_button_key),
                 AppCMSUIKeyType.PAGE_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_label_key),
@@ -244,8 +248,12 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_VALUE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_plan_value_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_PLAN_VALUE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_plan_processor_title_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_plan_processor_value_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_download_quality_value_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_edit_profile_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_EDIT_PROFILE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_cancel_subscription_key),
@@ -256,6 +264,13 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_BACKGROUND_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_background_image_type_type),
                 AppCMSUIKeyType.PAGE_BACKGROUND_IMAGE_TYPE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_app_version_value_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_APP_VERSION_VALUE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_togglebutton_key),
+                AppCMSUIKeyType.PAGE_TOGGLE_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_autoplay_toggle_button_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_title_key),
                 AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY);
@@ -366,7 +381,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_SUBHEADING_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_movie_description_key),
-                AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_DISCRIPTION_KEY);
+                AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_DESCRIPTION_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_movie_star_rating_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_STAR_RATING_KEY);
@@ -669,6 +684,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSCCAvenueRest providesAppCMSAvenueRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSCCAvenueRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -788,6 +809,11 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSIPGeoLocatorCall providesAppCMSIPGeoLocatorCall(AppCMSIPGeoLocatorRest appCMSIPGeoLocatorRest) {
         return new AppCMSIPGeoLocatorCall(appCMSIPGeoLocatorRest);
+    }
+
+    @Provides
+    public AppCMSCCAvenueCall providesAppCMSCCAvenueCall(AppCMSCCAvenueRest appCMSCCAvenueRest) {
+        return new AppCMSCCAvenueCall(appCMSCCAvenueRest);
     }
 
     @Provides

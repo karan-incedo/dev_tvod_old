@@ -144,10 +144,26 @@ public class Component implements ModuleWithComponents {
     @SerializedName("protected")
     @Expose
     boolean isViewProtected;
-
+	
     @SerializedName("selectedText")
     @Expose
-    private String selectedText;
+    String selectedText;
+
+    public int getPadding() {
+        return padding;
+    }
+
+    public void setPadding(int padding) {
+        this.padding = padding;
+    }
+
+    @SerializedName("padding")
+    @Expose
+    private int padding;
+
+    @SerializedName("svod")
+    @Expose
+    boolean svod;
 
     boolean yAxisSetManually;
 
@@ -447,5 +463,22 @@ public class Component implements ModuleWithComponents {
 
     public void setSelectedText(String selectedText) {
         this.selectedText = selectedText;
+    }
+	
+    float letterSpacing;
+    public float getLetetrSpacing() {
+        return letterSpacing;
+    }
+
+    public void setLetetrSpacing(float letetrSpacing) {
+        this.letterSpacing = letetrSpacing;
+    }
+
+    public boolean isSvod() {
+        return svod;
+    }
+
+    public void setSvod(boolean svod) {
+        this.svod = svod;
     }
 }

@@ -79,11 +79,27 @@ public class AppCMSMain {
     @Expose
     String android;
 
+    public String getFireTv() {
+        return fireTv;
+    }
+
+    public void setFireTv(String fireTv) {
+        this.fireTv = fireTv;
+    }
+
+    @SerializedName("fireTv")
+    @Expose
+    private String fireTv;
     @SerializedName("timestamp")
     @Expose
     long timestamp;
 
+    @SerializedName("socialMedia")
+    @Expose
+    SocialMedia socialMedia;
+
     @SerializedName("forceLogin")
+    @Expose
     boolean forceLogin;
 
     public String getId() {
@@ -252,5 +268,13 @@ public class AppCMSMain {
 
     public void setForceLogin(boolean forceLogin) {
         this.forceLogin = forceLogin;
+    }
+
+    public SocialMedia getSocialMedia() {
+        return socialMedia;
+    }
+
+    public void setSocialMedia(SocialMedia socialMedia) {
+        this.socialMedia = socialMedia;
     }
 }

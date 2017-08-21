@@ -197,8 +197,10 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                     new SearchAsyncTask(new Action1<List<AppCMSSearchResult>>() {
                         @Override
                         public void call(List<AppCMSSearchResult> data) {
-                            appCMSSearchItemAdapter.setData(data);
-                            updateNoResultsDisplay(appCMSPresenter, data);
+                            if (data != null) {
+                                appCMSSearchItemAdapter.setData(data);
+                                updateNoResultsDisplay(appCMSPresenter, data);
+                            }
                         }
                     }, appCMSSearchCall).execute(url);
                 }
@@ -208,7 +210,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
 
     private void updateNoResultsDisplay(AppCMSPresenter appCMSPresenter,
                                         List<AppCMSSearchResult> data) {
-        if (data == null || data.size() == 0) {
+        if (data == null || data.isEmpty()) {
             noResultsTextview.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
                     .getBrand()
                     .getGeneral()
