@@ -35,6 +35,8 @@ import com.google.gson.GsonBuilder;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.firetvcustomkeyboard.CustomKeyboard;
+import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.ContentDetails;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -574,7 +576,10 @@ public class AppCmsSearchFragment extends Fragment {
 
                 for (AppCMSSearchResult searchResult : appCMSSearchResults) {
                     BrowseFragmentRowData rowData = new BrowseFragmentRowData();
-                    rowData.contentData = searchResult.getContent();
+                    ContentDatum contentDatum = new ContentDatum();
+                    contentDatum.setContentDetails(searchResult.getContentDetails());
+                    contentDatum.setGist(searchResult.getGist());
+                    rowData.contentData = contentDatum;
                     rowData.uiComponentList = component.getComponents();
                     traylistRowAdapter.add(rowData);
                     Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());

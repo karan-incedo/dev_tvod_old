@@ -3903,7 +3903,7 @@ public class AppCMSPresenter {
     public boolean getIsUserSubscribed(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(IS_USER_SUBSCRIBED, 0);
-            return sharedPrefs.getBoolean(IS_USER_SUBSCRIBED, false);
+            return sharedPrefs.getBoolean(getLoggedInUser(currentActivity), false);
         }
         return false;
     }
