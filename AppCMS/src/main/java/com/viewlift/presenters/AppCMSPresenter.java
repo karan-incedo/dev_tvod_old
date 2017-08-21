@@ -3888,20 +3888,16 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public boolean getAutoplayEnabledUserPref(Context context) {
-        if (context != null) {
-            SharedPreferences sharedPrefs = context.getSharedPreferences(AUTO_PLAY_ENABLED_PREF_NAME, 0);
-            return sharedPrefs.getBoolean(AUTO_PLAY_ENABLED_PREF_NAME, true);
-        }
-        return false;
+    public boolean getAutoplayEnabledUserPref(@NonNull Context context) {
+        SharedPreferences sharedPrefs = context.getSharedPreferences(AUTO_PLAY_ENABLED_PREF_NAME, 0);
+        return sharedPrefs.getBoolean(getLoggedInUser(currentActivity), true);
     }
 
-    public boolean setAutoplayEnabledUserPref(Context context, boolean autoplayEnabled) {
+    public void setAutoplayEnabledUserPref(Context context, boolean isAutoplayEnabled) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(AUTO_PLAY_ENABLED_PREF_NAME, 0);
-            return sharedPrefs.edit().putBoolean(getLoggedInUser(currentActivity), autoplayEnabled).commit();
+            sharedPrefs.edit().putBoolean(getLoggedInUser(currentActivity), isAutoplayEnabled).apply();
         }
-        return false;
     }
 
     public boolean getIsUserSubscribed(Context context) {
