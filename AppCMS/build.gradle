@@ -37,6 +37,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 25
         renderscriptSupportModeEnabled true
+        useLibrary 'org.apache.http.legacy'
     }
     flavorDimensions "green"
     productFlavors {

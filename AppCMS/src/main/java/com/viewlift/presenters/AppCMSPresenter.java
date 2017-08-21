@@ -1399,11 +1399,20 @@ public class AppCMSPresenter {
             planToPurchasePrice = planPrice;
 
             if (isUserLoggedIn(currentActivity)) {
-                initiateItemPurchase();
+                String country = "india" ;
+                if (country.equalsIgnoreCase("india")) {
+                    initiateCCAvenuePurchase () ;
+                } else {
+                    initiateItemPurchase();
+                }
             } else {
                 navigateToLoginPage();
             }
         }
+    }
+
+    private void initiateCCAvenuePurchase () {
+         Log.v("Ini","Inititate ccAvanue") ;
     }
 
     public void initiateItemPurchase() {
@@ -1498,6 +1507,7 @@ public class AppCMSPresenter {
                                                 String.valueOf(getActiveSubscriptionPrice(currentActivity)),
                                                 subscriptionRequest.getPlanId(),
                                                 subscriptionRequest.getCurrencyCode());
+                                        Log.v("subscriptionRequest", subscriptionRequest.getCurrencyCode());
                                     },
                                     currentUserPlan -> {
 
@@ -2693,32 +2703,32 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             Bundle activeSubs = null;
             try {
-                if (inAppBillingService != null) {
-                    activeSubs = inAppBillingService.getPurchases(3,
-                            currentActivity.getPackageName(),
-                            "subs",
-                            null);
-                    ArrayList<String> subscribedItemList = activeSubs.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
-                    if (subscribedItemList != null && subscribedItemList.size() > 0) {
-                        for (int i = 0; i < subscribedItemList.size(); i++) {
-                            try {
-                                InAppPurchaseData inAppPurchaseData = gson.fromJson(subscribedItemList.get(i),
-                                        InAppPurchaseData.class);
-                                if (inAppPurchaseData.isAutoRenewing() && showErrorDialogIfSubscriptionExists) {
-                                    showDialog(DialogType.EXISTING_SUBSCRIPTION,
-                                            currentActivity.getString(R.string.app_cms_existing_subscription_error_message),
-                                            false,
-                                            () -> {
-                                                sendCloseOthersAction(null, true);
-                                            });
-                                    setExistingGooglePlaySubscriptionId(currentActivity, inAppPurchaseData.getProductId());
+                    if (inAppBillingService != null) {
+                        activeSubs = inAppBillingService.getPurchases(3,
+                                currentActivity.getPackageName(),
+                                "subs",
+                                null);
+                        ArrayList<String> subscribedItemList = activeSubs.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
+                        if (subscribedItemList != null && subscribedItemList.size() > 0) {
+                            for (int i = 0; i < subscribedItemList.size(); i++) {
+                                try {
+                                    InAppPurchaseData inAppPurchaseData = gson.fromJson(subscribedItemList.get(i),
+                                            InAppPurchaseData.class);
+                                    if (inAppPurchaseData.isAutoRenewing() && showErrorDialogIfSubscriptionExists) {
+                                        showDialog(DialogType.EXISTING_SUBSCRIPTION,
+                                                currentActivity.getString(R.string.app_cms_existing_subscription_error_message),
+                                                false,
+                                                () -> {
+                                                    sendCloseOthersAction(null, true);
+                                                });
+                                        setExistingGooglePlaySubscriptionId(currentActivity, inAppPurchaseData.getProductId());
+                                    }
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Error parsing Google Play subscription data: " + e.toString());
                                 }
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error parsing Google Play subscription data: " + e.toString());
                             }
                         }
                     }
-                }
             } catch (RemoteException e) {
                 Log.e(TAG, "Failed to purchase item with sku: "
                         + getActiveSubscriptionSku(currentActivity));

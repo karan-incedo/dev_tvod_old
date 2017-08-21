@@ -270,4 +270,17 @@
     <string name="app_cms_signup_invalid_password_message">Please enter a valid password.</string>
     <string name="loading_video_text">Loading Video</string>
 
+    <!-- CCAvenue Constant Strings -->
+    <string name="app_cms_access_code">access_code</string>
+    <string name="app_cms_merchant_id">merchant_id</string>
+    <string name="app_cms_order_id">order_id</string>
+    <string name="app_cms_amount">amount</string>
+    <string name="app_cms_currency">currency</string>
+    <string name="app_cms_enc_val">enc_val</string>
+    <string name="app_cms_redirect_url">redirect_url</string>
+    <string name="app_cms_cancel_url">cancel_url</string>
+    <string name="app_cms_rsa_key_url">rsa_key_url</string>
+    <string name="app_cms_rsa_trans_url">https://test.ccavenue.com/transaction/initTrans</string>
+    <!--<string name="app_cms_rsa_trans_url">https://secure.ccavenue.com/transaction/initTrans</string>-->
+
 </resources>
