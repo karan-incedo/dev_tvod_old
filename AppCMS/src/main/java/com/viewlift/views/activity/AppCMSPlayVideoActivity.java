@@ -50,6 +50,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     private String videoImageUrl;
     private String filmId;
     private String primaryCategory;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,7 +115,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             && binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl() != null
                             && !binder.getContentData().getContentDetails().getClosedCaptions()
                             .get(0).getUrl().equalsIgnoreCase(
-                                    getString(R.string.download_file_prefix))){
+                                    getString(R.string.download_file_prefix))) {
                         closedCaptionUrl = binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl();
                     }
                 } else {
@@ -140,8 +141,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 String bgColor = binder.getBgColor();
                 int playIndex = binder.getCurrentPlayingVideoIndex();
                 long watchedTime = intent.getLongExtra(getString(R.string.watched_time_key), 0L);
-                if(gist.getPrimaryCategory()!=null && gist.getPrimaryCategory().getTitle()!=null)
-                 primaryCategory = gist.getPrimaryCategory().getTitle();
+                if (gist.getPrimaryCategory() != null && gist.getPrimaryCategory().getTitle() != null)
+                    primaryCategory = gist.getPrimaryCategory().getTitle();
                 boolean playAds = binder.isPlayAds();
                 relateVideoIds = binder.getRelateVideoIds();
                 currentlyPlayingIndex = binder.getCurrentPlayingVideoIndex();

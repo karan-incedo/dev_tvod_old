@@ -316,7 +316,7 @@ public class CastHelper {
 
 
             if (relateVideoId == null && binderPlayScreen != null && CastingUtils.getPlayingUrl(binderPlayScreen.getContentData()) != null && !TextUtils.isEmpty(CastingUtils.getPlayingUrl(binderPlayScreen.getContentData()))) {
-                launchSingeRemoteMedia(binderPlayScreen, CastingUtils.getPlayingUrl(binderPlayScreen.getContentData()), filmId, currentPosition);
+                launchSingeRemoteMedia(binderPlayScreen, CastingUtils.getPlayingUrl(binderPlayScreen.getContentData()), filmId, currentPosition, false);
             } else {
                 callRelatedVideoData();
             }
@@ -342,21 +342,19 @@ public class CastHelper {
             }
         }
         if (videoUrl != null && !TextUtils.isEmpty(videoUrl)) {
-            launchSingeRemoteMedia(binder, videoUrl, filmId, currentPosition);
+            launchSingeRemoteMedia(binder, videoUrl, filmId, currentPosition, true);
         }
 
     }
 
 
-    private void launchSingeRemoteMedia(AppCMSVideoPageBinder binder, String videoPlayUrl, String filmId, long currentPosition) {
+    private void launchSingeRemoteMedia(AppCMSVideoPageBinder binder, String videoPlayUrl, String filmId, long currentPosition, boolean isTrailer) {
 
         if (binder != null && binder.getContentData() != null && binder.getContentData().getGist() != null) {
             if (binder.getContentData().getGist().getPermalink() != null) {
                 paramLink = binder.getContentData().getGist().getPermalink();
             }
-            if (binder.getContentData().getGist().getTitle() != null) {
-                title = binder.getContentData().getGist().getTitle();
-            }
+            title = CastingUtils.getTitle(binder.getContentData(), isTrailer);
             if (binder.getContentData().getGist().getVideoImageUrl() != null) {
                 imageUrl = binder.getContentData().getGist().getVideoImageUrl();
             }
@@ -644,7 +642,7 @@ public class CastHelper {
 
             videoUrl = CastingUtils.getPlayingUrl(binderPlayScreen.getContentData());
             if (videoUrl != null && !TextUtils.isEmpty(videoUrl)) {
-                launchSingeRemoteMedia(binderPlayScreen, videoUrl, startingFilmId, currentMediaPosition);
+                launchSingeRemoteMedia(binderPlayScreen, videoUrl, startingFilmId, currentMediaPosition, false);
             }
         }
     }
@@ -835,7 +833,7 @@ public class CastHelper {
                 mSessionManagerListener = null;
                 CastContext.getSharedInstance(mAppContext).getSessionManager().endCurrentSession(true);
             } catch (Exception e) {
-                Log.e(TAG,e.getMessage()); // getting crash by e.printStackTrace()
+                Log.e(TAG, e.getMessage()); // getting crash by e.printStackTrace()
 
             }
         }
