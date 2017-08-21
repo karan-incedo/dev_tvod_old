@@ -68,10 +68,10 @@ public class WebViewActivity extends Activity {
 		protected void onPreExecute() {
 			super.onPreExecute();
 			// Showing progress dialog
-			dialog = new ProgressDialog(WebViewActivity.this);
-			dialog.setMessage("Please wait...");
-			dialog.setCancelable(false);
-			dialog.show();
+//			dialog = new ProgressDialog(WebViewActivity.this);
+//			dialog.setMessage("Please wait...");
+//			dialog.setCancelable(false);
+//			dialog.show();
 		}
 
 		@Override
@@ -81,10 +81,10 @@ public class WebViewActivity extends Activity {
 	
 			// Making a request to url and getting response
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			params.add(new BasicNameValuePair(AvenuesParams.ACCESS_CODE, mainIntent.getStringExtra(AvenuesParams.ACCESS_CODE)));
-			params.add(new BasicNameValuePair(AvenuesParams.ORDER_ID, mainIntent.getStringExtra(AvenuesParams.ORDER_ID)));
-			String rsaKeyURL = mainIntent.getStringExtra(AvenuesParams.RSA_KEY_URL) ;
-			rsaKeyURL = rsaKeyURL + "?access_code=" + accessCode + "&merchant_id=138366&order_id=" + orderID ;
+			params.add(new BasicNameValuePair(AvenuesParams.ACCESS_CODE, accessCode));
+			params.add(new BasicNameValuePair(AvenuesParams.ORDER_ID, orderID));
+			//String rsaKeyURL = mainIntent.getStringExtra(AvenuesParams.RSA_KEY_URL) ;
+			//rsaKeyURL = rsaKeyURL + "?access_code=" + accessCode + "&merchant_id=138366&order_id=" + orderID ;
 			//String vResponse = sh.makeServiceCall(rsaKeyURL, ServiceHandler.POST, params);
 			String vResponse = getRSAKey() ;
 			if(!ServiceUtility.chkNull(vResponse).equals("")
@@ -102,8 +102,8 @@ public class WebViewActivity extends Activity {
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
 			// Dismiss the progress dialog
-			if (dialog.isShowing())
-				dialog.dismiss();
+//			if (dialog.isShowing())
+//				dialog.dismiss();
 			
 			@SuppressWarnings("unused")
 			class MyJavaScriptInterface
@@ -200,7 +200,7 @@ public class WebViewActivity extends Activity {
 		HttpURLConnection urlConnection = null;
 		BufferedReader reader = null;
 		try {
-			URL url = new URL("http://develop-api.viewlift.com/ccavenue/ccavenue/rsakey");
+			URL url = new URL("https://develop-api.viewlift.com/ccavenue/ccavenue/rsakey");
 			urlConnection = (HttpURLConnection) url.openConnection();
 			urlConnection.setDoOutput(true);
 			// is output buffer writter

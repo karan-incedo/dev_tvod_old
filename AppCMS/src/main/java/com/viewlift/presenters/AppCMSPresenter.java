@@ -64,6 +64,8 @@ import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
+import com.viewlift.ccavenue.screens.WebViewActivity;
+import com.viewlift.ccavenue.utility.AvenuesParams;
 import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenResponse;
 import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
@@ -1413,6 +1415,13 @@ public class AppCMSPresenter {
 
     private void initiateCCAvenuePurchase () {
          Log.v("Ini","Inititate ccAvanue") ;
+            Intent intent = new Intent(currentActivity,WebViewActivity.class);
+//            intent.putExtra(AvenuesParams.ACCESS_CODE, ServiceUtility.chkNull(accessCode.getText()).toString().trim());
+//            intent.putExtra(AvenuesParams.MERCHANT_ID, ServiceUtility.chkNull(merchantId.getText()).toString().trim());
+//            intent.putExtra(AvenuesParams.ORDER_ID, ServiceUtility.chkNull(orderId.getText()).toString().trim());
+              intent.putExtra(AvenuesParams.CURRENCY, "INR");
+             intent.putExtra(AvenuesParams.AMOUNT, "500");
+            currentActivity.startActivity(intent);
     }
 
     public void initiateItemPurchase() {
