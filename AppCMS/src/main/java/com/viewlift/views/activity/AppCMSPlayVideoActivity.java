@@ -228,23 +228,26 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
     @Override
     public void onMovieFinished() {
-        // TODO: 7/12/2017 Add a check for autoplay from settings
-        if (!binder.isOffline()) {
-            if (!binder.isTrailer()
-                    && relateVideoIds != null
-                    && currentlyPlayingIndex != relateVideoIds.size() - 1) {
-                binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
-                appCMSPresenter.openAutoPlayScreen(binder);
+        if (appCMSPresenter.getAutoplayEnabledUserPref(getApplication())) {
+            if (!binder.isOffline()) {
+                if (!binder.isTrailer()
+                        && relateVideoIds != null
+                        && currentlyPlayingIndex != relateVideoIds.size() - 1) {
+                    binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
+                    appCMSPresenter.openAutoPlayScreen(binder);
+                } else {
+                    closePlayer();
+                }
             } else {
-                closePlayer();
+                if (binder.getRelateVideoIds() != null
+                        && currentlyPlayingIndex != relateVideoIds.size() - 1) {
+                    appCMSPresenter.openAutoPlayScreen(binder);
+                } else {
+                    closePlayer();
+                }
             }
         } else {
-            if (binder.getRelateVideoIds() != null
-                    && currentlyPlayingIndex != relateVideoIds.size() - 1) {
-                appCMSPresenter.openAutoPlayScreen(binder);
-            } else {
-                closePlayer();
-            }
+            closePlayer();
         }
     }
 
