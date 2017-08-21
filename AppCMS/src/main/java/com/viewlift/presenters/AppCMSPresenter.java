@@ -1428,6 +1428,10 @@ public class AppCMSPresenter {
         Intent intent = new Intent(currentActivity,WebViewActivity.class);
               intent.putExtra(AvenuesParams.CURRENCY, currencyCode);
               intent.putExtra(AvenuesParams.AMOUNT, planToPurchasePrice);
+              intent.putExtra(currentActivity.getString(R.string.app_cms_site_name),appCMSMain.getInternalName()) ;
+              intent.putExtra(currentActivity.getString(R.string.app_cms_user_id),getLoggedInUser(currentActivity)) ;
+              intent.putExtra(currentActivity.getString(R.string.app_cms_plan_id),planToPurchase) ;
+              //intent.putExtra(AvenuesParams.AMOUNT, "500");
               intent.putExtra("plan_to_purchase_name", planToPurchaseName);
               currentActivity.startActivity(intent);
     }

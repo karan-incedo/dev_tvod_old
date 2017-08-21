@@ -49,10 +49,10 @@ public class WebViewActivity extends Activity {
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
-		orderID = "knhgjlkhgggsdhkjhjghgnkjhg" ;
-		accessCode = "AVGQ01EH20AR43QGRA" ;
-		merchantID = "138366" ;
-		cancelRedirectURL = "http://ccavenue.us-east-1.elasticbeanstalk.com/ccavResponseHandler.jsp" ;
+		orderID = "" ;
+		accessCode = "" ;
+		merchantID = "" ;
+		cancelRedirectURL = "" ;
 		setContentView(R.layout.activity_webview);
 		mainIntent = getIntent();
 		
@@ -159,6 +159,9 @@ public class WebViewActivity extends Activity {
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.ORDER_ID,orderID));
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.REDIRECT_URL,cancelRedirectURL));
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.CANCEL_URL,cancelRedirectURL));
+			params.append(ServiceUtility.addToPostParams("merchant_param1",getIntent().getStringExtra(getString(R.string.app_cms_user_id))));
+			params.append(ServiceUtility.addToPostParams("merchant_param2",getIntent().getStringExtra(getString(R.string.app_cms_site_name))));
+			params.append(ServiceUtility.addToPostParams("merchant_param3",getIntent().getStringExtra(getString(R.string.app_cms_plan_id))));
 			try {
 				params.append(ServiceUtility.addToPostParams(AvenuesParams.ENC_VAL,URLEncoder.encode(encVal,"UTF-8")));
 			} catch (Exception ex) {
@@ -186,9 +189,9 @@ public class WebViewActivity extends Activity {
 		JSONObject post_dict = new JSONObject();
 
 		try {
-			post_dict.put("site", "snagfilms");
-			post_dict.put("userId", "ANDROID-VIVEK");
-			post_dict.put("device", "android");
+			post_dict.put(getString(R.string.app_cms_site_name), getIntent().getStringExtra(getString(R.string.app_cms_site_name)));
+			post_dict.put(getString(R.string.app_cms_user_id), getIntent().getStringExtra(getString(R.string.app_cms_user_id)));
+			post_dict.put(getString(R.string.app_cms_device), getString(R.string.app_cms_subscription_key));
 			JsonDATA = String.valueOf(post_dict);
 		} catch (JSONException e) {
 			e.printStackTrace();

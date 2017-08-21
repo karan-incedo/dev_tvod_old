@@ -280,6 +280,7 @@
     <string name="app_cms_redirect_url">redirect_url</string>
     <string name="app_cms_cancel_url">cancel_url</string>
     <string name="app_cms_rsa_key_url">rsa_key_url</string>
+    <string name="app_cms_plan_id">plan_id</string>
     <string name="app_cms_rsa_trans_url">https://test.ccavenue.com/transaction/initTrans</string>
     <!--<string name="app_cms_rsa_trans_url">https://secure.ccavenue.com/transaction/initTrans</string>-->
 
