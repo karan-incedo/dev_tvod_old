@@ -24,7 +24,6 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.ViewCreator;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -435,7 +434,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     }
                 }
             } else if (contentDatum.getPlanDetails() != null &&
-                    contentDatum.getPlanDetails().size() > 0 &&
+                    !contentDatum.getPlanDetails().isEmpty() &&
                     contentDatum.getPlanDetails().get(0) != null &&
                     existingGooglePlaySubscriptionPrice <
                             contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount()) {

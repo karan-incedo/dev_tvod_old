@@ -48,14 +48,12 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
         AppCMSDownloadQualityFragment fragment = new AppCMSDownloadQualityFragment();
         Bundle args = new Bundle();
         args.putBinder(context.getString(R.string.app_cms_download_setting_binder_key), binder);
-        //     args.putSerializable(context.getString(R.string.app_cms_download_setting_listener_key), onDismiss);
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onAttach(Context context) {
-        // if (context instanceof AutoplayFragment.OnPageCreation) {
         try {
             super.onAttach(context);
 
@@ -122,7 +120,7 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
                 }
                 getActivity().finish();
             });
-            
+
             cancelButton.setOnClickListener(v -> getActivity().finish());
             pageView.setBackgroundColor(Color.TRANSPARENT);
         }
@@ -153,7 +151,6 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
         } else {
 
             getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//            pageView.setBackgroundColor(getActivity().getResources().getColor(R.color.semiTransparentColor, null));
             pageView.notifyAdaptersOfUpdate();
         }
 
@@ -170,11 +167,6 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
                 appCMSPresenter.onOrientationChange(false);
             }
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     @Override
@@ -209,11 +201,6 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
                         binder.getJsonValueKeyMap(),
                         appCMSPresenter))
                 .build();
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
     }
 
     @Override
