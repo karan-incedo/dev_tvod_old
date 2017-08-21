@@ -43,11 +43,13 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
@@ -1697,8 +1699,17 @@ public class AppCMSPresenter {
     }
 
     private void displayWatchlistToast(String toastMessage) {
-        Toast toast = Toast.makeText(currentActivity, toastMessage, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        LayoutInflater inflater = currentActivity.getLayoutInflater();
+        View layout = inflater.inflate(R.layout.custom_toast_layout,
+                (ViewGroup) currentActivity.findViewById(R.id.custom_toast_layout_root));
+
+        TextView watchlistToastMessage = (TextView) layout.findViewById(R.id.custom_toast_message);
+        watchlistToastMessage.setText(toastMessage);
+
+        Toast toast = new Toast(currentActivity.getApplicationContext());
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.setGravity(Gravity.FILL | Gravity.CENTER_VERTICAL, 0, 0);
         toast.show();
     }
 
@@ -2409,11 +2420,7 @@ public class AppCMSPresenter {
         } else {
             storagePath = new File(getStorageDirectories(currentActivity)[0]);
         }
-        if (getMegabytesAvailable(storagePath) > getRemainingDownloadSize()) {
-            return true;
-
-        }
-        return false;
+        return getMegabytesAvailable(storagePath) > getRemainingDownloadSize();
     }
 
     public void navigateToDownloadPage(String pageId, String pageTitle, String url,
@@ -6024,9 +6031,9 @@ public class AppCMSPresenter {
     }
 
     private String getPageId(AppCMSPageUI appCMSPageUI) {
-        for (String key : navigationPages.keySet()) {
-            if (navigationPages.get(key) == appCMSPageUI) {
-                return key;
+        for (Map.Entry<String, AppCMSPageUI> entry : navigationPages.entrySet()) {
+            if (entry.getValue() == appCMSPageUI) {
+                return entry.getKey();
             }
         }
         return null;

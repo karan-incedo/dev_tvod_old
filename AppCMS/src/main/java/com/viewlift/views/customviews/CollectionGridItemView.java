@@ -23,7 +23,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.signature.StringSignature;
@@ -352,7 +351,7 @@ public class CollectionGridItemView extends BaseView {
                         Locale locale = null;
 
                         if (data.getPlanDetails() != null &&
-                                data.getPlanDetails().size() > 0 &&
+                                !data.getPlanDetails().isEmpty() &&
                                 data.getPlanDetails().get(planIndex) != null &&
                                 data.getPlanDetails().get(planIndex).getCountryCode() != null) {
                             try {

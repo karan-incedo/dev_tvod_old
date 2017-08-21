@@ -135,7 +135,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         args.putLong(context.getString(R.string.watched_time_key), watchedTime);
         args.putString(context.getString(R.string.played_movie_image_url), imageUrl);
         args.putString(context.getString(R.string.video_player_closed_caption_key), closedCaptionUrl);
-        args.putBoolean("isTrailer", isTrailer);
+        args.putBoolean(context.getString(R.string.video_player_is_trailer_key), isTrailer);
         appCMSPlayVideoFragment.setArguments(args);
         return appCMSPlayVideoFragment;
     }
