@@ -3897,7 +3897,7 @@ public class AppCMSPresenter {
     public boolean getAutoplayEnabledUserPref(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(AUTO_PLAY_ENABLED_PREF_NAME, 0);
-            return sharedPrefs.getBoolean(AUTO_PLAY_ENABLED_PREF_NAME, true);
+            return sharedPrefs.getBoolean(getLoggedInUser(currentActivity), true);
         }
         return false;
     }
