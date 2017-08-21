@@ -1940,6 +1940,7 @@ public class AppCMSPresenter {
                         } else if (urlRenditionMap.get("1080p") != null) {
                             downloadURL = urlRenditionMap.get("1080p");
                         }
+
                     } else if (downloadURL == null && downloadQualityRendition.contains("720")) {
                         if (urlRenditionMap.get("360p") != null) {
                             downloadURL = urlRenditionMap.get("360p");
@@ -1948,7 +1949,6 @@ public class AppCMSPresenter {
                         }
 
                     } else if (downloadURL == null && downloadQualityRendition.contains("1080")) {
-
                         if (urlRenditionMap.get("720p") != null) {
                             downloadURL = urlRenditionMap.get("720p");
                         } else if (urlRenditionMap.get("360p") != null) {
@@ -3593,21 +3593,16 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public String getUserDownloadQualityPref(Context context) {
-        if (context != null) {
-            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, 0);
-            return sharedPrefs.getString(getLoggedInUser(context), null);
-        }
-        return null;
+    public String getUserDownloadQualityPref(@NonNull Context context) {
+        SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, 0);
+        return sharedPrefs.getString(getLoggedInUser(currentActivity), "720p");
     }
 
-    public boolean setUserDownloadQualityPref(Context context, String downloadQuality) {
+    public void setUserDownloadQualityPref(Context context, String downloadQuality) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, 0);
-            return sharedPrefs.edit().putString(getLoggedInUser(context), downloadQuality).commit()
-                    && setLoggedInTime(context);
+            sharedPrefs.edit().putString(getLoggedInUser(currentActivity), downloadQuality).apply();
         }
-        return false;
     }
 
     public boolean setAnonymousUserToken(Context context, String anonymousAuthToken) {
