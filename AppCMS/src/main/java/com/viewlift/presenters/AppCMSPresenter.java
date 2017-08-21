@@ -1544,22 +1544,21 @@ public class AppCMSPresenter {
     }
 
     private void initiateCCAvenuePurchase () {
-        Log.v("authtoken",getAuthToken(currentActivity)) ;
-        //        skuToPurchase ;
-        //        planToPurchase ;
-        //        planToPurchaseName ;
-        //        currencyOfPlanToPurchase;
-        //        planToPurchasePrice ;
-
-        Intent intent = new Intent(currentActivity,WebViewActivity.class);
-        intent.putExtra(AvenuesParams.CURRENCY, currencyCode);
-        intent.putExtra(AvenuesParams.AMOUNT, planToPurchasePrice);
-        intent.putExtra(currentActivity.getString(R.string.app_cms_site_name),appCMSMain.getInternalName()) ;
-        intent.putExtra(currentActivity.getString(R.string.app_cms_user_id),getLoggedInUser(currentActivity)) ;
-        intent.putExtra(currentActivity.getString(R.string.app_cms_plan_id),planToPurchase) ;
-        //intent.putExtra(AvenuesParams.AMOUNT, "500");
-        intent.putExtra("plan_to_purchase_name", planToPurchaseName);
-        currentActivity.startActivity(intent);
+        //Log.v("authtoken",getAuthToken(currentActivity)) ;
+        try {
+            String strAmount = Float.toString(planToPurchasePrice);
+            Intent intent = new Intent(currentActivity,WebViewActivity.class);
+            intent.putExtra(AvenuesParams.CURRENCY, currencyCode);
+            //intent.putExtra(AvenuesParams.AMOUNT, "500");
+            intent.putExtra(AvenuesParams.AMOUNT, strAmount);
+            intent.putExtra(currentActivity.getString(R.string.app_cms_site_name),appCMSMain.getInternalName()) ;
+            intent.putExtra(currentActivity.getString(R.string.app_cms_user_id),getLoggedInUser(currentActivity)) ;
+            intent.putExtra(currentActivity.getString(R.string.app_cms_plan_id),planToPurchase) ;
+            intent.putExtra("plan_to_purchase_name", planToPurchaseName);
+            currentActivity.startActivity(intent);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void initiateItemPurchase() {
