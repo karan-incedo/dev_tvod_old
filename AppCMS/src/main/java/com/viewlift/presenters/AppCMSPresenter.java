@@ -4525,6 +4525,7 @@ public class AppCMSPresenter {
                             Observable.just(false).subscribe(oncConfirmationAction);
                         }
                     });
+            builder.setCancelable(false);
             AlertDialog dialog = builder.create();
             if (dialog.getWindow() != null) {
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
