@@ -4479,6 +4479,8 @@ public class AppCMSPresenter {
                         });
             }
 
+            builder.setCancelable(false);
+
             AlertDialog dialog = builder.create();
             if (dialog.getWindow() != null) {
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
@@ -4647,6 +4649,7 @@ public class AppCMSPresenter {
                             }
                         });
             }
+            builder.setCancelable(false);
 
             AlertDialog dialog = builder.create();
             if (dialog.getWindow() != null) {
