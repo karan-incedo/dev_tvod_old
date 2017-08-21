@@ -33,4 +33,6 @@
         <item quantity="other" >MINS</item>
     </plurals>
 
+    <string name="item_position">nav_item_position</string>
+
 </resources>

@@ -159,7 +159,7 @@ public class AppCmsSearchFragment extends Fragment {
                 if (lastSearchedString.equals(editable.toString())) {
                     return;
                 }
-                if (editable.length() >= 3){
+                if (editable.toString().trim().length() >= 3){
                     if(appCMSPresenter.isNetworkConnected()){
                         handler.removeCallbacks(searcRunnable);
                         handler.postDelayed(searcRunnable,3000);
