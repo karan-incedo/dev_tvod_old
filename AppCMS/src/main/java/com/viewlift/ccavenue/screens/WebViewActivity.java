@@ -68,10 +68,10 @@ public class WebViewActivity extends Activity {
 		protected void onPreExecute() {
 			super.onPreExecute();
 			// Showing progress dialog
-//			dialog = new ProgressDialog(WebViewActivity.this);
-//			dialog.setMessage("Please wait...");
-//			dialog.setCancelable(false);
-//			dialog.show();
+			dialog = new ProgressDialog(WebViewActivity.this);
+			dialog.setMessage("Please wait...");
+			dialog.setCancelable(false);
+			dialog.show();
 		}
 
 		@Override
@@ -83,9 +83,6 @@ public class WebViewActivity extends Activity {
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			params.add(new BasicNameValuePair(AvenuesParams.ACCESS_CODE, accessCode));
 			params.add(new BasicNameValuePair(AvenuesParams.ORDER_ID, orderID));
-			//String rsaKeyURL = mainIntent.getStringExtra(AvenuesParams.RSA_KEY_URL) ;
-			//rsaKeyURL = rsaKeyURL + "?access_code=" + accessCode + "&merchant_id=138366&order_id=" + orderID ;
-			//String vResponse = sh.makeServiceCall(rsaKeyURL, ServiceHandler.POST, params);
 			String vResponse = getRSAKey() ;
 			if(!ServiceUtility.chkNull(vResponse).equals("")
 					&& ServiceUtility.chkNull(vResponse).toString().indexOf("ERROR")==-1){
@@ -102,8 +99,8 @@ public class WebViewActivity extends Activity {
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
 			// Dismiss the progress dialog
-//			if (dialog.isShowing())
-//				dialog.dismiss();
+			if (dialog.isShowing())
+				dialog.dismiss();
 			
 			@SuppressWarnings("unused")
 			class MyJavaScriptInterface

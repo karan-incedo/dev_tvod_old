@@ -341,6 +341,8 @@ public class AppCMSPresenter {
     private String planToPurchaseName;
     private String apikey;
     private float planToPurchasePrice;
+    private String currencyCode ;
+    private String countryCode ;
     private String planReceipt;
     private GoogleApiClient googleApiClient;
     private long downloaded = 0L;
@@ -1391,7 +1393,8 @@ public class AppCMSPresenter {
                                               String planId,
                                               String currency,
                                               String planName,
-                                              float planPrice) {
+                                              float planPrice,
+                                              String recurringPaymentCurrencyCode, String countryCode) {
         if (currentActivity != null) {
             launchType = LaunchType.SUBSCRIBE;
             skuToPurchase = sku;
@@ -1399,10 +1402,11 @@ public class AppCMSPresenter {
             planToPurchaseName = planName;
             currencyOfPlanToPurchase = currency;
             planToPurchasePrice = planPrice;
+            currencyCode = recurringPaymentCurrencyCode ;
+            this.countryCode = countryCode ;
 
             if (isUserLoggedIn(currentActivity)) {
-                String country = "india" ;
-                if (country.equalsIgnoreCase("india")) {
+                if (countryCode.equalsIgnoreCase("IN")) {
                     initiateCCAvenuePurchase () ;
                 } else {
                     initiateItemPurchase();
@@ -1414,14 +1418,18 @@ public class AppCMSPresenter {
     }
 
     private void initiateCCAvenuePurchase () {
-         Log.v("Ini","Inititate ccAvanue") ;
-            Intent intent = new Intent(currentActivity,WebViewActivity.class);
-//            intent.putExtra(AvenuesParams.ACCESS_CODE, ServiceUtility.chkNull(accessCode.getText()).toString().trim());
-//            intent.putExtra(AvenuesParams.MERCHANT_ID, ServiceUtility.chkNull(merchantId.getText()).toString().trim());
-//            intent.putExtra(AvenuesParams.ORDER_ID, ServiceUtility.chkNull(orderId.getText()).toString().trim());
-              intent.putExtra(AvenuesParams.CURRENCY, "INR");
-             intent.putExtra(AvenuesParams.AMOUNT, "500");
-            currentActivity.startActivity(intent);
+         Log.v("authtoken",getAuthToken(currentActivity)) ;
+//        skuToPurchase ;
+//        planToPurchase ;
+//        planToPurchaseName ;
+//        currencyOfPlanToPurchase;
+//        planToPurchasePrice ;
+
+        Intent intent = new Intent(currentActivity,WebViewActivity.class);
+              intent.putExtra(AvenuesParams.CURRENCY, currencyCode);
+              intent.putExtra(AvenuesParams.AMOUNT, planToPurchasePrice);
+              intent.putExtra("plan_to_purchase_name", planToPurchaseName);
+              currentActivity.startActivity(intent);
     }
 
     public void initiateItemPurchase() {

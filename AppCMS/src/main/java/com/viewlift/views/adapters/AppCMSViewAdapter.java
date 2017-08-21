@@ -239,7 +239,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         data.getId(),
                                         data.getPlanDetails().get(0).getCountryCode(),
                                         data.getName(),
-                                        (float) data.getPlanDetails().get(0).getRecurringPaymentAmount());
+                                        (float) data.getPlanDetails().get(0).getRecurringPaymentAmount(),
+                                        data.getPlanDetails().get(0).getRecurringPaymentCurrencyCode(),
+                                        data.getPlanDetails().get(0).getCountryCode());
                             } else {
                                 collectionGridItemView.performClick();
                             }
