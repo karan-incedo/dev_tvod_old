@@ -1555,7 +1555,8 @@ public class AppCMSPresenter {
             intent.putExtra(currentActivity.getString(R.string.app_cms_user_id),getLoggedInUser(currentActivity)) ;
             intent.putExtra(currentActivity.getString(R.string.app_cms_plan_id),planToPurchase) ;
             intent.putExtra("plan_to_purchase_name", planToPurchaseName);
-            currentActivity.startActivity(intent);
+            Log.v("activitynames",currentActivity.getClass().getSimpleName()) ;
+            currentActivity.startActivityForResult(intent,1);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

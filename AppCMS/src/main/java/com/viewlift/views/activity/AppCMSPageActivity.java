@@ -452,6 +452,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             } else if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
                 appCMSPresenter.finalizeSignupAfterSubscription(data.getStringExtra("INAPP_PURCHASE_DATA"));
             }
+
+            //CCAvenue Callback Handling
+            if (requestCode == 1) {
+                //Handle Post CCAvenue Response
+                if (resultCode == Activity.RESULT_OK) {
+
+                }
+            }
+
         } else if (resultCode == RESULT_CANCELED) {
             if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
                 if (!TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionSku(this))) {
