@@ -70,6 +70,7 @@ public class AppCMSEditProfileFragment extends DialogFragment {
         Button editProfileConfirmChangeButton = (Button) view.findViewById(R.id.edit_profile_confirm_change_button);
         editProfileConfirmChangeButton.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+            builder.setCancelable(false);
             builder.setView(password)
                     .setTitle("Enter your password to continue")
                     .setPositiveButton("Proceed", (dialog, position) -> {
@@ -86,8 +87,7 @@ public class AppCMSEditProfileFragment extends DialogFragment {
                     })
                     .setNegativeButton("Cancel", (dialog, position) ->
                             appCMSPresenter.sendCloseOthersAction(null, true))
-                    .create()
-                    .show();
+                    .create().show();
         });
 
         editProfileConfirmChangeButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor, buttonColor));
