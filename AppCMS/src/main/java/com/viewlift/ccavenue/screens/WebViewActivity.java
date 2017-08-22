@@ -144,8 +144,12 @@ public class WebViewActivity extends Activity {
 	    	        	webview.loadUrl("javascript:window.HTMLOUT.processHTML('<head>'+document.getElementsByTagName('html')[0].innerHTML+'</head>');");
 						//webview.loadUrl("https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction");
 	    	        }
-	    	    }  
 
+	    	        if (url.equalsIgnoreCase(cancelRedirectURL)) {
+						webview.stopLoading();
+						finlizePaymentWithUpdatingBackend () ;
+					}
+	    	    }
 	    	    @Override
 	    	    public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
 	    	        Toast.makeText(getApplicationContext(), "Oh no! " + description, Toast.LENGTH_SHORT).show();
@@ -159,8 +163,8 @@ public class WebViewActivity extends Activity {
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.ORDER_ID,orderID));
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.REDIRECT_URL,cancelRedirectURL));
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.CANCEL_URL,cancelRedirectURL));
-			params.append(ServiceUtility.addToPostParams("merchant_param1",getIntent().getStringExtra(getString(R.string.app_cms_user_id))));
-			params.append(ServiceUtility.addToPostParams("merchant_param2",getIntent().getStringExtra(getString(R.string.app_cms_site_name))));
+			params.append(ServiceUtility.addToPostParams("merchant_param2",getIntent().getStringExtra(getString(R.string.app_cms_user_id))));
+			params.append(ServiceUtility.addToPostParams("merchant_param1",getIntent().getStringExtra(getString(R.string.app_cms_site_name))));
 			params.append(ServiceUtility.addToPostParams("merchant_param3",getIntent().getStringExtra(getString(R.string.app_cms_plan_id))));
 			try {
 				params.append(ServiceUtility.addToPostParams(AvenuesParams.ENC_VAL,URLEncoder.encode(encVal,"UTF-8")));
@@ -256,5 +260,13 @@ public class WebViewActivity extends Activity {
 			}
 		}
 		return rsaToken ;
+	}
+
+
+	private void finlizePaymentWithUpdatingBackend () {
+		Intent intent = new Intent();
+		intent.putExtra(getString(R.string.app_cms_ccavenue_payment_success),true) ;
+		setResult(RESULT_OK, intent);
+		finish();
 	}
 } 

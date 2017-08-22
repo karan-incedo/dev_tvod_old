@@ -457,7 +457,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (requestCode == 1) {
                 //Handle Post CCAvenue Response
                 if (resultCode == Activity.RESULT_OK) {
-
+                    boolean subscriptionSuccess = data.getBooleanExtra(getString(R.string.app_cms_ccavenue_payment_success),false) ;
+                    if (subscriptionSuccess) {
+                        //appCMSPresenter.finalizeSignupAfterSubscription(data.getStringExtra("INAPP_PURCHASE_DATA"));
+                    }
                 }
             }
 
