@@ -436,7 +436,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     }
                 }
             } else if (contentDatum.getPlanDetails() != null &&
-                    contentDatum.getPlanDetails().size() > 0 &&
+                    !contentDatum.getPlanDetails().isEmpty() &&
                     contentDatum.getPlanDetails().get(0) != null &&
                     existingGooglePlaySubscriptionPrice <
                             contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount()) {

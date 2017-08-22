@@ -43,11 +43,13 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
@@ -250,6 +252,8 @@ public class AppCMSPresenter {
     private static final String USER_CLOSED_CAPTION_PREF_KEY = "user_closed_caption_pref_key";
     private static final String FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME = "facebook_access_token_shared_pref_name";
     private static final String GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME = "google_access_token_shared_pref_name";
+    private static final String NETWORK_CONNECTED_SHARED_PREF_NAME = "network_connected_share_pref_name";
+    private static final String WIFI_CONNECTED_SHARED_PREF_NAME = "wifi_connected_shared_pref_name";
     private static final String ACTIVE_SUBSCRIPTION_SKU = "active_subscription_sku_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_ID = "active_subscription_id_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_CURRENCY = "active_subscription_currency_pref_key";
@@ -1725,8 +1729,17 @@ public class AppCMSPresenter {
     }
 
     private void displayWatchlistToast(String toastMessage) {
-        Toast toast = Toast.makeText(currentActivity, toastMessage, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        LayoutInflater inflater = currentActivity.getLayoutInflater();
+        View layout = inflater.inflate(R.layout.custom_toast_layout,
+                (ViewGroup) currentActivity.findViewById(R.id.custom_toast_layout_root));
+
+        TextView watchlistToastMessage = (TextView) layout.findViewById(R.id.custom_toast_message);
+        watchlistToastMessage.setText(toastMessage);
+
+        Toast toast = new Toast(currentActivity.getApplicationContext());
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.setGravity(Gravity.FILL | Gravity.CENTER_VERTICAL, 0, 0);
         toast.show();
     }
 
@@ -1957,6 +1970,7 @@ public class AppCMSPresenter {
                         } else if (urlRenditionMap.get("1080p") != null) {
                             downloadURL = urlRenditionMap.get("1080p");
                         }
+
                     } else if (downloadURL == null && downloadQualityRendition.contains("720")) {
                         if (urlRenditionMap.get("360p") != null) {
                             downloadURL = urlRenditionMap.get("360p");
@@ -1965,7 +1979,6 @@ public class AppCMSPresenter {
                         }
 
                     } else if (downloadURL == null && downloadQualityRendition.contains("1080")) {
-
                         if (urlRenditionMap.get("720p") != null) {
                             downloadURL = urlRenditionMap.get("720p");
                         } else if (urlRenditionMap.get("360p") != null) {
@@ -2437,11 +2450,7 @@ public class AppCMSPresenter {
         } else {
             storagePath = new File(getStorageDirectories(currentActivity)[0]);
         }
-        if (getMegabytesAvailable(storagePath) > getRemainingDownloadSize()) {
-            return true;
-
-        }
-        return false;
+        return getMegabytesAvailable(storagePath) > getRemainingDownloadSize();
     }
 
     public void navigateToDownloadPage(String pageId, String pageTitle, String url,
@@ -3614,21 +3623,16 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public String getUserDownloadQualityPref(Context context) {
-        if (context != null) {
-            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, 0);
-            return sharedPrefs.getString(getLoggedInUser(context), null);
-        }
-        return null;
+    public String getUserDownloadQualityPref(@NonNull Context context) {
+        SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, 0);
+        return sharedPrefs.getString(getLoggedInUser(currentActivity), "720p");
     }
 
-    public boolean setUserDownloadQualityPref(Context context, String downloadQuality) {
+    public void setUserDownloadQualityPref(Context context, String downloadQuality) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, 0);
-            return sharedPrefs.edit().putString(getLoggedInUser(context), downloadQuality).commit()
-                    && setLoggedInTime(context);
+            sharedPrefs.edit().putString(getLoggedInUser(currentActivity), downloadQuality).apply();
         }
-        return false;
     }
 
     public boolean setAnonymousUserToken(Context context, String anonymousAuthToken) {
@@ -3785,6 +3789,39 @@ public class AppCMSPresenter {
         return null;
     }
 
+    public boolean setNetworkConnected(Context context, boolean networkConnected) {
+        if (context != null) {
+            SharedPreferences sharedPrefs =
+                    context.getSharedPreferences(NETWORK_CONNECTED_SHARED_PREF_NAME, 0);
+            return sharedPrefs.edit().putBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, networkConnected).commit();
+        }
+        return false;
+    }
+
+    public boolean isNetworkConnected(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(NETWORK_CONNECTED_SHARED_PREF_NAME, 0);
+            return sharedPrefs.getBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, false);
+        }
+        return false;
+    }
+
+    public boolean setWifiConnected(Context context, boolean wifiConnected) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(WIFI_CONNECTED_SHARED_PREF_NAME, 0);
+            return sharedPrefs.edit().putBoolean(WIFI_CONNECTED_SHARED_PREF_NAME, wifiConnected).commit();
+        }
+        return false;
+    }
+
+    public boolean isWifiConnected(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(WIFI_CONNECTED_SHARED_PREF_NAME, 0);
+            return sharedPrefs.getBoolean(WIFI_CONNECTED_SHARED_PREF_NAME, false);
+        }
+        return false;
+    }
+
     public boolean setFacebookAccessToken(Context context,
                                           final String facebookAccessToken,
                                           final String facebookUserId,
@@ -3931,7 +3968,7 @@ public class AppCMSPresenter {
     public boolean getIsUserSubscribed(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(IS_USER_SUBSCRIBED, 0);
-            return sharedPrefs.getBoolean(IS_USER_SUBSCRIBED, false);
+            return sharedPrefs.getBoolean(getLoggedInUser(currentActivity), false);
         }
         return false;
     }
@@ -3939,7 +3976,7 @@ public class AppCMSPresenter {
     public boolean setIsUserSubscribed(Context context, boolean userSubscribed) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(IS_USER_SUBSCRIBED, 0);
-            return sharedPrefs.edit().putBoolean(IS_USER_SUBSCRIBED, userSubscribed).commit();
+            return sharedPrefs.edit().putBoolean(getLoggedInUser(currentActivity), userSubscribed).commit();
         }
         return false;
     }
@@ -5167,6 +5204,7 @@ public class AppCMSPresenter {
                                                     .get(0).getRecurringPaymentAmount()));
                                     setActiveSubscriptionProcessor(currentActivity,
                                             appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler());
+                                    setIsUserSubscribed(currentActivity, true);
                                 }
                                 if (onRefreshReadyAction != null) {
                                     onRefreshReadyAction.call();
@@ -6052,9 +6090,9 @@ public class AppCMSPresenter {
     }
 
     private String getPageId(AppCMSPageUI appCMSPageUI) {
-        for (String key : navigationPages.keySet()) {
-            if (navigationPages.get(key) == appCMSPageUI) {
-                return key;
+        for (Map.Entry<String, AppCMSPageUI> entry : navigationPages.entrySet()) {
+            if (entry.getValue() == appCMSPageUI) {
+                return entry.getKey();
             }
         }
         return null;
