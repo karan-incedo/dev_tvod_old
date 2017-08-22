@@ -63,7 +63,8 @@ public class AppCMSPageAPICall {
                         context.getString(R.string.app_cms_page_api_view_plans_url,
                                 baseUrl,
                                 endpoint,
-                                siteId);
+                                siteId,
+                                context.getString(R.string.app_cms_subscription_platform_key));
             } else {
                 urlWithContent =
                         context.getString(R.string.app_cms_page_api_url,
