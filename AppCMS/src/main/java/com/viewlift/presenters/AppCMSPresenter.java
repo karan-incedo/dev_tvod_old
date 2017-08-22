@@ -2144,73 +2144,6 @@ public class AppCMSPresenter {
         return downloadPercent;
     }
 
-    private static class DownloadQueueItem {
-        ContentDatum contentDatum;
-        Action1<UserVideoDownloadStatus> resultAction1;
-    }
-
-    private static class DownloadQueueThread extends Thread {
-        private final AppCMSPresenter appCMSPresenter;
-        private Queue<DownloadQueueItem> filmDownloadQueue;
-        private List<String> filmsInQueue;
-
-        private boolean running;
-        private boolean startNextDownload;
-
-        public DownloadQueueThread(AppCMSPresenter appCMSPresenter) {
-            this.appCMSPresenter = appCMSPresenter;
-            this.filmDownloadQueue = new ConcurrentLinkedQueue<>();
-            this.filmsInQueue = new ArrayList<>();
-            this.running = false;
-            this.startNextDownload = true;
-        }
-
-        public void addToQueue(DownloadQueueItem downloadQueueItem) {
-            if (!filmsInQueue.contains(downloadQueueItem.contentDatum.getId())) {
-                filmDownloadQueue.add(downloadQueueItem);
-                filmsInQueue.add(downloadQueueItem.contentDatum.getGist().getTitle());
-                if (filmsInQueue.size() > 0) {
-                    appCMSPresenter.showQueueItem(downloadQueueItem.contentDatum.getGist().getTitle());
-                    downloadQueueItem.resultAction1.call(null);
-                }
-            }
-        }
-
-        @Override
-        public void run() {
-            running = true;
-            while (running) {
-                if (filmDownloadQueue.size() > 0 && startNextDownload) {
-                    DownloadQueueItem downloadQueueItem = filmDownloadQueue.remove();
-                    if (filmsInQueue.contains(downloadQueueItem.contentDatum.getGist().getTitle())) {
-                        filmsInQueue.remove(downloadQueueItem.contentDatum.getGist().getTitle());
-                    }
-
-                    appCMSPresenter.startDownload(downloadQueueItem.contentDatum,
-                            downloadQueueItem.resultAction1);
-                    startNextDownload = false;
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        public boolean running() {
-            return running;
-        }
-
-        public void setRunning(boolean running) {
-            this.running = running;
-        }
-
-        public void setStartNextDownload() {
-            this.startNextDownload = true;
-        }
-    }
-
     private void showQueueItem(String title) {
         currentActivity.runOnUiThread(() -> {
             showToast(currentActivity.getString(R.string.app_cms_download_queue_toast_message, title),
@@ -2469,7 +2402,10 @@ public class AppCMSPresenter {
             appCMSDeleteHistoryCall.call(url, getAuthToken(currentActivity),
                     appCMSDeleteHistoryResult -> {
                         try {
-                            Observable.just(appCMSDeleteHistoryResult).subscribe(resultAction1);
+                            showDialog(DialogType.DELETE_ONE_HISTORY_ITEM,
+                                    currentActivity.getString(R.string.app_cms_delete_one_history_item_message),
+                                    true,
+                                    () -> Observable.just(appCMSDeleteHistoryResult).subscribe(resultAction1));
                         } catch (Exception e) {
                             Log.e(TAG, "deleteHistoryContent: " + e.toString());
                         }
@@ -2682,7 +2618,10 @@ public class AppCMSPresenter {
             appCMSDeleteHistoryCall.call(url, getAuthToken(currentActivity),
                     appCMSDeleteHistoryResult -> {
                         try {
-                            Observable.just(appCMSDeleteHistoryResult).subscribe(resultAction1);
+                            showDialog(DialogType.DELETE_ALL_HISTORY_ITEMS,
+                                    currentActivity.getString(R.string.app_cms_delete_all_history_items_message),
+                                    true,
+                                    () -> Observable.just(appCMSDeleteHistoryResult).subscribe(resultAction1));
                         } catch (Exception e) {
                             Log.e(TAG, "clearHistoryContent: " + e.toString());
                         }
@@ -4679,12 +4618,12 @@ public class AppCMSPresenter {
                            String optionalMessage,
                            boolean showCancelButton,
                            final Action0 onDismissAction) {
-        boolean isNetwork = false;
         if (currentActivity != null) {
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
             String title;
             String message;
+
             switch (dialogType) {
                 case SIGNIN:
                     title = currentActivity.getString(R.string.app_cms_signin_error_title);
@@ -4716,6 +4655,12 @@ public class AppCMSPresenter {
                     message = optionalMessage;
                     break;
 
+                case DELETE_ONE_HISTORY_ITEM:
+                case DELETE_ALL_HISTORY_ITEMS:
+                    title = currentActivity.getString(R.string.app_cms_delete_history_alert_title);
+                    message = optionalMessage;
+                    break;
+
                 case DOWNLOAD_INCOMPLETE:
                     title = currentActivity.getString(R.string.app_cms_download_incomplete_error_title);
                     message = currentActivity.getString(R.string.app_cms_download_incomplete_error_message);
@@ -4730,20 +4675,23 @@ public class AppCMSPresenter {
                     title = currentActivity.getString(R.string.app_cms_download_external_storage_write_permission_info_error_title);
                     message = optionalMessage;
                     break;
+
                 case SD_CARD_NOT_AVAILABLE:
                     title = currentActivity.getString(R.string.app_cms_sdCard_unavailable_error_title);
                     message = currentActivity.getString(R.string.app_cms_sdCard_unavailable_error_message);
                     break;
+
                 case DOWNLOAD_NOT_AVAILABLE:
                     title = currentActivity.getString(R.string.app_cms_download_unavailable_error_title);
                     message = optionalMessage;
                     break;
+
                 case DOWNLOAD_FAILED:
                     title = currentActivity.getString(R.string.app_cms_download_failed_error_title);
                     message = optionalMessage;
                     break;
+
                 default:
-                    isNetwork = true;
                     title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
                     if (optionalMessage != null) {
                         message = optionalMessage;
@@ -4754,6 +4702,7 @@ public class AppCMSPresenter {
                         title = currentActivity.getString(R.string.app_cms_data_error_title);
                         message = currentActivity.getString(R.string.app_cms_data_error_message);
                     }
+                    break;
             }
             builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
                     Integer.toHexString(textColor).substring(2),
@@ -6950,6 +6899,8 @@ public class AppCMSPresenter {
         RESET_PASSWORD,
         CANCEL_SUBSCRIPTION,
         SUBSCRIBE,
+        DELETE_ONE_HISTORY_ITEM,
+        DELETE_ALL_HISTORY_ITEMS,
         LOGIN_REQUIRED,
         SUBSCRIPTION_REQUIRED,
         LOGIN_AND_SUBSCRIPTION_REQUIRED,
@@ -6976,6 +6927,73 @@ public class AppCMSPresenter {
         RESET_PASSWORD,
         EDIT_PROFILE,
         NONE
+    }
+
+    private static class DownloadQueueItem {
+        ContentDatum contentDatum;
+        Action1<UserVideoDownloadStatus> resultAction1;
+    }
+
+    private static class DownloadQueueThread extends Thread {
+        private final AppCMSPresenter appCMSPresenter;
+        private Queue<DownloadQueueItem> filmDownloadQueue;
+        private List<String> filmsInQueue;
+
+        private boolean running;
+        private boolean startNextDownload;
+
+        public DownloadQueueThread(AppCMSPresenter appCMSPresenter) {
+            this.appCMSPresenter = appCMSPresenter;
+            this.filmDownloadQueue = new ConcurrentLinkedQueue<>();
+            this.filmsInQueue = new ArrayList<>();
+            this.running = false;
+            this.startNextDownload = true;
+        }
+
+        public void addToQueue(DownloadQueueItem downloadQueueItem) {
+            if (!filmsInQueue.contains(downloadQueueItem.contentDatum.getId())) {
+                filmDownloadQueue.add(downloadQueueItem);
+                filmsInQueue.add(downloadQueueItem.contentDatum.getGist().getTitle());
+                if (filmsInQueue.size() > 0) {
+                    appCMSPresenter.showQueueItem(downloadQueueItem.contentDatum.getGist().getTitle());
+                    downloadQueueItem.resultAction1.call(null);
+                }
+            }
+        }
+
+        @Override
+        public void run() {
+            running = true;
+            while (running) {
+                if (filmDownloadQueue.size() > 0 && startNextDownload) {
+                    DownloadQueueItem downloadQueueItem = filmDownloadQueue.remove();
+                    if (filmsInQueue.contains(downloadQueueItem.contentDatum.getGist().getTitle())) {
+                        filmsInQueue.remove(downloadQueueItem.contentDatum.getGist().getTitle());
+                    }
+
+                    appCMSPresenter.startDownload(downloadQueueItem.contentDatum,
+                            downloadQueueItem.resultAction1);
+                    startNextDownload = false;
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        public boolean running() {
+            return running;
+        }
+
+        public void setRunning(boolean running) {
+            this.running = running;
+        }
+
+        public void setStartNextDownload() {
+            this.startNextDownload = true;
+        }
     }
 
     private static class BeaconRunnable implements Runnable {
