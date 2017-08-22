@@ -642,32 +642,30 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     private void delete(final ContentDatum contentDatum) {
-        if (isHistory) {
+        if ((isHistory) && (contentDatum.getGist() != null)) {
             Log.d(TAG, "Deleting history item: " + contentDatum.getGist().getTitle());
-            if (contentDatum.getGist() != null) {
-                appCMSPresenter.editHistory(contentDatum.getGist().getId(),
-                        appCMSDeleteHistoryResult -> {
-                            adapterData.remove(contentDatum);
-                            notifyDataSetChanged();
-                        }, false);
-            }
-        } else if (isDownload) {
-            if (contentDatum.getGist() != null) {
-                appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(), userVideoDownloadStatus -> {
-                    adapterData.remove(contentDatum);
-                    notifyDataSetChanged();
-                    resetData(mRecyclerView);
-                });
-            }
-        } else {
+            appCMSPresenter.editHistory(contentDatum.getGist().getId(),
+                    appCMSDeleteHistoryResult -> {
+                        adapterData.remove(contentDatum);
+                        notifyDataSetChanged();
+                    }, false);
+        }
+
+        if ((isDownload) && (contentDatum.getGist() != null)) {
+            appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(), userVideoDownloadStatus -> {
+                adapterData.remove(contentDatum);
+                notifyDataSetChanged();
+                resetData(mRecyclerView);
+            });
+        }
+
+        if ((isWatchlist) && (contentDatum.getGist() != null)) {
             Log.d(TAG, "Deleting watchlist item: " + contentDatum.getGist().getTitle());
-            if (contentDatum.getGist() != null) {
-                appCMSPresenter.editWatchlist(contentDatum.getGist().getId(),
-                        addToWatchlistResult -> {
-                            adapterData.remove(contentDatum);
-                            notifyDataSetChanged();
-                        }, false);
-            }
+            appCMSPresenter.editWatchlist(contentDatum.getGist().getId(),
+                    addToWatchlistResult -> {
+                        adapterData.remove(contentDatum);
+                        notifyDataSetChanged();
+                    }, false);
         }
     }
 
