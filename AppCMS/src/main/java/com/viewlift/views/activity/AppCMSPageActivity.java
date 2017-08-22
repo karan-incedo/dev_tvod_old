@@ -10,7 +10,10 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -40,7 +43,6 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.cast.framework.media.widget.MiniControllerFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -77,8 +79,6 @@ import java.util.Stack;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.functions.Action1;
-
-import static com.google.android.gms.common.GoogleApiAvailability.GOOGLE_PLAY_SERVICES_PACKAGE;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -127,6 +127,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private Map<String, AppCMSBinder> appCMSBinderMap;
     private BroadcastReceiver presenterActionReceiver;
     private BroadcastReceiver presenterCloseActionReceiver;
+    private BroadcastReceiver networkConnectedReceiver;
+    private BroadcastReceiver wifiConnectedReceiver;
     private boolean resumeInternalEvents;
     private boolean isActive;
     private boolean shouldSendCloseOthersAction;
@@ -138,6 +140,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private ServiceConnection inAppBillingServiceConn;
     private FirebaseAnalytics mFireBaseAnalytics;
     private boolean handlingClose;
+
+    private ConnectivityManager connectivityManager;
+    private WifiManager wifiManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -234,6 +239,26 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         };
 
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        networkConnectedReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+                boolean isConnected = activeNetwork != null &&
+                        activeNetwork.isConnectedOrConnecting();
+                appCMSPresenter.setNetworkConnected(AppCMSPageActivity.this,
+                        isConnected);
+            }
+        };
+
+        wifiConnectedReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                appCMSPresenter.setWifiConnected(AppCMSPageActivity.this,
+                        wifiManager.isWifiEnabled());
+            }
+        };
+
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION));
         registerReceiver(presenterActionReceiver,
@@ -248,6 +273,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION));
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION));
+        registerReceiver(networkConnectedReceiver,
+                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        registerReceiver(wifiConnectedReceiver,
+                new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION));
 
         resumeInternalEvents = false;
 
