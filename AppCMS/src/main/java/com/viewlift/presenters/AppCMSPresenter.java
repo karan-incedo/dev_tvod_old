@@ -3132,7 +3132,7 @@ public class AppCMSPresenter {
                                 if (skuDetailsList != null && !skuDetailsList.isEmpty()) {
                                     SkuDetails skuDetails = gson.fromJson(skuDetailsList.get(0),
                                             SkuDetails.class);
-                                    setExistingGooglePlaySubscriptionDescription(currentActivity, skuDetails.getDescription());
+                                    setExistingGooglePlaySubscriptionDescription(currentActivity, skuDetails.getTitle());
 
                                     setExistingGooglePlaySubscriptionPrice(currentActivity, skuDetails.getPrice());
 
