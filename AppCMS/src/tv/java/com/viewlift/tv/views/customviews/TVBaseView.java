@@ -205,7 +205,7 @@ public abstract class TVBaseView extends FrameLayout {
                 case PAGE_ADD_TO_WATCHLIST_KEY:
                 case PAGE_VIDEO_WATCH_TRAILER_KEY:
                     //viewWidth = FrameLayout.LayoutParams.WRAP_CONTENT;
-                    int padding = childComponent.getPadding();
+                    int padding = Utils.getViewXAxisAsPerScreen(getContext(),childComponent.getPadding());
                     view.setPadding(padding,padding,padding,padding);
                     break;
                 case PAGE_VIDEO_TITLE_KEY:
