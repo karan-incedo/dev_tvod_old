@@ -1894,125 +1894,12 @@ public class AppCMSPresenter {
             Log.w(TAG, currentActivity.getString(R.string.app_cms_download_failed_error_message));
             return;
         } else {
-
-            long enqueueId;
-
-            if (contentDatum.getStreamingInfo() == null) { // This will handle the case if we get video streaming info null at Video detail page.
-
-                String url = getStreamingInfoURL(contentDatum.getGist().getId());
-
-                GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
-
-                new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
-                    if (appCMSStreamingInfo != null) {
-                        contentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
-                    }
-                }).execute(param);
-
-                showDialog(DialogType.STREAMING_INFO_MISSING, null, false, null);
-                return;
-            }
-
-            long ccEnqueueId = 0L;
-            if (contentDatum.getContentDetails() != null &&
-                    contentDatum.getContentDetails().getClosedCaptions() != null &&
-                    !contentDatum.getContentDetails().getClosedCaptions().isEmpty() &&
-                    contentDatum.getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
-                ccEnqueueId = downloadVideoSubtitles(contentDatum.getContentDetails()
-                        .getClosedCaptions().get(0).getUrl(), contentDatum.getGist().getId());
-            }
-
-            cancelDownloadIconTimerTask();
-
-            try {
-                String downloadURL;
-
-
-                int bitrate = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
-
-                String downloadQualityRendition = getUserDownloadQualityPref(currentActivity);
-                Map<String, String> urlRenditionMap = new HashMap<>();
-                for (Mpeg mpeg : contentDatum.getStreamingInfo().getVideoAssets().getMpeg()) {
-                    urlRenditionMap.put(mpeg.getRenditionValue().replace("_", "").trim(),
-                            mpeg.getUrl());
-                }
-                downloadURL = urlRenditionMap.get(downloadQualityRendition);
-
-                if (downloadQualityRendition != null) {
-                    if (downloadURL == null && downloadQualityRendition.contains("360")) {
-                        if (urlRenditionMap.get("720p") != null) {
-                            downloadURL = urlRenditionMap.get("720p");
-                        } else if (urlRenditionMap.get("1080p") != null) {
-                            downloadURL = urlRenditionMap.get("1080p");
-                        }
-
-                    } else if (downloadURL == null && downloadQualityRendition.contains("720")) {
-                        if (urlRenditionMap.get("360p") != null) {
-                            downloadURL = urlRenditionMap.get("360p");
-                        } else if (urlRenditionMap.get("1080p") != null) {
-                            downloadURL = urlRenditionMap.get("1080p");
-                        }
-
-                    } else if (downloadURL == null && downloadQualityRendition.contains("1080")) {
-                        if (urlRenditionMap.get("720p") != null) {
-                            downloadURL = urlRenditionMap.get("720p");
-                        } else if (urlRenditionMap.get("360p") != null) {
-                            downloadURL = urlRenditionMap.get("360p");
-                        }
-                    } else if (downloadURL == null) {
-                        //noinspection SuspiciousMethodCalls
-                        downloadURL = urlRenditionMap.get(urlRenditionMap.keySet().toArray()[0]);
-                    }
-                } else {
-                    downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
-                }
-
-                downloadURL = downloadURL.replace("https:/", "http:/");
-
-                DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
-                        .setTitle(contentDatum.getGist().getTitle())
-                        .setDescription(contentDatum.getGist().getDescription())
-                        .setAllowedOverRoaming(false)
-                        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                        .setVisibleInDownloadsUi(false)
-                        .setShowRunningNotification(true);
-
-                if (isPreferedStorageLocationSDCard(currentActivity)) {
-                    downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, Environment.DIRECTORY_DOWNLOADS),
-                            contentDatum.getGist().getId() + MEDIA_SURFIX_MP4)));
-                } else {
-                    downloadRequest.setDestinationInExternalFilesDir(currentActivity, Environment.DIRECTORY_DOWNLOADS,
-                            contentDatum.getGist().getId() + MEDIA_SURFIX_MP4);
-                }
-
-                enqueueId = downloadManager.enqueue(downloadRequest);
-
-                long thumbEnqueueId = downloadVideoImage(contentDatum.getGist().getVideoImageUrl(),
-                        contentDatum.getGist().getId());
-                long posterEnqueueId = downloadPosterImage(contentDatum.getGist().getPosterImageUrl(),
-                        contentDatum.getGist().getId());
-            /*
-             * Inserting data in realm data object
-             */
-
-                createLocalEntry(
-                        enqueueId,
-                        thumbEnqueueId,
-                        posterEnqueueId,
-                        ccEnqueueId,
-                        contentDatum,
-                        downloadURL);
-
-                showToast(
-                        currentActivity.getString(R.string.app_cms_download_started_mesage,
-                                contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
-
-            } catch (Exception e) {
-                Log.e(TAG, e.getMessage());
-                showDialog(DialogType.DOWNLOAD_INCOMPLETE, e.getMessage(), false, null);
-            } finally {
-                appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), this,
-                        resultAction1, getLoggedInUser(currentActivity));
+            DownloadQueueItem downloadQueueItem = new DownloadQueueItem();
+            downloadQueueItem.contentDatum = contentDatum;
+            downloadQueueItem.resultAction1 = resultAction1;
+            downloadQueueThread.addToQueue(downloadQueueItem);
+            if (!downloadQueueThread.running()) {
+                downloadQueueThread.start();
             }
         }
     }
@@ -2258,15 +2145,14 @@ public class AppCMSPresenter {
     }
 
     private static class DownloadQueueItem {
-        String filmId;
-        String userId;
-        Action1<UserVideoDownloadStatus> responseAction;
-        ImageView imageView;
+        ContentDatum contentDatum;
+        Action1<UserVideoDownloadStatus> resultAction1;
     }
 
     private static class DownloadQueueThread extends Thread {
         private final AppCMSPresenter appCMSPresenter;
         private Queue<DownloadQueueItem> filmDownloadQueue;
+        private List<String> filmsInQueue;
 
         private boolean running;
         private boolean startNextDownload;
@@ -2274,12 +2160,20 @@ public class AppCMSPresenter {
         public DownloadQueueThread(AppCMSPresenter appCMSPresenter) {
             this.appCMSPresenter = appCMSPresenter;
             this.filmDownloadQueue = new ConcurrentLinkedQueue<>();
+            this.filmsInQueue = new ArrayList<>();
             this.running = false;
             this.startNextDownload = true;
         }
 
         public void addToQueue(DownloadQueueItem downloadQueueItem) {
-            filmDownloadQueue.add(downloadQueueItem);
+            if (!filmsInQueue.contains(downloadQueueItem.contentDatum.getId())) {
+                filmDownloadQueue.add(downloadQueueItem);
+                filmsInQueue.add(downloadQueueItem.contentDatum.getGist().getTitle());
+                if (filmsInQueue.size() > 0) {
+                    appCMSPresenter.showQueueItem(downloadQueueItem.contentDatum.getGist().getTitle());
+                    downloadQueueItem.resultAction1.call(null);
+                }
+            }
         }
 
         @Override
@@ -2288,11 +2182,12 @@ public class AppCMSPresenter {
             while (running) {
                 if (filmDownloadQueue.size() > 0 && startNextDownload) {
                     DownloadQueueItem downloadQueueItem = filmDownloadQueue.remove();
-                    appCMSPresenter.startDownload(downloadQueueItem.filmId,
-                            downloadQueueItem.imageView,
-                            appCMSPresenter,
-                            downloadQueueItem.responseAction,
-                            downloadQueueItem.userId);
+                    if (filmsInQueue.contains(downloadQueueItem.contentDatum.getGist().getTitle())) {
+                        filmsInQueue.remove(downloadQueueItem.contentDatum.getGist().getTitle());
+                    }
+
+                    appCMSPresenter.startDownload(downloadQueueItem.contentDatum,
+                            downloadQueueItem.resultAction1);
                     startNextDownload = false;
                 }
                 try {
@@ -2316,6 +2211,13 @@ public class AppCMSPresenter {
         }
     }
 
+    private void showQueueItem(String title) {
+        currentActivity.runOnUiThread(() -> {
+            showToast(currentActivity.getString(R.string.app_cms_download_queue_toast_message, title),
+                    Toast.LENGTH_LONG);
+        });
+    }
+
     public void startNextDownload() {
         if (downloadQueueThread != null) {
             if (downloadQueueThread.running()) {
@@ -2325,11 +2227,139 @@ public class AppCMSPresenter {
         }
     }
 
-    public void startDownload(String filmId, final ImageView imageView,
-                              AppCMSPresenter presenter,
-                              final Action1<UserVideoDownloadStatus> responseAction,
-                              String userId) {
+    public void startDownload(ContentDatum contentDatum,
+                              Action1<UserVideoDownloadStatus> resultAction1) {
+        currentActivity.runOnUiThread(() -> {
+            try {
+                long enqueueId;
+
+                if (contentDatum.getStreamingInfo() == null) { // This will handle the case if we get video streaming info null at Video detail page.
+
+                    String url = getStreamingInfoURL(contentDatum.getGist().getId());
+
+                    GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
+
+                    new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
+                        if (appCMSStreamingInfo != null) {
+                            contentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
+                        }
+                    }).execute(param);
+
+                    showDialog(DialogType.STREAMING_INFO_MISSING, null, false, null);
+                    return;
+                }
+
+                long ccEnqueueId = 0L;
+                if (contentDatum.getContentDetails() != null &&
+                        contentDatum.getContentDetails().getClosedCaptions() != null &&
+                        !contentDatum.getContentDetails().getClosedCaptions().isEmpty() &&
+                        contentDatum.getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
+                    ccEnqueueId = downloadVideoSubtitles(contentDatum.getContentDetails()
+                            .getClosedCaptions().get(0).getUrl(), contentDatum.getGist().getId());
+                }
+
+                cancelDownloadIconTimerTask();
+
+                String downloadURL;
+
+
+                int bitrate = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
+
+                String downloadQualityRendition = getUserDownloadQualityPref(currentActivity);
+                Map<String, String> urlRenditionMap = new HashMap<>();
+                for (Mpeg mpeg : contentDatum.getStreamingInfo().getVideoAssets().getMpeg()) {
+                    urlRenditionMap.put(mpeg.getRenditionValue().replace("_", "").trim(),
+                            mpeg.getUrl());
+                }
+                downloadURL = urlRenditionMap.get(downloadQualityRendition);
+
+                if (downloadQualityRendition != null) {
+                    if (downloadURL == null && downloadQualityRendition.contains("360")) {
+                        if (urlRenditionMap.get("720p") != null) {
+                            downloadURL = urlRenditionMap.get("720p");
+                        } else if (urlRenditionMap.get("1080p") != null) {
+                            downloadURL = urlRenditionMap.get("1080p");
+                        }
+
+                    } else if (downloadURL == null && downloadQualityRendition.contains("720")) {
+                        if (urlRenditionMap.get("360p") != null) {
+                            downloadURL = urlRenditionMap.get("360p");
+                        } else if (urlRenditionMap.get("1080p") != null) {
+                            downloadURL = urlRenditionMap.get("1080p");
+                        }
+
+                    } else if (downloadURL == null && downloadQualityRendition.contains("1080")) {
+                        if (urlRenditionMap.get("720p") != null) {
+                            downloadURL = urlRenditionMap.get("720p");
+                        } else if (urlRenditionMap.get("360p") != null) {
+                            downloadURL = urlRenditionMap.get("360p");
+                        }
+                    } else if (downloadURL == null) {
+                        //noinspection SuspiciousMethodCalls
+                        downloadURL = urlRenditionMap.get(urlRenditionMap.keySet().toArray()[0]);
+                    }
+                } else {
+                    downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+                }
+
+                downloadURL = downloadURL.replace("https:/", "http:/");
+
+                DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
+                        .setTitle(contentDatum.getGist().getTitle())
+                        .setDescription(contentDatum.getGist().getDescription())
+                        .setAllowedOverRoaming(false)
+                        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                        .setVisibleInDownloadsUi(false)
+                        .setShowRunningNotification(true);
+
+                if (isPreferedStorageLocationSDCard(currentActivity)) {
+                    downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, Environment.DIRECTORY_DOWNLOADS),
+                            contentDatum.getGist().getId() + MEDIA_SURFIX_MP4)));
+                } else {
+                    downloadRequest.setDestinationInExternalFilesDir(currentActivity, Environment.DIRECTORY_DOWNLOADS,
+                            contentDatum.getGist().getId() + MEDIA_SURFIX_MP4);
+                }
+
+                enqueueId = downloadManager.enqueue(downloadRequest);
+
+                long thumbEnqueueId = downloadVideoImage(contentDatum.getGist().getVideoImageUrl(),
+                        contentDatum.getGist().getId());
+                long posterEnqueueId = downloadPosterImage(contentDatum.getGist().getPosterImageUrl(),
+                        contentDatum.getGist().getId());
+                        /*
+                         * Inserting data in realm data object
+                         */
+
+                createLocalEntry(
+                        enqueueId,
+                        thumbEnqueueId,
+                        posterEnqueueId,
+                        ccEnqueueId,
+                        contentDatum,
+                        downloadURL);
+
+                showToast(
+                        currentActivity.getString(R.string.app_cms_download_started_mesage,
+                                contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
+
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage());
+                showDialog(DialogType.DOWNLOAD_INCOMPLETE, e.getMessage(), false, null);
+            } finally {
+                appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), this,
+                        resultAction1, getLoggedInUser(currentActivity));
+            }
+        });
+    }
+
+    public synchronized void updateDownloadingStatus(String filmId, final ImageView imageView,
+                                                     AppCMSPresenter presenter,
+                                                     final Action1<UserVideoDownloadStatus> responseAction,
+                                                     String userId, boolean isFromDownload) {
         long videoId = -1L;
+        if (!isFromDownload) {   //Fix of SVFA-1621
+            cancelDownloadIconTimerTask();
+        }
         try {
             videoId = realmController.getDownloadByIdBelongstoUser(filmId, userId).getVideoId_DM();
             DownloadManager.Query query = new DownloadManager.Query();
@@ -2372,27 +2402,6 @@ public class AppCMSPresenter {
             }, 500, 1000);
         } catch (Exception e) {
             Log.e(TAG, "Could not find video ID in downloads");
-        }
-    }
-
-    public synchronized void updateDownloadingStatus(String filmId, final ImageView imageView,
-                                                     AppCMSPresenter presenter,
-                                                     final Action1<UserVideoDownloadStatus> responseAction,
-                                                     String userId, boolean isFromDownload) {
-        if (!isFromDownload) {   //Fix of SVFA-1621
-            cancelDownloadIconTimerTask();
-        } else {
-            if (downloadQueueThread != null) {
-                if (!downloadQueueThread.running()) {
-                    downloadQueueThread.start();
-                }
-                DownloadQueueItem downloadQueueItem = new DownloadQueueItem();
-                downloadQueueItem.filmId = filmId;
-                downloadQueueItem.imageView = imageView;
-                downloadQueueItem.responseAction = responseAction;
-                downloadQueueItem.userId = userId;
-                downloadQueueThread.addToQueue(downloadQueueItem);
-            }
         }
     }
 
@@ -4510,8 +4519,8 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public void showToast(String messgae, int messageDuration) {
-        Toast.makeText(currentActivity, messgae, messageDuration).show();
+    public void showToast(String message, int messageDuration) {
+        Toast.makeText(currentActivity, message, messageDuration).show();
     }
 
     public void showEntitlementDialog(DialogType dialogType) {

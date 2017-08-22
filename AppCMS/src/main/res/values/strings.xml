@@ -298,5 +298,6 @@
     <string name="retryCallBinderKey">retryCallBinderKey</string>
     <string name="retryCallBundleKey">retryCallBundleKey</string>
     <string name="app_cms_default_download_quality">720p</string>
+    <string name="app_cms_download_queue_toast_message">%1$s has been queued for download.</string>
 
 </resources>
