@@ -34,5 +34,6 @@
     </plurals>
 
     <string name="item_position">nav_item_position</string>
+    <string name="no_data_available">No Data Available.</string>
 
 </resources>
