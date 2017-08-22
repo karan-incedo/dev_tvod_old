@@ -76,6 +76,9 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     private SimpleExoPlayerView playerView;
     private int resumeWindow;
     private long resumePosition;
+
+    private long bitrate = 0l;
+
     private long mCurrentPlayerPosition;
     private FinishListener mFinishListener;
 
@@ -187,6 +190,10 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         }
 
         return -1L;
+    }
+
+    public long getBitrate() {
+        return bitrate;
     }
 
     public void setCurrentPosition(long currentPosition) {
@@ -364,7 +371,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     public void onLoadStarted(DataSpec dataSpec, int dataType, int trackType, Format trackFormat,
                               int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                               long mediaEndTimeMs, long elapsedRealtimeMs) {
-
+        bitrate=(trackFormat.bitrate/1000);
     }
 
     @Override
@@ -372,7 +379,6 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
                                 int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                                 long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs,
                                 long bytesLoaded) {
-
     }
 
     @Override
