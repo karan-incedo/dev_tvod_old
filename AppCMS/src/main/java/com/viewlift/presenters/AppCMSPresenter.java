@@ -4974,6 +4974,25 @@ public class AppCMSPresenter {
                 false,
                 true,
                 true);
+
+
+//        try {
+//            appCMSSubscriptionPlanCall.call(
+//                    currentActivity.getString(R.string.app_cms_register_subscription_api_url,
+//                            appCMSMain.getApiBaseUrl(),
+//                            appCMSMain.getInternalName(),
+//                            currentActivity.getString(R.string.app_cms_subscription_platform_key)),
+//                    subscriptionCallType,
+//                    subscriptionRequest,
+//                    apikey,
+//                    getAuthToken(currentActivity),
+//                    result -> {
+//                        //
+//                    });
+//        } catch (Exception ex) {
+//            ex.
+//        }
+
     }
 
     public void finalizeSignupAfterSubscription(String receiptData) {

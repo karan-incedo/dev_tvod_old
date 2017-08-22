@@ -12,12 +12,14 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.ccavenue.utility.AvenuesParams;
 import com.viewlift.ccavenue.utility.Constants;
 import com.viewlift.ccavenue.utility.RSAUtility;
 import com.viewlift.ccavenue.utility.ServiceHandler;
 import com.viewlift.ccavenue.utility.ServiceUtility;
+import com.viewlift.presenters.AppCMSPresenter;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -46,6 +48,7 @@ public class WebViewActivity extends Activity {
 	String accessCode = "" ;
 	String cancelRedirectURL = "" ;
 	String merchantID = "" ;
+	private AppCMSPresenter appCMSPresenter;
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
@@ -55,6 +58,9 @@ public class WebViewActivity extends Activity {
 		cancelRedirectURL = "" ;
 		setContentView(R.layout.activity_webview);
 		mainIntent = getIntent();
+		appCMSPresenter = ((AppCMSApplication) getApplication())
+				.getAppCMSPresenterComponent()
+				.appCMSPresenter();
 		
 		// Calling async task to get display content
 		new RenderView().execute();
@@ -81,8 +87,6 @@ public class WebViewActivity extends Activity {
 	
 			// Making a request to url and getting response
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			params.add(new BasicNameValuePair(AvenuesParams.ACCESS_CODE, accessCode));
-			params.add(new BasicNameValuePair(AvenuesParams.ORDER_ID, orderID));
 			String vResponse = getRSAKey() ;
 			if(!ServiceUtility.chkNull(vResponse).equals("")
 					&& ServiceUtility.chkNull(vResponse).toString().indexOf("ERROR")==-1){
@@ -90,6 +94,8 @@ public class WebViewActivity extends Activity {
 				vEncVal.append(ServiceUtility.addToPostParams(AvenuesParams.AMOUNT, mainIntent.getStringExtra(AvenuesParams.AMOUNT)));
 				vEncVal.append(ServiceUtility.addToPostParams(AvenuesParams.CURRENCY, mainIntent.getStringExtra(AvenuesParams.CURRENCY)));
 				encVal = RSAUtility.encrypt(vEncVal.substring(0,vEncVal.length()-1), vResponse);
+				params.add(new BasicNameValuePair(AvenuesParams.ACCESS_CODE, accessCode));
+				params.add(new BasicNameValuePair(AvenuesParams.ORDER_ID, orderID));
 			}
 			
 			return null;
@@ -147,7 +153,8 @@ public class WebViewActivity extends Activity {
 
 	    	        if (url.equalsIgnoreCase(cancelRedirectURL)) {
 						webview.stopLoading();
-						finlizePaymentWithUpdatingBackend () ;
+						//new updateSubscriptionPlanAsyncTask ().execute();
+						//finlizePaymentWithUpdatingBackend () ;
 					}
 	    	    }
 	    	    @Override
@@ -163,9 +170,11 @@ public class WebViewActivity extends Activity {
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.ORDER_ID,orderID));
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.REDIRECT_URL,cancelRedirectURL));
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.CANCEL_URL,cancelRedirectURL));
-			params.append(ServiceUtility.addToPostParams("merchant_param2",getIntent().getStringExtra(getString(R.string.app_cms_user_id))));
 			params.append(ServiceUtility.addToPostParams("merchant_param1",getIntent().getStringExtra(getString(R.string.app_cms_site_name))));
+			params.append(ServiceUtility.addToPostParams("merchant_param2",getIntent().getStringExtra(getString(R.string.app_cms_user_id))));
 			params.append(ServiceUtility.addToPostParams("merchant_param3",getIntent().getStringExtra(getString(R.string.app_cms_plan_id))));
+			params.append(ServiceUtility.addToPostParams("merchant_param4","android"));
+
 			try {
 				params.append(ServiceUtility.addToPostParams(AvenuesParams.ENC_VAL,URLEncoder.encode(encVal,"UTF-8")));
 			} catch (Exception ex) {
@@ -264,9 +273,109 @@ public class WebViewActivity extends Activity {
 
 
 	private void finlizePaymentWithUpdatingBackend () {
-		Intent intent = new Intent();
-		intent.putExtra(getString(R.string.app_cms_ccavenue_payment_success),true) ;
-		setResult(RESULT_OK, intent);
-		finish();
+//		Intent intent = new Intent();
+//		intent.putExtra(getString(R.string.app_cms_ccavenue_payment_success),true) ;
+//		setResult(RESULT_OK, intent);
+//		finish();
+		appCMSPresenter.finalizeSignupAfterCCAvenueSubscription(null) ;
 	}
+
+	private class updateSubscriptionPlanAsyncTask extends AsyncTask<Void, Void, Void> {
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			// Showing progress dialog
+			dialog = new ProgressDialog(WebViewActivity.this);
+			dialog.setMessage("Please wait...");
+			dialog.setCancelable(false);
+			dialog.show();
+		}
+
+		@Override
+		protected Void doInBackground(Void... arg0) {
+			// Creating service handler class instance
+			String JsonResponse = null;
+			String JsonDATA = "";
+			String rsaToken = "" ;
+			JSONObject post_dict = new JSONObject();
+
+			try {
+				post_dict.put(getString(R.string.app_cms_site_name), getIntent().getStringExtra(getString(R.string.app_cms_site_name)));
+				post_dict.put(getString(R.string.app_cms_user_id), getIntent().getStringExtra(getString(R.string.app_cms_user_id)));
+				post_dict.put(getString(R.string.app_cms_device), getString(R.string.app_cms_subscription_key));
+				JsonDATA = String.valueOf(post_dict);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+
+			HttpURLConnection urlConnection = null;
+			BufferedReader reader = null;
+			try {
+				URL url = new URL(getString(R.string.app_cms_baseurl)+ "/subscription/subscribe");
+				urlConnection = (HttpURLConnection) url.openConnection();
+				urlConnection.setDoOutput(true);
+				// is output buffer writter
+				urlConnection.setRequestMethod("POST");
+				urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+				urlConnection.setRequestProperty("Accept", "application/json");
+				//set headers and method
+				Writer writer = new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream(), "UTF-8"));
+				writer.write(JsonDATA);
+				// json data
+				writer.close();
+				InputStream inputStream = urlConnection.getInputStream();
+				//input stream
+				StringBuffer buffer = new StringBuffer();
+				if (inputStream == null) {
+					// Nothing to do.
+					return null;
+				}
+				reader = new BufferedReader(new InputStreamReader(inputStream));
+
+				String inputLine;
+				while ((inputLine = reader.readLine()) != null)
+					buffer.append(inputLine + "\n");
+				if (buffer.length() == 0) {
+					// Stream was empty. No point in parsing.
+					return null;
+				}
+				JsonResponse = buffer.toString();
+				//response data
+				Log.i("TAG", JsonResponse);
+				try {
+					JSONObject jsonObj = new JSONObject(JsonResponse);
+					rsaToken = jsonObj.getString("rsaToken");
+					orderID = jsonObj.getString("orderId") ;
+					accessCode = jsonObj.getString("accessCode") ;
+					cancelRedirectURL = jsonObj.getString("redirectUrl") ;
+					merchantID = jsonObj.getString("merchantId") ;
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				if (urlConnection != null) {
+					urlConnection.disconnect();
+				}
+				if (reader != null) {
+					try {
+						reader.close();
+					} catch (final IOException e) {
+						Log.e("TAG", "Error closing stream", e);
+					}
+				}
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+			// Dismiss the progress dialog
+			if (dialog.isShowing())
+				dialog.dismiss();
+		}
+	}
+
 } 
