@@ -52,7 +52,6 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.models.data.appcms.ui.page.Settings;
-import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
@@ -618,6 +617,7 @@ public class ViewCreator {
                                                     settingsView.setVisibility(View.VISIBLE);
                                                 }
                                             }
+                                            settingsView.requestLayout();
                                         }
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_TOGGLE_BUTTON_KEY) {
@@ -825,6 +825,7 @@ public class ViewCreator {
                                   AppCMSPresenter appCMSPresenter,
                                   List<String> modulesToIgnore) {
         appCMSPresenter.clearOnInternalEvents();
+        pageView.clearExistingViewLists();
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList module : modulesList) {
@@ -2607,6 +2608,12 @@ public class ViewCreator {
         }
     }
 
+    private enum AdjustOtherState {
+        IGNORE,
+        INITIATED,
+        ADJUST_OTHERS
+    }
+
     public static class ComponentViewResult {
         View componentView;
         OnInternalEvent onInternalEvent;
@@ -2615,12 +2622,6 @@ public class ViewCreator {
         boolean shouldHideModule;
         boolean addToPageView;
         boolean shouldHideComponent;
-    }
-
-    private enum AdjustOtherState {
-        IGNORE,
-        INITIATED,
-        ADJUST_OTHERS
     }
 
     public static class UpdateImageIconAction implements Action1<UserVideoStatusResponse> {
