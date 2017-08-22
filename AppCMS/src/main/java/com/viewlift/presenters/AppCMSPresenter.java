@@ -4510,8 +4510,8 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public void showToast(String messgae, int messageDuration) {
-        Toast.makeText(currentActivity, messgae, messageDuration).show();
+    public void showToast(String message, int messageDuration) {
+        Toast.makeText(currentActivity, message, messageDuration).show();
     }
 
     public void showEntitlementDialog(DialogType dialogType) {
