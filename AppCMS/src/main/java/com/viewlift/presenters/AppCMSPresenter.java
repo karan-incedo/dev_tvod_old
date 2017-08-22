@@ -1559,7 +1559,13 @@ public class AppCMSPresenter {
             intent.putExtra(currentActivity.getString(R.string.app_cms_user_id),getLoggedInUser(currentActivity)) ;
             intent.putExtra(currentActivity.getString(R.string.app_cms_plan_id),planToPurchase) ;
             intent.putExtra("plan_to_purchase_name", planToPurchaseName);
-            Log.v("activitynames",currentActivity.getClass().getSimpleName()) ;
+
+
+            intent.putExtra("siteId", appCMSMain.getInternalName());
+            intent.putExtra("email", getLoggedInUserEmail(currentActivity));
+            intent.putExtra("authorizedUserName", getLoggedInUser(currentActivity));
+            intent.putExtra("x-api-token", apikey);
+            intent.putExtra("auth_token", getAuthToken(currentActivity));
             currentActivity.startActivityForResult(intent,1);
         } catch (Exception ex) {
             ex.printStackTrace();

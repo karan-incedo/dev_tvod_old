@@ -153,8 +153,7 @@ public class WebViewActivity extends Activity {
 
 	    	        if (url.equalsIgnoreCase(cancelRedirectURL)) {
 						webview.stopLoading();
-						//new updateSubscriptionPlanAsyncTask ().execute();
-						//finlizePaymentWithUpdatingBackend () ;
+						new updateSubscriptionPlanAsyncTask ().execute();
 					}
 	    	    }
 	    	    @Override
@@ -213,7 +212,7 @@ public class WebViewActivity extends Activity {
 		HttpURLConnection urlConnection = null;
 		BufferedReader reader = null;
 		try {
-			URL url = new URL("https://develop-api.viewlift.com/ccavenue/ccavenue/rsakey");
+			URL url = new URL(getString(R.string.app_cms_baseurl)+"/ccavenue/ccavenue/rsakey");
 			urlConnection = (HttpURLConnection) url.openConnection();
 			urlConnection.setDoOutput(true);
 			// is output buffer writter
@@ -300,9 +299,16 @@ public class WebViewActivity extends Activity {
 			JSONObject post_dict = new JSONObject();
 
 			try {
-				post_dict.put(getString(R.string.app_cms_site_name), getIntent().getStringExtra(getString(R.string.app_cms_site_name)));
-				post_dict.put(getString(R.string.app_cms_user_id), getIntent().getStringExtra(getString(R.string.app_cms_user_id)));
-				post_dict.put(getString(R.string.app_cms_device), getString(R.string.app_cms_subscription_key));
+				  post_dict.put("vlTransactionId", orderID) ;
+						post_dict.put("email",getIntent().getStringExtra("email"));
+						post_dict.put("currencyCode","INR");
+						post_dict.put("siteId",getIntent().getStringExtra("siteId"));
+						post_dict.put("planId",getIntent().getStringExtra(getString(R.string.app_cms_plan_id)));
+				        post_dict.put("platform","android");
+						post_dict.put("zip","");
+						post_dict.put("description","CCAvenue Subscripton");
+						post_dict.put("subscription","ccavenue"); //very important to say this is a ccavenue request
+				        post_dict.put("authorizedUserName",getIntent().getStringExtra("authorizedUserName"));
 				JsonDATA = String.valueOf(post_dict);
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -318,6 +324,8 @@ public class WebViewActivity extends Activity {
 				urlConnection.setRequestMethod("POST");
 				urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 				urlConnection.setRequestProperty("Accept", "application/json");
+				urlConnection.setRequestProperty ("Authorization", getIntent().getStringExtra("auth_token"));
+				urlConnection.setRequestProperty("x-api-token",getIntent().getStringExtra("x-api-token"));
 				//set headers and method
 				Writer writer = new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream(), "UTF-8"));
 				writer.write(JsonDATA);
@@ -338,19 +346,6 @@ public class WebViewActivity extends Activity {
 				if (buffer.length() == 0) {
 					// Stream was empty. No point in parsing.
 					return null;
-				}
-				JsonResponse = buffer.toString();
-				//response data
-				Log.i("TAG", JsonResponse);
-				try {
-					JSONObject jsonObj = new JSONObject(JsonResponse);
-					rsaToken = jsonObj.getString("rsaToken");
-					orderID = jsonObj.getString("orderId") ;
-					accessCode = jsonObj.getString("accessCode") ;
-					cancelRedirectURL = jsonObj.getString("redirectUrl") ;
-					merchantID = jsonObj.getString("merchantId") ;
-				} catch (JSONException e) {
-					e.printStackTrace();
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -375,6 +370,7 @@ public class WebViewActivity extends Activity {
 			// Dismiss the progress dialog
 			if (dialog.isShowing())
 				dialog.dismiss();
+			finlizePaymentWithUpdatingBackend () ;
 		}
 	}
 
