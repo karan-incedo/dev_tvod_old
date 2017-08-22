@@ -4964,7 +4964,16 @@ public class AppCMSPresenter {
     }
 
     public void finalizeSignupAfterCCAvenueSubscription (Intent data) {
-
+        String url = currentActivity.getString(R.string.app_cms_signin_api_url,
+                appCMSMain.getApiBaseUrl(),
+                appCMSMain.getInternalName());
+        startLoginAsyncTask(url,
+                subscriptionUserEmail,
+                subscriptionUserPassword,
+                false,
+                false,
+                true,
+                true);
     }
 
     public void finalizeSignupAfterSubscription(String receiptData) {
