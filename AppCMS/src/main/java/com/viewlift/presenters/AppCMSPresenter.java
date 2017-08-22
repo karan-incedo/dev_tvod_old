@@ -4869,6 +4869,10 @@ public class AppCMSPresenter {
         }
     }
 
+    public void finalizeSignupAfterCCAvenueSubscription (Intent data) {
+
+    }
+
     public void finalizeSignupAfterSubscription(String receiptData) {
         setActiveSubscriptionReceipt(currentActivity, receiptData);
 

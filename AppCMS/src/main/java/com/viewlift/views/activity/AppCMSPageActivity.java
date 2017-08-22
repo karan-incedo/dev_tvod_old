@@ -502,6 +502,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     boolean subscriptionSuccess = data.getBooleanExtra(getString(R.string.app_cms_ccavenue_payment_success),false) ;
                     if (subscriptionSuccess) {
                         //appCMSPresenter.finalizeSignupAfterSubscription(data.getStringExtra("INAPP_PURCHASE_DATA"));
+                        appCMSPresenter.finalizeSignupAfterCCAvenueSubscription(data);
                     }
                 }
             }
