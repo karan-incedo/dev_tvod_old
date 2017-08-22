@@ -251,6 +251,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         };
 
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         wifiConnectedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {

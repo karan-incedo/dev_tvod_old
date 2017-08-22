@@ -406,6 +406,7 @@ public class AppCMSPresenter {
     private ContentDatum downloadContentDatumAfterPermissionGranted;
     private Action1<UserVideoDownloadStatus> downloadResultActionAfterPermissionGranted;
     private boolean requestDownloadQualityScreen;
+    private DownloadQueueThread downloadQueueThread;
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -504,6 +505,8 @@ public class AppCMSPresenter {
         this.beaconMessageThread = new Thread(this.beaconMessageRunnable);
 
         this.launchType = LaunchType.LOGIN_AND_SIGNUP;
+
+        this.downloadQueueThread = new DownloadQueueThread(this);
     }
 
     public LruCache<String, PageView> getPageViewLruCache() {
@@ -2287,14 +2290,79 @@ public class AppCMSPresenter {
         return downloadPercent;
     }
 
-    public synchronized void updateDownloadingStatus(String filmId, final ImageView imageView,
-                                                     AppCMSPresenter presenter,
-                                                     final Action1<UserVideoDownloadStatus> responseAction,
-                                                     String userId, boolean isFromDownload) {
-        long videoId = -1L;
-        if (!isFromDownload) {   //Fix of SVFA-1621
-            cancelDownloadIconTimerTask();
+    private static class DownloadQueueItem {
+        String filmId;
+        String userId;
+        Action1<UserVideoDownloadStatus> responseAction;
+        ImageView imageView;
+    }
+
+    private static class DownloadQueueThread extends Thread {
+        private final AppCMSPresenter appCMSPresenter;
+        private Queue<DownloadQueueItem> filmDownloadQueue;
+
+        private boolean running;
+        private boolean startNextDownload;
+
+        public DownloadQueueThread(AppCMSPresenter appCMSPresenter) {
+            this.appCMSPresenter = appCMSPresenter;
+            this.filmDownloadQueue = new ConcurrentLinkedQueue<>();
+            this.running = false;
+            this.startNextDownload = true;
         }
+
+        public void addToQueue(DownloadQueueItem downloadQueueItem) {
+            filmDownloadQueue.add(downloadQueueItem);
+        }
+
+        @Override
+        public void run() {
+            running = true;
+            while (running) {
+                if (filmDownloadQueue.size() > 0 && startNextDownload) {
+                    DownloadQueueItem downloadQueueItem = filmDownloadQueue.remove();
+                    appCMSPresenter.startDownload(downloadQueueItem.filmId,
+                            downloadQueueItem.imageView,
+                            appCMSPresenter,
+                            downloadQueueItem.responseAction,
+                            downloadQueueItem.userId);
+                    startNextDownload = false;
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        public boolean running() {
+            return running;
+        }
+
+        public void setRunning(boolean running) {
+            this.running = running;
+        }
+
+        public void setStartNextDownload() {
+            this.startNextDownload = true;
+        }
+    }
+
+    public void startNextDownload() {
+        if (downloadQueueThread != null) {
+            if (downloadQueueThread.running()) {
+                downloadQueueThread.start();
+            }
+            downloadQueueThread.setStartNextDownload();
+        }
+    }
+
+    public void startDownload(String filmId, final ImageView imageView,
+                              AppCMSPresenter presenter,
+                              final Action1<UserVideoDownloadStatus> responseAction,
+                              String userId) {
+        long videoId = -1L;
         try {
             videoId = realmController.getDownloadByIdBelongstoUser(filmId, userId).getVideoId_DM();
             DownloadManager.Query query = new DownloadManager.Query();
@@ -2337,6 +2405,27 @@ public class AppCMSPresenter {
             }, 500, 1000);
         } catch (Exception e) {
             Log.e(TAG, "Could not find video ID in downloads");
+        }
+    }
+
+    public synchronized void updateDownloadingStatus(String filmId, final ImageView imageView,
+                                                     AppCMSPresenter presenter,
+                                                     final Action1<UserVideoDownloadStatus> responseAction,
+                                                     String userId, boolean isFromDownload) {
+        if (!isFromDownload) {   //Fix of SVFA-1621
+            cancelDownloadIconTimerTask();
+        } else {
+            if (downloadQueueThread != null) {
+                if (!downloadQueueThread.running()) {
+                    downloadQueueThread.start();
+                }
+                DownloadQueueItem downloadQueueItem = new DownloadQueueItem();
+                downloadQueueItem.filmId = filmId;
+                downloadQueueItem.imageView = imageView;
+                downloadQueueItem.responseAction = responseAction;
+                downloadQueueItem.userId = userId;
+                downloadQueueThread.addToQueue(downloadQueueItem);
+            }
         }
     }
 

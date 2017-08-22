@@ -2751,6 +2751,7 @@ public class ViewCreator {
                         appCMSPresenter.cancelDownloadIconTimerTask(); //Fix of SVFA-1621
                         imageButton.setImageResource(R.drawable.ic_downloaded);
                         imageButton.setOnClickListener(null);
+                        appCMSPresenter.startNextDownload();
                         break;
 
                     default:
