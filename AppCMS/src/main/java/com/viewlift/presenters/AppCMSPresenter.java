@@ -386,7 +386,7 @@ public class AppCMSPresenter {
     private String currencyOfPlanToPurchase;
     private String planToPurchaseName;
     private String apikey;
-    private float planToPurchasePrice;
+    private double planToPurchasePrice;
     private String planReceipt;
     private GoogleApiClient googleApiClient;
     private long downloaded = 0L;
@@ -1524,7 +1524,7 @@ public class AppCMSPresenter {
                                               String planId,
                                               String currency,
                                               String planName,
-                                              float planPrice) {
+                                              double planPrice) {
         if (currentActivity != null) {
             launchType = LaunchType.SUBSCRIBE;
             skuToPurchase = sku;
@@ -4987,7 +4987,7 @@ public class AppCMSPresenter {
                         planToPurchase = null;
                         currencyOfPlanToPurchase = null;
                         planToPurchaseName = null;
-                        planToPurchasePrice = 0.0f;
+                        planToPurchasePrice = 0.0;
 
                         if (launchType == LaunchType.SUBSCRIBE) {
                             launchType = LaunchType.LOGIN_AND_SIGNUP;
