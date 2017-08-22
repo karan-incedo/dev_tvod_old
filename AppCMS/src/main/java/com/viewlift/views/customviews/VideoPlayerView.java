@@ -10,7 +10,6 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ToggleButton;
 
@@ -59,7 +58,8 @@ import rx.functions.Action1;
  * Created by viewlift on 5/31/17.
  */
 
-public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListener, AdaptiveMediaSourceEventListener {
+public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListener,
+        AdaptiveMediaSourceEventListener {
     private static final String TAG = "VideoPlayerFragment";
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     protected DataSource.Factory mediaDataSourceFactory;
@@ -140,11 +140,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     }
 
     public boolean shouldPlayWhenReady() {
-        if (player != null) {
-            return player.getPlayWhenReady();
-        }
-
-        return false;
+        return player != null && player.getPlayWhenReady();
     }
 
     public void startPlayer() {
@@ -220,14 +216,11 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
         ccToggleButton = (ToggleButton) playerView.findViewById(R.id.ccButton);
-        ccToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (onClosedCaptionButtonClicked != null) {
-                    onClosedCaptionButtonClicked.call(isChecked);
-                }
-                isClosedCaptionEnabled = isChecked;
+        ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (onClosedCaptionButtonClicked != null) {
+                onClosedCaptionButtonClicked.call(isChecked);
             }
+            isClosedCaptionEnabled = isChecked;
         });
 
 
