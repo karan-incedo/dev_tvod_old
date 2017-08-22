@@ -86,6 +86,7 @@ import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 import com.viewlift.models.data.appcms.api.SubscriptionRequest;
 import com.viewlift.models.data.appcms.api.VideoAssets;
+import com.viewlift.models.data.appcms.downloads.CurrentDownloadingVideo;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
 import com.viewlift.models.data.appcms.downloads.RealmController;
@@ -501,8 +502,6 @@ public class AppCMSPresenter {
         this.beaconMessageThread = new Thread(this.beaconMessageRunnable);
 
         this.launchType = LaunchType.LOGIN_AND_SIGNUP;
-
-        this.downloadQueueThread = new DownloadQueueThread(this);
     }
 
     public LruCache<String, PageView> getPageViewLruCache() {
@@ -1894,12 +1893,14 @@ public class AppCMSPresenter {
             Log.w(TAG, currentActivity.getString(R.string.app_cms_download_failed_error_message));
             return;
         } else {
-            DownloadQueueItem downloadQueueItem = new DownloadQueueItem();
-            downloadQueueItem.contentDatum = contentDatum;
-            downloadQueueItem.resultAction1 = resultAction1;
-            downloadQueueThread.addToQueue(downloadQueueItem);
-            if (!downloadQueueThread.running()) {
-                downloadQueueThread.start();
+            if (downloadQueueThread != null) {
+                DownloadQueueItem downloadQueueItem = new DownloadQueueItem();
+                downloadQueueItem.contentDatum = contentDatum;
+                downloadQueueItem.resultAction1 = resultAction1;
+                downloadQueueThread.addToQueue(downloadQueueItem);
+                if (!downloadQueueThread.running()) {
+                    downloadQueueThread.start();
+                }
             }
         }
     }
@@ -2163,16 +2164,26 @@ public class AppCMSPresenter {
             this.filmsInQueue = new ArrayList<>();
             this.running = false;
             this.startNextDownload = true;
+            if (appCMSPresenter.getCurrentDownloadVideo() != null) {
+                this.startNextDownload = false;
+            }
         }
 
         public void addToQueue(DownloadQueueItem downloadQueueItem) {
-            if (!filmsInQueue.contains(downloadQueueItem.contentDatum.getId())) {
+            if (!filmsInQueue.contains(downloadQueueItem.contentDatum.getGist().getTitle())) {
                 filmDownloadQueue.add(downloadQueueItem);
                 filmsInQueue.add(downloadQueueItem.contentDatum.getGist().getTitle());
+
+                CurrentDownloadingVideo currentDownloadingVideo = new CurrentDownloadingVideo();
+                currentDownloadingVideo.setTitle(downloadQueueItem.contentDatum.getGist().getTitle());
+                appCMSPresenter.addCurrentDownloadItem(currentDownloadingVideo);
+
                 if (filmsInQueue.size() > 0) {
                     appCMSPresenter.showQueueItem(downloadQueueItem.contentDatum.getGist().getTitle());
                     downloadQueueItem.resultAction1.call(null);
                 }
+            } else {
+                appCMSPresenter.showAlreadyQueuedItem(downloadQueueItem.contentDatum.getGist().getTitle());
             }
         }
 
@@ -2211,9 +2222,28 @@ public class AppCMSPresenter {
         }
     }
 
+    public void addCurrentDownloadItem(CurrentDownloadingVideo currentDownloadingVideo) {
+        realmController.addCurrentDownloadTitle(currentDownloadingVideo);
+    }
+
+    public void removeCurrentDownloadItem() {
+        realmController.removeCurrentDownloadTitle();
+    }
+
+    public CurrentDownloadingVideo getCurrentDownloadVideo() {
+        return realmController.getCurrentDownloadTitle();
+    }
+
     private void showQueueItem(String title) {
         currentActivity.runOnUiThread(() -> {
             showToast(currentActivity.getString(R.string.app_cms_download_queue_toast_message, title),
+                    Toast.LENGTH_LONG);
+        });
+    }
+
+    private void showAlreadyQueuedItem(String title) {
+        currentActivity.runOnUiThread(() -> {
+            showToast(currentActivity.getString(R.string.app_cms_download_already_queued_toast_message, title),
                     Toast.LENGTH_LONG);
         });
     }
@@ -2223,6 +2253,7 @@ public class AppCMSPresenter {
             if (downloadQueueThread.running()) {
                 downloadQueueThread.start();
             }
+            realmController.removeCurrentDownloadTitle();
             downloadQueueThread.setStartNextDownload();
         }
     }
@@ -2430,7 +2461,11 @@ public class AppCMSPresenter {
             paint.setColor(Color.DKGRAY);
             paint.setStrokeWidth(iv2.getWidth() / 10);
             paint.setStyle(Paint.Style.STROKE);
-            canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 7, paint);// Fix SVFA-1561 changed  -2 to -7
+            if (BaseView.isTablet(currentActivity)) {
+                canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 2, paint);
+            } else {
+                canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 7, paint);// Fix SVFA-1561 changed  -2 to -7
+            }
 
             int tintColor = Color.parseColor((this.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
             paint.setColor(tintColor);
@@ -2438,7 +2473,11 @@ public class AppCMSPresenter {
             paint.setStyle(Paint.Style.FILL);
             final RectF oval = new RectF();
             paint.setStyle(Paint.Style.STROKE);
-            oval.set(6, 6, iv2.getWidth() - 6, iv2.getHeight() - 6); //Fix SVFA-1561  change 2 to 6
+            if (BaseView.isTablet(currentActivity)) {
+                oval.set(2, 2, iv2.getWidth() - 2, iv2.getHeight() - 2);
+            } else {
+                oval.set(6, 6, iv2.getWidth() - 6, iv2.getHeight() - 6); //Fix SVFA-1561  change 2 to 6
+            }
             canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
 
 
@@ -5563,6 +5602,7 @@ public class AppCMSPresenter {
         this.currentActivity = activity;
         this.downloadManager = (DownloadManager) currentActivity.getSystemService(Context.DOWNLOAD_SERVICE);
         this.realmController = RealmController.with(currentActivity);
+        this.downloadQueueThread = new DownloadQueueThread(this);
     }
 
     private Bundle getPageActivityBundle(Activity activity,
