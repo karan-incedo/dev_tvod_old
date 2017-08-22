@@ -17,6 +17,7 @@ import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenRest;
+import com.viewlift.models.network.rest.AppCMSBeaconCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
 import com.viewlift.models.network.rest.AppCMSCCAvenueRest;
@@ -778,6 +779,7 @@ public class AppCMSUIModule {
     public AppCMSUserDownloadVideoStatusCall providesAppCMSUserDownloadVideoStatusCall() {
         return new AppCMSUserDownloadVideoStatusCall();
     }
+
 
     @Provides
     @Singleton

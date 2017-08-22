@@ -86,6 +86,9 @@ import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 import com.viewlift.models.data.appcms.api.SubscriptionRequest;
 import com.viewlift.models.data.appcms.api.VideoAssets;
+import com.viewlift.models.data.appcms.beacon.AppCMSBeaconRequest;
+import com.viewlift.models.data.appcms.beacon.BeaconRequest;
+import com.viewlift.models.data.appcms.beacon.OfflineBeaconData;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
 import com.viewlift.models.data.appcms.downloads.RealmController;
@@ -104,6 +107,7 @@ import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
+import com.viewlift.models.data.appcms.ui.main.Beacon;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
@@ -126,6 +130,7 @@ import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
+import com.viewlift.models.network.rest.AppCMSBeaconCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryCall;
@@ -179,9 +184,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -304,6 +311,7 @@ public class AppCMSPresenter {
     private final AppCMSWatchlistCall appCMSWatchlistCall;
     private final AppCMSHistoryCall appCMSHistoryCall;
     private final AppCMSUserDownloadVideoStatusCall appCMSUserDownloadVideoStatusCall;
+    private final AppCMSBeaconCall appCMSBeaconCall;
 
     private final AppCMSUserVideoStatusCall appCMSUserVideoStatusCall;
     private final AppCMSAddToWatchlistCall appCMSAddToWatchlistCall;
@@ -433,7 +441,7 @@ public class AppCMSPresenter {
                            AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall,
                            AppCMSUserVideoStatusCall appCMSUserVideoStatusCall,
                            AppCMSUserDownloadVideoStatusCall appCMSUserDownloadVideoStatusCall,
-
+                           AppCMSBeaconCall appCMSBeaconCall,
                            AppCMSAddToWatchlistCall appCMSAddToWatchlistCall,
 
                            AppCMSCCAvenueCall appCMSCCAvenueCall,
@@ -469,7 +477,7 @@ public class AppCMSPresenter {
         this.appCMSUpdateWatchHistoryCall = appCMSUpdateWatchHistoryCall;
         this.appCMSUserVideoStatusCall = appCMSUserVideoStatusCall;
         this.appCMSUserDownloadVideoStatusCall = appCMSUserDownloadVideoStatusCall;
-
+        this.appCMSBeaconCall = appCMSBeaconCall;
         this.appCMSAddToWatchlistCall = appCMSAddToWatchlistCall;
 
         this.appCMSCCAvenueCall = appCMSCCAvenueCall;
@@ -4738,6 +4746,85 @@ public class AppCMSPresenter {
         }
     }
 
+    public ArrayList<BeaconRequest> getBeaconRequestList() {
+        String uid = InstanceID.getInstance(currentActivity).getId();
+        if (isUserLoggedIn(currentActivity)) {
+            uid = getLoggedInUser(currentActivity);
+        }
+
+        ArrayList<BeaconRequest> beaconRequestList = new ArrayList<>();
+        try {
+            for (OfflineBeaconData offlineBeaconData : realmController.getOfflineBeaconDataListByUser(uid)) {
+                BeaconRequest beaconRequest = offlineBeaconData.convertToBeaconRequest();
+                beaconRequestList.add(beaconRequest);
+            }
+            return beaconRequestList;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void sendOfflineBeaconMessage() {
+        ArrayList<BeaconRequest> beaconRequests = getBeaconRequestList();
+
+        String url = getBeaconUrl();
+        AppCMSBeaconRequest request = new AppCMSBeaconRequest();
+
+        if (url != null && beaconRequests != null) {
+            request.setBeaconRequest(beaconRequests);
+            appCMSBeaconCall.call(url, (Boolean aBoolean) -> {
+                try {
+
+                    if (aBoolean) {
+                        Log.d(TAG, "Beacon success Event: Offline " + aBoolean);
+                        currentActivity.runOnUiThread(() -> {
+                            realmController.deleteOfflineBeaconDataByUser(getLoggedInUser(currentActivity));
+                        });
+                    }
+                } catch (Exception e) {
+                    Log.d(TAG, "Beacon fail Event: offline  due to: " + e.getMessage());
+                }
+            }, request);
+        }
+    }
+
+    public void sendBeaconMessage(String vid, String screenName, String parentScreenName,
+                                  long currentPosition, boolean usingChromecast, BeaconEvent event, String mediaType, String bitrate, String height, String width) {
+
+        BeaconRequest beaconRequest = getBeaconRequest(vid, screenName, parentScreenName, currentPosition, event,
+                usingChromecast, mediaType, bitrate, height, width);
+        if (!isNetworkConnected()) {
+            currentActivity.runOnUiThread(() -> {
+                realmController.addOfflineBeaconData(beaconRequest.convertToOfflineBeaconData());
+            });
+
+            Log.d(TAG, "Beacon info added to database +++ " + event);
+            return;
+        }
+        String url = getBeaconUrl();
+        AppCMSBeaconRequest request = new AppCMSBeaconRequest();
+        ArrayList<BeaconRequest> beaconRequests = new ArrayList<>();
+
+        beaconRequests.add(beaconRequest);
+
+
+        request.setBeaconRequest(beaconRequests);
+        if (url != null) {
+
+            appCMSBeaconCall.call(url, aBoolean -> {
+                try {
+
+                    if (aBoolean) {
+                        Log.d(TAG, "Beacon success Event:  " + event);
+                    }
+                } catch (Exception e) {
+                    Log.d(TAG, "Beacon fail Event: " + event + " due to: " + e.getMessage());
+                }
+            }, request);
+
+        }
+    }
+
     public void sendBeaconPlayMessage(String vid, String screenName, String parentScreenName,
                                       long currentPosition, boolean usingChromecast) {
         Log.d(TAG, "Sending Beacon Play Message");
@@ -4756,6 +4843,56 @@ public class AppCMSPresenter {
         permalinkCompletePath.append(File.separatorChar);
         permalinkCompletePath.append(pagePath);
         return permalinkCompletePath.toString();
+    }
+
+    private BeaconRequest getBeaconRequest(String vid, String screenName, String parentScreenName,
+                                           long currentPosition, BeaconEvent event, boolean usingChromecast,
+                                           String mediaType, String bitrte, String resolutionHeight, String resolutionWidth) {
+        BeaconRequest beaconRequest = new BeaconRequest();
+        String uid = InstanceID.getInstance(currentActivity).getId();
+        int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
+        if (isUserLoggedIn(currentActivity)) {
+            uid = getLoggedInUser(currentActivity);
+        }
+
+
+        beaconRequest.setAid(appCMSMain.getBeacon().getSiteName());
+        beaconRequest.setCid(appCMSMain.getBeacon().getClientId());
+        beaconRequest.setPfm((platformType == PlatformType.TV) ?
+                currentActivity.getString(R.string.app_cms_beacon_tvplatform) :
+                currentActivity.getString(R.string.app_cms_beacon_platform));
+        beaconRequest.setVid(vid);
+        beaconRequest.setUid(uid);
+        beaconRequest.setPa(event.toString());
+        beaconRequest.setMedia_type(mediaType);
+        beaconRequest.setTstampoverride(getCurrentTimeStamp());
+        beaconRequest.setStream_id(vid);
+        beaconRequest.setDp1(currentActivity.getString(R.string.app_cms_beacon_dpm_android));
+        beaconRequest.setUrl(getPermalinkCompletePath(screenName));
+        beaconRequest.setRef(parentScreenName);
+        beaconRequest.setVpos(currentPositionSecs);
+        beaconRequest.setBitrate(bitrte);
+        beaconRequest.setResolutionheight(resolutionHeight);
+        beaconRequest.setResolutionwidth(resolutionWidth);
+       /* if (event==BeaconEvent.FIRST_FRAME){
+            beaconRequest.setTtfirstframe();
+        }*/
+        if (usingChromecast) {
+            beaconRequest.setDp2("Chromecast");
+        }
+
+
+        return beaconRequest;
+    }
+
+    public String getCurrentTimeStamp() {
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return formatter.format(new Date(System.currentTimeMillis()));
+    }
+
+    private String getBeaconUrl() {
+        return currentActivity.getString(R.string.app_cms_beacon_url_base, appCMSMain.getBeacon().getApiBaseUrl());
+
     }
 
     private String getBeaconUrl(String vid, String screenName, String parentScreenName,
@@ -6803,7 +6940,7 @@ public class AppCMSPresenter {
     }
 
     public enum BeaconEvent {
-        PLAY, RESUME, PING, AD_REQUEST, AD_IMPRESSION
+        PLAY, RESUME, PING, AD_REQUEST, AD_IMPRESSION, FIRST_FRAME, BUFFERING
     }
 
     public enum DialogType {

@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 
 import com.viewlift.models.data.appcms.api.SubscriptionPlan;
+import com.viewlift.models.data.appcms.beacon.OfflineBeaconData;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSUserSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.subscriptions.UserSubscriptionPlan;
 
@@ -238,6 +239,34 @@ public class RealmController {
         realm.commitTransaction();
 
     }
+
+    public void addOfflineBeaconData(OfflineBeaconData offlineBeaconData) {
+
+        if (!realm.isInTransaction()) {
+            realm.beginTransaction();
+        }
+        realm.insert(offlineBeaconData);
+        realm.commitTransaction();
+
+    }
+
+    public RealmResults<OfflineBeaconData> getOfflineBeaconDataListByUser(String userId) {
+        if (realm.where(OfflineBeaconData.class).equalTo("uid", userId).count() > 0) {
+            return realm.where(OfflineBeaconData.class).equalTo("uid", userId).findAll();
+        }
+        return null;
+    }
+
+    public void deleteOfflineBeaconDataByUser(String userId){
+        if (!realm.isInTransaction()){
+         realm.beginTransaction();
+        }
+        RealmResults<OfflineBeaconData> resultsToDel= realm.where(OfflineBeaconData.class).equalTo("uid",userId).findAll();
+        resultsToDel.deleteAllFromRealm();
+        realm.commitTransaction();
+    }
+
+
 
     public void closeRealm() {
         realm.close();
