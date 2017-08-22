@@ -448,6 +448,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         unregisterReceiver(presenterActionReceiver);
+        unregisterReceiver(networkConnectedReceiver);
+        unregisterReceiver(wifiConnectedReceiver);
+
         accessTokenTracker.stopTracking();
 
         if (inAppBillingService != null) {

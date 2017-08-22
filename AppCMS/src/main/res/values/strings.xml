@@ -228,12 +228,17 @@
     <string name="app_cms_cancel_subscription_title">Cancel Subscription</string>
     <string name="app_cms_confirm_alert_dialog_button_text">OK</string>
     <string name="app_cms_cancel_alert_dialog_button_text">CANCEL</string>
-    <string name="app_cms_cancel_subscription_confirmation_message">You have cancelled your subscription.</string>s
+    <string name="app_cms_cancel_subscription_confirmation_message">You have cancelled your subscription.</string>
+    s
     <string name="app_cms_cancel_subscription_not_subscribed_message">You are currently not subscribed to any plans.</string>
     <string name="app_cms_cancel_subscription_subscription_not_valid_message">Please check that the device is registered with a valid Gmail account.</string>
     <string name="app_cms_subscribtion_title">Subscription</string>
     <string name="app_cms_download_quality_title">SET YOUR DOWNLOAD QUALITY</string>
-    <string name="app_cms_downloas_setting_listner_key">app_cms_downloas_setting_listner_key</string>
+    <string name="app_cms_download_setting_listener_key">app_cms_download_setting_listener_key</string>
+
+    <string name="app_cms_delete_history_alert_title">Are you Sure?</string>
+    <string name="app_cms_delete_one_history_item_message">In order to add this film back in your history, You will need to rewatch it.</string>
+    <string name="app_cms_delete_all_history_items_message">In order to add these films back in your history, You will need to rewatch them.</string>
 
     <string name="app_cms_subscription_title">Subscription</string>
     <string name="app_cms_subscription_required_title">Subscription Required</string>
@@ -292,12 +297,13 @@
     <string name="app_cms_search_value_key">app_cms_search_value_</string>
     <string name="app_cms_no_search_result">NO RESULTS FOR \"%1$s\"</string>
     <plurals name="app_cms_search_result_header">
-        <item quantity="one" >RESULT FOR \"%1$s\"</item>
-        <item quantity="other" >RESULTS FOR \"%1$s\"</item>
+        <item quantity="one">RESULT FOR \"%1$s\"</item>
+        <item quantity="other">RESULTS FOR \"%1$s\"</item>
     </plurals>
     <string name="retryCallBinderKey">retryCallBinderKey</string>
     <string name="retryCallBundleKey">retryCallBundleKey</string>
     <string name="app_cms_default_download_quality">720p</string>
+    <string name="app_cms_download_queue_toast_message">%1$s has been queued for download.</string>
 
     <!-- CCAvenue Constant Strings -->
     <string name="app_cms_access_code">access_code</string>
