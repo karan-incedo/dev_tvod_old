@@ -245,7 +245,7 @@
 
     <!-- AppCMS Data values -->
     <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=%6$s</string>
-    <string name="app_cms_page_api_view_plans_url">%1$s%2$s?site=%3$s&amp;path=/viewplans&amp;includeContent=true</string>
+    <string name="app_cms_page_api_view_plans_url">%1$s%2$s?site=%3$s&amp;platform=%4$s&amp;path=/viewplans&amp;includeContent=true</string>
     <string name="app_cms_page_id_query_parameter">pageId=</string>
     <string name="app_cms_page_path_query_parameter">path=</string>
     <string name="app_cms_api_key">XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F</string>
