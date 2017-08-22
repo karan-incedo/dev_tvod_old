@@ -23,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -39,7 +40,9 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.cast.framework.media.widget.MiniControllerFragment;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
@@ -75,6 +78,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.functions.Action1;
 
+import static com.google.android.gms.common.GoogleApiAvailability.GOOGLE_PLAY_SERVICES_PACKAGE;
+
 /**
  * Created by viewlift on 5/5/17.
  */
@@ -89,6 +94,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private static final int HOME_PAGE_INDEX = 1;
     private static final int MOVIES_PAGE_INDEX = 2;
     private static final int SEARCH_INDEX = 3;
+
+    @BindView(R.id.app_cms_parent_layout)
+    RelativeLayout appCMSParentLayout;
 
     @BindView(R.id.app_cms_page_loading_progressbar)
     ProgressBar loadingProgressBar;
@@ -114,7 +122,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @BindView(R.id.app_cms_close_button)
     ImageButton closeButton;
 
-    CastServiceProvider castProvider;
     private AppCMSPresenter appCMSPresenter;
     private Stack<String> appCMSBinderStack;
     private Map<String, AppCMSBinder> appCMSBinderMap;
@@ -334,14 +341,20 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.setmFireBaseAnalytics(mFireBaseAnalytics);
         }
 
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                appCMSPresenter.sendCloseOthersAction(null, true);
-            }
+        closeButton.setOnClickListener(v -> {
+            appCMSPresenter.sendCloseOthersAction(null, true);
         });
 
+        inflateCastMiniController();
+
         Log.d(TAG, "onCreate()");
+    }
+
+    private void inflateCastMiniController() {
+        if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) ==
+                ConnectionResult.SUCCESS) {
+            LayoutInflater.from(this).inflate(R.layout.fragment_castminicontroller, appCMSParentLayout);
+        }
     }
 
     @Override
