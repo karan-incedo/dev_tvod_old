@@ -3918,7 +3918,7 @@ public class AppCMSPresenter {
     public boolean setIsUserSubscribed(Context context, boolean userSubscribed) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(IS_USER_SUBSCRIBED, 0);
-            return sharedPrefs.edit().putBoolean(IS_USER_SUBSCRIBED, userSubscribed).commit();
+            return sharedPrefs.edit().putBoolean(getLoggedInUser(currentActivity), userSubscribed).commit();
         }
         return false;
     }
@@ -5146,6 +5146,7 @@ public class AppCMSPresenter {
                                                     .get(0).getRecurringPaymentAmount()));
                                     setActiveSubscriptionProcessor(currentActivity,
                                             appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler());
+                                    setIsUserSubscribed(currentActivity, true);
                                 }
                                 if (onRefreshReadyAction != null) {
                                     onRefreshReadyAction.call();
