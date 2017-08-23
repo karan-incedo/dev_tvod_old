@@ -105,6 +105,7 @@ import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
+import com.viewlift.models.data.appcms.ui.authentication.UserIdentityPassword;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
@@ -1012,6 +1013,8 @@ public class AppCMSPresenter {
                         navigateToSubscriptionPlansPage(null, null);
                     } else if (actionType == AppCMSActionType.EDIT_PROFILE) {
                         launchEditProfilePage();
+                    } else if (actionType == AppCMSActionType.CHANGE_PASSWORD) {
+                        launchChangePasswordPage();
                     } else if (actionType == AppCMSActionType.MANAGE_SUBSCRIPTION) {
                         if (extraData != null && extraData.length > 0) {
                             String key = extraData[0];
@@ -1500,6 +1503,35 @@ public class AppCMSPresenter {
                     false,
                     null,
                     ExtraScreenType.EDIT_PROFILE);
+            if (args != null) {
+                Intent updatePageIntent =
+                        new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                updatePageIntent.putExtra(
+                        currentActivity.getString(R.string.app_cms_bundle_key),
+                        args);
+                currentActivity.sendBroadcast(updatePageIntent);
+            }
+        }
+    }
+
+    public void launchChangePasswordPage() {
+        if (currentActivity != null) {
+            cancelInternalEvents();
+
+            Bundle args = getPageActivityBundle(currentActivity,
+                    null,
+                    null,
+                    currentActivity.getString(R.string.app_cms_change_password_page_tag),
+                    currentActivity.getString(R.string.app_cms_change_password_page_tag),
+                    null,
+                    currentActivity.getString(R.string.app_cms_change_password_page_tag),
+                    false,
+                    true,
+                    false,
+                    false,
+                    false,
+                    null,
+                    ExtraScreenType.CHANGE_PASSWORD);
             if (args != null) {
                 Intent updatePageIntent =
                         new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
@@ -3246,10 +3278,10 @@ public class AppCMSPresenter {
     }
 
     @SuppressWarnings("ConstantConditions")
-    public void updateUserData(final String username,
-                               final String email,
-                               final String password,
-                               final Action1<UserIdentity> userIdentityAction) {
+    public void updateUserProfile(final String username,
+                                  final String email,
+                                  final String password,
+                                  final Action1<UserIdentity> userIdentityAction) {
         if (currentActivity != null) {
             callRefreshIdentity(() -> {
                 String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
@@ -3285,6 +3317,37 @@ public class AppCMSPresenter {
                             }
                         });
             });
+        }
+    }
+
+    public void updateUserPassword(final String oldPassword, final String newPassword,
+                                   final String confirmPassword) {
+        String url = currentActivity.getString(R.string.app_cms_change_password_api_url,
+                appCMSMain.getApiBaseUrl(), appCMSMain.getInternalName());
+
+        if (confirmPassword.equals(newPassword)) {
+            UserIdentityPassword userIdentityPassword = new UserIdentityPassword();
+            userIdentityPassword.setResetToken(getAuthToken(currentActivity));
+            userIdentityPassword.setOldPassword(oldPassword);
+            userIdentityPassword.setNewPassword(newPassword);
+
+            appCMSUserIdentityCall.passwordPost(url,
+                    getAuthToken(currentActivity), userIdentityPassword,
+                    userIdentityPasswordResult -> {
+                        if (userIdentityPasswordResult != null) {
+                            showToast("Password Changed Successfully", Toast.LENGTH_LONG);
+                        }
+                    }, errorBody -> {
+                        try {
+                            UserIdentityPassword userIdentityError = gson.fromJson(errorBody.string(),
+                                    UserIdentityPassword.class);
+                            showToast(userIdentityError.getError(), Toast.LENGTH_LONG);
+                        } catch (IOException e) {
+                            Log.e(TAG, "Invalid JSON object: " + e.toString());
+                        }
+                    });
+        } else {
+            showToast("New password should match with Confirm password.", Toast.LENGTH_LONG);
         }
     }
 
@@ -7132,6 +7195,7 @@ public class AppCMSPresenter {
         NAVIGATION,
         SEARCH,
         RESET_PASSWORD,
+        CHANGE_PASSWORD,
         EDIT_PROFILE,
         NONE
     }
