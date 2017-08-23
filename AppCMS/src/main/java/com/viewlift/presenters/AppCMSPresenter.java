@@ -272,6 +272,38 @@ public class AppCMSPresenter {
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String ANONYMOUS_AUTH_TOKEN_PREF_NAME = "anonymous_auth_token_pref_key";
 
+    private final String USER_ID_KEY = "user_id";
+    private final String LOGIN_STATUS_KEY = "logged_in_status";
+    private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
+    private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
+    private final String SUBSCRIPTION_STATUS_KEY = "subscription_status";
+    private final String SUBSCRIPTION_SUBSCRIBED = "subscribed";
+    private final String SUBSCRIPTION_NOT_SUBSCRIBED = "unsubscribed";
+    private final String SUBSCRIPTION_PLAN_ID = "cur_sub_plan_id";
+    private final String SUBSCRIPTION_PLAN_NAME = "cur_sub_plan_name";
+
+    private final String FIREBASE_SIGN_UP_EVENT = "sign_up";
+    private final String FIREBASE_SIGN_UP_METHOD = "sign_up_method";
+    private final String FIREBASE_SIGN_In_EVENT = "sign_in";
+    private final String FIREBASE_SIGN_IN_METHOD = "sign_in_method";
+
+    private final String FIREBASE_EMAIL_METHOD = "email";
+    private final String FIREBASE_FACEBOOK_METHOD = "Facebook";
+    private final String FIREBASE_GOOGLE_METHOD = "Google";
+
+    private final String FIREBASE_PLAN_ID = "item_id";
+    private final String FIREBASE_PLAN_NAME = "item_name";
+    private final String FIREBASE_CURRENCY_NAME = "currency";
+    private final String FIREBASE_VALUE = "value";
+    private final String FIREBASE_TRANSACTION_ID = "transaction_id";
+
+
+    private final String FIREBASE_ADD_CART = "add_to_cart";
+    private final String FIREBASE_ECOMMERCE_PURCHASE = "ecommerce_purchase";
+    private final String FIREBASE_CHANGE_SUBSCRIPTION = "change_subscription";
+    private final String FIREBASE_CANCEL_SUBSCRIPTION = "cancel_subscription";
+
+
     private static final long MILLISECONDS_PER_SECOND = 1000L;
     private static final long SECONDS_PER_MINUTE = 60L;
     private static final long MAX_SESSION_DURATION_IN_MINUTES = 30L;
@@ -803,6 +835,10 @@ public class AppCMSPresenter {
                     if (entitlementActive) {
                         Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
                         boolean requestAds = !svodServiceType && actionType != AppCMSActionType.PLAY_VIDEO_PAGE;
+
+                        //Send Firebase Analytics when user is subscribed and user is Logged In
+                        sendFirebaseLoginSubscribeSuccess();
+
                         String adsUrl;
                         if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE) {
                             if (pagePath != null && pagePath.contains(
@@ -959,20 +995,25 @@ public class AppCMSPresenter {
                 } else if (actionType == AppCMSActionType.LOGIN_FACEBOOK) {
                     Log.d(TAG, "Facebook Login selected");
                     loginFacebook();
+                    sendSignInFacebookFirebase();
                 } else if (actionType == AppCMSActionType.SIGNUP_FACEBOOK) {
                     Log.d(TAG, "Facebook Signup selected");
                     loginFacebook();
+                    sendSignUpFacebookFirebase();
                 } else if (actionType == AppCMSActionType.LOGIN_GOOGLE) {
                     Log.d(TAG, "Google Login selected");
                     loginGoogle();
+                    sendSignInGoogleFirebase();
                 } else if (actionType == AppCMSActionType.SIGNUP_GOOGLE) {
                     Log.d(TAG, "Google signup selected");
                     loginGoogle();
+                    sendSignUpGoogleFirebase();
                 } else {
                     if (actionType == AppCMSActionType.SIGNUP) {
                         Log.d(TAG, "Sign-Up selected: " + extraData[0]);
                         closeSoftKeyboard();
                         signup(extraData[0], extraData[1]);
+                        sendSignUpEmailFirebase();
                     } else if (actionType == AppCMSActionType.START_TRIAL) {
                         Log.d(TAG, "Start Trial selected");
                         navigateToSubscriptionPlansPage(null, null);
@@ -1633,6 +1674,16 @@ public class AppCMSPresenter {
                                                 getActiveSubscriptionPrice(currentActivity),
                                                 subscriptionRequest.getPlanId(),
                                                 subscriptionRequest.getCurrencyCode());
+
+                                        //Subscription Succes Firebase Log Event
+                                        Bundle bundle = new Bundle();
+                                        bundle.putString(FIREBASE_PLAN_ID, getActiveSubscriptionId(currentActivity));
+                                        bundle.putString(FIREBASE_PLAN_NAME, getActiveSubscriptionPlanName(currentActivity));
+                                        bundle.putString(FIREBASE_CURRENCY_NAME, getActiveSubscriptionCurrency(currentActivity));
+                                        bundle.putString(FIREBASE_VALUE, getActiveSubscriptionPrice(currentActivity));
+                                        //bundle.putString(FIREBASE_TRANSACTION_ID,get);
+                                        if (mFireBaseAnalytics != null)
+                                            mFireBaseAnalytics.logEvent(FIREBASE_CANCEL_SUBSCRIPTION, bundle);
                                     },
                                     currentUserPlan -> {
 
@@ -1672,6 +1723,10 @@ public class AppCMSPresenter {
                 appCMSMain.getInternalName(),
                 getLoggedInUser(currentActivity),
                 filmId);
+
+        //Firebase Succesfull Login Check on WatchList Add and Remove
+        mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
+
 
         try {
             AddToWatchlistRequest request = new AddToWatchlistRequest();
@@ -1759,6 +1814,9 @@ public class AppCMSPresenter {
                                           final Action1<UserVideoDownloadStatus> resultAction1) {
         downloadContentDatumAfterPermissionGranted = null;
         downloadResultActionAfterPermissionGranted = null;
+
+        //Send Firebase Analytics when user is subscribed and user is Logged In
+        sendFirebaseLoginSubscribeSuccess();
         if (isPreferedStorageLocationSDCard(currentActivity) &&
                 !hasWriteExternalStoragePermission()) {
             requestDownloadQualityScreen = true;
@@ -1880,6 +1938,8 @@ public class AppCMSPresenter {
         IntentFilter lowstorageFilter = new IntentFilter(Intent.ACTION_DEVICE_STORAGE_LOW);
         boolean hasLowStorage = currentActivity.registerReceiver(null, lowstorageFilter) != null;
 
+        //Send Firebase Analytics when user is subscribed and user is Logged In
+        sendFirebaseLoginSubscribeSuccess();
 
         if (isPreferedStorageLocationSDCard(currentActivity) &&
                 !hasWriteExternalStoragePermission()) {
@@ -3710,6 +3770,9 @@ public class AppCMSPresenter {
      */
     public boolean setLoggedInUser(Context context, String userId) {
         if (context != null) {
+            //Set the user Id when user is succesfully logged_in
+            if (mFireBaseAnalytics != null)
+                mFireBaseAnalytics.setUserProperty(USER_ID_KEY, userId);
             SharedPreferences sharedPrefs = context.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
             return sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, userId).commit() &&
                     setLoggedInTime(context);
@@ -4586,6 +4649,9 @@ public class AppCMSPresenter {
             if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED) {
                 title = currentActivity.getString(R.string.app_cms_login_and_subscription_required_title);
                 message = currentActivity.getString(R.string.app_cms_login_and_subscription_required_message);
+                //Set Firbase User Propert when user is not logged_in and unsubscribed
+                mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
             }
 
             if (dialogType == DialogType.CANNOT_UPGRADE_SUBSCRIPTION) {
@@ -4607,6 +4673,14 @@ public class AppCMSPresenter {
                 title = currentActivity.getString(R.string.app_cms_login_required_title);
                 message = currentActivity.getString(R.string.app_cms_login_required_message);
                 positiveButtonText = currentActivity.getString(R.string.app_cms_login_button_text);
+                //Set Firbase User Propert when user is not logged_in and unsubscribed
+                mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
+            }
+
+            if (dialogType == DialogType.SUBSCRIPTION_REQUIRED) {
+                mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
+                mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
             }
 
             AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
@@ -5047,6 +5121,16 @@ public class AppCMSPresenter {
                                 String.valueOf(planToPurchasePrice),
                                 subscriptionRequest.getPlanId(),
                                 subscriptionRequest.getCurrencyCode());
+
+                        //Subscription Succes Firebase Log Event
+                        Bundle bundle = new Bundle();
+                        bundle.putString(FIREBASE_PLAN_ID, subscriptionRequest.getPlanId());
+                        bundle.putString(FIREBASE_PLAN_NAME, planToPurchaseName);
+                        bundle.putString(FIREBASE_CURRENCY_NAME, currencyOfPlanToPurchase);
+                        bundle.putString(FIREBASE_VALUE, String.valueOf(planToPurchasePrice));
+                        if (mFireBaseAnalytics != null)
+                            mFireBaseAnalytics.logEvent(FIREBASE_ECOMMERCE_PURCHASE, bundle);
+
                         setActiveSubscriptionId(currentActivity, planToPurchase);
                         setActiveSubscriptionCurrency(currentActivity, currencyOfPlanToPurchase);
                         setActiveSubscriptionPlanName(currentActivity, planToPurchaseName);
@@ -6680,6 +6764,7 @@ public class AppCMSPresenter {
                 Log.d(TAG, "Login action selected: " + extraData[0]);
                 closeSoftKeyboard();
                 login(extraData[0], extraData[1]);
+                sendSignInEmailFirebase();
             } else if (actionType == AppCMSActionType.FORGOT_PASSWORD) {
                 Log.d(TAG, "Forgot password selected: " + extraData[0]);
                 closeSoftKeyboard();
@@ -6687,10 +6772,12 @@ public class AppCMSPresenter {
             } else if (actionType == AppCMSActionType.LOGIN_FACEBOOK) {
                 Log.d(TAG, "Login Facebook selected");
                 loginFacebook();
+                sendSignInFacebookFirebase();
             } else if (actionType == AppCMSActionType.SIGNUP) {
                 Log.d(TAG, "Sign-Up selected: " + extraData[0]);
                 closeSoftKeyboard();
                 signup(extraData[0], extraData[1]);
+                sendSignUpEmailFirebase();
             } else {
                 boolean appbarPresent = true;
                 boolean fullscreenEnabled = false;
@@ -7067,6 +7154,57 @@ public class AppCMSPresenter {
             });
         }
     }
+
+    public void sendSignUpFacebookFirebase() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_SIGN_UP_METHOD, FIREBASE_FACEBOOK_METHOD);
+        if (mFireBaseAnalytics != null)
+            mFireBaseAnalytics.logEvent(FIREBASE_SIGN_UP_EVENT, bundle);
+    }
+
+    public void sendSignUpGoogleFirebase() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_SIGN_UP_METHOD, FIREBASE_GOOGLE_METHOD);
+        if (mFireBaseAnalytics != null)
+            mFireBaseAnalytics.logEvent(FIREBASE_SIGN_UP_EVENT, bundle);
+    }
+
+    public void sendSignUpEmailFirebase() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_SIGN_UP_METHOD, FIREBASE_EMAIL_METHOD);
+        if (mFireBaseAnalytics != null)
+            mFireBaseAnalytics.logEvent(FIREBASE_SIGN_UP_EVENT, bundle);
+    }
+
+    public void sendSignInFacebookFirebase() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_SIGN_IN_METHOD, FIREBASE_FACEBOOK_METHOD);
+        if (mFireBaseAnalytics != null)
+            mFireBaseAnalytics.logEvent(FIREBASE_SIGN_In_EVENT, bundle);
+    }
+
+    public void sendSignInGoogleFirebase() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_SIGN_IN_METHOD, FIREBASE_GOOGLE_METHOD);
+        if (mFireBaseAnalytics != null)
+            mFireBaseAnalytics.logEvent(FIREBASE_SIGN_In_EVENT, bundle);
+    }
+
+    public void sendSignInEmailFirebase() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_SIGN_IN_METHOD, FIREBASE_EMAIL_METHOD);
+        if (mFireBaseAnalytics != null)
+            mFireBaseAnalytics.logEvent(FIREBASE_SIGN_In_EVENT, bundle);
+    }
+
+    public void sendFirebaseLoginSubscribeSuccess() {
+        //Send Firebase Analytics when user is subscribed and user is Logged In
+        mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_SUBSCRIBED);
+        mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
+        mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_ID, getActiveSubscriptionId(currentActivity));
+        mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_NAME,getActiveSubscriptionPlanName(currentActivity));
+    }
+
 
     private abstract static class AppCMSPageAPIAction implements Action1<AppCMSPageAPI> {
         boolean appbarPresent;
