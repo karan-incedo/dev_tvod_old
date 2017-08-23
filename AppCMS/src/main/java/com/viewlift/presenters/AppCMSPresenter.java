@@ -7207,7 +7207,6 @@ public class AppCMSPresenter {
 
                     appCMSPresenter.startDownload(downloadQueueItem.contentDatum,
                             downloadQueueItem.resultAction1);
-                    startNextDownload = false;
                 }
                 try {
                     Thread.sleep(1000);
