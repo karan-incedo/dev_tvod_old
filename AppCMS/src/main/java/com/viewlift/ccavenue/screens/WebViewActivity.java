@@ -1,7 +1,9 @@
 package com.viewlift.ccavenue.screens;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -152,7 +154,7 @@ public class WebViewActivity extends Activity {
 	    	        }
 
 	    	        if (url.equalsIgnoreCase(cancelRedirectURL)) {
-						webview.stopLoading();
+						//webview.stopLoading();
 						new updateSubscriptionPlanAsyncTask ().execute();
 					}
 	    	    }
@@ -169,6 +171,14 @@ public class WebViewActivity extends Activity {
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.ORDER_ID,orderID));
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.REDIRECT_URL,cancelRedirectURL));
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.CANCEL_URL,cancelRedirectURL));
+			if (getIntent().getBooleanExtra("renewable",false)) {
+				params.append(ServiceUtility.addToPostParams("payment_option","OPTCRDC")) ;
+			} else {
+				params.append(ServiceUtility.addToPostParams("payment_option","OPTCRDC")) ;
+				params.append(ServiceUtility.addToPostParams("payment_option","OPTDBCRD")) ;
+				params.append(ServiceUtility.addToPostParams("payment_option","OPTNBK")) ;
+			}
+
 			params.append(ServiceUtility.addToPostParams("merchant_param1",getIntent().getStringExtra(getString(R.string.app_cms_site_name))));
 			params.append(ServiceUtility.addToPostParams("merchant_param2",getIntent().getStringExtra(getString(R.string.app_cms_user_id))));
 			params.append(ServiceUtility.addToPostParams("merchant_param3",getIntent().getStringExtra(getString(R.string.app_cms_plan_id))));
@@ -212,13 +222,16 @@ public class WebViewActivity extends Activity {
 		HttpURLConnection urlConnection = null;
 		BufferedReader reader = null;
 		try {
-			URL url = new URL(getString(R.string.app_cms_baseurl)+"/ccavenue/ccavenue/rsakey");
+			//URL url = new URL(getString(R.string.app_cms_baseurl)+"/ccavenue/ccavenue/rsakey");
+			URL url = new URL ("http://release-api.viewlift.com/ccavenue/ccavenue/rsakey") ;
 			urlConnection = (HttpURLConnection) url.openConnection();
 			urlConnection.setDoOutput(true);
 			// is output buffer writter
 			urlConnection.setRequestMethod("POST");
 			urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 			urlConnection.setRequestProperty("Accept", "application/json");
+			urlConnection.setRequestProperty ("Authorization", getIntent().getStringExtra("auth_token"));
+			urlConnection.setRequestProperty("x-api-token",getIntent().getStringExtra("x-api-token"));
 			//set headers and method
 			Writer writer = new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream(), "UTF-8"));
 			writer.write(JsonDATA);
@@ -299,7 +312,7 @@ public class WebViewActivity extends Activity {
 			JSONObject post_dict = new JSONObject();
 
 			try {
-				  post_dict.put("vlTransactionId", orderID) ;
+				        post_dict.put("vlTransactionId", orderID) ;
 						post_dict.put("email",getIntent().getStringExtra("email"));
 						post_dict.put("currencyCode","INR");
 						post_dict.put("siteId",getIntent().getStringExtra("siteId"));
@@ -317,7 +330,7 @@ public class WebViewActivity extends Activity {
 			HttpURLConnection urlConnection = null;
 			BufferedReader reader = null;
 			try {
-				URL url = new URL(getString(R.string.app_cms_baseurl)+ "/subscription/subscribe");
+				URL url = new URL("http://release-api.viewlift.com/subscription/subscribe");
 				urlConnection = (HttpURLConnection) url.openConnection();
 				urlConnection.setDoOutput(true);
 				// is output buffer writter
@@ -347,6 +360,9 @@ public class WebViewActivity extends Activity {
 					// Stream was empty. No point in parsing.
 					return null;
 				}
+				JsonResponse = buffer.toString();
+				//response data
+				Log.i("TAG", JsonResponse);
 			} catch (IOException e) {
 				e.printStackTrace();
 			} finally {
@@ -370,8 +386,26 @@ public class WebViewActivity extends Activity {
 			// Dismiss the progress dialog
 			if (dialog.isShowing())
 				dialog.dismiss();
-			finlizePaymentWithUpdatingBackend () ;
+			displaySuccessPaymentDialog () ;
 		}
 	}
+
+   private void displaySuccessPaymentDialog () {
+	   AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+	   builder1.setMessage("Write your message here.");
+	   builder1.setCancelable(true);
+
+	   builder1.setPositiveButton(
+			   "Start Watching",
+			   new DialogInterface.OnClickListener() {
+				   public void onClick(DialogInterface dialog, int id) {
+					   finlizePaymentWithUpdatingBackend () ;
+					   dialog.cancel();
+				   }
+			   });
+
+	   AlertDialog alert11 = builder1.create();
+	   alert11.show();
+   }
 
 } 

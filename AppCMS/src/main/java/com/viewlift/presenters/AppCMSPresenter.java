@@ -407,7 +407,7 @@ public class AppCMSPresenter {
     private Action1<UserVideoDownloadStatus> downloadResultActionAfterPermissionGranted;
     private boolean requestDownloadQualityScreen;
     private DownloadQueueThread downloadQueueThread;
-
+    boolean isRenewable ;
     @Inject
     public AppCMSPresenter(Gson gson,
                            AppCMSMainUICall appCMSMainUICall,
@@ -1529,7 +1529,9 @@ public class AppCMSPresenter {
                                               String currency,
                                               String planName,
                                               double planPrice,
-                                              String recurringPaymentCurrencyCode, String countryCode) {
+                                              String recurringPaymentCurrencyCode,
+                                              String countryCode,
+                                              boolean isRenewable) {
         if (currentActivity != null) {
             launchType = LaunchType.SUBSCRIBE;
             skuToPurchase = sku;
@@ -1539,6 +1541,7 @@ public class AppCMSPresenter {
             planToPurchasePrice = planPrice;
             currencyCode = recurringPaymentCurrencyCode ;
             this.countryCode = countryCode ;
+            this.isRenewable = isRenewable ;
             if (isUserLoggedIn(currentActivity)) {
                 initiateItemPurchase();
             } else {
@@ -1548,7 +1551,8 @@ public class AppCMSPresenter {
     }
 
     private void initiateCCAvenuePurchase () {
-        //Log.v("authtoken",getAuthToken(currentActivity)) ;
+        Log.v("authtoken",getAuthToken(currentActivity)) ;
+        Log.v("apikey",apikey) ;
         try {
             String strAmount = Double.toString(planToPurchasePrice);
             Intent intent = new Intent(currentActivity,WebViewActivity.class);
@@ -1566,6 +1570,7 @@ public class AppCMSPresenter {
             intent.putExtra("authorizedUserName", getLoggedInUser(currentActivity));
             intent.putExtra("x-api-token", apikey);
             intent.putExtra("auth_token", getAuthToken(currentActivity));
+            intent.putExtra("renewable",isRenewable) ;
             currentActivity.startActivityForResult(intent,1);
         } catch (Exception ex) {
             ex.printStackTrace();
