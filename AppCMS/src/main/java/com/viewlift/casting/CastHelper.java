@@ -34,6 +34,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import rx.Observable;
@@ -84,6 +85,12 @@ public class CastHelper {
     private String title = "";
     private String videoUrl = "";
     private String paramLink = "";
+
+    private String mStreamId;
+    private long mStartBufferMilliSec;
+    private long mStopBufferMilliSec;
+    private static double ttfirstframe=0d;
+
 
     private CastHelper(Context mContext) {
         mAppContext = mContext.getApplicationContext();
@@ -344,6 +351,7 @@ public class CastHelper {
             launchSingeRemoteMedia(binder, videoUrl, filmId, currentPosition, true);
         }
 
+
     }
 
 
@@ -378,6 +386,26 @@ public class CastHelper {
                 customData,
                 mAppContext), true, currentPosition);
         getRemoteMediaClient().addListener(remoteListener);
+
+        try {
+            mStreamId = appCMSPresenterComponenet.getStreamingId(binder.getContentData().getGist().getTitle());
+        }catch (Exception e){
+            e.printStackTrace();
+            mStreamId=filmId+appCMSPresenterComponenet.getCurrentTimeStamp();
+        }
+        mStopBufferMilliSec =new Date().getTime();
+        appCMSPresenterComponenet.sendBeaconMessage(filmId,
+                binder.getContentData().getGist().getPermalink(),
+                beaconScreenName,
+                currentPosition,
+                true,
+                AppCMSPresenter.BeaconEvent.PLAY,
+                "Video",
+                null,
+                null,
+                null,
+                null,
+                0d);
     }
 
     public void openRemoteController() {
@@ -576,11 +604,23 @@ public class CastHelper {
                     if (!TextUtils.isEmpty(currentRemoteMediaId)) {
                         appCMSPresenterComponenet.updateWatchedTime(currentRemoteMediaId,
                                 castCurrentDuration);
-                        appCMSPresenterComponenet.sendBeaconPingMessage(currentRemoteMediaId,
+                     /*   appCMSPresenterComponenet.sendBeaconPingMessage(currentRemoteMediaId,
                                 currentMediaParamKey,
                                 beaconScreenName,
                                 castCurrentDuration,
-                                true);
+                                true);*/
+                        appCMSPresenterComponenet.sendBeaconMessage(currentRemoteMediaId,
+                                currentMediaParamKey,
+                                beaconScreenName,
+                                castCurrentDuration,
+                                true,
+                                AppCMSPresenter.BeaconEvent.PING,
+                                "Video",
+                                null,
+                                null,
+                                null,
+                                null,
+                                0d);
                     }
 
                 }
@@ -733,11 +773,26 @@ public class CastHelper {
                     String currentMediaParamKey = CastingUtils.getRemoteParamKey(mAppContext);
 
                     if (!TextUtils.isEmpty(currentRemoteMediaId)) {
-                        appCMSPresenterComponenet.sendBeaconPlayMessage(currentRemoteMediaId,
+                        mStopBufferMilliSec =new Date().getTime();
+                        System.out.println("Beacon diff on cast = "+(mStopBufferMilliSec-mStartBufferMilliSec)/1000d);
+                        ttfirstframe=((mStopBufferMilliSec-mStartBufferMilliSec)/1000d);
+                       /* appCMSPresenterComponenet.sendBeaconPlayMessage(currentRemoteMediaId,
                                 currentMediaParamKey,
                                 beaconScreenName,
                                 castCurrentDuration,
-                                true);
+                                true);*/
+                        appCMSPresenterComponenet.sendBeaconMessage(currentRemoteMediaId,
+                                currentMediaParamKey,
+                                beaconScreenName,
+                                castCurrentDuration,
+                                true,
+                                AppCMSPresenter.BeaconEvent.FIRST_FRAME,
+                                "Video",
+                                null,
+                                null,
+                                null,
+                                null,
+                                ttfirstframe);
                         sentBeaconPlay = true;
                     }
                 }

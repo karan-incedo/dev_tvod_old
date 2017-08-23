@@ -40,6 +40,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.util.LruCache;
 import android.view.Gravity;
@@ -189,6 +190,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -206,10 +209,13 @@ import java.util.Queue;
 import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 
 import io.realm.RealmList;
@@ -4000,6 +4006,9 @@ public class AppCMSPresenter {
 
     public boolean setNetworkConnected(Context context, boolean networkConnected) {
         if (context != null) {
+            if (networkConnected) {
+                sendOfflineBeaconMessage();
+            }
             SharedPreferences sharedPrefs =
                     context.getSharedPreferences(NETWORK_CONNECTED_SHARED_PREF_NAME, 0);
             return sharedPrefs.edit().putBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, networkConnected).commit();
@@ -4568,7 +4577,7 @@ public class AppCMSPresenter {
     }
 
     public boolean isPageAVideoPage(String pageName) {
-        if (currentActivity != null) {
+        if (currentActivity != null && pageName!=null) {
             return pageName.contains(currentActivity.getString(R.string.app_cms_video_page_page_name));
         }
         return false;
@@ -5033,6 +5042,17 @@ public class AppCMSPresenter {
             beaconMessageThread.run();
         }
     }
+    public void sendBeaconPlayMessage(String vid, String screenName, String parentScreenName,
+                                      long currentPosition, boolean usingChromecast) {
+        Log.d(TAG, "Sending Beacon Play Message");
+        String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.PLAY, usingChromecast);
+        if (url != null) {
+            Log.d(TAG, "Beacon Play: " + url);
+            beaconMessageRunnable.setUrl(url);
+            beaconMessageThread.run();
+        }
+    }
+
 
     public ArrayList<BeaconRequest> getBeaconRequestList() {
         String uid = InstanceID.getInstance(currentActivity).getId();
@@ -5059,6 +5079,7 @@ public class AppCMSPresenter {
         AppCMSBeaconRequest request = new AppCMSBeaconRequest();
 
         if (url != null && beaconRequests != null) {
+            System.out.println("Beacon data : "+gson.toJson(beaconRequests));
             request.setBeaconRequest(beaconRequests);
             appCMSBeaconCall.call(url, (Boolean aBoolean) -> {
                 try {
@@ -5073,14 +5094,19 @@ public class AppCMSPresenter {
                     Log.d(TAG, "Beacon fail Event: offline  due to: " + e.getMessage());
                 }
             }, request);
+        }else{
+            Log.d(TAG, "No offline Beacon Event: available ");
+
         }
     }
 
     public void sendBeaconMessage(String vid, String screenName, String parentScreenName,
-                                  long currentPosition, boolean usingChromecast, BeaconEvent event, String mediaType, String bitrate, String height, String width) {
+                                  long currentPosition, boolean usingChromecast, BeaconEvent event,
+                                  String mediaType, String bitrate, String height, String width,
+                                  String streamid,double ttfirstframe) {
 
         BeaconRequest beaconRequest = getBeaconRequest(vid, screenName, parentScreenName, currentPosition, event,
-                usingChromecast, mediaType, bitrate, height, width);
+                usingChromecast, mediaType, bitrate, height, width,streamid,ttfirstframe);
         if (!isNetworkConnected()) {
             currentActivity.runOnUiThread(() -> {
                 realmController.addOfflineBeaconData(beaconRequest.convertToOfflineBeaconData());
@@ -5113,15 +5139,14 @@ public class AppCMSPresenter {
         }
     }
 
-    public void sendBeaconPlayMessage(String vid, String screenName, String parentScreenName,
-                                      long currentPosition, boolean usingChromecast) {
-        Log.d(TAG, "Sending Beacon Play Message");
-        String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.PLAY, usingChromecast);
-        if (url != null) {
-            Log.d(TAG, "Beacon Play: " + url);
-            beaconMessageRunnable.setUrl(url);
-            beaconMessageThread.run();
-        }
+    public String getStreamingId(String filmName) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
+
+        SecretKeySpec key = new SecretKeySpec((getCurrentTimeStamp()).getBytes("UTF-8" ), "HmacSHA1");
+        Mac mac = Mac.getInstance("HmacSHA1");
+        mac.init(key);
+        byte[] bytes = mac.doFinal(filmName.getBytes("UTF-8"));
+        return UUID.nameUUIDFromBytes(bytes).toString();
+
     }
 
     private String getPermalinkCompletePath(String pagePath) {
@@ -5135,7 +5160,8 @@ public class AppCMSPresenter {
 
     private BeaconRequest getBeaconRequest(String vid, String screenName, String parentScreenName,
                                            long currentPosition, BeaconEvent event, boolean usingChromecast,
-                                           String mediaType, String bitrte, String resolutionHeight, String resolutionWidth) {
+                                           String mediaType, String bitrte, String resolutionHeight,
+                                           String resolutionWidth,String streamId,double ttfirstframe) {
         BeaconRequest beaconRequest = new BeaconRequest();
         String uid = InstanceID.getInstance(currentActivity).getId();
         int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
@@ -5154,7 +5180,7 @@ public class AppCMSPresenter {
         beaconRequest.setPa(event.toString());
         beaconRequest.setMedia_type(mediaType);
         beaconRequest.setTstampoverride(getCurrentTimeStamp());
-        beaconRequest.setStream_id(vid);
+        beaconRequest.setStream_id(streamId);
         beaconRequest.setDp1(currentActivity.getString(R.string.app_cms_beacon_dpm_android));
         beaconRequest.setUrl(getPermalinkCompletePath(screenName));
         beaconRequest.setRef(parentScreenName);
@@ -5162,9 +5188,9 @@ public class AppCMSPresenter {
         beaconRequest.setBitrate(bitrte);
         beaconRequest.setResolutionheight(resolutionHeight);
         beaconRequest.setResolutionwidth(resolutionWidth);
-       /* if (event==BeaconEvent.FIRST_FRAME){
-            beaconRequest.setTtfirstframe();
-        }*/
+        if (event==BeaconEvent.FIRST_FRAME){
+            beaconRequest.setTtfirstframe(String.format("%.2f",ttfirstframe));
+        }
         if (usingChromecast) {
             beaconRequest.setDp2("Chromecast");
         }
@@ -7368,7 +7394,7 @@ public class AppCMSPresenter {
     }
 
     public enum BeaconEvent {
-        PLAY, RESUME, PING, AD_REQUEST, AD_IMPRESSION, FIRST_FRAME, BUFFERING
+        PLAY, RESUME, PING, AD_REQUEST, AD_IMPRESSION, FIRST_FRAME, BUFFERING,FAILED_TO_START,DROPPED_STREAM
     }
 
     public enum DialogType {
