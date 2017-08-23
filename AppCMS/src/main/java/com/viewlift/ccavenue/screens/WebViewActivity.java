@@ -173,11 +173,11 @@ public class WebViewActivity extends Activity {
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.CANCEL_URL,cancelRedirectURL));
 			if (getIntent().getBooleanExtra("renewable",false)) {
 				params.append(ServiceUtility.addToPostParams("payment_option","OPTCRDC")) ;
-			} else {
-				params.append(ServiceUtility.addToPostParams("payment_option","OPTCRDC")) ;
+			}/* else {
 				params.append(ServiceUtility.addToPostParams("payment_option","OPTDBCRD")) ;
 				params.append(ServiceUtility.addToPostParams("payment_option","OPTNBK")) ;
-			}
+				params.append(ServiceUtility.addToPostParams("payment_option","OPTCRDC")) ;
+			}*/
 
 			params.append(ServiceUtility.addToPostParams("merchant_param1",getIntent().getStringExtra(getString(R.string.app_cms_site_name))));
 			params.append(ServiceUtility.addToPostParams("merchant_param2",getIntent().getStringExtra(getString(R.string.app_cms_user_id))));
