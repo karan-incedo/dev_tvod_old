@@ -58,12 +58,12 @@ public abstract class TVBaseView extends FrameLayout {
                 data.getGist().getPrimaryCategory() != null ?
                         data.getGist().getPrimaryCategory().getTitle() :
                         null;
-        boolean appendFirstSep = runtime > 0 &&
+        boolean appendFirstSep = runtime >= 0 &&
                 (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
-        boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year)) &&
+        boolean appendSecondSep = (runtime >= 0 || !TextUtils.isEmpty(year)) &&
                 !TextUtils.isEmpty(primaryCategory);
         StringBuffer infoText = new StringBuffer();
-        if (runtime > 0) {
+        if (runtime >= 0) {
             infoText.append(runtime + " " + context.getResources().getQuantityString(R.plurals.mins_abbreviation , (int)runtime));
         }
         if (appendFirstSep) {
