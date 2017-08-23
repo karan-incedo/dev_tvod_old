@@ -64,6 +64,7 @@ import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.NavBarItemView;
 import com.viewlift.views.customviews.ViewCreator;
+import com.viewlift.views.fragments.AppCMSChangePasswordFragment;
 import com.viewlift.views.fragments.AppCMSEditProfileFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSPageFragment;
@@ -779,11 +780,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                     appCMSPresenter.getLoggedInUserEmail(this));
                     break;
 
+                case CHANGE_PASSWORD:
+                    appCMSPageFragment = AppCMSChangePasswordFragment.newInstance();
+                    break;
+
                 case NONE:
                     appCMSPageFragment = AppCMSPageFragment.newInstance(this, appCMSBinder);
                     break;
 
                 default:
+                    break;
             }
 
             if (appCMSPageFragment != null) {
