@@ -305,5 +305,7 @@
     <string name="app_cms_default_download_quality">720p</string>
     <string name="app_cms_download_queue_toast_message">%1$s has been queued for download.</string>
     <string name="app_cms_download_already_queued_toast_message">%1$s has already been queued for download.</string>
+    <string name="app_cms_subscription_cancel_for_google_play_user_dialog">Please login as the Google Play user used to make this subscription to cancel.</string>
+    <string name="app_cms_subscription_google_play_cancel_title">Google Play User is Not Logged In</string>
 
 </resources>
