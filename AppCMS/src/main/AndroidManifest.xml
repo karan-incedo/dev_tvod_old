@@ -88,6 +88,18 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:label="@string/app_name"
+            android:name="com.viewlift.ccavenue.screens.WebViewActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <activity
+            android:label="@string/app_name"
+            android:name="com.viewlift.ccavenue.screens.StatusActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+
         <provider
             android:name="com.viewlift.models.data.appcms.providers.AppCMSSearchableContentProvider"
             android:authorities="@string/app_cms_search_provider" />

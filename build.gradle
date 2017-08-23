@@ -1,5 +1,4 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 buildscript {
     ext {
         realmVersion = "3.5.0"
@@ -17,7 +16,6 @@ buildscript {
         // in the individual module build.gradle files
     }
 }
-
 allprojects {
     repositories {
         jcenter()
@@ -29,7 +27,7 @@ allprojects {
         mockitoVersion = "1.10.19"
         espressoVersion = "2.2.2"
         dexmakerVersion = "1.0"
-        androidsupportVersion = "25.4.0"
+        androidsupportVersion = "26.+"
         androidsupportconstraintVersion = "1.0.2"
         glideVersion = "3.8.0"
         daggerVersion = "2.9"
@@ -49,11 +47,11 @@ allprojects {
         stagVersion = "2.3.1"
         facebookSdkVersion = "[4,5)"
         urbanAirshipVersion = "8.3.2"
+        appsFlyerVersion = "4.7.4@aar"
         glideTransformationVersion = "2.0.2"
         threetenBpVersion = "1.0.5"
     }
 }
-
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

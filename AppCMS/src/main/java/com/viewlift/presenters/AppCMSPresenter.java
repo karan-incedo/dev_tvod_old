@@ -71,6 +71,8 @@ import com.google.gson.Gson;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
+import com.viewlift.ccavenue.screens.WebViewActivity;
+import com.viewlift.ccavenue.utility.AvenuesParams;
 import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenResponse;
 import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
 import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
@@ -410,6 +412,8 @@ public class AppCMSPresenter {
     private String googleEmail;
     private String skuToPurchase;
     private String planToPurchase;
+    private String currencyCode ;
+    private String countryCode ;
     private String currencyOfPlanToPurchase;
     private String planToPurchaseName;
     private String apikey;
@@ -430,7 +434,7 @@ public class AppCMSPresenter {
     private Action1<UserVideoDownloadStatus> downloadResultActionAfterPermissionGranted;
     private boolean requestDownloadQualityScreen;
     private DownloadQueueThread downloadQueueThread;
-
+    boolean isRenewable ;
     @Inject
     public AppCMSPresenter(Gson gson,
                            AppCMSMainUICall appCMSMainUICall,
@@ -1586,7 +1590,10 @@ public class AppCMSPresenter {
                                               String planId,
                                               String currency,
                                               String planName,
-                                              double planPrice) {
+                                              double planPrice,
+                                              String recurringPaymentCurrencyCode,
+                                              String countryCode,
+                                              boolean isRenewable) {
         if (currentActivity != null) {
             launchType = LaunchType.SUBSCRIBE;
             skuToPurchase = sku;
@@ -1594,7 +1601,9 @@ public class AppCMSPresenter {
             planToPurchaseName = planName;
             currencyOfPlanToPurchase = currency;
             planToPurchasePrice = planPrice;
-
+            currencyCode = recurringPaymentCurrencyCode ;
+            this.countryCode = countryCode ;
+            this.isRenewable = isRenewable ;
             if (isUserLoggedIn(currentActivity)) {
                 initiateItemPurchase();
             } else {
@@ -1603,50 +1612,85 @@ public class AppCMSPresenter {
         }
     }
 
+    private void initiateCCAvenuePurchase () {
+        Log.v("authtoken",getAuthToken(currentActivity)) ;
+        Log.v("apikey",apikey) ;
+        try {
+            String strAmount = Double.toString(planToPurchasePrice);
+            Intent intent = new Intent(currentActivity,WebViewActivity.class);
+            intent.putExtra(AvenuesParams.CURRENCY, currencyCode);
+            //intent.putExtra(AvenuesParams.AMOUNT, "500");
+            intent.putExtra(AvenuesParams.AMOUNT, strAmount);
+            intent.putExtra(currentActivity.getString(R.string.app_cms_site_name),appCMSMain.getInternalName()) ;
+            intent.putExtra(currentActivity.getString(R.string.app_cms_user_id),getLoggedInUser(currentActivity)) ;
+            intent.putExtra(currentActivity.getString(R.string.app_cms_plan_id),planToPurchase) ;
+            intent.putExtra("plan_to_purchase_name", planToPurchaseName);
+
+
+            intent.putExtra("siteId", appCMSMain.getInternalName());
+            intent.putExtra("email", getLoggedInUserEmail(currentActivity));
+            intent.putExtra("authorizedUserName", getLoggedInUser(currentActivity));
+            intent.putExtra("x-api-token", apikey);
+            intent.putExtra("auth_token", getAuthToken(currentActivity));
+            intent.putExtra("renewable",isRenewable) ;
+            currentActivity.startActivityForResult(intent,1);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public void initiateItemPurchase() {
-        if (currentActivity != null &&
-                inAppBillingService != null) {
-            try {
-                Bundle activeSubs = inAppBillingService.getPurchases(3,
-                        currentActivity.getPackageName(),
-                        "subs",
-                        null);
-                ArrayList<String> subscribedSkus = activeSubs.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
 
-                Bundle buyIntentBundle;
-                if (subscribedSkus != null && !subscribedSkus.isEmpty()) {
-                    buyIntentBundle = inAppBillingService.getBuyIntentToReplaceSkus(5,
-                            currentActivity.getPackageName(),
-                            subscribedSkus,
-                            skuToPurchase,
-                            "subs",
-                            null);
-                } else {
-                    buyIntentBundle = inAppBillingService.getBuyIntent(3,
-                            currentActivity.getPackageName(),
-                            skuToPurchase,
-                            "subs",
-                            null);
-                }
+        if (countryCode.equalsIgnoreCase("IN")) {
 
-                PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
-                if (pendingIntent != null) {
-                    currentActivity.startIntentSenderForResult(pendingIntent.getIntentSender(),
-                            RC_PURCHASE_PLAY_STORE_ITEM,
-                            new Intent(),
-                            0,
-                            0,
-                            0);
-                } else {
-                    showToast(currentActivity.getString(R.string.app_cms_cancel_subscription_subscription_not_valid_message),
-                            Toast.LENGTH_LONG);
-                }
-            } catch (RemoteException | IntentSender.SendIntentException e) {
-                Log.e(TAG, "Failed to purchase item with sku: "
-                        + getActiveSubscriptionSku(currentActivity));
-            }
+            initiateCCAvenuePurchase () ;
+
         } else {
-            Log.e(TAG, "InAppBillingService: " + inAppBillingService);
+
+            if (currentActivity != null &&
+                    inAppBillingService != null) {
+                try {
+                    Bundle activeSubs = inAppBillingService.getPurchases(3,
+                            currentActivity.getPackageName(),
+                            "subs",
+                            null);
+                    ArrayList<String> subscribedSkus = activeSubs.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
+
+                    Bundle buyIntentBundle;
+                    if (subscribedSkus != null && !subscribedSkus.isEmpty()) {
+                        buyIntentBundle = inAppBillingService.getBuyIntentToReplaceSkus(5,
+                                currentActivity.getPackageName(),
+                                subscribedSkus,
+                                skuToPurchase,
+                                "subs",
+                                null);
+                    } else {
+                        buyIntentBundle = inAppBillingService.getBuyIntent(3,
+                                currentActivity.getPackageName(),
+                                skuToPurchase,
+                                "subs",
+                                null);
+                    }
+
+                    PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+                    if (pendingIntent != null) {
+                        currentActivity.startIntentSenderForResult(pendingIntent.getIntentSender(),
+                                RC_PURCHASE_PLAY_STORE_ITEM,
+                                new Intent(),
+                                0,
+                                0,
+                                0);
+                    } else {
+                        showToast(currentActivity.getString(R.string.app_cms_cancel_subscription_subscription_not_valid_message),
+                                Toast.LENGTH_LONG);
+                    }
+                } catch (RemoteException | IntentSender.SendIntentException e) {
+                    Log.e(TAG, "Failed to purchase item with sku: "
+                            + getActiveSubscriptionSku(currentActivity));
+                }
+            } else {
+                Log.e(TAG, "InAppBillingService: " + inAppBillingService);
+            }
         }
     }
 
@@ -5050,7 +5094,35 @@ public class AppCMSPresenter {
         }
     }
 
-    public void finalizeSignupAfterCCAvenueSubscription() {
+    public void finalizeSignupAfterCCAvenueSubscription (Intent data) {
+        String url = currentActivity.getString(R.string.app_cms_signin_api_url,
+                appCMSMain.getApiBaseUrl(),
+                appCMSMain.getInternalName());
+        startLoginAsyncTask(url,
+                subscriptionUserEmail,
+                subscriptionUserPassword,
+                false,
+                false,
+                true,
+                true);
+
+
+//        try {
+//            appCMSSubscriptionPlanCall.call(
+//                    currentActivity.getString(R.string.app_cms_register_subscription_api_url,
+//                            appCMSMain.getApiBaseUrl(),
+//                            appCMSMain.getInternalName(),
+//                            currentActivity.getString(R.string.app_cms_subscription_platform_key)),
+//                    subscriptionCallType,
+//                    subscriptionRequest,
+//                    apikey,
+//                    getAuthToken(currentActivity),
+//                    result -> {
+//                        //
+//                    });
+//        } catch (Exception ex) {
+//            ex.
+//        }
 
     }
 
@@ -5117,8 +5189,8 @@ public class AppCMSPresenter {
                         planToPurchase = null;
                         currencyOfPlanToPurchase = null;
                         planToPurchaseName = null;
-                        planToPurchasePrice = 0.0;
-
+                        planToPurchasePrice = 0.0f;
+                        countryCode = "" ;
                         if (launchType == LaunchType.SUBSCRIBE) {
                             launchType = LaunchType.LOGIN_AND_SIGNUP;
                             String url = currentActivity.getString(R.string.app_cms_signin_api_url,

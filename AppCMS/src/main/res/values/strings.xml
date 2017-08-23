@@ -317,4 +317,19 @@
     <string name="app_cms_subscription_cancel_for_google_play_user_dialog">Please login as the Google Play user used to make this subscription to cancel.</string>
     <string name="app_cms_subscription_google_play_cancel_title">Google Play User is Not Logged In</string>
 
+    <!-- CCAvenue Constant Strings -->
+    <string name="app_cms_access_code">access_code</string>
+    <string name="app_cms_merchant_id">merchant_id</string>
+    <string name="app_cms_order_id">order_id</string>
+    <string name="app_cms_amount">amount</string>
+    <string name="app_cms_currency">currency</string>
+    <string name="app_cms_enc_val">enc_val</string>
+    <string name="app_cms_redirect_url">redirect_url</string>
+    <string name="app_cms_cancel_url">cancel_url</string>
+    <string name="app_cms_rsa_key_url">rsa_key_url</string>
+    <string name="app_cms_plan_id">plan_id</string>
+    <string name="app_cms_rsa_trans_url">https://test.ccavenue.com/transaction/initTrans</string>
+    <string name="app_cms_ccavenue_payment_success">ccavenue_payment_success</string>
+    <!--<string name="app_cms_rsa_trans_url">https://secure.ccavenue.com/transaction/initTrans</string>-->
+
 </resources>
