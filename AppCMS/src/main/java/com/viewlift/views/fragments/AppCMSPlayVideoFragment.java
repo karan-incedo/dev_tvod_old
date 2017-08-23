@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -73,6 +74,30 @@ public class AppCMSPlayVideoFragment extends Fragment
     private ImaSdkFactory sdkFactory;
     private AdsLoader adsLoader;
     private AdsManager adsManager;
+
+    Handler mProgressHandler;
+    Runnable mProgressRunnable;
+    long mTotalVideoDuration;
+
+    //Setting the Key Values for Firebase Player Events
+    private final String FIREBASE_STREAM_START = "stream_start";
+    private final String FIREBASE_STREAM_25 = "stream_25_pct";
+    private final String FIREBASE_STREAM_50 = "stream_50_pct";
+    private final String FIREBASE_STREAM_75 = "stream_75_pct";
+
+    private final String FIREBASE_VIDEO_ID_KEY = "video_id";
+    private final String FIREBASE_VIDEO_NAME_KEY = "video_name";
+    private final String FIREBASE_SERIES_ID_KEY = "series_id";
+    private final String FIREBASE_SERIES_NAME_KEY = "series_name";
+    private final String FIREBASE_PLAYER_NAME_KEY = "player_name";
+    private final String FIREBASE_MEDIA_TYPE_KEY = "media_type";
+
+    private final String FIREBASE_PLAYER_NATIVE = "Native";
+    private final String FIREBASE_PLAYER_CHROMECAST = "Chromecast";
+    private final String FIREBASE_MEDIA_TYPE_VIDEO = "Video";
+    private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
+
+
 
     AdsLoader.AdsLoadedListener listenerAdsLoaded = adsManagerLoadedEvent -> {
         adsManager = adsManagerLoadedEvent.getAdsManager();
@@ -178,6 +203,9 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         beaconMsgTimeoutMsec = getActivity().getResources().getInteger(R.integer.app_cms_beacon_timeout_msec);
 
+        // It Handles the player stream Firebase events.
+        setFirebaseProgressHandling();
+
         parentScreenName = getContext().getString(R.string.app_cms_beacon_video_player_parent_screen_name);
         setRetainInstance(true);
 
@@ -244,6 +272,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                         beaconMessageThread.sendBeaconPing = true;
                         if (!beaconMessageThread.isAlive()) {
                             beaconMessageThread.start();
+                            mTotalVideoDuration = videoPlayerView.getDuration() / 1000;
+                            mTotalVideoDuration -= mTotalVideoDuration % 4;
+                            mProgressHandler.post(mProgressRunnable);
                         }
                         if (!sentBeaconPlay) {
                             appCMSPresenter.sendBeaconPlayMessage(filmId,
@@ -320,7 +351,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (screenVideoName == null)
             return;
         Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, PLAYER_SCREEN_NAME + "-" + screenVideoName);
+        bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, PLAYER_SCREEN_NAME + "-" + screenVideoName);
         //Logs an app event.
         appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
         //Sets whether analytics collection is enabled for this app on this device.
@@ -412,6 +443,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                 isAdDisplayed = true;
                 if (beaconMessageThread != null) {
                     beaconMessageThread.sendBeaconPing = false;
+                    if (mProgressHandler != null)
+                        mProgressHandler.removeCallbacks(mProgressRunnable);
                 }
                 if (appCMSPresenter != null) {
                     appCMSPresenter.sendBeaconAdImpression(filmId,
@@ -438,6 +471,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                 if (beaconMessageThread != null && !beaconMessageThread.isAlive()) {
                     beaconMessageThread.start();
 
+                    if (mProgressHandler != null)
+                        mProgressHandler.post(mProgressRunnable);
                 }
                 break;
 
@@ -469,6 +504,41 @@ public class AppCMSPlayVideoFragment extends Fragment
         adsLoader = null;
 
         super.onDestroyView();
+    }
+
+    public void setFirebaseProgressHandling(){
+        mProgressHandler = new Handler();
+        mProgressRunnable = new Runnable() {
+            @Override
+            public void run() {
+                mProgressHandler.removeCallbacks(this);
+                if (((videoPlayerView.getCurrentPosition() / 1000) % (mTotalVideoDuration / 4)) == 0) {
+                    long mPercentage = (long) (((float) (videoPlayerView.getCurrentPosition() / 1000) / mTotalVideoDuration) * 100);
+                    sendProgressAnalyticEvents(mPercentage);
+                }
+                mProgressHandler.postDelayed(this, 1000);
+            }
+        };
+    }
+
+    public void sendProgressAnalyticEvents(long progressPercent) {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_VIDEO_ID_KEY, filmId);
+        bundle.putString(FIREBASE_VIDEO_NAME_KEY, title);
+        bundle.putString(FIREBASE_PLAYER_NAME_KEY, FIREBASE_PLAYER_NATIVE);
+        bundle.putString(FIREBASE_MEDIA_TYPE_KEY, FIREBASE_MEDIA_TYPE_VIDEO);
+        //bundle.putString(FIREBASE_SERIES_ID_KEY, "");
+        //bundle.putString(FIREBASE_SERIES_NAME_KEY, "");
+
+        //Logs an app event.
+        if (progressPercent == 0)
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
+        if (progressPercent == 25)
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
+        if (progressPercent == 50)
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_50, bundle);
+        if (progressPercent == 75)
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_75, bundle);
     }
 
     private void requestAds(String adTagUrl) {
