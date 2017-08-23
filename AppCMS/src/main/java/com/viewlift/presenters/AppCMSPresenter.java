@@ -3670,20 +3670,40 @@ public class AppCMSPresenter {
                                  boolean usePageIdQueryParam,
                                  String pageId,
                                  Action1<AppCMSPageAPI> readyAction) {
-        boolean viewPlans = isViewPlanPage(pageId);
+        if (shouldRefreshAuthToken()) {
+            refreshIdentity(getRefreshToken(currentActivity),
+                    () -> {
+                        boolean viewPlans = isViewPlanPage(pageId);
 
-        GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
-                .context(currentActivity)
-                .baseUrl(baseUrl)
-                .endpoint(endPoint)
-                .siteId(siteId)
-                .authToken(getAuthToken(currentActivity))
-                .userId(getLoggedInUser(currentActivity))
-                .usePageIdQueryParam(usePageIdQueryParam)
-                .pageId(pageId)
-                .viewPlansPage(viewPlans)
-                .build();
-        new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
+                        GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
+                                .context(currentActivity)
+                                .baseUrl(baseUrl)
+                                .endpoint(endPoint)
+                                .siteId(siteId)
+                                .authToken(getAuthToken(currentActivity))
+                                .userId(getLoggedInUser(currentActivity))
+                                .usePageIdQueryParam(usePageIdQueryParam)
+                                .pageId(pageId)
+                                .viewPlansPage(viewPlans)
+                                .build();
+                        new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
+                    });
+        } else {
+            boolean viewPlans = isViewPlanPage(pageId);
+
+            GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
+                    .context(currentActivity)
+                    .baseUrl(baseUrl)
+                    .endpoint(endPoint)
+                    .siteId(siteId)
+                    .authToken(getAuthToken(currentActivity))
+                    .userId(getLoggedInUser(currentActivity))
+                    .usePageIdQueryParam(usePageIdQueryParam)
+                    .pageId(pageId)
+                    .viewPlansPage(viewPlans)
+                    .build();
+            new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
+        }
     }
 
     public boolean isViewPlanPage(String pageId) {
