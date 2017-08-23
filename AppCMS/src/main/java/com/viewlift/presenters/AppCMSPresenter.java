@@ -3288,9 +3288,6 @@ public class AppCMSPresenter {
                                         userIdentityResult.getEmail());
                                 setAuthToken(currentActivity, userIdentityResult.getAuthorizationToken());
                                 setRefreshToken(currentActivity, userIdentityResult.getRefreshToken());
-//                            } else {
-//                                String errorMessage = userIdentityResult.getError();
-//                                Toast.makeText(currentActivity, errorMessage, Toast.LENGTH_LONG).show();
                             }
                             sendRefreshPageAction();
                             userIdentityAction.call(userIdentityResult);
@@ -3298,8 +3295,7 @@ public class AppCMSPresenter {
                             try {
                                 UserIdentity userIdentityError = gson.fromJson(errorBody.string(),
                                         UserIdentity.class);
-                                Toast.makeText(currentActivity, userIdentityError.getError(), Toast.LENGTH_LONG).show();
-
+                                showToast(userIdentityError.getError(), Toast.LENGTH_LONG);
                             } catch (IOException e) {
                                 Log.e(TAG, "Invalid JSON object: " + e.toString());
                             }
