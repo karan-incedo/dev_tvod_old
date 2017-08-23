@@ -36,6 +36,8 @@ import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.VideoPlayerView;
 
+import java.util.Date;
+
 import rx.functions.Action1;
 
 /**
@@ -102,6 +104,11 @@ public class AppCMSPlayVideoFragment extends Fragment
     private final String FIREBASE_PLAYER_CHROMECAST = "Chromecast";
     private final String FIREBASE_MEDIA_TYPE_VIDEO = "Video";
     private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
+
+    private String mStreamId;
+    private long mStartBufferMilliSec;
+    private long mStopBufferMilliSec;
+    private static double ttfirstframe=0d;
 
 
 
@@ -269,9 +276,14 @@ public class AppCMSPlayVideoFragment extends Fragment
                     !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
             Log.i(TAG, "Playing video: " + hlsUrl);
         }
+        try {
+            mStreamId = appCMSPresenter.getStreamingId(title);
+        }catch (Exception e){
+            e.printStackTrace();
+            mStreamId=filmId+appCMSPresenter.getCurrentTimeStamp();
+        }
         videoPlayerView.setCurrentPosition(watchedTime * SECS_TO_MSECS);
         videoPlayerView.setOnPlayerStateChanged(playerState -> {
-            System.out.println(TAG+" playerState "+playerState.getPlaybackState());
             if (playerState.getPlaybackState() == ExoPlayer.STATE_READY && !isCastConnected) {
                 if (shouldRequestAds && !isAdDisplayed) {
                     requestAds(adsUrl);
@@ -288,6 +300,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                             mProgressHandler.post(mProgressRunnable);
                         }
                         if (!sentBeaconFirstFrame) {
+                            mStopBufferMilliSec= new Date().getTime();
+                            ttfirstframe=((mStopBufferMilliSec-mStartBufferMilliSec)/1000d);
                             appCMSPresenter.sendBeaconMessage(filmId,
                                     permaLink,
                                     parentScreenName,
@@ -297,8 +311,11 @@ public class AppCMSPlayVideoFragment extends Fragment
                                     "Video",
                                     String.valueOf(videoPlayerView.getBitrate()),
                                     String.valueOf(videoPlayerView.getHeight()),
-                                    String.valueOf(videoPlayerView.getWidth()));
+                                    String.valueOf(videoPlayerView.getWidth()),
+                                    mStreamId,
+                                    ttfirstframe);
                             sentBeaconFirstFrame = true;
+
                         }
                     }
                 }
@@ -353,8 +370,11 @@ public class AppCMSPlayVideoFragment extends Fragment
                         "Video",
                         String.valueOf(videoPlayerView.getBitrate()),
                         String.valueOf(videoPlayerView.getHeight()),
-                        String.valueOf(videoPlayerView.getWidth()));
+                        String.valueOf(videoPlayerView.getWidth()),
+                        mStreamId,
+                        0d);
                 sentBeaconPlay = true;
+                mStartBufferMilliSec=new Date().getTime();
             }
         });
         videoPlayerView.setOnPlayerControlsStateChanged(visibility -> {
@@ -374,13 +394,15 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (!shouldRequestAds) {
             videoPlayerView.startPlayer();
         }
+
         beaconMessageThread = new BeaconPingThread(beaconMsgTimeoutMsec,
                 appCMSPresenter,
                 filmId,
                 permaLink,
                 isTrailer,
                 parentScreenName,
-                videoPlayerView);
+                videoPlayerView,
+                mStreamId);
 
         beaconBufferingThread = new BeaconBufferingThread(beaconBufferingTimeoutMsec,
                 appCMSPresenter,
@@ -388,11 +410,12 @@ public class AppCMSPlayVideoFragment extends Fragment
                 permaLink,
                 isTrailer,
                 parentScreenName,
-                videoPlayerView);
+                videoPlayerView,
+                mStreamId);
 
         videoLoadingProgress.bringToFront();
         videoLoadingProgress.setVisibility(View.VISIBLE);
-
+       // double seconds = (now.getMillis() - dateTime.getMillis()) / 1000d;
         return rootView;
     }
 
@@ -526,7 +549,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                             "Video",
                             String.valueOf(videoPlayerView.getBitrate()),
                             String.valueOf(videoPlayerView.getHeight()),
-                            String.valueOf(videoPlayerView.getWidth()));
+                            String.valueOf(videoPlayerView.getWidth()),
+                            mStreamId,
+                            0d);
                 }
                 if (beaconMessageThread != null && !beaconMessageThread.isAlive()) {
                     beaconMessageThread.start();
@@ -638,17 +663,35 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     @Override
     public void onFinishCallback(String message) {
-        System.out.println(message+" onFinishCallback  "+videoPlayerView.getCurrentPosition()/1000 +"  state "+videoPlayerView.getPlayer().getPlaybackState());
-        /*
-        FAILED_TO_START
-        and
-        DROPPED_STREAM
-         */
+
+        AppCMSPresenter.BeaconEvent event;
+        if (message.contains("Unable")) {// If video position is something else then 0 It is droped in between playing
+            event=AppCMSPresenter.BeaconEvent.DROPPED_STREAM;
+        }else if(message.contains("Response"))
+        {
+            event= AppCMSPresenter.BeaconEvent.FAILED_TO_START;
+        }else{
+            event= AppCMSPresenter.BeaconEvent.FAILED_TO_START;
+        }
+
+        appCMSPresenter.sendBeaconMessage(filmId,
+                permaLink,
+                parentScreenName,
+                videoPlayerView.getCurrentPosition(),
+                false,
+                event,
+                "Video",
+                String.valueOf(videoPlayerView.getBitrate()),
+                String.valueOf(videoPlayerView.getHeight()),
+                String.valueOf(videoPlayerView.getWidth()),
+                mStreamId,
+                0d);
         videoPlayerView.releasePlayer();
         onClosePlayerEvent.closePlayer();
         if (!TextUtils.isEmpty(message)) {
             Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
         }
+
     }
 
     public interface OnClosePlayerEvent {
@@ -672,6 +715,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         final String filmId;
         final String permaLink;
         final String parentScreenName;
+        final String mStreamId;
         VideoPlayerView videoPlayerView;
         boolean runBeaconPing;
         boolean sendBeaconPing;
@@ -683,7 +727,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                                 String permaLink,
                                 boolean isTrailer,
                                 String parentScreenName,
-                                VideoPlayerView videoPlayerView) {
+                                VideoPlayerView videoPlayerView,
+                                String mStreamId) {
             this.beaconMsgTimeoutMsec = beaconMsgTimeoutMsec;
             this.appCMSPresenter = appCMSPresenter;
             this.filmId = filmId;
@@ -691,6 +736,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             this.parentScreenName = parentScreenName;
             this.videoPlayerView = videoPlayerView;
             this.isTrailer = isTrailer;
+            this.mStreamId=mStreamId;
         }
 
         @Override
@@ -712,12 +758,14 @@ public class AppCMSPlayVideoFragment extends Fragment
                                     permaLink,
                                     parentScreenName,
                                     videoPlayerView.getCurrentPosition(),
-                                    true,
+                                    false,
                                     AppCMSPresenter.BeaconEvent.PING,
                                     "Video",
                                     String.valueOf(videoPlayerView.getBitrate()),
                                     String.valueOf(videoPlayerView.getHeight()),
-                                    String.valueOf(videoPlayerView.getWidth()));
+                                    String.valueOf(videoPlayerView.getWidth()),
+                                    mStreamId,
+                                    0d);
 
                             if (!isTrailer) {
                                 appCMSPresenter.updateWatchedTime(filmId,
@@ -738,6 +786,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         final String filmId;
         final String permaLink;
         final String parentScreenName;
+        final String mStreamId;
         VideoPlayerView videoPlayerView;
         boolean runBeaconBuffring;
         boolean sendBeaconBuffring;
@@ -749,7 +798,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                                 String permaLink,
                                 boolean isTrailer,
                                 String parentScreenName,
-                                VideoPlayerView videoPlayerView) {
+                                VideoPlayerView videoPlayerView,
+                                String mStreamId) {
             this.beaconBufferTimeoutMsec= beaconBufferTimeoutMsec;
             this.appCMSPresenter = appCMSPresenter;
             this.filmId = filmId;
@@ -757,6 +807,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             this.parentScreenName = parentScreenName;
             this.videoPlayerView = videoPlayerView;
             this.isTrailer = isTrailer;
+            this.mStreamId=mStreamId;
         }
 
         public void run() {
@@ -771,12 +822,14 @@ public class AppCMSPlayVideoFragment extends Fragment
                                     permaLink,
                                     parentScreenName,
                                     videoPlayerView.getCurrentPosition(),
-                                    true,
+                                    false,
                                     AppCMSPresenter.BeaconEvent.BUFFERING,
                                     "Video",
                                     String.valueOf(videoPlayerView.getBitrate()),
                                     String.valueOf(videoPlayerView.getHeight()),
-                                    String.valueOf(videoPlayerView.getWidth()));
+                                    String.valueOf(videoPlayerView.getWidth()),
+                                    mStreamId,
+                                    0d);
 
                                 if (!isTrailer) {
                                 appCMSPresenter.updateWatchedTime(filmId,

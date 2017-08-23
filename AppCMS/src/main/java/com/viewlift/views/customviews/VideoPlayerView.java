@@ -395,7 +395,12 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
                             long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs,
                             long bytesLoaded, IOException error, boolean wasCanceled) {
         Log.d(TAG, "onLoadError : " + error.getMessage());
-        if (error.getMessage().contains("404") && !isLoadedNext) {
+        /**
+         * We can enhance logic here depending on the error code list that we will use for cloasing the video page.
+         */
+        if ( (error.getMessage().contains("404") ||
+                error.getMessage().contains("400") )
+                && !isLoadedNext) {
             if ((player.getCurrentPosition() + 5000) >= player.getDuration()) {
                 isLoadedNext = true;
                 mFinishListener.onFinishCallback(error.getMessage());
