@@ -1021,10 +1021,11 @@ public class AppCMSPresenter {
                                                 !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)))) &&
                                         isExistingGooglePlaySubscriptionSuspended(currentActivity) &&
                                         !upgradesAvailableForUser(getLoggedInUser(currentActivity))) {
-                                    if (!upgradesAvailableForUser(getLoggedInUser(currentActivity))) {
-                                        showEntitlementDialog(DialogType.UPGRADE_UNAVAILABLE);
-                                    } else {
+                                    if (!paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
+                                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))) {
                                         showEntitlementDialog(DialogType.CANNOT_UPGRADE_SUBSCRIPTION);
+                                    } else {
+                                        showEntitlementDialog(DialogType.UPGRADE_UNAVAILABLE);
                                     }
                                 } else {
                                     navigateToSubscriptionPlansPage(null, null);
