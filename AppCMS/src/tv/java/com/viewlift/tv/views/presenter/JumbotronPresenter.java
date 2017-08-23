@@ -83,8 +83,9 @@ public class JumbotronPresenter extends CardPresenter {
                         ImageView imageView = new ImageView(parentLayout.getContext());
                         switch(componentKey){
                             case PAGE_CAROUSEL_IMAGE_KEY:
-                                FrameLayout.LayoutParams parms = new FrameLayout.LayoutParams(Integer.valueOf(component.getLayout().getTv().getWidth()),
-                                        Integer.valueOf(component.getLayout().getTv().getHeight()));
+                                FrameLayout.LayoutParams parms = new FrameLayout.LayoutParams(
+                                        Utils.getViewXAxisAsPerScreen(mContext,Integer.valueOf(component.getLayout().getTv().getWidth())),
+                                        Utils.getViewYAxisAsPerScreen(mContext,Integer.valueOf(component.getLayout().getTv().getHeight())));
                                 imageView.setLayoutParams(parms);
                                 imageView.setBackground(Utils.getTrayBorder(mContext,borderColor,component));
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());

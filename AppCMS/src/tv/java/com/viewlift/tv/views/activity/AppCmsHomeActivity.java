@@ -173,6 +173,14 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     }
 
     @Override
+    protected void onStop() {
+        if(isNavigationVisible()){
+            handleNavigationVisibility();
+        }
+        super.onStop();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
 
     }
@@ -393,6 +401,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         //if navigation fragment is open then hold down key event otherwise pass it.
                        if(isNavigationVisible()){
                            handleNavigationVisibility();
+                           return true;
                        }
 
                         break;

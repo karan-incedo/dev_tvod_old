@@ -58,12 +58,12 @@ public abstract class TVBaseView extends FrameLayout {
                 data.getGist().getPrimaryCategory() != null ?
                         data.getGist().getPrimaryCategory().getTitle() :
                         null;
-        boolean appendFirstSep = runtime > 0 &&
+        boolean appendFirstSep = runtime >= 0 &&
                 (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
-        boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year)) &&
+        boolean appendSecondSep = (runtime >= 0 || !TextUtils.isEmpty(year)) &&
                 !TextUtils.isEmpty(primaryCategory);
         StringBuffer infoText = new StringBuffer();
-        if (runtime > 0) {
+        if (runtime >= 0) {
             infoText.append(runtime + " " + context.getResources().getQuantityString(R.plurals.mins_abbreviation , (int)runtime));
         }
         if (appendFirstSep) {
@@ -160,13 +160,13 @@ public abstract class TVBaseView extends FrameLayout {
                     case PAGE_TEXTALIGNMENT_LEFT_KEY:
                         gravity = Gravity.LEFT ;
                         if(componentKey == AppCMSUIKeyType.PAGE_VIDEO_TITLE_KEY){
-                            gravity = Gravity.LEFT | Gravity.CENTER;
+                            gravity = Gravity.LEFT | Gravity.CENTER_VERTICAL;
                         }
                         break;
                     case PAGE_TEXTALIGNMENT_RIGHT_KEY:
                         gravity = Gravity.RIGHT ;
                         if(componentKey == AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY){
-                            gravity = Gravity.RIGHT | Gravity.CENTER;
+                            gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL;
                         }
                         break;
                     case PAGE_TEXTALIGNMENT_CENTER_KEY:
@@ -205,7 +205,7 @@ public abstract class TVBaseView extends FrameLayout {
                 case PAGE_ADD_TO_WATCHLIST_KEY:
                 case PAGE_VIDEO_WATCH_TRAILER_KEY:
                     //viewWidth = FrameLayout.LayoutParams.WRAP_CONTENT;
-                    int padding = childComponent.getPadding();
+                    int padding = Utils.getViewXAxisAsPerScreen(getContext(),childComponent.getPadding());
                     view.setPadding(padding,padding,padding,padding);
                     break;
                 case PAGE_VIDEO_TITLE_KEY:
