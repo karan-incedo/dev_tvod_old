@@ -136,34 +136,42 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     View childView = parent.getChildAt(i);
                     setBorder(childView, unselectedColor);
                     if (childView instanceof CollectionGridItemView) {
-                        ((CollectionGridItemView) childView).setSelectable(false);
-                        for (View collectionGridChild : ((CollectionGridItemView) childView)
-                                .getViewsToUpdateOnClickEvent()) {
-                            if (collectionGridChild instanceof Button) {
-                                Component childComponent = ((CollectionGridItemView) childView).matchComponentToView(collectionGridChild);
-                                ((TextView) collectionGridChild).setText(childComponent.getText());
-                                collectionGridChild.setBackgroundColor(ContextCompat.getColor(v.getContext(),
-                                        R.color.disabledButtonColor));
-                            }
-                        }
+                        deselectViewPlan((CollectionGridItemView) childView);
                     }
                 }
                 setBorder(v, selectedColor);
                 if (v instanceof CollectionGridItemView) {
-                    ((CollectionGridItemView) v).setSelectable(true);
-                    for (View collectionGridChild : ((CollectionGridItemView) v)
-                            .getViewsToUpdateOnClickEvent()) {
-                        if (collectionGridChild instanceof Button) {
-                            Component childComponent = ((CollectionGridItemView) v).matchComponentToView(collectionGridChild);
-                            ((TextView) collectionGridChild).setText(childComponent.getSelectedText());
-                            collectionGridChild.setBackgroundColor(selectedColor);
-                        }
-                    }
+                    selectViewPlan((CollectionGridItemView) v);
                 }
             });
         }
 
         return new ViewHolder(view);
+    }
+
+    private void selectViewPlan(CollectionGridItemView collectionGridItemView) {
+        collectionGridItemView.setSelectable(true);
+        for (View collectionGridChild : collectionGridItemView
+                .getViewsToUpdateOnClickEvent()) {
+            if (collectionGridChild instanceof Button) {
+                Component childComponent = collectionGridItemView.matchComponentToView(collectionGridChild);
+                ((TextView) collectionGridChild).setText(childComponent.getSelectedText());
+                collectionGridChild.setBackgroundColor(selectedColor);
+            }
+        }
+    }
+
+    private void deselectViewPlan(CollectionGridItemView collectionGridItemView) {
+        collectionGridItemView.setSelectable(false);
+        for (View collectionGridChild : collectionGridItemView
+                .getViewsToUpdateOnClickEvent()) {
+            if (collectionGridChild instanceof Button) {
+                Component childComponent = collectionGridItemView.matchComponentToView(collectionGridChild);
+                ((TextView) collectionGridChild).setText(childComponent.getText());
+                collectionGridChild.setBackgroundColor(ContextCompat.getColor(collectionGridItemView.getContext(),
+                        R.color.disabledButtonColor));
+            }
+        }
     }
 
     @Override
@@ -192,6 +200,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             if (selectableIndex == position) {
                 holder.componentView.setSelectable(true);
                 holder.componentView.performClick();
+            } else {
+
             }
         }
     }

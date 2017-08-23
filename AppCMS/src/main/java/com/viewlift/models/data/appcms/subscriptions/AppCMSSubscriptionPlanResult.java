@@ -39,7 +39,7 @@ public class AppCMSSubscriptionPlanResult {
 
     @SerializedName("planDetails")
     @Expose
-    List<PlanDetail> planDetails = null;
+    List<PlanDetail> planDetails;
 
     @SerializedName("siteOwner")
     @Expose

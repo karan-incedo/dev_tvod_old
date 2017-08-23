@@ -105,6 +105,7 @@ public class CastServiceProvider {
             mCastSession = CastContext.getSharedInstance(mActivity).getSessionManager()
                     .getCurrentCastSession();
         }
+        mCastHelper.setCastSessionManager();
 
         createMediaChooserDialog();
         mCastHelper.setCastDiscovery();

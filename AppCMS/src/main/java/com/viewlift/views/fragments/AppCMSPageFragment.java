@@ -39,7 +39,7 @@ public class AppCMSPageFragment extends Fragment {
     private AppCMSBinder appCMSBinder;
     private PageView pageView;
     private String videoPageName = "Video Page";
-
+    private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
     public interface OnPageCreation {
         void onSuccess(AppCMSBinder appCMSBinder);
 
@@ -140,9 +140,9 @@ public class AppCMSPageFragment extends Fragment {
             bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, appCMSVideoPageBinder.getScreenName());
         } else {
             if (appCMSVideoPageBinder.getScreenName().matches(videoPageName))
-                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, appCMSVideoPageBinder.getScreenName() + "-" + appCMSVideoPageBinder.getPageName());
+                bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, appCMSVideoPageBinder.getScreenName() + "-" + appCMSVideoPageBinder.getPageName());
             else
-                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, appCMSVideoPageBinder.getScreenName());
+                bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, appCMSVideoPageBinder.getScreenName());
         }
         //Logs an app event.
         appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);

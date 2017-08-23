@@ -1,6 +1,7 @@
 package com.viewlift.views.activity;
 
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -52,6 +54,7 @@ import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.models.data.appcms.downloads.CurrentDownloadingVideo;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
@@ -122,6 +125,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @BindView(R.id.app_cms_close_button)
     ImageButton closeButton;
 
+    @BindView(R.id.app_cms_cast_conroller)
+    FrameLayout appCMSCastController;
+
     private AppCMSPresenter appCMSPresenter;
     private Stack<String> appCMSBinderStack;
     private Map<String, AppCMSBinder> appCMSBinderMap;
@@ -129,6 +135,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private BroadcastReceiver presenterCloseActionReceiver;
     private BroadcastReceiver networkConnectedReceiver;
     private BroadcastReceiver wifiConnectedReceiver;
+    private BroadcastReceiver downloadReceiver;
     private boolean resumeInternalEvents;
     private boolean isActive;
     private boolean shouldSendCloseOthersAction;
@@ -143,6 +150,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private ConnectivityManager connectivityManager;
     private WifiManager wifiManager;
+    private DownloadManager downloadManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -260,6 +268,47 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         };
 
+        downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+        downloadReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+                    CurrentDownloadingVideo currentDownloadingVideo =
+                            appCMSPresenter.getCurrentDownloadVideo();
+
+                    long downloadId = intent.getLongExtra(
+                            DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+
+                    DownloadManager.Query currentDownloadQuery = new DownloadManager.Query();
+                    currentDownloadQuery.setFilterById(downloadId);
+                    Cursor currentDownloadsCursor = downloadManager.query(currentDownloadQuery);
+
+                    boolean matchingTitle = false;
+                    if (currentDownloadsCursor != null && currentDownloadsCursor.getCount() > 0) {
+                        currentDownloadsCursor.moveToFirst();
+
+                        for (int i = 0; i < currentDownloadsCursor.getCount() && !matchingTitle; i++) {
+                            int titleIndex = currentDownloadsCursor.getColumnIndex(DownloadManager.COLUMN_TITLE);
+                            if (titleIndex >= 0) {
+                                String itemTitle = currentDownloadsCursor.getString(titleIndex);
+                                if (itemTitle != null &&
+                                        currentDownloadingVideo != null &&
+                                        currentDownloadingVideo.getTitle() != null) {
+                                    matchingTitle = itemTitle.equals(currentDownloadingVideo.getTitle());
+                                }
+                            }
+                            currentDownloadsCursor.moveToNext();
+                        }
+                        currentDownloadsCursor.close();
+                    }
+                    if (matchingTitle) {
+                        appCMSPresenter.startNextDownload();
+                    }
+                }
+            }
+        };
+
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION));
         registerReceiver(presenterActionReceiver,
@@ -278,6 +327,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         registerReceiver(wifiConnectedReceiver,
                 new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION));
+        registerReceiver(downloadReceiver,
+                new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
         resumeInternalEvents = false;
 
@@ -383,7 +434,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void inflateCastMiniController() {
         if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) ==
                 ConnectionResult.SUCCESS) {
-            LayoutInflater.from(this).inflate(R.layout.fragment_castminicontroller, appCMSParentLayout);
+            LayoutInflater.from(this).inflate(R.layout.fragment_castminicontroller, appCMSCastController);
         }
     }
 
@@ -450,6 +501,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         unregisterReceiver(presenterActionReceiver);
         unregisterReceiver(networkConnectedReceiver);
         unregisterReceiver(wifiConnectedReceiver);
+        unregisterReceiver(downloadReceiver);
 
         accessTokenTracker.stopTracking();
 

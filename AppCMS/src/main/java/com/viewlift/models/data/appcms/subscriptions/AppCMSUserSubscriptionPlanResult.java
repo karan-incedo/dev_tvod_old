@@ -1,6 +1,7 @@
 package com.viewlift.models.data.appcms.subscriptions;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
@@ -24,6 +25,11 @@ public class AppCMSUserSubscriptionPlanResult {
     private AppCMSSubscriptionPlanResult subscriptionPlanInfo;
     @SerializedName("subscriptionInfo")
     @Expose AppCMSUserSubscriptionPlanInfoResult subscriptionInfo;
+
+    public AppCMSUserSubscriptionPlanResult() {
+        subscriptionPlanInfo = new AppCMSSubscriptionPlanResult();
+        subscriptionInfo = new AppCMSUserSubscriptionPlanInfoResult();
+    }
 
     public String getUserId() {
         return userId;

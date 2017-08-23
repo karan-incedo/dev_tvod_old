@@ -1765,7 +1765,7 @@ public class ViewCreator {
                             }
                         } else {
                             if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
-                                componentViewResult.componentView.setVisibility(View.GONE);
+                                componentViewResult.componentView.setVisibility(View.VISIBLE);
                             }
                         }
 
@@ -2728,7 +2728,7 @@ public class ViewCreator {
 
                 switch (userVideoDownloadStatus.getDownloadStatus()) {
                     case STATUS_FAILED:
-                        //
+                        appCMSPresenter.startNextDownload();
                         break;
 
                     case STATUS_PAUSED:

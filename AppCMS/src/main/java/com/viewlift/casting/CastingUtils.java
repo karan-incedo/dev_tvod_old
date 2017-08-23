@@ -60,11 +60,13 @@ public class CastingUtils {
                 if (getPlayingUrl(detailsRelatedVideoData.get(i)) != null && !TextUtils.isEmpty(getPlayingUrl(detailsRelatedVideoData.get(i)))) {
                     int currentPlayingIndex = listCompareRelatedVideosId.indexOf(detailsRelatedVideoData.get(i).getGist().getId());
 
-                    queueItemsArray[currentPlayingIndex] = new MediaQueueItem.Builder(buildMediaInfoFromList(detailsRelatedVideoData.get(i), appName, context))
-                            .setAutoplay(true)
-                            .setPreloadTime(PRELOAD_TIME_S)
-                            .setCustomData(seasonObj)
-                            .build();
+                    if (0 <= currentPlayingIndex && currentPlayingIndex < queueItemsArray.length) {
+                        queueItemsArray[currentPlayingIndex] = new MediaQueueItem.Builder(buildMediaInfoFromList(detailsRelatedVideoData.get(i), appName, context))
+                                .setAutoplay(true)
+                                .setPreloadTime(PRELOAD_TIME_S)
+                                .setCustomData(seasonObj)
+                                .build();
+                    }
                 }
 
             }
