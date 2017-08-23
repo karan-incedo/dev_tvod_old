@@ -5040,6 +5040,7 @@ public class AppCMSPresenter {
             beaconMessageThread.run();
         }
     }
+
     public void sendBeaconPlayMessage(String vid, String screenName, String parentScreenName,
                                       long currentPosition, boolean usingChromecast) {
         Log.d(TAG, "Sending Beacon Play Message");
