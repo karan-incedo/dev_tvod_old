@@ -2174,10 +2174,6 @@ public class AppCMSPresenter {
                 filmDownloadQueue.add(downloadQueueItem);
                 filmsInQueue.add(downloadQueueItem.contentDatum.getGist().getTitle());
 
-                CurrentDownloadingVideo currentDownloadingVideo = new CurrentDownloadingVideo();
-                currentDownloadingVideo.setTitle(downloadQueueItem.contentDatum.getGist().getTitle());
-                appCMSPresenter.addCurrentDownloadItem(currentDownloadingVideo);
-
                 if (filmsInQueue.size() > 0) {
                     appCMSPresenter.showQueueItem(downloadQueueItem.contentDatum.getGist().getTitle());
                     downloadQueueItem.resultAction1.call(null);
@@ -2193,6 +2189,11 @@ public class AppCMSPresenter {
             while (running) {
                 if (filmDownloadQueue.size() > 0 && startNextDownload) {
                     DownloadQueueItem downloadQueueItem = filmDownloadQueue.remove();
+
+                    CurrentDownloadingVideo currentDownloadingVideo = new CurrentDownloadingVideo();
+                    currentDownloadingVideo.setTitle(downloadQueueItem.contentDatum.getGist().getTitle());
+                    appCMSPresenter.addCurrentDownloadItem(currentDownloadingVideo);
+
                     if (filmsInQueue.contains(downloadQueueItem.contentDatum.getGist().getTitle())) {
                         filmsInQueue.remove(downloadQueueItem.contentDatum.getGist().getTitle());
                     }
@@ -2223,7 +2224,10 @@ public class AppCMSPresenter {
     }
 
     public void addCurrentDownloadItem(CurrentDownloadingVideo currentDownloadingVideo) {
-        realmController.addCurrentDownloadTitle(currentDownloadingVideo);
+        currentActivity.runOnUiThread(() -> {
+            removeCurrentDownloadItem();
+            realmController.addCurrentDownloadTitle(currentDownloadingVideo);
+        });
     }
 
     public void removeCurrentDownloadItem() {
@@ -2250,7 +2254,7 @@ public class AppCMSPresenter {
 
     public void startNextDownload() {
         if (downloadQueueThread != null) {
-            if (downloadQueueThread.running()) {
+            if (!downloadQueueThread.running()) {
                 downloadQueueThread.start();
             }
             realmController.removeCurrentDownloadTitle();
@@ -4119,7 +4123,7 @@ public class AppCMSPresenter {
         try {
             String activeSubscriptionPrice = getActiveSubscriptionPrice(context);
             if (!TextUtils.isEmpty(activeSubscriptionPrice)) {
-                return NumberFormat.getCurrencyInstance().parse(activeSubscriptionPrice).doubleValue();
+                return NumberFormat.getNumberInstance().parse(activeSubscriptionPrice).doubleValue();
             }
 
         } catch (NumberFormatException | ParseException | NullPointerException e) {
