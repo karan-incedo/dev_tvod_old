@@ -132,6 +132,15 @@
     <string name="watched_time_key">watched_time</string>
     <string name="played_movie_image_url">played_movie_image</string>
 
+    <!--User Management - Change Password-->
+    <string name="app_cms_action_change_password_key">changePassword</string>
+    <string name="app_cms_change_password_page_tag">change_password</string>
+    <string name="app_cms_change_password_page_title">Change Password</string>
+    <string name="app_cms_old_password_input_text_hint">Old Password</string>
+    <string name="app_cms_new_password_input_text_hint">New Password</string>
+    <string name="app_cms_confirm_password_input_text_hint">Confirm Password</string>
+    <string name="app_cms_confirm_password_button_text">Change Password</string>
+
     <!-- AppCMS Video Detail API -->
     <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
 
