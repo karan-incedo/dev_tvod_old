@@ -125,6 +125,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @BindView(R.id.app_cms_close_button)
     ImageButton closeButton;
 
+    @BindView(R.id.app_cms_cast_conroller)
+    FrameLayout appCMSCastController;
+
     private AppCMSPresenter appCMSPresenter;
     private Stack<String> appCMSBinderStack;
     private Map<String, AppCMSBinder> appCMSBinderMap;
@@ -431,7 +434,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void inflateCastMiniController() {
         if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) ==
                 ConnectionResult.SUCCESS) {
-            LayoutInflater.from(this).inflate(R.layout.fragment_castminicontroller, appCMSParentLayout);
+            LayoutInflater.from(this).inflate(R.layout.fragment_castminicontroller, appCMSCastController);
         }
     }
 

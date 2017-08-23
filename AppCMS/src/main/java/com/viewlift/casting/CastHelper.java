@@ -164,7 +164,6 @@ public class CastHelper {
 
     public void setCallBackListener(Callback remoteMediaCallback) {
         callBackRemoteListener = remoteMediaCallback;
-
     }
 
     public void removeCallBackListener(Callback remoteMediaCallback) {
