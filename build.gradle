@@ -9,7 +9,7 @@ buildscript {
         maven { url 'https://maven.google.com' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-alpha9'
+        classpath 'com.android.tools.build:gradle:3.0.0-beta2'
         classpath "io.realm:realm-gradle-plugin:${realmVersion}"
         classpath 'com.google.gms:google-services:3.0.0'
 
@@ -41,7 +41,7 @@ allprojects {
         jsr250_apiVersion = "1.0"
         exoplayerVersion = "r2.4.1"
         googleAdsInteractiveMediaV3 = "3.6.0"
-        googlePlayServicesVersion = "10.2.0"
+        googlePlayServicesVersion = "10.2.1"
         crashlyticsVersion = "2.6.8@aar"
         leakcanaryVersion = "1.5.1"
         apptentiveVersion = "3.4.1"
@@ -50,6 +50,7 @@ allprojects {
         facebookSdkVersion = "[4,5)"
         urbanAirshipVersion = "8.3.2"
         glideTransformationVersion = "2.0.2"
+        percentageLayout = "2.0.2"
     }
 }
 
