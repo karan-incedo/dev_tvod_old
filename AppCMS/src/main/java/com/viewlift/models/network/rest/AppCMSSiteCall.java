@@ -25,7 +25,7 @@ public class AppCMSSiteCall {
     }
 
     @WorkerThread
-    public AppCMSSite call(String url) throws IOException {
+    public AppCMSSite call(String url, int numberOfTries) throws IOException {
         try {
             Log.d(TAG, "Attempting to retrieve site JSON: " + url);
             return appCMSSiteRest.get(url).execute().body();
@@ -34,6 +34,11 @@ public class AppCMSSiteCall {
         } catch (Exception e) {
             Log.e(TAG, "Network error retrieving site data - " + url + ": " + e.toString());
         }
+
+        if (numberOfTries == 0) {
+            call(url, numberOfTries + 1);
+        }
+
         return null;
     }
 }

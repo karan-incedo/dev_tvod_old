@@ -271,39 +271,6 @@ public class AppCMSPresenter {
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String ANONYMOUS_AUTH_TOKEN_PREF_NAME = "anonymous_auth_token_pref_key";
-
-    private final String USER_ID_KEY = "user_id";
-    private final String LOGIN_STATUS_KEY = "logged_in_status";
-    private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
-    private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
-    private final String SUBSCRIPTION_STATUS_KEY = "subscription_status";
-    private final String SUBSCRIPTION_SUBSCRIBED = "subscribed";
-    private final String SUBSCRIPTION_NOT_SUBSCRIBED = "unsubscribed";
-    private final String SUBSCRIPTION_PLAN_ID = "cur_sub_plan_id";
-    private final String SUBSCRIPTION_PLAN_NAME = "cur_sub_plan_name";
-
-    private final String FIREBASE_SIGN_UP_EVENT = "sign_up";
-    private final String FIREBASE_SIGN_UP_METHOD = "sign_up_method";
-    private final String FIREBASE_SIGN_In_EVENT = "sign_in";
-    private final String FIREBASE_SIGN_IN_METHOD = "sign_in_method";
-
-    private final String FIREBASE_EMAIL_METHOD = "email";
-    private final String FIREBASE_FACEBOOK_METHOD = "Facebook";
-    private final String FIREBASE_GOOGLE_METHOD = "Google";
-
-    private final String FIREBASE_PLAN_ID = "item_id";
-    private final String FIREBASE_PLAN_NAME = "item_name";
-    private final String FIREBASE_CURRENCY_NAME = "currency";
-    private final String FIREBASE_VALUE = "value";
-    private final String FIREBASE_TRANSACTION_ID = "transaction_id";
-
-
-    private final String FIREBASE_ADD_CART = "add_to_cart";
-    private final String FIREBASE_ECOMMERCE_PURCHASE = "ecommerce_purchase";
-    private final String FIREBASE_CHANGE_SUBSCRIPTION = "change_subscription";
-    private final String FIREBASE_CANCEL_SUBSCRIPTION = "cancel_subscription";
-
-
     private static final long MILLISECONDS_PER_SECOND = 1000L;
     private static final long SECONDS_PER_MINUTE = 60L;
     private static final long MAX_SESSION_DURATION_IN_MINUTES = 30L;
@@ -313,6 +280,31 @@ public class AppCMSPresenter {
     private static final String MEDIA_SUFFIX_SRT = ".srt";
     private static final int RC_GOOGLE_SIGN_IN = 1001;
     private static int PAGE_LRU_CACHE_SIZE = 10;
+    private final String USER_ID_KEY = "user_id";
+    private final String LOGIN_STATUS_KEY = "logged_in_status";
+    private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
+    private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
+    private final String SUBSCRIPTION_STATUS_KEY = "subscription_status";
+    private final String SUBSCRIPTION_SUBSCRIBED = "subscribed";
+    private final String SUBSCRIPTION_NOT_SUBSCRIBED = "unsubscribed";
+    private final String SUBSCRIPTION_PLAN_ID = "cur_sub_plan_id";
+    private final String SUBSCRIPTION_PLAN_NAME = "cur_sub_plan_name";
+    private final String FIREBASE_SIGN_UP_EVENT = "sign_up";
+    private final String FIREBASE_SIGN_UP_METHOD = "sign_up_method";
+    private final String FIREBASE_SIGN_In_EVENT = "sign_in";
+    private final String FIREBASE_SIGN_IN_METHOD = "sign_in_method";
+    private final String FIREBASE_EMAIL_METHOD = "email";
+    private final String FIREBASE_FACEBOOK_METHOD = "Facebook";
+    private final String FIREBASE_GOOGLE_METHOD = "Google";
+    private final String FIREBASE_PLAN_ID = "item_id";
+    private final String FIREBASE_PLAN_NAME = "item_name";
+    private final String FIREBASE_CURRENCY_NAME = "currency";
+    private final String FIREBASE_VALUE = "value";
+    private final String FIREBASE_TRANSACTION_ID = "transaction_id";
+    private final String FIREBASE_ADD_CART = "add_to_cart";
+    private final String FIREBASE_ECOMMERCE_PURCHASE = "ecommerce_purchase";
+    private final String FIREBASE_CHANGE_SUBSCRIPTION = "change_subscription";
+    private final String FIREBASE_CANCEL_SUBSCRIPTION = "cancel_subscription";
     private final Gson gson;
     private final AppCMSMainUICall appCMSMainUICall;
     private final AppCMSAndroidUICall appCMSAndroidUICall;
@@ -2203,84 +2195,6 @@ public class AppCMSPresenter {
 
         c.close();
         return downloadPercent;
-    }
-
-    private static class DownloadQueueItem {
-        ContentDatum contentDatum;
-        Action1<UserVideoDownloadStatus> resultAction1;
-    }
-
-    private static class DownloadQueueThread extends Thread {
-        private final AppCMSPresenter appCMSPresenter;
-        private Queue<DownloadQueueItem> filmDownloadQueue;
-        private List<String> filmsInQueue;
-
-        private boolean running;
-        private boolean startNextDownload;
-
-        public DownloadQueueThread(AppCMSPresenter appCMSPresenter) {
-            this.appCMSPresenter = appCMSPresenter;
-            this.filmDownloadQueue = new ConcurrentLinkedQueue<>();
-            this.filmsInQueue = new ArrayList<>();
-            this.running = false;
-            this.startNextDownload = true;
-            if (appCMSPresenter.getCurrentDownloadVideo() != null) {
-                this.startNextDownload = false;
-            }
-        }
-
-        public void addToQueue(DownloadQueueItem downloadQueueItem) {
-            if (!filmsInQueue.contains(downloadQueueItem.contentDatum.getGist().getTitle())) {
-                filmDownloadQueue.add(downloadQueueItem);
-                filmsInQueue.add(downloadQueueItem.contentDatum.getGist().getTitle());
-
-                if (filmsInQueue.size() > 0) {
-                    appCMSPresenter.showQueueItem(downloadQueueItem.contentDatum.getGist().getTitle());
-                    downloadQueueItem.resultAction1.call(null);
-                }
-            } else {
-                appCMSPresenter.showAlreadyQueuedItem(downloadQueueItem.contentDatum.getGist().getTitle());
-            }
-        }
-
-        @Override
-        public void run() {
-            running = true;
-            while (running) {
-                if (filmDownloadQueue.size() > 0 && startNextDownload) {
-                    DownloadQueueItem downloadQueueItem = filmDownloadQueue.remove();
-
-                    CurrentDownloadingVideo currentDownloadingVideo = new CurrentDownloadingVideo();
-                    currentDownloadingVideo.setTitle(downloadQueueItem.contentDatum.getGist().getTitle());
-                    appCMSPresenter.addCurrentDownloadItem(currentDownloadingVideo);
-
-                    if (filmsInQueue.contains(downloadQueueItem.contentDatum.getGist().getTitle())) {
-                        filmsInQueue.remove(downloadQueueItem.contentDatum.getGist().getTitle());
-                    }
-
-                    appCMSPresenter.startDownload(downloadQueueItem.contentDatum,
-                            downloadQueueItem.resultAction1);
-                    startNextDownload = false;
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        public boolean running() {
-            return running;
-        }
-
-        public void setRunning(boolean running) {
-            this.running = running;
-        }
-
-        public void setStartNextDownload() {
-            this.startNextDownload = true;
-        }
     }
 
     public void addCurrentDownloadItem(CurrentDownloadingVideo currentDownloadingVideo) {
@@ -4753,8 +4667,6 @@ public class AppCMSPresenter {
                         });
             }
 
-            builder.setCancelable(false);
-
             AlertDialog dialog = builder.create();
             if (dialog.getWindow() != null) {
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
@@ -4925,7 +4837,6 @@ public class AppCMSPresenter {
                 builder.setNegativeButton(R.string.app_cms_cancel_alert_dialog_button_text,
                         (dialog, which) -> dialog.dismiss());
             } else {
-
                 builder.setNegativeButton(R.string.app_cms_close_alert_dialog_button_text,
                         (dialog, which) -> {
                             dialog.dismiss();
@@ -4934,6 +4845,7 @@ public class AppCMSPresenter {
                             }
                         });
             }
+
             builder.setCancelable(false);
 
             AlertDialog dialog = builder.create();
@@ -7098,6 +7010,56 @@ public class AppCMSPresenter {
         return result;
     }
 
+    public void sendSignUpFacebookFirebase() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_SIGN_UP_METHOD, FIREBASE_FACEBOOK_METHOD);
+        if (mFireBaseAnalytics != null)
+            mFireBaseAnalytics.logEvent(FIREBASE_SIGN_UP_EVENT, bundle);
+    }
+
+    public void sendSignUpGoogleFirebase() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_SIGN_UP_METHOD, FIREBASE_GOOGLE_METHOD);
+        if (mFireBaseAnalytics != null)
+            mFireBaseAnalytics.logEvent(FIREBASE_SIGN_UP_EVENT, bundle);
+    }
+
+    public void sendSignUpEmailFirebase() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_SIGN_UP_METHOD, FIREBASE_EMAIL_METHOD);
+        if (mFireBaseAnalytics != null)
+            mFireBaseAnalytics.logEvent(FIREBASE_SIGN_UP_EVENT, bundle);
+    }
+
+    public void sendSignInFacebookFirebase() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_SIGN_IN_METHOD, FIREBASE_FACEBOOK_METHOD);
+        if (mFireBaseAnalytics != null)
+            mFireBaseAnalytics.logEvent(FIREBASE_SIGN_In_EVENT, bundle);
+    }
+
+    public void sendSignInGoogleFirebase() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_SIGN_IN_METHOD, FIREBASE_GOOGLE_METHOD);
+        if (mFireBaseAnalytics != null)
+            mFireBaseAnalytics.logEvent(FIREBASE_SIGN_In_EVENT, bundle);
+    }
+
+    public void sendSignInEmailFirebase() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_SIGN_IN_METHOD, FIREBASE_EMAIL_METHOD);
+        if (mFireBaseAnalytics != null)
+            mFireBaseAnalytics.logEvent(FIREBASE_SIGN_In_EVENT, bundle);
+    }
+
+    public void sendFirebaseLoginSubscribeSuccess() {
+        //Send Firebase Analytics when user is subscribed and user is Logged In
+        mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_SUBSCRIBED);
+        mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
+        mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_ID, getActiveSubscriptionId(currentActivity));
+        mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_NAME, getActiveSubscriptionPlanName(currentActivity));
+    }
+
     public enum LaunchType {
         SUBSCRIBE, LOGIN_AND_SIGNUP
     }
@@ -7147,6 +7109,84 @@ public class AppCMSPresenter {
         NONE
     }
 
+    private static class DownloadQueueItem {
+        ContentDatum contentDatum;
+        Action1<UserVideoDownloadStatus> resultAction1;
+    }
+
+    private static class DownloadQueueThread extends Thread {
+        private final AppCMSPresenter appCMSPresenter;
+        private Queue<DownloadQueueItem> filmDownloadQueue;
+        private List<String> filmsInQueue;
+
+        private boolean running;
+        private boolean startNextDownload;
+
+        public DownloadQueueThread(AppCMSPresenter appCMSPresenter) {
+            this.appCMSPresenter = appCMSPresenter;
+            this.filmDownloadQueue = new ConcurrentLinkedQueue<>();
+            this.filmsInQueue = new ArrayList<>();
+            this.running = false;
+            this.startNextDownload = true;
+            if (appCMSPresenter.getCurrentDownloadVideo() != null) {
+                this.startNextDownload = false;
+            }
+        }
+
+        public void addToQueue(DownloadQueueItem downloadQueueItem) {
+            if (!filmsInQueue.contains(downloadQueueItem.contentDatum.getGist().getTitle())) {
+                filmDownloadQueue.add(downloadQueueItem);
+                filmsInQueue.add(downloadQueueItem.contentDatum.getGist().getTitle());
+
+                if (filmsInQueue.size() > 0) {
+                    appCMSPresenter.showQueueItem(downloadQueueItem.contentDatum.getGist().getTitle());
+                    downloadQueueItem.resultAction1.call(null);
+                }
+            } else {
+                appCMSPresenter.showAlreadyQueuedItem(downloadQueueItem.contentDatum.getGist().getTitle());
+            }
+        }
+
+        @Override
+        public void run() {
+            running = true;
+            while (running) {
+                if (filmDownloadQueue.size() > 0 && startNextDownload) {
+                    DownloadQueueItem downloadQueueItem = filmDownloadQueue.remove();
+
+                    CurrentDownloadingVideo currentDownloadingVideo = new CurrentDownloadingVideo();
+                    currentDownloadingVideo.setTitle(downloadQueueItem.contentDatum.getGist().getTitle());
+                    appCMSPresenter.addCurrentDownloadItem(currentDownloadingVideo);
+
+                    if (filmsInQueue.contains(downloadQueueItem.contentDatum.getGist().getTitle())) {
+                        filmsInQueue.remove(downloadQueueItem.contentDatum.getGist().getTitle());
+                    }
+
+                    appCMSPresenter.startDownload(downloadQueueItem.contentDatum,
+                            downloadQueueItem.resultAction1);
+                    startNextDownload = false;
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        public boolean running() {
+            return running;
+        }
+
+        public void setRunning(boolean running) {
+            this.running = running;
+        }
+
+        public void setStartNextDownload() {
+            this.startNextDownload = true;
+        }
+    }
+
     private static class BeaconRunnable implements Runnable {
         final AppCMSBeaconRest appCMSBeaconRest;
         String url;
@@ -7174,57 +7214,6 @@ public class AppCMSPresenter {
             });
         }
     }
-
-    public void sendSignUpFacebookFirebase() {
-        Bundle bundle = new Bundle();
-        bundle.putString(FIREBASE_SIGN_UP_METHOD, FIREBASE_FACEBOOK_METHOD);
-        if (mFireBaseAnalytics != null)
-            mFireBaseAnalytics.logEvent(FIREBASE_SIGN_UP_EVENT, bundle);
-    }
-
-    public void sendSignUpGoogleFirebase() {
-        Bundle bundle = new Bundle();
-        bundle.putString(FIREBASE_SIGN_UP_METHOD, FIREBASE_GOOGLE_METHOD);
-        if (mFireBaseAnalytics != null)
-            mFireBaseAnalytics.logEvent(FIREBASE_SIGN_UP_EVENT, bundle);
-    }
-
-    public void sendSignUpEmailFirebase() {
-        Bundle bundle = new Bundle();
-        bundle.putString(FIREBASE_SIGN_UP_METHOD, FIREBASE_EMAIL_METHOD);
-        if (mFireBaseAnalytics != null)
-            mFireBaseAnalytics.logEvent(FIREBASE_SIGN_UP_EVENT, bundle);
-    }
-
-    public void sendSignInFacebookFirebase() {
-        Bundle bundle = new Bundle();
-        bundle.putString(FIREBASE_SIGN_IN_METHOD, FIREBASE_FACEBOOK_METHOD);
-        if (mFireBaseAnalytics != null)
-            mFireBaseAnalytics.logEvent(FIREBASE_SIGN_In_EVENT, bundle);
-    }
-
-    public void sendSignInGoogleFirebase() {
-        Bundle bundle = new Bundle();
-        bundle.putString(FIREBASE_SIGN_IN_METHOD, FIREBASE_GOOGLE_METHOD);
-        if (mFireBaseAnalytics != null)
-            mFireBaseAnalytics.logEvent(FIREBASE_SIGN_In_EVENT, bundle);
-    }
-
-    public void sendSignInEmailFirebase() {
-        Bundle bundle = new Bundle();
-        bundle.putString(FIREBASE_SIGN_IN_METHOD, FIREBASE_EMAIL_METHOD);
-        if (mFireBaseAnalytics != null)
-            mFireBaseAnalytics.logEvent(FIREBASE_SIGN_In_EVENT, bundle);
-    }
-
-    public void sendFirebaseLoginSubscribeSuccess() {
-        //Send Firebase Analytics when user is subscribed and user is Logged In
-        mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_SUBSCRIBED);
-        mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
-        mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_ID, getActiveSubscriptionId(currentActivity));
-        mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_NAME,getActiveSubscriptionPlanName(currentActivity));
-    }
-
 
     private abstract static class AppCMSPageAPIAction implements Action1<AppCMSPageAPI> {
         boolean appbarPresent;
