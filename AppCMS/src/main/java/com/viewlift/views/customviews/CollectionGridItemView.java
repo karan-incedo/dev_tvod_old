@@ -365,17 +365,26 @@ public class CollectionGridItemView extends BaseView {
                             locale = getContext().getResources().getConfiguration().locale;
                         }
 
-                        Currency currency = Currency.getInstance(locale);
+                        Currency currency = null;
+                        if (currency != null) {
+                            currency = Currency.getInstance(locale);
+                        }
 
                         if (data.getPlanDetails().get(planIndex).getDiscountedPrice() != 0) {
-                            StringBuilder stringBuilder = new StringBuilder(currency.getSymbol());
+                            StringBuilder stringBuilder = new StringBuilder();
+                            if (currency != null) {
+                                stringBuilder.append(currency.getSymbol());
+                            }
                             stringBuilder.append(String.valueOf(data.getPlanDetails()
                                     .get(planIndex).getRecurringPaymentAmount()));
 
                             int strikeThroughLength = stringBuilder.length();
-                            stringBuilder.append("     ")
-                                    .append(currency.getSymbol())
-                                    .append(String.valueOf(data.getPlanDetails().get(0).getDiscountedPrice()));
+                            stringBuilder.append("     ");
+                            if (currency != null) {
+                                stringBuilder.append(currency.getSymbol());
+                            }
+
+                            stringBuilder.append(String.valueOf(data.getPlanDetails().get(0).getDiscountedPrice()));
 
                             SpannableString spannableString =
                                     new SpannableString(stringBuilder.toString());
@@ -383,7 +392,10 @@ public class CollectionGridItemView extends BaseView {
                                     strikeThroughLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                             ((TextView) view).setText(spannableString);
                         } else {
-                            StringBuilder stringBuilder = new StringBuilder(currency.getSymbol());
+                            StringBuilder stringBuilder = new StringBuilder();
+                            if (currency != null) {
+                                stringBuilder.append(currency.getSymbol());
+                            }
                             stringBuilder.append(data.getPlanDetails().get(0)
                                     .getRecurringPaymentAmount());
                             ((TextView) view).setText(String.valueOf(stringBuilder.toString()));

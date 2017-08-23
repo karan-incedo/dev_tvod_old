@@ -2195,21 +2195,6 @@ public class AppCMSPresenter {
         return downloadPercent;
     }
 
-    public void addCurrentDownloadItem(CurrentDownloadingVideo currentDownloadingVideo) {
-        currentActivity.runOnUiThread(() -> {
-            removeCurrentDownloadItem();
-            realmController.addCurrentDownloadTitle(currentDownloadingVideo);
-        });
-    }
-
-    public void removeCurrentDownloadItem() {
-        realmController.removeCurrentDownloadTitle();
-    }
-
-    public CurrentDownloadingVideo getCurrentDownloadVideo() {
-        return realmController.getCurrentDownloadTitle();
-    }
-
     private void showQueueItem(String title) {
         currentActivity.runOnUiThread(() -> {
             showToast(currentActivity.getString(R.string.app_cms_download_queue_toast_message, title),
@@ -2229,7 +2214,6 @@ public class AppCMSPresenter {
             if (!downloadQueueThread.running()) {
                 downloadQueueThread.start();
             }
-            realmController.removeCurrentDownloadTitle();
             downloadQueueThread.setStartNextDownload();
         }
     }
@@ -4493,7 +4477,7 @@ public class AppCMSPresenter {
 
     public boolean isPageUser(String pageId) {
         for (NavigationUser navigationUser : navigation.getNavigationUser()) {
-            if (!TextUtils.isEmpty(pageId)) && pageId.contains(navigationUser.getPageId())) {
+            if (!TextUtils.isEmpty(pageId) && pageId.contains(navigationUser.getPageId())) {
                 return true;
             }
         }
@@ -7171,9 +7155,6 @@ public class AppCMSPresenter {
             this.filmsInQueue = new ArrayList<>();
             this.running = false;
             this.startNextDownload = true;
-            if (appCMSPresenter.getCurrentDownloadVideo() != null) {
-                this.startNextDownload = false;
-            }
         }
 
         public void addToQueue(DownloadQueueItem downloadQueueItem) {
@@ -7196,10 +7177,6 @@ public class AppCMSPresenter {
             while (running) {
                 if (filmDownloadQueue.size() > 0 && startNextDownload) {
                     DownloadQueueItem downloadQueueItem = filmDownloadQueue.remove();
-
-                    CurrentDownloadingVideo currentDownloadingVideo = new CurrentDownloadingVideo();
-                    currentDownloadingVideo.setTitle(downloadQueueItem.contentDatum.getGist().getTitle());
-                    appCMSPresenter.addCurrentDownloadItem(currentDownloadingVideo);
 
                     if (filmsInQueue.contains(downloadQueueItem.contentDatum.getGist().getTitle())) {
                         filmsInQueue.remove(downloadQueueItem.contentDatum.getGist().getTitle());
