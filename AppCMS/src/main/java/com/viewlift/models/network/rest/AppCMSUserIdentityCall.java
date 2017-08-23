@@ -3,6 +3,7 @@ package com.viewlift.models.network.rest;
 import android.support.annotation.NonNull;
 
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
+import com.viewlift.models.data.appcms.ui.authentication.UserIdentityPassword;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,6 +67,31 @@ public class AppCMSUserIdentityCall {
             @Override
             public void onFailure(@NonNull Call<UserIdentity> call, @NonNull Throwable t) {
                 Observable.just((UserIdentity) null).subscribe(userIdentityAction);
+            }
+        });
+    }
+
+    public void passwordPost(String url,
+                             String authToken,
+                             UserIdentityPassword userIdentityPassword,
+                             final Action1<UserIdentityPassword> userIdentityPasswordAction1,
+                             final Action1<ResponseBody> userPasswordErrorAction) {
+        authHeaders.put("resetToken", authToken);
+        appCMSUserIdentityRest.post(url, authHeaders,
+                userIdentityPassword).enqueue(new Callback<UserIdentityPassword>() {
+            @Override
+            public void onResponse(@NonNull Call<UserIdentityPassword> call,
+                                   @NonNull Response<UserIdentityPassword> response) {
+                if (response.body() != null) {
+                    Observable.just(response.body()).subscribe(userIdentityPasswordAction1);
+                } else {
+                    Observable.just(response.errorBody()).subscribe(userPasswordErrorAction);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<UserIdentityPassword> call, @NonNull Throwable t) {
+                //
             }
         });
     }
