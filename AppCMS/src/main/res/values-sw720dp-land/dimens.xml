@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="app_cms_content_rating_title_view_text_size">58sp</dimen>
+    <dimen name="app_cms_content_rating_description_text_size">14sp</dimen>
+    <dimen name="app_cms_content_rating_description_margin_left">50sp</dimen>
+    <fraction name="app_cms_content_rating_progress_bar_margin_bottom_percent">6.6%</fraction>
+    <fraction name="mainContainerWidthPercent">67%</fraction>
+    <fraction name="mainContainerHeightPercent">28%</fraction>
+
+</resources>

@@ -1,19 +1,36 @@
 package com.viewlift.views.fragments;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.percent.PercentLayoutHelper;
+import android.support.percent.PercentRelativeLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
@@ -32,8 +49,13 @@ import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
+import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
+import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.customviews.CustomTypefaceSpan;
 import com.viewlift.views.customviews.VideoPlayerView;
+
+import java.util.Map;
 
 import rx.functions.Action1;
 
@@ -42,7 +64,7 @@ import rx.functions.Action1;
  */
 
 public class AppCMSPlayVideoFragment extends Fragment
-        implements AdErrorEvent.AdErrorListener, AdEvent.AdEventListener {
+        implements AdErrorEvent.AdErrorListener, AdEvent.AdEventListener, Animation.AnimationListener {
     private static final String TAG = "PlayVideoFragment";
 
     private static final long SECS_TO_MSECS = 1000L;
@@ -58,10 +80,21 @@ public class AppCMSPlayVideoFragment extends Fragment
     private String imageUrl;
     private String parentScreenName;
     private String adsUrl;
+    private String parentalRating;
     private boolean shouldRequestAds;
     private LinearLayout videoPlayerInfoContainer;
+    private RelativeLayout videoPlayerMainContainer;
+    private PercentRelativeLayout contentRatingMainContainer;
+    private PercentRelativeLayout contentRatingAnimationContainer;
+    private LinearLayout contentRatingInfoContainer;
     private ImageButton videoPlayerViewDoneButton;
     private TextView videoPlayerTitleView;
+    private TextView contentRatingHeaderView;
+    private TextView contentRatingDiscretionView;
+    private TextView contentRatingDescriptionView;
+    private TextView contentRatingTitleView;
+    private TextView contentRatingBack;
+    private View contentRatingBackUnderline;
     private VideoPlayerView videoPlayerView;
     private LinearLayout videoLoadingProgress;
     private OnClosePlayerEvent onClosePlayerEvent;
@@ -72,6 +105,14 @@ public class AppCMSPlayVideoFragment extends Fragment
     private ImaSdkFactory sdkFactory;
     private AdsLoader adsLoader;
     private AdsManager adsManager;
+    private ProgressBar progressBar;
+    private Runnable seekListener;
+    private int progressCount = 0;
+    private Handler seekBarHandler;
+    Animation animSequential, animFadeIn,animFadeOut,animTranslate;
+    private final int totalCountdownInMillis = 10000;
+    private final int countDownIntervalInMillis = 10;
+
     AdsLoader.AdsLoadedListener listenerAdsLoaded = new AdsLoader.AdsLoadedListener() {
         @Override
         public void onAdsManagerLoaded(AdsManagerLoadedEvent adsManagerLoadedEvent) {
@@ -117,7 +158,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                                                       int playIndex,
                                                       long watchedTime,
                                                       String imageUrl,
-                                                      String closedCaptionUrl) {
+                                                      String closedCaptionUrl,
+                                                      String parentalRating) {
         AppCMSPlayVideoFragment appCMSPlayVideoFragment = new AppCMSPlayVideoFragment();
         Bundle args = new Bundle();
         args.putString(context.getString(R.string.video_player_font_color_key), fontColor);
@@ -132,6 +174,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         args.putLong(context.getString(R.string.watched_time_key), watchedTime);
         args.putString(context.getString(R.string.played_movie_image_url), imageUrl);
         args.putString(context.getString(R.string.video_player_closed_caption_key), closedCaptionUrl);
+        args.putString(context.getString(R.string.video_player_content_rating_key), parentalRating);
         appCMSPlayVideoFragment.setArguments(args);
         return appCMSPlayVideoFragment;
     }
@@ -162,6 +205,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             imageUrl = args.getString(getContext().getString(R.string.played_movie_image_url));
             closedCaptionUrl = args.getString(getContext().getString(R.string.video_player_closed_caption_key));
             primaryCategory = args.getString(getString(R.string.video_primary_category_key));
+            parentalRating = args.getString(getString(R.string.video_player_content_rating_key));
         }
 
         sentBeaconPlay = (0 < playIndex && watchedTime != 0);
@@ -176,6 +220,20 @@ public class AppCMSPlayVideoFragment extends Fragment
         parentScreenName = getContext().getString(R.string.app_cms_beacon_video_player_parent_screen_name);
         setRetainInstance(true);
 
+        animSequential = AnimationUtils.loadAnimation(getContext(),
+                R.anim.sequential);
+        animFadeIn = AnimationUtils.loadAnimation(getContext(),
+                R.anim.fade_in);
+        animFadeOut = AnimationUtils.loadAnimation(getContext(),
+                R.anim.fade_out);
+        animTranslate = AnimationUtils.loadAnimation(getContext(),
+                R.anim.translate);
+
+        animFadeIn.setAnimationListener(this);
+        animFadeOut.setAnimationListener(this);
+        animSequential.setAnimationListener(this);
+        animTranslate.setAnimationListener(this);
+
         AppsFlyerUtils.filmViewingEvent(getContext(), primaryCategory, filmId, appCMSPresenter);
 
     }
@@ -186,19 +244,58 @@ public class AppCMSPlayVideoFragment extends Fragment
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_video_player, container, false);
 
+        videoPlayerMainContainer =
+                (RelativeLayout) rootView.findViewById(R.id.app_cms_video_player_main_container);
+
         videoPlayerInfoContainer =
                 (LinearLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
 
+        contentRatingMainContainer =
+                (PercentRelativeLayout) rootView.findViewById(R.id.app_cms_content_rating_main_container);
+
+        contentRatingAnimationContainer =
+                (PercentRelativeLayout) rootView.findViewById(R.id.app_cms_content_rating_animation_container);
+
+        contentRatingInfoContainer =
+                (LinearLayout) rootView.findViewById(R.id.app_cms_content_rating_info_container);
+
         mMediaRouteButton = (ImageButton) rootView.findViewById(R.id.media_route_button);
 
+        contentRatingDiscretionView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_viewer_discretion);
+        setTypeFace(getContext(),contentRatingDiscretionView,getString(R.string.helvaticaneu_bold));
+
         videoPlayerTitleView = (TextView) rootView.findViewById(R.id.app_cms_video_player_title_view);
+
+        contentRatingHeaderView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_header_view);
+        setTypeFace(getContext(),contentRatingHeaderView,getString(R.string.helvaticaneu_bold));
+
+        contentRatingTitleView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_title_view);
+        setTypeFace(getContext(),contentRatingTitleView,getString(R.string.helvaticaneu_bold));
+
+        contentRatingDescriptionView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_description);
+        SpannableStringBuilder titleString = new SpannableStringBuilder(getResources().getString(R.string.content_rating_description));
+        titleString.setSpan(new CustomTypefaceSpan("", getFontType(getContext(),getResources().getString(R.string.helvaticaneu_bold))), 0, 29, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+        titleString.setSpan(new CustomTypefaceSpan("",  getFontType(getContext(),getResources().getString(R.string.helvaticaneu_italic))), 30, titleString.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+        contentRatingDescriptionView.setText(titleString);
+
+        contentRatingBack = (TextView) rootView.findViewById(R.id.app_cms_content_rating_back);
+        setTypeFace(getContext(),contentRatingBack,getContext().getString(R.string.helvaticaneu_bold));
+
+        contentRatingBackUnderline = rootView.findViewById(R.id.app_cms_content_rating_back_underline);
+
+        progressBar = (ProgressBar) rootView.findViewById(R.id.app_cms_content_rating_progress_bar);
 
         if (!TextUtils.isEmpty(title)) {
             videoPlayerTitleView.setText(title);
         }
         if (!TextUtils.isEmpty(fontColor)) {
             videoPlayerTitleView.setTextColor(Color.parseColor(fontColor));
+            contentRatingTitleView.setTextColor(Color.parseColor(fontColor));
+            contentRatingDescriptionView.setTextColor(Color.parseColor(fontColor));
+            contentRatingDiscretionView.setTextColor(Color.parseColor(fontColor));
+            contentRatingBack.setTextColor(Color.parseColor(fontColor));
         }
+
 
         videoPlayerViewDoneButton = (ImageButton) rootView.findViewById(R.id.app_cms_video_player_done_button);
         videoPlayerViewDoneButton.setOnClickListener(v -> {
@@ -289,8 +386,13 @@ public class AppCMSPlayVideoFragment extends Fragment
             appCMSPresenter.setClosedCaptionPreference(getContext(), isChecked);
         });
 
+        contentRatingBack.setOnClickListener(v -> {
+            getActivity().finish();
+        });
+
         if (!shouldRequestAds) {
-            videoPlayerView.startPlayer();
+            //videoPlayerView.startPlayer();
+            createContentRatingView();
         }
         beaconMessageThread = new BeaconPingThread(beaconMsgTimeoutMsec,
                 appCMSPresenter,
@@ -342,6 +444,12 @@ public class AppCMSPlayVideoFragment extends Fragment
         super.onPause();
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        getPercentageFromResource();
+    }
+
     private void pauseVideo() {
         if (shouldRequestAds && adsManager != null && isAdDisplayed) {
             adsManager.pause();
@@ -372,7 +480,8 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         Log.e(TAG, "Ad DialogType: " + adErrorEvent.getError().getMessage());
-        videoPlayerView.resumePlayer();
+        createContentRatingView();
+        //videoPlayerView.resumePlayer();
     }
 
     @Override
@@ -398,7 +507,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 break;
             case CONTENT_RESUME_REQUESTED:
                 isAdDisplayed = false;
-                videoPlayerView.startPlayer();
+                // videoPlayerView.startPlayer();
                 if (beaconMessageThread != null) {
                     beaconMessageThread.sendBeaconPing = true;
                 }
@@ -415,6 +524,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 }
                 break;
             case ALL_ADS_COMPLETED:
+                createContentRatingView();
                 if (adsManager != null) {
                     adsManager.destroy();
                     adsManager = null;
@@ -531,5 +641,141 @@ public class AppCMSPlayVideoFragment extends Fragment
                 }
             }
         }
+    }
+
+    private void createContentRatingView() {
+
+        if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())) {
+            int highlightColor =
+                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+            contentRatingBackUnderline.setBackgroundColor(highlightColor);
+            contentRatingHeaderView.setTextColor(highlightColor);
+            applyBorderToComponent(contentRatingInfoContainer, 1, highlightColor);
+            progressBar.getProgressDrawable()
+                    .setColorFilter(highlightColor, PorterDuff.Mode.SRC_IN);
+        }
+
+        if (!TextUtils.isEmpty(parentalRating)) {
+            String convertedRating = getContext().getString(R.string.age_rating_converted_default);
+            if (parentalRating.contains(getContext().getString(R.string.age_rating_y7))) {
+                convertedRating = getContext().getString(R.string.age_rating_converted_y7);
+            } else if (parentalRating.contains(getContext().getString(R.string.age_rating_y))) {
+                convertedRating = getContext().getString(R.string.age_rating_converted_y);
+            } else if (parentalRating.contains(getContext().getString(R.string.age_rating_g))) {
+                convertedRating = getContext().getString(R.string.age_rating_converted_g);
+            } else if (parentalRating.contains(getContext().getString(R.string.age_rating_pg))) {
+                convertedRating = getContext().getString(R.string.age_rating_converted_pg);
+            } else if (parentalRating.contains(getContext().getString(R.string.age_rating_fourteen))) {
+                convertedRating = getContext().getString(R.string.age_rating_converted_fourteen);
+            } else if (parentalRating.contains(getContext().getString(R.string.age_raging_r))) {
+                convertedRating = getContext().getString(R.string.age_rating_converted_eighteen);
+            }
+            contentRatingTitleView.setText("TVMA");
+        }
+        animateView();
+        startCountdown();
+    }
+
+    private void startCountdown() {
+         new CountDownTimer(totalCountdownInMillis, countDownIntervalInMillis) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                long time = totalCountdownInMillis - millisUntilFinished;
+                progressBar.setProgress((int)time);
+            }
+
+            @Override
+            public void onFinish() {
+                contentRatingMainContainer.setVisibility(View.GONE);
+                videoPlayerMainContainer.setVisibility(View.VISIBLE);
+                videoPlayerView.startPlayer();
+            }
+        }.start();
+    }
+
+    private void applyBorderToComponent(View view, int width, int Color) {
+        GradientDrawable rectangleBorder = new GradientDrawable();
+        rectangleBorder.setShape(GradientDrawable.RECTANGLE);
+        rectangleBorder.setStroke(width, Color);
+        view.setBackground(rectangleBorder);
+    }
+
+    private void getPercentageFromResource() {
+
+        float heightPercent =  getResources().getFraction(R.fraction.mainContainerHeightPercent,1,1);
+        float widthPercent =  getResources().getFraction(R.fraction.mainContainerWidthPercent,1,1);
+        float bottomMarginPercent =  getResources().getFraction(R.fraction.app_cms_content_rating_progress_bar_margin_bottom_percent,1,1);
+
+        PercentRelativeLayout.LayoutParams params = (PercentRelativeLayout.LayoutParams) contentRatingAnimationContainer.getLayoutParams();
+        PercentLayoutHelper.PercentLayoutInfo info = params.getPercentLayoutInfo();
+
+        PercentRelativeLayout.LayoutParams paramsProgressBar = (PercentRelativeLayout.LayoutParams) progressBar.getLayoutParams();
+        PercentLayoutHelper.PercentLayoutInfo infoProgress = paramsProgressBar.getPercentLayoutInfo();
+
+        info.heightPercent = heightPercent;
+        info.widthPercent = widthPercent;
+        infoProgress.bottomMarginPercent = bottomMarginPercent;
+
+        contentRatingAnimationContainer.requestLayout();
+        progressBar.requestLayout();
+    }
+
+    private void animateView(){
+        contentRatingMainContainer.setVisibility(View.VISIBLE);
+
+        contentRatingHeaderView.startAnimation(animFadeIn);
+        contentRatingInfoContainer.startAnimation(animFadeIn);
+        contentRatingInfoContainer.setVisibility(View.VISIBLE);
+
+        contentRatingTitleView.startAnimation(animSequential);
+        contentRatingTitleView.setVisibility(View.VISIBLE);
+
+        contentRatingDescriptionView.startAnimation(animTranslate);
+        contentRatingDescriptionView.setVisibility(View.VISIBLE);
+
+    }
+
+    private void setTypeFace(Context context,
+                             TextView view,String fontType) {
+        if (null != context && null != view && null != fontType) {
+            try {
+                Typeface face = Typeface.createFromAsset(context.getAssets(), fontType);
+                view.setTypeface(face);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private Typeface getFontType(Context context, String fontType) {
+        Typeface face;
+        if (null != context && null != fontType) {
+            try {
+                face = Typeface.createFromAsset(context.getAssets(), fontType);
+                return face;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return Typeface.createFromAsset(context.getAssets(), getString(R.string.helvaticaneu_bold));
+    }
+
+
+    @Override
+    public void onAnimationStart(Animation animation) {
+
+    }
+
+    @Override
+    public void onAnimationEnd(Animation animation) {
+        if (animation == animFadeIn) {
+            contentRatingDiscretionView.setVisibility(View.VISIBLE);
+            contentRatingDiscretionView.startAnimation(animFadeOut);
+        }
+    }
+
+    @Override
+    public void onAnimationRepeat(Animation animation) {
+
     }
 }

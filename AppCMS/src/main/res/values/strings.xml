@@ -75,6 +75,8 @@
     <string name="opensans_semibold_ttf">fonts/OpenSans-Semibold.ttf</string>
     <string name="opensans_extrabold_ttf">fonts/OpenSans-ExtraBold.ttf</string>
     <string name="opensans_regular_ttf">fonts/OpenSans-Regular.ttf</string>
+    <string name="helvaticaneu_bold">fonts/HelveticaNeu-Bold.ttf</string>
+    <string name="helvaticaneu_italic">fonts/HelveticaNeu-Italic.ttf</string>
     <string name="search_button_text">GO</string>
     <string name="bg_color_key">bg_color</string>
     <string name="button_color_key">button_color</string>
@@ -261,4 +263,15 @@
     <string name="app_cms_signup_invalid_password_message">Please enter a valid password.</string>
     <string name="loading_video_text">Loading Video</string>
 
+    <!-- content rating -->
+    <string name="content_rating_back">Back</string>
+    <string name="content_rating_text_warning">WARNING</string>
+    <string name="content_rating_viewer_discretion">Viewer Discretion Is Advised</string>
+    <string name="video_player_content_rating_key">video_player_content_rating</string>
+    <string name="content_rating_description">
+        &#160; &#160; The following may contain:\n
+        \u2022 Strong Language\n
+        \u2022 Sexual Content\n
+        \u2022 Violent Situations
+    </string>
 </resources>
