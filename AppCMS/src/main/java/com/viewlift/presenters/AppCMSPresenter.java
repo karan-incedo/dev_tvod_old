@@ -1948,32 +1948,36 @@ public class AppCMSPresenter {
 
     public long getRemainingDownloadSize() {
         List<DownloadVideoRealm> remainDownloads = getRealmController().getAllUnfinishedDownloades(getLoggedInUser(currentActivity));
-        long bytesRemainDownload = 0l;
+        long bytesRemainDownload = 0L;
         for (DownloadVideoRealm downloadVideoRealm : remainDownloads) {
 
             DownloadManager.Query query = new DownloadManager.Query();
             query.setFilterById(downloadVideoRealm.getVideoId_DM());
             Cursor c = downloadManager.query(query);
-            if (c != null && c.moveToFirst()) {
-                long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-                long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-                totalSize -= downloaded;
-                bytesRemainDownload += totalSize;
+            if (c != null) {
+                if (c.moveToFirst()) {
+                    long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                    long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                    totalSize -= downloaded;
+                    bytesRemainDownload += totalSize;
+                }
+                c.close();
             }
-            c.close();
 
         }
-        return bytesRemainDownload / (1024l * 1024l);
+        return bytesRemainDownload / (1024L * 1024L);
     }
 
     public long getMegabytesAvailable(File f) {
         StatFs stat = new StatFs(f.getPath());
         long bytesAvailable = 0;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
             bytesAvailable = (long) stat.getBlockSizeLong() * (long) stat.getAvailableBlocksLong();
-        else
+        }
+        else {
             bytesAvailable = (long) stat.getBlockSize() * (long) stat.getAvailableBlocks();
-        return bytesAvailable / (1024l * 1024l);
+        }
+        return bytesAvailable / (1024L * 1024L);
     }
 
     /**
