@@ -146,6 +146,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                 case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                     if(null != appCMSPlayVideoPageContainer){
                         appCMSPlayVideoPageContainer.findViewById(R.id.exo_pause).requestFocus();
+                        appCMSPlayVideoPageContainer.findViewById(R.id.exo_play).requestFocus();
                     }
                     break;
                 case KeyEvent.KEYCODE_MEDIA_REWIND:
