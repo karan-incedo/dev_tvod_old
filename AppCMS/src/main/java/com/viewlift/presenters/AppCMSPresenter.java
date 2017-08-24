@@ -972,7 +972,7 @@ public class AppCMSPresenter {
                         navigateToHomeToRefresh = true;
                     }
                 } else if (actionType == AppCMSActionType.SHARE) {
-                    if (extraData != null && extraData.length > 0) {
+                    if (extraData.length > 0) {
                         Intent sendIntent = new Intent();
                         sendIntent.setAction(Intent.ACTION_SEND);
                         sendIntent.putExtra(Intent.EXTRA_TEXT, extraData[0]);
@@ -1970,7 +1970,7 @@ public class AppCMSPresenter {
 
     public long getMegabytesAvailable(File f) {
         StatFs stat = new StatFs(f.getPath());
-        long bytesAvailable = 0;
+        long bytesAvailable;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
             bytesAvailable = (long) stat.getBlockSizeLong() * (long) stat.getAvailableBlocksLong();
         }
@@ -2021,7 +2021,6 @@ public class AppCMSPresenter {
             showDialog(DialogType.DOWNLOAD_FAILED, currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null);
 
             Log.w(TAG, currentActivity.getString(R.string.app_cms_download_failed_error_message));
-            return;
         } else {
             if (downloadQueueThread != null) {
                 DownloadQueueItem downloadQueueItem = new DownloadQueueItem();
@@ -2195,10 +2194,12 @@ public class AppCMSPresenter {
         DownloadManager.Query query = new DownloadManager.Query();
         query.setFilterById(enqueueId);
         Cursor cursor = downloadManager.query(query);
-        if (enqueueId != 0L && cursor != null && cursor.moveToFirst()) {
-            uriLocal = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+        if (cursor != null) {
+            if (enqueueId != 0L && cursor.moveToFirst()) {
+                uriLocal = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+            }
+            cursor.close();
         }
-        cursor.close();
         return uriLocal == null ? "data" : uriLocal;
     }
 
@@ -2373,7 +2374,9 @@ public class AppCMSPresenter {
                     downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
                 }
 
-                downloadURL = downloadURL.replace("https:/", "http:/");
+                downloadURL = downloadURL != null
+                        ? downloadURL.replace("https:/", "http:/")
+                        : null;
 
                 DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
                         .setTitle(contentDatum.getGist().getTitle())
@@ -3412,8 +3415,10 @@ public class AppCMSPresenter {
             if (view != null) {
                 InputMethodManager imm =
                         (InputMethodManager) currentActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,
-                        InputMethodManager.HIDE_IMPLICIT_ONLY);
+                if (imm != null) {
+                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,
+                            InputMethodManager.HIDE_IMPLICIT_ONLY);
+                }
             }
         }
     }
@@ -3424,7 +3429,9 @@ public class AppCMSPresenter {
             if (view != null) {
                 InputMethodManager imm =
                         (InputMethodManager) currentActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
             }
         }
     }
@@ -4145,8 +4152,6 @@ public class AppCMSPresenter {
                                     }
                                 }
                             });
-                        } else {
-
                         }
                     });
 
@@ -4364,10 +4369,8 @@ public class AppCMSPresenter {
 
     public String getActiveSubscriptionReceipt(Context context) {
         if (context != null) {
-            if (context != null) {
-                SharedPreferences sharedPrefs = context.getSharedPreferences(ACTIVE_SUBSCRIPTION_RECEIPT, 0);
-                return sharedPrefs.getString(ACTIVE_SUBSCRIPTION_RECEIPT, null);
-            }
+            SharedPreferences sharedPrefs = context.getSharedPreferences(ACTIVE_SUBSCRIPTION_RECEIPT, 0);
+            return sharedPrefs.getString(ACTIVE_SUBSCRIPTION_RECEIPT, null);
         }
         return null;
     }
@@ -4405,8 +4408,6 @@ public class AppCMSPresenter {
                     FacebookRequestError error = response.getError();
                     if (error != null) {
                         Log.e(TAG, error.toString());
-                    } else {
-                        //
                     }
                 }
             });
@@ -5000,11 +5001,9 @@ public class AppCMSPresenter {
         Log.d(TAG, "Sending Beacon Ad Impression");
         String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition,
                 BeaconEvent.AD_IMPRESSION, false);
-        if (url != null) {
-            Log.d(TAG, "Beacon Ad Impression: " + url);
-            beaconMessageRunnable.setUrl(url);
-            beaconMessageThread.run();
-        }
+        Log.d(TAG, "Beacon Ad Impression: " + url);
+        beaconMessageRunnable.setUrl(url);
+        beaconMessageThread.run();
     }
 
     public void sendBeaconAdRequestMessage(String vid, String screenName, String parentScreenName,
@@ -5012,33 +5011,27 @@ public class AppCMSPresenter {
         Log.d(TAG, "Sending Beacon Ad Request");
         String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition,
                 BeaconEvent.AD_REQUEST, false);
-        if (url != null) {
-            Log.d(TAG, "Beacon Ad Request: " + url);
-            beaconMessageRunnable.setUrl(url);
-            beaconMessageThread.run();
-        }
+        Log.d(TAG, "Beacon Ad Request: " + url);
+        beaconMessageRunnable.setUrl(url);
+        beaconMessageThread.run();
     }
 
     public void sendBeaconPingMessage(String vid, String screenName, String parentScreenName,
                                       long currentPosition, boolean usingChromecast) {
         Log.d(TAG, "Sending Beacon Ping Message");
         String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.PING, usingChromecast);
-        if (url != null) {
-            Log.d(TAG, "Beacon Ping: " + url);
-            beaconMessageRunnable.setUrl(url);
-            beaconMessageThread.run();
-        }
+        Log.d(TAG, "Beacon Ping: " + url);
+        beaconMessageRunnable.setUrl(url);
+        beaconMessageThread.run();
     }
 
     public void sendBeaconPlayMessage(String vid, String screenName, String parentScreenName,
                                       long currentPosition, boolean usingChromecast) {
         Log.d(TAG, "Sending Beacon Play Message");
         String url = getBeaconUrl(vid, screenName, parentScreenName, currentPosition, BeaconEvent.PLAY, usingChromecast);
-        if (url != null) {
-            Log.d(TAG, "Beacon Play: " + url);
-            beaconMessageRunnable.setUrl(url);
-            beaconMessageThread.run();
-        }
+        Log.d(TAG, "Beacon Play: " + url);
+        beaconMessageRunnable.setUrl(url);
+        beaconMessageThread.run();
     }
 
     private String getPermalinkCompletePath(String pagePath) {
