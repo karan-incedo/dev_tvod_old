@@ -530,22 +530,38 @@ public class AppCMSSearchResult {
     }
 
 
+
+
+    @SerializedName("gist")
+    @Expose
+    Gist gist;
+
+    public Gist getGist() {
+        return gist;
+    }
+
+    public void setGist(Gist gist) {
+        this.gist = gist;
+    }
+
+    public StreamingInfo getStreamingInfo() {
+        return streamingInfo;
+    }
+
+    public void setStreamingInfo(StreamingInfo streamingInfo) {
+        this.streamingInfo = streamingInfo;
+    }
+
+    @SerializedName("streamingInfo")
+    @Expose
+    StreamingInfo streamingInfo;
+
+
+
     public ContentDatum getContent(){
         ContentDatum contentDatum = new ContentDatum();
-        Gist gist = new Gist();
-        gist.setTitle(getTitle());
-        gist.setPosterImageUrl(getPosterImage().getUrl());
-        gist.setPermalink(getPermalink());
-        gist.setId(getId());
-
-        VideoAssets videoAssets = new VideoAssets();
-        videoAssets.setHls(getVideoAssets() != null ? getVideoAssets().get(0).getHls() : null);
-        StreamingInfo streamingInfo = new StreamingInfo();
-        streamingInfo.setVideoAssets(videoAssets);
-
-
-        contentDatum.setStreamingInfo(streamingInfo);
-        contentDatum.setGist(gist);
+        contentDatum.setStreamingInfo(getStreamingInfo());
+        contentDatum.setGist(getGist());
         return contentDatum;
     }
 }
