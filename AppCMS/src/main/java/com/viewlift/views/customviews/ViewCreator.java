@@ -582,8 +582,6 @@ public class ViewCreator {
                                             } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_VALUE_KEY) {
                                                 if (!TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName(context))) {
                                                     ((TextView) settingsView).setText(appCMSPresenter.getActiveSubscriptionPlanName(context));
-                                                } else if (!TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionDescription(context))) {
-                                                    ((TextView) settingsView).setText(appCMSPresenter.getExistingGooglePlaySubscriptionDescription(context));
                                                 } else {
                                                     ((TextView) settingsView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
                                                 }
@@ -2063,9 +2061,7 @@ public class ViewCreator {
                         case PAGE_SETTINGS_PLAN_VALUE_KEY:
                             if (!TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName(context))) {
                                 ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getActiveSubscriptionPlanName(context));
-                            } else if (!TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionDescription(context))) {
-                                ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getExistingGooglePlaySubscriptionDescription(context));
-                            } else {
+                            } else if (!appCMSPresenter.isUserSubscribed(context)) {
                                 ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
                             }
                             break;
