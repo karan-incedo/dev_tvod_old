@@ -51,6 +51,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     private String filmId;
     private String primaryCategory;
     private String contentRating;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

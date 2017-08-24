@@ -57,7 +57,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         implements AdErrorEvent.AdErrorListener,
         AdEvent.AdEventListener,
         VideoPlayerView.FinishListener,
-        Animation.AnimationListener{
+        Animation.AnimationListener {
     private static final String TAG = "PlayVideoFragment";
 
     private static final long SECS_TO_MSECS = 1000L;
@@ -123,7 +123,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private Runnable seekListener;
     private int progressCount = 0;
     private Handler seekBarHandler;
-    Animation animSequential, animFadeIn,animFadeOut,animTranslate;
+    Animation animSequential, animFadeIn, animFadeOut, animTranslate;
     private final int totalCountdownInMillis = 10000;
     private final int countDownIntervalInMillis = 10;
 
@@ -161,7 +161,6 @@ public class AppCMSPlayVideoFragment extends Fragment
                     });
         }
     };
-
 
 
     public static AppCMSPlayVideoFragment newInstance(Context context,
@@ -553,7 +552,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         super.onDestroyView();
     }
 
-    public void setFirebaseProgressHandling(){
+    public void setFirebaseProgressHandling() {
         mProgressHandler = new Handler();
         mProgressRunnable = new Runnable() {
             @Override
@@ -705,16 +704,16 @@ public class AppCMSPlayVideoFragment extends Fragment
                 (LinearLayout) rootView.findViewById(R.id.app_cms_content_rating_info_container);
 
         contentRatingHeaderView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_header_view);
-        setTypeFace(getContext(),contentRatingHeaderView,getString(R.string.helvaticaneu_bold));
+        setTypeFace(getContext(), contentRatingHeaderView, getString(R.string.helvaticaneu_bold));
 
         contentRatingTitleView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_title_view);
-        setTypeFace(getContext(),contentRatingTitleView,getString(R.string.helvaticaneu_bold));
+        setTypeFace(getContext(), contentRatingTitleView, getString(R.string.helvaticaneu_bold));
 
         contentRatingDiscretionView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_viewer_discretion);
-        setTypeFace(getContext(),contentRatingDiscretionView,getString(R.string.helvaticaneu_bold));
+        setTypeFace(getContext(), contentRatingDiscretionView, getString(R.string.helvaticaneu_bold));
 
         contentRatingBack = (TextView) rootView.findViewById(R.id.app_cms_content_rating_back);
-        setTypeFace(getContext(),contentRatingBack,getContext().getString(R.string.helvaticaneu_bold));
+        setTypeFace(getContext(), contentRatingBack, getContext().getString(R.string.helvaticaneu_bold));
 
         contentRatingBackUnderline = rootView.findViewById(R.id.app_cms_content_rating_back_underline);
 
@@ -742,10 +741,10 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private void createContentRatingView() {
-        if(!isTrailer && !getParentalRating().equalsIgnoreCase(getContext().getString(R.string.age_rating_converted_default))) {
+        if (!isTrailer && !getParentalRating().equalsIgnoreCase(getContext().getString(R.string.age_rating_converted_default))) {
             animateView();
             startCountdown();
-        }else{
+        } else {
             contentRatingMainContainer.setVisibility(View.GONE);
             videoPlayerMainContainer.setVisibility(View.VISIBLE);
             videoPlayerView.startPlayer();
@@ -754,7 +753,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     private String getParentalRating() {
         String convertedRating = getContext().getString(R.string.age_rating_converted_default);
-        if (!TextUtils.isEmpty(parentalRating) && !parentalRating.contentEquals( getContext().getString(R.string.age_rating_converted_default))) {
+        if (!TextUtils.isEmpty(parentalRating) && !parentalRating.contentEquals(getContext().getString(R.string.age_rating_converted_default))) {
             if (parentalRating.contains(getContext().getString(R.string.age_rating_y7))) {
                 convertedRating = getContext().getString(R.string.age_rating_converted_y7);
             } else if (parentalRating.contains(getContext().getString(R.string.age_rating_y))) {
@@ -774,11 +773,11 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private void startCountdown() {
-         new CountDownTimer(totalCountdownInMillis, countDownIntervalInMillis) {
+        new CountDownTimer(totalCountdownInMillis, countDownIntervalInMillis) {
             @Override
             public void onTick(long millisUntilFinished) {
                 long time = totalCountdownInMillis - millisUntilFinished;
-                progressBar.setProgress((int)time);
+                progressBar.setProgress((int) time);
             }
 
             @Override
@@ -799,9 +798,9 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     private void getPercentageFromResource() {
 
-        float heightPercent =  getResources().getFraction(R.fraction.mainContainerHeightPercent,1,1);
-        float widthPercent =  getResources().getFraction(R.fraction.mainContainerWidthPercent,1,1);
-        float bottomMarginPercent =  getResources().getFraction(R.fraction.app_cms_content_rating_progress_bar_margin_bottom_percent,1,1);
+        float heightPercent = getResources().getFraction(R.fraction.mainContainerHeightPercent, 1, 1);
+        float widthPercent = getResources().getFraction(R.fraction.mainContainerWidthPercent, 1, 1);
+        float bottomMarginPercent = getResources().getFraction(R.fraction.app_cms_content_rating_progress_bar_margin_bottom_percent, 1, 1);
 
         PercentRelativeLayout.LayoutParams params = (PercentRelativeLayout.LayoutParams) contentRatingAnimationContainer.getLayoutParams();
         PercentLayoutHelper.PercentLayoutInfo info = params.getPercentLayoutInfo();
@@ -817,7 +816,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         progressBar.requestLayout();
     }
 
-    private void animateView(){
+    private void animateView() {
 
         animSequential = AnimationUtils.loadAnimation(getContext(),
                 R.anim.sequential);
@@ -845,7 +844,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private void setTypeFace(Context context,
-                             TextView view,String fontType) {
+                             TextView view, String fontType) {
         if (null != context && null != view && null != fontType) {
             try {
                 Typeface face = Typeface.createFromAsset(context.getAssets(), fontType);
