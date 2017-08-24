@@ -1028,8 +1028,8 @@ public class AppCMSPresenter {
                             if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
                                 String paymentProcessor = getActiveSubscriptionProcessor(currentActivity);
                                 if (!TextUtils.isEmpty(paymentProcessor) &&
-                                        (!paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
-                                                !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)))) {
+                                        !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
+                                                !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))) {
                                     showEntitlementDialog(DialogType.CANNOT_UPGRADE_SUBSCRIPTION);
                                 } else if (isExistingGooglePlaySubscriptionSuspended(currentActivity) &&
                                         !upgradesAvailableForUser(getLoggedInUser(currentActivity))) {
