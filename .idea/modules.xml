@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/AndroidAppCMS.iml" filepath="$PROJECT_DIR$/AndroidAppCMS.iml" />
       <module fileurl="file://$PROJECT_DIR$/AppCMS/AppCMS.iml" filepath="$PROJECT_DIR$/AppCMS/AppCMS.iml" />
       <module fileurl="file://$PROJECT_DIR$/android-appcms.iml" filepath="$PROJECT_DIR$/android-appcms.iml" />
       <module fileurl="file://$PROJECT_DIR$/firetvcustomkeyboard/firetvcustomkeyboard.iml" filepath="$PROJECT_DIR$/firetvcustomkeyboard/firetvcustomkeyboard.iml" />
