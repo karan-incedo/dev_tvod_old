@@ -2041,32 +2041,45 @@ public class AppCMSPresenter {
                                  ContentDatum contentDatum,
                                  String downloadURL) {
         DownloadVideoRealm downloadVideoRealm = new DownloadVideoRealm();
-        downloadVideoRealm.setVideoThumbId_DM(thumbEnqueueId);
-        downloadVideoRealm.setPosterThumbId_DM(posterEnqueueId);
-        downloadVideoRealm.setVideoId_DM(enqueueId);
 
-        downloadVideoRealm.setVideoId(contentDatum.getGist().getId());
-        downloadVideoRealm.setVideoTitle(contentDatum.getGist().getTitle());
-        downloadVideoRealm.setVideoDescription(contentDatum.getGist().getDescription());
-        downloadVideoRealm.setLocalURI(downloadedMediaLocalURI(enqueueId));
-        downloadVideoRealm.setVideoImageUrl(getPngPosterPath(contentDatum.getGist().getId()));
-        downloadVideoRealm.setPosterFileURL(getPngPosterPath(contentDatum.getGist().getId()));
-        if (ccEnqueueId != 0) {
-            downloadVideoRealm.setSubtitlesId_DM(ccEnqueueId);
-            downloadVideoRealm.setSubtitlesFileURL(getPngPosterPath(contentDatum.getGist().getId()));
-        }
+        if (contentDatum != null && contentDatum.getGist() != null) {
+            downloadVideoRealm.setVideoThumbId_DM(thumbEnqueueId);
+            downloadVideoRealm.setPosterThumbId_DM(posterEnqueueId);
+            downloadVideoRealm.setVideoId_DM(enqueueId);
 
-        downloadVideoRealm.setVideoFileURL(contentDatum.getGist().getVideoImageUrl()); //This change has been done due to making thumb image available at time of videos are downloading.
-        downloadVideoRealm.setVideoWebURL(downloadURL);
-        downloadVideoRealm.setDownloadDate(System.currentTimeMillis());
-        downloadVideoRealm.setVideoDuration(contentDatum.getGist().getRuntime());
-        downloadVideoRealm.setWatchedTime(contentDatum.getGist().getWatchedTime());
+            if (contentDatum.getGist().getId() != null){
+                downloadVideoRealm.setVideoId(contentDatum.getGist().getId());
+                downloadVideoRealm.setVideoImageUrl(getPngPosterPath(contentDatum.getGist().getId()));
+                downloadVideoRealm.setPosterFileURL(getPngPosterPath(contentDatum.getGist().getId()));
+            }
+            if (contentDatum.getGist().getTitle() != null){
+                downloadVideoRealm.setVideoTitle(contentDatum.getGist().getTitle());
+            }
+            if (contentDatum.getGist().getDescription() != null){
+                downloadVideoRealm.setVideoDescription(contentDatum.getGist().getDescription());
+            }
+            downloadVideoRealm.setLocalURI(downloadedMediaLocalURI(enqueueId));
 
-        downloadVideoRealm.setPermalink(contentDatum.getGist().getPermalink());
-        downloadVideoRealm.setDownloadStatus(DownloadStatus.STATUS_PENDING);
-        downloadVideoRealm.setUserId(getLoggedInUser(currentActivity));
+            if (ccEnqueueId != 0 && contentDatum.getGist().getId()!=null) {
+                downloadVideoRealm.setSubtitlesId_DM(ccEnqueueId);
+                downloadVideoRealm.setSubtitlesFileURL(getPngPosterPath(contentDatum.getGist().getId()));
+            }
+            if (contentDatum.getGist().getVideoImageUrl() != null){
+                downloadVideoRealm.setVideoFileURL(contentDatum.getGist().getVideoImageUrl()); //This change has been done due to making thumb image available at time of videos are downloading.
+            }
 
+            downloadVideoRealm.setVideoWebURL(downloadURL);
+            downloadVideoRealm.setDownloadDate(System.currentTimeMillis());
+            downloadVideoRealm.setVideoDuration(contentDatum.getGist().getRuntime());
+            downloadVideoRealm.setWatchedTime(contentDatum.getGist().getWatchedTime());
+
+            downloadVideoRealm.setPermalink(contentDatum.getGist().getPermalink());
+            downloadVideoRealm.setDownloadStatus(DownloadStatus.STATUS_PENDING);
+            downloadVideoRealm.setUserId(getLoggedInUser(currentActivity));
+
+    }
         realmController.addDownload(downloadVideoRealm);
+
     }
 
     public void createSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
@@ -4573,7 +4586,7 @@ public class AppCMSPresenter {
 
     public boolean isPagePrimary(String pageId) {
         for (NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()) {
-            if (!TextUtils.isEmpty(pageId) && pageId.contains(navigationPrimary.getPageId())) {
+            if (pageId!=null && !TextUtils.isEmpty(pageId) && pageId.contains(navigationPrimary.getPageId())) {
                 return true;
             }
         }
@@ -4589,7 +4602,7 @@ public class AppCMSPresenter {
 
     public boolean isPageUser(String pageId) {
         for (NavigationUser navigationUser : navigation.getNavigationUser()) {
-            if (!TextUtils.isEmpty(pageId) && pageId.contains(navigationUser.getPageId())) {
+            if (pageId!=null && !TextUtils.isEmpty(pageId) && pageId.contains(navigationUser.getPageId())) {
                 return true;
             }
         }
