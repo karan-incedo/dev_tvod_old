@@ -175,7 +175,6 @@ import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
 import org.threeten.bp.temporal.ChronoUnit;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -434,6 +433,7 @@ public class AppCMSPresenter {
     private Action1<UserVideoDownloadStatus> downloadResultActionAfterPermissionGranted;
     private boolean requestDownloadQualityScreen;
     private DownloadQueueThread downloadQueueThread;
+    private boolean isVideoPlayerStarted;
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -813,7 +813,7 @@ public class AppCMSPresenter {
                 result = true;
                 boolean isTrailer = (actionType == AppCMSActionType.WATCH_TRAILER ||
                         (pagePath != null &&
-                        pagePath.contains(currentActivity.getString(R.string.app_cms_action_qualifier_watchvideo_key))));
+                                pagePath.contains(currentActivity.getString(R.string.app_cms_action_qualifier_watchvideo_key))));
                 if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
                         actionType == AppCMSActionType.WATCH_TRAILER) {
                     boolean entitlementActive = true;
@@ -840,7 +840,8 @@ public class AppCMSPresenter {
                         sendFirebaseLoginSubscribeSuccess();
 
                         String adsUrl;
-                        if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE) {
+                        if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE && !isVideoPlayerStarted) {
+                            isVideoPlayerStarted = true;
                             if (pagePath != null && pagePath.contains(
                                     currentActivity.getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
                                 requestAds = false;
@@ -1028,7 +1029,7 @@ public class AppCMSPresenter {
                                 String paymentProcessor = getActiveSubscriptionProcessor(currentActivity);
                                 if (!TextUtils.isEmpty(paymentProcessor) &&
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
-                                                !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))) {
+                                        !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))) {
                                     showEntitlementDialog(DialogType.CANNOT_UPGRADE_SUBSCRIPTION);
                                 } else if (isExistingGooglePlaySubscriptionSuspended(currentActivity) &&
                                         !upgradesAvailableForUser(getLoggedInUser(currentActivity))) {
@@ -1223,6 +1224,10 @@ public class AppCMSPresenter {
             }
         }
         return result;
+    }
+
+    public void setVideoPlayerHasStarted() {
+        isVideoPlayerStarted = false;
     }
 
     public boolean launchNavigationPage() {
@@ -2288,20 +2293,6 @@ public class AppCMSPresenter {
 
         c.close();
         return downloadPercent;
-    }
-
-    private void showQueueItem(String title) {
-        currentActivity.runOnUiThread(() -> {
-            showToast(currentActivity.getString(R.string.app_cms_download_queue_toast_message, title),
-                    Toast.LENGTH_LONG);
-        });
-    }
-
-    private void showAlreadyQueuedItem(String title) {
-        currentActivity.runOnUiThread(() -> {
-            showToast(currentActivity.getString(R.string.app_cms_download_already_queued_toast_message, title),
-                    Toast.LENGTH_LONG);
-        });
     }
 
     public void startNextDownload() {
@@ -7316,12 +7307,9 @@ public class AppCMSPresenter {
                 filmDownloadQueue.add(downloadQueueItem);
                 filmsInQueue.add(downloadQueueItem.contentDatum.getGist().getTitle());
 
-                if (filmsInQueue.size() > 0) {
-                    appCMSPresenter.showQueueItem(downloadQueueItem.contentDatum.getGist().getTitle());
+                if (!filmsInQueue.isEmpty()) {
                     downloadQueueItem.resultAction1.call(null);
                 }
-            } else {
-                appCMSPresenter.showAlreadyQueuedItem(downloadQueueItem.contentDatum.getGist().getTitle());
             }
         }
 
@@ -7329,7 +7317,7 @@ public class AppCMSPresenter {
         public void run() {
             running = true;
             while (running) {
-                if (filmDownloadQueue.size() > 0 && startNextDownload) {
+                if (!filmDownloadQueue.isEmpty() && startNextDownload) {
                     DownloadQueueItem downloadQueueItem = filmDownloadQueue.remove();
 
                     if (filmsInQueue.contains(downloadQueueItem.contentDatum.getGist().getTitle())) {
