@@ -3,30 +3,43 @@ package com.viewlift.models.billing.appcms.subscriptions;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
+@UseStag
 public class InAppPurchaseData {
 
+    @SerializedName("autoRenewing")
+    @Expose
+    boolean autoRenewing;
     @SerializedName("orderId")
     @Expose
-    private String orderId;
+    String orderId;
     @SerializedName("packageName")
     @Expose
-    private String packageName;
+    String packageName;
     @SerializedName("productId")
     @Expose
-    private String productId;
+    String productId;
     @SerializedName("purchaseTime")
     @Expose
-    private Integer purchaseTime;
+    long purchaseTime;
     @SerializedName("purchaseState")
     @Expose
-    private Integer purchaseState;
+    long purchaseState;
     @SerializedName("developerPayload")
     @Expose
-    private String developerPayload;
+    String developerPayload;
     @SerializedName("purchaseToken")
     @Expose
-    private String purchaseToken;
+    String purchaseToken;
+
+    public boolean isAutoRenewing() {
+        return autoRenewing;
+    }
+
+    public void setAutoRenewing(boolean autoRenewing) {
+        this.autoRenewing = autoRenewing;
+    }
 
     public String getOrderId() {
         return orderId;
@@ -52,19 +65,19 @@ public class InAppPurchaseData {
         this.productId = productId;
     }
 
-    public Integer getPurchaseTime() {
+    public long getPurchaseTime() {
         return purchaseTime;
     }
 
-    public void setPurchaseTime(Integer purchaseTime) {
+    public void setPurchaseTime(long purchaseTime) {
         this.purchaseTime = purchaseTime;
     }
 
-    public Integer getPurchaseState() {
+    public long getPurchaseState() {
         return purchaseState;
     }
 
-    public void setPurchaseState(Integer purchaseState) {
+    public void setPurchaseState(long purchaseState) {
         this.purchaseState = purchaseState;
     }
 

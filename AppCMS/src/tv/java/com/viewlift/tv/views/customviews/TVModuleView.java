@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
-import com.viewlift.models.data.appcms.ui.page.Module;
+import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.tv.utility.Utils;
 
 
@@ -14,7 +14,7 @@ import com.viewlift.tv.utility.Utils;
  * Created by viewlift on 5/17/17.
  */
 
-public class TVModuleView<T extends Module> extends TVBaseView {
+public class TVModuleView<T extends ModuleWithComponents> extends TVBaseView {
     private static final String TAG = "ModuleView";
     protected boolean[] componentHasViewList;
 

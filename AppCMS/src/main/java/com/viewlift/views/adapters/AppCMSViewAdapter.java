@@ -82,11 +82,19 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             this.adapterData = new ArrayList<>();
         }
 
+        this.viewType = viewType;
+        this.viewTypeKey = jsonValueKeyMap.get(viewType);
+        if (this.viewTypeKey == null) {
+            this.viewTypeKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+        }
+
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
             if (appCMSPresenter.isUserLoggedIn(context)) {
                 List<SubscriptionPlan> availableSubscriptionPlans =
                         appCMSPresenter.availableUpgradesForUser(appCMSPresenter.getLoggedInUser(context));
-                cullDataByAvailableUpgrades(availableSubscriptionPlans);
+
+                cullDataByAvailableUpgrades(availableSubscriptionPlans,
+                        appCMSPresenter.parseExistingGooglePlaySubscriptionPrice(context));
             }
         }
 
@@ -95,18 +103,12 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.useMarginsAsPercentages = true;
         this.defaultAction = getDefaultAction(context);
 
-        this.viewType = viewType;
-        this.viewTypeKey = jsonValueKeyMap.get(viewType);
-        if (this.viewTypeKey == null) {
-            this.viewTypeKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
-        }
         this.isSelected = false;
         this.unselectedColor = ContextCompat.getColor(context, android.R.color.white);
         this.selectedColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
                 .getGeneral().getBlockTitleColor());
         this.isClickable = true;
 
-        cullData(context, 0);
         sortPlanPricesInDescendingOrder();
     }
 
@@ -216,6 +218,16 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         notifyDataSetChanged();
         listView.setAdapter(this);
         listView.invalidate();
+
+        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
+            if (appCMSPresenter.isUserLoggedIn(listView.getContext())) {
+                List<SubscriptionPlan> availableSubscriptionPlans =
+                        appCMSPresenter.availableUpgradesForUser(appCMSPresenter.getLoggedInUser(listView.getContext()));
+                cullDataByAvailableUpgrades(availableSubscriptionPlans,
+                        appCMSPresenter.parseExistingGooglePlaySubscriptionPrice(listView.getContext()));
+            }
+        }
+
         notifyDataSetChanged();
     }
 
@@ -236,7 +248,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         data.getId(),
                                         data.getPlanDetails().get(0).getCountryCode(),
                                         data.getName(),
-                                        (float) data.getPlanDetails().get(0).getRecurringPaymentAmount());
+                                        data.getPlanDetails().get(0).getRecurringPaymentAmount());
                             } else {
                                 collectionGridItemView.performClick();
                             }
@@ -397,27 +409,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         itemView.setBackground(planBorder);
     }
 
-    private void cullData(Context context, int count) {
-        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY &&
-                adapterData != null &&
-                count < adapterData.size()) {
-            String currentSubscriptionSku = appCMSPresenter.getActiveSubscriptionSku(context);
-            float currentSubscriptionPrice = appCMSPresenter.getActiveSubscriptionPrice(context);
-            if (!TextUtils.isEmpty(currentSubscriptionSku)) {
-                for (int i = 0; i < adapterData.size(); i++) {
-                    if (adapterData.get(i).getId().equals(currentSubscriptionSku)) {
-                        adapterData.remove(i);
-                        cullData(context, count + 1);
-                    } else if ((float) adapterData.get(i).getPlanDetails().get(0).getRecurringPaymentAmount() <=
-                            currentSubscriptionPrice) {
-                        adapterData.remove(i);
-                        cullData(context, count + 1);
-                    }
-                }
-            }
-        }
-    }
-
     private void sortPlanPricesInDescendingOrder() {
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY && adapterData != null) {
 
@@ -430,18 +421,27 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
     }
 
-    private void cullDataByAvailableUpgrades(List<SubscriptionPlan> availableSubscriptionPlans) {
+    private void cullDataByAvailableUpgrades(List<SubscriptionPlan> availableSubscriptionPlans,
+                                             double existingGooglePlaySubscriptionPrice) {
         List<ContentDatum> updatedData = new ArrayList<>();
-        if (availableSubscriptionPlans != null) {
-            for (ContentDatum contentDatum : adapterData) {
+        for (ContentDatum contentDatum : adapterData) {
+            if (availableSubscriptionPlans != null) {
                 for (SubscriptionPlan subscriptionPlan : availableSubscriptionPlans) {
                     if (!TextUtils.isEmpty(contentDatum.getIdentifier()) &&
-                            contentDatum.getIdentifier().equals(subscriptionPlan.getSku())) {
+                            contentDatum.getIdentifier().equals(subscriptionPlan.getSku()) &&
+                            (existingGooglePlaySubscriptionPrice < subscriptionPlan.getSubscriptionPrice())) {
                         updatedData.add(contentDatum);
                     }
                 }
+            } else if (contentDatum.getPlanDetails() != null &&
+                    !contentDatum.getPlanDetails().isEmpty() &&
+                    contentDatum.getPlanDetails().get(0) != null &&
+                    existingGooglePlaySubscriptionPrice <
+                            contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount()) {
+                updatedData.add(contentDatum);
             }
         }
+
         this.adapterData = updatedData;
     }
 

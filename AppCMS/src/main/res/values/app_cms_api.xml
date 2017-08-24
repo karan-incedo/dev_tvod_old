@@ -15,15 +15,16 @@
     <string name="app_cms_streaminginfo_api_url">%1$s/content/videos/%2$s?site=%3$s&amp;fields=streamingInfo</string>
 
     <!-- AppCMS Search API -->
-    <string name="app_cms_search_api_url">%1$s/content/search?site=%2$s&amp;searchTerm=%3$s</string>
+    <string name="app_cms_search_api_url">%1$s/search/v1?site=%2$s&amp;searchTerm=%3$s</string>
 
     <!-- AppCMS Ads API -->
-    <string name="app_cms_ads_api_url">http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&amp;iu=/225734590/SF_Video/Mapp_Android&amp;impl=s&amp;gdfp_req=1&amp;env=vp&amp;output=xml_vast2&amp;unviewed_position_start=1&amp;url=%1$s&amp;ad_rule=0&amp;correlator=%2$d&amp;cust_params=APPID=%3$s</string>
+    <string name="app_cms_ads_api_url">http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&amp;iu=/225734590/SF_Video/Map_Android&amp;impl=s&amp;gdfp_req=1&amp;env=vp&amp;output=xml_vast2&amp;unviewed_position_start=1&amp;url=%1$s&amp;ad_rule=0&amp;correlator=%2$d&amp;cust_params=APPID=%3$s</string>
 
     <!-- AppCMS Beacon API -->
     <string name="app_cms_beacon_url">https://%1$s/events?aid=%2$s&amp;cid=%3$s&amp;pfm=%4$s&amp;dp1=%5$s&amp;vid=%6$s&amp;url=%7$s&amp;ref=%8$s&amp;pa=%9$s&amp;vpos=%10$d&amp;uid=%11$s</string>
     <string name="app_cms_beacon_chromecast_dp2_url">&amp;dp2=Chromecast</string>
     <string name="app_cms_beacon_platform">Android</string>
+    <string name="app_cms_beacon_tvplatform">FireTV</string>
     <string name="app_cms_beacon_dpm_android">Standard Android OS</string>
     <string name="app_cms_beacon_video_player_parent_screen_name">VideoPlayer</string>
     <string name="app_cms_beacon_casting_screen_name">CastingView</string>
@@ -62,10 +63,12 @@
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>
         <item>AC Footer 01</item>
+        <item>AC RawHtml 01</item>
     </string-array>
     <string name="app_cms_main_svod_service_type_key">SVOD</string>
     <string name="app_cms_android_navigation_key">navigation</string>
     <string name="app_cms_page_button_key">button</string>
+    <string name="app_cms_page_button_switch_key">switchToSdCard</string>
     <string name="app_cms_page_image_key">image</string>
     <string name="app_cms_page_label_key">label</string>
     <string name="app_cms_page_collection_grid_key">collectionGrid</string>
@@ -118,12 +121,18 @@
     <string name="app_cms_page_settings_name_value_key">nameValue</string>
     <string name="app_cms_page_settings_email_value_key">emailValue</string>
     <string name="app_cms_page_settings_plan_value_key">planValue</string>
+    <string name="app_cms_page_settings_plan_processor_title_key">paymentProcess</string>
     <string name="app_cms_page_settings_plan_processor_value_key">paymentProcessorValue</string>
     <string name="app_cms_page_edit_profile_key">Edit Profile</string>
     <string name="app_cms_page_cancel_subscription_key">Cancel Subscription</string>
     <string name="app_cms_page_upgrade_subscription_key">Upgrade Subscription</string>
+    <string name="app_cms_page_upgrade_subscribe_button_text">SUBSCRIBE</string>
     <string name="app_cms_page_background_image_view_key">backgroundImage</string>
     <string name="app_cms_page_background_image_type_type">imageView</string>
+    <string name="app_cms_page_togglebutton_key">toggle</string>
+    <string name="app_cms_page_autoplay_toggle_button_key">autoplayToggle</string>
+    <string name="app_cms_page_settings_download_quality_value_key">downloadQualityValue</string>
+    <string name="app_cms_page_settings_app_version_value_key">appVersionValue</string>
 
     <string name="app_cms_page_history_module_key">AC History 01</string>
     <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>
@@ -220,6 +229,7 @@
     <string name="app_cms_action_managesubscription_key">manageSubscription</string>
 
     <string name="app_cms_action_change_download_quality_key">changeDownloadQuality</string>
+    <string name="app_cms_action_change_download_storage_location_key">changeStorageLocation</string>
     <!--<string name="app_cms_action_change_download_quality_key">Manage Download</string>-->
 
     <string name="app_cms_action_logingoogle_key">logingoogle</string>
@@ -235,7 +245,7 @@
 
     <!-- AppCMS Data values -->
     <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=%6$s</string>
-    <string name="app_cms_page_api_view_plans_url">%1$s%2$s?site=%3$s&amp;path=/viewplans&amp;includeContent=true</string>
+    <string name="app_cms_page_api_view_plans_url">%1$s%2$s?site=%3$s&amp;device=%4$s&amp;path=/viewplans&amp;includeContent=true</string>
     <string name="app_cms_page_id_query_parameter">pageId=</string>
     <string name="app_cms_page_path_query_parameter">path=</string>
     <string name="app_cms_api_key">XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F</string>
@@ -314,7 +324,13 @@
     <string name="app_cms_download_quality_continue_button_key">continueButton</string>
 
     <!-- AppCMS Payment Processor values -->
-    <string name="subscription_ios_payment_processor_friendly">iOS</string>
-    <string name="subscription_android_payment_processor_friendly">Android</string>
+    <string name="subscription_ios_payment_processor">iOS</string>
+    <string name="subscription_ios_payment_processor_friendly">iTunes</string>
+    <string name="subscription_android_payment_processor">Android</string>
+    <string name="subscription_android_payment_processor_friendly">Google Play</string>
     <string name="subscription_web_payment_processor_friendly">Stripe</string>
+    <string name="subscription_no_payment_processor_friendly">None</string>
+    <string name="subscription_unsubscribed_plan_value">Unsubscribed</string>
+    <string name="subscription_unknown_payment_processor_friendly">Unknown</string>
+    <string name="app_cms_view_plan_module_key">ViewPlanModule</string>
 </resources>

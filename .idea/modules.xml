@@ -4,7 +4,14 @@
     <modules>
       <module fileurl="file://D:\AppCMSDir\forkPhase3\android-appcms\AndroidAppCMSPhase3.iml" filepath="D:\AppCMSDir\forkPhase3\android-appcms\AndroidAppCMSPhase3.iml" />
       <module fileurl="file://$PROJECT_DIR$/AppCMS/AppCMS.iml" filepath="$PROJECT_DIR$/AppCMS/AppCMS.iml" />
+      <module fileurl="file://G:\Sandeep\AppCMSWorkspace\android-appcms\AppCMS\AppCMS.iml" filepath="G:\Sandeep\AppCMSWorkspace\android-appcms\AppCMS\AppCMS.iml" />
       <module fileurl="file://$PROJECT_DIR$/android-appcms.iml" filepath="$PROJECT_DIR$/android-appcms.iml" />
+      <module fileurl="file://G:\Sandeep\AppCMSWorkspace\android-appcms\android-appcms.iml" filepath="G:\Sandeep\AppCMSWorkspace\android-appcms\android-appcms.iml" />
+      <module fileurl="file://C:\Users\anas.azeem\StudioProjects\android-appcms-8-2\android-appcms.iml" filepath="C:\Users\anas.azeem\StudioProjects\android-appcms-8-2\android-appcms.iml" />
+      <module fileurl="file://D:\Projects\APP_CMS_PHASE3\android-appcms\android-appcms-8-2.iml" filepath="D:\Projects\APP_CMS_PHASE3\android-appcms\android-appcms-8-2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/firetvcustomkeyboard/firetvcustomkeyboard.iml" filepath="$PROJECT_DIR$/firetvcustomkeyboard/firetvcustomkeyboard.iml" />
+      <module fileurl="file://G:\Sandeep\AppCMSWorkspace\android-appcms\firetvcustomkeyboard\firetvcustomkeyboard.iml" filepath="G:\Sandeep\AppCMSWorkspace\android-appcms\firetvcustomkeyboard\firetvcustomkeyboard.iml" />
+      <module fileurl="file://D:\Projects\APP_CMS_PHASE3\android-appcms\firetvcustomkeyboard\firetvcustomkeyboard.iml" filepath="D:\Projects\APP_CMS_PHASE3\android-appcms\firetvcustomkeyboard\firetvcustomkeyboard.iml" />
     </modules>
   </component>
 </project>

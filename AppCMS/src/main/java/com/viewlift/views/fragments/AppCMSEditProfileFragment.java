@@ -1,32 +1,24 @@
 package com.viewlift.views.fragments;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
-import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.ViewCreator;
-
-import rx.functions.Action1;
 
 /**
  * Created by viewlift on 7/27/17.
@@ -74,25 +66,32 @@ public class AppCMSEditProfileFragment extends DialogFragment {
         if (!TextUtils.isEmpty(email)) {
             appCMSEditProfileEmailInput.setText(email);
         }
-
+        final EditText password = new EditText(view.getContext());
         Button editProfileConfirmChangeButton = (Button) view.findViewById(R.id.edit_profile_confirm_change_button);
-        editProfileConfirmChangeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                appCMSPresenter.updateUserData(appCMSEditProfileNameInput.getText().toString(),
-                        appCMSEditProfileEmailInput.getText().toString(),
-                        new Action1<UserIdentity>() {
-                            @Override
-                            public void call(UserIdentity userIdentity) {
-                                // NO-OP - just close window
-                                appCMSPresenter.sendCloseOthersAction(null, true);
-                            }
-                        });
-            }
+        editProfileConfirmChangeButton.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+            builder.setCancelable(false);
+            builder.setView(password)
+                    .setTitle("Enter your password to continue")
+                    .setPositiveButton("Proceed", (dialog, position) -> {
+                        if (!TextUtils.isEmpty(password.getText().toString())) {
+                            appCMSPresenter.updateUserData(appCMSEditProfileNameInput.getText().toString(),
+                                    appCMSEditProfileEmailInput.getText().toString(),
+                                    password.getText().toString(),
+                                    userIdentity -> {
+                                        //
+                                    }
+                            );
+                        }
+                        appCMSPresenter.sendCloseOthersAction(null, true);
+                    })
+                    .setNegativeButton("Cancel", (dialog, position) ->
+                            appCMSPresenter.sendCloseOthersAction(null, true))
+                    .create().show();
         });
+
         editProfileConfirmChangeButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor, buttonColor));
         editProfileConfirmChangeButton.setBackgroundColor(buttonColor);
-
         setBgColor(bgColor, view);
 
         return view;

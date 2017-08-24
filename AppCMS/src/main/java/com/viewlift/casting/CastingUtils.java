@@ -60,11 +60,13 @@ public class CastingUtils {
                 if (getPlayingUrl(detailsRelatedVideoData.get(i)) != null && !TextUtils.isEmpty(getPlayingUrl(detailsRelatedVideoData.get(i)))) {
                     int currentPlayingIndex = listCompareRelatedVideosId.indexOf(detailsRelatedVideoData.get(i).getGist().getId());
 
-                    queueItemsArray[currentPlayingIndex] = new MediaQueueItem.Builder(buildMediaInfoFromList(detailsRelatedVideoData.get(i), appName, context))
-                            .setAutoplay(true)
-                            .setPreloadTime(PRELOAD_TIME_S)
-                            .setCustomData(seasonObj)
-                            .build();
+                    if (0 <= currentPlayingIndex && currentPlayingIndex < queueItemsArray.length) {
+                        queueItemsArray[currentPlayingIndex] = new MediaQueueItem.Builder(buildMediaInfoFromList(detailsRelatedVideoData.get(i), appName, context))
+                                .setAutoplay(true)
+                                .setPreloadTime(PRELOAD_TIME_S)
+                                .setCustomData(seasonObj)
+                                .build();
+                    }
                 }
 
             }
@@ -109,7 +111,7 @@ public class CastingUtils {
 
     public static String getPlayingUrl(ContentDatum contentData) {
         String playUrl = "";
-        if (contentData!=null && contentData.getStreamingInfo() != null && contentData.getStreamingInfo().getVideoAssets() != null) {
+        if (contentData != null && contentData.getStreamingInfo() != null && contentData.getStreamingInfo().getVideoAssets() != null) {
 
 
             if (contentData.getStreamingInfo().getVideoAssets().getMpeg() != null && contentData.getStreamingInfo().getVideoAssets().getMpeg().size() > 0) {
@@ -124,6 +126,16 @@ public class CastingUtils {
         return playUrl;
     }
 
+    public static String getTitle(ContentDatum contentData, boolean isTrailer) {
+        String videoTitle = "";
+        if (!isTrailer && contentData != null && contentData.getGist() != null && contentData.getGist().getTitle() != null) {
+            videoTitle = contentData.getGist().getTitle();
+        } else if (isTrailer && contentData != null && contentData.getContentDetails() != null && contentData.getContentDetails().getTrailers() != null && contentData.getContentDetails().getTrailers().get(0) != null) {
+            videoTitle = contentData.getContentDetails().getTrailers().get(0).getTitle();
+        }
+
+        return videoTitle;
+    }
 
     public static MediaInfo buildMediaInfo(String Title,
                                            String subtitle,

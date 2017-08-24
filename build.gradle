@@ -50,6 +50,7 @@ allprojects {
         facebookSdkVersion = "[4,5)"
         urbanAirshipVersion = "8.3.2"
         glideTransformationVersion = "2.0.2"
+        threetenBpVersion = "1.0.5"
         percentageLayout = "2.0.2"
     }
 }

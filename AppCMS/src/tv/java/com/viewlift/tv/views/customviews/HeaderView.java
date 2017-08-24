@@ -2,6 +2,7 @@ package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.View;
@@ -113,6 +114,10 @@ public class HeaderView extends TVBaseView {
                     }
                 }
                 ((TextView)componentView).setTextColor(textColor);
+                Typeface typeface = Utils.getTypeFace(mContext , mJsonValueKeyMap , component );
+                if(null != typeface){
+                    ((TextView) componentView).setTypeface(typeface);
+                }
                 switch (componentKey) {
                     case PAGE_VIDEO_TITLE_KEY:
                         if (!TextUtils.isEmpty(mModuleData.getContentData().get(0).getGist().getTitle())) {

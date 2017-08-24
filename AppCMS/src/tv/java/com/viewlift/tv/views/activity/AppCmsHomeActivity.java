@@ -1,7 +1,5 @@
 package com.viewlift.tv.views.activity;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -10,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -19,12 +18,24 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
+import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.CustomProgressBar;
+import com.viewlift.tv.views.component.AppCmsTvSearchComponent;
+import com.viewlift.tv.views.component.DaggerAppCmsTvSearchComponent;
+import com.viewlift.tv.views.fragment.AppCmsBrowseFragment;
 import com.viewlift.tv.views.fragment.AppCmsNavigationFragment;
+import com.viewlift.tv.views.fragment.AppCmsSearchFragment;
 import com.viewlift.tv.views.fragment.AppCmsTVPageFragment;
+import com.viewlift.tv.views.fragment.AppCmsTvErrorFragment;
+import com.viewlift.tv.views.fragment.TextOverlayDialogFragment;
 import com.viewlift.views.binders.AppCMSBinder;
-import com.viewlift.views.customviews.NavBarItemView;
+import com.viewlift.views.binders.RetryCallBinder;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 
 import com.viewlift.R;
 
@@ -32,7 +43,9 @@ import com.viewlift.R;
  * Created by nitin.tyagi on 6/27/2017.
  */
 
-public class AppCmsHomeActivity extends AppCmsBaseActivity implements AppCmsNavigationFragment.OnNavigationVisibilityListener{
+public class AppCmsHomeActivity extends AppCmsBaseActivity implements
+        AppCmsNavigationFragment.OnNavigationVisibilityListener ,
+        AppCmsTvErrorFragment.ErrorFragmentListener{
 
     private final String TAG = AppCmsHomeActivity.class.getName();
     private FrameLayout navHolder;
@@ -42,6 +55,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements AppCmsNavi
     private BroadcastReceiver presenterActionReceiver;
     AppCMSBinder updatedAppCMSBinder;
     AppCMSPresenter appCMSPresenter;
+    private Stack<String> appCMSBinderStack;
+    private Map<String, AppCMSBinder> appCMSBinderMap;
+    private static final String DIALOG_FRAGMENT_TAG = "text_overlay";
+    private AppCmsTvSearchComponent appCMSSearchUrlComponent;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,14 +67,24 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements AppCmsNavi
 
         Bundle args = getIntent().getBundleExtra(getString(R.string.app_cms_bundle_key));
         AppCMSBinder appCMSBinder = (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
+        updatedAppCMSBinder = appCMSBinder;
 
+        appCMSBinderStack = new Stack<>();
+        appCMSBinderMap = new HashMap<>();
 
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
-        int textColor = Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor());/*Color.parseColor("#F6546A");*/
-        int bgColor = Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());//Color.parseColor("#660066");
+
+        String tag = getTag(updatedAppCMSBinder);
+        appCMSBinderStack.push(tag);
+        appCMSBinderMap.put(tag, updatedAppCMSBinder);
+
+        AppCMSMain appCMSMain = appCMSBinder.getAppCMSMain();
+
+        int textColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getTextColor());/*Color.parseColor("#F6546A");*/
+        int bgColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor());//Color.parseColor("#660066");
 
         navigationFragment = AppCmsNavigationFragment.newInstance(this,this,appCMSBinder,textColor,bgColor);
 
@@ -66,7 +94,16 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements AppCmsNavi
         shadowView = (FrameLayout)findViewById(R.id.shadow_view);
         setNavigationFragment(navigationFragment);
         setPageFragment(appCMSBinder);
+        appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
+        showInfoIcon(appCMSBinder.getPageId());
 
+        if(null == appCMSSearchUrlComponent){
+            appCMSSearchUrlComponent = DaggerAppCmsTvSearchComponent.builder()
+                    .appCMSSearchUrlModule(new AppCMSSearchUrlModule(appCMSMain.getApiBaseUrl(),
+                            appCMSMain.getInternalName(),
+                            appCMSBinder.getAppCMSSearchCall()))
+                    .build();
+        }
 
         presenterActionReceiver = new BroadcastReceiver() {
             @Override
@@ -98,17 +135,118 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements AppCmsNavi
                      //   processDeepLink(intent.getData());
                     }
                 }
+                else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_DIALOG_ACTION)) {
+                    Bundle bundle = intent.getBundleExtra(getString(R.string.dialog_item_key));
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    TextOverlayDialogFragment newFragment = TextOverlayDialogFragment.newInstance(
+                            context,
+                            bundle);
+                    newFragment.show(ft, DIALOG_FRAGMENT_TAG);
+                }else if (intent.getAction().equals(AppCMSPresenter.SEARCH_ACTION)) {
+                   openSearchFragment();
+                }else if(intent.getAction().equals(AppCMSPresenter.ERROR_DIALOG_ACTION)){
+                    openErrorDialog(intent);
+                }
+
             }
         };
         registerReceiver(presenterActionReceiver,new IntentFilter(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION));
         registerReceiver(presenterActionReceiver,new IntentFilter(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
         registerReceiver(presenterActionReceiver,new IntentFilter(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM_ACTION));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_DIALOG_ACTION));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.SEARCH_ACTION));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.ERROR_DIALOG_ACTION));
+
+    }
+
+    private void openErrorDialog(Intent intent){
+        pageLoading(false);
+        Bundle bundle = intent.getBundleExtra(getString(R.string.retryCallBundleKey));
+        bundle.putBoolean(getString(R.string.retry_key) , true);
+        bundle.putBoolean(getString(R.string.register_internet_receiver_key) , true);
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        AppCmsTvErrorFragment newFragment = AppCmsTvErrorFragment.newInstance(
+                bundle);
+        newFragment.setErrorListener(this);
+        newFragment.show(ft, DIALOG_FRAGMENT_TAG);
+    }
+
+    @Override
+    public void onErrorScreenClose() {
 
     }
 
 
-    private void pageLoading(final boolean shouldShowProgress){
+    @Override
+    public void onRetry(Bundle bundle) {
+        RetryCallBinder retryCallBinder = (RetryCallBinder)bundle.getBinder(getString(R.string.retryCallBinderKey));
+        AppCMSPresenter.RETRY_TYPE retryType = retryCallBinder.getRetry_type();
+        switch(retryType){
+            case BUTTON_ACTION:
+                appCMSPresenter.launchTVButtonSelectedAction(
+                        retryCallBinder.getPagePath(),
+                        retryCallBinder.getAction(),
+                        retryCallBinder.getFilmTitle(),
+                        retryCallBinder.getExtraData(),
+                        retryCallBinder.isCloselauncher()
+                );
+                break;
+            case VIDEO_ACTION:
+                /*appCMSPresenter.launchVideoPlayer(
+                        retryCallBinder.getContentDatum(),
+                        -1,
+                        null,
+                        0
+
+                );*/
+
+                appCMSPresenter.launchTVVideoPlayer(
+                        retryCallBinder.getFilmId(),
+                        retryCallBinder.getPagePath(),
+                        retryCallBinder.getFilmTitle(),
+                        retryCallBinder.getContentDatum()
+                );
+
+                break;
+            case PAGE_ACTION:
+                appCMSPresenter.navigateToTVPage(
+                        retryCallBinder.getFilmId(),
+                        retryCallBinder.getFilmTitle(),
+                        retryCallBinder.getPagePath(),
+                        retryCallBinder.isCloselauncher(),
+                        Uri.EMPTY
+                );
+                break;
+
+            case SEARCH_RETRY_ACTION:
+                String tag = getString(R.string.app_cms_search_label);
+                Fragment fragment = getFragmentManager().findFragmentByTag(tag);
+                if(fragment instanceof AppCmsSearchFragment){
+                    ((AppCmsSearchFragment) fragment).searchResult(retryCallBinder.getFilmTitle());
+                }
+                break;
+        }
+    }
+
+    private String getTag(AppCMSBinder appCMSBinder){
+        String key = null;
+        if(!appCMSPresenter.isPagePrimary(appCMSBinder.getPageId())){
+            key = appCMSBinder.getPageId() + appCMSBinder.getScreenName();
+        }else{
+            key = appCMSBinder.getPageId();
+        }
+        return key;
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+    }
+
+
+
+    public void pageLoading(final boolean shouldShowProgress){
 
         new Handler().post(new Runnable() {
             @Override
@@ -128,8 +266,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements AppCmsNavi
         navigationFragment.setSelectedPageId(pageId);
     }
 
-
-
     @Override
     protected void onDestroy() {
         unregisterReceiver(presenterActionReceiver);
@@ -137,6 +273,28 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements AppCmsNavi
     }
 
     private void handleLaunchPageAction(AppCMSBinder appCMSBinder) {
+
+        int distanceFromStackTop = -1;
+        String tag = getTag(appCMSBinder);
+
+        distanceFromStackTop = appCMSBinderStack.search(tag);
+
+        Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
+        if (0 < distanceFromStackTop) {
+            for (int i = 0; i < distanceFromStackTop; i++) {
+                Log.d(TAG, "Popping stack to get to page item");
+                try {
+                    appCMSBinderStack.pop();
+                } catch (IllegalStateException e) {
+                    Log.e(TAG, "Error popping back stack: " + e.getMessage());
+                }
+            }
+        }
+
+        appCMSBinderStack.push(tag);
+        appCMSBinderMap.put(tag, appCMSBinder);
+
+        showInfoIcon(appCMSBinder.getPageId());
         Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
         boolean isPoped = getFragmentManager().popBackStackImmediate(appCMSBinder.getPageId() , 0 );
@@ -149,7 +307,30 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements AppCmsNavi
 
     @Override
     public void onBackPressed() {
+
+        //if navigation is visible then first hide the navigation.
+        if(isNavigationVisible()){
+            handleNavigationVisibility();
+            return;
+        }
+
+        if(appCMSBinderStack.size() > 0){
+            appCMSBinderStack.pop();
+        }
+
+        if(appCMSBinderStack.size() > 0){
+            if(appCMSBinderStack.peek().equalsIgnoreCase(getString(R.string.app_cms_search_label))){
+               selectNavItem(appCMSBinderStack.peek());
+                showInfoIcon(appCMSBinderStack.peek());
+            }else {
+                updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                selectNavItem(updatedAppCMSBinder.getPageId());
+                showInfoIcon(updatedAppCMSBinder.getPageId());
+            }
+        }
+
         super.onBackPressed();
+
         if(getFragmentManager().getBackStackEntryCount() == 0){
                 finish();
             }
@@ -160,44 +341,148 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements AppCmsNavi
          getFragmentManager().beginTransaction().add( R.id.navigation_placholder ,navigationFragment , "nav" ).commit();
     }
 
+
     private void setPageFragment(AppCMSBinder appCMSBinder){
-        Log.d(TAG , "setPageFragment Called ****");
         Fragment attached = getFragmentManager().findFragmentById(R.id.home_placeholder);
         if(attached == null || (attached != null && !attached.getTag().equalsIgnoreCase(appCMSBinder.getPageId()))){
             AppCmsTVPageFragment appCMSPageFragment = AppCmsTVPageFragment.newInstance(this , appCMSBinder);
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.home_placeholder ,appCMSPageFragment,appCMSBinder.getPageId());
-            fragmentTransaction.addToBackStack(appCMSBinder.getPageId());
-            fragmentTransaction.commitAllowingStateLoss();
+            String tag = getTag(appCMSBinder);
+            fragmentTransaction.replace(R.id.home_placeholder ,appCMSPageFragment,tag).addToBackStack(tag).commit();
+        }else{
+            if(null != appCMSPresenter)
+                appCMSPresenter.sendStopLoadingPageAction();
         }
         selectNavItem(appCMSBinder.getPageId());
     }
 
 
-    boolean isVisible = false;
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         int keyCode = event.getKeyCode();
         int action = event.getAction();
 
-        if ( (keyCode == KeyEvent.KEYCODE_MENU || keyCode == 85) && action == KeyEvent.ACTION_DOWN) {
-            if(navHolder.getVisibility() == View.GONE){
-                showNavigation(true);
-            }else if(navHolder.getVisibility() == View.VISIBLE){
-               showNavigation(false);
-            }
+        switch (action) {
+            case KeyEvent.ACTION_DOWN:
+                switch (keyCode) {
+                    case KeyEvent.KEYCODE_MENU:
+                        handleNavigationVisibility();
+                        break;
+                    case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                        handlePlayRemoteKey();
+                        break;
+                    case KeyEvent.KEYCODE_DPAD_DOWN:
+                        //if navigation fragment is open then hold down key event otherwise pass it.
+                       if(isNavigationVisible()){
+                           handleNavigationVisibility();
+                       }
+
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
         }
         return super.dispatchKeyEvent(event);
     }
 
+    private void handleNavigationVisibility(){
+        Log.d(TAG , "handleNavigationVisibility*****");
+        if(appCMSPresenter.isPagePrimary(appCMSBinderStack.peek())){
+            if(isNavigationVisible()){
+                showNavigation(false);
+            }else{
+                showNavigation(true);
+            }
+        }
+    }
+
+    public void keyPressed(View v){
+        String tag = getString(R.string.app_cms_search_label);
+        Fragment fragment = getFragmentManager().findFragmentByTag(tag);
+        if(fragment instanceof AppCmsSearchFragment){
+            ((AppCmsSearchFragment) fragment).keyPressed(v);
+        }
+    }
+
+    private void handlePlayRemoteKey(){
+        Fragment parentFragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
+        if(null != parentFragment) {
+            AppCmsBrowseFragment browseFragment = null;
+            if(parentFragment instanceof AppCmsTVPageFragment){
+                browseFragment = (AppCmsBrowseFragment) parentFragment.getChildFragmentManager().
+                                                      findFragmentById(R.id.appcms_browsefragment);
+            }else if(parentFragment instanceof AppCmsSearchFragment){
+                browseFragment = (AppCmsBrowseFragment) parentFragment.getChildFragmentManager().
+                                                      findFragmentById(R.id.appcms_search_results_container);
+            }
+            if (null != browseFragment && browseFragment.hasFocus()) {
+                browseFragment.pushedPlayKey();
+            }
+        }
+    }
+
+
     @Override
-    public void showNavigation(boolean shouldShow) {
-        navHolder.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
-        shadowView.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
-        navigationFragment.setFocusable(shouldShow);
-        navigationFragment.setSelectorColor();
-        navigationFragment.notifiDataSetInvlidate();
+    public void showNavigation(final boolean shouldShow) {
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                navHolder.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+                shadowView.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+                navigationFragment.setFocusable(shouldShow);
+                if(shouldShow) {
+                   // navigationFragment.setSelectorColor();
+                    navigationFragment.notifiDataSetInvlidate();
+                }
+            }
+        });
+    }
+
+    private boolean isNavigationVisible(){
+        return ( (navHolder.getVisibility() == View.VISIBLE) ? true : false );
+    }
+
+    public void openSearchFragment(){
+        int distanceFromStackTop = -1;
+        String tag = getString(R.string.app_cms_search_label);
+
+        distanceFromStackTop = appCMSBinderStack.search(tag);
+
+        Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
+        if (0 < distanceFromStackTop) {
+            for (int i = 0; i < distanceFromStackTop; i++) {
+                Log.d(TAG, "Popping stack to get to page item");
+                try {
+                    appCMSBinderStack.pop();
+                } catch (IllegalStateException e) {
+                    Log.e(TAG, "Error popping back stack: " + e.getMessage());
+                }
+            }
+        }
+
+        showInfoIcon(tag);
+        appCMSBinderStack.push(tag);
+        appCMSPresenter.sendGaScreen(tag);
+
+        AppCmsSearchFragment searchFragment = new AppCmsSearchFragment();
+        getFragmentManager().beginTransaction().replace(R.id.home_placeholder , searchFragment ,
+                    tag).addToBackStack(tag).commit();
+
+        selectNavItem(tag);
+    }
+
+    private void showInfoIcon(String pageId){
+        findViewById(R.id.info_icon).setVisibility(
+                appCMSPresenter.isPagePrimary(pageId) ? View.VISIBLE : View.INVISIBLE
+        );
+    }
+
+    public AppCmsTvSearchComponent getAppCMSSearchComponent(){
+        return appCMSSearchUrlComponent;
     }
 
 }

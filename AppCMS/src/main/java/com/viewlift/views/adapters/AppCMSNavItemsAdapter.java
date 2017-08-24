@@ -90,11 +90,11 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             if (navigationPrimary.getAccessLevels() != null) {
                 if ((userLoggedIn && navigationPrimary.getAccessLevels().getLoggedIn()) ||
                         !userLoggedIn && navigationPrimary.getAccessLevels().getLoggedOut() ||
-                                !userSubscribed && !navigationPrimary.getAccessLevels().getSubscribed()) {
+                        !userSubscribed && !navigationPrimary.getAccessLevels().getSubscribed()) {
                     viewHolder.navItemLabel.setText(navigationPrimary.getTitle().toUpperCase());
                     viewHolder.navItemLabel.setTextColor(textColor);
 
-                    if (navigationPrimary.getItems().size() > 0) {
+                    if (!navigationPrimary.getItems().isEmpty()) {
                         // TODO: 7/27/17 Implement Expandable Listview.
                     }
 
@@ -105,18 +105,16 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             titleKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
                         }
 
-                        boolean navbarPresent = true;
                         if (titleKey == AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY) {
-                            navbarPresent = false;
-                        }
-
-                        if (!appCMSPresenter.navigateToPage(navigationPrimary.getPageId(),
+                            appCMSPresenter.navigateToSubscriptionPlansPage(null,
+                                    null);
+                        } else if (!appCMSPresenter.navigateToPage(navigationPrimary.getPageId(),
                                 navigationPrimary.getTitle(),
                                 navigationPrimary.getUrl(),
                                 false,
                                 true,
                                 false,
-                                navbarPresent,
+                                true,
                                 false,
                                 null)) {
                             Log.e(TAG, "Could not navigate to page with Title: " +
@@ -134,9 +132,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 for (int j = 0; j <= (i - indexOffset) && j < navigation.getNavigationUser().size(); j++) {
                     if (navigation.getNavigationUser().get(j).getAccessLevels() != null) {
                         if ((userLoggedIn && !navigation.getNavigationUser().get(j).getAccessLevels().getLoggedIn()) ||
-                                (!userLoggedIn && !navigation.getNavigationUser().get(j).getAccessLevels().getLoggedOut()) ||
-                                (!userSubscribed && navigation.getNavigationFooter().get(j).getAccessLevels().getSubscribed()) ||
-                                        (userSubscribed && !navigation.getNavigationFooter().get(j).getAccessLevels().getSubscribed())) {
+                                (!userLoggedIn && !navigation.getNavigationUser().get(j).getAccessLevels().getLoggedOut())) {
                             indexOffset--;
                         }
                     }
@@ -150,9 +146,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
 
                 if (navigationUser.getAccessLevels() != null) {
                     if (userLoggedIn && navigationUser.getAccessLevels().getLoggedIn() ||
-                            (!userLoggedIn && navigationUser.getAccessLevels().getLoggedOut()) &&
-                                    ((!userSubscribed && !navigationUser.getAccessLevels().getSubscribed()) ||
-                                            (userSubscribed && navigationUser.getAccessLevels().getSubscribed()))) {
+                            !userLoggedIn && navigationUser.getAccessLevels().getLoggedOut()) {
                         viewHolder.navItemLabel.setText(navigationUser.getTitle().toUpperCase());
                         viewHolder.navItemLabel.setTextColor(textColor);
                         viewHolder.itemView.setOnClickListener(v -> {
@@ -162,11 +156,13 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                 titleKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
                             }
                             itemSelected = true;
+
                             switch (titleKey) {
                                 case ANDROID_DOWNLOAD_NAV_KEY:
                                     appCMSPresenter.navigateToDownloadPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
+
                                 case ANDROID_WATCHLIST_NAV_KEY:
                                     appCMSPresenter.navigateToWatchlistPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
@@ -190,6 +186,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                         Log.e(TAG, "Could not navigate to page with Title: "
                                                 + navigationUser.getTitle() + " Id: " + navigationUser.getPageId());
                                     }
+                                    break;
                             }
                         });
                     }
@@ -210,7 +207,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             }
 
             //footer
-            if (navigation.getNavigationFooter() != null && 0 <= (i - indexOffset) && (i - indexOffset) < navigation.getNavigationFooter().size()) {
+            if (navigation.getNavigationFooter() != null && 0 <= (i - indexOffset)
+                    && (i - indexOffset) < navigation.getNavigationFooter().size()) {
                 final NavigationFooter navigationFooter = navigation.getNavigationFooter().get(i - indexOffset);
                 if (navigationFooter.getAccessLevels() != null) {
                     if ((userLoggedIn && navigationFooter.getAccessLevels().getLoggedIn()) ||
@@ -245,8 +243,13 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 viewHolder.navItemLabel.setText(R.string.app_cms_sign_out_label);
                 viewHolder.navItemLabel.setTextColor(textColor);
                 viewHolder.itemView.setOnClickListener(v -> {
-                    appCMSPresenter.cancelInternalEvents();
-                    appCMSPresenter.logout();
+                    if (appCMSPresenter.isDownloadUnfinished()) {
+
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD);
+                    } else {
+                        appCMSPresenter.cancelInternalEvents();
+                        appCMSPresenter.logout();
+                    }
                 });
             }
         }
@@ -263,9 +266,14 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 for (int i = 0; i < navigation.getNavigationPrimary().size(); i++) {
                     NavigationPrimary navigationPrimary = navigation.getNavigationPrimary().get(i);
                     if (navigationPrimary.getAccessLevels() != null) {
-                        if ((!userLoggedIn && navigationPrimary.getAccessLevels().getLoggedOut() ||
-                                userLoggedIn && navigationPrimary.getAccessLevels().getLoggedIn() ||
-                                !userSubscribed && !navigationPrimary.getAccessLevels().getSubscribed())) {
+                        if ((!userSubscribed && !navigationPrimary.getAccessLevels().getSubscribed()) &&
+                                (!userLoggedIn && navigationPrimary.getAccessLevels().getLoggedOut() ||
+                                        userLoggedIn && navigationPrimary.getAccessLevels().getLoggedIn())) {
+                            totalItemCount++;
+                            numPrimaryItems++;
+                        } else if ((!userLoggedIn && navigationPrimary.getAccessLevels().getLoggedOut() ||
+                                userLoggedIn && navigationPrimary.getAccessLevels().getLoggedIn()) &&
+                                navigationPrimary.getAccessLevels().getSubscribed()) {
                             totalItemCount++;
                             numPrimaryItems++;
                         }
@@ -277,10 +285,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 for (int i = 0; i < navigation.getNavigationUser().size(); i++) {
                     NavigationUser navigationUser = navigation.getNavigationUser().get(i);
                     if (navigationUser.getAccessLevels() != null) {
-                        if ((!userLoggedIn && navigation.getNavigationUser().get(i).getAccessLevels().getLoggedOut() ||
-                                userLoggedIn && navigation.getNavigationUser().get(i).getAccessLevels().getLoggedIn()) &&
-                                ((!userSubscribed && !navigationUser.getAccessLevels().getSubscribed()) ||
-                                        (userSubscribed && navigationUser.getAccessLevels().getSubscribed()))) {
+                        if (!userLoggedIn && navigation.getNavigationUser().get(i).getAccessLevels().getLoggedOut() ||
+                                userLoggedIn && navigation.getNavigationUser().get(i).getAccessLevels().getLoggedIn()) {
                             totalItemCount++;
                             numUserItems++;
                         }

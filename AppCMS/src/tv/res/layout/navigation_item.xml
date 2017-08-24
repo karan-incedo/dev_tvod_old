@@ -11,7 +11,6 @@
     android:id="@+id/nav_item_layout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/navigation_item_selector"
     android:focusable="true"
     android:padding="@dimen/appcms_tv_navigation_item_padding"
     >
@@ -23,6 +22,7 @@
         android:text="Home"
         android:layout_centerInParent="true"
         android:textSize="@dimen/appcms_tv_navigation_textSize"
+        android:letterSpacing="0.04"
         />
 
 </RelativeLayout>

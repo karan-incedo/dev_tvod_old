@@ -1,1 +1,1 @@
-include ':AppCMS'
+include ':AppCMS', ':firetvcustomkeyboard'

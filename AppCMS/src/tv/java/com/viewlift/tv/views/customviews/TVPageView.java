@@ -80,8 +80,8 @@ public class TVPageView extends FrameLayout {
                         LayoutParams.MATCH_PARENT);
         childrenContainer.setLayoutParams(childContainerLayoutParams);
         ((LinearLayout) childrenContainer).setOrientation(LinearLayout.VERTICAL);
-
-        /*NestedScrollView nestedScrollView = new NestedScrollView(getContext());
+/*
+        NestedScrollView nestedScrollView = new NestedScrollView(getContext());
         LayoutParams nestedScrollViewLayoutParams =
                 new LayoutParams(LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT);

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +22,6 @@ import com.viewlift.tv.utility.Utils;
 import java.util.Map;
 
 
-import snagfilms.com.air.appcms.R;
-
 /**
  * Created by nitin.tyagi on 7/12/2017.
  */
@@ -34,6 +33,7 @@ public abstract class TVBaseView extends FrameLayout {
     protected static int DEVICE_HEIGHT;
     public static final int STANDARD_MOBILE_WIDTH_PX = 1920;
     public static final int STANDARD_MOBILE_HEIGHT_PX = 1080;
+    private static float LETTER_SPACING = 0.17f;
 
     public TVBaseView(@NonNull Context context) {
         super(context);
@@ -51,7 +51,7 @@ public abstract class TVBaseView extends FrameLayout {
 
 
     public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
-        int runtime = (data.getGist().getRuntime() / 60);
+        long runtime = (data.getGist().getRuntime() / 60);
         String year = data.getGist().getYear();
         String primaryCategory =
                 data.getGist().getPrimaryCategory() != null ?
@@ -63,7 +63,7 @@ public abstract class TVBaseView extends FrameLayout {
                 !TextUtils.isEmpty(primaryCategory);
         StringBuffer infoText = new StringBuffer();
         if (runtime > 0) {
-            infoText.append(runtime + context.getString(R.string.mins_abbreviation));
+            infoText.append(runtime + " "+ context.getString(R.string.mins_abbreviation));
         }
         if (appendFirstSep) {
             infoText.append(context.getString(R.string.text_separator));
@@ -79,6 +79,8 @@ public abstract class TVBaseView extends FrameLayout {
         }
         ((TextView) view).setText(infoText.toString());
         view.setAlpha(0.6f);
+        ((TextView) view).setLetterSpacing(LETTER_SPACING);
+
     }
 
 
@@ -144,7 +146,7 @@ public abstract class TVBaseView extends FrameLayout {
 
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
         if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
-                componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
+                componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY ) {
             if (viewWidth < 0) {
                 viewWidth = FrameLayout.LayoutParams.MATCH_PARENT;
             }
@@ -178,9 +180,6 @@ public abstract class TVBaseView extends FrameLayout {
                     tm = 0;
                     lm = 0;
                     break;
-                case PAGE_VIDEO_IMAGE_KEY:
-                    view.setPadding(6,6,6,6);
-                    break;
                 case PAGE_THUMBNAIL_TITLE_KEY:
                  {
                         tm -= viewHeight / 2;
@@ -197,11 +196,12 @@ public abstract class TVBaseView extends FrameLayout {
                     break;
                 case PAGE_ADD_TO_WATCHLIST_KEY:
                 case PAGE_VIDEO_WATCH_TRAILER_KEY:
-                    viewWidth = FrameLayout.LayoutParams.WRAP_CONTENT;
+                    //viewWidth = FrameLayout.LayoutParams.WRAP_CONTENT;
                     int padding = childComponent.getPadding();
                     view.setPadding(padding,padding,padding,padding);
                     break;
                 case PAGE_VIDEO_TITLE_KEY:
+                case PAGE_VIDEO_SUBTITLE_KEY:
                     viewWidth = DEVICE_WIDTH/2;
                     break;
                 default:
@@ -244,32 +244,5 @@ public abstract class TVBaseView extends FrameLayout {
         return 0;
     }
 
-
-    private void setTypeFace(Context context,
-                             Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                             Component component,
-                             TextView textView) {
-        if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
-            AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
-            if (fontWeight == null) {
-                fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
-            }
-            Typeface face = null;
-            switch (fontWeight) {
-                case PAGE_TEXT_BOLD_KEY:
-                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_bold_ttf));
-                    break;
-                case PAGE_TEXT_SEMIBOLD_KEY:
-                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_semibold_ttf));
-                    break;
-                case PAGE_TEXT_EXTRABOLD_KEY:
-                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_extrabold_ttf));
-                    break;
-                default:
-                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
-            }
-            textView.setTypeface(face);
-        }
-    }
 
 }

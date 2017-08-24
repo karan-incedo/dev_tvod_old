@@ -1,40 +1,30 @@
 package com.viewlift.tv.views.presenter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.nfc.Tag;
-import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.squareup.picasso.Picasso;
 import com.viewlift.models.data.appcms.api.ContentDatum;
-import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
-import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.tv.model.BrowseCompnentModule;
 import com.viewlift.tv.model.BrowseFragmentRowData;
-import com.viewlift.tv.views.fragment.AppCmsBrowseFragment;
+import com.viewlift.tv.utility.Utils;
 
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 import com.viewlift.R;
 
@@ -43,31 +33,37 @@ import com.viewlift.R;
  */
 
 public class CardPresenter extends Presenter {
-
     private AppCMSPresenter mAppCmsPresenter = null;
     private Context mContext;
     int i = 0;
     int mHeight = -1;
     int mWidth = -1;
     private Map<String , AppCMSUIKeyType> mJsonKeyValuemap;
+    String borderColor = null;
+    private Typeface fontType;
 
-    public CardPresenter(Context context , AppCMSPresenter appCMSPresenter , int height , int width , Map<String , AppCMSUIKeyType> jsonKeyValuemap){
+    public CardPresenter(Context context , AppCMSPresenter appCMSPresenter ,
+                         int height , int width , Map<String ,
+                          AppCMSUIKeyType> jsonKeyValuemap){
         mContext = context;
         mAppCmsPresenter = appCMSPresenter;
         mHeight = height;
         mWidth = width;
         mJsonKeyValuemap = jsonKeyValuemap;
+        borderColor = Utils.getFocusColor(mContext,appCMSPresenter);
     }
 
     public CardPresenter(Context context, AppCMSPresenter appCMSPresenter) {
         mContext = context;
         mAppCmsPresenter = appCMSPresenter;
+        borderColor = Utils.getFocusColor(mContext,appCMSPresenter);
+
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
         Log.d("Presenter" , " CardPresenter onCreateViewHolder******");
-        FrameLayout frameLayout = new FrameLayout(parent.getContext());
+        final FrameLayout frameLayout = new FrameLayout(parent.getContext());
         FrameLayout.LayoutParams layoutParams;
 
         if(mHeight != -1 && mWidth != -1) {
@@ -79,6 +75,17 @@ public class CardPresenter extends Presenter {
         }
         frameLayout.setLayoutParams(layoutParams);
         frameLayout.setFocusable(true);
+
+        frameLayout.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
+                if(keyCode == KeyEvent.KEYCODE_DPAD_UP
+                        && keyEvent.getAction() == KeyEvent.ACTION_UP){
+                    frameLayout.clearFocus();
+                }
+                return false;
+            }
+        });
         return new ViewHolder(frameLayout);
     }
 
@@ -124,15 +131,17 @@ public class CardPresenter extends Presenter {
                                 FrameLayout.LayoutParams parms = new FrameLayout.LayoutParams(Integer.valueOf(component.getLayout().getTv().getWidth()),
                                         Integer.valueOf(component.getLayout().getTv().getHeight()));
                                 imageView.setLayoutParams(parms);
-                                imageView.setBackgroundResource(R.drawable.gridview_cell_border);
+                                imageView.setBackground(Utils.getTrayBorder(mContext,borderColor,component));
 
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
                                 imageView.setPadding(gridImagePadding,gridImagePadding,gridImagePadding,gridImagePadding);
-                                Picasso.with(mContext)
-                                        .load(contentData.getGist().getPosterImageUrl())
-                                        .placeholder(R.drawable.poster_image_placeholder)
+
+                                Glide.with(mContext)
+                                        .load(contentData.getGist().getPosterImageUrl()+ "?impolicy=resize&w="+mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE).placeholder(R.drawable.poster_image_placeholder)
+                                        .error(ContextCompat.getDrawable(mContext, R.drawable.poster_image_placeholder))
                                         .into(imageView);
 
+                                Log.d("TAG" , "Url = "+contentData.getGist().getPosterImageUrl()+ "?impolicy=resize&w="+mWidth + "&h=" + mHeight);
                                 parentLayout.addView(imageView);
                                 break;
                         }
@@ -147,7 +156,11 @@ public class CardPresenter extends Presenter {
                         tvTitle.setMaxLines(1);
                         tvTitle.setEllipsize(TextUtils.TruncateAt.END);
                         tvTitle.setTextColor(Color.parseColor(component.getTextColor()));
-                        tvTitle.setTypeface(getFontType(component));
+                        if(fontType == null)
+                            fontType = getFontType(component);
+                        if(fontType != null){
+                            tvTitle.setTypeface(fontType);
+                        }
                         tvTitle.setText(contentData.getGist().getTitle());
                         //tvTitle.setTextSize(component.getFontSize());
                         parentLayout.addView(tvTitle);

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
@@ -20,6 +21,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.viewlift.AppCMSApplication;
@@ -38,13 +40,14 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
 
     private BroadcastReceiver handoffReceiver;
     private AppCMSPresenter appCMSPresenter;
+    FrameLayout appCMSPlayVideoPageContainer;
 
     private AppCMSPlayVideoFragment appCMSPlayVideoFragment;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_player_page);
-        FrameLayout appCMSPlayVideoPageContainer =
+        appCMSPlayVideoPageContainer =
                 (FrameLayout) findViewById(R.id.app_cms_play_video_page_container);
 
         Intent intent = getIntent();
@@ -112,6 +115,11 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
     public void onBackPressed() {
         super.onBackPressed();
         finish();
@@ -134,6 +142,23 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         boolean result = false;
         if(event.getAction() == KeyEvent.ACTION_DOWN ){
             result =  appCMSPlayVideoFragment.showController(event);
+            switch (event.getKeyCode()){
+                case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                    if(null != appCMSPlayVideoPageContainer){
+                        appCMSPlayVideoPageContainer.findViewById(R.id.exo_pause).requestFocus();
+                    }
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_REWIND:
+                    if(null != appCMSPlayVideoPageContainer){
+                        appCMSPlayVideoPageContainer.findViewById(R.id.exo_rew).requestFocus();
+                    }
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                    if(null != appCMSPlayVideoPageContainer){
+                        appCMSPlayVideoPageContainer.findViewById(R.id.exo_ffwd).requestFocus();
+                    }
+                    break;
+            }
         }
         return super.dispatchKeyEvent(event) || result;
     }

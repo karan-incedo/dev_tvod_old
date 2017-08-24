@@ -21,6 +21,7 @@
     <string name="menu_navigation_key">menu_navigation</string>
     <string name="ellipse_char">&#8230;</string>
     <string name="mins_abbreviation">MINS</string>
+    <string name="_mins_abbreviation">%d MINS</string>
     <string name="text_separator">&#160;|&#160;</string>
     <string name="color_hash_prefix">#</string>
     <string name="string_with_ellipse">%1$s&#8230;</string>
@@ -41,6 +42,7 @@
     <string name="player_video_playing_on_pause_key">player_video_playing_on_pause</string>
     <string name="app_cms_network_connectivity_error_title">Network Connectivity</string>
     <string name="app_cms_network_connectivity_error_message">Please connect your device to a network and try again.</string>
+    <string name="app_cms_network_connectivity_error_message_download">Please connect your device to a network and try again, or click OK for go to My Downloads.</string>
     <string name="app_cms_signin_error_title">Sign In</string>
     <string name="app_cms_signup_error_title">Sign Up</string>
     <string name="app_cms_reset_password_title">Reset Password</string>
@@ -50,6 +52,7 @@
     <string name="app_cms_data_error_message">Data is currently unavailable.  Please try again later.</string>
     <string name="app_cms_close_alert_dialog_button_text">CLOSE</string>
     <string name="text_plain_mime_type">text/plain</string>
+    <string name="app_cms_ok_alert_dialog_button_text">OK</string>
 
     <!-- Age rating values -->
     <string name="age_rating_y">Y</string>
@@ -70,6 +73,7 @@
     <string name="video_player_permalink_key">video_player_permalink</string>
     <string name="video_player_font_color_key">video_player_font_color</string>
     <string name="video_player_closed_caption_key">video_player_closed_caption</string>
+    <string name="video_player_is_trailer_key">isTrailer</string>
     <string name="video_primary_category_key">video_primary_category</string>
     <string name="opensans_bold_ttf">fonts/OpenSans-Bold.ttf</string>
     <string name="opensans_semibold_ttf">fonts/OpenSans-Semibold.ttf</string>
@@ -226,25 +230,43 @@
     <string name="app_cms_cancel_subscription_title">Cancel Subscription</string>
     <string name="app_cms_confirm_alert_dialog_button_text">OK</string>
     <string name="app_cms_cancel_alert_dialog_button_text">CANCEL</string>
-    <string name="app_cms_cancel_subscription_confirmation_message">You have cancelled your subscription.</string>s
+    <string name="app_cms_cancel_subscription_confirmation_message">You have cancelled your subscription.</string>
+    s
     <string name="app_cms_cancel_subscription_not_subscribed_message">You are currently not subscribed to any plans.</string>
     <string name="app_cms_cancel_subscription_subscription_not_valid_message">Please check that the device is registered with a valid Gmail account.</string>
     <string name="app_cms_subscribtion_title">Subscription</string>
     <string name="app_cms_download_quality_title">SET YOUR DOWNLOAD QUALITY</string>
-    <string name="app_cms_downloas_setting_listner_key">app_cms_downloas_setting_listner_key</string>
+    <string name="app_cms_download_setting_listener_key">app_cms_download_setting_listener_key</string>
+
+    <string name="app_cms_delete_history_alert_title">Are you Sure?</string>
+    <string name="app_cms_delete_one_history_item_message">In order to add this film back in your history, You will need to rewatch it.</string>
+    <string name="app_cms_delete_all_history_items_message">In order to add these films back in your history, You will need to rewatch them.</string>
 
     <string name="app_cms_subscription_title">Subscription</string>
-    <string name="app_cms_login_required_title">Subscription Required</string>
-    <string name="app_cms_login_required_message">Please subscribe to continue.</string>
+    <string name="app_cms_subscription_required_title">Subscription Required</string>
+    <string name="app_cms_subscription_required_message">Please subscribe to continue.</string>
     <string name="app_cms_login_and_subscription_required_title">Login and Subscription Required</string>
     <string name="app_cms_login_and_subscription_required_message">Please login or subscribe to continue.</string>
+    <string name="app_cms_logout_with_running_download_title">Downloading video in progress</string>
+    <string name="app_cms_logout_with_running_download_message">Logout will remove your current downloading videos, You can still access your already downloaded video after re-login. Do you want to continue.</string>
     <string name="app_cms_login_button_text">LOGIN</string>
+    <string name="app_cms_login_required_title">Login Required</string>
+    <string name="app_cms_login_required_message">Please login to continue.</string>
     <string name="app_cms_subscription_button_text">SUBSCRIBE</string>
     <string name="app_cast_overlay_text">Touch To Cast Videos On TV</string>
     <string name="app_cms_existing_subscription_error_message">The Play Store Google ID already has a subscription. Please sign into the app with an email and password that was used when the account was created.</string>
     <string name="app_cms_existing_subscription_title">Existing Subscription</string>
     <string name="sent_beacon_play_key">sent_beacon_play</string>
     <string name="play_index_key">play_index</string>
+
+    <string name="app_cms_subscription_upgrade_unavailable_title">Upgrade Unavailable</string>
+    <string name="app_cms_subscription_upgrade_unavailable_user_dialog">There are currently no plans available for upgrade for the plan you are currently subscribed.</string>
+    <string name="app_cms_subscription_upgrade_cancel_title">You did not purchase the subscription through the Google Play store</string>
+    <string name="app_cms_subscription_upgrade_for_web_user_dialog">To upgrade your subscription, go to the My Account section on our website.</string>
+    <string name="app_cms_subscription_cancel_for_web_user_dialog">To cancel your subscription, go to the My Account section on our website.</string>
+
+    <string name="app_cms_download_stream_info_error_title">Streaming Info Error</string>
+    <string name="app_cms_download_streaming_info_error_message">Some error occurred with streaming info, Please try again.</string>
 
     <string name="app_cms_download_incomplete_error_title">Download Incomplete</string>
     <string name="app_cms_download_incomplete_error_message">Please wait until the download is completed.</string>
@@ -262,6 +284,29 @@
     <string name="app_cms_signup_invalid_email_message">Please enter a valid email.</string>
     <string name="app_cms_signup_invalid_password_message">Please enter a valid password.</string>
     <string name="loading_video_text">Loading Video</string>
+    <string name="app_cms_download_write_external_storage_permission_rationale_message">May we request permission to access your external storage to download the video?</string>
+    <string name="app_cms_download_external_storage_write_permission_info_error_title">Download to External Storage</string>
+    <string name="app_cms_download_limit_message">Download is only available for 30 days after it has been downloaded.</string>
+    <string name="app_cms_download_unavailable_error_title">Download Unavailable</string>
+    <string name="app_cms_download_failed_error_title">Download Failed</string>
+    <string name="app_cms_download_failed_error_message">Cannot be downloaded due to low device storage, Please manage space in your storage area and try again.</string>
+    <string name="app_cms_sdCard_unavailable_error_title">SDCard Unavailable</string>
+    <string name="app_cms_sdCard_unavailable_error_message">Please insert SDCard in device if it supports for removeable media.  </string>
+
+    <!-- search result values -->
+    <string name="app_cms_search_sharepref_key">app_cms_sharepref_result</string>
+    <string name="app_cms_search_value_size_key">app_cms_search_value_size</string>
+    <string name="app_cms_search_value_key">app_cms_search_value_</string>
+    <string name="app_cms_no_search_result">NO RESULTS FOR \"%1$s\"</string>
+    <plurals name="app_cms_search_result_header">
+        <item quantity="one">RESULT FOR \"%1$s\"</item>
+        <item quantity="other">RESULTS FOR \"%1$s\"</item>
+    </plurals>
+    <string name="retryCallBinderKey">retryCallBinderKey</string>
+    <string name="retryCallBundleKey">retryCallBundleKey</string>
+    <string name="app_cms_default_download_quality">720p</string>
+    <string name="app_cms_download_queue_toast_message">%1$s has been queued for download.</string>
+    <string name="app_cms_download_already_queued_toast_message">%1$s has already been queued for download.</string>
 
     <!-- content rating -->
     <string name="content_rating_back">Back</string>

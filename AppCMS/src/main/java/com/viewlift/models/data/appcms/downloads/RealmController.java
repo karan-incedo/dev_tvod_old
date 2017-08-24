@@ -11,6 +11,7 @@ import com.viewlift.models.data.appcms.subscriptions.UserSubscriptionPlan;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 /**
@@ -90,13 +91,14 @@ public class RealmController {
         return realm.where(DownloadVideoRealm.class).contains("userId", userId).findAll();
     }
 
-    public RealmResults<DownloadVideoRealm> getAllUnfinishedDownloades() {
+    public RealmResults<DownloadVideoRealm> getAllUnfinishedDownloades(String userId) {
 
         String[] status = {String.valueOf(DownloadStatus.STATUS_FAILED),
                 String.valueOf(DownloadStatus.STATUS_PAUSED),
                 String.valueOf(DownloadStatus.STATUS_PENDING),
                 String.valueOf(DownloadStatus.STATUS_RUNNING)};
-        return realm.where(DownloadVideoRealm.class).in("downloadStatus", status).findAll();
+        return realm.where(DownloadVideoRealm.class).in("downloadStatus", status)
+                .equalTo("userId",userId).findAll();
 
     }
 
@@ -136,10 +138,33 @@ public class RealmController {
 
     }
 
+    public void addCurrentDownloadTitle(CurrentDownloadingVideo currentDownloadingVideo) {
+        realm.beginTransaction();
+        realm.insertOrUpdate(currentDownloadingVideo);
+        realm.commitTransaction();
+    }
+
+    public CurrentDownloadingVideo getCurrentDownloadTitle() {
+        return realm.where(CurrentDownloadingVideo.class)
+                .findFirst();
+    }
+
+    public void removeCurrentDownloadTitle() {
+        realm.beginTransaction();
+        realm.delete(CurrentDownloadingVideo.class);
+        realm.commitTransaction();
+    }
+
     public void addDownload(DownloadVideoRealm downloadVideoRealm) {
 
         realm.beginTransaction();
         realm.insert(downloadVideoRealm);
+        realm.commitTransaction();
+    }
+
+    public void updateDownload(DownloadVideoRealm downloadVideoRealm) {
+        realm.beginTransaction();
+        realm.insertOrUpdate(downloadVideoRealm);
         realm.commitTransaction();
     }
 

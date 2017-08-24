@@ -1,16 +1,20 @@
 package com.viewlift.tv.views.presenter;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import com.squareup.picasso.Picasso;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
+import com.viewlift.tv.utility.Utils;
 
 import java.util.List;
 
@@ -45,6 +49,8 @@ public class JumbotronPresenter extends CardPresenter {
 
             frameLayout.setLayoutParams(layoutParams);
             frameLayout.setFocusable(true);
+            frameLayout.setBackgroundColor(ContextCompat.getColor(mContext , android.R.color.black));
+
             return new ViewHolder(frameLayout);
         }
 
@@ -80,14 +86,14 @@ public class JumbotronPresenter extends CardPresenter {
                                 FrameLayout.LayoutParams parms = new FrameLayout.LayoutParams(Integer.valueOf(component.getLayout().getTv().getWidth()),
                                         Integer.valueOf(component.getLayout().getTv().getHeight()));
                                 imageView.setLayoutParams(parms);
-                                imageView.setBackgroundResource(R.drawable.gridview_cell_border);
-
+                                imageView.setBackground(Utils.getTrayBorder(mContext,borderColor,component));
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
                                 imageView.setPadding(gridImagePadding,gridImagePadding,gridImagePadding,gridImagePadding);
-                                Picasso.with(mContext)
-                                        .load(contentData.getGist().getVideoImageUrl())
+                                Glide.with(mContext)
+                                        .load(contentData.getGist().getVideoImageUrl()).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                        .error(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder))
+                                        .placeholder(ContextCompat.getDrawable(mContext , R.drawable.video_image_placeholder))
                                         .into(imageView);
-
                                 parentLayout.addView(imageView);
                                 break;
                         }

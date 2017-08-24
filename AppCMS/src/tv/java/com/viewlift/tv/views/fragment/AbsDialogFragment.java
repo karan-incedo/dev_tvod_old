@@ -13,7 +13,6 @@ import com.viewlift.R;
 
 public class AbsDialogFragment extends DialogFragment {
 
-
     public AbsDialogFragment() {
         setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Translucent_NoTitleBar);
     }
@@ -26,7 +25,7 @@ public class AbsDialogFragment extends DialogFragment {
             int height = getResources().getDimensionPixelSize(R.dimen.text_overlay_dialog_height);
             getDialog().getWindow().setLayout(width, height);
             getDialog().getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            getDialog().getWindow().setDimAmount(0.9f);
+            getDialog().getWindow().setDimAmount(0.6f);
             getDialog().getWindow().getAttributes().windowAnimations = R.style.dialogAnimation;
         }
     }

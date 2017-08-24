@@ -1,5 +1,8 @@
 package com.viewlift.models.data.appcms.ui.tv;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by nitin.tyagi on 7/5/2017.
  */
@@ -16,6 +19,48 @@ public class FireTV {
     private String xAxis;
 
     private String leftMargin;
+
+    public Float getFontSizeKey() {
+        return fontSizeKey;
+    }
+
+    public void setFontSizeKey(Float fontSizeKey) {
+        this.fontSizeKey = fontSizeKey;
+    }
+
+    public Float getFontSizeValue() {
+        return fontSizeValue;
+    }
+
+    public void setFontSizeValue(Float fontSizeValue) {
+        this.fontSizeValue = fontSizeValue;
+    }
+
+    @SerializedName("fontSizeKey")
+    @Expose
+    private Float fontSizeKey;
+    @SerializedName("fontSizeValue")
+    @Expose
+    private Float fontSizeValue;
+    public int getFontSize() {
+        return fontSize;
+    }
+
+    public void setFontSize(int fontSize) {
+        this.fontSize = fontSize;
+    }
+
+    private int fontSize;
+
+    public String getBottomMargin() {
+        return bottomMargin;
+    }
+
+    public void setBottomMargin(String bottomMargin) {
+        this.bottomMargin = bottomMargin;
+    }
+
+    private String bottomMargin;
 
     public String getTopMargin() {
         return topMargin;

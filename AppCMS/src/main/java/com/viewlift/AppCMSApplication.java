@@ -81,14 +81,13 @@ public class AppCMSApplication extends Application {
             }
         });
 
-        getAnalytics();
+        sendAnalytics();
     }
 
-    private void getAnalytics() {
+    private void sendAnalytics() {
         Fabric.with(this, new Crashlytics());
         AppsFlyerLib.getInstance().startTracking(this, getString(R.string.app_cms_appsflyer_dev_key));
         trackInstallationEvent(this);
-        AppsFlyerUtils.uninstallAppEvent(this, getString(R.string.GCM_SENDER_ID_APPFLYERS));
     }
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {
