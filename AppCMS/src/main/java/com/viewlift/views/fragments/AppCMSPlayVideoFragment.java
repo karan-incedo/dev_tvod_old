@@ -10,22 +10,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.percent.PercentLayoutHelper;
 import android.support.percent.PercentRelativeLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
@@ -51,13 +44,8 @@ import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
-import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
-import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.views.customviews.CustomTypefaceSpan;
 import com.viewlift.views.customviews.VideoPlayerView;
-
-import java.util.Map;
 
 import rx.functions.Action1;
 
@@ -96,7 +84,6 @@ public class AppCMSPlayVideoFragment extends Fragment
     private TextView videoPlayerTitleView;
     private TextView contentRatingHeaderView;
     private TextView contentRatingDiscretionView;
-    private TextView contentRatingDescriptionView;
     private TextView contentRatingTitleView;
     private TextView contentRatingBack;
     private View contentRatingBackUnderline;
@@ -132,13 +119,6 @@ public class AppCMSPlayVideoFragment extends Fragment
     private final String FIREBASE_MEDIA_TYPE_VIDEO = "Video";
     private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
 
-
-
-    AdsLoader.AdsLoadedListener listenerAdsLoaded = adsManagerLoadedEvent -> {
-        adsManager = adsManagerLoadedEvent.getAdsManager();
-        adsManager.addAdErrorListener(AppCMSPlayVideoFragment.this);
-        adsManager.addAdEventListener(AppCMSPlayVideoFragment.this);
-        adsManager.init();
     private ProgressBar progressBar;
     private Runnable seekListener;
     private int progressCount = 0;
@@ -147,14 +127,12 @@ public class AppCMSPlayVideoFragment extends Fragment
     private final int totalCountdownInMillis = 10000;
     private final int countDownIntervalInMillis = 10;
 
-    AdsLoader.AdsLoadedListener listenerAdsLoaded = new AdsLoader.AdsLoadedListener() {
-        @Override
-        public void onAdsManagerLoaded(AdsManagerLoadedEvent adsManagerLoadedEvent) {
-            adsManager = adsManagerLoadedEvent.getAdsManager();
-            adsManager.addAdErrorListener(AppCMSPlayVideoFragment.this);
-            adsManager.addAdEventListener(AppCMSPlayVideoFragment.this);
-            adsManager.init();
-        }
+
+    AdsLoader.AdsLoadedListener listenerAdsLoaded = adsManagerLoadedEvent -> {
+        adsManager = adsManagerLoadedEvent.getAdsManager();
+        adsManager.addAdErrorListener(AppCMSPlayVideoFragment.this);
+        adsManager.addAdEventListener(AppCMSPlayVideoFragment.this);
+        adsManager.init();
     };
 
     private boolean isAdDisplayed;
@@ -166,6 +144,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private CastHelper mCastHelper;
     private String closedCaptionUrl;
     private boolean isCastConnected;
+
     CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
         if (onClosePlayerEvent != null) {
             pauseVideo();
@@ -182,6 +161,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                     });
         }
     };
+
+
 
     public static AppCMSPlayVideoFragment newInstance(Context context,
                                                       String primaryCategory,
@@ -263,20 +244,6 @@ public class AppCMSPlayVideoFragment extends Fragment
         parentScreenName = getContext().getString(R.string.app_cms_beacon_video_player_parent_screen_name);
         setRetainInstance(true);
 
-        animSequential = AnimationUtils.loadAnimation(getContext(),
-                R.anim.sequential);
-        animFadeIn = AnimationUtils.loadAnimation(getContext(),
-                R.anim.fade_in);
-        animFadeOut = AnimationUtils.loadAnimation(getContext(),
-                R.anim.fade_out);
-        animTranslate = AnimationUtils.loadAnimation(getContext(),
-                R.anim.translate);
-
-        animFadeIn.setAnimationListener(this);
-        animFadeOut.setAnimationListener(this);
-        animSequential.setAnimationListener(this);
-        animTranslate.setAnimationListener(this);
-
         AppsFlyerUtils.filmViewingEvent(getContext(), primaryCategory, filmId, appCMSPresenter);
 
     }
@@ -293,52 +260,16 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerInfoContainer =
                 (LinearLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
 
-        contentRatingMainContainer =
-                (PercentRelativeLayout) rootView.findViewById(R.id.app_cms_content_rating_main_container);
-
-        contentRatingAnimationContainer =
-                (PercentRelativeLayout) rootView.findViewById(R.id.app_cms_content_rating_animation_container);
-
-        contentRatingInfoContainer =
-                (LinearLayout) rootView.findViewById(R.id.app_cms_content_rating_info_container);
-
         mMediaRouteButton = (ImageButton) rootView.findViewById(R.id.media_route_button);
 
-        contentRatingDiscretionView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_viewer_discretion);
-        setTypeFace(getContext(),contentRatingDiscretionView,getString(R.string.helvaticaneu_bold));
-
         videoPlayerTitleView = (TextView) rootView.findViewById(R.id.app_cms_video_player_title_view);
-
-        contentRatingHeaderView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_header_view);
-        setTypeFace(getContext(),contentRatingHeaderView,getString(R.string.helvaticaneu_bold));
-
-        contentRatingTitleView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_title_view);
-        setTypeFace(getContext(),contentRatingTitleView,getString(R.string.helvaticaneu_bold));
-
-        contentRatingDescriptionView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_description);
-        SpannableStringBuilder titleString = new SpannableStringBuilder(getResources().getString(R.string.content_rating_description));
-        titleString.setSpan(new CustomTypefaceSpan("", getFontType(getContext(),getResources().getString(R.string.helvaticaneu_bold))), 0, 29, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
-        titleString.setSpan(new CustomTypefaceSpan("",  getFontType(getContext(),getResources().getString(R.string.helvaticaneu_italic))), 30, titleString.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
-        contentRatingDescriptionView.setText(titleString);
-
-        contentRatingBack = (TextView) rootView.findViewById(R.id.app_cms_content_rating_back);
-        setTypeFace(getContext(),contentRatingBack,getContext().getString(R.string.helvaticaneu_bold));
-
-        contentRatingBackUnderline = rootView.findViewById(R.id.app_cms_content_rating_back_underline);
-
-        progressBar = (ProgressBar) rootView.findViewById(R.id.app_cms_content_rating_progress_bar);
 
         if (!TextUtils.isEmpty(title)) {
             videoPlayerTitleView.setText(title);
         }
         if (!TextUtils.isEmpty(fontColor)) {
             videoPlayerTitleView.setTextColor(Color.parseColor(fontColor));
-            contentRatingTitleView.setTextColor(Color.parseColor(fontColor));
-            contentRatingDescriptionView.setTextColor(Color.parseColor(fontColor));
-            contentRatingDiscretionView.setTextColor(Color.parseColor(fontColor));
-            contentRatingBack.setTextColor(Color.parseColor(fontColor));
         }
-
 
         sendFirebaseAnalyticsEvents(title);
 
@@ -437,12 +368,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             appCMSPresenter.setClosedCaptionPreference(getContext(), isChecked);
         });
 
-        contentRatingBack.setOnClickListener(v -> {
-            getActivity().finish();
-        });
-
+        initViewForCRW(rootView);
         if (!shouldRequestAds) {
-            //videoPlayerView.startPlayer();
             createContentRatingView();
         }
         beaconMessageThread = new BeaconPingThread(beaconMsgTimeoutMsec,
@@ -766,7 +693,38 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
     }
 
-    private void createContentRatingView() {
+    private void initViewForCRW(View rootView) {
+
+        contentRatingMainContainer =
+                (PercentRelativeLayout) rootView.findViewById(R.id.app_cms_content_rating_main_container);
+
+        contentRatingAnimationContainer =
+                (PercentRelativeLayout) rootView.findViewById(R.id.app_cms_content_rating_animation_container);
+
+        contentRatingInfoContainer =
+                (LinearLayout) rootView.findViewById(R.id.app_cms_content_rating_info_container);
+
+        contentRatingHeaderView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_header_view);
+        setTypeFace(getContext(),contentRatingHeaderView,getString(R.string.helvaticaneu_bold));
+
+        contentRatingTitleView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_title_view);
+        setTypeFace(getContext(),contentRatingTitleView,getString(R.string.helvaticaneu_bold));
+
+        contentRatingDiscretionView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_viewer_discretion);
+        setTypeFace(getContext(),contentRatingDiscretionView,getString(R.string.helvaticaneu_bold));
+
+        contentRatingBack = (TextView) rootView.findViewById(R.id.app_cms_content_rating_back);
+        setTypeFace(getContext(),contentRatingBack,getContext().getString(R.string.helvaticaneu_bold));
+
+        contentRatingBackUnderline = rootView.findViewById(R.id.app_cms_content_rating_back_underline);
+
+        progressBar = (ProgressBar) rootView.findViewById(R.id.app_cms_content_rating_progress_bar);
+
+        if (!TextUtils.isEmpty(fontColor)) {
+            contentRatingTitleView.setTextColor(Color.parseColor(fontColor));
+            contentRatingDiscretionView.setTextColor(Color.parseColor(fontColor));
+            contentRatingBack.setTextColor(Color.parseColor(fontColor));
+        }
 
         if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())) {
             int highlightColor =
@@ -778,8 +736,25 @@ public class AppCMSPlayVideoFragment extends Fragment
                     .setColorFilter(highlightColor, PorterDuff.Mode.SRC_IN);
         }
 
-        if (!TextUtils.isEmpty(parentalRating)) {
-            String convertedRating = getContext().getString(R.string.age_rating_converted_default);
+        contentRatingBack.setOnClickListener(v -> {
+            getActivity().finish();
+        });
+    }
+
+    private void createContentRatingView() {
+        if(!isTrailer && !getParentalRating().equalsIgnoreCase(getContext().getString(R.string.age_rating_converted_default))) {
+            animateView();
+            startCountdown();
+        }else{
+            contentRatingMainContainer.setVisibility(View.GONE);
+            videoPlayerMainContainer.setVisibility(View.VISIBLE);
+            videoPlayerView.startPlayer();
+        }
+    }
+
+    private String getParentalRating() {
+        String convertedRating = getContext().getString(R.string.age_rating_converted_default);
+        if (!TextUtils.isEmpty(parentalRating) && parentalRating.contentEquals( getContext().getString(R.string.age_rating_converted_default))) {
             if (parentalRating.contains(getContext().getString(R.string.age_rating_y7))) {
                 convertedRating = getContext().getString(R.string.age_rating_converted_y7);
             } else if (parentalRating.contains(getContext().getString(R.string.age_rating_y))) {
@@ -793,10 +768,9 @@ public class AppCMSPlayVideoFragment extends Fragment
             } else if (parentalRating.contains(getContext().getString(R.string.age_raging_r))) {
                 convertedRating = getContext().getString(R.string.age_rating_converted_eighteen);
             }
-            contentRatingTitleView.setText("TVMA");
+            contentRatingTitleView.setText(getResources().getString(R.string.content_rating_description) + convertedRating);
         }
-        animateView();
-        startCountdown();
+        return convertedRating;
     }
 
     private void startCountdown() {
@@ -844,6 +818,21 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private void animateView(){
+
+        animSequential = AnimationUtils.loadAnimation(getContext(),
+                R.anim.sequential);
+        animFadeIn = AnimationUtils.loadAnimation(getContext(),
+                R.anim.fade_in);
+        animFadeOut = AnimationUtils.loadAnimation(getContext(),
+                R.anim.fade_out);
+        animTranslate = AnimationUtils.loadAnimation(getContext(),
+                R.anim.translate);
+
+        animFadeIn.setAnimationListener(this);
+        animFadeOut.setAnimationListener(this);
+        animSequential.setAnimationListener(this);
+        animTranslate.setAnimationListener(this);
+
         contentRatingMainContainer.setVisibility(View.VISIBLE);
 
         contentRatingHeaderView.startAnimation(animFadeIn);
@@ -852,9 +841,6 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         contentRatingTitleView.startAnimation(animSequential);
         contentRatingTitleView.setVisibility(View.VISIBLE);
-
-        contentRatingDescriptionView.startAnimation(animTranslate);
-        contentRatingDescriptionView.setVisibility(View.VISIBLE);
 
     }
 
@@ -869,20 +855,6 @@ public class AppCMSPlayVideoFragment extends Fragment
             }
         }
     }
-
-    private Typeface getFontType(Context context, String fontType) {
-        Typeface face;
-        if (null != context && null != fontType) {
-            try {
-                face = Typeface.createFromAsset(context.getAssets(), fontType);
-                return face;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return Typeface.createFromAsset(context.getAssets(), getString(R.string.helvaticaneu_bold));
-    }
-
 
     @Override
     public void onAnimationStart(Animation animation) {

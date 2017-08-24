@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/app_cms_content_rating_back"
-        android:layout_width="@dimen/app_cms_content_rating_back_width"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginTop="10dp"
@@ -19,10 +19,11 @@
 
     <View
         android:id="@+id/app_cms_content_rating_back_underline"
-        android:layout_width="@dimen/app_cms_content_rating_back_width"
+        android:layout_width="wrap_content"
         android:layout_height="2dp"
         android:layout_below="@+id/app_cms_content_rating_back"
-        android:layout_marginStart="13dp"
+        android:layout_alignEnd="@id/app_cms_content_rating_back"
+        android:layout_alignStart="@id/app_cms_content_rating_back"
         android:text="@string/content_rating_back"
        />
 
@@ -55,28 +56,13 @@
 
                 <TextView
                     android:id="@+id/app_cms_content_rating_title_view"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight=".7"
                     android:textSize="@dimen/app_cms_content_rating_title_view_text_size"
-                    android:visibility="invisible"
-                    android:text="TVMA"
-                    android:gravity="end|center_vertical"
+                    android:visibility="visible"
+                    android:layout_marginLeft="@dimen/app_cms_content_rating_title_margin_left"
+                    android:gravity="center"
                     android:textColor="@android:color/white"/>
-
-                <TextView
-                    android:id="@+id/app_cms_content_rating_description"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight=".3"
-                    android:text="@string/content_rating_description"
-                    android:textSize="13sp"
-                    android:layout_marginStart="@dimen/app_cms_content_rating_description_margin_left"
-                    android:lineSpacingExtra="4dp"
-                    android:gravity="center_vertical"
-                    android:textColor="@android:color/white"
-                    android:visibility="invisible" />
-
 
             </LinearLayout>
 
@@ -108,7 +94,5 @@
         android:layout_marginEnd="@dimen/app_cms_content_rating_view_margin"
         android:indeterminate="false"
         android:max="10000" />
-
-
 
 </android.support.percent.PercentRelativeLayout>

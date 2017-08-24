@@ -43,7 +43,7 @@ android {
     productFlavors {
         mobile {
             dimension = "green"
-            minSdkVersion 23
+            minSdkVersion 21
             compileSdkVersion 23
             targetSdkVersion 25
         }

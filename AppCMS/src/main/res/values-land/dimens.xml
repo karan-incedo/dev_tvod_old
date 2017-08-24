@@ -1,8 +1,5 @@
 <resources>
 
-    <dimen name="app_cms_content_rating_title_view_text_size">46sp</dimen>
-    <dimen name="app_cms_content_rating_description_text_size">12sp</dimen>
-    <dimen name="app_cms_content_rating_description_margin_left">10sp</dimen>
     <fraction name="app_cms_content_rating_progress_bar_margin_bottom_percent">5.5%</fraction>
     <fraction name="mainContainerWidthPercent">54%</fraction>
     <fraction name="mainContainerHeightPercent">44.2%</fraction>

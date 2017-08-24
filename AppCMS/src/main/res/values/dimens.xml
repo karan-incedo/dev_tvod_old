@@ -58,11 +58,9 @@
     <dimen name="nav_item_container_padding">24dp</dimen>
     <dimen name="nav_item_login_container_padding">48dp</dimen>
 
-    <dimen name="app_cms_content_rating_title_view_text_size">46sp</dimen>
-    <dimen name="app_cms_content_rating_description_text_size">13sp</dimen>
-    <dimen name="app_cms_content_rating_description_margin_left">20sp</dimen>
+    <dimen name="app_cms_content_rating_title_view_text_size">18sp</dimen>
     <dimen name="app_cms_content_rating_view_margin">13dp</dimen>
-    <dimen name="app_cms_content_rating_back_width">35dp</dimen>
+    <dimen name="app_cms_content_rating_title_margin_left">45dp</dimen>
     <fraction name="app_cms_content_rating_progress_bar_margin_bottom_percent">3.4%</fraction>
     <fraction name="mainContainerHeightPercent">22%</fraction>
     <fraction name="mainContainerWidthPercent">90%</fraction>

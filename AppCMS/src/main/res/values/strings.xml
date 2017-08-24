@@ -313,10 +313,5 @@
     <string name="content_rating_text_warning">WARNING</string>
     <string name="content_rating_viewer_discretion">Viewer Discretion Is Advised</string>
     <string name="video_player_content_rating_key">video_player_content_rating</string>
-    <string name="content_rating_description">
-        &#160; &#160; The following may contain:\n
-        \u2022 Strong Language\n
-        \u2022 Sexual Content\n
-        \u2022 Violent Situations
-    </string>
+    <string name="content_rating_description">The following may contain:&#160;</string>
 </resources>
