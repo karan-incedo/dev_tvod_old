@@ -119,7 +119,15 @@ public class ViewCreator {
                                 AppCMSPresenter appCMSPresenter,
                                 List<String> modulesToIgnore) {
         for (ModuleList module : appCMSPageUI.getModuleList()) {
-            if (!modulesToIgnore.contains(module.getType()) && pageView != null) {
+            boolean createModule = !modulesToIgnore.contains(module.getType()) && pageView != null;
+
+            if (createModule && appCMSPresenter.isViewPlanPage(module.getId()) &&
+                    (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
+                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
+                createModule = false;
+            }
+
+            if (createModule) {
                 ModuleView moduleView = pageView.getModuleViewWithModuleId(module.getId());
                 boolean shouldHideModule = false;
                 if (moduleView != null) {
@@ -828,7 +836,20 @@ public class ViewCreator {
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList module : modulesList) {
-            if (!modulesToIgnore.contains(module.getType())) {
+            boolean createModule = !modulesToIgnore.contains(module.getType());
+
+            if (createModule && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
+                    (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
+                    jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
+                createModule = false;
+            }
+
+            if (createModule) {
+                if (appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
+                    jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY &&
+                            jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY) {
+
+                }
                 Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
                 View childView = createModuleView(context, module, moduleAPI, pageView,
                         jsonValueKeyMap,
