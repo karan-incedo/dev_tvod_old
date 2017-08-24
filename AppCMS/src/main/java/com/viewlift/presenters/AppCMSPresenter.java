@@ -4568,7 +4568,7 @@ public class AppCMSPresenter {
 
     public boolean isPagePrimary(String pageId) {
         for (NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()) {
-            if (!TextUtils.isEmpty(pageId) && pageId.contains(navigationPrimary.getPageId())) {
+            if (pageId!=null && !TextUtils.isEmpty(pageId) && pageId.contains(navigationPrimary.getPageId())) {
                 return true;
             }
         }
@@ -4577,14 +4577,14 @@ public class AppCMSPresenter {
     }
 
     public boolean isPageNavigationPage(String pageId) {
-        return currentActivity != null &&
+        return currentActivity != null && pageId!=null &&
                 !TextUtils.isEmpty(pageId) &&
                 pageId.equals(currentActivity.getString(R.string.app_cms_navigation_page_tag));
     }
 
     public boolean isPageUser(String pageId) {
         for (NavigationUser navigationUser : navigation.getNavigationUser()) {
-            if (!TextUtils.isEmpty(pageId) && pageId.contains(navigationUser.getPageId())) {
+            if (pageId!=null && !TextUtils.isEmpty(pageId) && pageId.contains(navigationUser.getPageId())) {
                 return true;
             }
         }
