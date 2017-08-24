@@ -175,7 +175,6 @@ import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
 import org.threeten.bp.temporal.ChronoUnit;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -434,6 +433,7 @@ public class AppCMSPresenter {
     private Action1<UserVideoDownloadStatus> downloadResultActionAfterPermissionGranted;
     private boolean requestDownloadQualityScreen;
     private DownloadQueueThread downloadQueueThread;
+    private boolean isVideoPlayerStarted;
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -678,9 +678,8 @@ public class AppCMSPresenter {
             String url = currentActivity.getString(R.string.app_cms_update_watch_history_api_url,
                     appCMSMain.getApiBaseUrl());
 
-            appCMSUpdateWatchHistoryCall.call(url, getAuthToken(currentActivity), updateHistoryRequest,
-                    s -> {
-                        // Call update history
+            appCMSUpdateWatchHistoryCall.call(url, getAuthToken(currentActivity),
+                    updateHistoryRequest, s -> {
                         if (currentActivity != null) {
                             sendUpdateHistoryAction();
                         }
@@ -813,9 +812,11 @@ public class AppCMSPresenter {
                 result = true;
                 boolean isTrailer = (actionType == AppCMSActionType.WATCH_TRAILER ||
                         (pagePath != null &&
-                        pagePath.contains(currentActivity.getString(R.string.app_cms_action_qualifier_watchvideo_key))));
-                if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
-                        actionType == AppCMSActionType.WATCH_TRAILER) {
+                                pagePath.contains(currentActivity.getString(R.string.app_cms_action_qualifier_watchvideo_key))));
+                if ((actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
+                        actionType == AppCMSActionType.WATCH_TRAILER) &&
+                        !isVideoPlayerStarted) {
+                    isVideoPlayerStarted = true;
                     boolean entitlementActive = true;
                     boolean svodServiceType =
                             appCMSMain.getServiceType()
@@ -1028,7 +1029,7 @@ public class AppCMSPresenter {
                                 String paymentProcessor = getActiveSubscriptionProcessor(currentActivity);
                                 if (!TextUtils.isEmpty(paymentProcessor) &&
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
-                                                !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))) {
+                                        !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))) {
                                     showEntitlementDialog(DialogType.CANNOT_UPGRADE_SUBSCRIPTION);
                                 } else if (isExistingGooglePlaySubscriptionSuspended(currentActivity) &&
                                         !upgradesAvailableForUser(getLoggedInUser(currentActivity))) {
@@ -1225,6 +1226,10 @@ public class AppCMSPresenter {
         return result;
     }
 
+    public void setVideoPlayerHasStarted() {
+        isVideoPlayerStarted = false;
+    }
+
     public boolean launchNavigationPage() {
         boolean result = false;
 
@@ -1283,6 +1288,7 @@ public class AppCMSPresenter {
                                 toContentDatum.getGist().getDescription().equals(fromContentDatum.getGist().getDescription())) {
                             toContentDatum.getGist().setWatchedTime(fromContentDatum.getGist().getWatchedTime());
                             toContentDatum.getGist().setWatchedPercentage(fromContentDatum.getGist().getWatchedPercentage());
+                            toContentDatum.getGist().setUpdateDate(fromContentDatum.getGist().getUpdateDate());
                         }
                     }
                 }
@@ -2288,20 +2294,6 @@ public class AppCMSPresenter {
 
         c.close();
         return downloadPercent;
-    }
-
-    private void showQueueItem(String title) {
-        currentActivity.runOnUiThread(() -> {
-            showToast(currentActivity.getString(R.string.app_cms_download_queue_toast_message, title),
-                    Toast.LENGTH_LONG);
-        });
-    }
-
-    private void showAlreadyQueuedItem(String title) {
-        currentActivity.runOnUiThread(() -> {
-            showToast(currentActivity.getString(R.string.app_cms_download_already_queued_toast_message, title),
-                    Toast.LENGTH_LONG);
-        });
     }
 
     public void startNextDownload() {
@@ -3870,32 +3862,16 @@ public class AppCMSPresenter {
         return false;
     }
 
-    /**
-     * Method is used to get the user preference with regard to Closed caption
-     *
-     * @param context current context of Activity/Application
-     * @return true/false based upon the user preference
-     */
     public boolean getClosedCaptionPreference(Context context) {
-        if (context != null) {
-            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_SETTINGS_PREF_NAME, 0);
-            return sharedPrefs.getBoolean(USER_CLOSED_CAPTION_PREF_KEY, false);
-        }
-        return false;
+        SharedPreferences sharedPrefs = context.getSharedPreferences(USER_CLOSED_CAPTION_PREF_KEY, 0);
+        return sharedPrefs.getBoolean(getLoggedInUser(currentActivity), false);
     }
 
-    /**
-     * Method is used to set the user preference with regard to Closed caption
-     *
-     * @param context current context of Activity/Application
-     * @return true/false if the set operation was successful
-     */
-    public boolean setClosedCaptionPreference(Context context, boolean ccPref) {
+    public void setClosedCaptionPreference(Context context, boolean isClosedCaptionOn) {
         if (context != null) {
-            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_SETTINGS_PREF_NAME, 0);
-            return sharedPrefs.edit().putBoolean(USER_CLOSED_CAPTION_PREF_KEY, ccPref).commit();
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_CLOSED_CAPTION_PREF_KEY, 0);
+            sharedPrefs.edit().putBoolean(getLoggedInUser(currentActivity), isClosedCaptionOn).apply();
         }
-        return false;
     }
 
     public String getLoggedInUserName(Context context) {
@@ -7402,12 +7378,9 @@ public class AppCMSPresenter {
                 filmDownloadQueue.add(downloadQueueItem);
                 filmsInQueue.add(downloadQueueItem.contentDatum.getGist().getTitle());
 
-                if (filmsInQueue.size() > 0) {
-                    appCMSPresenter.showQueueItem(downloadQueueItem.contentDatum.getGist().getTitle());
+                if (!filmsInQueue.isEmpty()) {
                     downloadQueueItem.resultAction1.call(null);
                 }
-            } else {
-                appCMSPresenter.showAlreadyQueuedItem(downloadQueueItem.contentDatum.getGist().getTitle());
             }
         }
 
@@ -7415,7 +7388,7 @@ public class AppCMSPresenter {
         public void run() {
             running = true;
             while (running) {
-                if (filmDownloadQueue.size() > 0 && startNextDownload) {
+                if (!filmDownloadQueue.isEmpty() && startNextDownload) {
                     DownloadQueueItem downloadQueueItem = filmDownloadQueue.remove();
 
                     if (filmsInQueue.contains(downloadQueueItem.contentDatum.getGist().getTitle())) {

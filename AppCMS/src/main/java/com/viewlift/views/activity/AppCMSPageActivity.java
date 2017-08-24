@@ -697,6 +697,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
+        appCMSPresenter.setVideoPlayerHasStarted();
+
         isActive = true;
 
         if (shouldSendCloseOthersAction && appCMSPresenter != null) {

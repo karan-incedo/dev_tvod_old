@@ -272,6 +272,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_autoplay_toggle_button_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_closed_captions_toggle_button_key),
+                AppCMSUIKeyType.PAGE_CLOSED_CAPTIONS_TOGGLE_BUTTON_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_title_key),
                 AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_priceinfo_key),
