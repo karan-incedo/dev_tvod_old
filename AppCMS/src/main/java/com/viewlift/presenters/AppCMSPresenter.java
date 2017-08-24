@@ -3862,32 +3862,16 @@ public class AppCMSPresenter {
         return false;
     }
 
-    /**
-     * Method is used to get the user preference with regard to Closed caption
-     *
-     * @param context current context of Activity/Application
-     * @return true/false based upon the user preference
-     */
     public boolean getClosedCaptionPreference(Context context) {
-        if (context != null) {
-            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_SETTINGS_PREF_NAME, 0);
-            return sharedPrefs.getBoolean(USER_CLOSED_CAPTION_PREF_KEY, false);
-        }
-        return false;
+        SharedPreferences sharedPrefs = context.getSharedPreferences(USER_CLOSED_CAPTION_PREF_KEY, 0);
+        return sharedPrefs.getBoolean(getLoggedInUser(currentActivity), false);
     }
 
-    /**
-     * Method is used to set the user preference with regard to Closed caption
-     *
-     * @param context current context of Activity/Application
-     * @return true/false if the set operation was successful
-     */
-    public boolean setClosedCaptionPreference(Context context, boolean ccPref) {
+    public void setClosedCaptionPreference(Context context, boolean isClosedCaptionOn) {
         if (context != null) {
-            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_SETTINGS_PREF_NAME, 0);
-            return sharedPrefs.edit().putBoolean(USER_CLOSED_CAPTION_PREF_KEY, ccPref).commit();
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_CLOSED_CAPTION_PREF_KEY, 0);
+            sharedPrefs.edit().putBoolean(getLoggedInUser(currentActivity), isClosedCaptionOn).apply();
         }
-        return false;
     }
 
     public String getLoggedInUserName(Context context) {

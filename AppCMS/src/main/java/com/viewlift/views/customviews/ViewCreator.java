@@ -25,7 +25,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -622,8 +621,17 @@ public class ViewCreator {
                                         }
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_TOGGLE_BUTTON_KEY) {
-                                    if (componentType == AppCMSUIKeyType.PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY) {
-                                        ((Switch) componentViewResult.componentView).setChecked(appCMSPresenter.getAutoplayEnabledUserPref(context));
+                                    switch (componentType) {
+                                        case PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY:
+                                            ((Switch) componentViewResult.componentView).setChecked(appCMSPresenter.getAutoplayEnabledUserPref(context));
+                                            break;
+
+                                        case PAGE_CLOSED_CAPTIONS_TOGGLE_BUTTON_KEY:
+                                            ((Switch) componentViewResult.componentView).setChecked(appCMSPresenter.getClosedCaptionPreference(context));
+                                            break;
+
+                                        default:
+                                            break;
                                     }
                                 }
 
@@ -2500,14 +2508,21 @@ public class ViewCreator {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                     ((Switch) componentViewResult.componentView).setTrackTintMode(PorterDuff.Mode.MULTIPLY);
                 }
+
                 if (componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY) {
-                    ((Switch) componentViewResult.componentView).setChecked(appCMSPresenter.getAutoplayEnabledUserPref(context));
-                    ((Switch) componentViewResult.componentView).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                        @Override
-                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            appCMSPresenter.setAutoplayEnabledUserPref(context, isChecked);
-                        }
-                    });
+                    ((Switch) componentViewResult.componentView)
+                            .setChecked(appCMSPresenter.getAutoplayEnabledUserPref(context));
+                    ((Switch) componentViewResult.componentView)
+                            .setOnCheckedChangeListener((buttonView, isChecked)
+                                    -> appCMSPresenter.setAutoplayEnabledUserPref(context, isChecked));
+                }
+
+                if (componentKey == AppCMSUIKeyType.PAGE_CLOSED_CAPTIONS_TOGGLE_BUTTON_KEY) {
+                    ((Switch) componentViewResult.componentView)
+                            .setChecked(appCMSPresenter.getClosedCaptionPreference(context));
+                    ((Switch) componentViewResult.componentView)
+                            .setOnCheckedChangeListener((buttonView, isChecked)
+                                    -> appCMSPresenter.setClosedCaptionPreference(context, isChecked));
                 }
                 break;
 
