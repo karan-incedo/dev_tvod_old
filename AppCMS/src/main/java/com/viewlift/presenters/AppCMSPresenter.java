@@ -426,8 +426,8 @@ public class AppCMSPresenter {
     private String googleEmail;
     private String skuToPurchase;
     private String planToPurchase;
-    private String currencyCode ;
-    private String countryCode ;
+    private String currencyCode;
+    private String countryCode;
     private String currencyOfPlanToPurchase;
     private String planToPurchaseName;
     private String apikey;
@@ -448,7 +448,8 @@ public class AppCMSPresenter {
     private Action1<UserVideoDownloadStatus> downloadResultActionAfterPermissionGranted;
     private boolean requestDownloadQualityScreen;
     private DownloadQueueThread downloadQueueThread;
-    boolean isRenewable ;
+    boolean isRenewable;
+
     @Inject
     public AppCMSPresenter(Gson gson,
                            AppCMSMainUICall appCMSMainUICall,
@@ -1052,7 +1053,7 @@ public class AppCMSPresenter {
                                 String paymentProcessor = getActiveSubscriptionProcessor(currentActivity);
                                 if ((!TextUtils.isEmpty(paymentProcessor) &&
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
-                                                !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))) ||
+                                        !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))) ||
                                         TextUtils.isEmpty(getExistingGooglePlaySubscriptionId(currentActivity))) {
                                     showEntitlementDialog(DialogType.CANNOT_CANCEL_SUBSCRIPTION);
                                 } else {
@@ -1615,9 +1616,9 @@ public class AppCMSPresenter {
             planToPurchaseName = planName;
             currencyOfPlanToPurchase = currency;
             planToPurchasePrice = planPrice;
-            currencyCode = recurringPaymentCurrencyCode ;
-            this.countryCode = countryCode ;
-            this.isRenewable = isRenewable ;
+            currencyCode = recurringPaymentCurrencyCode;
+            this.countryCode = countryCode;
+            this.isRenewable = isRenewable;
             if (isUserLoggedIn(currentActivity)) {
                 initiateItemPurchase();
             } else {
@@ -1626,18 +1627,18 @@ public class AppCMSPresenter {
         }
     }
 
-    private void initiateCCAvenuePurchase () {
-        Log.v("authtoken",getAuthToken(currentActivity)) ;
-        Log.v("apikey",apikey) ;
+    private void initiateCCAvenuePurchase() {
+        Log.v("authtoken", getAuthToken(currentActivity));
+        Log.v("apikey", apikey);
         try {
             String strAmount = Double.toString(planToPurchasePrice);
-            Intent intent = new Intent(currentActivity,WebViewActivity.class);
+            Intent intent = new Intent(currentActivity, WebViewActivity.class);
             intent.putExtra(AvenuesParams.CURRENCY, currencyCode);
             //intent.putExtra(AvenuesParams.AMOUNT, "500");
             intent.putExtra(AvenuesParams.AMOUNT, strAmount);
-            intent.putExtra(currentActivity.getString(R.string.app_cms_site_name),appCMSMain.getInternalName()) ;
-            intent.putExtra(currentActivity.getString(R.string.app_cms_user_id),getLoggedInUser(currentActivity)) ;
-            intent.putExtra(currentActivity.getString(R.string.app_cms_plan_id),planToPurchase) ;
+            intent.putExtra(currentActivity.getString(R.string.app_cms_site_name), appCMSMain.getInternalName());
+            intent.putExtra(currentActivity.getString(R.string.app_cms_user_id), getLoggedInUser(currentActivity));
+            intent.putExtra(currentActivity.getString(R.string.app_cms_plan_id), planToPurchase);
             intent.putExtra("plan_to_purchase_name", planToPurchaseName);
 
 
@@ -1646,8 +1647,8 @@ public class AppCMSPresenter {
             intent.putExtra("authorizedUserName", getLoggedInUser(currentActivity));
             intent.putExtra("x-api-token", apikey);
             intent.putExtra("auth_token", getAuthToken(currentActivity));
-            intent.putExtra("renewable",isRenewable) ;
-            currentActivity.startActivityForResult(intent,1);
+            intent.putExtra("renewable", isRenewable);
+            currentActivity.startActivityForResult(intent, 1);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -1657,7 +1658,7 @@ public class AppCMSPresenter {
 
         if (countryCode.equalsIgnoreCase("IN")) {
 
-            initiateCCAvenuePurchase () ;
+            initiateCCAvenuePurchase();
 
         } else {
 
@@ -4577,7 +4578,7 @@ public class AppCMSPresenter {
     }
 
     public boolean isPageAVideoPage(String pageName) {
-        if (currentActivity != null && pageName!=null) {
+        if (currentActivity != null && pageName != null) {
             return pageName.contains(currentActivity.getString(R.string.app_cms_video_page_page_name));
         }
         return false;
@@ -5042,6 +5043,7 @@ public class AppCMSPresenter {
             beaconMessageThread.run();
         }
     }
+
     public void sendBeaconPlayMessage(String vid, String screenName, String parentScreenName,
                                       long currentPosition, boolean usingChromecast) {
         Log.d(TAG, "Sending Beacon Play Message");
@@ -5079,7 +5081,7 @@ public class AppCMSPresenter {
         AppCMSBeaconRequest request = new AppCMSBeaconRequest();
 
         if (url != null && beaconRequests != null) {
-            System.out.println("Beacon data : "+gson.toJson(beaconRequests));
+            System.out.println("Beacon data : " + gson.toJson(beaconRequests));
             request.setBeaconRequest(beaconRequests);
             appCMSBeaconCall.call(url, (Boolean aBoolean) -> {
                 try {
@@ -5094,7 +5096,7 @@ public class AppCMSPresenter {
                     Log.d(TAG, "Beacon fail Event: offline  due to: " + e.getMessage());
                 }
             }, request);
-        }else{
+        } else {
             Log.d(TAG, "No offline Beacon Event: available ");
 
         }
@@ -5103,10 +5105,10 @@ public class AppCMSPresenter {
     public void sendBeaconMessage(String vid, String screenName, String parentScreenName,
                                   long currentPosition, boolean usingChromecast, BeaconEvent event,
                                   String mediaType, String bitrate, String height, String width,
-                                  String streamid,double ttfirstframe) {
+                                  String streamid, double ttfirstframe, int apod) {
 
         BeaconRequest beaconRequest = getBeaconRequest(vid, screenName, parentScreenName, currentPosition, event,
-                usingChromecast, mediaType, bitrate, height, width,streamid,ttfirstframe);
+                usingChromecast, mediaType, bitrate, height, width, streamid, ttfirstframe, apod);
         if (!isNetworkConnected()) {
             currentActivity.runOnUiThread(() -> {
                 realmController.addOfflineBeaconData(beaconRequest.convertToOfflineBeaconData());
@@ -5141,7 +5143,7 @@ public class AppCMSPresenter {
 
     public String getStreamingId(String filmName) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
 
-        SecretKeySpec key = new SecretKeySpec((getCurrentTimeStamp()).getBytes("UTF-8" ), "HmacSHA1");
+        SecretKeySpec key = new SecretKeySpec((getCurrentTimeStamp()).getBytes("UTF-8"), "HmacSHA1");
         Mac mac = Mac.getInstance("HmacSHA1");
         mac.init(key);
         byte[] bytes = mac.doFinal(filmName.getBytes("UTF-8"));
@@ -5161,7 +5163,7 @@ public class AppCMSPresenter {
     private BeaconRequest getBeaconRequest(String vid, String screenName, String parentScreenName,
                                            long currentPosition, BeaconEvent event, boolean usingChromecast,
                                            String mediaType, String bitrte, String resolutionHeight,
-                                           String resolutionWidth,String streamId,double ttfirstframe) {
+                                           String resolutionWidth, String streamId, double ttfirstframe, int apod) {
         BeaconRequest beaconRequest = new BeaconRequest();
         String uid = InstanceID.getInstance(currentActivity).getId();
         int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
@@ -5185,11 +5187,16 @@ public class AppCMSPresenter {
         beaconRequest.setUrl(getPermalinkCompletePath(screenName));
         beaconRequest.setRef(parentScreenName);
         beaconRequest.setVpos(currentPositionSecs);
+        beaconRequest.setApos(currentPositionSecs);
+        beaconRequest.setEnvironment(getEnvironment());
         beaconRequest.setBitrate(bitrte);
         beaconRequest.setResolutionheight(resolutionHeight);
         beaconRequest.setResolutionwidth(resolutionWidth);
-        if (event==BeaconEvent.FIRST_FRAME){
-            beaconRequest.setTtfirstframe(String.format("%.2f",ttfirstframe));
+        if (event == BeaconEvent.FIRST_FRAME) {
+            beaconRequest.setTtfirstframe(String.format("%.2f", ttfirstframe));
+        }
+        if (event == BeaconEvent.AD_IMPRESSION || event == BeaconEvent.AD_REQUEST) {
+            beaconRequest.setApod(apod);
         }
         if (usingChromecast) {
             beaconRequest.setDp2("Chromecast");
@@ -5203,6 +5210,27 @@ public class AppCMSPresenter {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return formatter.format(new Date(System.currentTimeMillis()));
     }
+
+    public String getEnvironment() {
+        String envirenment = "unknown";
+        if (appCMSMain.getApiBaseUrl().contains("prod")) {
+            envirenment = "production";
+        } else if (appCMSMain.getApiBaseUrl().contains("release")) {
+            envirenment = "release";
+        } else if (appCMSMain.getApiBaseUrl().contains("preprod")) {
+            envirenment = "preprod";
+        } else if (appCMSMain.getApiBaseUrl().contains("develop")) {
+            envirenment = "develop";
+        } else if (appCMSMain.getApiBaseUrl().contains("staging")) {
+            envirenment = "staging";
+        } else if (appCMSMain.getApiBaseUrl().contains("qa")) {
+            envirenment = "qa";
+        }
+
+        return envirenment;
+
+    }
+
 
     private String getBeaconUrl() {
         return currentActivity.getString(R.string.app_cms_beacon_url_base, appCMSMain.getBeacon().getApiBaseUrl());
@@ -5257,7 +5285,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void finalizeSignupAfterCCAvenueSubscription (Intent data) {
+    public void finalizeSignupAfterCCAvenueSubscription(Intent data) {
         String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                 appCMSMain.getApiBaseUrl(),
                 appCMSMain.getInternalName());
@@ -5353,7 +5381,7 @@ public class AppCMSPresenter {
                         currencyOfPlanToPurchase = null;
                         planToPurchaseName = null;
                         planToPurchasePrice = 0.0f;
-                        countryCode = "" ;
+                        countryCode = "";
                         if (launchType == LaunchType.SUBSCRIBE) {
                             launchType = LaunchType.LOGIN_AND_SIGNUP;
                             String url = currentActivity.getString(R.string.app_cms_signin_api_url,
@@ -7394,7 +7422,7 @@ public class AppCMSPresenter {
     }
 
     public enum BeaconEvent {
-        PLAY, RESUME, PING, AD_REQUEST, AD_IMPRESSION, FIRST_FRAME, BUFFERING,FAILED_TO_START,DROPPED_STREAM
+        PLAY, RESUME, PING, AD_REQUEST, AD_IMPRESSION, FIRST_FRAME, BUFFERING, FAILED_TO_START, DROPPED_STREAM
     }
 
     public enum DialogType {

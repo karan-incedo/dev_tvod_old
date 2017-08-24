@@ -89,7 +89,7 @@ public class CastHelper {
     private String mStreamId;
     private long mStartBufferMilliSec;
     private long mStopBufferMilliSec;
-    private static double ttfirstframe=0d;
+    private static double ttfirstframe = 0d;
 
 
     private CastHelper(Context mContext) {
@@ -389,11 +389,11 @@ public class CastHelper {
 
         try {
             mStreamId = appCMSPresenterComponenet.getStreamingId(binder.getContentData().getGist().getTitle());
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            mStreamId=filmId+appCMSPresenterComponenet.getCurrentTimeStamp();
+            mStreamId = filmId + appCMSPresenterComponenet.getCurrentTimeStamp();
         }
-        mStopBufferMilliSec =new Date().getTime();
+        mStopBufferMilliSec = new Date().getTime();
         appCMSPresenterComponenet.sendBeaconMessage(filmId,
                 binder.getContentData().getGist().getPermalink(),
                 beaconScreenName,
@@ -405,7 +405,8 @@ public class CastHelper {
                 null,
                 null,
                 null,
-                0d);
+                0d,
+                0);
     }
 
     public void openRemoteController() {
@@ -620,7 +621,8 @@ public class CastHelper {
                                 null,
                                 null,
                                 null,
-                                0d);
+                                0d,
+                                0);
                     }
 
                 }
@@ -773,9 +775,9 @@ public class CastHelper {
                     String currentMediaParamKey = CastingUtils.getRemoteParamKey(mAppContext);
 
                     if (!TextUtils.isEmpty(currentRemoteMediaId)) {
-                        mStopBufferMilliSec =new Date().getTime();
-                        System.out.println("Beacon diff on cast = "+(mStopBufferMilliSec-mStartBufferMilliSec)/1000d);
-                        ttfirstframe=((mStopBufferMilliSec-mStartBufferMilliSec)/1000d);
+                        mStopBufferMilliSec = new Date().getTime();
+                        System.out.println("Beacon diff on cast = " + (mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
+                        ttfirstframe = ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
                        /* appCMSPresenterComponenet.sendBeaconPlayMessage(currentRemoteMediaId,
                                 currentMediaParamKey,
                                 beaconScreenName,
@@ -792,7 +794,8 @@ public class CastHelper {
                                 null,
                                 null,
                                 null,
-                                ttfirstframe);
+                                ttfirstframe,
+                                0);
                         sentBeaconPlay = true;
                     }
                 }
