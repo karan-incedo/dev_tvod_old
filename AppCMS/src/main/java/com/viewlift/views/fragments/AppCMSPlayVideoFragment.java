@@ -415,8 +415,10 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         videoLoadingProgress.bringToFront();
         videoLoadingProgress.setVisibility(View.VISIBLE);
-       // double seconds = (now.getMillis() - dateTime.getMillis()) / 1000d;
-        return rootView;
+
+
+           return rootView;
+
     }
 
     private void sendFirebaseAnalyticsEvents(String screenVideoName) {
@@ -749,6 +751,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
                         if (appCMSPresenter != null && videoPlayerView != null && videoPlayerView.getPlayer().getPlayWhenReady()) { // For not to sent PIN in PAUSE mode
                             /*appCMSPresenter.sendBeaconPingMessage(filmId,
+
                                     permaLink,
                                     parentScreenName,
                                     videoPlayerView.getCurrentPosition(),
