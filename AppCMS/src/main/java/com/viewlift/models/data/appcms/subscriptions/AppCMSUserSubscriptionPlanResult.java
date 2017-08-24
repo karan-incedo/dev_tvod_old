@@ -24,7 +24,11 @@ public class AppCMSUserSubscriptionPlanResult {
     @Expose
     private AppCMSSubscriptionPlanResult subscriptionPlanInfo;
     @SerializedName("subscriptionInfo")
-    @Expose AppCMSUserSubscriptionPlanInfoResult subscriptionInfo;
+    @Expose
+    AppCMSUserSubscriptionPlanInfoResult subscriptionInfo;
+    @SerializedName("name")
+    @Expose
+    private String name;
 
     public AppCMSUserSubscriptionPlanResult() {
         subscriptionPlanInfo = new AppCMSSubscriptionPlanResult();
@@ -69,5 +73,13 @@ public class AppCMSUserSubscriptionPlanResult {
 
     public void setSubscriptionInfo(AppCMSUserSubscriptionPlanInfoResult subscriptionInfo) {
         this.subscriptionInfo = subscriptionInfo;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

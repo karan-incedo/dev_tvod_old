@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @UseStag
@@ -15,7 +16,7 @@ public class AppCMSPageAPI {
 
     @SerializedName("path")
     @Expose
-    List<String> path = null;
+    List<String> path = new ArrayList<>();
 
     @SerializedName("title")
     @Expose
@@ -27,11 +28,11 @@ public class AppCMSPageAPI {
 
     @SerializedName("modules")
     @Expose
-    List<Module> modules = null;
+    List<Module> modules = new ArrayList<>();
 
     @SerializedName("moduleIds")
     @Expose
-    List<String> moduleIds = null;
+    List<String> moduleIds = new ArrayList<>();
 
     public String getId() {
         return id;
