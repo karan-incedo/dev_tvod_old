@@ -754,7 +754,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     private String getParentalRating() {
         String convertedRating = getContext().getString(R.string.age_rating_converted_default);
-        if (!TextUtils.isEmpty(parentalRating) && parentalRating.contentEquals( getContext().getString(R.string.age_rating_converted_default))) {
+        if (!TextUtils.isEmpty(parentalRating) && !parentalRating.contentEquals( getContext().getString(R.string.age_rating_converted_default))) {
             if (parentalRating.contains(getContext().getString(R.string.age_rating_y7))) {
                 convertedRating = getContext().getString(R.string.age_rating_converted_y7);
             } else if (parentalRating.contains(getContext().getString(R.string.age_rating_y))) {
