@@ -549,12 +549,6 @@ public class ViewCreator {
                                     for (Component settingsComponent : component.getComponents()) {
                                         shouldHideComponent = false;
 
-                                        AppCMSUIKeyType settingsComponentType = jsonValueKeyMap.get(settingsComponent.getType());
-
-                                        if (settingsComponentType == null) {
-                                            settingsComponentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
-                                        }
-
                                         AppCMSUIKeyType settingsComponentKey = jsonValueKeyMap.get(settingsComponent.getKey());
 
                                         if (settingsComponentKey == null) {
@@ -582,7 +576,7 @@ public class ViewCreator {
                                             } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_VALUE_KEY) {
                                                 if (!TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName(context))) {
                                                     ((TextView) settingsView).setText(appCMSPresenter.getActiveSubscriptionPlanName(context));
-                                                } else if (!TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionDescription(context))) {
+                                                } else if (!appCMSPresenter.isUserSubscribed(context)) {
                                                     ((TextView) settingsView).setText(appCMSPresenter.getExistingGooglePlaySubscriptionDescription(context));
                                                 } else {
                                                     ((TextView) settingsView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
@@ -671,6 +665,7 @@ public class ViewCreator {
 
                     ViewGroup.LayoutParams moduleLayoutParams = moduleView.getLayoutParams();
                     moduleView.verifyHeightAdjustments();
+
                     for (int j = 0; j < moduleView.getHeightAdjusterListSize(); j++) {
                         ModuleView.HeightLayoutAdjuster heightLayoutAdjuster = moduleView.getHeightLayoutAdjuster(j);
 
@@ -840,14 +835,14 @@ public class ViewCreator {
 
             if (createModule && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
                     (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
-                    jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
+                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
                 createModule = false;
             }
 
             if (createModule) {
                 if (appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
-                    jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY &&
-                            jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY) {
+                        jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY &&
+                        jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY) {
 
                 }
                 Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
@@ -1171,7 +1166,7 @@ public class ViewCreator {
                                     LinearLayoutManager.VERTICAL,
                                     false));
 
-                    List<Mpeg> mpegs = null;
+                    List<Mpeg> mpegs;
                     if (moduleAPI.getContentData() != null &&
                             !moduleAPI.getContentData().isEmpty() &&
                             moduleAPI.getContentData().get(0) != null &&
@@ -1183,7 +1178,7 @@ public class ViewCreator {
                         mpegs = new ArrayList<>();
                     }
 
-                    List<Component> components = null;
+                    List<Component> components;
                     if (component.getComponents() != null) {
                         components = component.getComponents();
                     } else {
@@ -1438,7 +1433,6 @@ public class ViewCreator {
 
                 switch (componentKey) {
                     case PAGE_BUTTON_SWITCH_KEY:
-
                         if (appCMSPresenter.isPreferedStorageLocationSDCard(context)) {
                             ((Switch) componentViewResult.componentView).setChecked(true);
                         } else {
@@ -1458,9 +1452,8 @@ public class ViewCreator {
                             }
 
                         });
-
-
                         break;
+
                     case PAGE_AUTOPLAY_BACK_KEY:
                         componentViewResult.componentView.setVisibility(View.GONE);
                         break;
@@ -1470,7 +1463,6 @@ public class ViewCreator {
                         break;
 
                     case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
-
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
                         if (moduleAPI.getContentData() != null &&
@@ -1483,7 +1475,6 @@ public class ViewCreator {
                                             moduleAPI.getContentData().get(0), userId), userId);
                         }
                         componentViewResult.componentView.setVisibility(View.VISIBLE);
-
                         break;
 
                     case PAGE_ADD_TO_WATCHLIST_KEY:
@@ -1503,7 +1494,6 @@ public class ViewCreator {
                         componentViewResult.componentView.setVisibility(View.VISIBLE);
 
                         componentViewResult.componentView.setVisibility(View.VISIBLE);
-
                         break;
 
                     case PAGE_VIDEO_WATCH_TRAILER_KEY:
@@ -1731,7 +1721,7 @@ public class ViewCreator {
                                         break;
 
                                     default:
-                                        //
+                                        break;
                                 }
                             }
                         });
@@ -1800,6 +1790,7 @@ public class ViewCreator {
                                     0,
                                     null);
                         });
+                        break;
                 }
 
                 if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SETTINGS_KEY) {
@@ -1813,7 +1804,6 @@ public class ViewCreator {
                                         .getBlockTitleColor()));
                     }
                 }
-
                 break;
 
             case PAGE_LABEL_KEY:
@@ -1862,7 +1852,6 @@ public class ViewCreator {
                             } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_download_title);
                             }
-
                             break;
 
                         case PAGE_API_DESCRIPTION:
@@ -1927,6 +1916,7 @@ public class ViewCreator {
                                 viewTreeObserver.addOnGlobalLayoutListener(viewCreatorMultiLineLayoutListener);
                             }
                             break;
+
                         case PAGE_VIDEO_DESCRIPTION_KEY:
                             String videoDescription = null;
                             if (moduleAPI.getContentData() != null &&
@@ -2063,7 +2053,7 @@ public class ViewCreator {
                         case PAGE_SETTINGS_PLAN_VALUE_KEY:
                             if (!TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName(context))) {
                                 ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getActiveSubscriptionPlanName(context));
-                            } else if (!TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionDescription(context))) {
+                            } else if (!appCMSPresenter.isUserSubscribed(context)) {
                                 ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getExistingGooglePlaySubscriptionDescription(context));
                             } else {
                                 ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
@@ -2103,7 +2093,6 @@ public class ViewCreator {
                             } else {
                                 ((TextView) componentViewResult.componentView).setText("");
                             }
-
                             break;
 
                         case PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY:
@@ -2129,6 +2118,7 @@ public class ViewCreator {
                             if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText());
                             }
+                            break;
                     }
                 } else {
                     ((TextView) componentViewResult.componentView).setSingleLine(true);
@@ -2146,7 +2136,6 @@ public class ViewCreator {
                             component,
                             (TextView) componentViewResult.componentView);
                 }
-
                 break;
 
             case PAGE_IMAGE_KEY:
@@ -2236,6 +2225,7 @@ public class ViewCreator {
                                     .into((ImageView) componentViewResult.componentView);
                         }
                         ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        break;
                 }
                 break;
 
@@ -2438,6 +2428,7 @@ public class ViewCreator {
                         break;
 
                     default:
+                        break;
                 }
 
                 if (!TextUtils.isEmpty(component.getText())) {
@@ -2461,7 +2452,6 @@ public class ViewCreator {
                 ((TextInputLayout) componentViewResult.componentView).addView(textInputEditText);
 
                 ((TextInputLayout) componentViewResult.componentView).setHintEnabled(false);
-
                 break;
 
             case PAGE_VIDEO_STARRATING_KEY:
@@ -2492,7 +2482,6 @@ public class ViewCreator {
                         jsonValueKeyMap,
                         appCMSPresenter,
                         settings);
-
                 break;
 
             case PAGE_SETTINGS_KEY:
@@ -2523,6 +2512,7 @@ public class ViewCreator {
                 break;
 
             default:
+                break;
         }
 
         if (pageView != null) {
@@ -2557,7 +2547,7 @@ public class ViewCreator {
                         break;
 
                     default:
-                        //
+                        break;
                 }
             }
 
@@ -2622,6 +2612,7 @@ public class ViewCreator {
                 default:
                     face = Typeface.createFromAsset(context.getAssets(),
                             context.getString(R.string.opensans_regular_ttf));
+                    break;
             }
             textView.setTypeface(face);
         }

@@ -678,9 +678,8 @@ public class AppCMSPresenter {
             String url = currentActivity.getString(R.string.app_cms_update_watch_history_api_url,
                     appCMSMain.getApiBaseUrl());
 
-            appCMSUpdateWatchHistoryCall.call(url, getAuthToken(currentActivity), updateHistoryRequest,
-                    s -> {
-                        // Call update history
+            appCMSUpdateWatchHistoryCall.call(url, getAuthToken(currentActivity),
+                    updateHistoryRequest, s -> {
                         if (currentActivity != null) {
                             sendUpdateHistoryAction();
                         }
@@ -1289,6 +1288,7 @@ public class AppCMSPresenter {
                                 toContentDatum.getGist().getDescription().equals(fromContentDatum.getGist().getDescription())) {
                             toContentDatum.getGist().setWatchedTime(fromContentDatum.getGist().getWatchedTime());
                             toContentDatum.getGist().setWatchedPercentage(fromContentDatum.getGist().getWatchedPercentage());
+                            toContentDatum.getGist().setUpdateDate(fromContentDatum.getGist().getUpdateDate());
                         }
                     }
                 }
