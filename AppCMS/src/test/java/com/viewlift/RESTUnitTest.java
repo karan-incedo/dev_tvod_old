@@ -74,7 +74,7 @@ public class RESTUnitTest {
     @Test
     public void test_appCMSMainCall() throws Exception {
         AppCMSMainUICall appCMSMainUICall = appCMSUIComponent.appCMSMainCall();
-        AppCMSMain main = appCMSMainUICall.call(context, APP_CMS_APP_NAME);
+        AppCMSMain main = appCMSMainUICall.call(context, APP_CMS_APP_NAME, 0);
         assertNotNull(main);
         assertTrue(!TextUtils.isEmpty(main.getAndroid()));
     }
