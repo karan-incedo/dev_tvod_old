@@ -814,8 +814,10 @@ public class AppCMSPresenter {
                 boolean isTrailer = (actionType == AppCMSActionType.WATCH_TRAILER ||
                         (pagePath != null &&
                                 pagePath.contains(currentActivity.getString(R.string.app_cms_action_qualifier_watchvideo_key))));
-                if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
-                        actionType == AppCMSActionType.WATCH_TRAILER) {
+                if ((actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
+                        actionType == AppCMSActionType.WATCH_TRAILER) &&
+                        !isVideoPlayerStarted) {
+                    isVideoPlayerStarted = true;
                     boolean entitlementActive = true;
                     boolean svodServiceType =
                             appCMSMain.getServiceType()
@@ -840,8 +842,7 @@ public class AppCMSPresenter {
                         sendFirebaseLoginSubscribeSuccess();
 
                         String adsUrl;
-                        if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE && !isVideoPlayerStarted) {
-                            isVideoPlayerStarted = true;
+                        if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE) {
                             if (pagePath != null && pagePath.contains(
                                     currentActivity.getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
                                 requestAds = false;
