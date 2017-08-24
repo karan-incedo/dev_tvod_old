@@ -119,7 +119,15 @@ public class ViewCreator {
                                 AppCMSPresenter appCMSPresenter,
                                 List<String> modulesToIgnore) {
         for (ModuleList module : appCMSPageUI.getModuleList()) {
-            if (!modulesToIgnore.contains(module.getType()) && pageView != null) {
+            boolean createModule = !modulesToIgnore.contains(module.getType()) && pageView != null;
+
+            if (createModule && appCMSPresenter.isViewPlanPage(module.getId()) &&
+                    (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
+                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
+                createModule = false;
+            }
+
+            if (createModule) {
                 ModuleView moduleView = pageView.getModuleViewWithModuleId(module.getId());
                 boolean shouldHideModule = false;
                 if (moduleView != null) {
@@ -574,8 +582,6 @@ public class ViewCreator {
                                             } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_VALUE_KEY) {
                                                 if (!TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName(context))) {
                                                     ((TextView) settingsView).setText(appCMSPresenter.getActiveSubscriptionPlanName(context));
-                                                } else if (!TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionDescription(context))) {
-                                                    ((TextView) settingsView).setText(appCMSPresenter.getExistingGooglePlaySubscriptionDescription(context));
                                                 } else {
                                                     ((TextView) settingsView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
                                                 }
@@ -828,7 +834,20 @@ public class ViewCreator {
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList module : modulesList) {
-            if (!modulesToIgnore.contains(module.getType())) {
+            boolean createModule = !modulesToIgnore.contains(module.getType());
+
+            if (createModule && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
+                    (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
+                    jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
+                createModule = false;
+            }
+
+            if (createModule) {
+                if (appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
+                    jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY &&
+                            jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY) {
+
+                }
                 Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
                 View childView = createModuleView(context, module, moduleAPI, pageView,
                         jsonValueKeyMap,
@@ -2042,9 +2061,7 @@ public class ViewCreator {
                         case PAGE_SETTINGS_PLAN_VALUE_KEY:
                             if (!TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName(context))) {
                                 ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getActiveSubscriptionPlanName(context));
-                            } else if (!TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionDescription(context))) {
-                                ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getExistingGooglePlaySubscriptionDescription(context));
-                            } else {
+                            } else if (!appCMSPresenter.isUserSubscribed(context)) {
                                 ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
                             }
                             break;
