@@ -121,6 +121,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 } else {
                     if (binder.getContentData().getContentDetails() != null
                             && binder.getContentData().getContentDetails().getTrailers() != null
+                            && binder.getContentData().getContentDetails().getTrailers().size() > 0
                             && binder.getContentData().getContentDetails().getTrailers().get(0) != null
                             && binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
                         title = binder.getContentData().getContentDetails().getTrailers().get(0).getTitle();
