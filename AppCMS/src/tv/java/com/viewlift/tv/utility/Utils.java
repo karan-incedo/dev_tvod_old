@@ -90,8 +90,7 @@ public class Utils {
             FireTV fireTV = layout.getTv();
             float height = getViewHeight(fireTV);
             if (height != -1.0f) {
-                /*return height;*/
-                return getViewYAxisAsPerScreen(context,(int)height);
+                return height;
             }
         }
         return defaultHeight;

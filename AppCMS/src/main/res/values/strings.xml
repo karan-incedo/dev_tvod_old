@@ -25,7 +25,7 @@
     <string name="text_separator">&#160;|&#160;</string>
     <string name="color_hash_prefix">#</string>
     <string name="string_with_ellipse">%1$s&#8230;</string>
-    <string name="string_with_ellipse_and_more">%1$s&#8230; MORE</string>
+    <string name="string_with_ellipse_and_more">%1$s&#8230;MORE</string>
     <string name="text_with_color"><![CDATA[<font color=\'#%1$s\'>%2$s</font>]]></string>
     <string name="video_player_hls_url_key">video_player_hls_url</string>
     <string name="video_layer_film_id_key">film_id</string>
@@ -73,6 +73,7 @@
     <string name="video_player_permalink_key">video_player_permalink</string>
     <string name="video_player_font_color_key">video_player_font_color</string>
     <string name="video_player_closed_caption_key">video_player_closed_caption</string>
+    <string name="video_player_is_trailer_key">isTrailer</string>
     <string name="video_primary_category_key">video_primary_category</string>
     <string name="opensans_bold_ttf">fonts/OpenSans-Bold.ttf</string>
     <string name="opensans_semibold_ttf">fonts/OpenSans-Semibold.ttf</string>
@@ -131,6 +132,15 @@
     <string name="watched_time_key">watched_time</string>
     <string name="played_movie_image_url">played_movie_image</string>
 
+    <!--User Management - Change Password-->
+    <string name="app_cms_action_change_password_key">changePassword</string>
+    <string name="app_cms_change_password_page_tag">change_password</string>
+    <string name="app_cms_change_password_page_title">Change Password</string>
+    <string name="app_cms_old_password_input_text_hint">Old Password</string>
+    <string name="app_cms_new_password_input_text_hint">New Password</string>
+    <string name="app_cms_confirm_password_input_text_hint">Confirm Password</string>
+    <string name="app_cms_confirm_password_button_text">Change Password</string>
+
     <!-- AppCMS Video Detail API -->
     <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
 
@@ -157,11 +167,11 @@
     <string name="more_page_action">MorePage</string>
 
     <!-- AppCMS Facebook Login values -->
-    <string name="facebook_app_id">227991737252697</string>
-    <string name="fb_login_protocol_scheme">fb227991737252697</string>
+    <string name="facebook_app_id">1324523080924996</string>
+    <string name="fb_login_protocol_scheme">fb1324523080924996</string>
 
     <!-- AppCMS Apptentive API -->
-    <string name="app_cms_apptentive_api_key">b662ac9b5b55b2d40c803ba80cc2e3e5a239c4270b872a9b04d6eb7b8157ccc4</string>
+    <string name="app_cms_apptentive_api_key">dfde9505539f2dc1d24700c09fb096b5280ed4cbed0828084540ada79a2b00f7</string>
     <string name="app_cms_button_color_key">app_cms_button_color</string>
 
     <!-- Google Authentication API -->
@@ -227,12 +237,17 @@
     <string name="app_cms_cancel_subscription_title">Cancel Subscription</string>
     <string name="app_cms_confirm_alert_dialog_button_text">OK</string>
     <string name="app_cms_cancel_alert_dialog_button_text">CANCEL</string>
-    <string name="app_cms_cancel_subscription_confirmation_message">You have cancelled your subscription.</string>s
+    <string name="app_cms_cancel_subscription_confirmation_message">You have cancelled your subscription.</string>
+    s
     <string name="app_cms_cancel_subscription_not_subscribed_message">You are currently not subscribed to any plans.</string>
     <string name="app_cms_cancel_subscription_subscription_not_valid_message">Please check that the device is registered with a valid Gmail account.</string>
     <string name="app_cms_subscribtion_title">Subscription</string>
     <string name="app_cms_download_quality_title">SET YOUR DOWNLOAD QUALITY</string>
-    <string name="app_cms_downloas_setting_listner_key">app_cms_downloas_setting_listner_key</string>
+    <string name="app_cms_download_setting_listener_key">app_cms_download_setting_listener_key</string>
+
+    <string name="app_cms_delete_history_alert_title">Are you Sure?</string>
+    <string name="app_cms_delete_one_history_item_message">In order to add this film back in your history, You will need to rewatch it.</string>
+    <string name="app_cms_delete_all_history_items_message">In order to add these films back in your history, You will need to rewatch them.</string>
 
     <string name="app_cms_subscription_title">Subscription</string>
     <string name="app_cms_subscription_required_title">Subscription Required</string>
@@ -271,7 +286,7 @@
     <string name="download_file_prefix">file:///</string>
 
     <!-- cast receiver -->
-    <string name="chromecast_receiver_app_id">9B761D16</string>
+    <string name="chromecast_receiver_app_id">0974224E</string>
     <string name="app_cms_signup_invalid_email_and_password_message">Please enter a valid email and password.</string>
     <string name="app_cms_signup_invalid_email_message">Please enter a valid email.</string>
     <string name="app_cms_signup_invalid_password_message">Please enter a valid password.</string>
@@ -291,11 +306,30 @@
     <string name="app_cms_search_value_key">app_cms_search_value_</string>
     <string name="app_cms_no_search_result">NO RESULTS FOR \"%1$s\"</string>
     <plurals name="app_cms_search_result_header">
-        <item quantity="one" >RESULT FOR \"%1$s\"</item>
-        <item quantity="other" >RESULTS FOR \"%1$s\"</item>
+        <item quantity="one">RESULT FOR \"%1$s\"</item>
+        <item quantity="other">RESULTS FOR \"%1$s\"</item>
     </plurals>
     <string name="retryCallBinderKey">retryCallBinderKey</string>
     <string name="retryCallBundleKey">retryCallBundleKey</string>
     <string name="app_cms_default_download_quality">720p</string>
+    <string name="app_cms_download_queue_toast_message">%1$s has been queued for download.</string>
+    <string name="app_cms_download_already_queued_toast_message">%1$s has already been queued for download.</string>
+    <string name="app_cms_subscription_cancel_for_google_play_user_dialog">Please login as the Google Play user used to make this subscription to cancel.</string>
+    <string name="app_cms_subscription_google_play_cancel_title">Google Play User is Not Logged In</string>
+
+    <!-- CCAvenue Constant Strings -->
+    <string name="app_cms_access_code">access_code</string>
+    <string name="app_cms_merchant_id">merchant_id</string>
+    <string name="app_cms_order_id">order_id</string>
+    <string name="app_cms_amount">amount</string>
+    <string name="app_cms_currency">currency</string>
+    <string name="app_cms_enc_val">enc_val</string>
+    <string name="app_cms_redirect_url">redirect_url</string>
+    <string name="app_cms_cancel_url">cancel_url</string>
+    <string name="app_cms_rsa_key_url">rsa_key_url</string>
+    <string name="app_cms_plan_id">plan_id</string>
+    <string name="app_cms_rsa_trans_url">https://test.ccavenue.com/transaction/initTrans</string>
+    <string name="app_cms_ccavenue_payment_success">ccavenue_payment_success</string>
+    <!--<string name="app_cms_rsa_trans_url">https://secure.ccavenue.com/transaction/initTrans</string>-->
 
 </resources>

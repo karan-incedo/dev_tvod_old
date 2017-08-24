@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,7 +40,7 @@ public class AppCMSPageFragment extends Fragment {
     private AppCMSBinder appCMSBinder;
     private PageView pageView;
     private String videoPageName = "Video Page";
-
+    private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
     public interface OnPageCreation {
         void onSuccess(AppCMSBinder appCMSBinder);
 
@@ -139,10 +140,10 @@ public class AppCMSPageFragment extends Fragment {
         if (!appCMSVideoPageBinder.isUserLoggedIn()) {
             bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, appCMSVideoPageBinder.getScreenName());
         } else {
-            if (appCMSVideoPageBinder.getScreenName().matches(videoPageName))
-                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, appCMSVideoPageBinder.getScreenName() + "-" + appCMSVideoPageBinder.getPageName());
+            if (!TextUtils.isEmpty(appCMSVideoPageBinder.getScreenName()) && appCMSVideoPageBinder.getScreenName().matches(videoPageName))
+                bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, appCMSVideoPageBinder.getScreenName() + "-" + appCMSVideoPageBinder.getPageName());
             else
-                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, appCMSVideoPageBinder.getScreenName());
+                bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, appCMSVideoPageBinder.getScreenName());
         }
         //Logs an app event.
         appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);

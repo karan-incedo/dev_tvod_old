@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -91,11 +90,11 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             if (navigationPrimary.getAccessLevels() != null) {
                 if ((userLoggedIn && navigationPrimary.getAccessLevels().getLoggedIn()) ||
                         !userLoggedIn && navigationPrimary.getAccessLevels().getLoggedOut() ||
-                                !userSubscribed && !navigationPrimary.getAccessLevels().getSubscribed()) {
+                        !userSubscribed && !navigationPrimary.getAccessLevels().getSubscribed()) {
                     viewHolder.navItemLabel.setText(navigationPrimary.getTitle().toUpperCase());
                     viewHolder.navItemLabel.setTextColor(textColor);
 
-                    if (navigationPrimary.getItems().size() > 0) {
+                    if (!navigationPrimary.getItems().isEmpty()) {
                         // TODO: 7/27/17 Implement Expandable Listview.
                     }
 
@@ -157,11 +156,13 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                 titleKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
                             }
                             itemSelected = true;
+
                             switch (titleKey) {
                                 case ANDROID_DOWNLOAD_NAV_KEY:
                                     appCMSPresenter.navigateToDownloadPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
+
                                 case ANDROID_WATCHLIST_NAV_KEY:
                                     appCMSPresenter.navigateToWatchlistPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
@@ -185,6 +186,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                         Log.e(TAG, "Could not navigate to page with Title: "
                                                 + navigationUser.getTitle() + " Id: " + navigationUser.getPageId());
                                     }
+                                    break;
                             }
                         });
                     }
@@ -205,7 +207,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             }
 
             //footer
-            if (navigation.getNavigationFooter() != null && 0 <= (i - indexOffset) && (i - indexOffset) < navigation.getNavigationFooter().size()) {
+            if (navigation.getNavigationFooter() != null && 0 <= (i - indexOffset)
+                    && (i - indexOffset) < navigation.getNavigationFooter().size()) {
                 final NavigationFooter navigationFooter = navigation.getNavigationFooter().get(i - indexOffset);
                 if (navigationFooter.getAccessLevels() != null) {
                     if ((userLoggedIn && navigationFooter.getAccessLevels().getLoggedIn()) ||
@@ -240,10 +243,10 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 viewHolder.navItemLabel.setText(R.string.app_cms_sign_out_label);
                 viewHolder.navItemLabel.setTextColor(textColor);
                 viewHolder.itemView.setOnClickListener(v -> {
-                    if (appCMSPresenter.isDownloadUnfinished()){
+                    if (appCMSPresenter.isDownloadUnfinished()) {
 
                         appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD);
-                    }else {
+                    } else {
                         appCMSPresenter.cancelInternalEvents();
                         appCMSPresenter.logout();
                     }

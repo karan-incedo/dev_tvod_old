@@ -55,6 +55,9 @@ public class AppCMSSearchActivity extends AppCompatActivity {
     private AppCMSSearchItemAdapter appCMSSearchItemAdapter;
     private BroadcastReceiver handoffReceiver;
 
+    private final String FIREBASE_SEARCH_EVENT = "search";
+    private final String FIREBASE_SEARCH_TERM = "search_term";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -189,6 +192,11 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                 searchTerm = queryTerm;
                 if (!TextUtils.isEmpty(searchTerm)) {
                     appCMSSearchView.setQuery(queryTerm, false);
+                    //Send Search Term in Firebase Analytics Logs
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FIREBASE_SEARCH_TERM, queryTerm);
+                    if (appCMSPresenter.getmFireBaseAnalytics() != null)
+                        appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_SEARCH_EVENT, bundle);
                     final String url = getString(R.string.app_cms_search_api_url,
                             appCMSSearchUrlData.getBaseUrl(),
                             appCMSSearchUrlData.getSiteName(),
@@ -208,7 +216,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
 
     private void updateNoResultsDisplay(AppCMSPresenter appCMSPresenter,
                                         List<AppCMSSearchResult> data) {
-        if (data == null || data.size() == 0) {
+        if (data == null || data.isEmpty()) {
             noResultsTextview.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
                     .getBrand()
                     .getGeneral()

@@ -43,6 +43,9 @@
     <!-- AppCMS Refresh Identity API -->
     <string name="app_cms_refresh_identity_api_url">%1$s/identity/refresh/%2$s</string>
 
+    <!--AppCMS Change Password API-->
+    <string name="app_cms_change_password_api_url">%1$s/identity/password?site%2$s</string>
+
     <!-- AppCMS Forgot Password API -->
     <string name="app_cms_forgot_password_api_url">%1$s/identity/password/forgot?site=%2$s</string>
 
@@ -195,7 +198,7 @@
     <string name="app_cms_reset_password_page_tag">reset_password</string>
     <string name="app_cms_settings_page_tag">settings</string>
     <string name="app_cms_more_page_tag">more</string>
-
+    <string name="app_cms_device">device</string>
     <string name="app_cms_closing_page_name">closing_page</string>
 
     <!-- AppAppCMSPageUIPage names for Actions -->
@@ -246,7 +249,7 @@
 
     <!-- AppCMS Data values -->
     <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=%6$s</string>
-    <string name="app_cms_page_api_view_plans_url">%1$s%2$s?site=%3$s&amp;path=/viewplans&amp;includeContent=true</string>
+    <string name="app_cms_page_api_view_plans_url">%1$s%2$s?site=%3$s&amp;device=%4$s&amp;path=/viewplans&amp;includeContent=true</string>
     <string name="app_cms_page_id_query_parameter">pageId=</string>
     <string name="app_cms_page_path_query_parameter">path=</string>
     <string name="app_cms_api_key">XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F</string>
@@ -275,6 +278,8 @@
     <string name="app_cms_subscription_plan_create_key">create</string>
     <string name="app_cms_subscription_plan_update_key">update</string>
     <string name="app_cms_subscription_plan_cancel_key">cancel</string>
+    <string name="app_cms_user_id">userId</string>
+    <string name="app_cms_site_name">site</string>
 
     <!-- AppCMS Register Subscription API -->
     <string name="app_cms_register_subscription_api_url">%1$s/subscription/subscribe?site=%2$s&amp;platform=%3$s</string>

@@ -50,6 +50,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     private String videoImageUrl;
     private String filmId;
     private String primaryCategory;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,16 +111,17 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     if (binder.getContentData() != null
                             && binder.getContentData().getContentDetails() != null
                             && binder.getContentData().getContentDetails().getClosedCaptions() != null
-                            && binder.getContentData().getContentDetails().getClosedCaptions().size() > 0
+                            && !binder.getContentData().getContentDetails().getClosedCaptions().isEmpty()
                             && binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl() != null
                             && !binder.getContentData().getContentDetails().getClosedCaptions()
                             .get(0).getUrl().equalsIgnoreCase(
-                                    getString(R.string.download_file_prefix))){
+                                    getString(R.string.download_file_prefix))) {
                         closedCaptionUrl = binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl();
                     }
                 } else {
                     if (binder.getContentData().getContentDetails() != null
                             && binder.getContentData().getContentDetails().getTrailers() != null
+                            && binder.getContentData().getContentDetails().getTrailers().size() > 0
                             && binder.getContentData().getContentDetails().getTrailers().get(0) != null
                             && binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
                         title = binder.getContentData().getContentDetails().getTrailers().get(0).getTitle();
@@ -140,8 +142,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 String bgColor = binder.getBgColor();
                 int playIndex = binder.getCurrentPlayingVideoIndex();
                 long watchedTime = intent.getLongExtra(getString(R.string.watched_time_key), 0L);
-                if(gist.getPrimaryCategory()!=null && gist.getPrimaryCategory().getTitle()!=null)
-                 primaryCategory = gist.getPrimaryCategory().getTitle();
+                if (gist.getPrimaryCategory() != null && gist.getPrimaryCategory().getTitle() != null)
+                    primaryCategory = gist.getPrimaryCategory().getTitle();
                 boolean playAds = binder.isPlayAds();
                 relateVideoIds = binder.getRelateVideoIds();
                 currentlyPlayingIndex = binder.getCurrentPlayingVideoIndex();
@@ -227,23 +229,26 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
     @Override
     public void onMovieFinished() {
-        // TODO: 7/12/2017 Add a check for autoplay from settings
-        if (!binder.isOffline()) {
-            if (!binder.isTrailer()
-                    && relateVideoIds != null
-                    && currentlyPlayingIndex != relateVideoIds.size() - 1) {
-                binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
-                appCMSPresenter.openAutoPlayScreen(binder);
+        if (appCMSPresenter.getAutoplayEnabledUserPref(getApplication())) {
+            if (!binder.isOffline()) {
+                if (!binder.isTrailer()
+                        && relateVideoIds != null
+                        && currentlyPlayingIndex != relateVideoIds.size() - 1) {
+                    binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
+                    appCMSPresenter.openAutoPlayScreen(binder);
+                } else {
+                    closePlayer();
+                }
             } else {
-                closePlayer();
+                if (binder.getRelateVideoIds() != null
+                        && currentlyPlayingIndex != relateVideoIds.size() - 1) {
+                    appCMSPresenter.openAutoPlayScreen(binder);
+                } else {
+                    closePlayer();
+                }
             }
         } else {
-            if (binder.getRelateVideoIds() != null
-                    && currentlyPlayingIndex != relateVideoIds.size() - 1) {
-                appCMSPresenter.openAutoPlayScreen(binder);
-            } else {
-                closePlayer();
-            }
+            closePlayer();
         }
     }
 

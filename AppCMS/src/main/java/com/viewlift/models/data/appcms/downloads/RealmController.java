@@ -11,6 +11,7 @@ import com.viewlift.models.data.appcms.subscriptions.UserSubscriptionPlan;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 /**
@@ -135,6 +136,23 @@ public class RealmController {
                 .endGroup()
                 .findFirst();
 
+    }
+
+    public void addCurrentDownloadTitle(CurrentDownloadingVideo currentDownloadingVideo) {
+        realm.beginTransaction();
+        realm.insertOrUpdate(currentDownloadingVideo);
+        realm.commitTransaction();
+    }
+
+    public CurrentDownloadingVideo getCurrentDownloadTitle() {
+        return realm.where(CurrentDownloadingVideo.class)
+                .findFirst();
+    }
+
+    public void removeCurrentDownloadTitle() {
+        realm.beginTransaction();
+        realm.delete(CurrentDownloadingVideo.class);
+        realm.commitTransaction();
     }
 
     public void addDownload(DownloadVideoRealm downloadVideoRealm) {

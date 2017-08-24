@@ -116,7 +116,7 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
 
                                 Object[] rowResult = {i,
                                         searchResultList.get(i).getTitle(),
-                                        searchResultList.get(i).getRuntime() / 60,
+                                        searchResultList.get(i).getRuntime()/ 60,
                                         searchHintResult};
 
                                 cursor.addRow(rowResult);

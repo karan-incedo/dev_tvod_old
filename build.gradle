@@ -49,6 +49,8 @@ allprojects {
         stagVersion = "2.3.1"
         facebookSdkVersion = "[4,5)"
         urbanAirshipVersion = "8.3.2"
+        appsFlyerVersion = "4.7.4@aar"
+        appsFlyerVersion = "4.7.4@aar"
         glideTransformationVersion = "2.0.2"
         threetenBpVersion = "1.0.5"
     }

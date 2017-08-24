@@ -38,6 +38,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 25
         renderscriptSupportModeEnabled true
+        useLibrary 'org.apache.http.legacy'
     }
     flavorDimensions "green"
     productFlavors {
@@ -189,8 +190,9 @@ dependencies {
     compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
 
-    compile 'com.appsflyer:af-android-sdk:4.6.7@aar'
+    compile "com.appsflyer:af-android-sdk:$rootProject.ext.appsFlyerVersion"
     compile "com.google.android.gms:play-services-tagmanager:$rootProject.ext.googlePlayServicesVersion"
+
     compile project(path: ':firetvcustomkeyboard')
 
     compile "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"

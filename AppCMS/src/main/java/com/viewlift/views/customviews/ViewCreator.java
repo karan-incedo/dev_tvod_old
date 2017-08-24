@@ -52,7 +52,6 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.models.data.appcms.ui.page.Settings;
-import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
@@ -120,7 +119,7 @@ public class ViewCreator {
                                 AppCMSPresenter appCMSPresenter,
                                 List<String> modulesToIgnore) {
         for (ModuleList module : appCMSPageUI.getModuleList()) {
-            if (!modulesToIgnore.contains(module.getView()) && pageView != null) {
+            if (!modulesToIgnore.contains(module.getType()) && pageView != null) {
                 ModuleView moduleView = pageView.getModuleViewWithModuleId(module.getId());
                 boolean shouldHideModule = false;
                 if (moduleView != null) {
@@ -593,7 +592,8 @@ public class ViewCreator {
                                                     } else {
                                                         ((TextView) settingsView).setText(context.getString(R.string.subscription_unknown_payment_processor_friendly));
                                                     }
-                                                } else if (!TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionId(context))) {
+                                                } else if (appCMSPresenter.isUserSubscribed(context) &&
+                                                        !TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionId(context))) {
                                                     ((TextView) settingsView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
                                                 } else {
                                                     ((TextView) settingsView).setText("");
@@ -601,8 +601,7 @@ public class ViewCreator {
                                             } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY) {
                                                 ((TextView) settingsView).setText(appCMSPresenter.getUserDownloadQualityPref(context));
                                             } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
-                                                if (paymentProcessor == null &&
-                                                        TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionId(context))) {
+                                                if (appCMSPresenter.isUserSubscribed(context)) {
                                                     ((TextView) settingsView).setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
                                                     settingsView.setVisibility(View.VISIBLE);
                                                 } else if (appCMSPresenter.isExistingGooglePlaySubscriptionSuspended(context) ||
@@ -617,6 +616,7 @@ public class ViewCreator {
                                                     settingsView.setVisibility(View.VISIBLE);
                                                 }
                                             }
+                                            settingsView.requestLayout();
                                         }
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_TOGGLE_BUTTON_KEY) {
@@ -824,10 +824,11 @@ public class ViewCreator {
                                   AppCMSPresenter appCMSPresenter,
                                   List<String> modulesToIgnore) {
         appCMSPresenter.clearOnInternalEvents();
+        pageView.clearExistingViewLists();
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList module : modulesList) {
-            if (!modulesToIgnore.contains(module.getView())) {
+            if (!modulesToIgnore.contains(module.getType())) {
                 Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
                 View childView = createModuleView(context, module, moduleAPI, pageView,
                         jsonValueKeyMap,
@@ -1754,8 +1755,7 @@ public class ViewCreator {
                         break;
 
                     default:
-                        if (paymentProcessor == null &&
-                                TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionId(context))) {
+                        if (!appCMSPresenter.isUserSubscribed(context)) {
                             if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
                             } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
@@ -1763,7 +1763,7 @@ public class ViewCreator {
                             }
                         } else {
                             if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
-                                componentViewResult.componentView.setVisibility(View.GONE);
+                                componentViewResult.componentView.setVisibility(View.VISIBLE);
                             }
                         }
 
@@ -2606,6 +2606,12 @@ public class ViewCreator {
         }
     }
 
+    private enum AdjustOtherState {
+        IGNORE,
+        INITIATED,
+        ADJUST_OTHERS
+    }
+
     public static class ComponentViewResult {
         View componentView;
         OnInternalEvent onInternalEvent;
@@ -2614,12 +2620,6 @@ public class ViewCreator {
         boolean shouldHideModule;
         boolean addToPageView;
         boolean shouldHideComponent;
-    }
-
-    private enum AdjustOtherState {
-        IGNORE,
-        INITIATED,
-        ADJUST_OTHERS
     }
 
     public static class UpdateImageIconAction implements Action1<UserVideoStatusResponse> {
@@ -2726,7 +2726,7 @@ public class ViewCreator {
 
                 switch (userVideoDownloadStatus.getDownloadStatus()) {
                     case STATUS_FAILED:
-                        //
+                        appCMSPresenter.startNextDownload();
                         break;
 
                     case STATUS_PAUSED:
@@ -2749,6 +2749,7 @@ public class ViewCreator {
                         appCMSPresenter.cancelDownloadIconTimerTask(); //Fix of SVFA-1621
                         imageButton.setImageResource(R.drawable.ic_downloaded);
                         imageButton.setOnClickListener(null);
+                        appCMSPresenter.startNextDownload();
                         break;
 
                     default:

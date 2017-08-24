@@ -71,7 +71,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
                 if (0 < lineEnd) {
                     SpannableString spannableTextWithMore =
                             new SpannableString(textView.getContext().getString(R.string.string_with_ellipse_and_more,
-                                    textView.getText().subSequence(0, lineEnd).toString().trim()));
+                                    textView.getText().subSequence(0, lineEnd)));
                     ClickableSpan clickableSpan = new ClickableSpan() {
                         @Override
                         public void onClick(View widget) {
