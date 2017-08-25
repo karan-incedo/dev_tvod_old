@@ -3842,7 +3842,7 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public String getUserDownloadQualityPref(@NonNull Context context) {
+    public String getUserDownloadQualityPref(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME, 0);
             return sharedPrefs.getString(getLoggedInUser(currentActivity), "720p");
