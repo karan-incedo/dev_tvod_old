@@ -371,8 +371,8 @@ public class BeaconRequest {
         offlineBeaconData.setBufferhealth(getBufferhealth());
         offlineBeaconData.setCid(getCid());
         offlineBeaconData.setConnectionspeed(getConnectionspeed());
-        offlineBeaconData.setDp1(getAid());
-        offlineBeaconData.setDp2(getDp2());
+        offlineBeaconData.setDp1(getDp1());
+        offlineBeaconData.setDp2("downloaded_view-offline");
         offlineBeaconData.setDp3(getDp3());
         offlineBeaconData.setDp4(getDp4());
         offlineBeaconData.setDp5(getDp5());

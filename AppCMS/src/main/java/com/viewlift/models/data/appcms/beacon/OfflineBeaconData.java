@@ -322,7 +322,7 @@ public class OfflineBeaconData extends RealmObject{
         beaconRequest.setBufferhealth(getBufferhealth());
         beaconRequest.setCid(getCid());
         beaconRequest.setConnectionspeed(getConnectionspeed());
-        beaconRequest.setDp1(getAid());
+        beaconRequest.setDp1(getDp1());
         beaconRequest.setDp2(getDp2());
         beaconRequest.setDp3(getDp3());
         beaconRequest.setDp4(getDp4());

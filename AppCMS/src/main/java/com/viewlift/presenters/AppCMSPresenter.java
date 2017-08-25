@@ -447,7 +447,6 @@ public class AppCMSPresenter {
     private Action1<UserVideoDownloadStatus> downloadResultActionAfterPermissionGranted;
     private boolean requestDownloadQualityScreen;
     private DownloadQueueThread downloadQueueThread;
-    boolean isRenewable;
     private boolean isVideoPlayerStarted;
 
     @Inject
@@ -3671,9 +3670,10 @@ public class AppCMSPresenter {
                     new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
             currentActivity.sendBroadcast(stopLoadingPageIntent);
             showDialog(DialogType.NETWORK,
-                    null,
-                    false,
-                    () -> sendCloseOthersAction(null, false));
+                    currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download),
+                    true,
+                    () -> navigateToDownloadPage(downloadPage.getPageId(),
+                            downloadPage.getPageName(), downloadPage.getPageUI(), false)); // fix of SVFA-1435 for build #1.0.35
         }
     }
 
@@ -5224,8 +5224,14 @@ public class AppCMSPresenter {
         if (event == BeaconEvent.AD_IMPRESSION || event == BeaconEvent.AD_REQUEST) {
             beaconRequest.setApod(apod);
         }
+
+        if (isVideoDownloaded(vid)){
+            beaconRequest.setDp2("downloaded_view-online");
+        }
         if (usingChromecast) {
-            beaconRequest.setDp2("Chromecast");
+            beaconRequest.setPlayer("Chromecast");
+        }else{
+            beaconRequest.setPlayer("Video Player");
         }
 
 
