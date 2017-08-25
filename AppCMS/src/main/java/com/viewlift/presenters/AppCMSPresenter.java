@@ -5244,22 +5244,22 @@ public class AppCMSPresenter {
     }
 
     public String getEnvironment() {
-        String envirenment = "unknown";
+        String environment = "unknown";
         if (appCMSMain.getApiBaseUrl().contains("prod")) {
-            envirenment = "production";
+            environment = "production";
         } else if (appCMSMain.getApiBaseUrl().contains("release")) {
-            envirenment = "release";
+            environment = "release";
         } else if (appCMSMain.getApiBaseUrl().contains("preprod")) {
-            envirenment = "preprod";
+            environment = "preprod";
         } else if (appCMSMain.getApiBaseUrl().contains("develop")) {
-            envirenment = "develop";
+            environment = "develop";
         } else if (appCMSMain.getApiBaseUrl().contains("staging")) {
-            envirenment = "staging";
+            environment = "staging";
         } else if (appCMSMain.getApiBaseUrl().contains("qa")) {
-            envirenment = "qa";
+            environment = "qa";
         }
 
-        return envirenment;
+        return environment;
 
     }
 
