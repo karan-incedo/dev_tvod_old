@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <fraction name="app_cms_content_rating_progress_bar_margin_bottom_percent">5.5%</fraction>
+    <fraction name="mainContainerWidthPercent">57%</fraction>
+    <fraction name="mainContainerHeightPercent">35%</fraction>
+
+</resources>

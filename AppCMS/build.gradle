@@ -44,8 +44,9 @@ android {
     productFlavors {
         mobile {
             dimension = "green"
-            minSdkVersion 23
-            targetSdkVersion 26
+            minSdkVersion 21
+            compileSdkVersion 23
+            targetSdkVersion 25
         }
         tv {
             minSdkVersion 23
@@ -197,6 +198,7 @@ dependencies {
     compile "com.google.android.gms:play-services-tagmanager:$rootProject.ext.googlePlayServicesVersion"
 
     compile project(path: ':firetvcustomkeyboard')
+    compile "com.android.support:percent:$rootProject.ext.androidsupportVersion"
 
     compile "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
 }
