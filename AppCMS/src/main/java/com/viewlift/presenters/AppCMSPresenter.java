@@ -4580,7 +4580,7 @@ public class AppCMSPresenter {
                 String oldVersion = main.getOldVersion();
                 Log.d(TAG, "Version: " + version);
                 Log.d(TAG, "OldVersion: " + oldVersion);
-                loadFromFile = false;
+                loadFromFile = appCMSMain.shouldLoadFromFile();
 
                 appCMSSearchUrlComponent = DaggerAppCMSSearchUrlComponent.builder()
                         .appCMSSearchUrlModule(new AppCMSSearchUrlModule(main.getApiBaseUrl(),
@@ -6421,6 +6421,7 @@ public class AppCMSPresenter {
                                 + metaPage.getPageAPI());
                     }
                     if (!pagesToProcess.isEmpty()) {
+
                         processMetaPagesQueue(activity,
                                 main,
                                 loadFromFile,
