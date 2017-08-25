@@ -164,7 +164,6 @@ public class CastHelper {
 
     public void setCallBackListener(Callback remoteMediaCallback) {
         callBackRemoteListener = remoteMediaCallback;
-
     }
 
     public void removeCallBackListener(Callback remoteMediaCallback) {
@@ -172,7 +171,13 @@ public class CastHelper {
     }
 
     public void setCastSessionManager() {
-        mCastContext.getSessionManager().addSessionManagerListener(mSessionManagerListener, CastSession.class);
+        try {
+            mCastContext.getSessionManager().addSessionManagerListener(mSessionManagerListener, CastSession.class);
+        } catch (NullPointerException npe) {
+            Log.e(TAG, getClass().getCanonicalName() + " " + npe.getMessage());
+        } catch (Exception e) {
+            Log.e(TAG, getClass().getCanonicalName() + " " + e.getMessage());
+        }
     }
 
     public void removeCastSessionManager() {

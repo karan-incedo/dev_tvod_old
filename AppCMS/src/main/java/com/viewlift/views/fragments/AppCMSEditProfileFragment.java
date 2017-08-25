@@ -72,17 +72,15 @@ public class AppCMSEditProfileFragment extends DialogFragment {
             AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
             builder.setCancelable(false);
             builder.setView(password)
-                    .setTitle("Enter your password to continue")
+                    .setTitle("Verify your password to Continue")
                     .setPositiveButton("Proceed", (dialog, position) -> {
-                        if (!TextUtils.isEmpty(password.getText().toString())) {
-                            appCMSPresenter.updateUserData(appCMSEditProfileNameInput.getText().toString(),
-                                    appCMSEditProfileEmailInput.getText().toString(),
-                                    password.getText().toString(),
-                                    userIdentity -> {
-                                        //
-                                    }
-                            );
-                        }
+                        appCMSPresenter.updateUserProfile(appCMSEditProfileNameInput.getText().toString(),
+                                appCMSEditProfileEmailInput.getText().toString(),
+                                password.getText().toString(),
+                                userIdentity -> {
+                                    //
+                                }
+                        );
                         appCMSPresenter.sendCloseOthersAction(null, true);
                     })
                     .setNegativeButton("Cancel", (dialog, position) ->

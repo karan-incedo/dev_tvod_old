@@ -41,6 +41,9 @@
     <!-- AppCMS Refresh Identity API -->
     <string name="app_cms_refresh_identity_api_url">%1$s/identity/refresh/%2$s</string>
 
+    <!--AppCMS Change Password API-->
+    <string name="app_cms_change_password_api_url">%1$s/identity/password?site%2$s</string>
+
     <!-- AppCMS Forgot Password API -->
     <string name="app_cms_forgot_password_api_url">%1$s/identity/password/forgot?site=%2$s</string>
 
@@ -113,6 +116,8 @@
     <string name="app_cms_page_login_component_key">AC Login Component</string>
     <string name="app_cms_page_signup_component_key">AC SignUp Component</string>
     <string name="app_cms_page_settings_component_key">AC Settings Account 01</string>
+    <string name="app_cms_page_carousel_module_key">AC Carousel 01</string>
+    <string name="app_cms_page_tray_module_key">AC Tray 01</string>
     <string name="app_cms_page_removeall_key">removeAll</string>
     <string name="app_cms_page_planmetadatatitle_key">planMetaDataTitle</string>
     <string name="app_cms_page_planmetadataimage_key">planMetaDataImage</string>
@@ -194,7 +199,7 @@
     <string name="app_cms_reset_password_page_tag">reset_password</string>
     <string name="app_cms_settings_page_tag">settings</string>
     <string name="app_cms_more_page_tag">more</string>
-
+    <string name="app_cms_device">device</string>
     <string name="app_cms_closing_page_name">closing_page</string>
 
     <!-- AppAppCMSPageUIPage names for Actions -->
@@ -274,6 +279,8 @@
     <string name="app_cms_subscription_plan_create_key">create</string>
     <string name="app_cms_subscription_plan_update_key">update</string>
     <string name="app_cms_subscription_plan_cancel_key">cancel</string>
+    <string name="app_cms_user_id">userId</string>
+    <string name="app_cms_site_name">site</string>
 
     <!-- AppCMS Register Subscription API -->
     <string name="app_cms_register_subscription_api_url">%1$s/subscription/subscribe?site=%2$s&amp;platform=%3$s</string>

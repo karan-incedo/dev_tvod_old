@@ -1,6 +1,7 @@
 package com.viewlift.models.network.rest;
 
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
+import com.viewlift.models.data.appcms.ui.authentication.UserIdentityPassword;
 
 import java.util.Map;
 
@@ -23,4 +24,8 @@ public interface AppCMSUserIdentityRest {
     @POST
     Call<UserIdentity> post(@Url String url, @HeaderMap Map<String, String> authHeaders,
                             @Body UserIdentity userIdentity);
+
+    @POST
+    Call<UserIdentityPassword> post(@Url String url, @HeaderMap Map<String, String> authHeaders,
+                                    @Body UserIdentityPassword userIdentityPassword);
 }

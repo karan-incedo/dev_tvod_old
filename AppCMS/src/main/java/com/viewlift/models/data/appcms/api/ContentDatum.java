@@ -14,6 +14,10 @@ public class ContentDatum {
     @Expose
     String id;
 
+    @SerializedName("renewable")
+    @Expose
+    boolean renewable;
+
     @SerializedName("name")
     @Expose
     String name;
@@ -224,6 +228,14 @@ public class ContentDatum {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public boolean getRenewable() {
+        return renewable;
+    }
+
+    public void setRenewable(boolean renewable) {
+        this.renewable = renewable;
     }
 
     public String getName() {

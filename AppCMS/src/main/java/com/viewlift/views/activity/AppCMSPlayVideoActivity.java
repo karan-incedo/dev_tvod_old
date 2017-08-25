@@ -115,13 +115,13 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             && !binder.getContentData().getContentDetails().getClosedCaptions().isEmpty()
                             && binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl() != null
                             && !binder.getContentData().getContentDetails().getClosedCaptions()
-                            .get(0).getUrl().equalsIgnoreCase(
-                                    getString(R.string.download_file_prefix))) {
+                            .get(0).getUrl().equalsIgnoreCase(getString(R.string.download_file_prefix))) {
                         closedCaptionUrl = binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl();
                     }
                 } else {
                     if (binder.getContentData().getContentDetails() != null
                             && binder.getContentData().getContentDetails().getTrailers() != null
+                            && !binder.getContentData().getContentDetails().getTrailers().isEmpty()
                             && binder.getContentData().getContentDetails().getTrailers().get(0) != null
                             && binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
                         title = binder.getContentData().getContentDetails().getTrailers().get(0).getTitle();

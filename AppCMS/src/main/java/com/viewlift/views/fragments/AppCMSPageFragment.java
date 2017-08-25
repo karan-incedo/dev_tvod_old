@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -139,7 +140,7 @@ public class AppCMSPageFragment extends Fragment {
         if (!appCMSVideoPageBinder.isUserLoggedIn()) {
             bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, appCMSVideoPageBinder.getScreenName());
         } else {
-            if (appCMSVideoPageBinder.getScreenName().matches(videoPageName))
+            if (!TextUtils.isEmpty(appCMSVideoPageBinder.getScreenName()) && appCMSVideoPageBinder.getScreenName().matches(videoPageName))
                 bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, appCMSVideoPageBinder.getScreenName() + "-" + appCMSVideoPageBinder.getPageName());
             else
                 bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, appCMSVideoPageBinder.getScreenName());
