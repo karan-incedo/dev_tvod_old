@@ -565,18 +565,17 @@ public class ViewCreator {
                                             } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_VALUE_KEY) {
                                                 ((TextView) settingsView).setText(appCMSPresenter.getLoggedInUserEmail(context));
                                             } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY) {
-                                                if (paymentProcessor == null &&
-                                                        TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionId(context))) {
+                                                if (appCMSPresenter.isUserSubscribed(context) &&
+                                                        !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName(context))) {
+                                                    settingsView.setVisibility(View.VISIBLE);
+                                                } else {
                                                     settingsView.setVisibility(View.GONE);
                                                     shouldHideComponent = true;
-                                                } else {
-                                                    settingsView.setVisibility(View.VISIBLE);
                                                 }
                                             } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_VALUE_KEY) {
-                                                if (!TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName(context))) {
+                                                if (appCMSPresenter.isUserSubscribed(context) &&
+                                                        !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName(context))) {
                                                     ((TextView) settingsView).setText(appCMSPresenter.getActiveSubscriptionPlanName(context));
-                                                } else if (!appCMSPresenter.isUserSubscribed(context)) {
-                                                    ((TextView) settingsView).setText(appCMSPresenter.getExistingGooglePlaySubscriptionDescription(context));
                                                 } else {
                                                     ((TextView) settingsView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
                                                 }
@@ -593,9 +592,6 @@ public class ViewCreator {
                                                     } else {
                                                         ((TextView) settingsView).setText(context.getString(R.string.subscription_unknown_payment_processor_friendly));
                                                     }
-                                                } else if (appCMSPresenter.isUserSubscribed(context) &&
-                                                        !TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionId(context))) {
-                                                    ((TextView) settingsView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
                                                 } else {
                                                     ((TextView) settingsView).setText("");
                                                 }
@@ -2059,7 +2055,8 @@ public class ViewCreator {
                             break;
 
                         case PAGE_SETTINGS_PLAN_VALUE_KEY:
-                            if (!TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName(context))) {
+                            if (appCMSPresenter.isUserSubscribed(context) &&
+                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName(context))) {
                                 ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getActiveSubscriptionPlanName(context));
                             } else if (!appCMSPresenter.isUserSubscribed(context)) {
                                 ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
@@ -2067,12 +2064,12 @@ public class ViewCreator {
                             break;
 
                         case PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY:
-                            if (paymentProcessor == null &&
-                                    TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionId(context))) {
+                            if (appCMSPresenter.isUserSubscribed(context) &&
+                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName(context))) {
+                                componentViewResult.componentView.setVisibility(View.VISIBLE);
+                            } else {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                                 componentViewResult.shouldHideComponent = true;
-                            } else {
-                                componentViewResult.componentView.setVisibility(View.VISIBLE);
                             }
 
                             if (!TextUtils.isEmpty(component.getText())) {
@@ -2091,11 +2088,7 @@ public class ViewCreator {
                                 } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor)) ||
                                         paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly))) {
                                     ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
-                                } else {
-                                    ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_unknown_payment_processor_friendly));
                                 }
-                            } else if (!TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionId(context))) {
-                                ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
                             } else {
                                 ((TextView) componentViewResult.componentView).setText("");
                             }
