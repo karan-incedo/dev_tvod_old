@@ -1031,6 +1031,8 @@ public class AppCMSPresenter {
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))) {
                                     showEntitlementDialog(DialogType.CANNOT_UPGRADE_SUBSCRIPTION);
+                                } else if (TextUtils.isEmpty(paymentProcessor)) {
+                                    showEntitlementDialog(DialogType.UNKNOWN_SUBSCRIPTION_FOR_UPGRADE);
                                 } else if (isExistingGooglePlaySubscriptionSuspended(currentActivity) &&
                                         !upgradesAvailableForUser(getLoggedInUser(currentActivity))) {
                                     showEntitlementDialog(DialogType.UPGRADE_UNAVAILABLE);
@@ -1044,6 +1046,8 @@ public class AppCMSPresenter {
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))) ||
                                         TextUtils.isEmpty(getExistingGooglePlaySubscriptionId(currentActivity))) {
                                     showEntitlementDialog(DialogType.CANNOT_CANCEL_SUBSCRIPTION);
+                                } else if (TextUtils.isEmpty(paymentProcessor)) {
+                                    showEntitlementDialog(DialogType.UNKNOWN_SUBSCRIPTION_FOR_CANCEL);
                                 } else {
                                     sendSubscriptionCancellation();
                                 }
@@ -4733,6 +4737,16 @@ public class AppCMSPresenter {
                 }
             }
 
+            if (dialogType == DialogType.UNKNOWN_SUBSCRIPTION_FOR_UPGRADE) {
+                title = currentActivity.getString(R.string.app_cms_unknown_subscription_for_upgrade_title);
+                message = currentActivity.getString(R.string.app_cms_unknown_subscription_for_upgrade_text);
+            }
+
+            if (dialogType == DialogType.UNKNOWN_SUBSCRIPTION_FOR_CANCEL) {
+                title = currentActivity.getString(R.string.app_cms_unknown_subscription_for_cancellation_title);
+                message = currentActivity.getString(R.string.app_cms_unknown_subscription_for_cancellation_text);
+            }
+
             if (dialogType == DialogType.LOGIN_REQUIRED) {
                 title = currentActivity.getString(R.string.app_cms_login_required_title);
                 message = currentActivity.getString(R.string.app_cms_login_required_message);
@@ -7371,7 +7385,9 @@ public class AppCMSPresenter {
         REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_FOR_DOWNLOAD,
         DOWNLOAD_NOT_AVAILABLE,
         DOWNLOAD_FAILED,
-        SD_CARD_NOT_AVAILABLE
+        SD_CARD_NOT_AVAILABLE,
+        UNKNOWN_SUBSCRIPTION_FOR_UPGRADE,
+        UNKNOWN_SUBSCRIPTION_FOR_CANCEL
     }
 
     public enum RETRY_TYPE {

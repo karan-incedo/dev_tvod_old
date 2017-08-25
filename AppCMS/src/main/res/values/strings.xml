@@ -333,6 +333,10 @@
     <string name="app_cms_plan_id">plan_id</string>
     <string name="app_cms_rsa_trans_url">https://test.ccavenue.com/transaction/initTrans</string>
     <string name="app_cms_ccavenue_payment_success">ccavenue_payment_success</string>
+    <string name="app_cms_unknown_subscription_for_upgrade_title">Cannot Upgrade the Subscription</string>
+    <string name="app_cms_unknown_subscription_for_upgrade_text">The origin of the current subscription can not be determined and an upgrade can not be performed at the moment.  Please try again later or contact support for help.</string>
+    <string name="app_cms_unknown_subscription_for_cancellation_title">Cannot Cancel the Subscription</string>
+    <string name="app_cms_unknown_subscription_for_cancellation_text">The origin of the current subscription can not be determined and a cancellation can be performed at the moment.  Please try again later or contact support for help.</string>
     <!--<string name="app_cms_rsa_trans_url">https://secure.ccavenue.com/transaction/initTrans</string>-->
 
 </resources>
