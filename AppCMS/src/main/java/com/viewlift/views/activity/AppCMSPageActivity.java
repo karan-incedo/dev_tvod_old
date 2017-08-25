@@ -42,7 +42,6 @@ import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
@@ -71,7 +70,6 @@ import com.viewlift.views.fragments.AppCMSResetPasswordFragment;
 import com.viewlift.views.fragments.AppCMSSearchFragment;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.util.EmptyStackException;
@@ -476,7 +474,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         accessTokenTracker.stopTracking();
 
-        if (inAppBillingService != null) {
+        if (inAppBillingServiceConn != null) {
             unbindService(inAppBillingServiceConn);
             inAppBillingServiceConn = null;
             inAppBillingService = null;
