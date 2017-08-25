@@ -973,6 +973,7 @@ public class AppCMSPresenter {
                         entitlementPendingVideoData.extraData = extraData;
                         entitlementPendingVideoData.relateVideoIds = relateVideoIds;
                         navigateToHomeToRefresh = true;
+                        isVideoPlayerStarted = false;
                     }
                 } else if (actionType == AppCMSActionType.SHARE) {
                     if (extraData.length > 0) {
@@ -1652,57 +1653,49 @@ public class AppCMSPresenter {
     }
 
     public void initiateItemPurchase() {
+        if (currentActivity != null &&
+                inAppBillingService != null) {
+            try {
+                Bundle activeSubs = inAppBillingService.getPurchases(3,
+                        currentActivity.getPackageName(),
+                        "subs",
+                        null);
+                ArrayList<String> subscribedSkus = activeSubs.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
 
-        if (countryCode.equalsIgnoreCase("IN")) {
-
-            initiateCCAvenuePurchase();
-
-        } else {
-
-            if (currentActivity != null &&
-                    inAppBillingService != null) {
-                try {
-                    Bundle activeSubs = inAppBillingService.getPurchases(3,
+                Bundle buyIntentBundle;
+                if (subscribedSkus != null && !subscribedSkus.isEmpty()) {
+                    buyIntentBundle = inAppBillingService.getBuyIntentToReplaceSkus(5,
                             currentActivity.getPackageName(),
+                            subscribedSkus,
+                            skuToPurchase,
                             "subs",
                             null);
-                    ArrayList<String> subscribedSkus = activeSubs.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
-
-                    Bundle buyIntentBundle;
-                    if (subscribedSkus != null && !subscribedSkus.isEmpty()) {
-                        buyIntentBundle = inAppBillingService.getBuyIntentToReplaceSkus(5,
-                                currentActivity.getPackageName(),
-                                subscribedSkus,
-                                skuToPurchase,
-                                "subs",
-                                null);
-                    } else {
-                        buyIntentBundle = inAppBillingService.getBuyIntent(3,
-                                currentActivity.getPackageName(),
-                                skuToPurchase,
-                                "subs",
-                                null);
-                    }
-
-                    PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
-                    if (pendingIntent != null) {
-                        currentActivity.startIntentSenderForResult(pendingIntent.getIntentSender(),
-                                RC_PURCHASE_PLAY_STORE_ITEM,
-                                new Intent(),
-                                0,
-                                0,
-                                0);
-                    } else {
-                        showToast(currentActivity.getString(R.string.app_cms_cancel_subscription_subscription_not_valid_message),
-                                Toast.LENGTH_LONG);
-                    }
-                } catch (RemoteException | IntentSender.SendIntentException e) {
-                    Log.e(TAG, "Failed to purchase item with sku: "
-                            + getActiveSubscriptionSku(currentActivity));
+                } else {
+                    buyIntentBundle = inAppBillingService.getBuyIntent(3,
+                            currentActivity.getPackageName(),
+                            skuToPurchase,
+                            "subs",
+                            null);
                 }
-            } else {
-                Log.e(TAG, "InAppBillingService: " + inAppBillingService);
+
+                PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+                if (pendingIntent != null) {
+                    currentActivity.startIntentSenderForResult(pendingIntent.getIntentSender(),
+                            RC_PURCHASE_PLAY_STORE_ITEM,
+                            new Intent(),
+                            0,
+                            0,
+                            0);
+                } else {
+                    showToast(currentActivity.getString(R.string.app_cms_cancel_subscription_subscription_not_valid_message),
+                            Toast.LENGTH_LONG);
+                }
+            } catch (RemoteException | IntentSender.SendIntentException e) {
+                Log.e(TAG, "Failed to purchase item with sku: "
+                        + getActiveSubscriptionSku(currentActivity));
             }
+        } else {
+            Log.e(TAG, "InAppBillingService: " + inAppBillingService);
         }
     }
 
@@ -4802,6 +4795,12 @@ public class AppCMSPresenter {
                         (dialog, which) -> {
                             dialog.dismiss();
                             navigateToLoginPage();
+                        });
+            } else if (dialogType == DialogType.UNKNOWN_SUBSCRIPTION_FOR_UPGRADE ||
+                    dialogType == DialogType.UNKNOWN_SUBSCRIPTION_FOR_CANCEL) {
+                builder.setPositiveButton("OK",
+                        (dialog, which) -> {
+                            dialog.dismiss();
                         });
             } else {
                 builder.setPositiveButton(positiveButtonText,
