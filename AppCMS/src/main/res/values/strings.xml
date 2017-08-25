@@ -141,6 +141,9 @@
     <string name="app_cms_confirm_password_input_text_hint">Confirm Password</string>
     <string name="app_cms_confirm_password_button_text">Change Password</string>
 
+    <!--User Management - Closed Captions-->
+    <string name="app_cms_closed_captions_toggle_button_key">closedCaptionsToggle</string>
+
     <!-- AppCMS Video Detail API -->
     <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
 
@@ -238,7 +241,7 @@
     <string name="app_cms_confirm_alert_dialog_button_text">OK</string>
     <string name="app_cms_cancel_alert_dialog_button_text">CANCEL</string>
     <string name="app_cms_cancel_subscription_confirmation_message">You have cancelled your subscription.</string>
-    s
+
     <string name="app_cms_cancel_subscription_not_subscribed_message">You are currently not subscribed to any plans.</string>
     <string name="app_cms_cancel_subscription_subscription_not_valid_message">Please check that the device is registered with a valid Gmail account.</string>
     <string name="app_cms_subscribtion_title">Subscription</string>

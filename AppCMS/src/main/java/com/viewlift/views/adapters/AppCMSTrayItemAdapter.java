@@ -98,11 +98,20 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         if (adapterData != null && !adapterData.isEmpty()) {
             sendEvent(null);
         }
+
+        sortData();
     }
 
     private void sortData() {
         if (adapterData != null) {
-            Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getAddedDate(), o2.getAddedDate()));
+            if (isWatchlist || isDownload) {
+                Collections.sort(adapterData, (o1, o2)
+                        -> Long.compare(o1.getAddedDate(), o2.getAddedDate()));
+            } else if (isHistory) {
+                Collections.sort(adapterData, (o1, o2)
+                        -> Long.compare(o1.getUpdateDate(), o2.getUpdateDate()));
+                Collections.reverse(adapterData);
+            }
         }
     }
 
@@ -564,19 +573,40 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     @Override
     public void resetData(RecyclerView listView) {
-        listView.setAdapter(null);
-        List<ContentDatum> adapterDataTmp = null;
-        if (adapterData != null) {
-            adapterDataTmp = new ArrayList<>(adapterData);
+        if (isHistory) {
+            appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
+                listView.setAdapter(null);
+                List<ContentDatum> adapterDataTmp = null;
+                adapterData = appCMSHistoryResult.convertToAppCMSPageAPI(null).getModules().get(0).getContentData();
+                if (adapterData != null) {
+                    adapterDataTmp = new ArrayList<>(adapterData);
+                } else {
+                    adapterDataTmp = new ArrayList<>();
+                }
+                adapterData = null;
+                notifyDataSetChanged();
+                adapterData = adapterDataTmp;
+                sortData();
+                notifyDataSetChanged();
+                listView.setAdapter(this);
+                listView.invalidate();
+            });
         } else {
-            adapterDataTmp = new ArrayList<>();
+            listView.setAdapter(null);
+            List<ContentDatum> adapterDataTmp;
+            if (adapterData != null) {
+                adapterDataTmp = new ArrayList<>(adapterData);
+            } else {
+                adapterDataTmp = new ArrayList<>();
+            }
+            adapterData = null;
+            notifyDataSetChanged();
+            adapterData = adapterDataTmp;
+            sortData();
+            notifyDataSetChanged();
+            listView.setAdapter(this);
+            listView.invalidate();
         }
-        adapterData = null;
-        notifyDataSetChanged();
-        adapterData = adapterDataTmp;
-        notifyDataSetChanged();
-        listView.setAdapter(this);
-        listView.invalidate();
     }
 
     @Override
@@ -698,7 +728,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             if (fontWeight == null) {
                 fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }
-            Typeface face = null;
+            Typeface face;
             switch (fontWeight) {
                 case PAGE_TEXT_BOLD_KEY:
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_bold_ttf));

@@ -94,7 +94,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         appCMSPresenter.availableUpgradesForUser(appCMSPresenter.getLoggedInUser(context));
 
                 cullDataByAvailableUpgrades(availableSubscriptionPlans,
-                        appCMSPresenter.parseExistingGooglePlaySubscriptionPrice(context));
+                        Double.parseDouble(appCMSPresenter.getActiveSubscriptionPrice(context)));
             }
         }
 
@@ -234,7 +234,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 List<SubscriptionPlan> availableSubscriptionPlans =
                         appCMSPresenter.availableUpgradesForUser(appCMSPresenter.getLoggedInUser(listView.getContext()));
                 cullDataByAvailableUpgrades(availableSubscriptionPlans,
-                        appCMSPresenter.parseExistingGooglePlaySubscriptionPrice(listView.getContext()));
+                        Double.parseDouble(appCMSPresenter.getActiveSubscriptionPrice(listView.getContext())));
             }
         }
 

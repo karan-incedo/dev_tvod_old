@@ -35,8 +35,6 @@ import com.google.gson.GsonBuilder;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.firetvcustomkeyboard.CustomKeyboard;
-import com.viewlift.models.data.appcms.api.ContentDatum;
-import com.viewlift.models.data.appcms.api.ContentDetails;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -161,7 +159,7 @@ public class AppCmsSearchFragment extends Fragment {
                 if (lastSearchedString.equals(editable.toString())) {
                     return;
                 }
-                if (editable.length() >= 3){
+                if (editable.toString().trim().length() >= 3){
                     if(appCMSPresenter.isNetworkConnected()){
                         handler.removeCallbacks(searcRunnable);
                         handler.postDelayed(searcRunnable,3000);
@@ -443,7 +441,7 @@ public class AppCmsSearchFragment extends Fragment {
     Runnable searcRunnable = new Runnable() {
         @Override
         public void run() {
-            if(editText.getText().toString().trim().length() > 2) {
+            if(editText.getText().toString().length() > 2) {
                 try {
                     if (searchTask != null && searchTask.getStatus() == AsyncTask.Status.RUNNING) {
                         searchTask.cancel(true);
@@ -519,11 +517,16 @@ public class AppCmsSearchFragment extends Fragment {
             {
                 AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(mContext);
                 browseFragment.setAdapter(mRowsAdapter);
-                getChildFragmentManager().beginTransaction().replace(R.id.appcms_search_results_container ,browseFragment ,"frag").commit();
+                getChildFragmentManager().beginTransaction().replace(R.id.appcms_search_results_container ,browseFragment ,"frag").commitAllowingStateLoss();
             }
         }
     }
 
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+
+    }
 
     private CustomHeaderItem customHeaderItem = null;
     public void createTrayModule(final Context context,
@@ -576,10 +579,7 @@ public class AppCmsSearchFragment extends Fragment {
 
                 for (AppCMSSearchResult searchResult : appCMSSearchResults) {
                     BrowseFragmentRowData rowData = new BrowseFragmentRowData();
-                    ContentDatum contentDatum = new ContentDatum();
-                    contentDatum.setContentDetails(searchResult.getContentDetails());
-                    contentDatum.setGist(searchResult.getGist());
-                    rowData.contentData = contentDatum;
+                    rowData.contentData = searchResult.getContent();
                     rowData.uiComponentList = component.getComponents();
                     traylistRowAdapter.add(rowData);
                     Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());

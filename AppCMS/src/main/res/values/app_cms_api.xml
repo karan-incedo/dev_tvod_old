@@ -117,6 +117,8 @@
     <string name="app_cms_page_login_component_key">AC Login Component</string>
     <string name="app_cms_page_signup_component_key">AC SignUp Component</string>
     <string name="app_cms_page_settings_component_key">AC Settings Account 01</string>
+    <string name="app_cms_page_carousel_module_key">AC Carousel 01</string>
+    <string name="app_cms_page_tray_module_key">AC Tray 01</string>
     <string name="app_cms_page_removeall_key">removeAll</string>
     <string name="app_cms_page_planmetadatatitle_key">planMetaDataTitle</string>
     <string name="app_cms_page_planmetadataimage_key">planMetaDataImage</string>

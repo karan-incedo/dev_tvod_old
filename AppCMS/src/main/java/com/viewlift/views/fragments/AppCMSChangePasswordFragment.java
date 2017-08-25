@@ -20,6 +20,9 @@ import butterknife.ButterKnife;
 
 public class AppCMSChangePasswordFragment extends android.support.v4.app.Fragment {
 
+    @BindView(R.id.app_cms_change_password_main_layout)
+    RelativeLayout appCMSChangePasswordMainLayout;
+
     @BindView(R.id.app_cms_change_password_page_title)
     TextView changePasswordPageTitle;
 
@@ -46,34 +49,36 @@ public class AppCMSChangePasswordFragment extends android.support.v4.app.Fragmen
 
         ButterKnife.bind(this, view);
 
-        final AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
+        AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
-        int bgColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor());
-        int buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
-        int textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
-
-        String oldPassword = oldPasswordInput.getText().toString().trim();
-        String newPassword = newPasswordInput.getText().toString().trim();
-        String confirmPassword = confirmPasswordInput.getText().toString().trim();
+        int bgColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
+                .getBackgroundColor());
+        int buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
+                .getBlockTitleColor());
+        int textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
+                .getTextColor());
 
         changePasswordPageTitle.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
                 .getBrand().getGeneral().getTextColor()));
 
-        confirmPasswordButton.setOnClickListener(v ->
-                appCMSPresenter.updateUserPassword(oldPassword, newPassword, confirmPassword));
+        confirmPasswordButton.setOnClickListener(v -> {
+            String oldPassword = oldPasswordInput.getText().toString().trim();
+            String newPassword = newPasswordInput.getText().toString().trim();
+            String confirmPassword = confirmPasswordInput.getText().toString().trim();
+
+            appCMSPresenter.updateUserPassword(oldPassword, newPassword, confirmPassword);
+        });
 
         confirmPasswordButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor, buttonColor));
         confirmPasswordButton.setBackgroundColor(buttonColor);
-        setBgColor(bgColor, view);
+        setBgColor(bgColor);
 
         return view;
     }
 
-    private void setBgColor(int bgColor, View view) {
-        RelativeLayout appCMSEditProfileMainLayout =
-                (RelativeLayout) view.findViewById(R.id.app_cms_edit_profile_main_layout);
-        appCMSEditProfileMainLayout.setBackgroundColor(bgColor);
+    private void setBgColor(int bgColor) {
+        appCMSChangePasswordMainLayout.setBackgroundColor(bgColor);
     }
 }

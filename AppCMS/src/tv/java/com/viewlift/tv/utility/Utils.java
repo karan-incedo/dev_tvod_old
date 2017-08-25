@@ -36,6 +36,9 @@ import java.util.Map;
 public class Utils {
 
     private static final int DEAFULT_PADDING = 0;
+    public static final int STANDARD_TABLET_HEIGHT_PX = 1080;
+    public static final int STANDARD_TABLET_WIDTH_PX = 1920;
+
 
     public static void setBrowseFragmentViewParameters(View browseFragmentView, int marginLeft,
                                                        int marginTop) {
@@ -81,15 +84,6 @@ public class Utils {
         return json;
     }
 
-    public static int convertPixelsToDp(int px, Context context) {
-        Resources resources = context.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        int dp = px / 2/*(metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)*/;
-        return dp;
-    }
-
-
-
 
     public static float getViewHeight(Context context, Layout layout, float defaultHeight) {
         if (layout != null) {
@@ -108,11 +102,28 @@ public class Utils {
             FireTV fireTV = layout.getTv();
             float width = getViewWidth(fireTV);
             if (width != -1.0f) {
-                return width;
+                return getViewXAxisAsPerScreen(context,(int)width);
+               // return width;
             }
         }
         return defaultWidth;
     }
+
+
+    public static int getViewXAxisAsPerScreen(Context context , int dimension){
+        float dim  = context.getResources().getDisplayMetrics().widthPixels
+                * ((float)dimension / STANDARD_TABLET_WIDTH_PX);
+        return Math.round(dim);
+    }
+
+
+    public static int getViewYAxisAsPerScreen(Context context , int dimension){
+        float dim  = context.getResources().getDisplayMetrics().heightPixels
+                * ((float)dimension / STANDARD_TABLET_HEIGHT_PX);
+        return Math.round(dim);
+    }
+
+
 
     public static int getLeftPadding(Context context, Layout layout) {
         if (layout != null) {

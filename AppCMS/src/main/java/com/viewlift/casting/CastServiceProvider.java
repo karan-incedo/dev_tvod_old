@@ -41,6 +41,7 @@ public class CastServiceProvider {
     private FragmentActivity mActivity;
     private ImageButton mMediaRouteButton;
     private CastHelper mCastHelper;
+    private boolean isHomeScreen=false;
     private CastChooserDialog castChooserDialog;
     private CastSession mCastSession;
     private AnimationDrawable castAnimDrawable;
@@ -232,11 +233,14 @@ public class CastServiceProvider {
             castAnimDrawable.start();
         }
     };
+    public void isHomeScreen(boolean fromHomePage) {
+        isHomeScreen=fromHomePage;
+    }
 
 
     public void showIntroOverLay() {
 
-        if (mMediaRouteButton != null && mActivity != null) {
+        if (mMediaRouteButton != null && mActivity != null && isHomeScreen) {
             new Handler().postDelayed(() -> {
                 Target target = new ViewTarget(mMediaRouteButton.getId(), mActivity);
                 mShowCaseView = new ShowcaseView.Builder(mActivity)
