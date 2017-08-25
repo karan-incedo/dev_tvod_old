@@ -40,6 +40,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.util.LruCache;
 import android.view.Gravity;
@@ -88,6 +89,9 @@ import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 import com.viewlift.models.data.appcms.api.SubscriptionRequest;
 import com.viewlift.models.data.appcms.api.VideoAssets;
+import com.viewlift.models.data.appcms.beacon.AppCMSBeaconRequest;
+import com.viewlift.models.data.appcms.beacon.BeaconRequest;
+import com.viewlift.models.data.appcms.beacon.OfflineBeaconData;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
 import com.viewlift.models.data.appcms.downloads.RealmController;
@@ -108,6 +112,7 @@ import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentityPassword;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
+import com.viewlift.models.data.appcms.ui.main.Beacon;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
@@ -130,6 +135,7 @@ import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
+import com.viewlift.models.network.rest.AppCMSBeaconCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryCall;
@@ -183,9 +189,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -198,10 +208,13 @@ import java.util.Queue;
 import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 
 import io.realm.RealmList;
@@ -334,6 +347,7 @@ public class AppCMSPresenter {
     private final AppCMSWatchlistCall appCMSWatchlistCall;
     private final AppCMSHistoryCall appCMSHistoryCall;
     private final AppCMSUserDownloadVideoStatusCall appCMSUserDownloadVideoStatusCall;
+    private final AppCMSBeaconCall appCMSBeaconCall;
 
     private final AppCMSUserVideoStatusCall appCMSUserVideoStatusCall;
     private final AppCMSAddToWatchlistCall appCMSAddToWatchlistCall;
@@ -467,7 +481,7 @@ public class AppCMSPresenter {
                            AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall,
                            AppCMSUserVideoStatusCall appCMSUserVideoStatusCall,
                            AppCMSUserDownloadVideoStatusCall appCMSUserDownloadVideoStatusCall,
-
+                           AppCMSBeaconCall appCMSBeaconCall,
                            AppCMSAddToWatchlistCall appCMSAddToWatchlistCall,
 
                            AppCMSCCAvenueCall appCMSCCAvenueCall,
@@ -503,7 +517,7 @@ public class AppCMSPresenter {
         this.appCMSUpdateWatchHistoryCall = appCMSUpdateWatchHistoryCall;
         this.appCMSUserVideoStatusCall = appCMSUserVideoStatusCall;
         this.appCMSUserDownloadVideoStatusCall = appCMSUserDownloadVideoStatusCall;
-
+        this.appCMSBeaconCall = appCMSBeaconCall;
         this.appCMSAddToWatchlistCall = appCMSAddToWatchlistCall;
 
         this.appCMSCCAvenueCall = appCMSCCAvenueCall;
@@ -3653,9 +3667,10 @@ public class AppCMSPresenter {
                     new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
             currentActivity.sendBroadcast(stopLoadingPageIntent);
             showDialog(DialogType.NETWORK,
-                    null,
-                    false,
-                    () -> sendCloseOthersAction(null, false));
+                    currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download),
+                    true,
+                    () -> navigateToDownloadPage(downloadPage.getPageId(),
+                            downloadPage.getPageName(), downloadPage.getPageUI(), false)); // fix of SVFA-1435 for build #1.0.35
         }
     }
 
@@ -3997,6 +4012,9 @@ public class AppCMSPresenter {
 
     public boolean setNetworkConnected(Context context, boolean networkConnected) {
         if (context != null) {
+            if (networkConnected) {
+                sendOfflineBeaconMessage();
+            }
             SharedPreferences sharedPrefs =
                     context.getSharedPreferences(NETWORK_CONNECTED_SHARED_PREF_NAME, 0);
             return sharedPrefs.edit().putBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, networkConnected).commit();
@@ -4597,7 +4615,7 @@ public class AppCMSPresenter {
     }
 
     public boolean isPageAVideoPage(String pageName) {
-        if (currentActivity != null) {
+        if (currentActivity != null && pageName != null) {
             return pageName.contains(currentActivity.getString(R.string.app_cms_video_page_page_name));
         }
         return false;
@@ -5082,6 +5100,102 @@ public class AppCMSPresenter {
         beaconMessageThread.run();
     }
 
+
+    public ArrayList<BeaconRequest> getBeaconRequestList() {
+        String uid = InstanceID.getInstance(currentActivity).getId();
+        if (isUserLoggedIn(currentActivity)) {
+            uid = getLoggedInUser(currentActivity);
+        }
+
+        ArrayList<BeaconRequest> beaconRequestList = new ArrayList<>();
+        try {
+            for (OfflineBeaconData offlineBeaconData : realmController.getOfflineBeaconDataListByUser(uid)) {
+                BeaconRequest beaconRequest = offlineBeaconData.convertToBeaconRequest();
+                beaconRequestList.add(beaconRequest);
+            }
+            return beaconRequestList;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void sendOfflineBeaconMessage() {
+        ArrayList<BeaconRequest> beaconRequests = getBeaconRequestList();
+
+        String url = getBeaconUrl();
+        AppCMSBeaconRequest request = new AppCMSBeaconRequest();
+
+        if (url != null && beaconRequests != null) {
+            System.out.println("Beacon data : " + gson.toJson(beaconRequests));
+            request.setBeaconRequest(beaconRequests);
+            appCMSBeaconCall.call(url, (Boolean aBoolean) -> {
+                try {
+
+                    if (aBoolean) {
+                        Log.d(TAG, "Beacon success Event: Offline " + aBoolean);
+                        currentActivity.runOnUiThread(() -> {
+                            realmController.deleteOfflineBeaconDataByUser(getLoggedInUser(currentActivity));
+                        });
+                    }
+                } catch (Exception e) {
+                    Log.d(TAG, "Beacon fail Event: offline  due to: " + e.getMessage());
+                }
+            }, request);
+        } else {
+            Log.d(TAG, "No offline Beacon Event: available ");
+
+        }
+    }
+
+    public void sendBeaconMessage(String vid, String screenName, String parentScreenName,
+                                  long currentPosition, boolean usingChromecast, BeaconEvent event,
+                                  String mediaType, String bitrate, String height, String width,
+                                  String streamid, double ttfirstframe, int apod) {
+
+        BeaconRequest beaconRequest = getBeaconRequest(vid, screenName, parentScreenName, currentPosition, event,
+                usingChromecast, mediaType, bitrate, height, width, streamid, ttfirstframe, apod);
+        if (!isNetworkConnected()) {
+            currentActivity.runOnUiThread(() -> {
+                realmController.addOfflineBeaconData(beaconRequest.convertToOfflineBeaconData());
+            });
+
+            Log.d(TAG, "Beacon info added to database +++ " + event);
+            return;
+        }
+        String url = getBeaconUrl();
+        AppCMSBeaconRequest request = new AppCMSBeaconRequest();
+        ArrayList<BeaconRequest> beaconRequests = new ArrayList<>();
+
+        beaconRequests.add(beaconRequest);
+
+
+        request.setBeaconRequest(beaconRequests);
+        if (url != null) {
+
+            appCMSBeaconCall.call(url, aBoolean -> {
+                try {
+
+                    if (aBoolean) {
+                        Log.d(TAG, "Beacon success Event:  " + event);
+                    }
+                } catch (Exception e) {
+                    Log.d(TAG, "Beacon fail Event: " + event + " due to: " + e.getMessage());
+                }
+            }, request);
+
+        }
+    }
+
+    public String getStreamingId(String filmName) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
+
+        SecretKeySpec key = new SecretKeySpec((getCurrentTimeStamp()).getBytes("UTF-8"), "HmacSHA1");
+        Mac mac = Mac.getInstance("HmacSHA1");
+        mac.init(key);
+        byte[] bytes = mac.doFinal(filmName.getBytes("UTF-8"));
+        return UUID.nameUUIDFromBytes(bytes).toString();
+
+    }
+
     private String getPermalinkCompletePath(String pagePath) {
         StringBuffer permalinkCompletePath = new StringBuffer();
         permalinkCompletePath.append(currentActivity.getString(R.string.https_scheme));
@@ -5089,6 +5203,89 @@ public class AppCMSPresenter {
         permalinkCompletePath.append(File.separatorChar);
         permalinkCompletePath.append(pagePath);
         return permalinkCompletePath.toString();
+    }
+
+    private BeaconRequest getBeaconRequest(String vid, String screenName, String parentScreenName,
+                                           long currentPosition, BeaconEvent event, boolean usingChromecast,
+                                           String mediaType, String bitrte, String resolutionHeight,
+                                           String resolutionWidth, String streamId, double ttfirstframe, int apod) {
+        BeaconRequest beaconRequest = new BeaconRequest();
+        String uid = InstanceID.getInstance(currentActivity).getId();
+        int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
+        if (isUserLoggedIn(currentActivity)) {
+            uid = getLoggedInUser(currentActivity);
+        }
+
+
+        beaconRequest.setAid(appCMSMain.getBeacon().getSiteName());
+        beaconRequest.setCid(appCMSMain.getBeacon().getClientId());
+        beaconRequest.setPfm((platformType == PlatformType.TV) ?
+                currentActivity.getString(R.string.app_cms_beacon_tvplatform) :
+                currentActivity.getString(R.string.app_cms_beacon_platform));
+        beaconRequest.setVid(vid);
+        beaconRequest.setUid(uid);
+        beaconRequest.setPa(event.toString());
+        beaconRequest.setMedia_type(mediaType);
+        beaconRequest.setTstampoverride(getCurrentTimeStamp());
+        beaconRequest.setStream_id(streamId);
+        beaconRequest.setDp1(currentActivity.getString(R.string.app_cms_beacon_dpm_android));
+        beaconRequest.setUrl(getPermalinkCompletePath(screenName));
+        beaconRequest.setRef(parentScreenName);
+        beaconRequest.setVpos(currentPositionSecs);
+        beaconRequest.setApos(currentPositionSecs);
+        beaconRequest.setEnvironment(getEnvironment());
+        beaconRequest.setBitrate(bitrte);
+        beaconRequest.setResolutionheight(resolutionHeight);
+        beaconRequest.setResolutionwidth(resolutionWidth);
+        if (event == BeaconEvent.FIRST_FRAME) {
+            beaconRequest.setTtfirstframe(String.format("%.2f", ttfirstframe));
+        }
+        if (event == BeaconEvent.AD_IMPRESSION || event == BeaconEvent.AD_REQUEST) {
+            beaconRequest.setApod(apod);
+        }
+
+        if (isVideoDownloaded(vid)){
+            beaconRequest.setDp2("downloaded_view-online");
+        }
+        if (usingChromecast) {
+            beaconRequest.setPlayer("Chromecast");
+        }else{
+            beaconRequest.setPlayer("Video Player");
+        }
+
+
+        return beaconRequest;
+    }
+
+    public String getCurrentTimeStamp() {
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return formatter.format(new Date(System.currentTimeMillis()));
+    }
+
+    public String getEnvironment() {
+        String environment = "unknown";
+        if (appCMSMain.getApiBaseUrl().contains("prod")) {
+            environment = "production";
+        } else if (appCMSMain.getApiBaseUrl().contains("release")) {
+            environment = "release";
+        } else if (appCMSMain.getApiBaseUrl().contains("preprod")) {
+            environment = "preprod";
+        } else if (appCMSMain.getApiBaseUrl().contains("develop")) {
+            environment = "develop";
+        } else if (appCMSMain.getApiBaseUrl().contains("staging")) {
+            environment = "staging";
+        } else if (appCMSMain.getApiBaseUrl().contains("qa")) {
+            environment = "qa";
+        }
+
+        return environment;
+
+    }
+
+
+    private String getBeaconUrl() {
+        return currentActivity.getString(R.string.app_cms_beacon_url_base, appCMSMain.getBeacon().getApiBaseUrl());
+
     }
 
     private String getBeaconUrl(String vid, String screenName, String parentScreenName,
@@ -7360,7 +7557,7 @@ public class AppCMSPresenter {
     }
 
     public enum BeaconEvent {
-        PLAY, RESUME, PING, AD_REQUEST, AD_IMPRESSION
+        PLAY, RESUME, PING, AD_REQUEST, AD_IMPRESSION, FIRST_FRAME, BUFFERING, FAILED_TO_START, DROPPED_STREAM
     }
 
     public enum DialogType {

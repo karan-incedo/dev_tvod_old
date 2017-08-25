@@ -166,6 +166,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         appCMSPresenter,
                                         userVideoDownloadStatus -> {
                                             if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
+                                                holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);// Fix of SVFA-1779
                                                 holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.ic_deleteicon));
                                                 holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
                                                 holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
