@@ -184,7 +184,7 @@ dependencies {
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
 
     compile "com.android.support:mediarouter-v7:$rootProject.ext.androidsupportVersion"
-    compile "com.google.android.gms:play-services-cast-framework:$rootProject.ext.googlePlayServicesVersion"
+    implementation "com.google.android.gms:play-services-cast-framework:$rootProject.ext.googlePlayServicesVersion"
 
     compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
