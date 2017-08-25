@@ -6225,50 +6225,75 @@ public class AppCMSPresenter {
                     initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
                     navigation = appCMSAndroidUI.getNavigation();
                     queueMetaPages(appCMSAndroidUI.getMetaPages());
-                    final MetaPage firstPage = pagesToProcess.peek();
                     Log.d(TAG, "Processing meta pages queue");
                     processMetaPagesQueue(activity,
                             main,
                             loadFromFile,
                             () -> {
-                                if (firstPage != null) {
-                                    Log.d(TAG, "Launching first page: "
-                                            + firstPage.getPageName());
-                                    boolean appbarPresent =
-                                            (jsonValueKeyMap.get(firstPage.getPageName())
-                                                    != AppCMSUIKeyType.ANDROID_SPLASH_SCREEN_KEY);
-                                    boolean fullscreen = !appbarPresent;
-                                    if (appCMSMain.getServiceType()
-                                            .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
-                                        refreshSubscriptionData(() -> {
-                                            boolean launchSuccess = navigateToPage(firstPage.getPageId(),
-                                                    firstPage.getPageName(),
-                                                    firstPage.getPageUI(),
+                                if (appCMSMain.getServiceType()
+                                        .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
+                                    refreshSubscriptionData(() -> {
+                                        if (appCMSMain.isForceLogin()) {
+                                            boolean launchSuccess = navigateToPage(loginPage.getPageId(),
+                                                    loginPage.getPageName(),
+                                                    loginPage.getPageUI(),
                                                     true,
-                                                    appbarPresent,
-                                                    fullscreen,
-                                                    appbarPresent,
+                                                    false,
+                                                    false,
+                                                    false,
                                                     false,
                                                     deeplinkSearchQuery);
                                             if (!launchSuccess) {
                                                 Log.e(TAG, "Failed to launch page: "
-                                                        + firstPage.getPageName());
+                                                        + loginPage.getPageName());
                                                 launchErrorActivity(currentActivity, platformType);
                                             }
-                                        });
-                                    } else {
-                                        boolean launchSuccess = navigateToPage(firstPage.getPageId(),
-                                                firstPage.getPageName(),
-                                                firstPage.getPageUI(),
+                                        } else {
+                                            boolean launchSuccess = navigateToPage(homePage.getPageId(),
+                                                    homePage.getPageName(),
+                                                    homePage.getPageUI(),
+                                                    true,
+                                                    true,
+                                                    false,
+                                                    true,
+                                                    false,
+                                                    deeplinkSearchQuery);
+                                            if (!launchSuccess) {
+                                                Log.e(TAG, "Failed to launch page: "
+                                                        + loginPage.getPageName());
+                                                launchErrorActivity(currentActivity, platformType);
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    if (appCMSMain.isForceLogin()) {
+                                        boolean launchSuccess = navigateToPage(loginPage.getPageId(),
+                                                loginPage.getPageName(),
+                                                loginPage.getPageUI(),
                                                 true,
-                                                appbarPresent,
-                                                fullscreen,
-                                                appbarPresent,
+                                                true,
+                                                false,
+                                                false,
                                                 false,
                                                 deeplinkSearchQuery);
                                         if (!launchSuccess) {
                                             Log.e(TAG, "Failed to launch page: "
-                                                    + firstPage.getPageName());
+                                                    + loginPage.getPageName());
+                                            launchErrorActivity(currentActivity, platformType);
+                                        }
+                                    } else {
+                                        boolean launchSuccess = navigateToPage(homePage.getPageId(),
+                                                homePage.getPageName(),
+                                                homePage.getPageUI(),
+                                                true,
+                                                true,
+                                                false,
+                                                true,
+                                                false,
+                                                deeplinkSearchQuery);
+                                        if (!launchSuccess) {
+                                            Log.e(TAG, "Failed to launch page: "
+                                                    + loginPage.getPageName());
                                             launchErrorActivity(currentActivity, platformType);
                                         }
                                     }
