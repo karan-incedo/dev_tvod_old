@@ -39,7 +39,7 @@ allprojects {
         jsr250_apiVersion = "1.0"
         exoplayerVersion = "r2.4.1"
         googleAdsInteractiveMediaV3 = "3.6.0"
-        googlePlayServicesVersion = "10.2.0"
+        googlePlayServicesVersion = "10.2.1"
         crashlyticsVersion = "2.6.8@aar"
         leakcanaryVersion = "1.5.1"
         apptentiveVersion = "3.4.1"

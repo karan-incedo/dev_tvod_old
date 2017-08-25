@@ -598,19 +598,16 @@ public class ViewCreator {
                                             } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY) {
                                                 ((TextView) settingsView).setText(appCMSPresenter.getUserDownloadQualityPref(context));
                                             } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
-                                                if (appCMSPresenter.isUserSubscribed(context)) {
+                                                if (!appCMSPresenter.isUserSubscribed(context)) {
                                                     ((TextView) settingsView).setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
-                                                    settingsView.setVisibility(View.VISIBLE);
-                                                } else if (appCMSPresenter.isExistingGooglePlaySubscriptionSuspended(context) ||
-                                                        !appCMSPresenter.upgradesAvailableForUser(appCMSPresenter.getLoggedInUser(context))) {
-                                                    settingsView.setVisibility(View.GONE);
+                                                } else if (!TextUtils.isEmpty(component.getText())) {
+                                                    ((TextView) settingsView).setText(component.getText());
                                                 }
                                             } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                                                if (paymentProcessor == null &&
-                                                        TextUtils.isEmpty(appCMSPresenter.getExistingGooglePlaySubscriptionId(context))) {
-                                                    settingsView.setVisibility(View.GONE);
-                                                } else {
+                                                if (appCMSPresenter.isUserSubscribed(context)) {
                                                     settingsView.setVisibility(View.VISIBLE);
+                                                } else {
+                                                    settingsView.setVisibility(View.GONE);
                                                 }
                                             }
                                             settingsView.requestLayout();
@@ -1776,10 +1773,6 @@ public class ViewCreator {
                             } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                             }
-                        } else {
-                            if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
-                                componentViewResult.componentView.setVisibility(View.VISIBLE);
-                            }
                         }
 
                         componentViewResult.componentView.setOnClickListener(v -> {
@@ -2020,6 +2013,8 @@ public class ViewCreator {
                                     convertedRating = context.getString(R.string.age_rating_converted_pg);
                                 } else if (parentalRating.contains(context.getString(R.string.age_rating_fourteen))) {
                                     convertedRating = context.getString(R.string.age_rating_converted_fourteen);
+                                } else if (parentalRating.contains(context.getString(R.string.age_rating_converted_default))) {
+                                    convertedRating = context.getString(R.string.age_rating_converted_default);
                                 } else if (parentalRating.contains(context.getString(R.string.age_raging_r))) {
                                     convertedRating = context.getString(R.string.age_rating_converted_eighteen);
                                 }
