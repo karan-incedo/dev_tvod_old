@@ -5316,41 +5316,49 @@ public class AppCMSPresenter {
                                   String mediaType, String bitrate, String height, String width,
                                   String streamid, double ttfirstframe, int apod) {
 
-        BeaconRequest beaconRequest = getBeaconRequest(vid, screenName, parentScreenName, currentPosition, event,
-                usingChromecast, mediaType, bitrate, height, width, streamid, ttfirstframe, apod);
-        if (!isNetworkConnected()) {
+        if (currentActivity != null) {
             currentActivity.runOnUiThread(() -> {
                 try {
-                    realmController.addOfflineBeaconData(beaconRequest.convertToOfflineBeaconData());
-                } catch (Exception e) {
-                    Log.e(TAG, "Error adding offline Beacon data: " + e.getMessage());
-                }
-            });
+                    BeaconRequest beaconRequest = getBeaconRequest(vid, screenName, parentScreenName, currentPosition, event,
+                            usingChromecast, mediaType, bitrate, height, width, streamid, ttfirstframe, apod);
+                    if (!isNetworkConnected()) {
+                        currentActivity.runOnUiThread(() -> {
+                            try {
+                                realmController.addOfflineBeaconData(beaconRequest.convertToOfflineBeaconData());
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error adding offline Beacon data: " + e.getMessage());
+                            }
+                        });
 
-            Log.d(TAG, "Beacon info added to database +++ " + event);
-            return;
-        }
-        String url = getBeaconUrl();
-        AppCMSBeaconRequest request = new AppCMSBeaconRequest();
-        ArrayList<BeaconRequest> beaconRequests = new ArrayList<>();
+                        Log.d(TAG, "Beacon info added to database +++ " + event);
+                        return;
+                    }
+                    String url = getBeaconUrl();
+                    AppCMSBeaconRequest request = new AppCMSBeaconRequest();
+                    ArrayList<BeaconRequest> beaconRequests = new ArrayList<>();
 
-        beaconRequests.add(beaconRequest);
+                    beaconRequests.add(beaconRequest);
 
 
-        request.setBeaconRequest(beaconRequests);
-        if (url != null) {
+                    request.setBeaconRequest(beaconRequests);
+                    if (url != null) {
 
-            appCMSBeaconCall.call(url, aBoolean -> {
-                try {
+                        appCMSBeaconCall.call(url, aBoolean -> {
+                            try {
 
-                    if (aBoolean) {
-                        Log.d(TAG, "Beacon success Event:  " + event);
+                                if (aBoolean) {
+                                    Log.d(TAG, "Beacon success Event:  " + event);
+                                }
+                            } catch (Exception e) {
+                                Log.d(TAG, "Beacon fail Event: " + event + " due to: " + e.getMessage());
+                            }
+                        }, request);
+
                     }
                 } catch (Exception e) {
-                    Log.d(TAG, "Beacon fail Event: " + event + " due to: " + e.getMessage());
+                    Log.e(TAG, "Error sending new beacon message: " + e.getMessage());
                 }
-            }, request);
-
+            });
         }
     }
 
@@ -6031,13 +6039,17 @@ public class AppCMSPresenter {
         RealmList<SubscriptionPlan> availableUpgrades = new RealmList<>();
         if (currentActivity != null && availablePlans != null) {
             double existingSubscriptionPrice = parseActiveSubscriptionPrice(currentActivity);
+            String existingSku = getActiveSubscriptionSku(currentActivity);
+
             if (existingSubscriptionPrice == 0.0) {
                 existingSubscriptionPrice = parseExistingGooglePlaySubscriptionPrice(currentActivity);
             }
 
             if (existingSubscriptionPrice != 0.0) {
                 for (SubscriptionPlan subscriptionPlan : availablePlans) {
-                    if (existingSubscriptionPrice < subscriptionPlan.getSubscriptionPrice()) {
+                    if (existingSubscriptionPrice < subscriptionPlan.getSubscriptionPrice() &&
+                            (TextUtils.isEmpty(existingSku)) ||
+                            (!TextUtils.isEmpty(existingSku) && !existingSku.equals(subscriptionPlan.getSku()))) {
                         availableUpgrades.add(subscriptionPlan);
                     }
                 }
