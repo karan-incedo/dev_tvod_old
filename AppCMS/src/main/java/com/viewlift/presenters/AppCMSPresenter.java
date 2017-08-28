@@ -878,6 +878,7 @@ public class AppCMSPresenter {
                                                         currentActivity.getString(R.string.app_cms_download_limit_message),
                                                         false,
                                                         null);
+                                                isVideoPlayerStarted = false;
                                                 return false;
                                             }
 
