@@ -3195,7 +3195,6 @@ public class AppCMSPresenter {
                     false,
                     false,
                     deeplinkSearchQuery);
-            checkForExistingSubscription(true);
 
             if (!launchSuccess) {
                 Log.e(TAG, "Failed to launch page: " + subscriptionPage.getPageName());
