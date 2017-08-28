@@ -248,10 +248,8 @@ public class ViewCreator {
                                                 }
                                             });
                                         } else {
-                                            if (!BaseView.isLandscape(context)) {
-                                                shouldHideComponent = true;
-                                                view.setVisibility(View.GONE);
-                                            }
+                                            shouldHideComponent = true;
+                                            view.setVisibility(View.GONE);
                                         }
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_PLAY_BUTTON_KEY) {
                                         view.setOnClickListener(v -> {
@@ -1531,10 +1529,8 @@ public class ViewCreator {
                                 }
                             });
                         } else {
-                            if (!BaseView.isLandscape(context)) {
-                                componentViewResult.shouldHideComponent = true;
-                                componentViewResult.componentView.setVisibility(View.GONE);
-                            }
+                            componentViewResult.shouldHideComponent = true;
+                            componentViewResult.componentView.setVisibility(View.GONE);
                         }
                         break;
 
