@@ -1280,6 +1280,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.onConfigurationChange(false);
         appCMSPresenter.cancelInternalEvents();
         appCMSPresenter.restartInternalEvents();
+        if (appCMSPresenter.isViewPlanPage(updatedAppCMSBinder.getPageId())) {
+            appCMSPresenter.checkForExistingSubscription(true);
+        }
         getSupportFragmentManager().removeOnBackStackChangedListener(this);
     }
 
