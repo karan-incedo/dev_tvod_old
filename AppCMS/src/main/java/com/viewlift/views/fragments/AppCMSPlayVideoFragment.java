@@ -670,9 +670,12 @@ public class AppCMSPlayVideoFragment extends Fragment
             @Override
             public void run() {
                 mProgressHandler.removeCallbacks(this);
-                if (((videoPlayerView.getCurrentPosition() / 1000) % (mTotalVideoDuration / 4)) == 0) {
-                    long mPercentage = (long) (((float) (videoPlayerView.getCurrentPosition() / 1000) / mTotalVideoDuration) * 100);
-                    sendProgressAnalyticEvents(mPercentage);
+                long totalVideoDurationMod4 = mTotalVideoDuration / 4;
+                if (totalVideoDurationMod4 > 0) {
+                    if (((videoPlayerView.getCurrentPosition() / 1000) % totalVideoDurationMod4) == 0) {
+                        long mPercentage = (long) (((float) (videoPlayerView.getCurrentPosition() / 1000) / mTotalVideoDuration) * 100);
+                        sendProgressAnalyticEvents(mPercentage);
+                    }
                 }
                 mProgressHandler.postDelayed(this, 1000);
             }
