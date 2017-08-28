@@ -541,13 +541,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         if (retry) {
                             appCMSPresenter.initiateItemPurchase();
                         } else {
-                            appCMSPresenter.setActiveSubscriptionSku(this, null);
-                            handleBack(true, true, false, true);
+                            appCMSPresenter.sendCloseOthersAction(null, true);
                         }
                     });
                 } else {
-                    appCMSPresenter.setActiveSubscriptionSku(this, null);
-                    handleBack(true, true, false, true);
+                    appCMSPresenter.sendCloseOthersAction(null, true);
                 }
             }
         }
