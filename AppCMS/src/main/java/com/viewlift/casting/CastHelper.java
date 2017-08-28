@@ -450,13 +450,19 @@ public class CastHelper {
             @Override
             public void onMetadataUpdated() {
                 try {
-                    JSONObject getRemoteObject = CastContext.getSharedInstance(mAppContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().getCurrentItem().getCustomData();
+                    JSONObject getRemoteObject = CastContext.getSharedInstance(mAppContext)
+                            .getSessionManager()
+                            .getCurrentCastSession()
+                            .getRemoteMediaClient()
+                            .getCurrentItem()
+                            .getCustomData();
                     CastingUtils.castingMediaId = getRemoteObject.getString(CastingUtils.MEDIA_KEY);
                 } catch (Exception e) {
-                    Log.e(TAG, "Error updating cast metadata: " + e.getMessage());
+                    Log.e(TAG, e.getLocalizedMessage());
                 }
                 if (listCompareRelatedVideosId != null) {
-                    playIndexPosition = listCompareRelatedVideosId.indexOf(CastingUtils.castingMediaId);
+                    playIndexPosition = listCompareRelatedVideosId
+                            .indexOf(CastingUtils.castingMediaId);
                 }
 
                 Log.d(TAG, "Remote Media listener-" + "onMetadataUpdated");
