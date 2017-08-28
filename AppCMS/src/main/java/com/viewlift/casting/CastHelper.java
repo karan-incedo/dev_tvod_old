@@ -378,12 +378,12 @@ public class CastHelper {
         try {
             customData.put(CastingUtils.MEDIA_KEY, filmId);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
         }
         try {
             customData.put(CastingUtils.PARAM_KEY, paramLink);
         } catch (JSONException e) {
-            e.printStackTrace();
+           Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
         }
         getRemoteMediaClient().load(CastingUtils.buildMediaInfo(title,
                 appName,
@@ -396,7 +396,7 @@ public class CastHelper {
         try {
             mStreamId = appCMSPresenterComponenet.getStreamingId(binder.getContentData().getGist().getTitle());
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error retrieving stream data: " + e.getMessage());
             mStreamId = filmId + appCMSPresenterComponenet.getCurrentTimeStamp();
         }
         mStopBufferMilliSec = new Date().getTime();
@@ -421,7 +421,7 @@ public class CastHelper {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Error opening remote controller: " + e.getMessage());
             }
             if (!CastingUtils.isRemoteMediaControllerOpen) {
                 Intent intent = new Intent(mActivity, ExpandedControlsActivity.class);
@@ -453,7 +453,7 @@ public class CastHelper {
                     JSONObject getRemoteObject = CastContext.getSharedInstance(mAppContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().getCurrentItem().getCustomData();
                     CastingUtils.castingMediaId = getRemoteObject.getString(CastingUtils.MEDIA_KEY);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "Error updating cast metadata: " + e.getMessage());
                 }
                 if (listCompareRelatedVideosId != null) {
                     playIndexPosition = listCompareRelatedVideosId.indexOf(CastingUtils.castingMediaId);
@@ -633,7 +633,7 @@ public class CastHelper {
 
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "Error initializing progress indicators: " + e.getMessage());
             }
         };
     }

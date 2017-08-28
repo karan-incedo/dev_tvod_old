@@ -375,10 +375,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.setInAppBillingServiceConn(inAppBillingServiceConn);
         }
 
-        appCMSParentView.setBackgroundColor(Color.parseColor(updatedAppCMSBinder.getAppCMSMain()
-                .getBrand()
-                .getGeneral()
-                .getBackgroundColor()));
+        if (updatedAppCMSBinder != null) {
+            appCMSParentView.setBackgroundColor(Color.parseColor(updatedAppCMSBinder.getAppCMSMain()
+                    .getBrand()
+                    .getGeneral()
+                    .getBackgroundColor()));
+        }
 
         createMenuNavItem();
         createHomeNavItem(appCMSPresenter.findHomePageNavItem());
