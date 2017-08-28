@@ -5,7 +5,7 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
-import java.util.List;
+import java.util.ArrayList;
 
 @UseStag
 public class ModuleList implements ModuleWithComponents {
@@ -27,9 +27,9 @@ public class ModuleList implements ModuleWithComponents {
     String view;
 
     @SerializedName("components")
-    @JsonAdapter(ComponentListDeserializer.class)
+    @JsonAdapter(ComponentListSerializerDeserializer.class)
     @Expose
-    List<Component> components;
+    ArrayList<Component> components;
 
     @SerializedName("type")
     @Expose
@@ -71,11 +71,11 @@ public class ModuleList implements ModuleWithComponents {
         this.view = view;
     }
 
-    public List<Component> getComponents() {
+    public ArrayList<Component> getComponents() {
         return components;
     }
 
-    public void setComponents(List<Component> components) {
+    public void setComponents(ArrayList<Component> components) {
         this.components = components;
     }
 

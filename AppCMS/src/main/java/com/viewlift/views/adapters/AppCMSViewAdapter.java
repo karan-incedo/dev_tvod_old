@@ -93,8 +93,17 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 List<SubscriptionPlan> availableSubscriptionPlans =
                         appCMSPresenter.availableUpgradesForUser(appCMSPresenter.getLoggedInUser(context));
 
-                cullDataByAvailableUpgrades(availableSubscriptionPlans,
-                        Double.parseDouble(appCMSPresenter.getActiveSubscriptionPrice(context)));
+                double subscriptionPrice = -1.0;
+
+                try {
+                    subscriptionPrice = Double.parseDouble(appCMSPresenter.getActiveSubscriptionPrice(context));
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to parse double value for subscription price");
+                }
+
+                if (subscriptionPrice >= 0.0) {
+                    cullDataByAvailableUpgrades(availableSubscriptionPlans, subscriptionPrice);
+                }
             }
         }
 
@@ -233,8 +242,18 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             if (appCMSPresenter.isUserLoggedIn(listView.getContext())) {
                 List<SubscriptionPlan> availableSubscriptionPlans =
                         appCMSPresenter.availableUpgradesForUser(appCMSPresenter.getLoggedInUser(listView.getContext()));
-                cullDataByAvailableUpgrades(availableSubscriptionPlans,
-                        Double.parseDouble(appCMSPresenter.getActiveSubscriptionPrice(listView.getContext())));
+
+                double subscriptionPrice = -1.0;
+
+                try {
+                    subscriptionPrice = Double.parseDouble(appCMSPresenter.getActiveSubscriptionPrice(listView.getContext()));
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to parse double value for subscription price");
+                }
+
+                if (subscriptionPrice >= 0.0) {
+                    cullDataByAvailableUpgrades(availableSubscriptionPlans, subscriptionPrice);
+                }
             }
         }
 
@@ -436,21 +455,21 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     }
 
     private void cullDataByAvailableUpgrades(List<SubscriptionPlan> availableSubscriptionPlans,
-                                             double existingGooglePlaySubscriptionPrice) {
+                                             double existingSubscriptionPrice) {
         List<ContentDatum> updatedData = new ArrayList<>();
         for (ContentDatum contentDatum : adapterData) {
             if (availableSubscriptionPlans != null) {
                 for (SubscriptionPlan subscriptionPlan : availableSubscriptionPlans) {
                     if (!TextUtils.isEmpty(contentDatum.getIdentifier()) &&
                             contentDatum.getIdentifier().equals(subscriptionPlan.getSku()) &&
-                            (existingGooglePlaySubscriptionPrice < subscriptionPlan.getSubscriptionPrice())) {
+                            (existingSubscriptionPrice < subscriptionPlan.getSubscriptionPrice())) {
                         updatedData.add(contentDatum);
                     }
                 }
             } else if (contentDatum.getPlanDetails() != null &&
                     !contentDatum.getPlanDetails().isEmpty() &&
                     contentDatum.getPlanDetails().get(0) != null &&
-                    existingGooglePlaySubscriptionPrice <
+                    existingSubscriptionPrice <
                             contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount()) {
                 updatedData.add(contentDatum);
             }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="app_cms_content_rating_title_margin_left">90dp</dimen>
+    <fraction name="app_cms_content_rating_progress_bar_margin_bottom_percent">5%</fraction>
+    <fraction name="mainContainerWidthPercent">89%</fraction>
+    <fraction name="mainContainerHeightPercent">21%</fraction>
+
+</resources>

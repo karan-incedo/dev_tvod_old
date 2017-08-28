@@ -50,6 +50,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     private String videoImageUrl;
     private String filmId;
     private String primaryCategory;
+    private String contentRating;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -146,7 +147,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 boolean playAds = binder.isPlayAds();
                 relateVideoIds = binder.getRelateVideoIds();
                 currentlyPlayingIndex = binder.getCurrentPlayingVideoIndex();
-
+                contentRating = binder.getContentData().getParentalRating();
                 if (!TextUtils.isEmpty(bgColor)) {
                     appCMSPlayVideoPageContainer.setBackgroundColor(Color.parseColor(bgColor));
                 }
@@ -167,7 +168,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 playIndex,
                                 watchedTime,
                                 videoImageUrl,
-                                closedCaptionUrl);
+                                closedCaptionUrl,
+                                contentRating);
                 fragmentTransaction.add(R.id.app_cms_play_video_page_container,
                         appCMSPlayVideoFragment,
                         getString(R.string.video_fragment_tag_key));
