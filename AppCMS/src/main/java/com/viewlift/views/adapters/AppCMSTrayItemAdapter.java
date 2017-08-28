@@ -6,6 +6,7 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.support.annotation.UiThread;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -137,6 +138,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         mRecyclerView = recyclerView;
     }
 
+    @UiThread
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (adapterData != null && !adapterData.isEmpty()) {
@@ -201,7 +203,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                         default:
                             break;
                     }
-                    DownloadVideoRealm downloadVideoRealm = appCMSPresenter.getRealmController().getDownloadByIdBelongstoUser(contentDatum.getGist().getId(), userId); // fix of SVFA-1707
+                    DownloadVideoRealm downloadVideoRealm = appCMSPresenter.getRealmController()
+                            .getDownloadByIdBelongstoUser(contentDatum.getGist().getId(), userId); // fix of SVFA-1707
                     if (downloadVideoRealm != null && contentDatum != null && contentDatum.getGist() != null) {
                         if (downloadVideoRealm.getWatchedTime() > contentDatum.getGist().getWatchedTime()) {
                             contentDatum.getGist().setWatchedTime(downloadVideoRealm.getWatchedTime());
