@@ -1058,8 +1058,7 @@ public class AppCMSPresenter {
                                 String paymentProcessor = getActiveSubscriptionProcessor(currentActivity);
                                 if ((!TextUtils.isEmpty(paymentProcessor) &&
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
-                                        !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))) ||
-                                        TextUtils.isEmpty(getExistingGooglePlaySubscriptionId(currentActivity))) {
+                                        !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)))) {
                                     showEntitlementDialog(DialogType.CANNOT_CANCEL_SUBSCRIPTION);
                                 } else if (TextUtils.isEmpty(paymentProcessor)) {
                                     showEntitlementDialog(DialogType.UNKNOWN_SUBSCRIPTION_FOR_CANCEL);
@@ -2144,7 +2143,7 @@ public class AppCMSPresenter {
 
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error downloading video image " + downloadURL + ": " + e.getMessage());
         }
 
         return enqueueId;
@@ -5605,48 +5604,52 @@ public class AppCMSPresenter {
                                                                     //
                                                                 },
                                                                 appCMSSubscriptionPlanResult -> {
-                                                                    if (appCMSSubscriptionPlanResult != null) {
+                                                                    try {
+                                                                        if (appCMSSubscriptionPlanResult != null) {
 
-                                                                        UserSubscriptionPlan userSubscriptionPlan = new UserSubscriptionPlan();
-                                                                        userSubscriptionPlan.setUserId(getLoggedInUser(currentActivity));
-                                                                        String planReceipt = appCMSSubscriptionPlanResult.getSubscriptionInfo().getReceipt();
-                                                                        Receipt receipt = gson.fromJson(planReceipt, Receipt.class);
-                                                                        userSubscriptionPlan.setPlanReceipt(planReceipt);
-                                                                        userSubscriptionPlan.setPaymentHandler(appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler());
+                                                                            UserSubscriptionPlan userSubscriptionPlan = new UserSubscriptionPlan();
+                                                                            userSubscriptionPlan.setUserId(getLoggedInUser(currentActivity));
+                                                                            String planReceipt = appCMSSubscriptionPlanResult.getSubscriptionInfo().getReceipt();
+                                                                            Receipt receipt = gson.fromJson(planReceipt, Receipt.class);
+                                                                            userSubscriptionPlan.setPlanReceipt(planReceipt);
+                                                                            userSubscriptionPlan.setPaymentHandler(appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler());
 
-                                                                        SubscriptionPlan subscribedPlan = null;
-                                                                        for (SubscriptionPlan subscriptionPlan : subscriptionPlans) {
-                                                                            if (!TextUtils.isEmpty(subscriptionPlan.getSku()) &&
-                                                                                    receipt != null &&
-                                                                                    subscriptionPlan.getSku().equals(receipt.getProductId())) {
-                                                                                subscribedPlan = subscriptionPlan;
+                                                                            SubscriptionPlan subscribedPlan = null;
+                                                                            for (SubscriptionPlan subscriptionPlan : subscriptionPlans) {
+                                                                                if (!TextUtils.isEmpty(subscriptionPlan.getSku()) &&
+                                                                                        receipt != null &&
+                                                                                        subscriptionPlan.getSku().equals(receipt.getProductId())) {
+                                                                                    subscribedPlan = subscriptionPlan;
+                                                                                }
+
+                                                                                if (subscribedPlan != null) {
+                                                                                    setActiveSubscriptionSku(currentActivity,
+                                                                                            subscribedPlan.getSku());
+                                                                                    setActiveSubscriptionId(currentActivity,
+                                                                                            subscribedPlan.getPlanId());
+                                                                                    setActiveSubscriptionPlanName(currentActivity,
+                                                                                            subscribedPlan.getPlanName());
+                                                                                    setActiveSubscriptionPrice(currentActivity,
+                                                                                            String.valueOf(subscribedPlan.getSubscriptionPrice()));
+                                                                                } else if (appCMSSubscriptionPlanResult.getSubscriptionPlanInfo() != null) {
+                                                                                    setActiveSubscriptionSku(currentActivity,
+                                                                                            appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
+                                                                                    setActiveSubscriptionId(currentActivity,
+                                                                                            appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
+                                                                                    setActiveSubscriptionPlanName(currentActivity,
+                                                                                            appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
+                                                                                    setActiveSubscriptionPrice(currentActivity,
+                                                                                            String.valueOf(appCMSSubscriptionPlanResult.getSubscriptionInfo().getTotalAmount()));
+                                                                                }
+
+                                                                                setIsUserSubscribed(currentActivity, true);
                                                                             }
-
-                                                                            if (subscribedPlan != null) {
-                                                                                setActiveSubscriptionSku(currentActivity,
-                                                                                        subscribedPlan.getSku());
-                                                                                setActiveSubscriptionId(currentActivity,
-                                                                                        subscribedPlan.getPlanId());
-                                                                                setActiveSubscriptionPlanName(currentActivity,
-                                                                                        subscribedPlan.getPlanName());
-                                                                                setActiveSubscriptionPrice(currentActivity,
-                                                                                        String.valueOf(subscribedPlan.getSubscriptionPrice()));
-                                                                            } else if (appCMSSubscriptionPlanResult.getSubscriptionPlanInfo() != null) {
-                                                                                setActiveSubscriptionSku(currentActivity,
-                                                                                        appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
-                                                                                setActiveSubscriptionId(currentActivity,
-                                                                                        appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
-                                                                                setActiveSubscriptionPlanName(currentActivity,
-                                                                                        appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
-                                                                                setActiveSubscriptionPrice(currentActivity,
-                                                                                        String.valueOf(appCMSSubscriptionPlanResult.getSubscriptionInfo().getTotalAmount()));
+                                                                            if (onRefreshReadyAction != null) {
+                                                                                onRefreshReadyAction.call();
                                                                             }
-
-                                                                            setIsUserSubscribed(currentActivity, true);
                                                                         }
-                                                                        if (onRefreshReadyAction != null) {
-                                                                            onRefreshReadyAction.call();
-                                                                        }
+                                                                    } catch (Exception e) {
+                                                                        Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
                                                                     }
                                                                 }
                                                         );
@@ -5708,65 +5711,71 @@ public class AppCMSPresenter {
                                                     //
                                                 },
                                                 appCMSSubscriptionPlanResult -> {
-                                                    if (appCMSSubscriptionPlanResult != null) {
 
-                                                        UserSubscriptionPlan userSubscriptionPlan = new UserSubscriptionPlan();
-                                                        userSubscriptionPlan.setUserId(getLoggedInUser(currentActivity));
-                                                        String planReceipt = appCMSSubscriptionPlanResult.getSubscriptionInfo().getReceipt();
-                                                        Receipt receipt = gson.fromJson(planReceipt, Receipt.class);
-                                                        userSubscriptionPlan.setPlanReceipt(planReceipt);
-                                                        userSubscriptionPlan.setPaymentHandler(appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler());
+                                                    try {
 
-                                                        SubscriptionPlan subscribedPlan = null;
-                                                        for (SubscriptionPlan subscriptionPlan : subscriptionPlans) {
-                                                            if (!TextUtils.isEmpty(subscriptionPlan.getSku()) &&
-                                                                    receipt != null &&
-                                                                    subscriptionPlan.getSku().equals(receipt.getProductId())) {
-                                                                subscribedPlan = subscriptionPlan;
+                                                        if (appCMSSubscriptionPlanResult != null) {
+
+                                                            UserSubscriptionPlan userSubscriptionPlan = new UserSubscriptionPlan();
+                                                            userSubscriptionPlan.setUserId(getLoggedInUser(currentActivity));
+                                                            String planReceipt = appCMSSubscriptionPlanResult.getSubscriptionInfo().getReceipt();
+                                                            Receipt receipt = gson.fromJson(planReceipt, Receipt.class);
+                                                            userSubscriptionPlan.setPlanReceipt(planReceipt);
+                                                            userSubscriptionPlan.setPaymentHandler(appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler());
+
+                                                            SubscriptionPlan subscribedPlan = null;
+                                                            for (SubscriptionPlan subscriptionPlan : subscriptionPlans) {
+                                                                if (!TextUtils.isEmpty(subscriptionPlan.getSku()) &&
+                                                                        receipt != null &&
+                                                                        subscriptionPlan.getSku().equals(receipt.getProductId())) {
+                                                                    subscribedPlan = subscriptionPlan;
+                                                                }
                                                             }
-                                                        }
 
-                                                        if (subscribedPlan != null) {
-                                                            setActiveSubscriptionSku(currentActivity,
-                                                                    subscribedPlan.getSku());
-                                                            setActiveSubscriptionId(currentActivity,
-                                                                    subscribedPlan.getPlanId());
-                                                            setActiveSubscriptionPlanName(currentActivity,
-                                                                    subscribedPlan.getPlanName());
-                                                            setActiveSubscriptionPrice(currentActivity,
-                                                                    String.valueOf(subscribedPlan.getSubscriptionPrice()));
-                                                        } else if (appCMSSubscriptionPlanResult.getSubscriptionPlanInfo() != null) {
-                                                            setActiveSubscriptionSku(currentActivity,
-                                                                    appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
-                                                            setActiveSubscriptionId(currentActivity,
-                                                                    appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
-                                                            setActiveSubscriptionPlanName(currentActivity,
-                                                                    appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
-                                                            setActiveSubscriptionPrice(currentActivity,
-                                                                    String.valueOf(appCMSSubscriptionPlanResult.getSubscriptionInfo().getTotalAmount()));
-                                                        }
-
-                                                        if (appCMSSubscriptionPlanResult.getSubscriptionInfo() != null &&
-                                                                !TextUtils.isEmpty(appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler())) {
-                                                            String paymentHandler = appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler();
-                                                            if (paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor)) ||
-                                                                    paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly))) {
-                                                                setActiveSubscriptionProcessor(currentActivity,
-                                                                        currentActivity.getString(R.string.subscription_ios_payment_processor_friendly));
-                                                            } else if (paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
-                                                                    paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))) {
-                                                                setActiveSubscriptionProcessor(currentActivity,
-                                                                        currentActivity.getString(R.string.subscription_android_payment_processor_friendly));
-                                                            } else if (paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_web_payment_processor_friendly))) {
-                                                                setActiveSubscriptionProcessor(currentActivity,
-                                                                        currentActivity.getString(R.string.subscription_web_payment_processor_friendly));
+                                                            if (subscribedPlan != null) {
+                                                                setActiveSubscriptionSku(currentActivity,
+                                                                        subscribedPlan.getSku());
+                                                                setActiveSubscriptionId(currentActivity,
+                                                                        subscribedPlan.getPlanId());
+                                                                setActiveSubscriptionPlanName(currentActivity,
+                                                                        subscribedPlan.getPlanName());
+                                                                setActiveSubscriptionPrice(currentActivity,
+                                                                        String.valueOf(subscribedPlan.getSubscriptionPrice()));
+                                                            } else if (appCMSSubscriptionPlanResult.getSubscriptionPlanInfo() != null) {
+                                                                setActiveSubscriptionSku(currentActivity,
+                                                                        appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
+                                                                setActiveSubscriptionId(currentActivity,
+                                                                        appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
+                                                                setActiveSubscriptionPlanName(currentActivity,
+                                                                        appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
+                                                                setActiveSubscriptionPrice(currentActivity,
+                                                                        String.valueOf(appCMSSubscriptionPlanResult.getSubscriptionInfo().getTotalAmount()));
                                                             }
-                                                        }
 
-                                                        setIsUserSubscribed(currentActivity, true);
-                                                    }
-                                                    if (onRefreshReadyAction != null) {
-                                                        onRefreshReadyAction.call();
+                                                            if (appCMSSubscriptionPlanResult.getSubscriptionInfo() != null &&
+                                                                    !TextUtils.isEmpty(appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler())) {
+                                                                String paymentHandler = appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler();
+                                                                if (paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor)) ||
+                                                                        paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly))) {
+                                                                    setActiveSubscriptionProcessor(currentActivity,
+                                                                            currentActivity.getString(R.string.subscription_ios_payment_processor_friendly));
+                                                                } else if (paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
+                                                                        paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))) {
+                                                                    setActiveSubscriptionProcessor(currentActivity,
+                                                                            currentActivity.getString(R.string.subscription_android_payment_processor_friendly));
+                                                                } else if (paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_web_payment_processor_friendly))) {
+                                                                    setActiveSubscriptionProcessor(currentActivity,
+                                                                            currentActivity.getString(R.string.subscription_web_payment_processor_friendly));
+                                                                }
+                                                            }
+
+                                                            setIsUserSubscribed(currentActivity, true);
+                                                        }
+                                                        if (onRefreshReadyAction != null) {
+                                                            onRefreshReadyAction.call();
+                                                        }
+                                                    } catch (Exception e) {
+                                                        Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
                                                     }
                                                 }
                                         );
