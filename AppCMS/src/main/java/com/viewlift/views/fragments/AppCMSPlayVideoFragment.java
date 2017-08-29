@@ -380,8 +380,10 @@ public class AppCMSPlayVideoFragment extends Fragment
                     // tell the activity that the movie is finished
                     onClosePlayerEvent.onMovieFinished();
                 }
-                appCMSPresenter.updateWatchedTime(filmId,
-                        videoPlayerView.getCurrentPosition() / 1000);
+                if (!isTrailer) {
+                    appCMSPresenter.updateWatchedTime(filmId,
+                            videoPlayerView.getCurrentPosition() / 1000);
+                }
             } else if (playerState.getPlaybackState() == ExoPlayer.STATE_BUFFERING ||
                     playerState.getPlaybackState() == ExoPlayer.STATE_IDLE) {
                 if (beaconMessageThread != null) {
