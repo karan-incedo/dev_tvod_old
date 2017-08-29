@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -648,11 +649,23 @@ public class AppCMSPresenter {
                                         entitlementPendingVideoData.relateVideoIds = appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds();
                                         navigateToHomeToRefresh = true;
                                     }
+                                }else{
+                                    if (!isNetworkConnected()) {
+                                        // Fix of SVFA-1435
+                                        showDialog(DialogType.NETWORK,
+                                                currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download),
+                                                true,
+                                                () -> navigateToDownloadPage(downloadPage.getPageId(),
+                                                        downloadPage.getPageName(), downloadPage.getPageUI(), false));
+                                    }
+
                                 }
+
                             } catch (Exception e) {
                                 Log.e(TAG, "Error retrieving AppCMS Video Details: " + e.getMessage());
-                            }
-                        }).execute(params);
+
+
+                        }}).execute(params);
             } else {
                 if (entitlementActive) {
                     if (watchedTime >= 0) {
@@ -2069,6 +2082,7 @@ public class AppCMSPresenter {
             }
         }
     }
+
 
     public void createLocalEntry(long enqueueId,
                                  long thumbEnqueueId,
@@ -5287,7 +5301,7 @@ public class AppCMSPresenter {
         AppCMSBeaconRequest request = new AppCMSBeaconRequest();
 
         if (url != null && beaconRequests != null) {
-            System.out.println("Beacon data : " + gson.toJson(beaconRequests));
+
             request.setBeaconRequest(beaconRequests);
             appCMSBeaconCall.call(url, (Boolean aBoolean) -> {
                 try {
@@ -5311,13 +5325,14 @@ public class AppCMSPresenter {
     public void sendBeaconMessage(String vid, String screenName, String parentScreenName,
                                   long currentPosition, boolean usingChromecast, BeaconEvent event,
                                   String mediaType, String bitrate, String height, String width,
-                                  String streamid, double ttfirstframe, int apod) {
+                                  String streamid, double ttfirstframe, int apod, boolean isDownloaded) {
+
 
         if (currentActivity != null) {
-            currentActivity.runOnUiThread(() -> {
+
                 try {
                     BeaconRequest beaconRequest = getBeaconRequest(vid, screenName, parentScreenName, currentPosition, event,
-                            usingChromecast, mediaType, bitrate, height, width, streamid, ttfirstframe, apod);
+                            usingChromecast, mediaType, bitrate, height, width, streamid, ttfirstframe, apod,isDownloaded);
                     if (!isNetworkConnected()) {
                         currentActivity.runOnUiThread(() -> {
                             try {
@@ -5355,8 +5370,8 @@ public class AppCMSPresenter {
                 } catch (Exception e) {
                     Log.e(TAG, "Error sending new beacon message: " + e.getMessage());
                 }
-            });
-        }
+            }
+
     }
 
     public String getStreamingId(String filmName) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
@@ -5381,7 +5396,7 @@ public class AppCMSPresenter {
     private BeaconRequest getBeaconRequest(String vid, String screenName, String parentScreenName,
                                            long currentPosition, BeaconEvent event, boolean usingChromecast,
                                            String mediaType, String bitrte, String resolutionHeight,
-                                           String resolutionWidth, String streamId, double ttfirstframe, int apod) {
+                                           String resolutionWidth, String streamId, double ttfirstframe, int apod, boolean isDownloaded) {
         BeaconRequest beaconRequest = new BeaconRequest();
         String uid = InstanceID.getInstance(currentActivity).getId();
         int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
@@ -5417,9 +5432,13 @@ public class AppCMSPresenter {
             beaconRequest.setApod(apod);
         }
 
-        if (isVideoDownloaded(vid)) {
+        if (isDownloaded) {
             beaconRequest.setDp2("downloaded_view-online");
+        }else {
+            beaconRequest.setDp2("view-online");
         }
+
+
         if (usingChromecast) {
             beaconRequest.setPlayer("Chromecast");
         } else {
