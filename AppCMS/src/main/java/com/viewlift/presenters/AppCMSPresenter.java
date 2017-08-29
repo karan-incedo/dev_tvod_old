@@ -1653,16 +1653,14 @@ public class AppCMSPresenter {
         Log.v("apikey", apikey);
         try {
             String strAmount = Double.toString(planToPurchasePrice);
-            Intent intent = new Intent(currentActivity, WebViewActivity.class);
+            Intent intent = new Intent(currentActivity,WebViewActivity.class);
+            //Intent intent = new Intent(currentActivity,PaymentOptionsActivity.class);
             intent.putExtra(AvenuesParams.CURRENCY, currencyCode);
-            //intent.putExtra(AvenuesParams.AMOUNT, "500");
             intent.putExtra(AvenuesParams.AMOUNT, strAmount);
             intent.putExtra(currentActivity.getString(R.string.app_cms_site_name), appCMSSite.getGist().getSiteInternalName());
             intent.putExtra(currentActivity.getString(R.string.app_cms_user_id), getLoggedInUser(currentActivity));
             intent.putExtra(currentActivity.getString(R.string.app_cms_plan_id), planToPurchase);
             intent.putExtra("plan_to_purchase_name", planToPurchaseName);
-
-
             intent.putExtra("siteId", appCMSSite.getGist().getSiteInternalName());
             intent.putExtra("email", getLoggedInUserEmail(currentActivity));
             intent.putExtra("authorizedUserName", getLoggedInUser(currentActivity));
@@ -1677,7 +1675,9 @@ public class AppCMSPresenter {
 
     public void initiateItemPurchase() {
         if (countryCode.equalsIgnoreCase("IN")) {
-            initiateCCAvenuePurchase();
+            if (currencyCode.equalsIgnoreCase("INR")) {
+                initiateCCAvenuePurchase();
+            }
         } else {
             if (currentActivity != null &&
                     inAppBillingService != null) {
@@ -6127,6 +6127,7 @@ public class AppCMSPresenter {
                 .build();
         new PostAppCMSLoginRequestAsyncTask(appCMSSignInCall,
                 signInResponse -> {
+
                     try {
                         if (signInResponse == null) {
                             // Show log error
