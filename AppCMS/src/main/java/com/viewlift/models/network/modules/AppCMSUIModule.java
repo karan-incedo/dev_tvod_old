@@ -17,6 +17,7 @@ import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenRest;
+import com.viewlift.models.network.rest.AppCMSBeaconCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
 import com.viewlift.models.network.rest.AppCMSCCAvenueRest;
@@ -272,6 +273,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_autoplay_toggle_button_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_closed_captions_toggle_button_key),
+                AppCMSUIKeyType.PAGE_CLOSED_CAPTIONS_TOGGLE_BUTTON_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_title_key),
                 AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_priceinfo_key),
@@ -311,6 +315,12 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscription_imagetextrow_key),
                 AppCMSUIKeyType.PAGE_SUBSCRIPTION_IMAGEROW_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_module_key),
+                AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_module_key),
+                AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_player_with_info_key),
                 AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY);
@@ -781,6 +791,7 @@ public class AppCMSUIModule {
     public AppCMSUserDownloadVideoStatusCall providesAppCMSUserDownloadVideoStatusCall() {
         return new AppCMSUserDownloadVideoStatusCall();
     }
+
 
     @Provides
     @Singleton

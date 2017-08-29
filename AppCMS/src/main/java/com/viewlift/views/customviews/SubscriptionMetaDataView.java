@@ -256,6 +256,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
                         } else {
                             ((ImageView) componentView).setImageResource(R.drawable.crossicon);
                         }
+                        gridLayoutParams.setMargins(0, 0, 16, 0);
                         gridLayoutParams.setGravity(Gravity.END);
                         componentView.setLayoutParams(gridLayoutParams);
                     }

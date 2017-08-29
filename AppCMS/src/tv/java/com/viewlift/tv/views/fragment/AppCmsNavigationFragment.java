@@ -1,34 +1,22 @@
 package com.viewlift.tv.views.fragment;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
@@ -37,12 +25,6 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.views.binders.AppCMSBinder;
-
-import org.w3c.dom.Text;
-
-import java.util.zip.Inflater;
-
-import javax.inject.Inject;
 
 import com.viewlift.R;
 
@@ -58,7 +40,7 @@ public class AppCmsNavigationFragment extends Fragment {
     private static OnNavigationVisibilityListener navigationVisibilityListener;
     private Typeface extraBoldTypeFace , semiBoldTypeFace;
     private Component extraBoldComp , semiBoldComp;
-
+    private AppCMSBinder appCmsBinder;
     public static AppCmsNavigationFragment newInstance(Context context,
                                                        OnNavigationVisibilityListener listener,
                                                        AppCMSBinder appCMSBinder,
@@ -85,7 +67,7 @@ public class AppCmsNavigationFragment extends Fragment {
         bgColor = args.getInt(getResources().getString(R.string.app_cms_bg_color_key));
 
         AppCMSBinder appCMSBinder = ((AppCMSBinder) args.getBinder(getResources().getString(R.string.fragment_page_bundle_key)));
-
+        this.appCmsBinder = appCMSBinder;
         AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
@@ -195,6 +177,7 @@ public class AppCmsNavigationFragment extends Fragment {
         public void onBindViewHolder(NavItemHolder holder, final int position) {
             final NavigationPrimary primary = (NavigationPrimary)getItem(position);
             holder.navItemView.setText(primary.getTitle().toString().toUpperCase());
+            holder.navItemView.setTag(R.string.item_position , position);
             Log.d("NavigationAdapter", primary.getTitle().toString());
 
 
@@ -245,6 +228,7 @@ public class AppCmsNavigationFragment extends Fragment {
             return totalCount;
         }
 
+
         class NavItemHolder extends RecyclerView.ViewHolder {
             TextView navItemView;
             RelativeLayout navItemlayout;
@@ -262,6 +246,10 @@ public class AppCmsNavigationFragment extends Fragment {
                     public void onFocusChange(View view, boolean hasFocus) {
 
                         String text = navItemView.getText().toString();
+                        int position = (int)navItemView.getTag(R.string.item_position);
+                        selectedPosition = position;
+
+                        Log.d("TAG","Nav position = "+position);
                         if (hasFocus) {
                             navItemView.setText(text.toUpperCase());
                             navItemView.setTypeface(extraBoldTypeFace);
@@ -272,8 +260,39 @@ public class AppCmsNavigationFragment extends Fragment {
                     }
                 });
 
+                navItemlayout.setOnKeyListener(new View.OnKeyListener() {
+                    @Override
+                    public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                        int keyCode = keyEvent.getKeyCode();
+                        int action = keyEvent.getAction();
+                        if (action == KeyEvent.ACTION_DOWN) {
+                            switch (keyCode) {
+                                case KeyEvent.KEYCODE_DPAD_LEFT:
+                                    if(isStartPosition()){
+                                        return true;
+                                    }
+                                    break;
+                                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                                    if (isEndPosition()) {
+                                        return true;
+                                    }
+                                    break;
+                            }
+                        }
+                        return false;
+                    }
+                });
             }
         }
+    }
+
+  private int selectedPosition = -1;
+  private boolean isEndPosition(){
+        return selectedPosition == appCmsBinder.getNavigation().getNavigationPrimary().size()-1;
+    }
+
+    private boolean isStartPosition(){
+        return (selectedPosition == 0) ;
     }
 
     public interface OnNavigationVisibilityListener {

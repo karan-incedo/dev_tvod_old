@@ -83,9 +83,9 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
 
             ListRow rowItem = (ListRow) item;
             CustomHeaderItem customHeaderItem = ((CustomHeaderItem)rowItem.getHeaderItem());
-            int listRowLeftmargin = customHeaderItem.getmListRowLeftMargin();
-            int listRowRightmargin = customHeaderItem.getmListRowRightMargin();
-            int listRowHeight =  customHeaderItem.getmListRowHeight();
+            int listRowLeftmargin = Utils.getViewXAxisAsPerScreen(mContext,customHeaderItem.getmListRowLeftMargin());
+            int listRowRightmargin = Utils.getViewXAxisAsPerScreen(mContext,customHeaderItem.getmListRowRightMargin());
+            int listRowHeight =  Utils.getViewYAxisAsPerScreen(mContext,customHeaderItem.getmListRowHeight());
 
             headerTitle.setTextSize(customHeaderItem.getFontSize());
 

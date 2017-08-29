@@ -34,6 +34,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import rx.Observable;
@@ -84,6 +85,12 @@ public class CastHelper {
     private String title = "";
     private String videoUrl = "";
     private String paramLink = "";
+
+    private String mStreamId;
+    private long mStartBufferMilliSec;
+    private long mStopBufferMilliSec;
+    private static double ttfirstframe = 0d;
+
 
     private CastHelper(Context mContext) {
         mAppContext = mContext.getApplicationContext();
@@ -171,7 +178,13 @@ public class CastHelper {
     }
 
     public void setCastSessionManager() {
-        mCastContext.getSessionManager().addSessionManagerListener(mSessionManagerListener, CastSession.class);
+        try {
+            mCastContext.getSessionManager().addSessionManagerListener(mSessionManagerListener, CastSession.class);
+        } catch (NullPointerException npe) {
+            Log.e(TAG, getClass().getCanonicalName() + " " + npe.getMessage());
+        } catch (Exception e) {
+            Log.e(TAG, getClass().getCanonicalName() + " " + e.getMessage());
+        }
     }
 
     public void removeCastSessionManager() {
@@ -344,6 +357,7 @@ public class CastHelper {
             launchSingeRemoteMedia(binder, videoUrl, filmId, currentPosition, true);
         }
 
+
     }
 
 
@@ -364,12 +378,12 @@ public class CastHelper {
         try {
             customData.put(CastingUtils.MEDIA_KEY, filmId);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
         }
         try {
             customData.put(CastingUtils.PARAM_KEY, paramLink);
         } catch (JSONException e) {
-            e.printStackTrace();
+           Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
         }
         getRemoteMediaClient().load(CastingUtils.buildMediaInfo(title,
                 appName,
@@ -378,6 +392,27 @@ public class CastHelper {
                 customData,
                 mAppContext), true, currentPosition);
         getRemoteMediaClient().addListener(remoteListener);
+
+        try {
+            mStreamId = appCMSPresenterComponenet.getStreamingId(binder.getContentData().getGist().getTitle());
+        } catch (Exception e) {
+            Log.e(TAG, "Error retrieving stream data: " + e.getMessage());
+            mStreamId = filmId + appCMSPresenterComponenet.getCurrentTimeStamp();
+        }
+        mStopBufferMilliSec = new Date().getTime();
+        appCMSPresenterComponenet.sendBeaconMessage(filmId,
+                binder.getContentData().getGist().getPermalink(),
+                beaconScreenName,
+                currentPosition,
+                true,
+                AppCMSPresenter.BeaconEvent.PLAY,
+                "Video",
+                null,
+                null,
+                null,
+                null,
+                0d,
+                0);
     }
 
     public void openRemoteController() {
@@ -386,7 +421,7 @@ public class CastHelper {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Error opening remote controller: " + e.getMessage());
             }
             if (!CastingUtils.isRemoteMediaControllerOpen) {
                 Intent intent = new Intent(mActivity, ExpandedControlsActivity.class);
@@ -415,13 +450,19 @@ public class CastHelper {
             @Override
             public void onMetadataUpdated() {
                 try {
-                    JSONObject getRemoteObject = CastContext.getSharedInstance(mAppContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().getCurrentItem().getCustomData();
+                    JSONObject getRemoteObject = CastContext.getSharedInstance(mAppContext)
+                            .getSessionManager()
+                            .getCurrentCastSession()
+                            .getRemoteMediaClient()
+                            .getCurrentItem()
+                            .getCustomData();
                     CastingUtils.castingMediaId = getRemoteObject.getString(CastingUtils.MEDIA_KEY);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(TAG, e.getLocalizedMessage());
                 }
                 if (listCompareRelatedVideosId != null) {
-                    playIndexPosition = listCompareRelatedVideosId.indexOf(CastingUtils.castingMediaId);
+                    playIndexPosition = listCompareRelatedVideosId
+                            .indexOf(CastingUtils.castingMediaId);
                 }
 
                 Log.d(TAG, "Remote Media listener-" + "onMetadataUpdated");
@@ -576,16 +617,29 @@ public class CastHelper {
                     if (!TextUtils.isEmpty(currentRemoteMediaId)) {
                         appCMSPresenterComponenet.updateWatchedTime(currentRemoteMediaId,
                                 castCurrentDuration);
-                        appCMSPresenterComponenet.sendBeaconPingMessage(currentRemoteMediaId,
+                     /*   appCMSPresenterComponenet.sendBeaconPingMessage(currentRemoteMediaId,
                                 currentMediaParamKey,
                                 beaconScreenName,
                                 castCurrentDuration,
-                                true);
+                                true);*/
+                        appCMSPresenterComponenet.sendBeaconMessage(currentRemoteMediaId,
+                                currentMediaParamKey,
+                                beaconScreenName,
+                                castCurrentDuration,
+                                true,
+                                AppCMSPresenter.BeaconEvent.PING,
+                                "Video",
+                                null,
+                                null,
+                                null,
+                                null,
+                                0d,
+                                0);
                     }
 
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "Error initializing progress indicators: " + e.getMessage());
             }
         };
     }
@@ -733,11 +787,27 @@ public class CastHelper {
                     String currentMediaParamKey = CastingUtils.getRemoteParamKey(mAppContext);
 
                     if (!TextUtils.isEmpty(currentRemoteMediaId)) {
-                        appCMSPresenterComponenet.sendBeaconPlayMessage(currentRemoteMediaId,
+                        mStopBufferMilliSec = new Date().getTime();
+                        System.out.println("Beacon diff on cast = " + (mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
+                        ttfirstframe = ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
+                       /* appCMSPresenterComponenet.sendBeaconPlayMessage(currentRemoteMediaId,
                                 currentMediaParamKey,
                                 beaconScreenName,
                                 castCurrentDuration,
-                                true);
+                                true);*/
+                        appCMSPresenterComponenet.sendBeaconMessage(currentRemoteMediaId,
+                                currentMediaParamKey,
+                                beaconScreenName,
+                                castCurrentDuration,
+                                true,
+                                AppCMSPresenter.BeaconEvent.FIRST_FRAME,
+                                "Video",
+                                null,
+                                null,
+                                null,
+                                null,
+                                ttfirstframe,
+                                0);
                         sentBeaconPlay = true;
                     }
                 }

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -18,13 +20,33 @@ import android.widget.TextView;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.customviews.AsteriskPasswordTransformation;
 import com.viewlift.views.customviews.ViewCreator;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by viewlift on 7/27/17.
  */
 
 public class AppCMSEditProfileFragment extends DialogFragment {
+
+    @BindView(R.id.app_cms_edit_profile_page_title)
+    TextView titleTextView;
+
+    @BindView(R.id.app_cms_edit_profile_name_input)
+    EditText appCMSEditProfileNameInput;
+
+    @BindView(R.id.app_cms_edit_profile_email_input)
+    EditText appCMSEditProfileEmailInput;
+
+    @BindView(R.id.edit_profile_confirm_change_button)
+    Button editProfileConfirmChangeButton;
+
+    @BindView(R.id.app_cms_edit_profile_main_layout)
+    RelativeLayout appCMSEditProfileMainLayout;
+
     public static AppCMSEditProfileFragment newInstance(Context context,
                                                         String username,
                                                         String email) {
@@ -38,40 +60,49 @@ public class AppCMSEditProfileFragment extends DialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
+
+        ButterKnife.bind(this, view);
 
         final AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
-        int bgColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor());
-        int buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
-        int textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+        int bgColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
+                .getBackgroundColor());
+        int buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
+                .getBlockTitleColor());
+        int textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
+                .getTextColor());
 
         Bundle args = getArguments();
         String username = args.getString(getContext().getString(R.string.app_cms_edit_profile_username_key));
         String email = args.getString(getContext().getString(R.string.app_cms_password_reset_email_key));
 
-        TextView titleTextView = (TextView) view.findViewById(R.id.app_cms_edit_profile_page_title);
         titleTextView.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
                 .getBrand().getGeneral().getTextColor()));
 
-        final EditText appCMSEditProfileNameInput = (EditText) view.findViewById(R.id.app_cms_edit_profile_name_input);
         if (!TextUtils.isEmpty(email)) {
             appCMSEditProfileNameInput.setText(username);
         }
 
-        final EditText appCMSEditProfileEmailInput = (EditText) view.findViewById(R.id.app_cms_edit_profile_email_input);
         if (!TextUtils.isEmpty(email)) {
             appCMSEditProfileEmailInput.setText(email);
         }
-        final EditText password = new EditText(view.getContext());
-        Button editProfileConfirmChangeButton = (Button) view.findViewById(R.id.edit_profile_confirm_change_button);
+
+        TextInputLayout textInputLayout = new TextInputLayout(view.getContext());
+        TextInputEditText password = new TextInputEditText(view.getContext());
+
+        textInputLayout.addView(password);
+        textInputLayout.setPasswordVisibilityToggleEnabled(true);
+        password.setTransformationMethod(new AsteriskPasswordTransformation());
+
         editProfileConfirmChangeButton.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
             builder.setCancelable(false);
-            builder.setView(password)
+            builder.setView(textInputLayout)
                     .setTitle("Verify your password to Continue")
                     .setPositiveButton("Proceed", (dialog, position) -> {
                         appCMSPresenter.updateUserProfile(appCMSEditProfileNameInput.getText().toString(),
@@ -88,16 +119,15 @@ public class AppCMSEditProfileFragment extends DialogFragment {
                     .create().show();
         });
 
-        editProfileConfirmChangeButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor, buttonColor));
+        editProfileConfirmChangeButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor,
+                buttonColor));
         editProfileConfirmChangeButton.setBackgroundColor(buttonColor);
-        setBgColor(bgColor, view);
+        setBgColor(bgColor);
 
         return view;
     }
 
-    private void setBgColor(int bgColor, View view) {
-        RelativeLayout appCMSEditProfileMainLayout =
-                (RelativeLayout) view.findViewById(R.id.app_cms_edit_profile_main_layout);
+    private void setBgColor(int bgColor) {
         appCMSEditProfileMainLayout.setBackgroundColor(bgColor);
     }
 }

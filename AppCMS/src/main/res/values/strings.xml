@@ -79,6 +79,8 @@
     <string name="opensans_semibold_ttf">fonts/OpenSans-Semibold.ttf</string>
     <string name="opensans_extrabold_ttf">fonts/OpenSans-ExtraBold.ttf</string>
     <string name="opensans_regular_ttf">fonts/OpenSans-Regular.ttf</string>
+    <string name="helvaticaneu_bold">fonts/HelveticaNeu-Bold.ttf</string>
+    <string name="helvaticaneu_italic">fonts/HelveticaNeu-Italic.ttf</string>
     <string name="search_button_text">GO</string>
     <string name="bg_color_key">bg_color</string>
     <string name="button_color_key">button_color</string>
@@ -140,6 +142,9 @@
     <string name="app_cms_new_password_input_text_hint">New Password</string>
     <string name="app_cms_confirm_password_input_text_hint">Confirm Password</string>
     <string name="app_cms_confirm_password_button_text">Change Password</string>
+
+    <!--User Management - Closed Captions-->
+    <string name="app_cms_closed_captions_toggle_button_key">closedCaptionsToggle</string>
 
     <!-- AppCMS Video Detail API -->
     <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
@@ -238,7 +243,7 @@
     <string name="app_cms_confirm_alert_dialog_button_text">OK</string>
     <string name="app_cms_cancel_alert_dialog_button_text">CANCEL</string>
     <string name="app_cms_cancel_subscription_confirmation_message">You have cancelled your subscription.</string>
-    s
+
     <string name="app_cms_cancel_subscription_not_subscribed_message">You are currently not subscribed to any plans.</string>
     <string name="app_cms_cancel_subscription_subscription_not_valid_message">Please check that the device is registered with a valid Gmail account.</string>
     <string name="app_cms_subscribtion_title">Subscription</string>
@@ -314,7 +319,7 @@
     <string name="app_cms_default_download_quality">720p</string>
     <string name="app_cms_download_queue_toast_message">%1$s has been queued for download.</string>
     <string name="app_cms_download_already_queued_toast_message">%1$s has already been queued for download.</string>
-    <string name="app_cms_subscription_cancel_for_google_play_user_dialog">Please login as the Google Play user used to make this subscription to cancel.</string>
+    <string name="app_cms_subscription_cancel_for_google_play_user_dialog">Please login as the Google Play user used to create this subscription to cancel.</string>
     <string name="app_cms_subscription_google_play_cancel_title">Google Play User is Not Logged In</string>
 
     <!-- CCAvenue Constant Strings -->
@@ -330,6 +335,16 @@
     <string name="app_cms_plan_id">plan_id</string>
     <string name="app_cms_rsa_trans_url">https://test.ccavenue.com/transaction/initTrans</string>
     <string name="app_cms_ccavenue_payment_success">ccavenue_payment_success</string>
+    <string name="app_cms_unknown_subscription_for_upgrade_title">Cannot Upgrade the Subscription</string>
+    <string name="app_cms_unknown_subscription_for_upgrade_text">The origin of the current subscription can not be determined and an upgrade can not be performed at the moment.  Please try again later or contact support for help.</string>
+    <string name="app_cms_unknown_subscription_for_cancellation_title">Cannot Cancel the Subscription</string>
+    <string name="app_cms_unknown_subscription_for_cancellation_text">The origin of the current subscription can not be determined and a cancellation can be performed at the moment.  Please try again later or contact support for help.</string>
     <!--<string name="app_cms_rsa_trans_url">https://secure.ccavenue.com/transaction/initTrans</string>-->
 
+    <!-- content rating -->
+    <string name="content_rating_back">Back</string>
+    <string name="content_rating_text_warning">WARNING</string>
+    <string name="content_rating_viewer_discretion">Viewer Discretion Is Advised</string>
+    <string name="video_player_content_rating_key">video_player_content_rating</string>
+    <string name="content_rating_description">The following may contain:&#160;</string>
 </resources>
