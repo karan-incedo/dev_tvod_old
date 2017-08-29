@@ -1592,7 +1592,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             signupFromFacebook = true;
             LoginManager.getInstance().logInWithReadPermissions(currentActivity,
-                    Arrays.asList("public_profile", "user_friends"));
+                    Arrays.asList("public_profile", "email", "user_friends"));
         }
     }
 
