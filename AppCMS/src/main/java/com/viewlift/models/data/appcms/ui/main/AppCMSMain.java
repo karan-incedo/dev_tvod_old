@@ -138,10 +138,6 @@ public class AppCMSMain {
         this.pageEndpoint = pageEndpoint;
     }
 
-    public String getInternalName() {
-        return internalName;
-    }
-
     public void setInternalName(String internalName) {
         this.internalName = internalName;
     }

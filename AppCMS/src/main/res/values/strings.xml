@@ -179,6 +179,9 @@
     <string name="app_cms_apptentive_api_key">dfde9505539f2dc1d24700c09fb096b5280ed4cbed0828084540ada79a2b00f7</string>
     <string name="app_cms_button_color_key">app_cms_button_color</string>
 
+    <!-- x-api-key -->
+    <string name="x_api_key">vdTAMerEdh8t5t7xtUAa199qBKQuFLXb5cuG93ZF</string>
+
     <!-- Google Authentication API -->
     <string name="google_authentication_refresh_token_api">https://accounts.google.com/o/oauth2/token</string>
     <string name="google_authentication_refresh_token_api_grant_type">refresh_token</string>
@@ -292,9 +295,12 @@
 
     <!-- cast receiver -->
     <string name="chromecast_receiver_app_id">0974224E</string>
-    <string name="app_cms_signup_invalid_email_and_password_message">Please enter a valid email and password.</string>
-    <string name="app_cms_signup_invalid_email_message">Please enter a valid email.</string>
-    <string name="app_cms_signup_invalid_password_message">Please enter a valid password.</string>
+    <string name="app_cms_signup_invalid_email_and_password_message">Please enter a non-blank email and password.</string>
+    <string name="app_cms_signup_invalid_email_message">Please enter a non-blank email.</string>
+    <string name="app_cms_signup_blank_password_message">Please enter a non-blank password.</string>
+    <string name="app_cms_signup_email_matches_password_message">Please enter a password that is not the same as your email address.</string>
+    <string name="app_cms_signup_name_matches_password_message">Please enter a password that is not the same your name.</string>
+    <string name="app_cms_signup_invalid_password_message">Please enter a password that is at least 10 characters in length, has one lower case letter, one upper case letter, one digit, and of the following special characters: ! ” # $ % &amp; ‘ ( ) * + , - . / : ; &lt; = &gt; ? @ [ \ ] ^ _ ` { | } ~.</string>
     <string name="loading_video_text">Loading Video</string>
     <string name="app_cms_download_write_external_storage_permission_rationale_message">May we request permission to access your external storage to download the video?</string>
     <string name="app_cms_download_external_storage_write_permission_info_error_title">Download to External Storage</string>

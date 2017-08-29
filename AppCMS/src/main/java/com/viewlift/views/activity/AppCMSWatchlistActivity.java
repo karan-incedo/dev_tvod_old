@@ -71,7 +71,7 @@ public class AppCMSWatchlistActivity extends AppCompatActivity {
 
         final String url = getString(R.string.app_cms_watchlist_api_url,
                 appCMSPresenter.getAppCMSMain().getApiBaseUrl(),
-                appCMSPresenter.getAppCMSMain().getInternalName(),
+                appCMSPresenter.getAppCMSSite().getGist().getSiteInternalName(),
                 null);
         Log.d(TAG, "handleIntent: " + url);
 
