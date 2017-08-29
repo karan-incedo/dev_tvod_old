@@ -3,6 +3,7 @@ package com.viewlift.casting;
 import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
@@ -20,6 +21,8 @@ import java.util.List;
 
 
 public class CastingUtils {
+
+    private static final String TAG = "CastingUtils";
 
     public static String MEDIA_KEY = "media_key";
     public static String PARAM_KEY = "param_key";
@@ -54,7 +57,7 @@ public class CastingUtils {
                     seasonObj.put(PARAM_KEY, detailsRelatedVideoData.get(i).getGist().getPermalink());
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "");
                 }
 
                 if (getPlayingUrl(detailsRelatedVideoData.get(i)) != null && !TextUtils.isEmpty(getPlayingUrl(detailsRelatedVideoData.get(i)))) {
@@ -91,7 +94,7 @@ public class CastingUtils {
             medoaInfoCustomData.put(PARAM_KEY, contentData.getGist().getPermalink());
 
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error retrieving media information: " + e.getMessage());
         }
         if (contentData != null) {
             titleMediaInfo = contentData.getGist().getTitle();
@@ -171,14 +174,14 @@ public class CastingUtils {
             getRemoteObject = CastContext.getSharedInstance(mContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().getCurrentItem().getCustomData();
             remoteMediaId = getRemoteObject.getString(CastingUtils.MEDIA_KEY);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error retrieving media information: " + e.getMessage());
         }
 
         try {
             getRemoteObject = CastContext.getSharedInstance(mContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().getMediaInfo().getCustomData();
             remoteMediaId = getRemoteObject.getString(CastingUtils.MEDIA_KEY);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error retrieving remote media object: " + e.getMessage());
         }
         return remoteMediaId;
     }
@@ -190,14 +193,14 @@ public class CastingUtils {
             getRemoteObject = CastContext.getSharedInstance(mContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().getCurrentItem().getCustomData();
             remoteParamKey = getRemoteObject.getString(CastingUtils.PARAM_KEY);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error retrieving remote media object: " + e.getMessage());
         }
 
         try {
             getRemoteObject = CastContext.getSharedInstance(mContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().getMediaInfo().getCustomData();
             remoteParamKey = getRemoteObject.getString(CastingUtils.PARAM_KEY);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error retrieving remote media object: " + e.getMessage());
         }
         return remoteParamKey;
     }
