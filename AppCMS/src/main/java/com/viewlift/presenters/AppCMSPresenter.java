@@ -100,6 +100,7 @@ import com.viewlift.models.data.appcms.history.AppCMSDeleteHistoryResult;
 import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
 import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
+import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionResult;
 import com.viewlift.models.data.appcms.subscriptions.Receipt;
@@ -377,6 +378,7 @@ public class AppCMSPresenter {
     private boolean loadFromFile;
     private boolean loadingPage;
     private AppCMSMain appCMSMain;
+    private AppCMSSite appCMSSite;
     private Queue<MetaPage> pagesToProcess;
     private Map<String, AppCMSPageUI> navigationPages;
     private Map<String, AppCMSPageAPI> navigationPageData;
@@ -690,7 +692,7 @@ public class AppCMSPresenter {
             updateHistoryRequest.setUserId(getLoggedInUser(currentActivity));
             updateHistoryRequest.setWatchedTime(watchedTime);
             updateHistoryRequest.setVideoId(filmId);
-            updateHistoryRequest.setSiteOwner(appCMSMain.getInternalName());
+            updateHistoryRequest.setSiteOwner(appCMSSite.getGist().getSiteInternalName());
 
             String url = currentActivity.getString(R.string.app_cms_update_watch_history_api_url,
                     appCMSMain.getApiBaseUrl());
@@ -731,12 +733,12 @@ public class AppCMSPresenter {
             refreshIdentity(getRefreshToken(currentActivity),
                     () -> {
                         String url = currentActivity.getString(R.string.app_cms_video_status_api_url,
-                                appCMSMain.getApiBaseUrl(), filmId, appCMSMain.getInternalName());
+                                appCMSMain.getApiBaseUrl(), filmId, appCMSSite.getGist().getSiteInternalName());
                         appCMSUserVideoStatusCall.call(url, getAuthToken(currentActivity), responseAction);
                     });
         } else {
             String url = currentActivity.getString(R.string.app_cms_video_status_api_url,
-                    appCMSMain.getApiBaseUrl(), filmId, appCMSMain.getInternalName());
+                    appCMSMain.getApiBaseUrl(), filmId, appCMSSite.getGist().getSiteInternalName());
             appCMSUserVideoStatusCall.call(url, getAuthToken(currentActivity), responseAction);
         }
     }
@@ -745,11 +747,11 @@ public class AppCMSPresenter {
         appCMSUserDownloadVideoStatusCall.call(filmId, this, responseAction, userId);
     }
 
-    public void signinAnonymousUser(final AppCMSMain main) {
+    public void signinAnonymousUser() {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_anonymous_auth_token_api_url,
-                    main.getApiBaseUrl(),
-                    main.getInternalName());
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSSite.getGist().getSiteInternalName());
             appCMSAnonymousAuthTokenCall.call(url, anonymousAuthTokenResponse -> {
                 try {
                     if (anonymousAuthTokenResponse != null) {
@@ -762,36 +764,28 @@ public class AppCMSPresenter {
         }
     }
 
-    public void signinAnonymousUser(final Activity activity,
-                                    final AppCMSMain main,
-                                    int tryCount,
+    public void signinAnonymousUser(int tryCount,
                                     Uri searchQuery,
                                     PlatformType platformType) {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_anonymous_auth_token_api_url,
-                    main.getApiBaseUrl(),
-                    main.getInternalName());
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSSite.getGist().getSiteInternalName());
             appCMSAnonymousAuthTokenCall.call(url, anonymousAuthTokenResponse -> {
                 if (anonymousAuthTokenResponse != null) {
                     setAnonymousUserToken(currentActivity, anonymousAuthTokenResponse.getAuthorizationToken());
                     if (tryCount == 0) {
                         if (platformType == PlatformType.ANDROID) {
-                            getAppCMSAndroid(activity,
-                                    main,
-                                    tryCount + 1);
+                            getAppCMSAndroid(tryCount + 1);
                         } else if (platformType == PlatformType.TV) {
-                            getAppCMSTV(activity,
-                                    main,
-                                    tryCount + 1);
+                            getAppCMSTV(tryCount + 1);
                         }
                     } else {
                         showDialog(DialogType.NETWORK, null, false, null);
                     }
                 } else {
                     if (platformType == PlatformType.TV) {
-                        getAppCMSTV(activity,
-                                main,
-                                tryCount + 1);
+                        getAppCMSTV(tryCount + 1);
                     }
                 }
             });
@@ -1131,7 +1125,7 @@ public class AppCMSPresenter {
                         AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
                         getPageIdContent(appCMSMain.getApiBaseUrl(),
                                 actionToPageAPIUrlMap.get(action),
-                                appCMSMain.getInternalName(),
+                                appCMSSite.getGist().getSiteInternalName(),
                                 false,
                                 pagePath,
                                 new AppCMSPageAPIAction(appbarPresent,
@@ -1662,13 +1656,13 @@ public class AppCMSPresenter {
             intent.putExtra(AvenuesParams.CURRENCY, currencyCode);
             //intent.putExtra(AvenuesParams.AMOUNT, "500");
             intent.putExtra(AvenuesParams.AMOUNT, strAmount);
-            intent.putExtra(currentActivity.getString(R.string.app_cms_site_name), appCMSMain.getInternalName());
+            intent.putExtra(currentActivity.getString(R.string.app_cms_site_name), appCMSSite.getGist().getSiteInternalName());
             intent.putExtra(currentActivity.getString(R.string.app_cms_user_id), getLoggedInUser(currentActivity));
             intent.putExtra(currentActivity.getString(R.string.app_cms_plan_id), planToPurchase);
             intent.putExtra("plan_to_purchase_name", planToPurchaseName);
 
 
-            intent.putExtra("siteId", appCMSMain.getInternalName());
+            intent.putExtra("siteId", appCMSSite.getGist().getSiteInternalName());
             intent.putExtra("email", getLoggedInUserEmail(currentActivity));
             intent.putExtra("authorizedUserName", getLoggedInUser(currentActivity));
             intent.putExtra("x-api-token", apikey);
@@ -1760,7 +1754,7 @@ public class AppCMSPresenter {
                             appCMSSubscriptionPlanCall.call(
                                     currentActivity.getString(R.string.app_cms_cancel_subscription_api_url,
                                             appCMSMain.getApiBaseUrl(),
-                                            appCMSMain.getInternalName(),
+                                            appCMSSite.getGist().getSiteInternalName(),
                                             currentActivity.getString(R.string.app_cms_subscription_platform_key)),
                                     R.string.app_cms_subscription_plan_cancel_key,
                                     subscriptionRequest,
@@ -1823,7 +1817,7 @@ public class AppCMSPresenter {
 
         final String url = currentActivity.getString(R.string.app_cms_edit_watchlist_api_url,
                 appCMSMain.getApiBaseUrl(),
-                appCMSMain.getInternalName(),
+                appCMSSite.getGist().getSiteInternalName(),
                 getLoggedInUser(currentActivity),
                 filmId);
 
@@ -2574,7 +2568,7 @@ public class AppCMSPresenter {
         final String url = currentActivity.getString(R.string.app_cms_edit_history_api_url,
                 appCMSMain.getApiBaseUrl(),
                 getLoggedInUser(currentActivity),
-                appCMSMain.getInternalName(),
+                appCMSSite.getGist().getSiteInternalName(),
                 filmId);
 
         try {
@@ -2622,7 +2616,7 @@ public class AppCMSPresenter {
     public void clearWatchlist(final Action1<AppCMSAddToWatchlistResult> resultAction1) {
         final String url = currentActivity.getString(R.string.app_cms_clear_watchlist_api_url,
                 appCMSMain.getApiBaseUrl(),
-                appCMSMain.getInternalName(),
+                appCMSSite.getGist().getSiteInternalName(),
                 getLoggedInUser(currentActivity));
 
         try {
@@ -2807,7 +2801,7 @@ public class AppCMSPresenter {
         final String url = currentActivity.getString(R.string.app_cms_clear_history_api_url,
                 appCMSMain.getApiBaseUrl(),
                 getLoggedInUser(currentActivity),
-                appCMSMain.getInternalName());
+                appCMSSite.getGist().getSiteInternalName());
 
         try {
             DeleteHistoryRequest request = new DeleteHistoryRequest();
@@ -2844,7 +2838,7 @@ public class AppCMSPresenter {
 
             getWatchlistPageContent(appCMSMain.getApiBaseUrl(),
                     pageIdToPageAPIUrlMap.get(pageId),
-                    appCMSMain.getInternalName(),
+                    appCMSSite.getGist().getSiteInternalName(),
                     true,
                     getPageId(appCMSPageUI), new AppCMSWatchlistAPIAction(false,
                             false,
@@ -3031,7 +3025,7 @@ public class AppCMSPresenter {
             AppCMSPageUI appCMSPageUI = navigationPages.get(historyMetaPage.getPageId());
             getHistoryPageContent(appCMSMain.getApiBaseUrl(),
                     historyMetaPage.getPageAPI(),
-                    appCMSMain.getInternalName(),
+                    appCMSSite.getGist().getSiteInternalName(),
                     true,
                     getPageId(appCMSPageUI),
                     new AppCMSHistoryAPIAction(true,
@@ -3064,7 +3058,7 @@ public class AppCMSPresenter {
 
             getHistoryPageContent(appCMSMain.getApiBaseUrl(),
                     pageIdToPageAPIUrlMap.get(pageId),
-                    appCMSMain.getInternalName(),
+                    appCMSSite.getGist().getSiteInternalName(),
                     true,
                     getPageId(appCMSPageUI), new AppCMSHistoryAPIAction(false,
                             false,
@@ -3198,7 +3192,7 @@ public class AppCMSPresenter {
 
             if (!launchSuccess) {
                 Log.e(TAG, "Failed to launch page: " + subscriptionPage.getPageName());
-                launchErrorActivity(currentActivity, platformType);
+                launchErrorActivity(platformType);
             }
         }
     }
@@ -3340,7 +3334,7 @@ public class AppCMSPresenter {
                     deeplinkSearchQuery);
             if (!launchSuccess) {
                 Log.e(TAG, "Failed to launch page: " + loginPage.getPageName());
-                launchErrorActivity(currentActivity, platformType);
+                launchErrorActivity(platformType);
             }
         }
     }
@@ -3349,7 +3343,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_forgot_password_api_url,
                     appCMSMain.getApiBaseUrl(),
-                    appCMSMain.getInternalName());
+                    appCMSSite.getGist().getSiteInternalName());
             appCMSResetPasswordCall.call(url,
                     email,
                     forgotPasswordResponse -> {
@@ -3382,7 +3376,7 @@ public class AppCMSPresenter {
                     try {
                         String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
                                 appCMSMain.getApiBaseUrl(),
-                                appCMSMain.getInternalName());
+                                appCMSSite.getGist().getSiteInternalName());
                         appCMSUserIdentityCall.callGet(url,
                                 getAuthToken(currentActivity),
                                 userIdentity -> {
@@ -3399,7 +3393,7 @@ public class AppCMSPresenter {
             } else {
                 String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
                         appCMSMain.getApiBaseUrl(),
-                        appCMSMain.getInternalName());
+                        appCMSSite.getGist().getSiteInternalName());
                 appCMSUserIdentityCall.callGet(url,
                         getAuthToken(currentActivity),
                         userIdentity -> {
@@ -3423,7 +3417,7 @@ public class AppCMSPresenter {
                 try {
                     String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
                             appCMSMain.getApiBaseUrl(),
-                            appCMSMain.getInternalName());
+                            appCMSSite.getGist().getSiteInternalName());
                     UserIdentity userIdentity = new UserIdentity();
                     userIdentity.setName(username);
                     userIdentity.setEmail(email);
@@ -3469,7 +3463,7 @@ public class AppCMSPresenter {
     public void updateUserPassword(final String oldPassword, final String newPassword,
                                    final String confirmPassword) {
         String url = currentActivity.getString(R.string.app_cms_change_password_api_url,
-                appCMSMain.getApiBaseUrl(), appCMSMain.getInternalName());
+                appCMSMain.getApiBaseUrl(), appCMSSite.getGist().getSiteInternalName());
 
         if (confirmPassword.equals(newPassword)) {
             UserIdentityPassword userIdentityPassword = new UserIdentityPassword();
@@ -3556,7 +3550,7 @@ public class AppCMSPresenter {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             getPageIdContent(appCMSMain.getApiBaseUrl(),
                     pageIdToPageAPIUrlMap.get(pageId),
-                    appCMSMain.getInternalName(),
+                    appCMSSite.getGist().getSiteInternalName(),
                     true,
                     getPageId(appCMSPageUI),
                     new AppCMSPageAPIAction(appbarPresent,
@@ -3768,21 +3762,23 @@ public class AppCMSPresenter {
         }
     }
 
-    public void launchErrorActivity(Activity activity, PlatformType platformType) {
-        if (platformType == PlatformType.ANDROID) {
-            try {
-                sendCloseOthersAction(null, false);
-                Intent errorIntent = new Intent(activity, AppCMSErrorActivity.class);
-                activity.startActivity(errorIntent);
-            } catch (Exception e) {
-                Log.e(TAG, "DialogType launching Mobile DialogType Activity");
-            }
-        } else if (platformType == PlatformType.TV) {
-            try {
-                Intent errorIntent = new Intent(activity, Class.forName(tvErrorScreenPackage));
-                activity.startActivity(errorIntent);
-            } catch (Exception e) {
-                Log.e(TAG, "DialogType launching TV DialogType Activity");
+    public void launchErrorActivity(PlatformType platformType) {
+        if (currentActivity != null) {
+            if (platformType == PlatformType.ANDROID) {
+                try {
+                    sendCloseOthersAction(null, false);
+                    Intent errorIntent = new Intent(currentActivity, AppCMSErrorActivity.class);
+                    currentActivity.startActivity(errorIntent);
+                } catch (Exception e) {
+                    Log.e(TAG, "DialogType launching Mobile DialogType Activity");
+                }
+            } else if (platformType == PlatformType.TV) {
+                try {
+                    Intent errorIntent = new Intent(currentActivity, Class.forName(tvErrorScreenPackage));
+                    currentActivity.startActivity(errorIntent);
+                } catch (Exception e) {
+                    Log.e(TAG, "DialogType launching TV DialogType Activity");
+                }
             }
         }
     }
@@ -4158,7 +4154,7 @@ public class AppCMSPresenter {
         } else if (context != null) {
             String url = currentActivity.getString(R.string.app_cms_facebook_login_api_url,
                     appCMSMain.getApiBaseUrl(),
-                    appCMSMain.getInternalName());
+                    appCMSSite.getGist().getSiteInternalName());
             appCMSFacebookLoginCall.call(url,
                     facebookAccessToken,
                     facebookUserId,
@@ -4246,7 +4242,7 @@ public class AppCMSPresenter {
             initiateItemPurchase();
         } else if (context != null) {
             String url = currentActivity.getString(R.string.app_cms_google_login_api_url,
-                    appCMSMain.getApiBaseUrl(), appCMSMain.getInternalName());
+                    appCMSMain.getApiBaseUrl(), appCMSSite.getGist().getSiteInternalName());
 
             appCMSGoogleLoginCall.call(url, googleAccessToken,
                     googleLoginResponse -> {
@@ -4596,7 +4592,7 @@ public class AppCMSPresenter {
 
             sendUpdateHistoryAction();
 
-            signinAnonymousUser(appCMSMain);
+            signinAnonymousUser();
 
             if (googleApiClient != null && googleApiClient.isConnected()) {
                 Auth.GoogleSignInApi.signOut(googleApiClient);
@@ -4696,18 +4692,15 @@ public class AppCMSPresenter {
             try {
                 if (main == null) {
                     Log.e(TAG, "DialogType retrieving main.json");
-                    launchErrorActivity(activity, platformType);
+                    launchErrorActivity(platformType);
                 } else if (TextUtils.isEmpty(main
                         .getAndroid())) {
                     Log.e(TAG, "AppCMS key for main not found");
-                    launchErrorActivity(activity, platformType);
+                    launchErrorActivity(platformType);
                 } else if (TextUtils.isEmpty(main
                         .getApiBaseUrl())) {
                     Log.e(TAG, "AppCMS key for API Base URL not found");
-                    launchErrorActivity(activity, platformType);
-                } else if (TextUtils.isEmpty(main.getInternalName())) {
-                    Log.e(TAG, "AppCMS key for API Site ID not found");
-                    launchErrorActivity(activity, platformType);
+                    launchErrorActivity(platformType);
                 } else {
                     appCMSMain = main;
                     String version = main.getVersion();
@@ -4716,12 +4709,7 @@ public class AppCMSPresenter {
                     Log.d(TAG, "OldVersion: " + oldVersion);
                     loadFromFile = appCMSMain.shouldLoadFromFile();
 
-                    appCMSSearchUrlComponent = DaggerAppCMSSearchUrlComponent.builder()
-                            .appCMSSearchUrlModule(new AppCMSSearchUrlModule(main.getApiBaseUrl(),
-                                    main.getInternalName(),
-                                    appCMSSearchCall))
-                            .build();
-                    getAppCMSSite(activity, main, platformType);
+                    getAppCMSSite(platformType);
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
@@ -4731,6 +4719,10 @@ public class AppCMSPresenter {
 
     public AppCMSMain getAppCMSMain() {
         return appCMSMain;
+    }
+
+    public AppCMSSite getAppCMSSite() {
+        return appCMSSite;
     }
 
     public boolean isPageAVideoPage(String pageName) {
@@ -5522,7 +5514,7 @@ public class AppCMSPresenter {
     public void finalizeSignupAfterCCAvenueSubscription(Intent data) {
         String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                 appCMSMain.getApiBaseUrl(),
-                appCMSMain.getInternalName());
+                appCMSSite.getGist().getSiteInternalName());
         startLoginAsyncTask(url,
                 subscriptionUserEmail,
                 subscriptionUserPassword,
@@ -5536,7 +5528,7 @@ public class AppCMSPresenter {
 //            appCMSSubscriptionPlanCall.call(
 //                    currentActivity.getString(R.string.app_cms_register_subscription_api_url,
 //                            appCMSMain.getApiBaseUrl(),
-//                            appCMSMain.getInternalName(),
+//                            appCMSSite.getGist().getSiteInternalName(),
 //                            currentActivity.getString(R.string.app_cms_subscription_platform_key)),
 //                    subscriptionCallType,
 //                    subscriptionRequest,
@@ -5575,7 +5567,7 @@ public class AppCMSPresenter {
             appCMSSubscriptionPlanCall.call(
                     currentActivity.getString(R.string.app_cms_register_subscription_api_url,
                             appCMSMain.getApiBaseUrl(),
-                            appCMSMain.getInternalName(),
+                            appCMSSite.getGist().getSiteInternalName(),
                             currentActivity.getString(R.string.app_cms_subscription_platform_key)),
                     subscriptionCallType,
                     subscriptionRequest,
@@ -5621,7 +5613,7 @@ public class AppCMSPresenter {
                                 launchType = LaunchType.LOGIN_AND_SIGNUP;
                                 String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                                         appCMSMain.getApiBaseUrl(),
-                                        appCMSMain.getInternalName());
+                                        appCMSSite.getGist().getSiteInternalName());
                                 startLoginAsyncTask(url,
                                         subscriptionUserEmail,
                                         subscriptionUserPassword,
@@ -5757,7 +5749,7 @@ public class AppCMSPresenter {
             } else {
                 String url = currentActivity.getString(R.string.app_cms_signup_api_url,
                         appCMSMain.getApiBaseUrl(),
-                        appCMSMain.getInternalName());
+                        appCMSSite.getGist().getSiteInternalName());
                 startLoginAsyncTask(url,
                         email,
                         password,
@@ -5778,7 +5770,7 @@ public class AppCMSPresenter {
                                 try {
                                     getPageIdContent(appCMSMain.getApiBaseUrl(),
                                             pageIdToPageAPIUrlMap.get(subscriptionPage.getPageId()),
-                                            appCMSMain.getInternalName(),
+                                            appCMSSite.getGist().getSiteInternalName(),
                                             true,
                                             subscriptionPage.getPageId(),
                                             appCMSPageAPI -> {
@@ -5809,7 +5801,7 @@ public class AppCMSPresenter {
                                                         appCMSSubscriptionPlanCall.call(
                                                                 currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
                                                                         appCMSMain.getApiBaseUrl(),
-                                                                        appCMSMain.getInternalName()),
+                                                                        appCMSSite.getGist().getSiteInternalName()),
                                                                 R.string.app_cms_subscription_subscribed_plan_key,
                                                                 null,
                                                                 apikey,
@@ -5899,7 +5891,7 @@ public class AppCMSPresenter {
                     try {
                         getPageIdContent(appCMSMain.getApiBaseUrl(),
                                 pageIdToPageAPIUrlMap.get(subscriptionPage.getPageId()),
-                                appCMSMain.getInternalName(),
+                                appCMSSite.getGist().getSiteInternalName(),
                                 true,
                                 subscriptionPage.getPageId(),
                                 appCMSPageAPI -> {
@@ -5932,7 +5924,7 @@ public class AppCMSPresenter {
                                         appCMSSubscriptionPlanCall.call(
                                                 currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
                                                         appCMSMain.getApiBaseUrl(),
-                                                        appCMSMain.getInternalName()),
+                                                        appCMSSite.getGist().getSiteInternalName()),
                                                 R.string.app_cms_subscription_subscribed_plan_key,
                                                 null,
                                                 apikey,
@@ -6036,7 +6028,7 @@ public class AppCMSPresenter {
                                    Action1<AppCMSPageAPI> appCMSPageAPIReadyAction) {
         getPageIdContent(appCMSMain.getApiBaseUrl(),
                 pageIdToPageAPIUrlMap.get(pageId),
-                appCMSMain.getInternalName(),
+                appCMSSite.getGist().getSiteInternalName(),
                 true,
                 getPageId(appCMSPageUI),
                 appCMSPageAPIReadyAction);
@@ -6046,7 +6038,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                     appCMSMain.getApiBaseUrl(),
-                    appCMSMain.getInternalName());
+                    appCMSSite.getGist().getSiteInternalName());
             startLoginAsyncTask(url,
                     email,
                     password,
@@ -6647,22 +6639,26 @@ public class AppCMSPresenter {
         currentActivity.startActivity(intent);
     }
 
-    private void getAppCMSSite(final Activity activity,
-                               final AppCMSMain main,
-                               final PlatformType platformType) {
+    private void getAppCMSSite(final PlatformType platformType) {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_site_api_url,
-                    main.getApiBaseUrl(),
-                    main.getDomainName());
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSMain.getDomainName());
             new GetAppCMSSiteAsyncTask(appCMSSiteCall,
                     appCMSSite -> {
                         try {
                             if (appCMSSite != null) {
+                                this.appCMSSite = appCMSSite;
                                 apikey = currentActivity.getString(R.string.x_api_key);
                                 AppCMSAPIComponent appCMSAPIComponent = DaggerAppCMSAPIComponent.builder()
-                                        .appCMSAPIModule(new AppCMSAPIModule(activity,
-                                                main.getApiBaseUrl(),
+                                        .appCMSAPIModule(new AppCMSAPIModule(currentActivity,
+                                                appCMSMain.getApiBaseUrl(),
                                                 apikey))
+                                        .build();
+                                appCMSSearchUrlComponent = DaggerAppCMSSearchUrlComponent.builder()
+                                        .appCMSSearchUrlModule(new AppCMSSearchUrlModule(appCMSMain.getApiBaseUrl(),
+                                                appCMSSite.getGist().getSiteInternalName(),
+                                                appCMSSearchCall))
                                         .build();
                                 appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
                                 appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
@@ -6670,15 +6666,15 @@ public class AppCMSPresenter {
                                 clearMaps();
                                 switch (platformType) {
                                     case ANDROID:
-                                        getAppCMSAndroid(activity, main, 0);
+                                        getAppCMSAndroid(0);
                                         break;
                                     case TV:
-                                        getAppCMSTV(activity, main, 0);
+                                        getAppCMSTV(0);
                                         break;
                                     default:
                                 }
                             } else {
-                                launchErrorActivity(activity, platformType);
+                                launchErrorActivity(platformType);
                             }
                         } catch (Exception e) {
                             Log.e(TAG, "Error retrieving AppCMS Site Info: " + e.getMessage());
@@ -6687,14 +6683,14 @@ public class AppCMSPresenter {
         }
     }
 
-    private void getAppCMSAndroid(final Activity activity, final AppCMSMain main, int tryCount) {
+    private void getAppCMSAndroid(int tryCount) {
         if (!isUserLoggedIn(currentActivity) && tryCount == 0) {
-            signinAnonymousUser(activity, main, tryCount, null, PlatformType.ANDROID);
+            signinAnonymousUser(tryCount, null, PlatformType.ANDROID);
         } else if (isUserLoggedIn(currentActivity) && shouldRefreshAuthToken() && tryCount == 0) {
-            refreshIdentity(getRefreshToken(activity),
+            refreshIdentity(getRefreshToken(currentActivity),
                     () -> {
                         try {
-                            getAppCMSAndroid(activity, main, tryCount + 1);
+                            getAppCMSAndroid(tryCount + 1);
                         } catch (Exception e) {
                             Log.e(TAG, "Error refreshing identity while attempting to retrieving AppCMS Android data: ");
                         }
@@ -6702,27 +6698,25 @@ public class AppCMSPresenter {
         } else {
             GetAppCMSAndroidUIAsyncTask.Params params =
                     new GetAppCMSAndroidUIAsyncTask.Params.Builder()
-                            .url(activity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                    main.getAndroid(),
-                                    main.getTimestamp()))
+                            .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
+                                    appCMSMain.getAndroid(),
+                                    appCMSMain.getTimestamp()))
                             .loadFromFile(loadFromFile)
                             .build();
-            Log.d(TAG, "Params: " + main.getAndroid() + " " + loadFromFile);
+            Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
             new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
                 try {
                     if (appCMSAndroidUI == null ||
                             appCMSAndroidUI.getMetaPages() == null ||
                             appCMSAndroidUI.getMetaPages().isEmpty()) {
                         Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
-                        launchErrorActivity(activity, platformType);
+                        launchErrorActivity(platformType);
                     } else {
                         initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
                         navigation = appCMSAndroidUI.getNavigation();
                         queueMetaPages(appCMSAndroidUI.getMetaPages());
                         Log.d(TAG, "Processing meta pages queue");
-                        processMetaPagesQueue(activity,
-                                main,
-                                loadFromFile,
+                        processMetaPagesQueue(loadFromFile,
                                 () -> {
                                     if (appCMSMain.getServiceType()
                                             .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
@@ -6740,7 +6734,7 @@ public class AppCMSPresenter {
                                                 if (!launchSuccess) {
                                                     Log.e(TAG, "Failed to launch page: "
                                                             + loginPage.getPageName());
-                                                    launchErrorActivity(currentActivity, platformType);
+                                                    launchErrorActivity(platformType);
                                                 }
                                             } else {
                                                 boolean launchSuccess = navigateToPage(homePage.getPageId(),
@@ -6755,7 +6749,7 @@ public class AppCMSPresenter {
                                                 if (!launchSuccess) {
                                                     Log.e(TAG, "Failed to launch page: "
                                                             + loginPage.getPageName());
-                                                    launchErrorActivity(currentActivity, platformType);
+                                                    launchErrorActivity(platformType);
                                                 }
                                             }
                                         });
@@ -6773,7 +6767,7 @@ public class AppCMSPresenter {
                                             if (!launchSuccess) {
                                                 Log.e(TAG, "Failed to launch page: "
                                                         + loginPage.getPageName());
-                                                launchErrorActivity(currentActivity, platformType);
+                                                launchErrorActivity(platformType);
                                             }
                                         } else {
                                             boolean launchSuccess = navigateToPage(homePage.getPageId(),
@@ -6788,7 +6782,7 @@ public class AppCMSPresenter {
                                             if (!launchSuccess) {
                                                 Log.e(TAG, "Failed to launch page: "
                                                         + loginPage.getPageName());
-                                                launchErrorActivity(currentActivity, platformType);
+                                                launchErrorActivity(platformType);
                                             }
                                         }
                                     }
@@ -6866,9 +6860,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private void processMetaPagesQueue(final Activity activity,
-                                       final AppCMSMain main,
-                                       final boolean loadFromFile,
+    private void processMetaPagesQueue(final boolean loadFromFile,
                                        final Action0 onPagesFinishedAction) {
         final MetaPage metaPage = pagesToProcess.remove();
 
@@ -6880,9 +6872,9 @@ public class AppCMSPresenter {
         pageIdToPageAPIUrlMap.put(metaPage.getPageId(), metaPage.getPageAPI());
         pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
 
-        getAppCMSPage(activity.getString(R.string.app_cms_url_with_appended_timestamp,
+        getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
                 metaPage.getPageUI(),
-                main.getTimestamp()),
+                appCMSMain.getTimestamp()),
                 appCMSPageUI -> {
                     try {
                         navigationPages.put(metaPage.getPageId(), appCMSPageUI);
@@ -6897,9 +6889,7 @@ public class AppCMSPresenter {
                         }
                         if (!pagesToProcess.isEmpty()) {
 
-                            processMetaPagesQueue(activity,
-                                    main,
-                                    loadFromFile,
+                            processMetaPagesQueue(loadFromFile,
                                     onPagesFinishedAction);
                         } else {
                             onPagesFinishedAction.call();
@@ -7026,29 +7016,27 @@ public class AppCMSPresenter {
         pageIdToPageNameMap.clear();
     }
 
-    private void getAppCMSTV(final Activity activity,
-                             final AppCMSMain main,
-                             int tryCount) {
+    private void getAppCMSTV(int tryCount) {
         if (!isUserLoggedIn(currentActivity) && tryCount == 0) {
-            signinAnonymousUser(activity, main, tryCount, null, PlatformType.TV);
+            signinAnonymousUser(tryCount, null, PlatformType.TV);
         } else if (isUserLoggedIn(currentActivity) && shouldRefreshAuthToken() && tryCount == 0) {
-            refreshIdentity(getRefreshToken(activity),
-                    () -> getAppCMSTV(activity, main, tryCount + 1));
+            refreshIdentity(getRefreshToken(currentActivity),
+                    () -> getAppCMSTV(tryCount + 1));
         } else {
             GetAppCMSAndroidUIAsyncTask.Params params =
                     new GetAppCMSAndroidUIAsyncTask.Params.Builder()
-                            .url(activity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                    main.getFireTv(),
-                                    main.getTimestamp()))
+                            .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
+                                    appCMSMain.getFireTv(),
+                                    appCMSMain.getTimestamp()))
                             .loadFromFile(loadFromFile)
                             .build();
-            Log.d(TAG, "Params: " + main.getAndroid() + " " + loadFromFile);
+            Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
             new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
                 if (appCMSAndroidUI == null ||
                         appCMSAndroidUI.getMetaPages() == null ||
                         appCMSAndroidUI.getMetaPages().isEmpty()) {
                     Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
-                    launchErrorActivity(activity, PlatformType.TV);
+                    launchErrorActivity(PlatformType.TV);
                 } else {
                     if (appCMSAndroidUI.getAnalytics() != null) {
                         initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
@@ -7064,9 +7052,7 @@ public class AppCMSPresenter {
                     queueMetaPages(appCMSAndroidUI.getMetaPages());
                     final MetaPage firstPage = pagesToProcess.peek();
                     Log.d(TAG, "Processing meta pages queue");
-                    processMetaPagesQueue(activity,
-                            main,
-                            loadFromFile,
+                    processMetaPagesQueue(loadFromFile,
                             () -> {
                                 Log.d(TAG, "Launching first page: " + firstPage.getPageName());
                                 cancelInternalEvents();
@@ -7083,7 +7069,7 @@ public class AppCMSPresenter {
                                 if (!launchSuccess) {
                                     Log.e(TAG, "Failed to launch page: "
                                             + firstPage.getPageName());
-                                    launchErrorActivity(currentActivity, PlatformType.TV);
+                                    launchErrorActivity(PlatformType.TV);
                                 }
                             });
                 }
@@ -7122,7 +7108,7 @@ public class AppCMSPresenter {
 
                 getPageIdContent(appCMSMain.getApiBaseUrl(),
                         pageIdToPageAPIUrlMap.get(pageId),
-                        appCMSMain.getInternalName(),
+                        appCMSSite.getGist().getSiteInternalName(),
                         true,
                         getPageId(appCMSPageUI),
                         new AppCMSPageAPIAction(true,
@@ -7517,7 +7503,7 @@ public class AppCMSPresenter {
                 AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
                 getPageIdContent(appCMSMain.getApiBaseUrl(),
                         actionToPageAPIUrlMap.get(action),
-                        appCMSMain.getSite(),
+                        appCMSSite.getGist().getSiteInternalName(),
                         false,
                         pagePath,
                         new AppCMSPageAPIAction(appbarPresent,
@@ -7735,13 +7721,13 @@ public class AppCMSPresenter {
         } else if (currentActivity != null &&
                 !loadingPage && appCMSMain != null &&
                 !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
-                !TextUtils.isEmpty(appCMSMain.getInternalName())) {
+                !TextUtils.isEmpty(appCMSSite.getGist().getSiteInternalName())) {
             result = true;
             final String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
             String url = currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
                     appCMSMain.getApiBaseUrl(),
                     filmId,
-                    appCMSMain.getInternalName());
+                    appCMSSite.getGist().getSiteInternalName());
             GetAppCMSStreamingInfoAsyncTask.Params params =
                     new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
             new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall,
