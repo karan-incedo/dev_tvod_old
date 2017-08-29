@@ -96,42 +96,30 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private static final int DEFAULT_PRIMARY_PAGE_INDEX = 1;
     private static final int DEFAULT_SECONDARY_PAGE_INDEX = 2;
     private static final int DEFAULT_SEARCH_INDEX = 3;
-
+    @BindView(R.id.app_cms_parent_layout)
+    RelativeLayout appCMSParentLayout;
+    @BindView(R.id.app_cms_page_loading_progressbar)
+    ProgressBar loadingProgressBar;
+    @BindView(R.id.app_cms_parent_view)
+    RelativeLayout appCMSParentView;
+    @BindView(R.id.app_cms_fragment)
+    FrameLayout appCMSFragment;
+    @BindView(R.id.app_cms_appbarlayout)
+    AppBarLayout appBarLayout;
+    @BindView(R.id.app_cms_tab_nav_container)
+    LinearLayout appCMSTabNavContainer;
+    @BindView(R.id.ll_media_route_button)
+    LinearLayout ll_media_route_button;
+    @BindView(R.id.media_route_button)
+    ImageButton mMediaRouteButton;
+    @BindView(R.id.app_cms_close_button)
+    ImageButton closeButton;
+    @BindView(R.id.app_cms_cast_conroller)
+    FrameLayout appCMSCastController;
     private int navPageIndex;
     private int firstPrimaryPageIndex;
     private int secondPrimaryPageIndex;
     private int searchPageIndex;
-
-    @BindView(R.id.app_cms_parent_layout)
-    RelativeLayout appCMSParentLayout;
-
-    @BindView(R.id.app_cms_page_loading_progressbar)
-    ProgressBar loadingProgressBar;
-
-    @BindView(R.id.app_cms_parent_view)
-    RelativeLayout appCMSParentView;
-
-    @BindView(R.id.app_cms_fragment)
-    FrameLayout appCMSFragment;
-
-    @BindView(R.id.app_cms_appbarlayout)
-    AppBarLayout appBarLayout;
-
-    @BindView(R.id.app_cms_tab_nav_container)
-    LinearLayout appCMSTabNavContainer;
-
-    @BindView(R.id.ll_media_route_button)
-    LinearLayout ll_media_route_button;
-
-    @BindView(R.id.media_route_button)
-    ImageButton mMediaRouteButton;
-
-    @BindView(R.id.app_cms_close_button)
-    ImageButton closeButton;
-
-    @BindView(R.id.app_cms_cast_conroller)
-    FrameLayout appCMSCastController;
-
     private AppCMSPresenter appCMSPresenter;
     private Stack<String> appCMSBinderStack;
     private Map<String, AppCMSBinder> appCMSBinderMap;
@@ -159,10 +147,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_appcms_page);
 
-        navPageIndex = getResources().getInteger(R.integer.nav_page_index);
         firstPrimaryPageIndex = getResources().getInteger(R.integer.first_primary_page_index);
         secondPrimaryPageIndex = getResources().getInteger(R.integer.second_primary_page_index);
         searchPageIndex = getResources().getInteger(R.integer.search_page_index);
+        navPageIndex = getResources().getInteger(R.integer.nav_page_index);
 
         ButterKnife.bind(this);
         appCMSPresenter = ((AppCMSApplication) getApplication())
@@ -1245,42 +1233,45 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getScreenName());
                         usePageIdQueryParam = false;
                     }
-                    appCMSPresenter.getPageIdContent(appCMSMain.getApiBaseUrl(),
-                            endPoint,
-                            appCMSSite.getGist().getSiteInternalName(),
-                            usePageIdQueryParam,
-                            appCMSBinder.getPagePath(),
-                            appCMSPageAPI -> {
-                                if (appCMSPageAPI != null) {
-                                    boolean updatedHistory = false;
-                                    if (appCMSPresenter.isUserLoggedIn(this)) {
-                                        if (appCMSPageAPI.getModules() != null) {
-                                            for (Module module : appCMSPageAPI.getModules()) {
-                                                AppCMSUIKeyType moduleType = appCMSPresenter.getJsonValueKeyMap().get(module.getModuleType());
-                                                if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY ||
-                                                        moduleType == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
-                                                    if (module.getContentData() != null &&
-                                                            !module.getContentData().isEmpty()) {
-                                                        appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
-                                                            if (appCMSHistoryResult != null) {
-                                                                AppCMSPageAPI historyAPI =
-                                                                        appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
-                                                                historyAPI.getModules().get(0).setId(module.getId());
-                                                                appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);
-                                                                appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
-                                                            }
-                                                        });
-                                                        updatedHistory = true;
+
+                    if (!TextUtils.isEmpty(endPoint)) {
+                        appCMSPresenter.getPageIdContent(appCMSMain.getApiBaseUrl(),
+                                endPoint,
+                                appCMSSite.getGist().getSiteInternalName(),
+                                usePageIdQueryParam,
+                                appCMSBinder.getPagePath(),
+                                appCMSPageAPI -> {
+                                    if (appCMSPageAPI != null) {
+                                        boolean updatedHistory = false;
+                                        if (appCMSPresenter.isUserLoggedIn(this)) {
+                                            if (appCMSPageAPI.getModules() != null) {
+                                                for (Module module : appCMSPageAPI.getModules()) {
+                                                    AppCMSUIKeyType moduleType = appCMSPresenter.getJsonValueKeyMap().get(module.getModuleType());
+                                                    if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY ||
+                                                            moduleType == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
+                                                        if (module.getContentData() != null &&
+                                                                !module.getContentData().isEmpty()) {
+                                                            appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
+                                                                if (appCMSHistoryResult != null) {
+                                                                    AppCMSPageAPI historyAPI =
+                                                                            appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
+                                                                    historyAPI.getModules().get(0).setId(module.getId());
+                                                                    appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);
+                                                                    appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
+                                                                }
+                                                            });
+                                                            updatedHistory = true;
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
+                                        if (!updatedHistory) {
+                                            appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
+                                        }
                                     }
-                                    if (!updatedHistory) {
-                                        appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
-                                    }
-                                }
-                            });
+                                });
+                    }
                 }
             }
         }
