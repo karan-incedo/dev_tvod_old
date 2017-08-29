@@ -53,6 +53,7 @@ import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
@@ -1216,6 +1217,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void updateData() {
         final AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+        final AppCMSSite appCMSSite = appCMSPresenter.getAppCMSSite();
 
         if (appCMSPresenter != null) {
             for (Map.Entry<String, AppCMSBinder> appCMSBinderEntry : appCMSBinderMap.entrySet()) {
@@ -1229,7 +1231,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     }
                     appCMSPresenter.getPageIdContent(appCMSMain.getApiBaseUrl(),
                             endPoint,
-                            appCMSMain.getInternalName(),
+                            appCMSSite.getGist().getSiteInternalName(),
                             usePageIdQueryParam,
                             appCMSBinder.getPagePath(),
                             appCMSPageAPI -> {
