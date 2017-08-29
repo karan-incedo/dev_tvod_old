@@ -4174,6 +4174,9 @@ public class AppCMSPresenter {
                                 refreshSubscriptionData(() -> {
                                     try {
                                         if (entitlementPendingVideoData != null) {
+                                            navigateToHomeToRefresh = false;
+                                            sendRefreshPageAction();
+                                            sendCloseOthersAction(null, true);
                                             launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
                                                     entitlementPendingVideoData.action,
                                                     entitlementPendingVideoData.filmTitle,
@@ -4263,6 +4266,9 @@ public class AppCMSPresenter {
                                         refreshSubscriptionData) {
                                     refreshSubscriptionData(() -> {
                                         if (entitlementPendingVideoData != null) {
+                                            navigateToHomeToRefresh = false;
+                                            sendRefreshPageAction();
+                                            sendCloseOthersAction(null, true);
                                             launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
                                                     entitlementPendingVideoData.action,
                                                     entitlementPendingVideoData.filmTitle,
