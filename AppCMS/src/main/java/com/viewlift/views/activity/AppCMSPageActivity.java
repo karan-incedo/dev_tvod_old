@@ -1233,7 +1233,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     if (!TextUtils.isEmpty(endPoint)) {
                         appCMSPresenter.getPageIdContent(appCMSMain.getApiBaseUrl(),
                                 endPoint,
-                                appCMSMain.getInternalName(),
+                                appCMSSite.getGist().getSiteInternalName(),
                                 usePageIdQueryParam,
                                 appCMSBinder.getPagePath(),
                                 appCMSPageAPI -> {
