@@ -74,7 +74,7 @@ public class AppCMSEditProfileFragment extends DialogFragment {
             builder.setView(password)
                     .setTitle("Verify your password to Continue")
                     .setPositiveButton("Proceed", (dialog, position) -> {
-                        appCMSPresenter.updateUserData(appCMSEditProfileNameInput.getText().toString(),
+                        appCMSPresenter.updateUserProfile(appCMSEditProfileNameInput.getText().toString(),
                                 appCMSEditProfileEmailInput.getText().toString(),
                                 password.getText().toString(),
                                 userIdentity -> {

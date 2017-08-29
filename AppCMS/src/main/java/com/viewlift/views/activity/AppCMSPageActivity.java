@@ -64,6 +64,7 @@ import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.NavBarItemView;
 import com.viewlift.views.customviews.ViewCreator;
+import com.viewlift.views.fragments.AppCMSChangePasswordFragment;
 import com.viewlift.views.fragments.AppCMSEditProfileFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSPageFragment;
@@ -274,37 +275,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
                 if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-                    CurrentDownloadingVideo currentDownloadingVideo =
-                            appCMSPresenter.getCurrentDownloadVideo();
 
-                    long downloadId = intent.getLongExtra(
-                            DownloadManager.EXTRA_DOWNLOAD_ID, 0);
-
-                    DownloadManager.Query currentDownloadQuery = new DownloadManager.Query();
-                    currentDownloadQuery.setFilterById(downloadId);
-                    Cursor currentDownloadsCursor = downloadManager.query(currentDownloadQuery);
-
-                    boolean matchingTitle = false;
-                    if (currentDownloadsCursor != null && currentDownloadsCursor.getCount() > 0) {
-                        currentDownloadsCursor.moveToFirst();
-
-                        for (int i = 0; i < currentDownloadsCursor.getCount() && !matchingTitle; i++) {
-                            int titleIndex = currentDownloadsCursor.getColumnIndex(DownloadManager.COLUMN_TITLE);
-                            if (titleIndex >= 0) {
-                                String itemTitle = currentDownloadsCursor.getString(titleIndex);
-                                if (itemTitle != null &&
-                                        currentDownloadingVideo != null &&
-                                        currentDownloadingVideo.getTitle() != null) {
-                                    matchingTitle = itemTitle.equals(currentDownloadingVideo.getTitle());
-                                }
-                            }
-                            currentDownloadsCursor.moveToNext();
-                        }
-                        currentDownloadsCursor.close();
-                    }
-                    if (matchingTitle) {
-                        appCMSPresenter.startNextDownload();
-                    }
                 }
             }
         };
@@ -822,11 +793,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                     appCMSPresenter.getLoggedInUserEmail(this));
                     break;
 
+                case CHANGE_PASSWORD:
+                    appCMSPageFragment = AppCMSChangePasswordFragment.newInstance();
+                    break;
+
                 case NONE:
                     appCMSPageFragment = AppCMSPageFragment.newInstance(this, appCMSBinder);
                     break;
 
                 default:
+                    break;
             }
 
             if (appCMSPageFragment != null) {

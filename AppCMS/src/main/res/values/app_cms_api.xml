@@ -41,6 +41,9 @@
     <!-- AppCMS Refresh Identity API -->
     <string name="app_cms_refresh_identity_api_url">%1$s/identity/refresh/%2$s</string>
 
+    <!--AppCMS Change Password API-->
+    <string name="app_cms_change_password_api_url">%1$s/identity/password?site%2$s</string>
+
     <!-- AppCMS Forgot Password API -->
     <string name="app_cms_forgot_password_api_url">%1$s/identity/password/forgot?site=%2$s</string>
 
