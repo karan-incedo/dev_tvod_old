@@ -1592,7 +1592,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             signupFromFacebook = true;
             LoginManager.getInstance().logInWithReadPermissions(currentActivity,
-                    Arrays.asList("public_profile", "user_friends"));
+                    Arrays.asList("public_profile", "user_friends", "email"));
         }
     }
 
@@ -4588,6 +4588,9 @@ public class AppCMSPresenter {
             setIsUserSubscribed(currentActivity, false);
             setExistingGooglePlaySubscriptionId(currentActivity, null);
             setActiveSubscriptionProcessor(currentActivity, null);
+
+            setFacebookAccessToken(currentActivity, null, null, null, null);
+            setGoogleAccessToken(currentActivity, null, null, null, null);
 
             sendUpdateHistoryAction();
 
