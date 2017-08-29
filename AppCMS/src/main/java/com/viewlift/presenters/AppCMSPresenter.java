@@ -1586,21 +1586,20 @@ public class AppCMSPresenter {
         try {
             String strAmount = Double.toString(planToPurchasePrice);
             Intent intent = new Intent(currentActivity,WebViewActivity.class);
+            //Intent intent = new Intent(currentActivity,PaymentOptionsActivity.class);
             intent.putExtra(AvenuesParams.CURRENCY, currencyCode);
-            //intent.putExtra(AvenuesParams.AMOUNT, "500");
             intent.putExtra(AvenuesParams.AMOUNT, strAmount);
             intent.putExtra(currentActivity.getString(R.string.app_cms_site_name),appCMSMain.getInternalName()) ;
             intent.putExtra(currentActivity.getString(R.string.app_cms_user_id),getLoggedInUser(currentActivity)) ;
             intent.putExtra(currentActivity.getString(R.string.app_cms_plan_id),planToPurchase) ;
             intent.putExtra("plan_to_purchase_name", planToPurchaseName);
-
-
             intent.putExtra("siteId", appCMSMain.getInternalName());
             intent.putExtra("email", getLoggedInUserEmail(currentActivity));
             intent.putExtra("authorizedUserName", getLoggedInUser(currentActivity));
             intent.putExtra("x-api-token", apikey);
             intent.putExtra("auth_token", getAuthToken(currentActivity));
             intent.putExtra("renewable",isRenewable) ;
+            //currentActivity.startActivity(intent);
             currentActivity.startActivityForResult(intent,1);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -1610,9 +1609,9 @@ public class AppCMSPresenter {
     public void initiateItemPurchase() {
 
         if (countryCode.equalsIgnoreCase("IN")) {
-
-            initiateCCAvenuePurchase () ;
-
+            if (currencyCode.equalsIgnoreCase("INR")) {
+                initiateCCAvenuePurchase();
+            }
         } else {
 
             if (currentActivity != null &&
@@ -5568,6 +5567,7 @@ public class AppCMSPresenter {
                 .build();
         new PostAppCMSLoginRequestAsyncTask(appCMSSignInCall,
                 signInResponse -> {
+
                     if (signInResponse == null) {
                         // Show log error
                         Log.e(TAG, "Email and password are not valid.");

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.viewlift">
@@ -10,62 +11,54 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-
     <application
-        android:name="com.viewlift.AppCMSApplication"
+        android:name=".AppCMSApplication"
         android:allowBackup="true"
         android:largeHeap="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:node="merge">
-
         <meta-data
             android:name="com.urbanairship.autopilot"
             android:value="com.viewlift.pushnotif.AppCMSAutoPilot" />
-
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
-
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="010453f0fe88d0a913753d705ba2c0cf368eb0c9" />
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name="com.viewlift.views.activity.AppCMSPageActivity"
+            android:name=".views.activity.AppCMSPageActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTask">
             <meta-data
                 android:name="android.app.default_searchable"
                 android:value="com.viewlift.views.activity.AppCMSSearchActivity" />
         </activity>
-
         <activity
-            android:name="com.viewlift.views.activity.AppCMSErrorActivity"
+            android:name=".views.activity.AppCMSErrorActivity"
             android:configChanges="orientation|screenSize" />
-
         <activity
-            android:name="com.viewlift.views.activity.AppCMSPlayVideoActivity"
+            android:name=".views.activity.AppCMSPlayVideoActivity"
             android:configChanges="orientation|screenSize" />
-
         <activity
-            android:name="com.viewlift.views.activity.AppCMSSearchActivity"
+            android:name=".views.activity.AppCMSSearchActivity"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
-            android:name="com.viewlift.casting.ExpandedControlsActivity"
+            android:name=".casting.ExpandedControlsActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:label="@string/app_name"
             android:launchMode="singleTask"
@@ -78,46 +71,41 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.viewlift.mobile.AppCMSLaunchActivity" />
         </activity>
-
         <activity
-            android:name="com.viewlift.views.activity.AppCMSWatchlistActivity"
+            android:name=".views.activity.AppCMSWatchlistActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH.Watchlist" />
             </intent-filter>
         </activity>
-
         <activity
+            android:name=".ccavenue.screens.WebViewActivity"
             android:label="@string/app_name"
-            android:name="com.viewlift.ccavenue.screens.WebViewActivity"
-            android:screenOrientation="portrait" >
-        </activity>
-
+            android:screenOrientation="portrait"></activity>
         <activity
+            android:name=".ccavenue.screens.StatusActivity"
             android:label="@string/app_name"
-            android:name="com.viewlift.ccavenue.screens.StatusActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
 
         <provider
-            android:name="com.viewlift.models.data.appcms.providers.AppCMSSearchableContentProvider"
+            android:name=".models.data.appcms.providers.AppCMSSearchableContentProvider"
             android:authorities="@string/app_cms_search_provider" />
 
-        <activity android:name="com.viewlift.views.activity.AppCMSHistoryActivity" />
+        <activity android:name=".views.activity.AppCMSHistoryActivity" />
 
-        <service android:name="com.viewlift.models.network.background.services.AppCMSBackgroundService" />
+        <service android:name=".models.network.background.services.AppCMSBackgroundService" />
 
-        <activity android:name="com.viewlift.views.activity.AutoplayActivity" />
-
+        <activity android:name=".views.activity.AutoplayActivity" />
         <activity
-            android:name="com.viewlift.views.activity.AppCMSDownloadQualityActivity"
+            android:name=".views.activity.AppCMSDownloadQualityActivity"
             android:theme="@style/TransparentTheme" />
 
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="com.viewlift.casting.CastOptionsProvider" />
 
+        <activity android:name=".ccavenue.screens.PaymentOptionsActivity"></activity>
     </application>
 
 </manifest>
