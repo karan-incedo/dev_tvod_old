@@ -579,21 +579,23 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     public void resetData(RecyclerView listView) {
         if (isHistory) {
             appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
-                listView.setAdapter(null);
-                List<ContentDatum> adapterDataTmp = null;
-                adapterData = appCMSHistoryResult.convertToAppCMSPageAPI(null).getModules().get(0).getContentData();
-                if (adapterData != null) {
-                    adapterDataTmp = new ArrayList<>(adapterData);
-                } else {
-                    adapterDataTmp = new ArrayList<>();
+                if (appCMSHistoryResult != null) {
+                    listView.setAdapter(null);
+                    List<ContentDatum> adapterDataTmp = null;
+                    adapterData = appCMSHistoryResult.convertToAppCMSPageAPI(null).getModules().get(0).getContentData();
+                    if (adapterData != null) {
+                        adapterDataTmp = new ArrayList<>(adapterData);
+                    } else {
+                        adapterDataTmp = new ArrayList<>();
+                    }
+                    adapterData = null;
+                    notifyDataSetChanged();
+                    adapterData = adapterDataTmp;
+                    sortData();
+                    notifyDataSetChanged();
+                    listView.setAdapter(this);
+                    listView.invalidate();
                 }
-                adapterData = null;
-                notifyDataSetChanged();
-                adapterData = adapterDataTmp;
-                sortData();
-                notifyDataSetChanged();
-                listView.setAdapter(this);
-                listView.invalidate();
             });
         } else {
             listView.setAdapter(null);
