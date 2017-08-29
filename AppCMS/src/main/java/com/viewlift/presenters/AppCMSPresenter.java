@@ -5703,8 +5703,7 @@ public class AppCMSPresenter {
 
     public void signup(String email, String password) {
         if (currentActivity != null) {
-            final String PASSWORD_VERIFICATION_REGEX =
-                    "^(?=[a-zA-Z!”#$%&'()*+,-./:;<=>?@\\\\\\[\\]^_`{|}~]*[0-9])(?=[A-Z0-9!”#$%&'()*+,-./:;<=>?@\\\\\\[\\]^_`{|}~]*[a-z])(?=[a-z0-9!”#$%&'()*+,-./:;<=>?@\\\\\\[\\]^_`{|}~]*[A-Z])(?=[a-zA-Z0-9]*[!”#$%&'()*+,-./:;<=>?@\\\\\\[\\]^_`{|}~])[0-9a-zA-Z!”#$%&'()*+,-./:;<=>?@\\\\\\[\\]^_`{|}~]{10,30}$";
+            final String PASSWORD_VERIFICATION_REGEX = "^\\S{5,50}$";
 
             String userName = getLoggedInUserName(currentActivity);
 

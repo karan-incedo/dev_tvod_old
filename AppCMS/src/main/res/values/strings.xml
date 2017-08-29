@@ -300,7 +300,7 @@
     <string name="app_cms_signup_blank_password_message">Please enter a non-blank password.</string>
     <string name="app_cms_signup_email_matches_password_message">Please enter a password that is not the same as your email address.</string>
     <string name="app_cms_signup_name_matches_password_message">Please enter a password that is not the same your name.</string>
-    <string name="app_cms_signup_invalid_password_message">Please enter a password that is at least 10 characters in length, has one lower case letter, one upper case letter, one digit, and of the following special characters: ! ” # $ % &amp; ‘ ( ) * + , - . / : ; &lt; = &gt; ? @ [ \ ] ^ _ ` { | } ~.</string>
+    <string name="app_cms_signup_invalid_password_message">Please enter a password that is between 5 to 50 characters in length.</string>
     <string name="loading_video_text">Loading Video</string>
     <string name="app_cms_download_write_external_storage_permission_rationale_message">May we request permission to access your external storage to download the video?</string>
     <string name="app_cms_download_external_storage_write_permission_info_error_title">Download to External Storage</string>
