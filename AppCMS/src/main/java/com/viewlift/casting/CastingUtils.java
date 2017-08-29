@@ -57,7 +57,7 @@ public class CastingUtils {
                     seasonObj.put(PARAM_KEY, detailsRelatedVideoData.get(i).getGist().getPermalink());
 
                 } catch (Exception e) {
-                    Log.e(TAG, "");
+                    Log.e(TAG, "Error create session JSON object: " + e.getMessage());
                 }
 
                 if (getPlayingUrl(detailsRelatedVideoData.get(i)) != null && !TextUtils.isEmpty(getPlayingUrl(detailsRelatedVideoData.get(i)))) {
