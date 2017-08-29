@@ -91,10 +91,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "AppCMSPageActivity";
 
-    private static final int NAV_PAGE_INDEX = 0;
-    private static final int HOME_PAGE_INDEX = 1;
-    private static final int MOVIES_PAGE_INDEX = 2;
-    private static final int SEARCH_INDEX = 3;
+    private static final int DEFAULT_NAV_PAGE_INDEX = 0;
+    private static final int DEFAULT_PRIMARY_PAGE_INDEX = 1;
+    private static final int DEFAULT_SECONDARY_PAGE_INDEX = 2;
+    private static final int DEFAULT_SEARCH_INDEX = 3;
+
+    private int navPageIndex;
+    private int firstPrimaryPageIndex;
+    private int secondPrimaryPageIndex;
+    private int searchPageIndex;
 
     @BindView(R.id.app_cms_parent_layout)
     RelativeLayout appCMSParentLayout;
@@ -152,6 +157,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_appcms_page);
+
+        navPageIndex = getResources().getInteger(R.integer.nav_page_index);
+        firstPrimaryPageIndex = getResources().getInteger(R.integer.first_primary_page_index);
+        secondPrimaryPageIndex = getResources().getInteger(R.integer.second_primary_page_index);
+        searchPageIndex = getResources().getInteger(R.integer.search_page_index);
 
         ButterKnife.bind(this);
         appCMSPresenter = ((AppCMSApplication) getApplication())
@@ -1089,8 +1099,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void createMenuNavItem() {
+        if (appCMSTabNavContainer.getChildCount() <= navPageIndex) {
+            navPageIndex = DEFAULT_NAV_PAGE_INDEX;
+        }
         final NavBarItemView menuNavBarItemView =
-                (NavBarItemView) appCMSTabNavContainer.getChildAt(NAV_PAGE_INDEX);
+                (NavBarItemView) appCMSTabNavContainer.getChildAt(navPageIndex);
         int highlightColor =
                 Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
         menuNavBarItemView.setImage(getString(R.string.app_cms_menu_icon_name));
@@ -1110,8 +1123,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void createHomeNavItem(final NavigationPrimary homePageNav) {
         if (homePageNav != null) {
+            if (appCMSTabNavContainer.getChildCount() <= firstPrimaryPageIndex) {
+                firstPrimaryPageIndex = DEFAULT_PRIMARY_PAGE_INDEX;
+            }
             final NavBarItemView homeNavBarItemView =
-                    (NavBarItemView) appCMSTabNavContainer.getChildAt(HOME_PAGE_INDEX);
+                    (NavBarItemView) appCMSTabNavContainer.getChildAt(firstPrimaryPageIndex);
             int highlightColor =
                     Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
             homeNavBarItemView.setImage(getString(R.string.app_cms_home_icon_name));
@@ -1129,8 +1145,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void createMoviesNavItem(final NavigationPrimary moviePageNav) {
         if (moviePageNav != null) {
+            if (appCMSTabNavContainer.getChildCount() <= secondPrimaryPageIndex) {
+                secondPrimaryPageIndex = DEFAULT_SECONDARY_PAGE_INDEX;
+            }
             final NavBarItemView moviesNavBarItemView =
-                    (NavBarItemView) appCMSTabNavContainer.getChildAt(MOVIES_PAGE_INDEX);
+                    (NavBarItemView) appCMSTabNavContainer.getChildAt(secondPrimaryPageIndex);
             int highlightColor =
                     Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
             moviesNavBarItemView.setImage(getString(R.string.app_cms_movies_icon_name));
@@ -1147,8 +1166,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void createSearchNavItem(String pageId) {
+        if (appCMSTabNavContainer.getChildCount() <= searchPageIndex) {
+            searchPageIndex = DEFAULT_SEARCH_INDEX;
+        }
         NavBarItemView searchNavBarItemView =
-                (NavBarItemView) appCMSTabNavContainer.getChildAt(SEARCH_INDEX);
+                (NavBarItemView) appCMSTabNavContainer.getChildAt(searchPageIndex);
         int highlightColor =
                 Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
         searchNavBarItemView.setImage(getString(R.string.app_cms_search_icon_name));
@@ -1177,7 +1199,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         if (!foundPage) {
             final NavBarItemView menuNavBarItemView =
-                    (NavBarItemView) appCMSTabNavContainer.getChildAt(NAV_PAGE_INDEX);
+                    (NavBarItemView) appCMSTabNavContainer.getChildAt(navPageIndex);
             selectNavItem(menuNavBarItemView);
         }
     }
