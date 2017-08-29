@@ -17,7 +17,6 @@ import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenRest;
-import com.viewlift.models.network.rest.AppCMSBeaconCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
 import com.viewlift.models.network.rest.AppCMSCCAvenueRest;
@@ -255,8 +254,13 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_download_quality_value_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_edit_profile_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_EDIT_PROFILE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_change_password_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_CHANGE_PASSWORD_KEY);
+        jsonValueKeyMap.put("emailValue", AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_TITLE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_cancel_subscription_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_upgrade_subscription_key),
