@@ -2428,10 +2428,10 @@ public class AppCMSPresenter {
                         contentDatum.getGist().getId());
                 long posterEnqueueId = downloadPosterImage(contentDatum.getGist().getPosterImageUrl(),
                         contentDatum.getGist().getId());
-                        /*
-                         * Inserting data in realm data object
-                         */
 
+                /*
+                 * Inserting data in realm data object
+                 */
                 createLocalEntry(
                         enqueueId,
                         thumbEnqueueId,
@@ -7293,6 +7293,7 @@ public class AppCMSPresenter {
                               int currentlyPlayingIndex,
                               long watchedTime) {
         sendCloseOthersAction(null, true);
+        isVideoPlayerStarted = false;
         if (!binder.isOffline()) {
             launchVideoPlayer(binder.getContentData(),
                     currentlyPlayingIndex,
