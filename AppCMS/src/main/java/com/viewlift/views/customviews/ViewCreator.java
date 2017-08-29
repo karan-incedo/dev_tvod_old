@@ -1480,30 +1480,6 @@ public class ViewCreator {
                         break;
 
                     case PAGE_SETTINGS_EDIT_PROFILE_KEY:
-                        if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken(context))) {
-                            componentViewResult.componentView.setVisibility(View.GONE);
-                            componentViewResult.shouldHideComponent = true;
-                        }
-
-                        if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken(context))) {
-                            componentViewResult.componentView.setVisibility(View.GONE);
-                            componentViewResult.shouldHideComponent = true;
-                        }
-
-                        componentViewResult.componentView.setOnClickListener(v -> {
-                            String[] extraData = new String[1];
-                            extraData[0] = component.getKey();
-                            appCMSPresenter.launchButtonSelectedAction(null,
-                                    component.getAction(),
-                                    null,
-                                    extraData,
-                                    null,
-                                    false,
-                                    0,
-                                    null);
-                        });
-                        break;
-
                     case PAGE_SETTINGS_CHANGE_PASSWORD_KEY:
                         if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken(context))) {
                             componentViewResult.componentView.setVisibility(View.GONE);
