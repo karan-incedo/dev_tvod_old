@@ -1592,7 +1592,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             signupFromFacebook = true;
             LoginManager.getInstance().logInWithReadPermissions(currentActivity,
-                    Arrays.asList("public_profile", "user_friends", "email"));
+                    Arrays.asList("public_profile", "email", "user_friends"));
         }
     }
 
@@ -4588,6 +4588,8 @@ public class AppCMSPresenter {
             setIsUserSubscribed(currentActivity, false);
             setExistingGooglePlaySubscriptionId(currentActivity, null);
             setActiveSubscriptionProcessor(currentActivity, null);
+            setFacebookAccessToken(currentActivity, null, null, null, null);
+            setGoogleAccessToken(currentActivity, null, null, null, null);
 
             setFacebookAccessToken(currentActivity, null, null, null, null);
             setGoogleAccessToken(currentActivity, null, null, null, null);
@@ -5063,7 +5065,12 @@ public class AppCMSPresenter {
                     message = optionalMessage;
                     break;
 
-                case SIGNUP:
+                case SIGNUP_BLANK_EMAIL_PASSWORD:
+                case SIGNUP_BLANK_EMAIL:
+                case SIGNUP_BLANK_PASSWORD:
+                case SIGNUP_EMAIL_MATCHES_PASSWORD:
+                case SIGNUP_PASSWORD_INVALID:
+                case SIGNUP_NAME_MATCHES_PASSWORD:
                     title = currentActivity.getString(R.string.app_cms_signup_error_title);
                     message = optionalMessage;
                     break;
@@ -5703,18 +5710,47 @@ public class AppCMSPresenter {
 
     public void signup(String email, String password) {
         if (currentActivity != null) {
+            final String PASSWORD_VERIFICATION_REGEX =
+                    "^(?=[a-zA-Z!”#$%&'()*+,-./:;<=>?@\\\\\\[\\]^_`{|}~]*[0-9])(?=[A-Z0-9!”#$%&'()*+,-./:;<=>?@\\\\\\[\\]^_`{|}~]*[a-z])(?=[a-z0-9!”#$%&'()*+,-./:;<=>?@\\\\\\[\\]^_`{|}~]*[A-Z])(?=[a-zA-Z0-9]*[!”#$%&'()*+,-./:;<=>?@\\\\\\[\\]^_`{|}~])[0-9a-zA-Z!”#$%&'()*+,-./:;<=>?@\\\\\\[\\]^_`{|}~]{5,30}$";
+
+            String userName = getLoggedInUserName(currentActivity);
+
             if (TextUtils.isEmpty(email) && TextUtils.isEmpty(password)) {
-                showDialog(DialogType.SIGNUP,
+                showDialog(DialogType.SIGNUP_BLANK_EMAIL_PASSWORD,
                         currentActivity.getString(R.string.app_cms_signup_invalid_email_and_password_message),
                         false,
                         null);
             } else if (TextUtils.isEmpty(email)) {
-                showDialog(DialogType.SIGNUP,
+                showDialog(DialogType.SIGNUP_BLANK_EMAIL,
                         currentActivity.getString(R.string.app_cms_signup_invalid_email_message),
                         false,
                         null);
             } else if (TextUtils.isEmpty(password)) {
-                showDialog(DialogType.SIGNUP,
+                showDialog(DialogType.SIGNUP_BLANK_PASSWORD,
+                        currentActivity.getString(R.string.app_cms_signup_blank_password_message),
+                        false,
+                        null);
+            } else if (!TextUtils.isEmpty(userName) &&
+                    userName.equals(password)) {
+                showDialog(DialogType.SIGNUP_NAME_MATCHES_PASSWORD,
+                        currentActivity.getString(R.string.app_cms_signup_name_matches_password_message),
+                        false,
+                        null);
+            } else if (!TextUtils.isEmpty(email) &&
+                    !TextUtils.isEmpty(password)) {
+                int atIndex = email.indexOf("@");
+                if (0 < atIndex) {
+                    String emailName = email.substring(0, atIndex);
+                    if (emailName.equals(password)) {
+                        showDialog(DialogType.SIGNUP_EMAIL_MATCHES_PASSWORD,
+                                currentActivity.getString(R.string.app_cms_signup_email_matches_password_message),
+                                false,
+                                null);
+                    }
+                }
+            } else if (!TextUtils.isEmpty(password) &&
+                    !password.matches(PASSWORD_VERIFICATION_REGEX)) {
+                showDialog(DialogType.SIGNUP_PASSWORD_INVALID,
                         currentActivity.getString(R.string.app_cms_signup_invalid_password_message),
                         false,
                         null);
@@ -6090,7 +6126,7 @@ public class AppCMSPresenter {
                             Log.e(TAG, "Email and password are not valid.");
                             if (!suppressErrorMessages) {
                                 if (signup) {
-                                    showDialog(DialogType.SIGNUP, currentActivity.getString(
+                                    showDialog(DialogType.SIGNUP_PASSWORD_INVALID, currentActivity.getString(
                                             R.string.app_cms_error_user_already_exists), false, null);
                                 } else {
                                     showDialog(DialogType.SIGNIN, currentActivity.getString(
@@ -6622,7 +6658,7 @@ public class AppCMSPresenter {
                     appCMSSite -> {
                         try {
                             if (appCMSSite != null) {
-                                apikey = appCMSSite.getGist().getAppAccess().getAppSecretKey();
+                                apikey = currentActivity.getString(R.string.x_api_key);
                                 AppCMSAPIComponent appCMSAPIComponent = DaggerAppCMSAPIComponent.builder()
                                         .appCMSAPIModule(new AppCMSAPIModule(activity,
                                                 main.getApiBaseUrl(),
@@ -7808,7 +7844,12 @@ public class AppCMSPresenter {
     public enum DialogType {
         NETWORK,
         SIGNIN,
-        SIGNUP,
+        SIGNUP_BLANK_EMAIL_PASSWORD,
+        SIGNUP_BLANK_EMAIL,
+        SIGNUP_BLANK_PASSWORD,
+        SIGNUP_EMAIL_MATCHES_PASSWORD,
+        SIGNUP_PASSWORD_INVALID,
+        SIGNUP_NAME_MATCHES_PASSWORD,
         RESET_PASSWORD,
         CANCEL_SUBSCRIPTION,
         SUBSCRIBE,
