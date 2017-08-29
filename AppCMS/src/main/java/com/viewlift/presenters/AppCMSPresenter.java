@@ -872,9 +872,10 @@ public class AppCMSPresenter {
                                     !TextUtils.isEmpty(contentDatum.getGist().getId())) {
                                 String filmId = contentDatum.getGist().getId();
                                 try {
-                                    DownloadVideoRealm downloadedVideo = realmController.getDownloadById(filmId);
+                                    DownloadVideoRealm downloadedVideo = realmController.getRealm()
+                                            .copyFromRealm(realmController.getDownloadById(filmId));
                                     if (downloadedVideo != null) {
-                                        if (isVideoOffline) {
+                                        if (isVideoOffline && !isNetworkConnected()) {
                                             long timeAfterDownloadMsec = System.currentTimeMillis() -
                                                     downloadedVideo.getDownloadDate();
 
