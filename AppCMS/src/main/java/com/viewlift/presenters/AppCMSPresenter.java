@@ -4145,7 +4145,8 @@ public class AppCMSPresenter {
                                           final String facebookAccessToken,
                                           final String facebookUserId,
                                           final String username,
-                                          final String email) {
+                                          final String email,
+                                          boolean refreshSubscriptionData) {
         if (launchType == LaunchType.SUBSCRIBE) {
             this.facebookAccessToken = facebookAccessToken;
             this.facebookUserId = facebookUserId;
@@ -4168,7 +4169,8 @@ public class AppCMSPresenter {
                             setLoggedInUserEmail(currentActivity, email);
 
                             if (appCMSMain.getServiceType()
-                                    .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
+                                    .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
+                                refreshSubscriptionData) {
                                 refreshSubscriptionData(() -> {
                                     try {
                                         if (entitlementPendingVideoData != null) {
@@ -4233,7 +4235,8 @@ public class AppCMSPresenter {
                                         final String googleAccessToken,
                                         final String googleUserId,
                                         final String googleUsername,
-                                        final String googleEmail) {
+                                        final String googleEmail,
+                                        boolean refreshSubscriptionData) {
 
         if (launchType == LaunchType.SUBSCRIBE) {
             this.googleAccessToken = googleAccessToken;
@@ -4256,7 +4259,8 @@ public class AppCMSPresenter {
                                 setLoggedInUserEmail(currentActivity, googleEmail);
 
                                 if (appCMSMain.getServiceType()
-                                        .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
+                                        .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
+                                        refreshSubscriptionData) {
                                     refreshSubscriptionData(() -> {
                                         if (entitlementPendingVideoData != null) {
                                             launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
@@ -4585,11 +4589,8 @@ public class AppCMSPresenter {
             setIsUserSubscribed(currentActivity, false);
             setExistingGooglePlaySubscriptionId(currentActivity, null);
             setActiveSubscriptionProcessor(currentActivity, null);
-            setFacebookAccessToken(currentActivity, null, null, null, null);
-            setGoogleAccessToken(currentActivity, null, null, null, null);
-
-            setFacebookAccessToken(currentActivity, null, null, null, null);
-            setGoogleAccessToken(currentActivity, null, null, null, null);
+            setFacebookAccessToken(currentActivity, null, null, null, null, false);
+            setGoogleAccessToken(currentActivity, null, null, null, null, false);
 
             sendUpdateHistoryAction();
 
@@ -5522,7 +5523,8 @@ public class AppCMSPresenter {
                 false,
                 false,
                 true,
-                true);
+                true,
+                false);
 
 
 //        try {
@@ -5621,20 +5623,23 @@ public class AppCMSPresenter {
                                         false,
                                         false,
                                         true,
-                                        true);
+                                        true,
+                                        false);
                             }
                             if (signupFromFacebook) {
                                 setFacebookAccessToken(currentActivity,
                                         facebookAccessToken,
                                         facebookUserId,
                                         facebookUsername,
-                                        facebookEmail);
+                                        facebookEmail,
+                                        false);
                             } else if (isSignupFromGoogle) {
                                 setGoogleAccessToken(currentActivity,
                                         googleAccessToken,
                                         googleUserId,
                                         googleUsername,
-                                        googleEmail);
+                                        googleEmail,
+                                        false);
                             }
                             subscriptionUserEmail = null;
                             subscriptionUserPassword = null;
@@ -5755,6 +5760,7 @@ public class AppCMSPresenter {
                         password,
                         true,
                         launchType == LaunchType.SUBSCRIBE,
+                        false,
                         false,
                         false);
             }
@@ -6045,7 +6051,8 @@ public class AppCMSPresenter {
                     false,
                     false,
                     false,
-                    false);
+                    false,
+                    true);
         }
     }
 
@@ -6103,7 +6110,8 @@ public class AppCMSPresenter {
                                      boolean signup,
                                      boolean followWithSubscription,
                                      boolean suppressErrorMessages,
-                                     boolean forceSubscribed) {
+                                     boolean forceSubscribed,
+                                     boolean refreshSubscriptionData) {
         PostAppCMSLoginRequestAsyncTask.Params params = new PostAppCMSLoginRequestAsyncTask.Params
                 .Builder()
                 .url(url)
@@ -6161,7 +6169,8 @@ public class AppCMSPresenter {
                                 initiateItemPurchase();
                             } else {
                                 if (appCMSMain.getServiceType()
-                                        .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
+                                        .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
+                                        refreshSubscriptionData) {
                                     refreshSubscriptionData(() -> {
                                         if (entitlementPendingVideoData != null) {
                                             navigateToHomeToRefresh = false;

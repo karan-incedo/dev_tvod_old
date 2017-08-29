@@ -334,7 +334,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         currentAccessToken.getToken(),
                                         currentAccessToken.getUserId(),
                                         username,
-                                        email);
+                                        email,
+                                        true);
                             });
                     Bundle parameters = new Bundle();
                     parameters.putString("fields", "id,name,email");
@@ -516,7 +517,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.setGoogleAccessToken(this, result.getSignInAccount().getIdToken(),
                         result.getSignInAccount().getId(),
                         result.getSignInAccount().getDisplayName(),
-                        result.getSignInAccount().getEmail());
+                        result.getSignInAccount().getEmail(),
+                        true);
             }
 
             if (FacebookSdk.isFacebookRequestCode(requestCode)) {
