@@ -159,7 +159,7 @@ public class AppCmsSearchFragment extends Fragment {
                 if (lastSearchedString.equals(editable.toString())) {
                     return;
                 }
-                if (editable.length() >= 3){
+                if (editable.toString().trim().length() >= 3){
                     if(appCMSPresenter.isNetworkConnected()){
                         handler.removeCallbacks(searcRunnable);
                         handler.postDelayed(searcRunnable,3000);
@@ -168,9 +168,11 @@ public class AppCmsSearchFragment extends Fragment {
                         appCMSPresenter.searchRetryDialog(editable.toString());
                     }
                 }else{
+                    lastSearchedString = "";
                     if(null != mRowsAdapter){
                         mRowsAdapter.clear();
                     }
+                    noSearchTextView.setVisibility(View.GONE);
                     progressBar.setVisibility(View.INVISIBLE);
                 }
             }
@@ -439,7 +441,7 @@ public class AppCmsSearchFragment extends Fragment {
     Runnable searcRunnable = new Runnable() {
         @Override
         public void run() {
-            if(editText.getText().toString().trim().length() > 2) {
+            if(editText.getText().toString().length() > 2) {
                 try {
                     if (searchTask != null && searchTask.getStatus() == AsyncTask.Status.RUNNING) {
                         searchTask.cancel(true);
@@ -461,7 +463,7 @@ public class AppCmsSearchFragment extends Fragment {
 
 
 
-    private static class SearchAsyncTask extends AsyncTask<String, Void, List<AppCMSSearchResult>> {
+    private class SearchAsyncTask extends AsyncTask<String, Void, List<AppCMSSearchResult>> {
         final Action1<List<AppCMSSearchResult>> dataReadySubscriber;
         final AppCMSSearchCall appCMSSearchCall;
 
@@ -485,7 +487,9 @@ public class AppCmsSearchFragment extends Fragment {
 
         @Override
         protected void onPostExecute(List<AppCMSSearchResult> result) {
-            Observable.just(result).subscribe(dataReadySubscriber);
+            if(isAdded()) {
+                Observable.just(result).subscribe(dataReadySubscriber);
+            }
         }
     }
 
@@ -513,11 +517,16 @@ public class AppCmsSearchFragment extends Fragment {
             {
                 AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(mContext);
                 browseFragment.setAdapter(mRowsAdapter);
-                getChildFragmentManager().beginTransaction().replace(R.id.appcms_search_results_container ,browseFragment ,"frag").commit();
+                getChildFragmentManager().beginTransaction().replace(R.id.appcms_search_results_container ,browseFragment ,"frag").commitAllowingStateLoss();
             }
         }
     }
 
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+
+    }
 
     private CustomHeaderItem customHeaderItem = null;
     public void createTrayModule(final Context context,

@@ -14,7 +14,6 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.views.adapters.AppCMSBaseAdapter;
-import com.viewlift.views.adapters.AppCMSViewAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -147,6 +146,11 @@ public class PageView extends BaseView {
             }
         }
         return null;
+    }
+
+    public void clearExistingViewLists() {
+        moduleViewMap.clear();
+        viewsWithComponentIds.clear();
     }
 
     public void addModuleViewWithModuleId(String moduleId, ModuleView moduleView) {

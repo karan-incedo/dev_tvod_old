@@ -1,6 +1,7 @@
 package com.viewlift.models.network.rest;
 
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
+import com.viewlift.models.data.appcms.ui.authentication.UserIdentityPassword;
 
 import java.util.Map;
 
@@ -16,9 +17,15 @@ import retrofit2.http.Url;
  */
 
 public interface AppCMSUserIdentityRest {
+
     @GET
     Call<UserIdentity> get(@Url String url, @HeaderMap Map<String, String> authHeaders);
-    @POST
-    Call<UserIdentity> post(@Url String url, @HeaderMap Map<String, String> authHeaders, @Body UserIdentity userIdentity);
 
+    @POST
+    Call<UserIdentity> post(@Url String url, @HeaderMap Map<String, String> authHeaders,
+                            @Body UserIdentity userIdentity);
+
+    @POST
+    Call<UserIdentityPassword> post(@Url String url, @HeaderMap Map<String, String> authHeaders,
+                                    @Body UserIdentityPassword userIdentityPassword);
 }

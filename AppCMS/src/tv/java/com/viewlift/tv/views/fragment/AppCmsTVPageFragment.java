@@ -107,7 +107,7 @@ public class AppCmsTVPageFragment extends Fragment {
                 && getChildFragmentManager().findFragmentByTag(mAppCMSBinder.getScreenName()) == null){
             AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(getActivity());
             browseFragment.setAdapter(appCmsViewComponent.tvviewCreator().mRowsAdapter);
-            getChildFragmentManager().beginTransaction().replace(R.id.appcms_browsefragment ,browseFragment ,mAppCMSBinder.getScreenName()).commit();
+            getChildFragmentManager().beginTransaction().replace(R.id.appcms_browsefragment ,browseFragment ,mAppCMSBinder.getScreenName()).commitAllowingStateLoss();
         }
         return tvPageView;
     }
@@ -116,7 +116,7 @@ public class AppCmsTVPageFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-      //  requestFocus();
+        requestFocus();
         if(null != appCMSPresenter)
         appCMSPresenter.sendStopLoadingPageAction();
     }
@@ -124,9 +124,13 @@ public class AppCmsTVPageFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        requestFocus();
     }
 
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        //super.onSaveInstanceState(outState);
+    }
 
     public void requestFocus(){
         new Handler().postDelayed(new Runnable() {
@@ -144,7 +148,6 @@ public class AppCmsTVPageFragment extends Fragment {
                         int moduleChild = moduleChildContaineer.getChildCount();
 
                         for(int j = 0; j < moduleChild; j++){
-
                             View view = moduleChildContaineer.getChildAt(j);
                             if(null != view){
                                 System.out.println("View isFocusable == "+view.isFocusable() + "TAG =  = == " + (view.getTag() != null ? view.getTag().toString() : null));
@@ -152,7 +155,6 @@ public class AppCmsTVPageFragment extends Fragment {
                                         view.getTag().toString().equalsIgnoreCase(getString(R.string.video_image_key))){
                                     ((FrameLayout)view).getChildAt(0).requestFocus();
                                     break;
-
                                 }
                                 else if(view.isFocusable()){
                                     view.requestFocus();
@@ -160,21 +162,13 @@ public class AppCmsTVPageFragment extends Fragment {
                                 }else{
                                     view.clearFocus();
                                 }
-                            }/*
-                            if(j == 3 && moduleChildContaineer.getChildAt(3) != null){
-                                moduleChildContaineer.getChildAt(3).requestFocus();
-                                break;
-                            }*/
+                            }
                         }
                     }
-
                 }
             }
-        } , 100);
+        } , 10);
     }
-
-
-
 
     @Override
     public void onDestroyView() {
@@ -187,7 +181,6 @@ public class AppCmsTVPageFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
     }
-
 
     public AppCMSTVViewComponent buildAppCMSViewComponent() {
         return DaggerAppCMSTVViewComponent.builder()

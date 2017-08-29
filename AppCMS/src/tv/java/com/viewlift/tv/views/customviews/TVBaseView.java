@@ -22,6 +22,7 @@ import com.viewlift.tv.utility.Utils;
 import java.util.Map;
 
 
+
 /**
  * Created by nitin.tyagi on 7/12/2017.
  */
@@ -57,13 +58,13 @@ public abstract class TVBaseView extends FrameLayout {
                 data.getGist().getPrimaryCategory() != null ?
                         data.getGist().getPrimaryCategory().getTitle() :
                         null;
-        boolean appendFirstSep = runtime > 0 &&
+        boolean appendFirstSep = runtime >= 0 &&
                 (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
-        boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year)) &&
+        boolean appendSecondSep = (runtime >= 0 || !TextUtils.isEmpty(year)) &&
                 !TextUtils.isEmpty(primaryCategory);
         StringBuffer infoText = new StringBuffer();
-        if (runtime > 0) {
-            infoText.append(runtime + " "+ context.getString(R.string.mins_abbreviation));
+        if (runtime >= 0) {
+            infoText.append(runtime + " " + context.getResources().getQuantityString(R.plurals.mins_abbreviation , (int)runtime));
         }
         if (appendFirstSep) {
             infoText.append(context.getString(R.string.text_separator));
@@ -78,7 +79,7 @@ public abstract class TVBaseView extends FrameLayout {
             infoText.append(primaryCategory.toUpperCase());
         }
         ((TextView) view).setText(infoText.toString());
-        view.setAlpha(0.6f);
+         view.setAlpha(0.6f);
         ((TextView) view).setLetterSpacing(LETTER_SPACING);
 
     }
@@ -145,6 +146,8 @@ public abstract class TVBaseView extends FrameLayout {
 
 
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
+        AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
+
         if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
                 componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY ) {
             if (viewWidth < 0) {
@@ -155,10 +158,16 @@ public abstract class TVBaseView extends FrameLayout {
                 AppCMSUIKeyType textAlignment = jsonValueKeyMap.get(childComponent.getTextAlignment());
                 switch(textAlignment){
                     case PAGE_TEXTALIGNMENT_LEFT_KEY:
-                        gravity = Gravity.LEFT;
+                        gravity = Gravity.LEFT ;
+                        if(componentKey == AppCMSUIKeyType.PAGE_VIDEO_TITLE_KEY){
+                            gravity = Gravity.LEFT | Gravity.CENTER_VERTICAL;
+                        }
                         break;
                     case PAGE_TEXTALIGNMENT_RIGHT_KEY:
-                        gravity = Gravity.RIGHT;
+                        gravity = Gravity.RIGHT ;
+                        if(componentKey == AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY){
+                            gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL;
+                        }
                         break;
                     case PAGE_TEXTALIGNMENT_CENTER_KEY:
                         gravity = Gravity.CENTER;
@@ -168,7 +177,6 @@ public abstract class TVBaseView extends FrameLayout {
             }
 
 
-            AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
             if (componentKey == null) {
                 componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }
@@ -197,10 +205,11 @@ public abstract class TVBaseView extends FrameLayout {
                 case PAGE_ADD_TO_WATCHLIST_KEY:
                 case PAGE_VIDEO_WATCH_TRAILER_KEY:
                     //viewWidth = FrameLayout.LayoutParams.WRAP_CONTENT;
-                    int padding = childComponent.getPadding();
+                    int padding = Utils.getViewXAxisAsPerScreen(getContext(),childComponent.getPadding());
                     view.setPadding(padding,padding,padding,padding);
                     break;
                 case PAGE_VIDEO_TITLE_KEY:
+                case PAGE_VIDEO_SUBTITLE_KEY:
                     viewWidth = DEVICE_WIDTH/2;
                     break;
                 default:

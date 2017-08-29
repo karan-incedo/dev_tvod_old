@@ -37,6 +37,8 @@ import jp.wasabeef.glide.transformations.BlurTransformation;
  */
 public class AutoplayFragment extends Fragment {
     private static final String TAG = "AutoplayFragment";
+    private static final int TOTAL_COUNTDOWN_IN_MILLIS = 13000;
+    private static final int COUNTDOWN_INTERVAL_IN_MILLIS = 1000;
     private FragmentInteractionListener fragmentInteractionListener;
     private AppCMSVideoPageBinder binder;
     private AppCMSPresenter appCMSPresenter;
@@ -44,15 +46,18 @@ public class AutoplayFragment extends Fragment {
     private PageView pageView;
     private OnPageCreation onPageCreation;
     private CountDownTimer countdownTimer;
-
-    private final int totalCountdownInMillis = 13000;
-    private final int countDownIntervalInMillis = 1000;
     private TextView tvCountdown;
 
-    public interface OnPageCreation {
-        void onSuccess(AppCMSVideoPageBinder binder);
+    public AutoplayFragment() {
+        // Required empty public constructor
+    }
 
-        void onError(AppCMSVideoPageBinder binder);
+    public static AutoplayFragment newInstance(Context context, AppCMSVideoPageBinder binder) {
+        AutoplayFragment fragment = new AutoplayFragment();
+        Bundle args = new Bundle();
+        args.putBinder(context.getString(R.string.fragment_page_bundle_key), binder);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -82,11 +87,6 @@ public class AutoplayFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
     }
-
-    public AutoplayFragment() {
-        // Required empty public constructor
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -157,7 +157,7 @@ public class AutoplayFragment extends Fragment {
     }
 
     private void startCountdown() {
-        countdownTimer = new CountDownTimer(totalCountdownInMillis, countDownIntervalInMillis) {
+        countdownTimer = new CountDownTimer(TOTAL_COUNTDOWN_IN_MILLIS, COUNTDOWN_INTERVAL_IN_MILLIS) {
 
             @Override
             public void onTick(long millisUntilFinished) {
@@ -221,12 +221,6 @@ public class AutoplayFragment extends Fragment {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
         if (binder != null && appCMSViewComponent.viewCreator() != null) {
@@ -253,18 +247,6 @@ public class AutoplayFragment extends Fragment {
         handleOrientation(newConfig.orientation);
     }
 
-    public static AutoplayFragment newInstance(Context context, AppCMSVideoPageBinder binder) {
-        AutoplayFragment fragment = new AutoplayFragment();
-        Bundle args = new Bundle();
-        args.putBinder(context.getString(R.string.fragment_page_bundle_key), binder);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public interface FragmentInteractionListener {
-        void onCountdownFinished();
-    }
-
     public AppCMSViewComponent buildAppCMSViewComponent() {
         return DaggerAppCMSViewComponent.builder()
                 .appCMSPageViewModule(new AppCMSPageViewModule(getContext(),
@@ -280,5 +262,15 @@ public class AutoplayFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         fragmentInteractionListener = null;
+    }
+
+    public interface OnPageCreation {
+        void onSuccess(AppCMSVideoPageBinder binder);
+
+        void onError(AppCMSVideoPageBinder binder);
+    }
+
+    public interface FragmentInteractionListener {
+        void onCountdownFinished();
     }
 }

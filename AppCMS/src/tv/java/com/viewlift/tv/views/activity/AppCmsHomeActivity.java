@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -59,12 +60,13 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     private Map<String, AppCMSBinder> appCMSBinderMap;
     private static final String DIALOG_FRAGMENT_TAG = "text_overlay";
     private AppCmsTvSearchComponent appCMSSearchUrlComponent;
+    private boolean isActive;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        isActive = true;
         Bundle args = getIntent().getBundleExtra(getString(R.string.app_cms_bundle_key));
         AppCMSBinder appCMSBinder = (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
         updatedAppCMSBinder = appCMSBinder;
@@ -113,11 +115,9 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     try {
                         updatedAppCMSBinder =
                                 (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
-                        /*if (isActive)*/ {
+                     if (isActive) {
                             handleLaunchPageAction(updatedAppCMSBinder);
-
                             //appCMSPresenter.sendStopLoadingPageAction(); //stop the progress bar..
-
                         }
                     } catch (ClassCastException e) {
                         Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
@@ -160,10 +160,36 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isActive = true;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isActive = false;
+    }
+
+    @Override
+    protected void onStop() {
+        if(isNavigationVisible()){
+            handleNavigationVisibility();
+        }
+        super.onStop();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+
+    }
+
     private void openErrorDialog(Intent intent){
         pageLoading(false);
         Bundle bundle = intent.getBundleExtra(getString(R.string.retryCallBundleKey));
         bundle.putBoolean(getString(R.string.retry_key) , true);
+        bundle.putBoolean(getString(R.string.register_internet_receiver_key) , true);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         AppCmsTvErrorFragment newFragment = AppCmsTvErrorFragment.newInstance(
                 bundle);
@@ -348,7 +374,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             String tag = getTag(appCMSBinder);
-            fragmentTransaction.replace(R.id.home_placeholder ,appCMSPageFragment,tag).addToBackStack(tag).commit();
+            fragmentTransaction.replace(R.id.home_placeholder ,appCMSPageFragment,tag).addToBackStack(tag).commitAllowingStateLoss();
         }else{
             if(null != appCMSPresenter)
                 appCMSPresenter.sendStopLoadingPageAction();
@@ -375,6 +401,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         //if navigation fragment is open then hold down key event otherwise pass it.
                        if(isNavigationVisible()){
                            handleNavigationVisibility();
+                           return true;
                        }
 
                         break;

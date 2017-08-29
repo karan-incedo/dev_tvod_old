@@ -58,7 +58,7 @@ public class AppCMSMainUICall {
     }
 
     @WorkerThread
-    public AppCMSMain call(Context context, String siteId) throws IOException {
+    public AppCMSMain call(Context context, String siteId, int tryCount) throws IOException {
         Date now = new Date();
         final String appCMSMainUrl = context.getString(R.string.app_cms_main_url,
                 context.getString(R.string.app_cms_baseurl),
@@ -82,12 +82,21 @@ public class AppCMSMainUICall {
                 future.get(connectionTimeout, TimeUnit.MILLISECONDS);
             } catch (TimeoutException e) {
                 Log.e(TAG, "Connection timed out: " + e.toString());
+                if (tryCount == 0) {
+                    return call(context, siteId, tryCount + 1);
+                }
                 return null;
             } catch (InterruptedException e) {
                 Log.e(TAG, "Connection interrupted: " + e.toString());
+                if (tryCount == 0) {
+                    return call(context, siteId, tryCount + 1);
+                }
                 return null;
             } catch (ExecutionException e) {
                 Log.e(TAG, "Execution error: " + e.toString());
+                if (tryCount == 0) {
+                    return call(context, siteId, tryCount + 1);
+                }
                 return null;
             } finally {
                 future.cancel(true);
@@ -105,7 +114,9 @@ public class AppCMSMainUICall {
 
             if (mainInStorage != null) {
                 main.setOldVersion(mainInStorage.getOldVersion());
-                useExistingOldVersion = false;
+                useExistingOldVersion = main.getOldVersion().equals(main.getVersion());
+                main.setLoadFromFile(useExistingOldVersion);
+                main.setOldVersion(main.getVersion());
             }
 
             if (useExistingOldVersion) {
@@ -115,6 +126,10 @@ public class AppCMSMainUICall {
             main = writeMainToFile(filename, main);
         } catch (Exception e) {
             Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
+        }
+
+        if (main == null && tryCount == 0) {
+            return call(context, siteId, tryCount + 1);
         }
 
         return main;

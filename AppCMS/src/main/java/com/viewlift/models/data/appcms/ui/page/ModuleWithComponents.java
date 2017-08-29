@@ -17,4 +17,6 @@ public interface ModuleWithComponents {
     Settings getSettings();
 
     String getId();
+
+    boolean isSvod();
 }

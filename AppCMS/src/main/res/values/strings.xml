@@ -21,6 +21,7 @@
     <string name="menu_navigation_key">menu_navigation</string>
     <string name="ellipse_char">&#8230;</string>
     <string name="mins_abbreviation">MINS</string>
+    <string name="_mins_abbreviation">%d MINS</string>
     <string name="text_separator">&#160;|&#160;</string>
     <string name="color_hash_prefix">#</string>
     <string name="string_with_ellipse">%1$s&#8230;</string>
@@ -41,6 +42,7 @@
     <string name="player_video_playing_on_pause_key">player_video_playing_on_pause</string>
     <string name="app_cms_network_connectivity_error_title">Network Connectivity</string>
     <string name="app_cms_network_connectivity_error_message">Please connect your device to a network and try again.</string>
+    <string name="app_cms_network_connectivity_error_message_download">Please connect your device to a network and try again, or click OK for go to My Downloads.</string>
     <string name="app_cms_signin_error_title">Sign In</string>
     <string name="app_cms_signup_error_title">Sign Up</string>
     <string name="app_cms_reset_password_title">Reset Password</string>
@@ -50,6 +52,7 @@
     <string name="app_cms_data_error_message">Data is currently unavailable.  Please try again later.</string>
     <string name="app_cms_close_alert_dialog_button_text">CLOSE</string>
     <string name="text_plain_mime_type">text/plain</string>
+    <string name="app_cms_ok_alert_dialog_button_text">OK</string>
 
     <!-- Age rating values -->
     <string name="age_rating_y">Y</string>
@@ -70,11 +73,14 @@
     <string name="video_player_permalink_key">video_player_permalink</string>
     <string name="video_player_font_color_key">video_player_font_color</string>
     <string name="video_player_closed_caption_key">video_player_closed_caption</string>
+    <string name="video_player_is_trailer_key">isTrailer</string>
     <string name="video_primary_category_key">video_primary_category</string>
     <string name="opensans_bold_ttf">fonts/OpenSans-Bold.ttf</string>
     <string name="opensans_semibold_ttf">fonts/OpenSans-Semibold.ttf</string>
     <string name="opensans_extrabold_ttf">fonts/OpenSans-ExtraBold.ttf</string>
     <string name="opensans_regular_ttf">fonts/OpenSans-Regular.ttf</string>
+    <string name="helvaticaneu_bold">fonts/HelveticaNeu-Bold.ttf</string>
+    <string name="helvaticaneu_italic">fonts/HelveticaNeu-Italic.ttf</string>
     <string name="search_button_text">GO</string>
     <string name="bg_color_key">bg_color</string>
     <string name="button_color_key">button_color</string>
@@ -127,6 +133,18 @@
     <string name="reset_password_text">RESET PASSWORD</string>
     <string name="watched_time_key">watched_time</string>
     <string name="played_movie_image_url">played_movie_image</string>
+
+    <!--User Management - Change Password-->
+    <string name="app_cms_action_change_password_key">changePassword</string>
+    <string name="app_cms_change_password_page_tag">change_password</string>
+    <string name="app_cms_change_password_page_title">Change Password</string>
+    <string name="app_cms_old_password_input_text_hint">Old Password</string>
+    <string name="app_cms_new_password_input_text_hint">New Password</string>
+    <string name="app_cms_confirm_password_input_text_hint">Confirm Password</string>
+    <string name="app_cms_confirm_password_button_text">Change Password</string>
+
+    <!--User Management - Closed Captions-->
+    <string name="app_cms_closed_captions_toggle_button_key">closedCaptionsToggle</string>
 
     <!-- AppCMS Video Detail API -->
     <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
@@ -224,12 +242,17 @@
     <string name="app_cms_cancel_subscription_title">Cancel Subscription</string>
     <string name="app_cms_confirm_alert_dialog_button_text">OK</string>
     <string name="app_cms_cancel_alert_dialog_button_text">CANCEL</string>
-    <string name="app_cms_cancel_subscription_confirmation_message">You have cancelled your subscription.</string>s
+    <string name="app_cms_cancel_subscription_confirmation_message">You have cancelled your subscription.</string>
+
     <string name="app_cms_cancel_subscription_not_subscribed_message">You are currently not subscribed to any plans.</string>
     <string name="app_cms_cancel_subscription_subscription_not_valid_message">Please check that the device is registered with a valid Gmail account.</string>
     <string name="app_cms_subscribtion_title">Subscription</string>
     <string name="app_cms_download_quality_title">SET YOUR DOWNLOAD QUALITY</string>
-    <string name="app_cms_downloas_setting_listner_key">app_cms_downloas_setting_listner_key</string>
+    <string name="app_cms_download_setting_listener_key">app_cms_download_setting_listener_key</string>
+
+    <string name="app_cms_delete_history_alert_title">Are you Sure?</string>
+    <string name="app_cms_delete_one_history_item_message">In order to add this film back in your history, You will need to rewatch it.</string>
+    <string name="app_cms_delete_all_history_items_message">In order to add these films back in your history, You will need to rewatch them.</string>
 
     <string name="app_cms_subscription_title">Subscription</string>
     <string name="app_cms_subscription_required_title">Subscription Required</string>
@@ -277,6 +300,10 @@
     <string name="app_cms_download_external_storage_write_permission_info_error_title">Download to External Storage</string>
     <string name="app_cms_download_limit_message">Download is only available for 30 days after it has been downloaded.</string>
     <string name="app_cms_download_unavailable_error_title">Download Unavailable</string>
+    <string name="app_cms_download_failed_error_title">Download Failed</string>
+    <string name="app_cms_download_failed_error_message">Cannot be downloaded due to low device storage, Please manage space in your storage area and try again.</string>
+    <string name="app_cms_sdCard_unavailable_error_title">SDCard Unavailable</string>
+    <string name="app_cms_sdCard_unavailable_error_message">Please insert SDCard in device if it supports for removeable media.  </string>
 
     <!-- search result values -->
     <string name="app_cms_search_sharepref_key">app_cms_sharepref_result</string>
@@ -284,11 +311,40 @@
     <string name="app_cms_search_value_key">app_cms_search_value_</string>
     <string name="app_cms_no_search_result">NO RESULTS FOR \"%1$s\"</string>
     <plurals name="app_cms_search_result_header">
-        <item quantity="one" >RESULT FOR \"%1$s\"</item>
-        <item quantity="other" >RESULTS FOR \"%1$s\"</item>
+        <item quantity="one">RESULT FOR \"%1$s\"</item>
+        <item quantity="other">RESULTS FOR \"%1$s\"</item>
     </plurals>
     <string name="retryCallBinderKey">retryCallBinderKey</string>
     <string name="retryCallBundleKey">retryCallBundleKey</string>
     <string name="app_cms_default_download_quality">720p</string>
+    <string name="app_cms_download_queue_toast_message">%1$s has been queued for download.</string>
+    <string name="app_cms_download_already_queued_toast_message">%1$s has already been queued for download.</string>
+    <string name="app_cms_subscription_cancel_for_google_play_user_dialog">Please login as the Google Play user used to create this subscription to cancel.</string>
+    <string name="app_cms_subscription_google_play_cancel_title">Google Play User is Not Logged In</string>
 
+    <!-- CCAvenue Constant Strings -->
+    <string name="app_cms_access_code">access_code</string>
+    <string name="app_cms_merchant_id">merchant_id</string>
+    <string name="app_cms_order_id">order_id</string>
+    <string name="app_cms_amount">amount</string>
+    <string name="app_cms_currency">currency</string>
+    <string name="app_cms_enc_val">enc_val</string>
+    <string name="app_cms_redirect_url">redirect_url</string>
+    <string name="app_cms_cancel_url">cancel_url</string>
+    <string name="app_cms_rsa_key_url">rsa_key_url</string>
+    <string name="app_cms_plan_id">plan_id</string>
+    <string name="app_cms_rsa_trans_url">https://test.ccavenue.com/transaction/initTrans</string>
+    <string name="app_cms_ccavenue_payment_success">ccavenue_payment_success</string>
+    <string name="app_cms_unknown_subscription_for_upgrade_title">Cannot Upgrade the Subscription</string>
+    <string name="app_cms_unknown_subscription_for_upgrade_text">The origin of the current subscription can not be determined and an upgrade can not be performed at the moment.  Please try again later or contact support for help.</string>
+    <string name="app_cms_unknown_subscription_for_cancellation_title">Cannot Cancel the Subscription</string>
+    <string name="app_cms_unknown_subscription_for_cancellation_text">The origin of the current subscription can not be determined and a cancellation can be performed at the moment.  Please try again later or contact support for help.</string>
+    <!--<string name="app_cms_rsa_trans_url">https://secure.ccavenue.com/transaction/initTrans</string>-->
+
+    <!-- content rating -->
+    <string name="content_rating_back">Back</string>
+    <string name="content_rating_text_warning">WARNING</string>
+    <string name="content_rating_viewer_discretion">Viewer Discretion Is Advised</string>
+    <string name="video_player_content_rating_key">video_player_content_rating</string>
+    <string name="content_rating_description">The following may contain:&#160;</string>
 </resources>

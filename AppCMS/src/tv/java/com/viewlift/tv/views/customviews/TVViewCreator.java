@@ -42,6 +42,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -232,26 +233,44 @@ public class TVViewCreator {
             return null;
         } else if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())) {
 
-            module = new GsonBuilder().create().
-                    fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
+            /*module = new GsonBuilder().create().
+                    fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);*/
 
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
-            final TVPageView finalPageView = pageView;
-            Glide.with(context).load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                    .asBitmap().into(new SimpleTarget<Bitmap>(TVBaseView.DEVICE_WIDTH,
-                    TVBaseView.DEVICE_HEIGHT ) {
-                @Override
-                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                    Drawable drawable = new BitmapDrawable(context.getResources(), resource);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                        finalPageView.setBackground(drawable);
-                        finalPageView.getChildrenContainer().setBackgroundColor(ContextCompat.getColor(context,R.color.appcms_detail_screen_shadow_color));
+            if(null == moduleAPI
+                    || moduleAPI.getContentData() ==null){
+                TextView textView = new TextView(context);
+                textView.setText(context.getString(R.string.no_data_available));
+                textView.setGravity(Gravity.CENTER);
+                Component component = new Component();
+                component.setFontFamily(context.getString(R.string.app_cms_page_font_family_key));
+                component.setFontWeight(context.getString(R.string.app_cms_page_font_semibold_key));
+                textView.setTypeface(Utils.getTypeFace(context,jsonValueKeyMap,component));
+                childrenContainer.addView(textView);
+                return moduleView ;
+            }
 
+            final TVPageView finalPageView = pageView;
+
+            if(null != moduleAPI.getContentData()
+                    && null != moduleAPI.getContentData().get(0)
+                    && null != moduleAPI.getContentData().get(0).getGist()
+                    && null != moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()){
+                Glide.with(context).load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                        .asBitmap().into(new SimpleTarget<Bitmap>(TVBaseView.DEVICE_WIDTH,
+                        TVBaseView.DEVICE_HEIGHT) {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        Drawable drawable = new BitmapDrawable(context.getResources(), resource);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            finalPageView.setBackground(drawable);
+                            finalPageView.getChildrenContainer().setBackgroundColor(ContextCompat.getColor(context, R.color.appcms_detail_screen_shadow_color));
+                        }
                     }
-                }
-            });
+                });
+            }
 
             if (module.getComponents() != null) {
                 for (int i = 0; i < module.getComponents().size(); i++) {
@@ -1093,7 +1112,23 @@ public class TVViewCreator {
                         Utils.getFontSizeKey(context, component.getLayout()),
                         Utils.getFontSizeValue(context, component.getLayout()));
                 componentViewResult.componentView.setFocusable(false);
-                break;
+
+           try {
+               if (TextUtils.isEmpty(directorListSb.toString())) {
+                   ((CreditBlocksView) componentViewResult.componentView).getChildAt(0).setVisibility(View.GONE);
+                   ((CreditBlocksView) componentViewResult.componentView).getChildAt(1).setVisibility(View.GONE);
+               }
+
+
+               if (TextUtils.isEmpty(starringListSb.toString())) {
+                   ((CreditBlocksView) componentViewResult.componentView).getChildAt(2).setVisibility(View.GONE);
+                   ((CreditBlocksView) componentViewResult.componentView).getChildAt(3).setVisibility(View.GONE);
+               }
+           }catch (Exception e){
+               e.printStackTrace();
+           }
+           break;
+
             case PAGE_TEXTFIELD_KEY:
                 componentViewResult.componentView = new TextInputLayout(context);
                 TextInputEditText textInputEditText = new TextInputEditText(context);

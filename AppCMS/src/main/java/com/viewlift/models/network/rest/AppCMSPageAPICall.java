@@ -63,7 +63,8 @@ public class AppCMSPageAPICall {
                         context.getString(R.string.app_cms_page_api_view_plans_url,
                                 baseUrl,
                                 endpoint,
-                                siteId);
+                                siteId,
+                                context.getString(R.string.app_cms_subscription_platform_key));
             } else {
                 urlWithContent =
                         context.getString(R.string.app_cms_page_api_url,
@@ -95,6 +96,7 @@ public class AppCMSPageAPICall {
             if (!TextUtils.isEmpty(authToken)) {
                 headersMap.put("Authorization", authToken);
             }
+            Log.d(TAG, "AppCMSPageAPICall Authorization val "+headersMap.toString());
             appCMSPageAPI = appCMSPageAPIRest.get(urlWithContent, headersMap).execute().body();
             if (filename != null) {
                 appCMSPageAPI = writePageToFile(filename, appCMSPageAPI);
@@ -106,7 +108,7 @@ public class AppCMSPageAPICall {
         }
 
         if (appCMSPageAPI == null && tryCount == 0) {
-            call(context,
+            return call(context,
                     baseUrl,
                     endpoint,
                     siteId,

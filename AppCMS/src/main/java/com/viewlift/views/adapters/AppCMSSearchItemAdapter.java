@@ -84,9 +84,10 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         viewHolder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String permalink = appCMSSearchResults.get(adapterPosition).getPermalink();
+
+                String permalink = appCMSSearchResults.get(adapterPosition).getGist().getPermalink();
                 String action = viewHolder.view.getContext().getString(R.string.app_cms_action_videopage_key);
-                String title = appCMSSearchResults.get(adapterPosition).getTitle();
+                String title = appCMSSearchResults.get(adapterPosition).getGist().getTitle();
                 Log.d(TAG, "Launching " + permalink + ":" + action);
                 if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                         action,
@@ -105,14 +106,14 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             }
         });
 
-        if (!TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getTitle())) {
-            viewHolder.filmTitle.setText(appCMSSearchResults.get(adapterPosition).getTitle());
+        if (!TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getGist().getTitle())) {
+            viewHolder.filmTitle.setText(appCMSSearchResults.get(adapterPosition).getGist().getTitle());
         }
 
-        if (!TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getPosterImage().getUrl())) {
+        if (!TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getContentDetails().getPosterImage().getUrl())) {
 
             final String imageUrl = viewHolder.view.getContext().getString(R.string.app_cms_image_with_resize_query,
-                    appCMSSearchResults.get(adapterPosition).getPosterImage().getUrl(),
+                    appCMSSearchResults.get(adapterPosition).getContentDetails().getPosterImage().getUrl(),
                     imageWidth,
                     imageHeight);
 

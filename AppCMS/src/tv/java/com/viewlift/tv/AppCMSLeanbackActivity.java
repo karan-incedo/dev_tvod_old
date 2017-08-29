@@ -35,7 +35,7 @@ public class AppCMSLeanbackActivity extends Activity implements AppCmsTvErrorFra
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_launch);
+        setContentView(R.layout.activity_launch_tv);
         Log.d(TAG, "Launching application from main.json");
 
         Log.d(TAG, "onCreate()");
@@ -52,7 +52,7 @@ public class AppCMSLeanbackActivity extends Activity implements AppCmsTvErrorFra
                 Uri.parse(""),
                 AppCMSPresenter.PlatformType.TV);
         }else{
-            showErrorFragment();
+            showErrorFragment(true);
         }
     }
 
@@ -78,7 +78,9 @@ public class AppCMSLeanbackActivity extends Activity implements AppCmsTvErrorFra
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(AppCMSPresenter.ERROR_DIALOG_ACTION)){
-                showErrorFragment();
+                Bundle bundle = intent.getBundleExtra(getString(R.string.retryCallBundleKey));
+                boolean shouldRetry = bundle.getBoolean(getString(R.string.retry_key));
+                showErrorFragment(shouldRetry);
             }else if(intent.getAction().equals(AppCMSPresenter.ACTION_LOGO_ANIMATION)){
                 startLogoAnimation();
                 new Handler().postDelayed(new Runnable() {
@@ -112,21 +114,22 @@ public class AppCMSLeanbackActivity extends Activity implements AppCmsTvErrorFra
                 translateY.setDuration(1500);
                 translateY.start();
 
-                ObjectAnimator anim = ObjectAnimator.ofFloat(logo,"scaleX",0.49f);
+                ObjectAnimator anim = ObjectAnimator.ofFloat(logo,"scaleX",0.50f);
                 anim.setDuration(1500); // duration 3 seconds
                 anim.start();
 
-                ObjectAnimator anim2 = ObjectAnimator.ofFloat(logo,"scaleY",0.49f);
+                ObjectAnimator anim2 = ObjectAnimator.ofFloat(logo,"scaleY",0.50f);
                 anim2.setDuration(1500); // duration 3 seconds
                 anim2.start();
             }
         });
     }
 
-    public void showErrorFragment(){
+    public void showErrorFragment(boolean shouldRegisterInternetReciever){
         CustomProgressBar.getInstance(this).dismissProgressDialog();
         Bundle bundle = new Bundle();
         bundle.putBoolean(getString(R.string.retry_key) , true);
+        bundle.putBoolean(getString(R.string.register_internet_receiver_key) , true);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         AppCmsTvErrorFragment errorActivityFragment = AppCmsTvErrorFragment.newInstance(
                 bundle);

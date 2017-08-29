@@ -31,11 +31,12 @@ public class GetAppCMSSiteAsyncTask extends AsyncTask<String, Integer, AppCMSSit
     protected AppCMSSite doInBackground(String... params) {
         if (params.length >= 1) {
             try {
-                return call.call(params[0]);
+                return call.call(params[0], 0);
             } catch (IOException e) {
                 Log.e(TAG, "Could not retrieve Site data - " + params[0] + ": " + e.toString());
             }
         }
+
         return null;
     }
 

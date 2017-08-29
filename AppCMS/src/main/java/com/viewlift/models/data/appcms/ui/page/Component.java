@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @UseStag(UseStag.FieldOption.SERIALIZED_NAME)
@@ -95,7 +96,7 @@ public class Component implements ModuleWithComponents {
 
     @SerializedName("components")
     @Expose
-    List<Component> components = null;
+    ArrayList<Component> components;
 
     @SerializedName("progressColor")
     @Expose
@@ -160,6 +161,10 @@ public class Component implements ModuleWithComponents {
     @SerializedName("padding")
     @Expose
     private int padding;
+
+    @SerializedName("svod")
+    @Expose
+    boolean svod;
 
     boolean yAxisSetManually;
 
@@ -331,11 +336,11 @@ public class Component implements ModuleWithComponents {
         this.fontSize = fontSize;
     }
 
-    public List<Component> getComponents() {
+    public ArrayList<Component> getComponents() {
         return components;
     }
 
-    public void setComponents(List<Component> components) {
+    public void setComponents(ArrayList<Component> components) {
         this.components = components;
     }
 
@@ -469,6 +474,12 @@ public class Component implements ModuleWithComponents {
     public void setLetetrSpacing(float letetrSpacing) {
         this.letterSpacing = letetrSpacing;
     }
-	
 
+    public boolean isSvod() {
+        return svod;
+    }
+
+    public void setSvod(boolean svod) {
+        this.svod = svod;
+    }
 }

@@ -67,8 +67,9 @@ public class CardPresenter extends Presenter {
         FrameLayout.LayoutParams layoutParams;
 
         if(mHeight != -1 && mWidth != -1) {
-            layoutParams = new FrameLayout.LayoutParams(mWidth,
-                    mHeight);
+            layoutParams = new FrameLayout.LayoutParams(
+                    Utils.getViewXAxisAsPerScreen(mContext,mWidth),
+                    Utils.getViewXAxisAsPerScreen(mContext,mHeight));
         }else{
             layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
                     FrameLayout.LayoutParams.WRAP_CONTENT);
@@ -128,8 +129,11 @@ public class CardPresenter extends Presenter {
                         ImageView imageView = new ImageView(parentLayout.getContext());
                         switch(componentKey){
                             case PAGE_THUMBNAIL_IMAGE_KEY:
-                                FrameLayout.LayoutParams parms = new FrameLayout.LayoutParams(Integer.valueOf(component.getLayout().getTv().getWidth()),
-                                        Integer.valueOf(component.getLayout().getTv().getHeight()));
+                                FrameLayout.LayoutParams parms = new FrameLayout.LayoutParams(
+
+                                        Utils.getViewXAxisAsPerScreen(mContext,Integer.valueOf(component.getLayout().getTv().getWidth())),
+                                        Utils.getViewYAxisAsPerScreen(mContext,Integer.valueOf(component.getLayout().getTv().getHeight())));
+
                                 imageView.setLayoutParams(parms);
                                 imageView.setBackground(Utils.getTrayBorder(mContext,borderColor,component));
 
@@ -149,9 +153,10 @@ public class CardPresenter extends Presenter {
 
                     case PAGE_LABEL_KEY:
                         TextView tvTitle = new TextView(parentLayout.getContext());
-                        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT ,
-                                Integer.valueOf(component.getLayout().getTv().getHeight()));
-                         layoutParams.topMargin = Integer.valueOf(component.getLayout().getTv().getTopMargin());
+                        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.MATCH_PARENT ,
+                                Utils.getViewYAxisAsPerScreen(mContext,Integer.valueOf(component.getLayout().getTv().getHeight())));
+                         layoutParams.topMargin =  Utils.getViewYAxisAsPerScreen(mContext,Integer.valueOf(component.getLayout().getTv().getTopMargin()));
                          tvTitle.setLayoutParams(layoutParams);
                         tvTitle.setMaxLines(1);
                         tvTitle.setEllipsize(TextUtils.TruncateAt.END);

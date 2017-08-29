@@ -8,7 +8,9 @@ import com.viewlift.models.network.modules.AppCMSSearchModule;
 import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
+import com.viewlift.models.network.rest.AppCMSBeaconCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
+import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
 import com.viewlift.models.network.rest.AppCMSDeleteHistoryCall;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSGoogleLoginCall;
@@ -79,9 +81,12 @@ public class AppCMSPresenterModule {
                                                    GoogleCancelSubscriptionCall googleCancelSubscriptionCall,
                                                    AppCMSAddToWatchlistCall appCMSAddToWatchlistCall,
 
+                                                   AppCMSCCAvenueCall appCMSCCAvenueCall,
+
                                                    AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall,
                                                    AppCMSUserVideoStatusCall appCMSUserVideoStatusCall,
                                                    AppCMSUserDownloadVideoStatusCall appCMSUserDownloadVideoStatusCall,
+                                                   AppCMSBeaconCall appCMSBeaconCall,
 
                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                    Map<String, String> pageNameToActionMap,
@@ -119,8 +124,10 @@ public class AppCMSPresenterModule {
                 appCMSUpdateWatchHistoryCall,
                 appCMSUserVideoStatusCall,
                 appCMSUserDownloadVideoStatusCall,
-
+                appCMSBeaconCall,
                 appCMSAddToWatchlistCall,
+
+                appCMSCCAvenueCall,
 
                 jsonValueKeyMap,
                 pageNameToActionMap,
