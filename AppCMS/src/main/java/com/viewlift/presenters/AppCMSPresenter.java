@@ -4591,6 +4591,9 @@ public class AppCMSPresenter {
             setFacebookAccessToken(currentActivity, null, null, null, null);
             setGoogleAccessToken(currentActivity, null, null, null, null);
 
+            setFacebookAccessToken(currentActivity, null, null, null, null);
+            setGoogleAccessToken(currentActivity, null, null, null, null);
+
             sendUpdateHistoryAction();
 
             signinAnonymousUser(appCMSMain);
