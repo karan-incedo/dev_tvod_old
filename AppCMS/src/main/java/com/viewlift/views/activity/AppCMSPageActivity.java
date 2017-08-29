@@ -1217,42 +1217,44 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getScreenName());
                         usePageIdQueryParam = false;
                     }
-                    appCMSPresenter.getPageIdContent(appCMSMain.getApiBaseUrl(),
-                            endPoint,
-                            appCMSMain.getInternalName(),
-                            usePageIdQueryParam,
-                            appCMSBinder.getPagePath(),
-                            appCMSPageAPI -> {
-                                if (appCMSPageAPI != null) {
-                                    boolean updatedHistory = false;
-                                    if (appCMSPresenter.isUserLoggedIn(this)) {
-                                        if (appCMSPageAPI.getModules() != null) {
-                                            for (Module module : appCMSPageAPI.getModules()) {
-                                                AppCMSUIKeyType moduleType = appCMSPresenter.getJsonValueKeyMap().get(module.getModuleType());
-                                                if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY ||
-                                                        moduleType == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
-                                                    if (module.getContentData() != null &&
-                                                            !module.getContentData().isEmpty()) {
-                                                        appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
-                                                            if (appCMSHistoryResult != null) {
-                                                                AppCMSPageAPI historyAPI =
-                                                                        appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
-                                                                historyAPI.getModules().get(0).setId(module.getId());
-                                                                appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);
-                                                                appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
-                                                            }
-                                                        });
-                                                        updatedHistory = true;
+                    if (!TextUtils.isEmpty(endPoint)) {
+                        appCMSPresenter.getPageIdContent(appCMSMain.getApiBaseUrl(),
+                                endPoint,
+                                appCMSMain.getInternalName(),
+                                usePageIdQueryParam,
+                                appCMSBinder.getPagePath(),
+                                appCMSPageAPI -> {
+                                    if (appCMSPageAPI != null) {
+                                        boolean updatedHistory = false;
+                                        if (appCMSPresenter.isUserLoggedIn(this)) {
+                                            if (appCMSPageAPI.getModules() != null) {
+                                                for (Module module : appCMSPageAPI.getModules()) {
+                                                    AppCMSUIKeyType moduleType = appCMSPresenter.getJsonValueKeyMap().get(module.getModuleType());
+                                                    if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY ||
+                                                            moduleType == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
+                                                        if (module.getContentData() != null &&
+                                                                !module.getContentData().isEmpty()) {
+                                                            appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
+                                                                if (appCMSHistoryResult != null) {
+                                                                    AppCMSPageAPI historyAPI =
+                                                                            appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
+                                                                    historyAPI.getModules().get(0).setId(module.getId());
+                                                                    appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);
+                                                                    appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
+                                                                }
+                                                            });
+                                                            updatedHistory = true;
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
+                                        if (!updatedHistory) {
+                                            appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
+                                        }
                                     }
-                                    if (!updatedHistory) {
-                                        appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
-                                    }
-                                }
-                            });
+                                });
+                    }
                 }
             }
         }
