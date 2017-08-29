@@ -2,17 +2,16 @@ package com.viewlift.models.data.appcms.downloads;
 
 import android.app.Activity;
 import android.app.Application;
+import android.support.annotation.UiThread;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 
 import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 import com.viewlift.models.data.appcms.beacon.OfflineBeaconData;
-import com.viewlift.models.data.appcms.subscriptions.AppCMSUserSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.subscriptions.UserSubscriptionPlan;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 
 /**
@@ -61,6 +60,7 @@ public class RealmController {
     }
 
     public static RealmController getInstance() {
+
         if (instance == null) {
             instance = new RealmController();
         }
@@ -99,11 +99,12 @@ public class RealmController {
                 String.valueOf(DownloadStatus.STATUS_PENDING),
                 String.valueOf(DownloadStatus.STATUS_RUNNING)};
         return realm.where(DownloadVideoRealm.class).in("downloadStatus", status)
-                .equalTo("userId",userId).findAll();
+                .equalTo("userId", userId).findAll();
 
     }
 
     public RealmResults<DownloadVideoRealm> getDownloadesByStatus(String status) {
+
         return realm.where(DownloadVideoRealm.class).contains("downloadStatus", status).findAll();
     }
 
@@ -127,16 +128,14 @@ public class RealmController {
                 .equals(DownloadStatus.STATUS_SUCCESSFUL);
     }
 
+    @UiThread
     public DownloadVideoRealm getDownloadByIdBelongstoUser(String videoId, String userId) {
-
-
         return realm.where(DownloadVideoRealm.class)
                 .beginGroup()
                 .equalTo("videoId", videoId)
                 .equalTo("userId", userId)
                 .endGroup()
                 .findFirst();
-
     }
 
     public void addCurrentDownloadTitle(CurrentDownloadingVideo currentDownloadingVideo) {
@@ -157,7 +156,6 @@ public class RealmController {
     }
 
     public void addDownload(DownloadVideoRealm downloadVideoRealm) {
-
         realm.beginTransaction();
         realm.insert(downloadVideoRealm);
         realm.commitTransaction();
@@ -195,14 +193,15 @@ public class RealmController {
         return null;
     }
 
-    public void updateDownloadInfo(String videoId, String filmUrl, String thumbUrl, String posterUrl, String subtitlesUrl, long totlsize, DownloadStatus status) {
+    public void updateDownloadInfo(String videoId, String filmUrl, String thumbUrl, String posterUrl,
+                                   String subtitlesUrl, long totalSize, DownloadStatus status) {
         DownloadVideoRealm toEdit = realm.where(DownloadVideoRealm.class)
                 .equalTo("videoId", videoId).findFirst();
 
         if (!realm.isInTransaction())
             realm.beginTransaction();
 
-        toEdit.setVideoSize(totlsize);
+        toEdit.setVideoSize(totalSize);
         toEdit.setVideoFileURL(thumbUrl);
         toEdit.setVideoImageUrl(thumbUrl);
         toEdit.setPosterFileURL(posterUrl);
@@ -212,7 +211,6 @@ public class RealmController {
 
         realm.copyToRealmOrUpdate(toEdit);
         realm.commitTransaction();
-
     }
 
     /**
@@ -221,18 +219,19 @@ public class RealmController {
      * @param videoId
      * @param filmUrl
      * @param thumbUrl
-     * @param totlsize
+     * @param totalSize
      * @param downloadedSoFar
      * @param status
      */
-    public void updateDownloadInfo(String videoId, String filmUrl, String thumbUrl, long totlsize, long downloadedSoFar, DownloadStatus status) {
+    public void updateDownloadInfo(String videoId, String filmUrl, String thumbUrl, long totalSize,
+                                   long downloadedSoFar, DownloadStatus status) {
         DownloadVideoRealm toEdit = realm.where(DownloadVideoRealm.class)
                 .equalTo("videoId", videoId).findFirst();
 
         if (!realm.isInTransaction())
             realm.beginTransaction();
 
-        toEdit.setVideoSize(totlsize);
+        toEdit.setVideoSize(totalSize);
         toEdit.setVideo_Downloaded_so_far(downloadedSoFar);
         toEdit.setVideoFileURL(thumbUrl);
         toEdit.setVideoImageUrl(thumbUrl);
@@ -275,15 +274,14 @@ public class RealmController {
         return null;
     }
 
-    public void deleteOfflineBeaconDataByUser(String userId){
-        if (!realm.isInTransaction()){
-         realm.beginTransaction();
+    public void deleteOfflineBeaconDataByUser(String userId) {
+        if (!realm.isInTransaction()) {
+            realm.beginTransaction();
         }
-        RealmResults<OfflineBeaconData> resultsToDel= realm.where(OfflineBeaconData.class).equalTo("uid",userId).findAll();
+        RealmResults<OfflineBeaconData> resultsToDel = realm.where(OfflineBeaconData.class).equalTo("uid", userId).findAll();
         resultsToDel.deleteAllFromRealm();
         realm.commitTransaction();
     }
-
 
 
     public void closeRealm() {

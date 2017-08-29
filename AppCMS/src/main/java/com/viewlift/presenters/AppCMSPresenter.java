@@ -31,6 +31,7 @@ import android.os.RemoteException;
 import android.os.StatFs;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -40,7 +41,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.util.LruCache;
 import android.view.Gravity;
@@ -112,7 +112,6 @@ import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentityPassword;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
-import com.viewlift.models.data.appcms.ui.main.Beacon;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
@@ -2279,12 +2278,10 @@ public class AppCMSPresenter {
         return getDownloadedFileSize(downloadVideoRealm.getVideoSize());
     }
 
-    public DownloadVideoRealm getDownloadedVideo(String videoId) {
-        return realmController.getDownloadByIdBelongstoUser(videoId, getLoggedInUser(currentActivity));
-    }
-
+    @UiThread
     public boolean isVideoDownloaded(String videoId) {
-        DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId, getLoggedInUser(currentActivity));
+        DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId,
+                getLoggedInUser(currentActivity));
         return downloadVideoRealm != null && downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId);
     }
 
@@ -2462,12 +2459,13 @@ public class AppCMSPresenter {
         });
     }
 
+    @UiThread
     public synchronized void updateDownloadingStatus(String filmId, final ImageView imageView,
                                                      AppCMSPresenter presenter,
                                                      final Action1<UserVideoDownloadStatus> responseAction,
                                                      String userId, boolean isFromDownload) {
         long videoId = -1L;
-        if (!isFromDownload) {   //Fix of SVFA-1621
+        if (!isFromDownload) {
             cancelDownloadIconTimerTask();
         }
         try {
@@ -2502,17 +2500,17 @@ public class AppCMSPresenter {
                             } else {
                                 if (currentActivity != null && runUpdateDownloadIconTimer)
                                     currentActivity.runOnUiThread(() -> {
-                                    try {
-                                        circularImageBar(imageView, downloadPercent);
-                                    } catch (Exception e) {
-                                        Log.e(TAG, "Error rendering circular image bar");
-                                    }
+                                        try {
+                                            circularImageBar(imageView, downloadPercent);
+                                        } catch (Exception e) {
+                                            Log.e(TAG, "Error rendering circular image bar");
+                                        }
                                     });
                             }
 
                         }
                     } catch (Exception exception) {
-
+                        Log.e(TAG, exception.getMessage());
                     }
                 }
             }, 500, 1000);
@@ -5419,12 +5417,12 @@ public class AppCMSPresenter {
             beaconRequest.setApod(apod);
         }
 
-        if (isVideoDownloaded(vid)){
+        if (isVideoDownloaded(vid)) {
             beaconRequest.setDp2("downloaded_view-online");
         }
         if (usingChromecast) {
             beaconRequest.setPlayer("Chromecast");
-        }else{
+        } else {
             beaconRequest.setPlayer("Video Player");
         }
 
