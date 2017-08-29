@@ -4588,6 +4588,8 @@ public class AppCMSPresenter {
             setIsUserSubscribed(currentActivity, false);
             setExistingGooglePlaySubscriptionId(currentActivity, null);
             setActiveSubscriptionProcessor(currentActivity, null);
+            setFacebookAccessToken(currentActivity, null, null, null, null);
+            setGoogleAccessToken(currentActivity, null, null, null, null);
 
             sendUpdateHistoryAction();
 
@@ -6653,7 +6655,7 @@ public class AppCMSPresenter {
                     appCMSSite -> {
                         try {
                             if (appCMSSite != null) {
-                                apikey = appCMSSite.getGist().getAppAccess().getAppSecretKey();
+                                apikey = currentActivity.getString(R.string.x_api_key);
                                 AppCMSAPIComponent appCMSAPIComponent = DaggerAppCMSAPIComponent.builder()
                                         .appCMSAPIModule(new AppCMSAPIModule(activity,
                                                 main.getApiBaseUrl(),
