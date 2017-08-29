@@ -488,9 +488,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         accessTokenTracker.stopTracking();
 
         if (inAppBillingServiceConn != null) {
-            unbindService(inAppBillingServiceConn);
-            inAppBillingServiceConn = null;
-            inAppBillingService = null;
+            try {
+                unbindService(inAppBillingServiceConn);
+                inAppBillingServiceConn = null;
+                inAppBillingService = null;
+            } catch (Exception e) {
+                Log.e(TAG, "Unable to unbind Google Play Services connection: " + e.getMessage());
+            }
         }
 
         Log.d(TAG, "onDestroy()");
