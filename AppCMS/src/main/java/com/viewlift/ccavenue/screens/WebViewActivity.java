@@ -19,7 +19,6 @@ import com.viewlift.R;
 import com.viewlift.ccavenue.utility.AvenuesParams;
 import com.viewlift.ccavenue.utility.Constants;
 import com.viewlift.ccavenue.utility.RSAUtility;
-import com.viewlift.ccavenue.utility.ServiceHandler;
 import com.viewlift.ccavenue.utility.ServiceUtility;
 import com.viewlift.presenters.AppCMSPresenter;
 
@@ -43,7 +42,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WebViewActivity extends Activity {
-	private ProgressDialog dialog;
 	Intent mainIntent;
 	String html, encVal;
 	String orderID = "" ;
@@ -52,6 +50,8 @@ public class WebViewActivity extends Activity {
 	String merchantID = "" ;
 	private AppCMSPresenter appCMSPresenter;
 	RenderView readerViewAyncTask = null ;
+	updateSubscriptionPlanAsyncTask updateStatus = null ;
+	ProgressDialog progressDialog = null ;
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
@@ -74,6 +74,7 @@ public class WebViewActivity extends Activity {
 	 * Async task class to get json by making HTTP call
 	 * */
 	private class RenderView extends AsyncTask<Void, Void, Void> {
+		private ProgressDialog dialog;
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
@@ -87,8 +88,6 @@ public class WebViewActivity extends Activity {
 		@Override
 		protected Void doInBackground(Void... arg0) {
 			// Creating service handler class instance
-			ServiceHandler sh = new ServiceHandler();
-	
 			// Making a request to url and getting response
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			String vResponse = getRSAKey() ;
@@ -109,8 +108,15 @@ public class WebViewActivity extends Activity {
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
 			// Dismiss the progress dialog
-			if (dialog.isShowing())
-				dialog.dismiss();
+			try {
+				if (dialog.isShowing()) {
+					dialog.dismiss();
+					dialog = null;
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				dialog = null;
+			}
 			
 			@SuppressWarnings("unused")
 			class MyJavaScriptInterface
@@ -155,10 +161,15 @@ public class WebViewActivity extends Activity {
 						//webview.loadUrl("https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction");
 	    	        }
                     //https://stgsecure.ccavenue.com/servlet/processTxn
-					cancelRedirectURL = "https://stgsecure.ccavenue.com/servlet/processTxn" ;
+					///cancelRedirectURL = "https://stgsecure.ccavenue.com/servlet/processTxn" ;
 	    	        if (url.equalsIgnoreCase(cancelRedirectURL)) {
 						webview.stopLoading();
-						new updateSubscriptionPlanAsyncTask ().execute();
+						try {
+							 updateStatus = new updateSubscriptionPlanAsyncTask() ;
+							updateStatus.execute();
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
 					}
 	    	    }
 	    	    @Override
@@ -245,6 +256,7 @@ public class WebViewActivity extends Activity {
 			StringBuffer buffer = new StringBuffer();
 			if (inputStream == null) {
 				// Nothing to do.
+				progressDialog = null ;
 				return null;
 			}
 			reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -289,18 +301,19 @@ public class WebViewActivity extends Activity {
 
 
 	private void finlizePaymentWithUpdatingBackend () {
-		appCMSPresenter.finalizeSignupAfterCCAvenueSubscription(null) ;
+		appCMSPresenter.navigateToHomePage();
 	}
 
-	private class updateSubscriptionPlanAsyncTask extends AsyncTask<Void, Void, String> {
+	private  class  updateSubscriptionPlanAsyncTask extends AsyncTask<Void, Void, String> {
+
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
 			// Showing progress dialog
-			dialog = new ProgressDialog(WebViewActivity.this);
-			dialog.setMessage("Please wait...");
-			dialog.setCancelable(false);
-			dialog.show();
+			progressDialog = new ProgressDialog(WebViewActivity.this);
+			progressDialog.setMessage("Please wait...");
+			progressDialog.setCancelable(false);
+			progressDialog.show();
 		}
 
 		@Override
@@ -308,21 +321,22 @@ public class WebViewActivity extends Activity {
 			// Creating service handler class instance
 			String JsonResponse = null;
 			String JsonDATA = "";
-			String rsaToken = "" ;
 			JSONObject post_dict = new JSONObject();
 
 			try {
-				        post_dict.put("vlTransactionId", orderID) ;
-						post_dict.put("email",getIntent().getStringExtra("email"));
-						post_dict.put("currencyCode","INR");
-						post_dict.put("siteId",getIntent().getStringExtra("siteId"));
-						post_dict.put("planId",getIntent().getStringExtra(getString(R.string.app_cms_plan_id)));
-				        post_dict.put("platform","android");
-						post_dict.put("zip","");
-						post_dict.put("description","CCAvenue Subscripton");
-						post_dict.put("subscription","ccavenue"); //very important to say this is a ccavenue request
-				        post_dict.put("authorizedUserName",getIntent().getStringExtra("authorizedUserName"));
-				JsonDATA = String.valueOf(post_dict);
+					post_dict.put("vlTransactionId", orderID) ;
+					post_dict.put("email",getIntent().getStringExtra("email"));
+					post_dict.put("currencyCode","INR");
+					post_dict.put("siteId",getIntent().getStringExtra("siteId"));
+					post_dict.put("planId",getIntent().getStringExtra(getString(R.string.app_cms_plan_id)));
+					post_dict.put("platform","android");
+					post_dict.put("zip","");
+					post_dict.put("description","CCAvenue Subscripton");
+					post_dict.put("subscription","ccavenue"); //very important to say this is a ccavenue request
+					post_dict.put("authorizedUserName",getIntent().getStringExtra("authorizedUserName"));
+				    Log.v("userid",getIntent().getStringExtra("authorizedUserName")) ;
+				     JsonDATA = String.valueOf(post_dict);
+				     Log.v("JsonDATA",JsonDATA) ;
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -344,12 +358,20 @@ public class WebViewActivity extends Activity {
 				writer.write(JsonDATA);
 				// json data
 				writer.close();
-				InputStream inputStream = urlConnection.getInputStream();
+				InputStream inputStream = null ;
+				try {
+					 inputStream = urlConnection.getInputStream();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					closeConnection(urlConnection,reader) ;
+					return "";
+				}
 				//input stream
 				StringBuffer buffer = new StringBuffer();
 				if (inputStream == null) {
 					// Nothing to do.
-					return null;
+					closeConnection(urlConnection,reader) ;
+					return "";
 				}
 				reader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -361,14 +383,45 @@ public class WebViewActivity extends Activity {
 					return null;
 				}
 				JsonResponse = buffer.toString();
+				Log.v("subscriberesponse",JsonResponse) ;
 				//response data
 				Log.i("TAG", JsonResponse);
 			} catch (IOException e) {
+				closeConnection(urlConnection,reader) ;
 				e.printStackTrace();
-			} finally {
-				if (urlConnection != null) {
+			}
+//			} finally {
+//				if (urlConnection != null) {
+//					try {
+//						urlConnection.disconnect();
+//					} catch (Exception ex) {
+//						ex.printStackTrace();
+//					}
+//				}
+//				try {
+//					if (reader != null) {
+//						try {
+//							reader.close();
+//						} catch (final IOException e) {
+//							Log.e("TAG", "Error closing stream", e);
+//						}
+//					}
+//				} catch (Exception ex) {
+//					ex.printStackTrace();
+//				}
+//			}
+			return JsonResponse;
+		}
+
+		private void closeConnection (HttpURLConnection urlConnection, BufferedReader reader) {
+			if (urlConnection != null) {
+				try {
 					urlConnection.disconnect();
+				} catch (Exception ex) {
+					ex.printStackTrace();
 				}
+			}
+			try {
 				if (reader != null) {
 					try {
 						reader.close();
@@ -376,22 +429,23 @@ public class WebViewActivity extends Activity {
 						Log.e("TAG", "Error closing stream", e);
 					}
 				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
 			}
-			return JsonResponse;
-		}
+        }
 
 		@Override
 		protected void onPostExecute(String result) {
 			super.onPostExecute(result);
 			// Dismiss the progress dialog
-			if (dialog.isShowing())
-				dialog.dismiss();
+
             if (result==null) {
 				displaySuccessPaymentDialog("Payment failed!", "Try again later!");
 			} else {
 				try {
 					JSONObject jsonObj = new JSONObject(result);
 					if (jsonObj.getString("subscriptionStatus").equalsIgnoreCase("COMPLETED")) {
+						appCMSPresenter.finalizeSignupAfterCCAvenueSubscription(null) ;
 						displaySuccessPaymentDialog("Payment Done!", "Start Watching");
 					} else {
 						displaySuccessPaymentDialog("Payment failed!", "Try again later!");
@@ -401,28 +455,42 @@ public class WebViewActivity extends Activity {
 				}
 			}
 		}
+		private void displaySuccessPaymentDialog (String message, String buttonTitle) {
+			AlertDialog.Builder builder1 = new AlertDialog.Builder(WebViewActivity.this);
+			//builder1.setMessage("Payment Done!");
+			builder1.setMessage(message);
+			builder1.setCancelable(true);
+
+			builder1.setPositiveButton(
+					buttonTitle,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							if (message.equalsIgnoreCase("Payment failed!")) {
+								dialog.cancel();
+								progressDialog.show();
+								onBackPressed();
+							} else {
+								dialog.cancel();
+								progressDialog.show();
+								progressDialog.setMessage("Updating Subscription...");
+								appCMSPresenter.navigateToHomePage();
+							}
+						}
+					});
+
+			AlertDialog alert11 = builder1.create();
+			alert11.show();
+			try {
+				if (progressDialog.isShowing()) {
+					progressDialog.hide();
+					//progressDialog.dismiss();
+					//progressDialog = null ;
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
 	}
-
-   private void displaySuccessPaymentDialog (String message, String buttonTitle) {
-	   AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-	   //builder1.setMessage("Payment Done!");
-	   builder1.setMessage(message);
-	   builder1.setCancelable(true);
-
-	   builder1.setPositiveButton(
-			   buttonTitle,
-			   new DialogInterface.OnClickListener() {
-				   public void onClick(DialogInterface dialog, int id) {
-					   finlizePaymentWithUpdatingBackend () ;
-					   dialog.cancel();
-					   onBackPressed();
-				   }
-			   });
-
-	   AlertDialog alert11 = builder1.create();
-	   alert11.show();
-   }
-
 	@Override
 	protected void onDestroy() {
 		if (readerViewAyncTask!=null) {
@@ -431,6 +499,27 @@ public class WebViewActivity extends Activity {
 				readerViewAyncTask = null ;
 			}
 		}
+
+		if (updateStatus!=null) {
+			if (updateStatus.getStatus() == AsyncTask.Status.RUNNING) {
+				updateStatus.cancel(true) ;
+				updateStatus = null ;
+			}
+		}
+
+		if (progressDialog!=null) {
+			try {
+				if (progressDialog.isShowing()) {
+					progressDialog.hide();
+					progressDialog.dismiss();
+					progressDialog = null ;
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
 		super.onDestroy();
 	}
+
+
 }
