@@ -91,10 +91,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "AppCMSPageActivity";
 
-    private static final int NAV_PAGE_INDEX = 0;
-    private static final int HOME_PAGE_INDEX = 1;
-    private static final int MOVIES_PAGE_INDEX = 2;
-    private static final int SEARCH_INDEX = 3;
+    private static final int HOME_PAGE_INDEX = 0;
+    private static final int MOVIES_PAGE_INDEX = 1;
+    private static final int SEARCH_INDEX = 2;
+    private static final int NAV_PAGE_INDEX = 3;
 
     @BindView(R.id.app_cms_parent_layout)
     RelativeLayout appCMSParentLayout;
