@@ -44,7 +44,6 @@ public class AppCMSBeaconCall {
             Call<Boolean> call;
 
             call = appCMSBeaconRest.sendBeaconMessage(url, authTokenMap, request.getBeaconRequest());
-            System.out.println(""+ new Gson().toJson(request.getBeaconRequest()));
             call.enqueue(new Callback<Boolean>() {
 
                 @Override
