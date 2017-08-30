@@ -346,7 +346,7 @@ public class CastHelper {
             try {
                 mStreamId = appCMSPresenterComponenet.getStreamingId(binder.getContentData().getGist().getTitle());
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, e.getMessage());
                 mStreamId = filmId + appCMSPresenterComponenet.getCurrentTimeStamp();
             }
 
@@ -382,7 +382,7 @@ public class CastHelper {
         try {
             mStreamId = appCMSPresenterComponenet.getStreamingId(binder.getContentData().getGist().getTitle());
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
             mStreamId = filmId + appCMSPresenterComponenet.getCurrentTimeStamp();
         }
         beaconBufferingTimeoutMsec = (mAppContext).getResources().getInteger(R.integer.app_cms_beacon_buffering_timeout_msec);
@@ -462,7 +462,7 @@ public class CastHelper {
                     try {
                         mStreamId = appCMSPresenterComponenet.getStreamingId(title);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Log.e(TAG, e.getMessage());
                         mStreamId = CastingUtils.getRemoteMediaId(mAppContext) + appCMSPresenterComponenet.getCurrentTimeStamp();
                     }
 
