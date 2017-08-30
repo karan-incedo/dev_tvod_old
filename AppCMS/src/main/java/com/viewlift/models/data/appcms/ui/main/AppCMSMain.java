@@ -1,5 +1,7 @@
 package com.viewlift.models.data.appcms.ui.main;
 
+import android.text.TextUtils;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
@@ -79,6 +81,8 @@ public class AppCMSMain {
     @Expose
     String android;
 
+    boolean loadFromFile;
+
     public String getFireTv() {
         return fireTv;
     }
@@ -132,10 +136,6 @@ public class AppCMSMain {
 
     public void setPageEndpoint(String pageEndpoint) {
         this.pageEndpoint = pageEndpoint;
-    }
-
-    public String getInternalName() {
-        return internalName;
     }
 
     public void setInternalName(String internalName) {
@@ -276,5 +276,13 @@ public class AppCMSMain {
 
     public void setSocialMedia(SocialMedia socialMedia) {
         this.socialMedia = socialMedia;
+    }
+
+    public boolean shouldLoadFromFile() {
+        return loadFromFile;
+    }
+
+    public void setLoadFromFile(boolean loadFromFile) {
+        this.loadFromFile = loadFromFile;
     }
 }

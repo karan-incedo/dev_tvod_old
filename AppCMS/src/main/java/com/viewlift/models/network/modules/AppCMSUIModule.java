@@ -254,8 +254,13 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_download_quality_value_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_edit_profile_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_EDIT_PROFILE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_change_password_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_CHANGE_PASSWORD_KEY);
+        jsonValueKeyMap.put("emailValue", AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_TITLE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_cancel_subscription_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_upgrade_subscription_key),
@@ -271,6 +276,9 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_TOGGLE_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_autoplay_toggle_button_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_closed_captions_toggle_button_key),
+                AppCMSUIKeyType.PAGE_CLOSED_CAPTIONS_TOGGLE_BUTTON_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_title_key),
                 AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY);
@@ -787,6 +795,7 @@ public class AppCMSUIModule {
     public AppCMSUserDownloadVideoStatusCall providesAppCMSUserDownloadVideoStatusCall() {
         return new AppCMSUserDownloadVideoStatusCall();
     }
+
 
     @Provides
     @Singleton

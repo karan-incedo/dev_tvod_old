@@ -33,7 +33,7 @@ public class AppCMSSite {
 
     @SerializedName("siteInternalName")
     @Expose
-    Object siteInternalName;
+    String siteInternalName;
 
     @SerializedName("appAccess")
     @Expose
@@ -87,11 +87,7 @@ public class AppCMSSite {
         this.readWritePolicy = readWritePolicy;
     }
 
-    public Object getSiteInternalName() {
-        return siteInternalName;
-    }
-
-    public void setSiteInternalName(Object siteInternalName) {
+    public void setSiteInternalName(String siteInternalName) {
         this.siteInternalName = siteInternalName;
     }
 

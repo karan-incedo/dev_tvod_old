@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @UseStag
@@ -11,17 +12,17 @@ public class AppCMSPageUI {
 
     @SerializedName("moduleList")
     @Expose
-    List<ModuleList> moduleList = null;
+    ArrayList<ModuleList> moduleList = null;
 
     @SerializedName("version")
     @Expose
     String version;
 
-    public List<ModuleList> getModuleList() {
+    public ArrayList<ModuleList> getModuleList() {
         return moduleList;
     }
 
-    public void setModuleList(List<ModuleList> moduleList) {
+    public void setModuleList(ArrayList<ModuleList> moduleList) {
         this.moduleList = moduleList;
     }
 

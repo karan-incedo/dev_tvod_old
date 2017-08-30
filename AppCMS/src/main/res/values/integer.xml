@@ -1,5 +1,6 @@
 <resources>
     <integer name="app_cms_beacon_timeout_msec">30000</integer>
+    <integer name="app_cms_beacon_buffering_timeout_msec">5000</integer>
     <integer name="app_cms_default_connection_timeout_msec">10000</integer>
     <integer name="app_cms_default_read_timeout_msec">10000</integer>
     <integer name="app_cms_default_write_timeout_msec">10000</integer>
@@ -10,4 +11,9 @@
     <integer name="app_cms_login_underline_padding">16</integer>
     <integer name="app_cms_border_stroke_width">4</integer>
     <integer name="app_cms_empty_list_message_textsize">24</integer>
+
+    <integer name="first_primary_page_index">1</integer>
+    <integer name="second_primary_page_index">2</integer>
+    <integer name="search_page_index">4</integer>
+    <integer name="nav_page_index">0</integer>
 </resources>
