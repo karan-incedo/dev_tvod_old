@@ -4719,7 +4719,7 @@ public class AppCMSPresenter {
                     if (!isNetworkConnected()) {//Fix for SVFA-1435 issue 2nd by manoj comment
                        openDownloadScreenForNetworkError(true);
                     }else {
-                        launchErrorActivity(activity, platformType);
+                        launchErrorActivity(platformType);
                     }
                 } else if (TextUtils.isEmpty(main
                         .getAndroid())) {
