@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -17,7 +18,6 @@ import android.widget.Toast;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.ccavenue.utility.AvenuesParams;
-import com.viewlift.ccavenue.utility.Constants;
 import com.viewlift.ccavenue.utility.RSAUtility;
 import com.viewlift.ccavenue.utility.ServiceUtility;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -41,6 +41,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.viewlift.ccavenue.utility.Constants.TRANS_URL;
+
 public class WebViewActivity extends Activity {
 	private static final String TAG = "CCAvenueWebView";
 
@@ -54,6 +56,7 @@ public class WebViewActivity extends Activity {
 	RenderView readerViewAyncTask = null ;
 	updateSubscriptionPlanAsyncTask updateStatus = null ;
 	ProgressDialog progressDialog = null ;
+	boolean backPressFlag ;
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
@@ -61,6 +64,7 @@ public class WebViewActivity extends Activity {
 		accessCode = "" ;
 		merchantID = "" ;
 		cancelRedirectURL = "" ;
+		backPressFlag = false ;
 		setContentView(R.layout.activity_webview);
 		mainIntent = getIntent();
 		appCMSPresenter = ((AppCMSApplication) getApplication())
@@ -152,6 +156,11 @@ public class WebViewActivity extends Activity {
 				@Override
 				public void onPageStarted(WebView view, String url, Bitmap favicon) {
 					super.onPageStarted(view, url, favicon);
+					if (url.equalsIgnoreCase(TRANS_URL)) {
+						backPressFlag = false ;
+					} else {
+						backPressFlag = true ;
+					}
 					Log.v("url",url) ;
 				}
 
@@ -209,7 +218,7 @@ public class WebViewActivity extends Activity {
 			
 			String vPostParams = params.substring(0,params.length()-1);
 			try {
-				webview.postUrl(Constants.TRANS_URL, EncodingUtils.getBytes(vPostParams, "UTF-8"));
+				webview.postUrl(TRANS_URL, EncodingUtils.getBytes(vPostParams, "UTF-8"));
 			} catch (Exception e) {
 				showToast("Exception occured while opening webview.");
 			}
@@ -460,7 +469,7 @@ public class WebViewActivity extends Activity {
 			AlertDialog.Builder builder1 = new AlertDialog.Builder(WebViewActivity.this);
 			//builder1.setMessage("Payment Done!");
 			builder1.setMessage(message);
-			builder1.setCancelable(true);
+			builder1.setCancelable(false);
 
 			builder1.setPositiveButton(
 					buttonTitle,
@@ -522,5 +531,14 @@ public class WebViewActivity extends Activity {
 		super.onDestroy();
 	}
 
-
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (backPressFlag) {
+			if (keyCode == KeyEvent.KEYCODE_BACK) {
+				//Do something here
+				return backPressFlag;
+			}
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 }
