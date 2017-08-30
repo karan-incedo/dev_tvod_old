@@ -133,6 +133,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private long mStopBufferMilliSec;
     private static double ttfirstframe = 0d;
     private static int apod = 0;
+    private static boolean isVideoDownloaded;
 
     private ProgressBar progressBar;
     private Runnable seekListener;
@@ -322,6 +323,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             e.printStackTrace();
             mStreamId = filmId + appCMSPresenter.getCurrentTimeStamp();
         }
+        isVideoDownloaded=appCMSPresenter.isVideoDownloaded(filmId);
         videoPlayerView.setCurrentPosition(watchedTime * SECS_TO_MSECS);
         videoPlayerView.setOnPlayerStateChanged(playerState -> {
             if (playerState.getPlaybackState() == ExoPlayer.STATE_READY && !isCastConnected) {
@@ -329,7 +331,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     requestAds(adsUrl);
                 } else {
                     if (beaconBufferingThread != null) {
-                        beaconBufferingThread.sendBeaconBuffring = false;
+                        beaconBufferingThread.sendBeaconBuffering = false;
                     }
                     if (beaconMessageThread != null) {
                         beaconMessageThread.sendBeaconPing = true;
@@ -354,7 +356,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                                     String.valueOf(videoPlayerView.getWidth()),
                                     mStreamId,
                                     ttfirstframe,
-                                    0);
+                                    0,
+                                    isVideoDownloaded);
                             sentBeaconFirstFrame = true;
 
                         }
@@ -390,7 +393,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     beaconMessageThread.sendBeaconPing = false;
                 }
                 if (beaconBufferingThread != null) {
-                    beaconBufferingThread.sendBeaconBuffring = true;
+                    beaconBufferingThread.sendBeaconBuffering = true;
                     if (!beaconBufferingThread.isAlive()) {
                         beaconBufferingThread.start();
                     }
@@ -416,7 +419,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                         String.valueOf(videoPlayerView.getWidth()),
                         mStreamId,
                         0d,
-                        0);
+                        0,
+                        isVideoDownloaded);
                 sentBeaconPlay = true;
                 mStartBufferMilliSec = new Date().getTime();
             }
@@ -453,7 +457,6 @@ public class AppCMSPlayVideoFragment extends Fragment
                 appCMSPresenter,
                 filmId,
                 permaLink,
-                isTrailer,
                 parentScreenName,
                 videoPlayerView,
                 mStreamId);
@@ -533,7 +536,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             beaconMessageThread.sendBeaconPing = false;
         }
         if (beaconBufferingThread != null) {
-            beaconBufferingThread.sendBeaconBuffring = false;
+            beaconBufferingThread.sendBeaconBuffering = false;
         }
     }
 
@@ -546,7 +549,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 beaconMessageThread.sendBeaconPing = true;
             }
             if (beaconBufferingThread != null) {
-                beaconBufferingThread.sendBeaconBuffring = true;
+                beaconBufferingThread.sendBeaconBuffering = true;
             }
             Log.d(TAG, "Resuming playback");
         }
@@ -592,7 +595,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                             String.valueOf(videoPlayerView.getWidth()),
                             mStreamId,
                             0d,
-                            apod);
+                            apod,
+                            isVideoDownloaded);
                 }
                 videoPlayerView.pausePlayer();
                 break;
@@ -618,7 +622,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                             String.valueOf(videoPlayerView.getWidth()),
                             mStreamId,
                             ttfirstframe,
-                            0);
+                            0,
+                            isVideoDownloaded);
                 }
                 if (beaconMessageThread != null && !beaconMessageThread.isAlive()) {
                     beaconMessageThread.start();
@@ -650,8 +655,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         beaconMessageThread.videoPlayerView = null;
         beaconMessageThread = null;
 
-        beaconBufferingThread.sendBeaconBuffring = false;
-        beaconBufferingThread.runBeaconBuffring = false;
+        beaconBufferingThread.sendBeaconBuffering = false;
+        beaconBufferingThread.runBeaconBuffering = false;
         beaconBufferingThread.videoPlayerView = null;
         beaconBufferingThread = null;
 
@@ -737,7 +742,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                         String.valueOf(videoPlayerView.getWidth()),
                         mStreamId,
                         0d,
-                        apod);
+                        apod,
+                        isVideoDownloaded);
             }
         }
     }
@@ -766,7 +772,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                 String.valueOf(videoPlayerView.getWidth()),
                 mStreamId,
                 0d,
-                0);
+                0,
+                isVideoDownloaded);
         videoPlayerView.releasePlayer();
         onClosePlayerEvent.closePlayer();
         if (!TextUtils.isEmpty(message)) {
@@ -801,6 +808,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         boolean runBeaconPing;
         boolean sendBeaconPing;
         boolean isTrailer;
+
 
         public BeaconPingThread(long beaconMsgTimeoutMsec,
                                 AppCMSPresenter appCMSPresenter,
@@ -848,7 +856,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                                     String.valueOf(videoPlayerView.getWidth()),
                                     mStreamId,
                                     0d,
-                                    0);
+                                    0,
+                                    isVideoDownloaded);
 
                             if (!isTrailer) {
                                 appCMSPresenter.updateWatchedTime(filmId,
@@ -872,15 +881,14 @@ public class AppCMSPlayVideoFragment extends Fragment
         final String parentScreenName;
         final String mStreamId;
         VideoPlayerView videoPlayerView;
-        boolean runBeaconBuffring;
-        boolean sendBeaconBuffring;
-        boolean isTrailer;
+        boolean runBeaconBuffering;
+        boolean sendBeaconBuffering;
+
 
         public BeaconBufferingThread(long beaconBufferTimeoutMsec,
                                      AppCMSPresenter appCMSPresenter,
                                      String filmId,
                                      String permaLink,
-                                     boolean isTrailer,
                                      String parentScreenName,
                                      VideoPlayerView videoPlayerView,
                                      String mStreamId) {
@@ -890,16 +898,15 @@ public class AppCMSPlayVideoFragment extends Fragment
             this.permaLink = permaLink;
             this.parentScreenName = parentScreenName;
             this.videoPlayerView = videoPlayerView;
-            this.isTrailer = isTrailer;
             this.mStreamId = mStreamId;
         }
 
         public void run() {
-            runBeaconBuffring = true;
-            while (runBeaconBuffring) {
+            runBeaconBuffering = true;
+            while (runBeaconBuffering) {
                 try {
                     Thread.sleep(beaconBufferTimeoutMsec);
-                    if (sendBeaconBuffring) {
+                    if (sendBeaconBuffering) {
 
                         if (appCMSPresenter != null && videoPlayerView != null &&
                                 videoPlayerView.getPlayer().getPlayWhenReady() &&
@@ -916,12 +923,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                                     String.valueOf(videoPlayerView.getWidth()),
                                     mStreamId,
                                     0d,
-                                    0);
+                                    0,
+                                    isVideoDownloaded);
 
-                            if (!isTrailer) {
-                                appCMSPresenter.updateWatchedTime(filmId,
-                                        videoPlayerView.getCurrentPosition() / 1000);
-                            }
                         }
                     }
                 } catch (InterruptedException e) {
