@@ -36,7 +36,7 @@ public class AppCMSSiteCall {
         }
 
         if (numberOfTries == 0) {
-            call(url, numberOfTries + 1);
+            return call(url, numberOfTries + 1);
         }
 
         return null;

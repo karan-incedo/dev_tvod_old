@@ -129,7 +129,10 @@
     <string name="app_cms_page_settings_plan_value_key">planValue</string>
     <string name="app_cms_page_settings_plan_processor_title_key">paymentProcess</string>
     <string name="app_cms_page_settings_plan_processor_value_key">paymentProcessorValue</string>
+
     <string name="app_cms_page_edit_profile_key">Edit Profile</string>
+    <string name="app_cms_page_change_password_key">Change Password</string>
+
     <string name="app_cms_page_cancel_subscription_key">Cancel Subscription</string>
     <string name="app_cms_page_upgrade_subscription_key">Upgrade Subscription</string>
     <string name="app_cms_page_upgrade_subscribe_button_text">SUBSCRIBE</string>

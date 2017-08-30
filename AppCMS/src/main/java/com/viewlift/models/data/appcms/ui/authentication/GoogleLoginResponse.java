@@ -35,6 +35,14 @@ public class GoogleLoginResponse {
     @Expose
     private String picture;
 
+    @SerializedName("status")
+    @Expose
+    private String status;
+
+    @SerializedName("message")
+    @Expose
+    private String message;
+
     public String getAuthorizationToken() {
         return authorizationToken;
     }
@@ -81,5 +89,21 @@ public class GoogleLoginResponse {
 
     public void setPicture(String picture) {
         this.picture = picture;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

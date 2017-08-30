@@ -157,7 +157,7 @@ public class RealmController {
 
     public void addDownload(DownloadVideoRealm downloadVideoRealm) {
         realm.beginTransaction();
-        realm.insert(downloadVideoRealm);
+        realm.insertOrUpdate(downloadVideoRealm);
         realm.commitTransaction();
     }
 
