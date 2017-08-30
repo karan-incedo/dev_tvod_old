@@ -24,6 +24,7 @@ buildscript {
 apply plugin: 'io.fabric'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
+    maven { url "https://jitpack.io" }
 }
 
 android {
@@ -202,6 +203,8 @@ dependencies {
     compile "com.android.support:percent:$rootProject.ext.androidsupportVersion"
 
     compile "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
+
+    compile 'com.github.NightWhistler:HtmlSpanner:0.4'
 }
 
 apply plugin: 'com.google.gms.google-services'
