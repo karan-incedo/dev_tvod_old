@@ -5778,68 +5778,17 @@ public class AppCMSPresenter {
 
     public void signup(String email, String password) {
         if (currentActivity != null) {
-            final String PASSWORD_VERIFICATION_REGEX = "^\\S{5,50}$";
-
-            String userName = getLoggedInUserName(currentActivity);
-
-            boolean matchingEmailAndPassword = false;
-
-            if (!TextUtils.isEmpty(email) &&
-                    !TextUtils.isEmpty(password)) {
-                int atIndex = email.indexOf("@");
-                if (0 < atIndex) {
-                    String emailName = email.substring(0, atIndex);
-                    if (emailName.equals(password)) {
-                        matchingEmailAndPassword = true;
-                    }
-                }
-            }
-
-            if (TextUtils.isEmpty(email) && TextUtils.isEmpty(password)) {
-                showDialog(DialogType.SIGNUP_BLANK_EMAIL_PASSWORD,
-                        currentActivity.getString(R.string.app_cms_signup_invalid_email_and_password_message),
-                        false,
-                        null);
-            } else if (TextUtils.isEmpty(email)) {
-                showDialog(DialogType.SIGNUP_BLANK_EMAIL,
-                        currentActivity.getString(R.string.app_cms_signup_invalid_email_message),
-                        false,
-                        null);
-            } else if (TextUtils.isEmpty(password)) {
-                showDialog(DialogType.SIGNUP_BLANK_PASSWORD,
-                        currentActivity.getString(R.string.app_cms_signup_blank_password_message),
-                        false,
-                        null);
-            } else if (!TextUtils.isEmpty(userName) &&
-                    userName.equals(password)) {
-                showDialog(DialogType.SIGNUP_NAME_MATCHES_PASSWORD,
-                        currentActivity.getString(R.string.app_cms_signup_name_matches_password_message),
-                        false,
-                        null);
-            } else if (matchingEmailAndPassword) {
-                showDialog(DialogType.SIGNUP_EMAIL_MATCHES_PASSWORD,
-                        currentActivity.getString(R.string.app_cms_signup_email_matches_password_message),
-                        false,
-                        null);
-            } else if (!TextUtils.isEmpty(password) &&
-                    !password.matches(PASSWORD_VERIFICATION_REGEX)) {
-                showDialog(DialogType.SIGNUP_PASSWORD_INVALID,
-                        currentActivity.getString(R.string.app_cms_signup_invalid_password_message),
-                        false,
-                        null);
-            } else {
-                String url = currentActivity.getString(R.string.app_cms_signup_api_url,
-                        appCMSMain.getApiBaseUrl(),
-                        appCMSSite.getGist().getSiteInternalName());
-                startLoginAsyncTask(url,
-                        email,
-                        password,
-                        true,
-                        launchType == LaunchType.SUBSCRIBE,
-                        false,
-                        false,
-                        false);
-            }
+            String url = currentActivity.getString(R.string.app_cms_signup_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSSite.getGist().getSiteInternalName());
+            startLoginAsyncTask(url,
+                    email,
+                    password,
+                    true,
+                    launchType == LaunchType.SUBSCRIBE,
+                    false,
+                    false,
+                    false);
         }
     }
 
@@ -6210,6 +6159,8 @@ public class AppCMSPresenter {
                                             R.string.app_cms_error_email_password), false, null);
                                 }
                             }
+                        } else if (!TextUtils.isEmpty(signInResponse.getError())) {
+                            showDialog(DialogType.SIGNIN, signInResponse.getError(), false, null);
                         } else {
                             setRefreshToken(currentActivity, signInResponse.getRefreshToken());
                             setAuthToken(currentActivity, signInResponse.getAuthorizationToken());
