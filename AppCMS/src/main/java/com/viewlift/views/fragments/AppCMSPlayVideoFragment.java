@@ -331,7 +331,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     requestAds(adsUrl);
                 } else {
                     if (beaconBufferingThread != null) {
-                        beaconBufferingThread.sendBeaconBuffring = false;
+                        beaconBufferingThread.sendBeaconBuffering = false;
                     }
                     if (beaconMessageThread != null) {
                         beaconMessageThread.sendBeaconPing = true;
@@ -391,7 +391,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     beaconMessageThread.sendBeaconPing = false;
                 }
                 if (beaconBufferingThread != null) {
-                    beaconBufferingThread.sendBeaconBuffring = true;
+                    beaconBufferingThread.sendBeaconBuffering = true;
                     if (!beaconBufferingThread.isAlive()) {
                         beaconBufferingThread.start();
                     }
@@ -534,7 +534,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             beaconMessageThread.sendBeaconPing = false;
         }
         if (beaconBufferingThread != null) {
-            beaconBufferingThread.sendBeaconBuffring = false;
+            beaconBufferingThread.sendBeaconBuffering = false;
         }
     }
 
@@ -547,7 +547,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 beaconMessageThread.sendBeaconPing = true;
             }
             if (beaconBufferingThread != null) {
-                beaconBufferingThread.sendBeaconBuffring = true;
+                beaconBufferingThread.sendBeaconBuffering = true;
             }
             Log.d(TAG, "Resuming playback");
         }
@@ -653,8 +653,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         beaconMessageThread.videoPlayerView = null;
         beaconMessageThread = null;
 
-        beaconBufferingThread.sendBeaconBuffring = false;
-        beaconBufferingThread.runBeaconBuffring = false;
+        beaconBufferingThread.sendBeaconBuffering = false;
+        beaconBufferingThread.runBeaconBuffering = false;
         beaconBufferingThread.videoPlayerView = null;
         beaconBufferingThread = null;
 
@@ -879,8 +879,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         final String parentScreenName;
         final String mStreamId;
         VideoPlayerView videoPlayerView;
-        boolean runBeaconBuffring;
-        boolean sendBeaconBuffring;
+        boolean runBeaconBuffering;
+        boolean sendBeaconBuffering;
 
 
         public BeaconBufferingThread(long beaconBufferTimeoutMsec,
@@ -900,11 +900,11 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
 
         public void run() {
-            runBeaconBuffring = true;
-            while (runBeaconBuffring) {
+            runBeaconBuffering = true;
+            while (runBeaconBuffering) {
                 try {
                     Thread.sleep(beaconBufferTimeoutMsec);
-                    if (sendBeaconBuffring) {
+                    if (sendBeaconBuffering) {
 
                         if (appCMSPresenter != null && videoPlayerView != null &&
                                 videoPlayerView.getPlayer().getPlayWhenReady() &&

@@ -321,6 +321,7 @@ public class AppCMSPresenter {
     private final String FIREBASE_ECOMMERCE_PURCHASE = "ecommerce_purchase";
     private final String FIREBASE_CHANGE_SUBSCRIPTION = "change_subscription";
     private final String FIREBASE_CANCEL_SUBSCRIPTION = "cancel_subscription";
+    private final String DOWNLOAD_UI_ID = "download_page_id_pref";
     private final Gson gson;
     private final AppCMSMainUICall appCMSMainUICall;
     private final AppCMSAndroidUICall appCMSAndroidUICall;
@@ -652,11 +653,7 @@ public class AppCMSPresenter {
                                 }else{
                                     if (!isNetworkConnected()) {
                                         // Fix of SVFA-1435
-                                        showDialog(DialogType.NETWORK,
-                                                currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download),
-                                                true,
-                                                () -> navigateToDownloadPage(downloadPage.getPageId(),
-                                                        downloadPage.getPageName(), downloadPage.getPageUI(), false));
+                                        openDownloadScreenForNetworkError(false);
                                     }
 
                                 }
@@ -827,13 +824,9 @@ public class AppCMSPresenter {
             Log.e(TAG, e.getLocalizedMessage());
         }
         if (!isNetworkConnected() && !isVideoOffline) { //checking isVideoOffline here to fix SVFA-1431 in offline mode
-            // showDialog(DialogType.NETWORK, null, false, null);
             // Fix of SVFA-1435
-            showDialog(DialogType.NETWORK,
-                    currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download),
-                    true,
-                    () -> navigateToDownloadPage(downloadPage.getPageId(),
-                            downloadPage.getPageName(), downloadPage.getPageUI(), false));
+            openDownloadScreenForNetworkError(false);
+
         } else {
             final AppCMSActionType actionType = actionToActionTypeMap.get(action);
 
@@ -3768,17 +3761,10 @@ public class AppCMSPresenter {
             Intent stopLoadingPageIntent =
                     new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
             currentActivity.sendBroadcast(stopLoadingPageIntent);
-            showDialog(DialogType.NETWORK,
-                    currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download),
-                    true,
-                    () -> {
-                        try {
-                            navigateToDownloadPage(downloadPage.getPageId(),
-                                    downloadPage.getPageName(), downloadPage.getPageUI(), false);
-                        } catch (Exception e) {
-                            Log.e(TAG, "Error sending stop loading action: " + e.getMessage());
-                        }
-                    }); // fix of SVFA-1435 for build #1.0.35
+            if (!isNetworkConnected()) { // Fix of SVFA-1918
+                openDownloadScreenForNetworkError(false);
+                // fix of SVFA-1435 for build #1.0.35
+            }
         }
     }
 
@@ -3898,6 +3884,21 @@ public class AppCMSPresenter {
             return sharedPrefs.getString(USER_ID_SHARED_PREF_NAME, null);
         }
         return null;
+    }
+    public String getDownloadPageId(Context context) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(DOWNLOAD_UI_ID, 0);
+            return sharedPrefs.getString(DOWNLOAD_UI_ID, null);
+        }
+        return null;
+    }
+    public boolean setDownloadPageId(Context context, String url) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(DOWNLOAD_UI_ID, 0);
+            return sharedPrefs.edit().putString(DOWNLOAD_UI_ID, url).commit() &&
+                    setLoggedInTime(context);
+        }
+        return false;
     }
 
     public boolean setCastOverLay(Context context) {
@@ -4705,7 +4706,11 @@ public class AppCMSPresenter {
             try {
                 if (main == null) {
                     Log.e(TAG, "DialogType retrieving main.json");
-                    launchErrorActivity(activity, platformType);
+                    if (!isNetworkConnected()) {//Fix for SVFA-1435 issue 2nd by manoj comment
+                       openDownloadScreenForNetworkError(true);
+                    }else {
+                        launchErrorActivity(activity, platformType);
+                    }
                 } else if (TextUtils.isEmpty(main
                         .getAndroid())) {
                     Log.e(TAG, "AppCMS key for main not found");
@@ -5055,6 +5060,22 @@ public class AppCMSPresenter {
                     }
                 }
             }
+        }
+    }
+    public void openDownloadScreenForNetworkError(boolean launchActivity){
+        if (!isUserLoggedIn(currentActivity)){//fix SVFA-1911
+            showDialog(DialogType.NETWORK, null, false, null);
+            return;
+        }
+        try { // Applied this flow for fixing SVFA-1435 App Launch Scenario
+
+            showDialog(DialogType.NETWORK,
+                    currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download),
+                    true,
+                    () -> navigateToDownloadPage(getDownloadPageId(currentActivity),
+                            null, null, launchActivity));
+        } catch (Exception e) {
+            Log.d(TAG,e.getMessage());
         }
     }
 
@@ -6857,6 +6878,10 @@ public class AppCMSPresenter {
                 metaPage.getPageId() + " " +
                 metaPage.getPageUI() + " " +
                 metaPage.getPageAPI());
+        if (metaPage.getPageName().contains("Downloads") && !metaPage.getPageName().contains("Settings")){//Fix SVFA-1435 app Launch:  setting Download page UI url in shared pref
+
+            setDownloadPageId(currentActivity,metaPage.getPageId());
+        }
         pageIdToPageAPIUrlMap.put(metaPage.getPageId(), metaPage.getPageAPI());
         pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
 

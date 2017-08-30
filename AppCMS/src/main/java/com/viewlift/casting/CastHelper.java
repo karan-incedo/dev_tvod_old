@@ -85,7 +85,7 @@ public class CastHelper {
     private boolean sentBeaconPlay;
     private boolean sentBeaconFirstFrame;
     private boolean sendBeaconPing;
-    private boolean sendBeaconBuffring;
+    private boolean sendBeaconBuffering;
     private Action1<OnApplicationEnded> onApplicationEndedAction;
     private String imageUrl = "";
     private String title = "";
@@ -626,8 +626,8 @@ public class CastHelper {
                         callBackRemoteListener.onApplicationDisconnected();
                 }
 
-                beaconBufferingThread.sendBeaconBuffring = false;
-                beaconBufferingThread.runBeaconBuffring = false;
+                beaconBufferingThread.sendBeaconBuffering = false;
+                beaconBufferingThread.runBeaconBuffering = false;
                 beaconBufferingThread = null;
             }
         };
@@ -833,9 +833,9 @@ public class CastHelper {
         switch (status) {
             case MediaStatus.PLAYER_STATE_PLAYING:
                 sendBeaconPing = true;
-                sendBeaconBuffring = false;
+                sendBeaconBuffering = false;
                 if (beaconBufferingThread != null) {
-                    beaconBufferingThread.sendBeaconBuffring = false;
+                    beaconBufferingThread.sendBeaconBuffering = false;
                 }
                 if (!sentBeaconFirstFrame) {
 
@@ -863,28 +863,28 @@ public class CastHelper {
 
             case MediaStatus.PLAYER_STATE_PAUSED:
                 sendBeaconPing = false;
-                sendBeaconBuffring = false;
+                sendBeaconBuffering = false;
                 if (beaconBufferingThread != null) {
-                    beaconBufferingThread.sendBeaconBuffring = false;
+                    beaconBufferingThread.sendBeaconBuffering = false;
                 }
 
                 break;
 
             case MediaStatus.PLAYER_STATE_UNKNOWN:
                 sendBeaconPing = false;
-                sendBeaconBuffring = false;
+                sendBeaconBuffering = false;
                 if (beaconBufferingThread != null) {
-                    beaconBufferingThread.sendBeaconBuffring = false;
+                    beaconBufferingThread.sendBeaconBuffering = false;
                 }
 
                 break;
 
             case MediaStatus.PLAYER_STATE_BUFFERING:
                 sendBeaconPing = false;
-                sendBeaconBuffring = true;
+                sendBeaconBuffering = true;
 
                 if (beaconBufferingThread != null) {
-                    beaconBufferingThread.sendBeaconBuffring = true;
+                    beaconBufferingThread.sendBeaconBuffering = true;
                 }
                 if (!beaconBufferingThread.isAlive()){
                     beaconBufferingThread.start();
@@ -895,9 +895,9 @@ public class CastHelper {
 
             case MediaStatus.PLAYER_STATE_IDLE:
                 sendBeaconPing = false;
-                sendBeaconBuffring = false;
+                sendBeaconBuffering = false;
                 if (beaconBufferingThread != null) {
-                    beaconBufferingThread.sendBeaconBuffring = false;
+                    beaconBufferingThread.sendBeaconBuffering = false;
                 }
 
                 if (idleReason == MediaStatus.IDLE_REASON_FINISHED) {
@@ -911,9 +911,9 @@ public class CastHelper {
 
             default: // case unknown
                 sendBeaconPing = false;
-                sendBeaconBuffring = false;
+                sendBeaconBuffering = false;
                 if (beaconBufferingThread != null) {
-                    beaconBufferingThread.sendBeaconBuffring = false;
+                    beaconBufferingThread.sendBeaconBuffering = false;
                 }
                 break;
         }
@@ -991,8 +991,8 @@ public class CastHelper {
         final String filmId;
         final String permaLink;
         final String parentScreenName;
-        boolean runBeaconBuffring;
-        boolean sendBeaconBuffring;
+        boolean runBeaconBuffering;
+        boolean sendBeaconBuffering;
 
         public BeaconBufferingThread(long beaconBufferTimeoutMsec,
                                      AppCMSPresenter appCMSPresenter,
@@ -1008,11 +1008,11 @@ public class CastHelper {
         }
 
         public void run() {
-            runBeaconBuffring = true;
-            while (runBeaconBuffring) {
+            runBeaconBuffering = true;
+            while (runBeaconBuffering) {
                 try {
                     Thread.sleep(beaconBufferTimeoutMsec);
-                    if (sendBeaconBuffring) {
+                    if (sendBeaconBuffering) {
 
                         if (appCMSPresenter != null ) { // For not to sent PIN in PAUSE mode
                             appCMSPresenter.sendBeaconMessage(filmId,
