@@ -5532,7 +5532,12 @@ public class AppCMSPresenter {
                 true,
                 true,
                 false);
-
+        setActiveSubscriptionId(currentActivity, planToPurchase);
+        setActiveSubscriptionCurrency(currentActivity, currencyOfPlanToPurchase);
+        setActiveSubscriptionPlanName(currentActivity, planToPurchaseName);
+        setActiveSubscriptionPrice(currentActivity, String.valueOf(planToPurchasePrice));
+        setActiveSubscriptionProcessor(currentActivity, "CCAvenue");
+        refreshSubscriptionData(null);
 
 //        try {
 //            appCMSSubscriptionPlanCall.call(
@@ -5821,9 +5826,11 @@ public class AppCMSPresenter {
                                                                 getAuthToken(currentActivity),
                                                                 listResult -> {
                                                                     //
+                                                                    Log.v("currentActivity","currentActivity") ;
                                                                 },
                                                                 singleResult -> {
                                                                     //
+
                                                                 },
                                                                 appCMSSubscriptionPlanResult -> {
                                                                     try {
@@ -6052,7 +6059,7 @@ public class AppCMSPresenter {
             String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                     appCMSMain.getApiBaseUrl(),
                     appCMSSite.getGist().getSiteInternalName());
-            startLoginAsyncTask(url,
+                    startLoginAsyncTask(url,
                     email,
                     password,
                     false,
@@ -6127,7 +6134,7 @@ public class AppCMSPresenter {
                 .build();
         new PostAppCMSLoginRequestAsyncTask(appCMSSignInCall,
                 signInResponse -> {
-
+                    Log.v("ananomyousToken",getAnonymousUserToken(currentActivity)) ;
                     try {
                         if (signInResponse == null) {
                             // Show log error

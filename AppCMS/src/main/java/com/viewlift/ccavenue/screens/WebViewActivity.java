@@ -299,11 +299,6 @@ public class WebViewActivity extends Activity {
 		return rsaToken ;
 	}
 
-
-	private void finlizePaymentWithUpdatingBackend () {
-		appCMSPresenter.navigateToHomePage();
-	}
-
 	private  class  updateSubscriptionPlanAsyncTask extends AsyncTask<Void, Void, String> {
 
 		@Override
