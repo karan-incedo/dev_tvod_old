@@ -7907,6 +7907,10 @@ public class AppCMSPresenter {
         mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_NAME, getActiveSubscriptionPlanName(currentActivity));
     }
 
+    public String getApiKey() {
+        return apikey;
+    }
+
     public enum LaunchType {
         SUBSCRIBE, LOGIN_AND_SIGNUP
     }
