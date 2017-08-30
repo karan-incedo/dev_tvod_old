@@ -51,8 +51,8 @@ android {
         tv {
             minSdkVersion 21
             compileSdkVersion 25
-            versionCode 3010003
-            versionName "1.0.10"
+            versionCode 3010004
+            versionName "1.0.11"
             dimension = "green"
             aaptOptions {
                 cruncherEnabled = false
@@ -196,6 +196,9 @@ dependencies {
     compile project(path: ':firetvcustomkeyboard')
 
     compile "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
+
+    compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
+    annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
 }
 
 apply plugin: 'com.google.gms.google-services'

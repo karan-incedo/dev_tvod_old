@@ -237,6 +237,7 @@ public class AppCMSPresenter {
     public static final int REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS = 2002;
     public static final String PRESENTER_DIALOG_ACTION = "appcms_presenter_dialog_action";
     public static final String SEARCH_ACTION = "SEARCH_ACTION";
+    public static final String MY_PROFILE_ACTION = "MY_PROFILE_ACTION";
     public static final String ERROR_DIALOG_ACTION = "appcms_error_dialog_action";
     public static final String ACTION_LOGO_ANIMATION = "appcms_logo_animation";
     private static final String TAG = "AppCMSPresenter";
@@ -361,6 +362,11 @@ public class AppCMSPresenter {
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
     private Activity currentActivity;
+
+    public Navigation getNavigation() {
+        return navigation;
+    }
+
     private Navigation navigation;
     private boolean loadFromFile;
     private boolean loadingPage;
@@ -3681,8 +3687,11 @@ public class AppCMSPresenter {
             }
         } else if (platformType == PlatformType.TV) {
             try {
-                Intent errorIntent = new Intent(activity, Class.forName(tvErrorScreenPackage));
-                activity.startActivity(errorIntent);
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(currentActivity.getString(R.string.retry_key), false);
+                Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+                args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+                currentActivity.sendBroadcast(args);
             } catch (Exception e) {
                 Log.e(TAG, "DialogType launching TV DialogType Activity");
             }
@@ -6198,7 +6207,7 @@ public class AppCMSPresenter {
             new GetAppCMSSiteAsyncTask(appCMSSiteCall,
                     appCMSSite -> {
                         if (appCMSSite != null) {
-                            apikey = appCMSSite.getGist().getAppAccess().getAppSecretKey();
+                            apikey = currentActivity.getString(R.string.x_api_key);//appCMSSite.getGist().getAppAccess().getAppSecretKey();
                             AppCMSAPIComponent appCMSAPIComponent = DaggerAppCMSAPIComponent.builder()
                                     .appCMSAPIModule(new AppCMSAPIModule(activity,
                                             main.getApiBaseUrl(),
@@ -6551,6 +6560,19 @@ public class AppCMSPresenter {
                         initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
                     }
                     navigation = appCMSAndroidUI.getNavigation();
+
+                    //add search in navigation item.
+                    NavigationPrimary myProfile = new NavigationPrimary();
+                    myProfile.setPageId(currentActivity.getString(R.string.app_cms_my_profile_label ,
+                    currentActivity.getString(R.string.profile_label)));
+
+                    myProfile.setTitle(currentActivity.getString(R.string.app_cms_my_profile_label ,
+                            appCMSAndroidUI.getShortAppName() != null ?
+                                    appCMSAndroidUI.getShortAppName() :
+                                    currentActivity.getString(R.string.profile_label)));
+                    //navigation.getNavigationPrimary().add(myProfile);   //TODO : commented due to phase_1 build. This is a feature of Phase_2
+
+
                     //add search in navigation item.
                     NavigationPrimary searchNav = new NavigationPrimary();
                     searchNav.setPageId(currentActivity.getString(R.string.app_cms_search_label));
@@ -7206,8 +7228,13 @@ public class AppCMSPresenter {
     }
 
     public void openSearch() {
-        Intent updateHistoryIntent = new Intent(SEARCH_ACTION);
-        currentActivity.sendBroadcast(updateHistoryIntent);
+        Intent searchIntent = new Intent(SEARCH_ACTION);
+        currentActivity.sendBroadcast(searchIntent);
+    }
+
+    public void openMyProfile() {
+        Intent myProfileIntent = new Intent(MY_PROFILE_ACTION);
+        currentActivity.sendBroadcast(myProfileIntent);
     }
 
     public boolean launchTVVideoPlayer(final String filmId,
