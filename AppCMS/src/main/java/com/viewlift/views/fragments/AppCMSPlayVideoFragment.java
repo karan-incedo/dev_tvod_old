@@ -245,6 +245,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             parentalRating = args.getString(getString(R.string.video_player_content_rating_key));
         }
 
+        hlsUrl = hlsUrl.replaceAll(" ", "+");
+
         sentBeaconPlay = (0 < playIndex && watchedTime != 0);
 
         appCMSPresenter =
