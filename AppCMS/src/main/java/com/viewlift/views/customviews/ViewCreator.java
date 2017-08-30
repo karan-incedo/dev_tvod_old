@@ -16,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.InputType;
+import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -56,6 +57,10 @@ import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
+
+import net.nightwhistler.htmlspanner.HtmlSpanner;
+
+import org.htmlcleaner.HtmlCleaner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -1901,11 +1906,8 @@ public class ViewCreator {
 
                         case PAGE_API_DESCRIPTION:
                             if (!TextUtils.isEmpty(moduleAPI.getRawText())) {
-                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(moduleAPI.getRawText()));
-                                } else {
-                                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(moduleAPI.getRawText(), Html.FROM_HTML_MODE_COMPACT));
-                                }
+                                Spannable rawHtmlSpannable = new HtmlSpanner().fromHtml(moduleAPI.getRawText());
+                                ((TextView) componentViewResult.componentView).setText(rawHtmlSpannable);
                                 ((TextView) componentViewResult.componentView).setMovementMethod(LinkMovementMethod.getInstance());
                             }
                             break;

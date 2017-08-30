@@ -599,15 +599,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             });
         } else {
             listView.setAdapter(null);
-            List<ContentDatum> adapterDataTmp;
-            if (adapterData != null) {
-                adapterDataTmp = new ArrayList<>(adapterData);
-            } else {
-                adapterDataTmp = new ArrayList<>();
-            }
-            adapterData = null;
-            notifyDataSetChanged();
-            adapterData = adapterDataTmp;
             sortData();
             notifyDataSetChanged();
             listView.setAdapter(this);
