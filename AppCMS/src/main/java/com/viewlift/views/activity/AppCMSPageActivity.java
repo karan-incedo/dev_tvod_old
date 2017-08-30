@@ -510,21 +510,23 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
 
         if (resultCode == Activity.RESULT_OK) {
-            if (result != null && result.isSuccess()) {
-                if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
-                    handleCloseAction();
+           if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
+                if (result != null && result.isSuccess()) {
+                    if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+                        handleCloseAction();
+                    }
+                    appCMSPresenter.setGoogleAccessToken(this, result.getSignInAccount().getIdToken(),
+                            result.getSignInAccount().getId(),
+                            result.getSignInAccount().getDisplayName(),
+                            result.getSignInAccount().getEmail(),
+                            true);
                 }
-                appCMSPresenter.setGoogleAccessToken(this, result.getSignInAccount().getIdToken(),
-                        result.getSignInAccount().getId(),
-                        result.getSignInAccount().getDisplayName(),
-                        result.getSignInAccount().getEmail(),
-                        true);
-            }
-
-            if (FacebookSdk.isFacebookRequestCode(requestCode)) {
-                callbackManager.onActivityResult(requestCode, resultCode, data);
-            } else if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
-                appCMSPresenter.finalizeSignupAfterSubscription(data.getStringExtra("INAPP_PURCHASE_DATA"));
+            } else {
+                if (FacebookSdk.isFacebookRequestCode(requestCode)) {
+                    callbackManager.onActivityResult(requestCode, resultCode, data);
+                } else if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
+                    appCMSPresenter.finalizeSignupAfterSubscription(data.getStringExtra("INAPP_PURCHASE_DATA"));
+                }
             }
 
             //CCAvenue Callback Handling

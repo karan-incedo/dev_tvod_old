@@ -295,7 +295,7 @@ public class AppCMSPresenter {
     private static final String MEDIA_SURFIX_PNG = ".png";
     private static final String MEDIA_SURFIX_JPG = ".jpg";
     private static final String MEDIA_SUFFIX_SRT = ".srt";
-    private static final int RC_GOOGLE_SIGN_IN = 1001;
+    public static final int RC_GOOGLE_SIGN_IN = 1001;
     private static int PAGE_LRU_CACHE_SIZE = 10;
     private final String USER_ID_KEY = "user_id";
     private final String LOGIN_STATUS_KEY = "logged_in_status";
@@ -357,6 +357,9 @@ public class AppCMSPresenter {
     private final AppCMSSubscriptionCall appCMSSubscriptionCall;
     private final AppCMSSubscriptionPlanCall appCMSSubscriptionPlanCall;
     private final AppCMSAnonymousAuthTokenCall appCMSAnonymousAuthTokenCall;
+
+    private String clientId;
+
     public String[] physicalPaths = {
             "/storage/sdcard0", "/storage/sdcard1", // Motorola Xoom
             "/storage/extsdcard", // Samsung SGS3
@@ -1604,7 +1607,7 @@ public class AppCMSPresenter {
             GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions
                     .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestEmail()
-                    .requestIdToken(currentActivity.getString(R.string.default_web_client_id))
+                    .requestServerAuthCode(clientId, false)
                     .build();
 
             Intent googleIntent = Auth.GoogleSignInApi
@@ -1680,7 +1683,7 @@ public class AppCMSPresenter {
     }
 
     public void initiateItemPurchase() {
-        if (countryCode.equalsIgnoreCase("IN")) {
+        if (!TextUtils.isEmpty(countryCode) && countryCode.equalsIgnoreCase("IN")) {
             if (currencyCode.equalsIgnoreCase("INR")) {
                 initiateCCAvenuePurchase();
             }
@@ -4312,20 +4315,34 @@ public class AppCMSPresenter {
                                         }
                                     });
                                 } else {
-                                    sendCloseOthersAction(null, true);
-                                    cancelInternalEvents();
-                                    restartInternalEvents();
-                                    NavigationPrimary homePageNavItem = findHomePageNavItem();
-                                    if (homePageNavItem != null) {
-                                        navigateToPage(homePageNavItem.getPageId(),
-                                                homePageNavItem.getTitle(),
-                                                homePageNavItem.getUrl(),
-                                                false,
-                                                true,
-                                                false,
-                                                true,
-                                                false,
-                                                deeplinkSearchQuery);
+                                    if (entitlementPendingVideoData != null) {
+                                        navigateToHomeToRefresh = false;
+                                        sendRefreshPageAction();
+                                        sendCloseOthersAction(null, true);
+                                        launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
+                                                entitlementPendingVideoData.action,
+                                                entitlementPendingVideoData.filmTitle,
+                                                entitlementPendingVideoData.extraData,
+                                                entitlementPendingVideoData.contentDatum,
+                                                entitlementPendingVideoData.closeLauncher,
+                                                entitlementPendingVideoData.currentlyPlayingIndex,
+                                                entitlementPendingVideoData.relateVideoIds);
+                                    } else {
+                                        sendCloseOthersAction(null, true);
+                                        cancelInternalEvents();
+                                        restartInternalEvents();
+                                        NavigationPrimary homePageNavItem = findHomePageNavItem();
+                                        if (homePageNavItem != null) {
+                                            navigateToPage(homePageNavItem.getPageId(),
+                                                    homePageNavItem.getTitle(),
+                                                    homePageNavItem.getUrl(),
+                                                    false,
+                                                    true,
+                                                    false,
+                                                    true,
+                                                    false,
+                                                    deeplinkSearchQuery);
+                                        }
                                     }
                                 }
                             }
@@ -5588,7 +5605,7 @@ public class AppCMSPresenter {
 //                        //
 //                    });
 //        } catch (Exception ex) {
-//            ex.
+//            Log.e(TAG, ex.getMessage());
 //        }
 
     }
@@ -5791,6 +5808,18 @@ public class AppCMSPresenter {
                                 false,
                                 null);
                     }
+                } else {
+                    String url = currentActivity.getString(R.string.app_cms_signup_api_url,
+                            appCMSMain.getApiBaseUrl(),
+                            appCMSSite.getGist().getSiteInternalName());
+                    startLoginAsyncTask(url,
+                            email,
+                            password,
+                            true,
+                            launchType == LaunchType.SUBSCRIBE,
+                            false,
+                            false,
+                            false);
                 }
             } else if (!TextUtils.isEmpty(password) &&
                     !password.matches(PASSWORD_VERIFICATION_REGEX)) {
@@ -6395,6 +6424,7 @@ public class AppCMSPresenter {
         this.downloadManager = (DownloadManager) currentActivity.getSystemService(Context.DOWNLOAD_SERVICE);
         this.realmController = RealmController.with(currentActivity);
         this.downloadQueueThread = new DownloadQueueThread(this);
+        this.clientId = activity.getString(R.string.server_client_id);
     }
 
     private Bundle getPageActivityBundle(Activity activity,
