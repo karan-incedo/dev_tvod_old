@@ -5590,6 +5590,12 @@ public class AppCMSPresenter {
                 true,
                 false);
 
+        setActiveSubscriptionId(currentActivity, planToPurchase);
+        setActiveSubscriptionCurrency(currentActivity, currencyOfPlanToPurchase);
+        setActiveSubscriptionPlanName(currentActivity, planToPurchaseName);
+        setActiveSubscriptionPrice(currentActivity, String.valueOf(planToPurchasePrice));
+        setActiveSubscriptionProcessor(currentActivity, "CCAvenue");
+        refreshSubscriptionData(null);
 
 //        try {
 //            appCMSSubscriptionPlanCall.call(
@@ -5776,6 +5782,19 @@ public class AppCMSPresenter {
 
             String userName = getLoggedInUserName(currentActivity);
 
+            boolean matchingEmailAndPassword = false;
+
+            if (!TextUtils.isEmpty(email) &&
+                    !TextUtils.isEmpty(password)) {
+                int atIndex = email.indexOf("@");
+                if (0 < atIndex) {
+                    String emailName = email.substring(0, atIndex);
+                    if (emailName.equals(password)) {
+                        matchingEmailAndPassword = true;
+                    }
+                }
+            }
+
             if (TextUtils.isEmpty(email) && TextUtils.isEmpty(password)) {
                 showDialog(DialogType.SIGNUP_BLANK_EMAIL_PASSWORD,
                         currentActivity.getString(R.string.app_cms_signup_invalid_email_and_password_message),
@@ -5797,30 +5816,11 @@ public class AppCMSPresenter {
                         currentActivity.getString(R.string.app_cms_signup_name_matches_password_message),
                         false,
                         null);
-            } else if (!TextUtils.isEmpty(email) &&
-                    !TextUtils.isEmpty(password)) {
-                int atIndex = email.indexOf("@");
-                if (0 < atIndex) {
-                    String emailName = email.substring(0, atIndex);
-                    if (emailName.equals(password)) {
-                        showDialog(DialogType.SIGNUP_EMAIL_MATCHES_PASSWORD,
-                                currentActivity.getString(R.string.app_cms_signup_email_matches_password_message),
-                                false,
-                                null);
-                    }
-                } else {
-                    String url = currentActivity.getString(R.string.app_cms_signup_api_url,
-                            appCMSMain.getApiBaseUrl(),
-                            appCMSSite.getGist().getSiteInternalName());
-                    startLoginAsyncTask(url,
-                            email,
-                            password,
-                            true,
-                            launchType == LaunchType.SUBSCRIBE,
-                            false,
-                            false,
-                            false);
-                }
+            } else if (matchingEmailAndPassword) {
+                showDialog(DialogType.SIGNUP_EMAIL_MATCHES_PASSWORD,
+                        currentActivity.getString(R.string.app_cms_signup_email_matches_password_message),
+                        false,
+                        null);
             } else if (!TextUtils.isEmpty(password) &&
                     !password.matches(PASSWORD_VERIFICATION_REGEX)) {
                 showDialog(DialogType.SIGNUP_PASSWORD_INVALID,
