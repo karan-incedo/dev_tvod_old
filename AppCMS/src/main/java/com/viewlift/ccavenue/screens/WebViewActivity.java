@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -120,10 +121,12 @@ public class WebViewActivity extends Activity {
 				// process the html as needed by the app
 				String status = null;
 				if(html.indexOf("F")!=-1){
+					backPressFlag = false ;
 					status = "Transaction Declined!";
 					displaySuccessPaymentDialog("Transaction Declined!", "Try again later!");
 				}else if(html.indexOf("S")!=-1){
 					try {
+						backPressFlag = true ;
 					appCMSPresenter.finalizeSignupAfterCCAvenueSubscription(null) ;
 					updateStatus = new updateSubscriptionPlanAsyncTask() ;
 					updateStatus.execute();
@@ -132,9 +135,11 @@ public class WebViewActivity extends Activity {
 					}
 				}else if(html.indexOf("Aborted")!=-1){
 					status = "Transaction Cancelled!";
+					backPressFlag = false ;
 					displaySuccessPaymentDialog("Transaction Cancelled!", "Try again later!");
 				}else{
 					status = "Status Not Known!";
+					backPressFlag = false ;
 					displaySuccessPaymentDialog("Something went wrong!", "Try again later!");
 				}
 			}
@@ -186,6 +191,7 @@ public class WebViewActivity extends Activity {
                     //https://stgsecure.ccavenue.com/servlet/processTxn
 					///cancelRedirectURL = "https://stgsecure.ccavenue.com/servlet/processTxn" ;
 	    	        if (url.equalsIgnoreCase(cancelRedirectURL)) {
+						webview.setVisibility(View.GONE);
 	    	        	/* This call inject JavaScript into the page which just finished loading. */
 						webview.loadUrl("javascript:window.HTMLOUT.processHTML('<head>'+document.getElementsByTagName('html')[0].innerHTML+'</head>');");
 						//webview.stopLoading();
@@ -216,6 +222,7 @@ public class WebViewActivity extends Activity {
 			params.append(ServiceUtility.addToPostParams("merchant_param2",getIntent().getStringExtra(getString(R.string.app_cms_user_id))));
 			params.append(ServiceUtility.addToPostParams("merchant_param3",getIntent().getStringExtra(getString(R.string.app_cms_plan_id))));
 			params.append(ServiceUtility.addToPostParams("merchant_param4","android"));
+			params.append(ServiceUtility.addToPostParams("merchant_param5",""));
 			//params.append(ServiceUtility.addToPostParams(AvenuesParams.BILLING_EMAIL,"email")) ;
 			try {
 				params.append(ServiceUtility.addToPostParams(AvenuesParams.ENC_VAL,URLEncoder.encode(encVal,"UTF-8")));

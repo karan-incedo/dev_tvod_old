@@ -5596,9 +5596,11 @@ public class AppCMSPresenter {
     }
 
     public void finalizeSignupAfterCCAvenueSubscription(Intent data) {
-        String url = currentActivity.getString(R.string.app_cms_signin_api_url,
+
+      /*  String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                 appCMSMain.getApiBaseUrl(),
                 appCMSSite.getGist().getSiteInternalName());
+
         startLoginAsyncTask(url,
                 subscriptionUserEmail,
                 subscriptionUserPassword,
@@ -5606,7 +5608,55 @@ public class AppCMSPresenter {
                 false,
                 true,
                 true,
-                false);
+                false);*/
+            if (entitlementPendingVideoData != null) {
+                navigateToHomeToRefresh = false;
+                sendRefreshPageAction();
+                sendCloseOthersAction(null, true);
+                launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
+                        entitlementPendingVideoData.action,
+                        entitlementPendingVideoData.filmTitle,
+                        entitlementPendingVideoData.extraData,
+                        entitlementPendingVideoData.contentDatum,
+                        entitlementPendingVideoData.closeLauncher,
+                        entitlementPendingVideoData.currentlyPlayingIndex,
+                        entitlementPendingVideoData.relateVideoIds);
+                entitlementPendingVideoData.pagePath = null;
+                entitlementPendingVideoData.action = null;
+                entitlementPendingVideoData.filmTitle = null;
+                entitlementPendingVideoData.extraData = null;
+                entitlementPendingVideoData.contentDatum = null;
+                entitlementPendingVideoData.closeLauncher = false;
+                entitlementPendingVideoData.currentlyPlayingIndex = -1;
+                entitlementPendingVideoData.relateVideoIds = null;
+                entitlementPendingVideoData = null;
+            } else {
+                sendCloseOthersAction(null, true);
+                cancelInternalEvents();
+                restartInternalEvents();
+
+                if (TextUtils.isEmpty(getUserDownloadQualityPref(currentActivity))) {
+                    setUserDownloadQualityPref(currentActivity,
+                            currentActivity.getString(R.string.app_cms_default_download_quality));
+                }
+
+                NavigationPrimary homePageNavItem = findHomePageNavItem();
+                if (homePageNavItem != null) {
+                    cancelInternalEvents();
+                    navigateToPage(homePageNavItem.getPageId(),
+                            homePageNavItem.getTitle(),
+                            homePageNavItem.getUrl(),
+                            false,
+                            true,
+                            false,
+                            true,
+                            true,
+                            deeplinkSearchQuery);
+                }
+            }
+
+
+        setIsUserSubscribed(currentActivity,true) ;
         setActiveSubscriptionId(currentActivity, planToPurchase);
         setActiveSubscriptionCurrency(currentActivity, currencyOfPlanToPurchase);
         setActiveSubscriptionPlanName(currentActivity, planToPurchaseName);
