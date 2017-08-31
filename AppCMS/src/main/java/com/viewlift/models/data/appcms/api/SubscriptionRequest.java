@@ -67,6 +67,10 @@ public class SubscriptionRequest {
     @Expose
     String receipt;
 
+    @SerializedName("addEntitlement")
+    @Expose
+    boolean addEntitlement = true;
+
     public String getSiteInternalName() {
         return siteInternalName;
     }
@@ -177,5 +181,13 @@ public class SubscriptionRequest {
 
     public void setPlanIdentifier(String planIdentifier) {
         this.planIdentifier = planIdentifier;
+    }
+
+    public boolean isAddEntitlement() {
+        return addEntitlement;
+    }
+
+    public void setAddEntitlement(boolean addEntitlement) {
+        this.addEntitlement = addEntitlement;
     }
 }

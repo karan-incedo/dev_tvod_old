@@ -208,7 +208,9 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                             appCMSSearchItemAdapter.setData(data);
                             updateNoResultsDisplay(appCMSPresenter, data);
                         }
-                    }, appCMSSearchCall).execute(url);
+                    },
+                            appCMSSearchCall,
+                            appCMSPresenter.getApiKey()).execute(url);
                 }
             }
         }
@@ -230,18 +232,21 @@ public class AppCMSSearchActivity extends AppCompatActivity {
     private static class SearchAsyncTask extends AsyncTask<String, Void, List<AppCMSSearchResult>> {
         final Action1<List<AppCMSSearchResult>> dataReadySubscriber;
         final AppCMSSearchCall appCMSSearchCall;
+        final String apiKey;
 
         SearchAsyncTask(Action1<List<AppCMSSearchResult>> dataReadySubscriber,
-                        AppCMSSearchCall appCMSSearchCall) {
+                        AppCMSSearchCall appCMSSearchCall,
+                        String apiKey) {
             this.dataReadySubscriber = dataReadySubscriber;
             this.appCMSSearchCall = appCMSSearchCall;
+            this.apiKey = apiKey;
         }
 
         @Override
         protected List<AppCMSSearchResult> doInBackground(String... params) {
             if (params.length > 0) {
                 try {
-                    return appCMSSearchCall.call(params[0]);
+                    return appCMSSearchCall.call(apiKey, params[0]);
                 } catch (IOException e) {
                     Log.e(TAG, "I/O DialogType retrieving search data from URL: " + params[0]);
                 }

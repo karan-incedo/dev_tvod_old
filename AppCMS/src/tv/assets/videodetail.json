@@ -24,6 +24,7 @@
           "layout": {
             "ftv": {
               "leftMargin": 95,
+              "topMargin": 10,
               "fontSize": 30
             }
           },
@@ -39,6 +40,7 @@
         {
           "layout": {
             "ftv": {
+              "yAxis": 35,
               "width": 590,
               "rightMargin": 100,
               "fontSize": 16,

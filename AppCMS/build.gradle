@@ -4,7 +4,7 @@ apply plugin: 'realm-android'
 def final packageName = 'air.com.snagfilms'
 def final customApplicationId = 'SnagFilms'
 def final hostName = "www.snagfilms.com"
-def final appVersionName = "1.0.22"
+def final appVersionName = "1.0.26"
 
 buildscript {
     repositories {
@@ -24,19 +24,20 @@ buildscript {
 apply plugin: 'io.fabric'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
+    maven { url "https://jitpack.io" }
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
     defaultConfig {
         applicationId packageName
         minSdkVersion 23
         targetSdkVersion 25
-        versionCode 3042064
+        versionCode 3042068
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        renderscriptTargetApi 25
+        renderscriptTargetApi 26
         renderscriptSupportModeEnabled true
         useLibrary 'org.apache.http.legacy'
     }
@@ -49,6 +50,7 @@ android {
             targetSdkVersion 25
         }
         tv {
+
             minSdkVersion 21
             compileSdkVersion 25
             versionCode 3010004
@@ -128,6 +130,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile "junit:junit:$rootProject.ext.junitVersion"
     testCompile "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
@@ -194,11 +197,15 @@ dependencies {
     compile "com.google.android.gms:play-services-tagmanager:$rootProject.ext.googlePlayServicesVersion"
 
     compile project(path: ':firetvcustomkeyboard')
+    compile "com.android.support:percent:$rootProject.ext.androidsupportVersion"
 
     compile "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
 
     compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
+
+    compile 'com.github.NightWhistler:HtmlSpanner:0.4'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

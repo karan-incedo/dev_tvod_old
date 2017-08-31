@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -84,6 +85,9 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         appCMSBinderMap.put(tag, updatedAppCMSBinder);
 
         AppCMSMain appCMSMain = appCMSBinder.getAppCMSMain();
+
+        AppCMSSite appCMSSite = appCMSPresenter.getAppCMSSite();
+
         int textColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getTextColor());/*Color.parseColor("#F6546A");*/
         int bgColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor());//Color.parseColor("#660066");
 
@@ -101,7 +105,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         if(null == appCMSSearchUrlComponent){
             appCMSSearchUrlComponent = DaggerAppCmsTvSearchComponent.builder()
                     .appCMSSearchUrlModule(new AppCMSSearchUrlModule(appCMSMain.getApiBaseUrl(),
-                            appCMSMain.getInternalName(),
+                            appCMSSite.getGist().getSiteInternalName(),
                             appCMSBinder.getAppCMSSearchCall()))
                     .build();
         }
