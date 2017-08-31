@@ -3770,14 +3770,14 @@ public class AppCMSPresenter {
                 // fix of SVFA-1435 for build #1.0.35
             }
         }
-
+    }
       
-    public void launchErrorActivity(Activity activity, PlatformType platformType) {
+    public void launchErrorActivity(PlatformType platformType) {
         if (platformType == PlatformType.ANDROID) {
             try {
                 sendCloseOthersAction(null, false);
-                Intent errorIntent = new Intent(activity, AppCMSErrorActivity.class);
-                activity.startActivity(errorIntent);
+                Intent errorIntent = new Intent(currentActivity, AppCMSErrorActivity.class);
+                currentActivity.startActivity(errorIntent);
             } catch (Exception e) {
                 Log.e(TAG, "DialogType launching Mobile DialogType Activity");
             }
