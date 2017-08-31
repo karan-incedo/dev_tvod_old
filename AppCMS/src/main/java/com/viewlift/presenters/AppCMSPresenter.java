@@ -5694,6 +5694,8 @@ public class AppCMSPresenter {
                             setActiveSubscriptionCurrency(currentActivity, currencyOfPlanToPurchase);
                             setActiveSubscriptionPlanName(currentActivity, planToPurchaseName);
                             setActiveSubscriptionPrice(currentActivity, String.valueOf(planToPurchasePrice));
+                            setActiveSubscriptionProcessor(currentActivity,
+                                    currentActivity.getString(R.string.subscription_android_payment_processor_friendly));
                             skuToPurchase = null;
                             planToPurchase = null;
                             currencyOfPlanToPurchase = null;
