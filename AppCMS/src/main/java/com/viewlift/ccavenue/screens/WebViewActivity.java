@@ -130,6 +130,9 @@ public class WebViewActivity extends Activity {
 					appCMSPresenter.finalizeSignupAfterCCAvenueSubscription(null) ;
 					updateStatus = new updateSubscriptionPlanAsyncTask() ;
 					updateStatus.execute();
+						sendBroadcast(new Intent(
+								AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+						finish();
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
