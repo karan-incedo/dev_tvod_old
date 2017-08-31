@@ -1,6 +1,5 @@
 package com.viewlift.views.fragments;
 
-
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -17,12 +16,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSNavItemsAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
-
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/30/17.
@@ -65,7 +63,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
         appCMSBinder =
                 ((AppCMSBinder) args.getBinder(getContext().getString(R.string.fragment_page_bundle_key)));
         View view = inflater.inflate(R.layout.fragment_menu_nav, container, false);
-        RecyclerView navItemsList = (RecyclerView) view.findViewById(R.id.nav_items_list);
+        RecyclerView navItemsList = view.findViewById(R.id.nav_items_list);
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
@@ -80,24 +78,21 @@ public class AppCMSNavItemsFragment extends DialogFragment {
             appCMSPresenter.restrictPortraitOnly();
         }
 
-        LinearLayout appCMSNavLoginContainer = (LinearLayout) view.findViewById(R.id.app_cms_nav_login_container);
+        LinearLayout appCMSNavLoginContainer = view.findViewById(R.id.app_cms_nav_login_container);
         if (appCMSPresenter.isUserLoggedIn(getContext())) {
             appCMSNavLoginContainer.setVisibility(View.GONE);
         } else {
             appCMSNavLoginContainer.setVisibility(View.VISIBLE);
             View appCMSNavItemsSeparatorView = view.findViewById(R.id.app_cms_nav_items_separator_view);
             appCMSNavItemsSeparatorView.setBackgroundColor(textColor);
-            TextView appCMSNavItemsLoggedOutMessage = (TextView) view.findViewById(R.id.app_cms_nav_items_logged_out_message);
+            TextView appCMSNavItemsLoggedOutMessage = view.findViewById(R.id.app_cms_nav_items_logged_out_message);
             appCMSNavItemsLoggedOutMessage.setTextColor(textColor);
-            Button appCMSNavLoginButton = (Button) view.findViewById(R.id.app_cms_nav_login_button);
+            Button appCMSNavLoginButton = view.findViewById(R.id.app_cms_nav_login_button);
             appCMSNavLoginButton.setTextColor(textColor);
-            appCMSNavLoginButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (appCMSPresenter != null) {
-                        appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
-                        appCMSPresenter.navigateToLoginPage();
-                    }
+            appCMSNavLoginButton.setOnClickListener(v -> {
+                if (appCMSPresenter != null) {
+                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
+                    appCMSPresenter.navigateToLoginPage();
                 }
             });
             GradientDrawable loginBorder = new GradientDrawable();
@@ -106,19 +101,16 @@ public class AppCMSNavItemsFragment extends DialogFragment {
             loginBorder.setColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
             appCMSNavLoginButton.setBackground(loginBorder);
 
-            Button appCMSNavFreeTrialButton = (Button) view.findViewById(R.id.app_cms_nav_free_trial_button);
+            Button appCMSNavFreeTrialButton = view.findViewById(R.id.app_cms_nav_free_trial_button);
             if (appCMSPresenter.getAppCMSMain()
                     .getServiceType()
                     .equals(getContext().getString(R.string.app_cms_main_svod_service_type_key))) {
                 appCMSNavFreeTrialButton.setTextColor(textColor);
-                appCMSNavFreeTrialButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (appCMSPresenter != null) {
-                            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
-                            appCMSPresenter.navigateToSubscriptionPlansPage(appCMSBinder.getPageId(),
-                                    appCMSBinder.getPageName());
-                        }
+                appCMSNavFreeTrialButton.setOnClickListener(v -> {
+                    if (appCMSPresenter != null) {
+                        appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
+                        appCMSPresenter.navigateToSubscriptionPlansPage(appCMSBinder.getPageId(),
+                                appCMSBinder.getPageName());
                     }
                 });
                 appCMSNavFreeTrialButton.setBackgroundColor(buttonColor);
@@ -142,7 +134,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
 
     private void setBgColor(int bgColor, View view) {
         RelativeLayout appCMSNavigationMenuMainLayout =
-                (RelativeLayout) view.findViewById(R.id.app_cms_navigation_menu_main_layout);
+                view.findViewById(R.id.app_cms_navigation_menu_main_layout);
         appCMSNavigationMenuMainLayout.setBackgroundColor(bgColor);
     }
 }
