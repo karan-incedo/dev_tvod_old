@@ -129,7 +129,7 @@ public class AppCMSLeanbackActivity extends Activity implements AppCmsTvErrorFra
         CustomProgressBar.getInstance(this).dismissProgressDialog();
         Bundle bundle = new Bundle();
         bundle.putBoolean(getString(R.string.retry_key) , true);
-        bundle.putBoolean(getString(R.string.register_internet_receiver_key) , true);
+        bundle.putBoolean(getString(R.string.register_internet_receiver_key) , shouldRegisterInternetReciever);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         AppCmsTvErrorFragment errorActivityFragment = AppCmsTvErrorFragment.newInstance(
                 bundle);

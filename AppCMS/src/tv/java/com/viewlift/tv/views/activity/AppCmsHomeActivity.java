@@ -85,6 +85,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         appCMSBinderMap.put(tag, updatedAppCMSBinder);
 
         AppCMSMain appCMSMain = appCMSBinder.getAppCMSMain();
+
         AppCMSSite appCMSSite = appCMSPresenter.getAppCMSSite();
 
         int textColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getTextColor());/*Color.parseColor("#F6546A");*/
@@ -115,10 +116,14 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 if (intent.getAction().equals(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION)) {
                     Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
                     try {
-                        updatedAppCMSBinder =
-                                (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
                      if (isActive) {
-                            handleLaunchPageAction(updatedAppCMSBinder);
+                            if(appCMSPresenter.isPageUser(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())){
+                                handleProfileFragmentAction((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)));
+                            }else {
+                                updatedAppCMSBinder =
+                                        (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
+                                handleLaunchPageAction(updatedAppCMSBinder);
+                            }
                             //appCMSPresenter.sendStopLoadingPageAction(); //stop the progress bar..
                         }
                     } catch (ClassCastException e) {
@@ -146,6 +151,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     newFragment.show(ft, DIALOG_FRAGMENT_TAG);
                 }else if (intent.getAction().equals(AppCMSPresenter.SEARCH_ACTION)) {
                    openSearchFragment();
+                }else if(intent.getAction().equals(AppCMSPresenter.MY_PROFILE_ACTION)){
+                    openMyProfile();
                 }else if(intent.getAction().equals(AppCMSPresenter.ERROR_DIALOG_ACTION)){
                     openErrorDialog(intent);
                 }
@@ -158,8 +165,17 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_DIALOG_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.SEARCH_ACTION));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.MY_PROFILE_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.ERROR_DIALOG_ACTION));
 
+    }
+
+    private void handleProfileFragmentAction(AppCMSBinder updatedAppCMSBinder) {
+        AppCmsMyProfileFragment appCmsMyProfileFragment = AppCmsMyProfileFragment.newInstance(this , updatedAppCMSBinder);
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        String tag = getTag(updatedAppCMSBinder);
+        fragmentTransaction.replace(R.id.home_placeholder ,appCmsMyProfileFragment,tag).commitAllowingStateLoss();
     }
 
     @Override
@@ -273,21 +289,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
 
 
-    public void pageLoading(final boolean shouldShowProgress){
-
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                if(shouldShowProgress){
-                    CustomProgressBar.getInstance(AppCmsHomeActivity.this).showProgressDialog(AppCmsHomeActivity.this,"Loading...");
-                }else{
-                    CustomProgressBar.getInstance(AppCmsHomeActivity.this).dismissProgressDialog();
-                }
-            }
-        });
-
-    }
-
     private void selectNavItem(String pageId) {
         Log.d(TAG , "Nav Pageid = "+pageId);
         navigationFragment.setSelectedPageId(pageId);
@@ -346,8 +347,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         }
 
         if(appCMSBinderStack.size() > 0){
-            if(appCMSBinderStack.peek().equalsIgnoreCase(getString(R.string.app_cms_search_label))){
-               selectNavItem(appCMSBinderStack.peek());
+            if(appCMSBinderStack.peek().equalsIgnoreCase(getString(R.string.app_cms_search_label))
+                    || appCMSBinderStack.peek().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label ,
+                                                                   getString(R.string.profile_label)))){
+                selectNavItem(appCMSBinderStack.peek());
                 showInfoIcon(appCMSBinderStack.peek());
             }else {
                 updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
@@ -362,11 +365,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 finish();
             }
         }
-
-
-    private void setNavigationFragment(AppCmsNavigationFragment navigationFragment){
-         getFragmentManager().beginTransaction().add( R.id.navigation_placholder ,navigationFragment , "nav" ).commit();
-    }
 
 
     private void setPageFragment(AppCMSBinder appCMSBinder){
@@ -394,6 +392,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             case KeyEvent.ACTION_DOWN:
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_MENU:
+                    case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                         handleNavigationVisibility();
                         break;
                     case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
@@ -503,6 +502,38 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         selectNavItem(tag);
     }
 
+    private void openMyProfile() {
+        int distanceFromStackTop = -1;
+        String tag = getString(R.string.app_cms_my_profile_label ,
+                               getString(R.string.profile_label));
+
+        distanceFromStackTop = appCMSBinderStack.search(tag);
+
+        Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
+        if (0 < distanceFromStackTop) {
+            for (int i = 0; i < distanceFromStackTop; i++) {
+                Log.d(TAG, "Popping stack to get to page item");
+                try {
+                    appCMSBinderStack.pop();
+                } catch (IllegalStateException e) {
+                    Log.e(TAG, "Error popping back stack: " + e.getMessage());
+                }
+            }
+        }
+
+        showInfoIcon(tag);
+        appCMSBinderStack.push(tag);
+       // appCMSPresenter.sendGaScreen(tag);
+
+       /* AppCmsMyProfileFragment profileFragment = new AppCmsMyProfileFragment();
+        getFragmentManager().beginTransaction().replace(R.id.home_placeholder , profileFragment ,
+                tag).addToBackStack(tag).commit();*/
+
+
+
+        selectNavItem(tag);
+    }
+
     private void showInfoIcon(String pageId){
         findViewById(R.id.info_icon).setVisibility(
                 appCMSPresenter.isPagePrimary(pageId) ? View.VISIBLE : View.INVISIBLE
@@ -513,4 +544,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         return appCMSSearchUrlComponent;
     }
 
+    @Override
+    public int getNavigationContaineer() {
+        return R.id.navigation_placholder;
+    }
 }

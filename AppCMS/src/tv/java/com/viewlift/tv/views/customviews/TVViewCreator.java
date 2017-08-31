@@ -36,6 +36,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -195,7 +196,6 @@ public class TVViewCreator {
     }
 
     int trayIndex = -1;
-
     public View createModuleView(final Context context,
                                  ModuleList module,
                                  final Module moduleAPI,
@@ -203,7 +203,6 @@ public class TVViewCreator {
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                  AppCMSPresenter appCMSPresenter) {
         TVModuleView moduleView = null;
-
         if (Arrays.asList(context.getResources().getStringArray(R.array.app_cms_tray_modules)).contains(module.getView())) {
             if (module.getView().equalsIgnoreCase(context.getResources().getString(R.string.carousel_nodule))) {
                 if (null == mRowsAdapter) {
@@ -305,8 +304,54 @@ public class TVViewCreator {
                         moduleView.setComponentHasView(i, false);
                     }
                 }
+             }
+            } else {
+
+
+            module = new GsonBuilder().create().
+                    fromJson(Utils.loadJsonFromAssets(context, "login.json"), ModuleList.class);
+
+
+            moduleView = new TVModuleView<>(context, module);
+            ViewGroup childrenContainer = moduleView.getChildrenContainer();
+
+            if (module.getComponents() != null) {
+                for (int i = 0; i < module.getComponents().size(); i++) {
+                    Component component = module.getComponents().get(i);
+                    createComponentView(context,
+                            component,
+                            module.getLayout(),
+                            moduleAPI,
+                            pageView,
+                            module.getSettings(),
+                            jsonValueKeyMap,
+                            appCMSPresenter,
+                            false);
+                    if (componentViewResult.onInternalEvent != null) {
+                        appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
+                    }
+
+                    View componentView = componentViewResult.componentView;
+                    if (componentView != null) {
+                        childrenContainer.addView(componentView);
+                        moduleView.setComponentHasView(i, true);
+
+                        moduleView.setViewMarginsFromComponent(component,
+                                componentView,
+                                moduleView.getLayout(),
+                                childrenContainer,
+                                jsonValueKeyMap,
+                                componentViewResult.useMarginsAsPercentagesOverride,
+                                componentViewResult.useWidthOfScreen);
+
+                    } else {
+                        moduleView.setComponentHasView(i, false);
+                    }
                 }
             }
+
+
+        }
             return moduleView;
         }
 
@@ -1130,8 +1175,8 @@ public class TVViewCreator {
            break;
 
             case PAGE_TEXTFIELD_KEY:
-                componentViewResult.componentView = new TextInputLayout(context);
-                TextInputEditText textInputEditText = new TextInputEditText(context);
+                componentViewResult.componentView = new LinearLayout(context);
+                EditText textInputEditText = new EditText(context);
                 switch (componentKey) {
                     case PAGE_EMAILTEXTFIELD_KEY:
                     case PAGE_EMAILTEXTFIELD2_KEY:
@@ -1140,7 +1185,7 @@ public class TVViewCreator {
                     case PAGE_PASSWORDTEXTFIELD_KEY:
                     case PAGE_PASSWORDTEXTFIELD2_KEY:
                         textInputEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                        ((TextInputLayout) componentViewResult.componentView).setPasswordVisibilityToggleEnabled(true);
+                       // ((TextInputLayout) componentViewResult.componentView).setPasswordVisibilityToggleEnabled(true);
                         break;
                     case PAGE_MOBILETEXTFIELD_KEY:
                         textInputEditText.setInputType(InputType.TYPE_CLASS_PHONE);
@@ -1163,11 +1208,11 @@ public class TVViewCreator {
                         loginInputHorizontalMargin,
                         0);
                 textInputEditText.setTextSize(context.getResources().getInteger(R.integer.app_cms_login_input_textsize));
-                TextInputLayout.LayoutParams textInputEditTextLayoutParams =
-                        new TextInputLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams textInputEditTextLayoutParams =
+                        new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                 ViewGroup.LayoutParams.MATCH_PARENT);
                 textInputEditText.setLayoutParams(textInputEditTextLayoutParams);
-                ((TextInputLayout) componentViewResult.componentView).addView(textInputEditText);
+                ((LinearLayout) componentViewResult.componentView).addView(textInputEditText);
                 break;
             case PAGE_VIDEO_STARRATING_KEY:
                 int starBorderColor = Color.parseColor(getColor(context, component.getBorderColor()));
