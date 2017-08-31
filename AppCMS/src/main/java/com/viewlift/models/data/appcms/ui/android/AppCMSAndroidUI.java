@@ -29,6 +29,30 @@ public class AppCMSAndroidUI {
     @Expose
     String version;
 
+    @SerializedName("appName")
+    @Expose
+    String appName;
+
+    @SerializedName("shortAppName")
+    @Expose
+    String shortAppName;
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
+
+    public String getShortAppName() {
+        return shortAppName;
+    }
+
+    public void setShortAppName(String shortAppName) {
+        this.shortAppName = shortAppName;
+    }
+
     public Navigation getNavigation() {
         return navigation;
     }
