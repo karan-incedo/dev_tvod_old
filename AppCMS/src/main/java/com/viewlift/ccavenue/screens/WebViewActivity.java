@@ -483,7 +483,7 @@ public class WebViewActivity extends Activity {
 								dialog.cancel();
 								progressDialog.show();
 								progressDialog.setMessage("Updating Subscription...");
-								appCMSPresenter.navigateToHomePage();
+								//appCMSPresenter.navigateToHomePage();
 							}
 						}
 					});
