@@ -259,7 +259,6 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_SETTINGS_EDIT_PROFILE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_change_password_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_CHANGE_PASSWORD_KEY);
-        jsonValueKeyMap.put("emailValue", AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_TITLE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_cancel_subscription_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY);
