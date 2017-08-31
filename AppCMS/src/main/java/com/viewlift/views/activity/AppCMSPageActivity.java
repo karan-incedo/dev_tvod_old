@@ -1101,8 +1101,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
         final NavBarItemView menuNavBarItemView =
                 (NavBarItemView) appCMSTabNavContainer.getChildAt(navPageIndex);
-        int highlightColor =
-                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+        int highlightColor = 0;
+        if(appCMSPresenter.getAppCMSMain()!=null && appCMSPresenter.getAppCMSMain().getBrand()!=null){
+             highlightColor =
+                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+        }
+
         menuNavBarItemView.setImage(getString(R.string.app_cms_menu_icon_name));
         menuNavBarItemView.setLabel(getString(R.string.app_cms_menu_label));
         menuNavBarItemView.setHighlightColor(highlightColor);
