@@ -39,14 +39,22 @@ import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.upstream.AssetDataSource;
+import com.google.android.exoplayer2.upstream.ContentDataSource;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultDataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.upstream.FileDataSource;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
+import com.google.android.exoplayer2.upstream.TransferListener;
+import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
+import com.google.android.exoplayer2.upstream.DataSource.Factory;
 import com.viewlift.R;
 
 import java.io.IOException;
@@ -310,7 +318,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     }
 
     private DataSource.Factory buildDataSourceFactory(DefaultBandwidthMeter bandwidthMeter) {
-        return new DefaultDataSourceFactory(getContext(),
+        return new UpdatedUriDataSourceFactory(getContext(),
                 bandwidthMeter,
                 buildHttpDataSourceFactory(bandwidthMeter));
     }
@@ -398,8 +406,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         /**
          * We can enhance logic here depending on the error code list that we will use for cloasing the video page.
          */
-        if ( (error.getMessage().contains("404") ||
-                error.getMessage().contains("400") )
+        if (error.getMessage().contains("404")
                 && !isLoadedNext) {
             if ((player.getCurrentPosition() + 5000) >= player.getDuration()) {
                 isLoadedNext = true;
@@ -437,6 +444,165 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
 
         public int getPlaybackState() {
             return playbackState;
+        }
+    }
+
+    private static class UpdatedUriDataSourceFactory implements Factory {
+        private final Context context;
+        private final TransferListener<? super DataSource> listener;
+        private final DataSource.Factory baseDataSourceFactory;
+
+        /**
+         * @param context A context.
+         * @param userAgent The User-Agent string that should be used.
+         */
+        public UpdatedUriDataSourceFactory(Context context, String userAgent) {
+            this(context, userAgent, null);
+        }
+
+        /**
+         * @param context A context.
+         * @param userAgent The User-Agent string that should be used.
+         * @param listener An optional listener.
+         */
+        public UpdatedUriDataSourceFactory(Context context, String userAgent,
+                                        TransferListener<? super DataSource> listener) {
+            this(context, listener, new DefaultHttpDataSourceFactory(userAgent, listener));
+        }
+
+        /**
+         * @param context A context.
+         * @param listener An optional listener.
+         * @param baseDataSourceFactory A {@link DataSource.Factory} to be used to create a base {@link DataSource}
+         *     for {@link DefaultDataSource}.
+         * @see DefaultDataSource#DefaultDataSource(Context, TransferListener, DataSource)
+         */
+        public UpdatedUriDataSourceFactory(Context context, TransferListener<? super DataSource> listener,
+                                        DataSource.Factory baseDataSourceFactory) {
+            this.context = context.getApplicationContext();
+            this.listener = listener;
+            this.baseDataSourceFactory = baseDataSourceFactory;
+        }
+
+        @Override
+        public UpdatedUriDataSource createDataSource() {
+            return new UpdatedUriDataSource(context, listener, baseDataSourceFactory.createDataSource());
+        }
+
+    }
+
+    private static class UpdatedUriDataSource implements DataSource {
+        private static final String SCHEME_ASSET = "asset";
+        private static final String SCHEME_CONTENT = "content";
+
+        private final DataSource baseDataSource;
+        private final DataSource fileDataSource;
+        private final DataSource assetDataSource;
+        private final DataSource contentDataSource;
+
+        private DataSource dataSource;
+
+        /**
+         * Constructs a new instance, optionally configured to follow cross-protocol redirects.
+         *
+         * @param context                     A context.
+         * @param listener                    An optional listener.
+         * @param userAgent                   The User-Agent string that should be used when requesting remote data.
+         * @param allowCrossProtocolRedirects Whether cross-protocol redirects (i.e. redirects from HTTP
+         *                                    to HTTPS and vice versa) are enabled when fetching remote data.
+         */
+        public UpdatedUriDataSource(Context context, TransferListener<? super DataSource> listener,
+                                    String userAgent, boolean allowCrossProtocolRedirects) {
+            this(context, listener, userAgent, DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
+                    DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS, allowCrossProtocolRedirects);
+        }
+
+        /**
+         * Constructs a new instance, optionally configured to follow cross-protocol redirects.
+         *
+         * @param context                     A context.
+         * @param listener                    An optional listener.
+         * @param userAgent                   The User-Agent string that should be used when requesting remote data.
+         * @param connectTimeoutMillis        The connection timeout that should be used when requesting remote
+         *                                    data, in milliseconds. A timeout of zero is interpreted as an infinite timeout.
+         * @param readTimeoutMillis           The read timeout that should be used when requesting remote data,
+         *                                    in milliseconds. A timeout of zero is interpreted as an infinite timeout.
+         * @param allowCrossProtocolRedirects Whether cross-protocol redirects (i.e. redirects from HTTP
+         *                                    to HTTPS and vice versa) are enabled when fetching remote data.
+         */
+        public UpdatedUriDataSource(Context context, TransferListener<? super DataSource> listener,
+                                    String userAgent, int connectTimeoutMillis, int readTimeoutMillis,
+                                    boolean allowCrossProtocolRedirects) {
+            this(context, listener,
+                    new DefaultHttpDataSource(userAgent, null, listener, connectTimeoutMillis,
+                            readTimeoutMillis, allowCrossProtocolRedirects, null));
+        }
+
+        /**
+         * Constructs a new instance that delegates to a provided {@link DataSource} for URI schemes other
+         * than file, asset and content.
+         *
+         * @param context        A context.
+         * @param listener       An optional listener.
+         * @param baseDataSource A {@link DataSource} to use for URI schemes other than file, asset and
+         *                       content. This {@link DataSource} should normally support at least http(s).
+         */
+        public UpdatedUriDataSource(Context context, TransferListener<? super DataSource> listener,
+                                    DataSource baseDataSource) {
+            this.baseDataSource = Assertions.checkNotNull(baseDataSource);
+            this.fileDataSource = new FileDataSource(listener);
+            this.assetDataSource = new AssetDataSource(context, listener);
+            this.contentDataSource = new ContentDataSource(context, listener);
+        }
+
+        @Override
+        public long open(DataSpec dataSpec) throws IOException {
+            Assertions.checkState(dataSource == null);
+            // Choose the correct source for the scheme.
+            String scheme = dataSpec.uri.getScheme();
+            if (Util.isLocalFileUri(dataSpec.uri)) {
+                if (dataSpec.uri.getPath().startsWith("/android_asset/")) {
+                    dataSource = assetDataSource;
+                } else {
+                    dataSource = fileDataSource;
+                }
+            } else if (SCHEME_ASSET.equals(scheme)) {
+                dataSource = assetDataSource;
+            } else if (SCHEME_CONTENT.equals(scheme)) {
+                dataSource = contentDataSource;
+            } else {
+                dataSource = baseDataSource;
+            }
+
+            Uri updatedUri = Uri.parse(dataSpec.uri.toString().replaceAll(" ", "%20"));
+            dataSpec = new DataSpec(updatedUri,
+                    dataSpec.absoluteStreamPosition,
+                    dataSpec.length,
+                    dataSpec.key);
+
+            // Open the source and return.
+            return dataSource.open(dataSpec);
+        }
+
+        @Override
+        public int read(byte[] buffer, int offset, int readLength) throws IOException {
+            return dataSource.read(buffer, offset, readLength);
+        }
+
+        @Override
+        public Uri getUri() {
+            return dataSource == null ? null : dataSource.getUri();
+        }
+
+        @Override
+        public void close() throws IOException {
+            if (dataSource != null) {
+                try {
+                    dataSource.close();
+                } finally {
+                    dataSource = null;
+                }
+            }
         }
     }
 }
