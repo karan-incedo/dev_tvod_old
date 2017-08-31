@@ -42,6 +42,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WebViewActivity extends Activity {
+	private static final String TAG = "CCAvenueWebView";
+
 	Intent mainIntent;
 	String html, encVal;
 	String orderID = "" ;
@@ -114,7 +116,7 @@ public class WebViewActivity extends Activity {
 					dialog = null;
 				}
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				Log.e(TAG, ex.getMessage());
 				dialog = null;
 			}
 			
@@ -168,7 +170,7 @@ public class WebViewActivity extends Activity {
 							 updateStatus = new updateSubscriptionPlanAsyncTask() ;
 							updateStatus.execute();
 						} catch (Exception ex) {
-							ex.printStackTrace();
+							Log.e(TAG, ex.getMessage());
 						}
 					}
 	    	    }
@@ -201,7 +203,7 @@ public class WebViewActivity extends Activity {
 			try {
 				params.append(ServiceUtility.addToPostParams(AvenuesParams.ENC_VAL,URLEncoder.encode(encVal,"UTF-8")));
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				Log.e(TAG, ex.getMessage());
 			}
 
 			
@@ -230,7 +232,7 @@ public class WebViewActivity extends Activity {
 			post_dict.put(getString(R.string.app_cms_device), getString(R.string.app_cms_subscription_key));
 			JsonDATA = String.valueOf(post_dict);
 		} catch (JSONException e) {
-			e.printStackTrace();
+			Log.e(TAG, e.getMessage());
 		}
 
 		HttpURLConnection urlConnection = null;
@@ -280,10 +282,10 @@ public class WebViewActivity extends Activity {
 				Log.v("cancelRedirectURL",cancelRedirectURL) ;
 				merchantID = jsonObj.getString("merchantId") ;
 			} catch (JSONException e) {
-				e.printStackTrace();
+				Log.e(TAG, e.getMessage());
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			Log.e(TAG, e.getMessage());
 		} finally {
 			if (urlConnection != null) {
 				urlConnection.disconnect();
@@ -334,11 +336,15 @@ public class WebViewActivity extends Activity {
 					post_dict.put("description","CCAvenue Subscripton");
 					post_dict.put("subscription","ccavenue"); //very important to say this is a ccavenue request
 					post_dict.put("authorizedUserName",getIntent().getStringExtra("authorizedUserName"));
-				    Log.v("userid",getIntent().getStringExtra("authorizedUserName")) ;
-				     JsonDATA = String.valueOf(post_dict);
-				     Log.v("JsonDATA",JsonDATA) ;
+                JsonDATA = String.valueOf(post_dict);
+					try {
+                        Log.v("userid", getIntent().getStringExtra("authorizedUserName"));
+                        Log.v("JsonDATA", JsonDATA);
+                    } catch (Exception e) {
+                        Log.e(TAG, e.getMessage());
+                    }
 			} catch (JSONException e) {
-				e.printStackTrace();
+				Log.e(TAG, e.getMessage());
 			}
 
 			HttpURLConnection urlConnection = null;
@@ -362,7 +368,7 @@ public class WebViewActivity extends Activity {
 				try {
 					 inputStream = urlConnection.getInputStream();
 				} catch (Exception ex) {
-					ex.printStackTrace();
+					Log.e(TAG, ex.getMessage());
 					closeConnection(urlConnection,reader) ;
 					return "";
 				}
@@ -388,14 +394,14 @@ public class WebViewActivity extends Activity {
 				Log.i("TAG", JsonResponse);
 			} catch (IOException e) {
 				closeConnection(urlConnection,reader) ;
-				e.printStackTrace();
+				Log.e(TAG, e.getMessage());
 			}
 //			} finally {
 //				if (urlConnection != null) {
 //					try {
 //						urlConnection.disconnect();
 //					} catch (Exception ex) {
-//						ex.printStackTrace();
+//						Log.e(TAG, ex.getMessage());
 //					}
 //				}
 //				try {
@@ -407,7 +413,7 @@ public class WebViewActivity extends Activity {
 //						}
 //					}
 //				} catch (Exception ex) {
-//					ex.printStackTrace();
+//					Log.e(TAG, ex.getMessage());
 //				}
 //			}
 			return JsonResponse;
@@ -418,7 +424,7 @@ public class WebViewActivity extends Activity {
 				try {
 					urlConnection.disconnect();
 				} catch (Exception ex) {
-					ex.printStackTrace();
+					Log.e(TAG, ex.getMessage());
 				}
 			}
 			try {
@@ -430,7 +436,7 @@ public class WebViewActivity extends Activity {
 					}
 				}
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				Log.e(TAG, ex.getMessage());
 			}
         }
 
@@ -451,7 +457,7 @@ public class WebViewActivity extends Activity {
 						displaySuccessPaymentDialog("Payment failed!", "Try again later!");
 					}
 				} catch (JSONException e) {
-					e.printStackTrace();
+					Log.e(TAG, e.getMessage());
 				}
 			}
 		}
@@ -487,7 +493,7 @@ public class WebViewActivity extends Activity {
 					//progressDialog = null ;
 				}
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				Log.e(TAG, ex.getMessage());
 			}
 		}
 	}
@@ -515,7 +521,7 @@ public class WebViewActivity extends Activity {
 					progressDialog = null ;
 				}
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				Log.e(TAG, ex.getMessage());
 			}
 		}
 		super.onDestroy();

@@ -16,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.InputType;
+import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -56,6 +57,8 @@ import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
+
+import net.nightwhistler.htmlspanner.HtmlSpanner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -397,12 +400,14 @@ public class ViewCreator {
                                                 convertedRating = context.getString(R.string.age_rating_converted_y7);
                                             } else if (parentalRating.contains(context.getString(R.string.age_rating_y))) {
                                                 convertedRating = context.getString(R.string.age_rating_converted_y);
-                                            } else if (parentalRating.contains(context.getString(R.string.age_rating_g))) {
-                                                convertedRating = context.getString(R.string.age_rating_converted_g);
                                             } else if (parentalRating.contains(context.getString(R.string.age_rating_pg))) {
                                                 convertedRating = context.getString(R.string.age_rating_converted_pg);
+                                            } else if (parentalRating.contains(context.getString(R.string.age_rating_g))) {
+                                                convertedRating = context.getString(R.string.age_rating_converted_g);
                                             } else if (parentalRating.contains(context.getString(R.string.age_rating_fourteen))) {
                                                 convertedRating = context.getString(R.string.age_rating_converted_fourteen);
+                                            } else if (parentalRating.contains(context.getString(R.string.age_rating_converted_default))) {
+                                                convertedRating = context.getString(R.string.age_rating_converted_default);
                                             } else if (parentalRating.contains(context.getString(R.string.age_raging_r))) {
                                                 convertedRating = context.getString(R.string.age_rating_converted_eighteen);
                                             }
@@ -486,23 +491,19 @@ public class ViewCreator {
                                     }
                                 } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_EDIT_PROFILE_KEY) {
                                     if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken(context))) {
-                                        componentViewResult.componentView.setVisibility(View.GONE);
-                                        componentViewResult.shouldHideComponent = true;
+                                        view.setVisibility(View.GONE);
                                     }
 
                                     if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken(context))) {
-                                        componentViewResult.componentView.setVisibility(View.GONE);
-                                        componentViewResult.shouldHideComponent = true;
+                                        view.setVisibility(View.GONE);
                                     }
                                 } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CHANGE_PASSWORD_KEY) {
                                     if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken(context))) {
-                                        componentViewResult.componentView.setVisibility(View.GONE);
-                                        componentViewResult.shouldHideComponent = true;
+                                        view.setVisibility(View.GONE);
                                     }
 
                                     if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken(context))) {
-                                        componentViewResult.componentView.setVisibility(View.GONE);
-                                        componentViewResult.shouldHideComponent = true;
+                                        view.setVisibility(View.GONE);
                                     }
                                 } else {
                                     if (componentType == AppCMSUIKeyType.PAGE_CASTVIEW_VIEW_KEY) {
@@ -611,6 +612,8 @@ public class ViewCreator {
                                                             } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor)) ||
                                                                     paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly))) {
                                                                 ((TextView) settingsView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
+                                                            } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ccavenue_payment_processor))) {
+                                                                ((TextView) settingsView).setText(context.getString(R.string.subscription_ccavenue_payment_processor_friendly));
                                                             } else {
                                                                 ((TextView) settingsView).setText(context.getString(R.string.subscription_unknown_payment_processor_friendly));
                                                             }
@@ -639,11 +642,13 @@ public class ViewCreator {
                                     } else if (componentType == AppCMSUIKeyType.PAGE_TOGGLE_BUTTON_KEY) {
                                         switch (componentType) {
                                             case PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY:
-                                                ((Switch) componentViewResult.componentView).setChecked(appCMSPresenter.getAutoplayEnabledUserPref(context));
+                                                ((Switch) view).setChecked(appCMSPresenter
+                                                        .getAutoplayEnabledUserPref(context));
                                                 break;
 
-                                            case PAGE_CLOSED_CAPTIONS_TOGGLE_BUTTON_KEY:
-                                                ((Switch) componentViewResult.componentView).setChecked(appCMSPresenter.getClosedCaptionPreference(context));
+                                            case PAGE_SD_CARD_FOR_DOWNLOADS_TOGGLE_BUTTON_KEY:
+                                                ((Switch) view).setChecked(appCMSPresenter
+                                                        .getUserDownloadLocationPref(context));
                                                 break;
 
                                             default:
@@ -1457,28 +1462,6 @@ public class ViewCreator {
                 }
 
                 switch (componentKey) {
-                    case PAGE_BUTTON_SWITCH_KEY:
-                        if (appCMSPresenter.isPreferedStorageLocationSDCard(context)) {
-                            ((Switch) componentViewResult.componentView).setChecked(true);
-                        } else {
-                            ((Switch) componentViewResult.componentView).setChecked(false);
-                        }
-
-                        ((Switch) componentViewResult.componentView).setOnCheckedChangeListener((buttonView, isChecked) -> {
-                            if (isChecked) {
-                                if (appCMSPresenter.isRemoveableSDCardAvailable()) {
-                                    appCMSPresenter.setPreferedStorageLocationSDCard(context, true);
-                                } else {
-                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SD_CARD_NOT_AVAILABLE, null, false, null);
-                                    buttonView.setChecked(false);
-                                }
-                            } else {
-                                appCMSPresenter.setPreferedStorageLocationSDCard(context, false);
-                            }
-
-                        });
-                        break;
-
                     case PAGE_SETTINGS_EDIT_PROFILE_KEY:
                     case PAGE_SETTINGS_CHANGE_PASSWORD_KEY:
                         if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken(context))) {
@@ -1901,11 +1884,8 @@ public class ViewCreator {
 
                         case PAGE_API_DESCRIPTION:
                             if (!TextUtils.isEmpty(moduleAPI.getRawText())) {
-                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(moduleAPI.getRawText()));
-                                } else {
-                                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(moduleAPI.getRawText(), Html.FROM_HTML_MODE_COMPACT));
-                                }
+                                Spannable rawHtmlSpannable = new HtmlSpanner().fromHtml(moduleAPI.getRawText());
+                                ((TextView) componentViewResult.componentView).setText(rawHtmlSpannable);
                                 ((TextView) componentViewResult.componentView).setMovementMethod(LinkMovementMethod.getInstance());
                             }
                             break;
@@ -2055,10 +2035,10 @@ public class ViewCreator {
                                     convertedRating = context.getString(R.string.age_rating_converted_y7);
                                 } else if (parentalRating.contains(context.getString(R.string.age_rating_y))) {
                                     convertedRating = context.getString(R.string.age_rating_converted_y);
-                                } else if (parentalRating.contains(context.getString(R.string.age_rating_g))) {
-                                    convertedRating = context.getString(R.string.age_rating_converted_g);
                                 } else if (parentalRating.contains(context.getString(R.string.age_rating_pg))) {
                                     convertedRating = context.getString(R.string.age_rating_converted_pg);
+                                } else if (parentalRating.contains(context.getString(R.string.age_rating_g))) {
+                                    convertedRating = context.getString(R.string.age_rating_converted_g);
                                 } else if (parentalRating.contains(context.getString(R.string.age_rating_fourteen))) {
                                     convertedRating = context.getString(R.string.age_rating_converted_fourteen);
                                 } else if (parentalRating.contains(context.getString(R.string.age_rating_converted_default))) {
@@ -2138,6 +2118,8 @@ public class ViewCreator {
                                 } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor)) ||
                                         paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly))) {
                                     ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
+                                } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ccavenue_payment_processor))) {
+                                    ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_ccavenue_payment_processor_friendly));
                                 }
                             } else {
                                 ((TextView) componentViewResult.componentView).setText("");
@@ -2558,12 +2540,25 @@ public class ViewCreator {
                                     -> appCMSPresenter.setAutoplayEnabledUserPref(context, isChecked));
                 }
 
-                if (componentKey == AppCMSUIKeyType.PAGE_CLOSED_CAPTIONS_TOGGLE_BUTTON_KEY) {
+                if (componentKey == AppCMSUIKeyType.PAGE_SD_CARD_FOR_DOWNLOADS_TOGGLE_BUTTON_KEY) {
                     ((Switch) componentViewResult.componentView)
-                            .setChecked(appCMSPresenter.getClosedCaptionPreference(context));
+                            .setChecked(appCMSPresenter.getUserDownloadLocationPref(context));
                     ((Switch) componentViewResult.componentView)
-                            .setOnCheckedChangeListener((buttonView, isChecked)
-                                    -> appCMSPresenter.setClosedCaptionPreference(context, isChecked));
+                            .setOnCheckedChangeListener((buttonView, isChecked) -> {
+                                if (isChecked) {
+                                    if (appCMSPresenter.isRemovableSDCardAvailable()) {
+                                        appCMSPresenter.setUserDownloadLocationPref(context, true);
+                                    } else {
+                                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SD_CARD_NOT_AVAILABLE,
+                                                null,
+                                                false,
+                                                null);
+                                        buttonView.setChecked(false);
+                                    }
+                                } else {
+                                    appCMSPresenter.setUserDownloadLocationPref(context, false);
+                                }
+                            });
                 }
                 break;
 

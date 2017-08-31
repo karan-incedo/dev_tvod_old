@@ -376,6 +376,7 @@ public class CastHelper {
                 videoUrl = videoAssets.getMpeg().get(videoAssets.getMpeg().size() - 1).getUrl();
             }
         }
+
         if (videoUrl != null && !TextUtils.isEmpty(videoUrl)) {
             launchSingeRemoteMedia(binder, videoUrl, filmId, currentPosition, true);
         }
@@ -418,16 +419,17 @@ public class CastHelper {
         try {
             customData.put(CastingUtils.PARAM_KEY, paramLink);
         } catch (JSONException e) {
-           Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
+            Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
         }
-        getRemoteMediaClient().load(CastingUtils.buildMediaInfo(title,
-                appName,
-                imageUrl,
-                videoPlayUrl,
-                customData,
-                mAppContext), true, currentPosition);
-        getRemoteMediaClient().addListener(remoteListener);
-
+        if (getRemoteMediaClient() != null) {
+            getRemoteMediaClient().load(CastingUtils.buildMediaInfo(title,
+                    appName,
+                    imageUrl,
+                    videoPlayUrl,
+                    customData,
+                    mAppContext), true, currentPosition);
+            getRemoteMediaClient().addListener(remoteListener);
+        }
 
     }
 
@@ -465,7 +467,6 @@ public class CastHelper {
                         Log.e(TAG, e.getMessage());
                         mStreamId = CastingUtils.getRemoteMediaId(mAppContext) + appCMSPresenterComponenet.getCurrentTimeStamp();
                     }
-
 
 
                 }
@@ -626,9 +627,11 @@ public class CastHelper {
                         callBackRemoteListener.onApplicationDisconnected();
                 }
 
-                beaconBufferingThread.sendBeaconBuffering = false;
-                beaconBufferingThread.runBeaconBuffering = false;
-                beaconBufferingThread = null;
+                if (beaconBufferingThread != null) {
+                    beaconBufferingThread.sendBeaconBuffering = false;
+                    beaconBufferingThread.runBeaconBuffering = false;
+                    beaconBufferingThread = null;
+                }
             }
         };
     }
@@ -808,7 +811,7 @@ public class CastHelper {
         String currentMediaParamKey = CastingUtils.getRemoteParamKey(mAppContext);
 
         if (!sentBeaconPlay) {
-            isVideoDownloaded=appCMSPresenterComponenet.isVideoDownloaded(currentRemoteMediaId);
+            isVideoDownloaded = appCMSPresenterComponenet.isVideoDownloaded(currentRemoteMediaId);
             mStartBufferMilliSec = new Date().getTime();
             if (!TextUtils.isEmpty(currentRemoteMediaId)) {
                 mStopBufferMilliSec = new Date().getTime();
@@ -886,7 +889,7 @@ public class CastHelper {
                 if (beaconBufferingThread != null) {
                     beaconBufferingThread.sendBeaconBuffering = true;
                 }
-                if (!beaconBufferingThread.isAlive()){
+                if (!beaconBufferingThread.isAlive()) {
                     beaconBufferingThread.start();
                 }
 
@@ -1014,7 +1017,7 @@ public class CastHelper {
                     Thread.sleep(beaconBufferTimeoutMsec);
                     if (sendBeaconBuffering) {
 
-                        if (appCMSPresenter != null ) { // For not to sent PIN in PAUSE mode
+                        if (appCMSPresenter != null) { // For not to sent PIN in PAUSE mode
                             appCMSPresenter.sendBeaconMessage(filmId,
                                     permaLink,
                                     parentScreenName,

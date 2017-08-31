@@ -259,7 +259,6 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_SETTINGS_EDIT_PROFILE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_change_password_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_CHANGE_PASSWORD_KEY);
-        jsonValueKeyMap.put("emailValue", AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_TITLE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_cancel_subscription_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY);
@@ -276,9 +275,9 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_TOGGLE_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_autoplay_toggle_button_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY);
-
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_closed_captions_toggle_button_key),
-                AppCMSUIKeyType.PAGE_CLOSED_CAPTIONS_TOGGLE_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string
+                        .app_cms_page_use_sd_card_for_downloads_toggle_button_key),
+                AppCMSUIKeyType.PAGE_SD_CARD_FOR_DOWNLOADS_TOGGLE_BUTTON_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_title_key),
                 AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY);

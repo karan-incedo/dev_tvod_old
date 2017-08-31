@@ -106,4 +106,5 @@ public class SignInResponse {
     public void setSubscribed(boolean subscribed) {
         isSubscribed = subscribed;
     }
+
 }

@@ -247,6 +247,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             parentalRating = args.getString(getString(R.string.video_player_content_rating_key));
         }
 
+        hlsUrl = hlsUrl.replaceAll(" ", "+");
+
         sentBeaconPlay = (0 < playIndex && watchedTime != 0);
 
         appCMSPresenter =
@@ -681,15 +683,15 @@ public class AppCMSPlayVideoFragment extends Fragment
                 mProgressHandler.removeCallbacks(this);
                 long totalVideoDurationMod4 = mTotalVideoDuration / 4;
                 if (totalVideoDurationMod4 > 0) {
-                    if (((videoPlayerView.getCurrentPosition() / 1000) % totalVideoDurationMod4) == 0) {
                         long mPercentage = (long) (((float) (videoPlayerView.getCurrentPosition() / 1000) / mTotalVideoDuration) * 100);
                         sendProgressAnalyticEvents(mPercentage);
-                    }
                 }
                 mProgressHandler.postDelayed(this, 1000);
             }
         };
     }
+
+    boolean isStreamStart, isStream25, isStream50, isStream75;
 
     public void sendProgressAnalyticEvents(long progressPercent) {
         Bundle bundle = new Bundle();
@@ -701,15 +703,44 @@ public class AppCMSPlayVideoFragment extends Fragment
         //bundle.putString(FIREBASE_SERIES_NAME_KEY, "");
 
         //Logs an app event.
-        if (progressPercent == 0)
+        if (progressPercent == 0 && !isStreamStart) {
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
-        if (progressPercent == 25)
+            isStreamStart = true;
+        }
+
+        if (progressPercent >= 25 && progressPercent < 50 && !isStream25) {
+            if (!isStreamStart) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
+                isStreamStart = true;
+            }
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
-        if (progressPercent == 50)
+            isStream25 = true;
+        }
+
+        if (progressPercent >= 50 && progressPercent < 75 && !isStream50) {
+            if (!isStream25) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
+                isStream25 = true;
+            }
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_50, bundle);
-        if (progressPercent == 75)
+            isStream50 = true;
+        }
+        if (progressPercent >= 75 && progressPercent < 100 && !isStream75) {
+            if (!isStream25) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
+                isStream25 = true;
+            }
+            if (!isStream50) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_50, bundle);
+                isStream50 = true;
+            }
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_75, bundle);
+            isStream75 = true;
+        }
     }
+
+
+
 
     private void requestAds(String adTagUrl) {
         if (!TextUtils.isEmpty(adTagUrl) && adsLoader != null) {
@@ -984,7 +1015,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     .setColorFilter(highlightColor, PorterDuff.Mode.SRC_IN);
         }
 
-        if(!isParentalRatingExist()) {
+        if(!doesParentalRatingExist()) {
             contentRatingTitleView.setText(parentalRating);
         }
 
@@ -994,7 +1025,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private void createContentRatingView() {
-        if (!isParentalRatingExist()) {
+        if (!doesParentalRatingExist()) {
             animateView();
             startCountdown();
         } else {
@@ -1004,7 +1035,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
     }
 
-    private boolean isParentalRatingExist() {
+    private boolean doesParentalRatingExist() {
        return (isTrailer || (parentalRating != null && (parentalRating.contentEquals(getResources().getString(R.string.age_rating_converted_default)))));
     }
 

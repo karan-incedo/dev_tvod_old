@@ -142,6 +142,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private ConnectivityManager connectivityManager;
     private WifiManager wifiManager;
 
+    private String FIREBASE_SEARCH_SCREEN = "Search Screen";
+    private String FIREBASE_MENU_SCREEN = "MENU";
+    private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -510,21 +514,23 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
 
         if (resultCode == Activity.RESULT_OK) {
-            if (result != null && result.isSuccess()) {
-                if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
-                    handleCloseAction();
+            if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
+                if (result != null && result.isSuccess()) {
+                    if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+                        handleCloseAction();
+                    }
+                    appCMSPresenter.setGoogleAccessToken(this, result.getSignInAccount().getIdToken(),
+                            result.getSignInAccount().getId(),
+                            result.getSignInAccount().getDisplayName(),
+                            result.getSignInAccount().getEmail(),
+                            true);
                 }
-                appCMSPresenter.setGoogleAccessToken(this, result.getSignInAccount().getIdToken(),
-                        result.getSignInAccount().getId(),
-                        result.getSignInAccount().getDisplayName(),
-                        result.getSignInAccount().getEmail(),
-                        true);
-            }
-
-            if (FacebookSdk.isFacebookRequestCode(requestCode)) {
-                callbackManager.onActivityResult(requestCode, resultCode, data);
-            } else if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
-                appCMSPresenter.finalizeSignupAfterSubscription(data.getStringExtra("INAPP_PURCHASE_DATA"));
+            } else {
+                if (FacebookSdk.isFacebookRequestCode(requestCode)) {
+                    callbackManager.onActivityResult(requestCode, resultCode, data);
+                } else if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
+                    appCMSPresenter.finalizeSignupAfterSubscription(data.getStringExtra("INAPP_PURCHASE_DATA"));
+                }
             }
 
             //CCAvenue Callback Handling
@@ -772,6 +778,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
                                         Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
                                         Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+                        //send menu screen event for firebase
+                        sendFireBaseMenuScreenEvent();
                     } catch (IllegalArgumentException e) {
                         Log.e(TAG, "Error in parsing color. " + e.getLocalizedMessage());
                     }
@@ -786,6 +794,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         .replace("#", ""), 16),
                                 Long.parseLong(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()
                                         .replace("#", ""), 16));
+                        //Need to FireEvents When User click on Search
+                        sendFireBaseSearchScreenEvent();
+
                     } catch (NumberFormatException e) {
                         Log.e(TAG, "Error in parsing color. " + e.getLocalizedMessage());
                     }
@@ -831,6 +842,20 @@ public class AppCMSPageActivity extends AppCompatActivity implements
          */
 
         setMediaRouterButtonVisibility(appCMSBinder.getPageId());
+    }
+
+    private void sendFireBaseMenuScreenEvent() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_MENU_SCREEN);
+        if (appCMSPresenter.getmFireBaseAnalytics() != null)
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+    }
+
+    private void sendFireBaseSearchScreenEvent() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_SEARCH_SCREEN);
+        if (appCMSPresenter.getmFireBaseAnalytics() != null)
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
     }
 
     private void selectNavItemAndLaunchPage(NavBarItemView v, String pageId, String pageTitle) {
@@ -1099,8 +1124,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
         final NavBarItemView menuNavBarItemView =
                 (NavBarItemView) appCMSTabNavContainer.getChildAt(navPageIndex);
-        int highlightColor =
-                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+        int highlightColor = 0;
+        if(appCMSPresenter.getAppCMSMain()!=null && appCMSPresenter.getAppCMSMain().getBrand()!=null){
+             highlightColor =
+                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+        }
+
         menuNavBarItemView.setImage(getString(R.string.app_cms_menu_icon_name));
         menuNavBarItemView.setLabel(getString(R.string.app_cms_menu_label));
         menuNavBarItemView.setHighlightColor(highlightColor);

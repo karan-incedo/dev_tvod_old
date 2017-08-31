@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -252,14 +251,12 @@ public class AppCMSPresenter {
     public static final String SEARCH_ACTION = "SEARCH_ACTION";
     public static final String ERROR_DIALOG_ACTION = "appcms_error_dialog_action";
     public static final String ACTION_LOGO_ANIMATION = "appcms_logo_animation";
+    public static final int RC_GOOGLE_SIGN_IN = 1001;
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String CASTING_OVERLAY_PREF_NAME = "cast_intro_pref";
-
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
-
     private static final String CAST_SHARED_PREF_NAME = "cast_shown";
-
     private static final String USER_NAME_SHARED_PREF_NAME = "user_name_pref";
     private static final String USER_EMAIL_SHARED_PREF_NAME = "user_email_pref";
     private static final String REFRESH_TOKEN_SHARED_PREF_NAME = "refresh_token_pref";
@@ -285,7 +282,6 @@ public class AppCMSPresenter {
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_PRICE = "existing_google_play_subscription_price_pref_key";
     private static final String USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME = "user_download_quality_pref";
     private static final String USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME = "user_download_sd_card_pref";
-
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String ANONYMOUS_AUTH_TOKEN_PREF_NAME = "anonymous_auth_token_pref_key";
     private static final long MILLISECONDS_PER_SECOND = 1000L;
@@ -295,9 +291,9 @@ public class AppCMSPresenter {
     private static final String MEDIA_SURFIX_PNG = ".png";
     private static final String MEDIA_SURFIX_JPG = ".jpg";
     private static final String MEDIA_SUFFIX_SRT = ".srt";
-    private static final int RC_GOOGLE_SIGN_IN = 1001;
     private static int PAGE_LRU_CACHE_SIZE = 10;
     private final String USER_ID_KEY = "user_id";
+    private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
     private final String LOGIN_STATUS_KEY = "logged_in_status";
     private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
     private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
@@ -337,9 +333,9 @@ public class AppCMSPresenter {
     private final AppCMSUserIdentityCall appCMSUserIdentityCall;
     private final GoogleRefreshTokenCall googleRefreshTokenCall;
     private final GoogleCancelSubscriptionCall googleCancelSubscriptionCall;
-
+    private final String FIREBASE_SCREEN_SIGN_OUT = "sign_out";
+    private final String FIREBASE_SCREEN_LOG_OUT = "log_out";
     private final AppCMSCCAvenueCall appCMSCCAvenueCall;
-
     private final AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final Map<String, String> pageNameToActionMap;
@@ -350,7 +346,6 @@ public class AppCMSPresenter {
     private final AppCMSHistoryCall appCMSHistoryCall;
     private final AppCMSUserDownloadVideoStatusCall appCMSUserDownloadVideoStatusCall;
     private final AppCMSBeaconCall appCMSBeaconCall;
-
     private final AppCMSUserVideoStatusCall appCMSUserVideoStatusCall;
     private final AppCMSAddToWatchlistCall appCMSAddToWatchlistCall;
     private final AppCMSDeleteHistoryCall appCMSDeleteHistoryCall;
@@ -372,6 +367,8 @@ public class AppCMSPresenter {
             "/storage/microsd" // ASUS ZenFone 2
     };
     boolean isRenewable;
+    private String FIREBASE_CONTACT_SCREEN = "Contact Us";
+    private String clientId;
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
@@ -652,7 +649,7 @@ public class AppCMSPresenter {
                                         entitlementPendingVideoData.relateVideoIds = appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds();
                                         navigateToHomeToRefresh = true;
                                     }
-                                }else{
+                                } else {
                                     if (!isNetworkConnected()) {
                                         // Fix of SVFA-1435
                                         openDownloadScreenForNetworkError(false);
@@ -664,7 +661,8 @@ public class AppCMSPresenter {
                                 Log.e(TAG, "Error retrieving AppCMS Video Details: " + e.getMessage());
 
 
-                        }}).execute(params);
+                            }
+                        }).execute(params);
             } else {
                 if (entitlementActive) {
                     if (watchedTime >= 0) {
@@ -1017,6 +1015,7 @@ public class AppCMSPresenter {
                     Log.d(TAG, "Login action selected: " + extraData[0]);
                     closeSoftKeyboard();
                     login(extraData[0], extraData[1]);
+                    sendSignInEmailFirebase();
                 } else if (actionType == AppCMSActionType.FORGOT_PASSWORD) {
                     Log.d(TAG, "Forgot password selected: " + extraData[0]);
                     closeSoftKeyboard();
@@ -1604,7 +1603,7 @@ public class AppCMSPresenter {
             GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions
                     .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestEmail()
-                    .requestIdToken(currentActivity.getString(R.string.default_web_client_id))
+                    .requestServerAuthCode(clientId, false)
                     .build();
 
             Intent googleIntent = Auth.GoogleSignInApi
@@ -1659,7 +1658,7 @@ public class AppCMSPresenter {
         Log.v("apikey", apikey);
         try {
             String strAmount = Double.toString(planToPurchasePrice);
-            Intent intent = new Intent(currentActivity,WebViewActivity.class);
+            Intent intent = new Intent(currentActivity, WebViewActivity.class);
             //Intent intent = new Intent(currentActivity,PaymentOptionsActivity.class);
             intent.putExtra(AvenuesParams.CURRENCY, currencyCode);
             intent.putExtra(AvenuesParams.AMOUNT, strAmount);
@@ -1680,7 +1679,7 @@ public class AppCMSPresenter {
     }
 
     public void initiateItemPurchase() {
-        if (countryCode.equalsIgnoreCase("IN")) {
+        if (!TextUtils.isEmpty(countryCode) && countryCode.equalsIgnoreCase("IN")) {
             if (currencyCode.equalsIgnoreCase("INR")) {
                 initiateCCAvenuePurchase();
             }
@@ -1921,7 +1920,7 @@ public class AppCMSPresenter {
 
         //Send Firebase Analytics when user is subscribed and user is Logged In
         sendFirebaseLoginSubscribeSuccess();
-        if (isPreferedStorageLocationSDCard(currentActivity) &&
+        if (getUserDownloadLocationPref(currentActivity) &&
                 !hasWriteExternalStoragePermission()) {
             requestDownloadQualityScreen = true;
             askForPermissionToDownloadToExternalStorage(true,
@@ -2048,7 +2047,7 @@ public class AppCMSPresenter {
         //Send Firebase Analytics when user is subscribed and user is Logged In
         sendFirebaseLoginSubscribeSuccess();
 
-        if (isPreferedStorageLocationSDCard(currentActivity) &&
+        if (getUserDownloadLocationPref(currentActivity) &&
                 !hasWriteExternalStoragePermission()) {
             requestDownloadQualityScreen = false;
             askForPermissionToDownloadToExternalStorage(true,
@@ -2153,7 +2152,7 @@ public class AppCMSPresenter {
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
 
-            if (isPreferedStorageLocationSDCard(currentActivity)) {
+            if (getUserDownloadLocationPref(currentActivity)) {
                 downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, "thumbs"),
                         filename + MEDIA_SURFIX_JPG)));
             } else {
@@ -2192,7 +2191,7 @@ public class AppCMSPresenter {
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
 
-            if (isPreferedStorageLocationSDCard(currentActivity)) {
+            if (getUserDownloadLocationPref(currentActivity)) {
                 downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, "posters"),
                         filename + MEDIA_SURFIX_JPG)));
             } else {
@@ -2222,7 +2221,7 @@ public class AppCMSPresenter {
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(true);
 
-            if (isPreferedStorageLocationSDCard(currentActivity)) {
+            if (getUserDownloadLocationPref(currentActivity)) {
                 downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, "closedCaptions"),
                         filename + MEDIA_SUFFIX_SRT)));
             } else {
@@ -2421,7 +2420,7 @@ public class AppCMSPresenter {
                         .setVisibleInDownloadsUi(false)
                         .setShowRunningNotification(true);
 
-                if (isPreferedStorageLocationSDCard(currentActivity)) {
+                if (getUserDownloadLocationPref(currentActivity)) {
                     downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, Environment.DIRECTORY_DOWNLOADS),
                             contentDatum.getGist().getId() + MEDIA_SURFIX_MP4)));
                 } else {
@@ -2648,7 +2647,7 @@ public class AppCMSPresenter {
     public boolean isMemorySpaceAvailable() {
         Log.d(TAG, getRemainingDownloadSize() + "  Available storage space:=  " + getMegabytesAvailable(Environment.getExternalStorageDirectory()));
         File storagePath = null;
-        if (!isPreferedStorageLocationSDCard(currentActivity)) {
+        if (!getUserDownloadLocationPref(currentActivity)) {
             storagePath = Environment.getExternalStorageDirectory();
         } else {
             storagePath = new File(getStorageDirectories(currentActivity)[0]);
@@ -2984,7 +2983,8 @@ public class AppCMSPresenter {
                             }
                         }).execute(params);
             } else {
-                AppCMSPageAPI pageAPI = binder.getContentData().convertToAppCMSPageAPI();
+                AppCMSPageAPI pageAPI = binder.getContentData().convertToAppCMSPageAPI(
+                        currentActivity.getString(R.string.app_cms_page_autoplay_module_key));
 
                 if (pageAPI != null) {
                     launchAutoplayActivity(currentActivity,
@@ -3701,6 +3701,8 @@ public class AppCMSPresenter {
                 !TextUtils.isEmpty(url) &&
                 url.contains(currentActivity.getString(
                         R.string.app_cms_page_navigation_contact_us_key))) {
+            //Firebase Event when contact us screen is opened.
+            sendFireBaseContactUsEvent();
             if (Apptentive.canShowMessageCenter()) {
                 Apptentive.showMessageCenter(currentActivity);
             }
@@ -3710,6 +3712,15 @@ public class AppCMSPresenter {
         }
         return result;
     }
+
+
+    private void sendFireBaseContactUsEvent() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_CONTACT_SCREEN);
+        if (getmFireBaseAnalytics() != null)
+            getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+    }
+
 
     public void sendRefreshPageAction() {
         if (currentActivity != null) {
@@ -3882,6 +3893,7 @@ public class AppCMSPresenter {
         }
         return null;
     }
+
     public String getDownloadPageId(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(DOWNLOAD_UI_ID, 0);
@@ -3889,6 +3901,7 @@ public class AppCMSPresenter {
         }
         return null;
     }
+
     public boolean setDownloadPageId(Context context, String url) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(DOWNLOAD_UI_ID, 0);
@@ -3947,7 +3960,7 @@ public class AppCMSPresenter {
         return null;
     }
 
-    public boolean isPreferedStorageLocationSDCard(Context context) {
+    public boolean getUserDownloadLocationPref(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, 0);
             return sharedPrefs.getBoolean(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, false);
@@ -3955,7 +3968,7 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public boolean setPreferedStorageLocationSDCard(Context context, boolean downloadPref) {
+    public boolean setUserDownloadLocationPref(Context context, boolean downloadPref) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, 0);
             return sharedPrefs.edit().putBoolean(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME,
@@ -4186,7 +4199,7 @@ public class AppCMSPresenter {
 
                             if (appCMSMain.getServiceType()
                                     .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
-                                refreshSubscriptionData) {
+                                    refreshSubscriptionData) {
                                 refreshSubscriptionData(() -> {
                                     try {
                                         if (entitlementPendingVideoData != null) {
@@ -4312,20 +4325,34 @@ public class AppCMSPresenter {
                                         }
                                     });
                                 } else {
-                                    sendCloseOthersAction(null, true);
-                                    cancelInternalEvents();
-                                    restartInternalEvents();
-                                    NavigationPrimary homePageNavItem = findHomePageNavItem();
-                                    if (homePageNavItem != null) {
-                                        navigateToPage(homePageNavItem.getPageId(),
-                                                homePageNavItem.getTitle(),
-                                                homePageNavItem.getUrl(),
-                                                false,
-                                                true,
-                                                false,
-                                                true,
-                                                false,
-                                                deeplinkSearchQuery);
+                                    if (entitlementPendingVideoData != null) {
+                                        navigateToHomeToRefresh = false;
+                                        sendRefreshPageAction();
+                                        sendCloseOthersAction(null, true);
+                                        launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
+                                                entitlementPendingVideoData.action,
+                                                entitlementPendingVideoData.filmTitle,
+                                                entitlementPendingVideoData.extraData,
+                                                entitlementPendingVideoData.contentDatum,
+                                                entitlementPendingVideoData.closeLauncher,
+                                                entitlementPendingVideoData.currentlyPlayingIndex,
+                                                entitlementPendingVideoData.relateVideoIds);
+                                    } else {
+                                        sendCloseOthersAction(null, true);
+                                        cancelInternalEvents();
+                                        restartInternalEvents();
+                                        NavigationPrimary homePageNavItem = findHomePageNavItem();
+                                        if (homePageNavItem != null) {
+                                            navigateToPage(homePageNavItem.getPageId(),
+                                                    homePageNavItem.getTitle(),
+                                                    homePageNavItem.getUrl(),
+                                                    false,
+                                                    true,
+                                                    false,
+                                                    true,
+                                                    false,
+                                                    deeplinkSearchQuery);
+                                        }
                                     }
                                 }
                             }
@@ -4597,6 +4624,8 @@ public class AppCMSPresenter {
 
             revokePermissions.executeAsync();
             LoginManager.getInstance().logOut();
+            //Send Firebase Logout Event
+            sendFireBaseLogOutEvent();
 
             setLoggedInUser(currentActivity, null);
             setLoggedInUserName(currentActivity, null);
@@ -4628,6 +4657,13 @@ public class AppCMSPresenter {
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
             AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser(currentActivity));
         }
+    }
+
+    private void sendFireBaseLogOutEvent() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_SCREEN_SIGN_OUT, FIREBASE_SCREEN_LOG_OUT);
+        if (getmFireBaseAnalytics() != null)
+            getmFireBaseAnalytics().logEvent(FIREBASE_SCREEN_SIGN_OUT, bundle);
     }
 
     public void addInternalEvent(OnInternalEvent onInternalEvent) {
@@ -4718,7 +4754,7 @@ public class AppCMSPresenter {
                     Log.e(TAG, "DialogType retrieving main.json");
                     if (!isNetworkConnected()) {//Fix for SVFA-1435 issue 2nd by manoj comment
                        openDownloadScreenForNetworkError(true);
-                    }else {
+                    } else {
                         launchErrorActivity(platformType);
                     }
                 } else if (TextUtils.isEmpty(main
@@ -4790,12 +4826,10 @@ public class AppCMSPresenter {
     }
 
     public boolean isPageSplashPage(String pageId) {
-        if (splashPage != null &&
-                !TextUtils.isEmpty(pageId) &&
-                !TextUtils.isEmpty(splashPage.getPageId())) {
-            return splashPage.getPageId().equals(pageId);
-        }
-        return false;
+        return splashPage != null
+                && !TextUtils.isEmpty(pageId)
+                && !TextUtils.isEmpty(splashPage.getPageId())
+                && splashPage.getPageId().equals(pageId);
     }
 
     public AppCMSSearchUrlComponent getAppCMSSearchUrlComponent() {
@@ -5068,8 +5102,9 @@ public class AppCMSPresenter {
             }
         }
     }
-    public void openDownloadScreenForNetworkError(boolean launchActivity){
-        if (!isUserLoggedIn(currentActivity)){//fix SVFA-1911
+
+    public void openDownloadScreenForNetworkError(boolean launchActivity) {
+        if (!isUserLoggedIn(currentActivity)) {//fix SVFA-1911
             showDialog(DialogType.NETWORK, null, false, null);
             return;
         }
@@ -5081,7 +5116,7 @@ public class AppCMSPresenter {
                     () -> navigateToDownloadPage(getDownloadPageId(currentActivity),
                             null, null, launchActivity));
         } catch (Exception e) {
-            Log.d(TAG,e.getMessage());
+            Log.d(TAG, e.getMessage());
         }
     }
 
@@ -5362,47 +5397,47 @@ public class AppCMSPresenter {
 
         if (currentActivity != null) {
 
-                try {
-                    BeaconRequest beaconRequest = getBeaconRequest(vid, screenName, parentScreenName, currentPosition, event,
-                            usingChromecast, mediaType, bitrate, height, width, streamid, ttfirstframe, apod,isDownloaded);
-                    if (!isNetworkConnected()) {
-                        currentActivity.runOnUiThread(() -> {
-                            try {
-                                realmController.addOfflineBeaconData(beaconRequest.convertToOfflineBeaconData());
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error adding offline Beacon data: " + e.getMessage());
-                            }
-                        });
+            try {
+                BeaconRequest beaconRequest = getBeaconRequest(vid, screenName, parentScreenName, currentPosition, event,
+                        usingChromecast, mediaType, bitrate, height, width, streamid, ttfirstframe, apod, isDownloaded);
+                if (!isNetworkConnected()) {
+                    currentActivity.runOnUiThread(() -> {
+                        try {
+                            realmController.addOfflineBeaconData(beaconRequest.convertToOfflineBeaconData());
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error adding offline Beacon data: " + e.getMessage());
+                        }
+                    });
 
-                        Log.d(TAG, "Beacon info added to database +++ " + event);
-                        return;
-                    }
-                    String url = getBeaconUrl();
-                    AppCMSBeaconRequest request = new AppCMSBeaconRequest();
-                    ArrayList<BeaconRequest> beaconRequests = new ArrayList<>();
-
-                    beaconRequests.add(beaconRequest);
-
-
-                    request.setBeaconRequest(beaconRequests);
-                    if (url != null) {
-
-                        appCMSBeaconCall.call(url, aBoolean -> {
-                            try {
-
-                                if (aBoolean) {
-                                    Log.d(TAG, "Beacon success Event:  " + event);
-                                }
-                            } catch (Exception e) {
-                                Log.d(TAG, "Beacon fail Event: " + event + " due to: " + e.getMessage());
-                            }
-                        }, request);
-
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "Error sending new beacon message: " + e.getMessage());
+                    Log.d(TAG, "Beacon info added to database +++ " + event);
+                    return;
                 }
+                String url = getBeaconUrl();
+                AppCMSBeaconRequest request = new AppCMSBeaconRequest();
+                ArrayList<BeaconRequest> beaconRequests = new ArrayList<>();
+
+                beaconRequests.add(beaconRequest);
+
+
+                request.setBeaconRequest(beaconRequests);
+                if (url != null) {
+
+                    appCMSBeaconCall.call(url, aBoolean -> {
+                        try {
+
+                            if (aBoolean) {
+                                Log.d(TAG, "Beacon success Event:  " + event);
+                            }
+                        } catch (Exception e) {
+                            Log.d(TAG, "Beacon fail Event: " + event + " due to: " + e.getMessage());
+                        }
+                    }, request);
+
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error sending new beacon message: " + e.getMessage());
             }
+        }
 
     }
 
@@ -5466,7 +5501,7 @@ public class AppCMSPresenter {
 
         if (isDownloaded) {
             beaconRequest.setDp2("downloaded_view-online");
-        }else {
+        } else {
             beaconRequest.setDp2("view-online");
         }
 
@@ -5573,6 +5608,12 @@ public class AppCMSPresenter {
                 true,
                 false);
 
+        setActiveSubscriptionId(currentActivity, planToPurchase);
+        setActiveSubscriptionCurrency(currentActivity, currencyOfPlanToPurchase);
+        setActiveSubscriptionPlanName(currentActivity, planToPurchaseName);
+        setActiveSubscriptionPrice(currentActivity, String.valueOf(planToPurchasePrice));
+        setActiveSubscriptionProcessor(currentActivity, currentActivity.getString(R.string.subscription_ccavenue_payment_processor_friendly));
+        refreshSubscriptionData(null);
 
 //        try {
 //            appCMSSubscriptionPlanCall.call(
@@ -5588,7 +5629,7 @@ public class AppCMSPresenter {
 //                        //
 //                    });
 //        } catch (Exception ex) {
-//            ex.
+//            Log.e(TAG, ex.getMessage());
 //        }
 
     }
@@ -5755,62 +5796,17 @@ public class AppCMSPresenter {
 
     public void signup(String email, String password) {
         if (currentActivity != null) {
-            final String PASSWORD_VERIFICATION_REGEX = "^\\S{5,50}$";
-
-            String userName = getLoggedInUserName(currentActivity);
-
-            if (TextUtils.isEmpty(email) && TextUtils.isEmpty(password)) {
-                showDialog(DialogType.SIGNUP_BLANK_EMAIL_PASSWORD,
-                        currentActivity.getString(R.string.app_cms_signup_invalid_email_and_password_message),
-                        false,
-                        null);
-            } else if (TextUtils.isEmpty(email)) {
-                showDialog(DialogType.SIGNUP_BLANK_EMAIL,
-                        currentActivity.getString(R.string.app_cms_signup_invalid_email_message),
-                        false,
-                        null);
-            } else if (TextUtils.isEmpty(password)) {
-                showDialog(DialogType.SIGNUP_BLANK_PASSWORD,
-                        currentActivity.getString(R.string.app_cms_signup_blank_password_message),
-                        false,
-                        null);
-            } else if (!TextUtils.isEmpty(userName) &&
-                    userName.equals(password)) {
-                showDialog(DialogType.SIGNUP_NAME_MATCHES_PASSWORD,
-                        currentActivity.getString(R.string.app_cms_signup_name_matches_password_message),
-                        false,
-                        null);
-            } else if (!TextUtils.isEmpty(email) &&
-                    !TextUtils.isEmpty(password)) {
-                int atIndex = email.indexOf("@");
-                if (0 < atIndex) {
-                    String emailName = email.substring(0, atIndex);
-                    if (emailName.equals(password)) {
-                        showDialog(DialogType.SIGNUP_EMAIL_MATCHES_PASSWORD,
-                                currentActivity.getString(R.string.app_cms_signup_email_matches_password_message),
-                                false,
-                                null);
-                    }
-                }
-            } else if (!TextUtils.isEmpty(password) &&
-                    !password.matches(PASSWORD_VERIFICATION_REGEX)) {
-                showDialog(DialogType.SIGNUP_PASSWORD_INVALID,
-                        currentActivity.getString(R.string.app_cms_signup_invalid_password_message),
-                        false,
-                        null);
-            } else {
-                String url = currentActivity.getString(R.string.app_cms_signup_api_url,
-                        appCMSMain.getApiBaseUrl(),
-                        appCMSSite.getGist().getSiteInternalName());
-                startLoginAsyncTask(url,
-                        email,
-                        password,
-                        true,
-                        launchType == LaunchType.SUBSCRIBE,
-                        false,
-                        false,
-                        false);
-            }
+            String url = currentActivity.getString(R.string.app_cms_signup_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSSite.getGist().getSiteInternalName());
+            startLoginAsyncTask(url,
+                    email,
+                    password,
+                    true,
+                    launchType == LaunchType.SUBSCRIBE,
+                    false,
+                    false,
+                    false);
         }
     }
 
@@ -5921,6 +5917,9 @@ public class AppCMSPresenter {
                                                                                 } else if (paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_web_payment_processor_friendly))) {
                                                                                     setActiveSubscriptionProcessor(currentActivity,
                                                                                             currentActivity.getString(R.string.subscription_web_payment_processor_friendly));
+                                                                                } else if (paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ccavenue_payment_processor))) {
+                                                                                    setActiveSubscriptionProcessor(currentActivity,
+                                                                                            currentActivity.getString(R.string.subscription_ccavenue_payment_processor_friendly));
                                                                                 }
                                                                             }
 
@@ -6046,6 +6045,9 @@ public class AppCMSPresenter {
                                                                 } else if (paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_web_payment_processor_friendly))) {
                                                                     setActiveSubscriptionProcessor(currentActivity,
                                                                             currentActivity.getString(R.string.subscription_web_payment_processor_friendly));
+                                                                } else if (paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ccavenue_payment_processor))) {
+                                                                    setActiveSubscriptionProcessor(currentActivity,
+                                                                            currentActivity.getString(R.string.subscription_ccavenue_payment_processor_friendly));
                                                                 }
                                                             }
 
@@ -6165,6 +6167,7 @@ public class AppCMSPresenter {
                 .email(email)
                 .password(password)
                 .build();
+
         new PostAppCMSLoginRequestAsyncTask(appCMSSignInCall,
                 signInResponse -> {
 
@@ -6181,6 +6184,8 @@ public class AppCMSPresenter {
                                             R.string.app_cms_error_email_password), false, null);
                                 }
                             }
+                        } else if (!TextUtils.isEmpty(signInResponse.getError())) {
+                            showDialog(DialogType.SIGNIN, signInResponse.getError(), false, null);
                         } else {
                             setRefreshToken(currentActivity, signInResponse.getRefreshToken());
                             setAuthToken(currentActivity, signInResponse.getAuthorizationToken());
@@ -6395,6 +6400,7 @@ public class AppCMSPresenter {
         this.downloadManager = (DownloadManager) currentActivity.getSystemService(Context.DOWNLOAD_SERVICE);
         this.realmController = RealmController.with(currentActivity);
         this.downloadQueueThread = new DownloadQueueThread(this);
+        this.clientId = activity.getString(R.string.server_client_id);
     }
 
     private Bundle getPageActivityBundle(Activity activity,
@@ -6725,10 +6731,13 @@ public class AppCMSPresenter {
                                     case ANDROID:
                                         getAppCMSAndroid(0);
                                         break;
+
                                     case TV:
                                         getAppCMSTV(0);
                                         break;
+
                                     default:
+                                        break;
                                 }
                             } else {
                                 launchErrorActivity(platformType);
@@ -6926,9 +6935,9 @@ public class AppCMSPresenter {
                 metaPage.getPageId() + " " +
                 metaPage.getPageUI() + " " +
                 metaPage.getPageAPI());
-        if (metaPage.getPageName().contains("Downloads") && !metaPage.getPageName().contains("Settings")){//Fix SVFA-1435 app Launch:  setting Download page UI url in shared pref
+        if (metaPage.getPageName().contains("Downloads") && !metaPage.getPageName().contains("Settings")) {//Fix SVFA-1435 app Launch:  setting Download page UI url in shared pref
 
-            setDownloadPageId(currentActivity,metaPage.getPageId());
+            setDownloadPageId(currentActivity, metaPage.getPageId());
         }
         pageIdToPageAPIUrlMap.put(metaPage.getPageId(), metaPage.getPageAPI());
         pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
@@ -7628,12 +7637,9 @@ public class AppCMSPresenter {
         return platformType;
     }
 
-    public boolean isRemoveableSDCardAvailable() {
-        if (currentActivity != null) {
-            if (getStorageDirectories(currentActivity).length >= 1) {
-                return true;
-            }
-
+    public boolean isRemovableSDCardAvailable() {
+        if (currentActivity != null && getStorageDirectories(currentActivity).length >= 1) {
+            return true;
         }
         return false;
     }
@@ -7649,28 +7655,25 @@ public class AppCMSPresenter {
     }
 
     public String getSDCardPath(Context context) {
-        File baseSDCardDir = null;
+        File baseSDCardDir;
         String[] dirs = getStorageDirectories(context);
-
-
         baseSDCardDir = new File(dirs[0] + File.separator + appCMSMain.getDomainName());
-
 
         return baseSDCardDir.getAbsolutePath();
     }
 
     public String[] getStorageDirectories(Context context) {
-        HashSet<String> paths = new HashSet<String>();
+        HashSet<String> paths = new HashSet<>();
         String rawExternalStorage = System.getenv("EXTERNAL_STORAGE");
         String rawSecondaryStoragesStr = System.getenv("SECONDARY_STORAGE");
         String rawEmulatedStorageTarget = System.getenv("EMULATED_STORAGE_TARGET");
         if (TextUtils.isEmpty(rawEmulatedStorageTarget)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-                List<String> results = new ArrayList<String>();
+                List<String> results = new ArrayList<>();
                 File[] externalDirs = context.getExternalFilesDirs(null);
                 for (File file : externalDirs) {
-                    String path = null;
+                    String path;
                     try {
                         path = file.getPath().split("/Android")[0];
                     } catch (Exception e) {
@@ -7738,7 +7741,7 @@ public class AppCMSPresenter {
     public List<String> getSearchResultsFromSharePreference() {
         if (currentActivity == null)
             return null;
-        List<String> searchValues = new ArrayList<String>();
+        List<String> searchValues = new ArrayList<>();
         SharedPreferences sharePref = currentActivity.getSharedPreferences(
                 currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
         int size = sharePref.getInt(currentActivity.getString(R.string.app_cms_search_value_size_key), 0);
@@ -7875,6 +7878,10 @@ public class AppCMSPresenter {
         mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
         mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_ID, getActiveSubscriptionId(currentActivity));
         mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_NAME, getActiveSubscriptionPlanName(currentActivity));
+    }
+
+    public String getApiKey() {
+        return apikey;
     }
 
     public enum LaunchType {
