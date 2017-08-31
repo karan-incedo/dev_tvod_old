@@ -301,6 +301,8 @@ public class AppCMSPresenter {
     public static final int RC_GOOGLE_SIGN_IN = 1001;
     private static int PAGE_LRU_CACHE_SIZE = 10;
     private final String USER_ID_KEY = "user_id";
+    private String FIREBASE_CONTACT_SCREEN = "Contact Us";
+    private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
     private final String LOGIN_STATUS_KEY = "logged_in_status";
     private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
     private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
@@ -341,6 +343,9 @@ public class AppCMSPresenter {
     private final GoogleRefreshTokenCall googleRefreshTokenCall;
     private final GoogleCancelSubscriptionCall googleCancelSubscriptionCall;
 
+    private final String FIREBASE_SCREEN_SIGN_OUT = "sign_out";
+    private final String FIREBASE_SCREEN_LOG_OUT = "log_out";
+
     private final AppCMSCCAvenueCall appCMSCCAvenueCall;
 
     private final AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall;
@@ -360,6 +365,7 @@ public class AppCMSPresenter {
     private final AppCMSSubscriptionCall appCMSSubscriptionCall;
     private final AppCMSSubscriptionPlanCall appCMSSubscriptionPlanCall;
     private final AppCMSAnonymousAuthTokenCall appCMSAnonymousAuthTokenCall;
+
 
     private String clientId;
 
@@ -658,7 +664,7 @@ public class AppCMSPresenter {
                                         entitlementPendingVideoData.relateVideoIds = appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds();
                                         navigateToHomeToRefresh = true;
                                     }
-                                }else{
+                                } else {
                                     if (!isNetworkConnected()) {
                                         // Fix of SVFA-1435
                                         openDownloadScreenForNetworkError(false);
@@ -670,7 +676,8 @@ public class AppCMSPresenter {
                                 Log.e(TAG, "Error retrieving AppCMS Video Details: " + e.getMessage());
 
 
-                        }}).execute(params);
+                            }
+                        }).execute(params);
             } else {
                 if (entitlementActive) {
                     if (watchedTime >= 0) {
@@ -1023,6 +1030,7 @@ public class AppCMSPresenter {
                     Log.d(TAG, "Login action selected: " + extraData[0]);
                     closeSoftKeyboard();
                     login(extraData[0], extraData[1]);
+                    sendSignInEmailFirebase();
                 } else if (actionType == AppCMSActionType.FORGOT_PASSWORD) {
                     Log.d(TAG, "Forgot password selected: " + extraData[0]);
                     closeSoftKeyboard();
@@ -1665,7 +1673,7 @@ public class AppCMSPresenter {
         Log.v("apikey", apikey);
         try {
             String strAmount = Double.toString(planToPurchasePrice);
-            Intent intent = new Intent(currentActivity,WebViewActivity.class);
+            Intent intent = new Intent(currentActivity, WebViewActivity.class);
             //Intent intent = new Intent(currentActivity,PaymentOptionsActivity.class);
             intent.putExtra(AvenuesParams.CURRENCY, currencyCode);
             intent.putExtra(AvenuesParams.AMOUNT, strAmount);
@@ -3708,6 +3716,8 @@ public class AppCMSPresenter {
                 !TextUtils.isEmpty(url) &&
                 url.contains(currentActivity.getString(
                         R.string.app_cms_page_navigation_contact_us_key))) {
+            //Firebase Event when contact us screen is opened.
+            sendFireBaseContactUsEvent();
             if (Apptentive.canShowMessageCenter()) {
                 Apptentive.showMessageCenter(currentActivity);
             }
@@ -3717,6 +3727,15 @@ public class AppCMSPresenter {
         }
         return result;
     }
+
+
+    private void sendFireBaseContactUsEvent() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_CONTACT_SCREEN);
+        if (getmFireBaseAnalytics() != null)
+            getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+    }
+
 
     public void sendRefreshPageAction() {
         if (currentActivity != null) {
@@ -3889,6 +3908,7 @@ public class AppCMSPresenter {
         }
         return null;
     }
+
     public String getDownloadPageId(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(DOWNLOAD_UI_ID, 0);
@@ -3896,6 +3916,7 @@ public class AppCMSPresenter {
         }
         return null;
     }
+
     public boolean setDownloadPageId(Context context, String url) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(DOWNLOAD_UI_ID, 0);
@@ -4193,7 +4214,7 @@ public class AppCMSPresenter {
 
                             if (appCMSMain.getServiceType()
                                     .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
-                                refreshSubscriptionData) {
+                                    refreshSubscriptionData) {
                                 refreshSubscriptionData(() -> {
                                     try {
                                         if (entitlementPendingVideoData != null) {
@@ -4618,6 +4639,8 @@ public class AppCMSPresenter {
 
             revokePermissions.executeAsync();
             LoginManager.getInstance().logOut();
+            //Send Firebase Logout Event
+            sendFireBaseLogOutEvent();
 
             setLoggedInUser(currentActivity, null);
             setLoggedInUserName(currentActivity, null);
@@ -4649,6 +4672,13 @@ public class AppCMSPresenter {
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
             AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser(currentActivity));
         }
+    }
+
+    private void sendFireBaseLogOutEvent() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_SCREEN_SIGN_OUT, FIREBASE_SCREEN_LOG_OUT);
+        if (getmFireBaseAnalytics() != null)
+            getmFireBaseAnalytics().logEvent(FIREBASE_SCREEN_SIGN_OUT, bundle);
     }
 
     public void addInternalEvent(OnInternalEvent onInternalEvent) {
@@ -4738,8 +4768,8 @@ public class AppCMSPresenter {
                 if (main == null) {
                     Log.e(TAG, "DialogType retrieving main.json");
                     if (!isNetworkConnected()) {//Fix for SVFA-1435 issue 2nd by manoj comment
-                       openDownloadScreenForNetworkError(true);
-                    }else {
+                        openDownloadScreenForNetworkError(true);
+                    } else {
                         launchErrorActivity(platformType);
                     }
                 } else if (TextUtils.isEmpty(main
@@ -5089,8 +5119,9 @@ public class AppCMSPresenter {
             }
         }
     }
-    public void openDownloadScreenForNetworkError(boolean launchActivity){
-        if (!isUserLoggedIn(currentActivity)){//fix SVFA-1911
+
+    public void openDownloadScreenForNetworkError(boolean launchActivity) {
+        if (!isUserLoggedIn(currentActivity)) {//fix SVFA-1911
             showDialog(DialogType.NETWORK, null, false, null);
             return;
         }
@@ -5102,7 +5133,7 @@ public class AppCMSPresenter {
                     () -> navigateToDownloadPage(getDownloadPageId(currentActivity),
                             null, null, launchActivity));
         } catch (Exception e) {
-            Log.d(TAG,e.getMessage());
+            Log.d(TAG, e.getMessage());
         }
     }
 
@@ -5383,47 +5414,47 @@ public class AppCMSPresenter {
 
         if (currentActivity != null) {
 
-                try {
-                    BeaconRequest beaconRequest = getBeaconRequest(vid, screenName, parentScreenName, currentPosition, event,
-                            usingChromecast, mediaType, bitrate, height, width, streamid, ttfirstframe, apod,isDownloaded);
-                    if (!isNetworkConnected()) {
-                        currentActivity.runOnUiThread(() -> {
-                            try {
-                                realmController.addOfflineBeaconData(beaconRequest.convertToOfflineBeaconData());
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error adding offline Beacon data: " + e.getMessage());
-                            }
-                        });
+            try {
+                BeaconRequest beaconRequest = getBeaconRequest(vid, screenName, parentScreenName, currentPosition, event,
+                        usingChromecast, mediaType, bitrate, height, width, streamid, ttfirstframe, apod, isDownloaded);
+                if (!isNetworkConnected()) {
+                    currentActivity.runOnUiThread(() -> {
+                        try {
+                            realmController.addOfflineBeaconData(beaconRequest.convertToOfflineBeaconData());
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error adding offline Beacon data: " + e.getMessage());
+                        }
+                    });
 
-                        Log.d(TAG, "Beacon info added to database +++ " + event);
-                        return;
-                    }
-                    String url = getBeaconUrl();
-                    AppCMSBeaconRequest request = new AppCMSBeaconRequest();
-                    ArrayList<BeaconRequest> beaconRequests = new ArrayList<>();
-
-                    beaconRequests.add(beaconRequest);
-
-
-                    request.setBeaconRequest(beaconRequests);
-                    if (url != null) {
-
-                        appCMSBeaconCall.call(url, aBoolean -> {
-                            try {
-
-                                if (aBoolean) {
-                                    Log.d(TAG, "Beacon success Event:  " + event);
-                                }
-                            } catch (Exception e) {
-                                Log.d(TAG, "Beacon fail Event: " + event + " due to: " + e.getMessage());
-                            }
-                        }, request);
-
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "Error sending new beacon message: " + e.getMessage());
+                    Log.d(TAG, "Beacon info added to database +++ " + event);
+                    return;
                 }
+                String url = getBeaconUrl();
+                AppCMSBeaconRequest request = new AppCMSBeaconRequest();
+                ArrayList<BeaconRequest> beaconRequests = new ArrayList<>();
+
+                beaconRequests.add(beaconRequest);
+
+
+                request.setBeaconRequest(beaconRequests);
+                if (url != null) {
+
+                    appCMSBeaconCall.call(url, aBoolean -> {
+                        try {
+
+                            if (aBoolean) {
+                                Log.d(TAG, "Beacon success Event:  " + event);
+                            }
+                        } catch (Exception e) {
+                            Log.d(TAG, "Beacon fail Event: " + event + " due to: " + e.getMessage());
+                        }
+                    }, request);
+
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error sending new beacon message: " + e.getMessage());
             }
+        }
 
     }
 
@@ -5487,7 +5518,7 @@ public class AppCMSPresenter {
 
         if (isDownloaded) {
             beaconRequest.setDp2("downloaded_view-online");
-        }else {
+        } else {
             beaconRequest.setDp2("view-online");
         }
 
@@ -6918,9 +6949,9 @@ public class AppCMSPresenter {
                 metaPage.getPageId() + " " +
                 metaPage.getPageUI() + " " +
                 metaPage.getPageAPI());
-        if (metaPage.getPageName().contains("Downloads") && !metaPage.getPageName().contains("Settings")){//Fix SVFA-1435 app Launch:  setting Download page UI url in shared pref
+        if (metaPage.getPageName().contains("Downloads") && !metaPage.getPageName().contains("Settings")) {//Fix SVFA-1435 app Launch:  setting Download page UI url in shared pref
 
-            setDownloadPageId(currentActivity,metaPage.getPageId());
+            setDownloadPageId(currentActivity, metaPage.getPageId());
         }
         pageIdToPageAPIUrlMap.put(metaPage.getPageId(), metaPage.getPageAPI());
         pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
