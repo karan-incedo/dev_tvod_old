@@ -11,6 +11,9 @@
     <string name="app_cms_url_with_appended_timestamp">%1$s?x=%2$d</string>
     <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
 
+    <!-- x-api-key -->
+    <string name="x_api_key">vdTAMerEdh8t5t7xtUAa199qBKQuFLXb5cuG93ZF</string>
+
     <!-- AppCMS StreamingInfo API -->
     <string name="app_cms_streaminginfo_api_url">%1$s/content/videos/%2$s?site=%3$s&amp;fields=streamingInfo</string>
 
@@ -129,7 +132,10 @@
     <string name="app_cms_page_settings_plan_value_key">planValue</string>
     <string name="app_cms_page_settings_plan_processor_title_key">paymentProcess</string>
     <string name="app_cms_page_settings_plan_processor_value_key">paymentProcessorValue</string>
+
     <string name="app_cms_page_edit_profile_key">Edit Profile</string>
+    <string name="app_cms_page_change_password_key">Change Password</string>
+
     <string name="app_cms_page_cancel_subscription_key">Cancel Subscription</string>
     <string name="app_cms_page_upgrade_subscription_key">Upgrade Subscription</string>
     <string name="app_cms_page_upgrade_subscribe_button_text">SUBSCRIBE</string>
@@ -137,6 +143,7 @@
     <string name="app_cms_page_background_image_type_type">imageView</string>
     <string name="app_cms_page_togglebutton_key">toggle</string>
     <string name="app_cms_page_autoplay_toggle_button_key">autoplayToggle</string>
+    <string name="app_cms_page_use_sd_card_for_downloads_toggle_button_key">useSDCardForDownloadsToggle</string>
     <string name="app_cms_page_settings_download_quality_value_key">downloadQualityValue</string>
     <string name="app_cms_page_settings_app_version_value_key">appVersionValue</string>
 
@@ -336,6 +343,8 @@
     <string name="subscription_ios_payment_processor_friendly">iTunes</string>
     <string name="subscription_android_payment_processor">Android</string>
     <string name="subscription_android_payment_processor_friendly">Google Play</string>
+    <string name="subscription_ccavenue_payment_processor">ccavenue</string>
+    <string name="subscription_ccavenue_payment_processor_friendly">CCAvenue</string>
     <string name="subscription_web_payment_processor_friendly">Stripe</string>
     <string name="subscription_no_payment_processor_friendly">None</string>
     <string name="subscription_unsubscribed_plan_value">Unsubscribed</string>

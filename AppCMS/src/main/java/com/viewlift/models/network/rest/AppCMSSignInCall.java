@@ -37,12 +37,17 @@ public class AppCMSSignInCall {
         SignInRequest signInRequest = new SignInRequest();
         signInRequest.setEmail(email);
         signInRequest.setPassword(password);
-        JsonElement signInResponse = null;
         try {
             Call<JsonElement> call = appCMSSignInRest.signin(url, signInRequest);
+
             Response<JsonElement> response = call.execute();
-            signInResponse = response.body();
-            loggedInResponseResponse = gson.fromJson(signInResponse, SignInResponse.class);
+            if (response.body() != null) {
+                JsonElement signInResponse = response.body();
+                loggedInResponseResponse = gson.fromJson(signInResponse, SignInResponse.class);
+            } else if (response.errorBody() != null) {
+                String errorResponse = response.errorBody().string();
+                loggedInResponseResponse = gson.fromJson(errorResponse, SignInResponse.class);
+            }
         } catch (JsonSyntaxException | IOException e) {
             Log.e(TAG, "SignIn error: " + e.toString());
         }

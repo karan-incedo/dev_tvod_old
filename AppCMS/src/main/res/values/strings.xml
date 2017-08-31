@@ -292,16 +292,21 @@
 
     <!-- cast receiver -->
     <string name="chromecast_receiver_app_id">0974224E</string>
-    <string name="app_cms_signup_invalid_email_and_password_message">Please enter a valid email and password.</string>
-    <string name="app_cms_signup_invalid_email_message">Please enter a valid email.</string>
-    <string name="app_cms_signup_invalid_password_message">Please enter a valid password.</string>
+    <string name="app_cms_signup_invalid_email_and_password_message">Please enter a non-blank email and password.</string>
+    <string name="app_cms_signup_invalid_email_message">Please enter a non-blank email.</string>
+    <string name="app_cms_signup_blank_password_message">Please enter a non-blank password.</string>
+    <string name="app_cms_signup_email_matches_password_message">Please enter a password that is not the same as your email address.</string>
+    <string name="app_cms_signup_name_matches_password_message">Please enter a password that is not the same your name.</string>
+    <string name="app_cms_signup_invalid_password_message">Please enter a password that is between 5 to 50 characters in length.</string>
     <string name="loading_video_text">Loading Video</string>
     <string name="app_cms_download_write_external_storage_permission_rationale_message">May we request permission to access your external storage to download the video?</string>
     <string name="app_cms_download_external_storage_write_permission_info_error_title">Download to External Storage</string>
     <string name="app_cms_download_limit_message">Download is only available for 30 days after it has been downloaded.</string>
     <string name="app_cms_download_unavailable_error_title">Download Unavailable</string>
     <string name="app_cms_download_failed_error_title">Download Failed</string>
-    <string name="app_cms_download_failed_error_message">Cannot be downloaded due to low device storage, Please manage space in your storage area and try again.</string>
+   <!-- <string name="app_cms_download_failed_error_message">Cannot be downloaded due to low device storage, Please manage space in your storage area and try again.</string>-->
+    <string name="app_cms_download_failed_error_message">Your device does not have enough space to download the content! In order to free some memory : &lt;br&#47;&gt; 1. Go to Settings. &lt;br&#47;&gt; 2. Tap on Storage  </string>
+
     <string name="app_cms_sdCard_unavailable_error_title">SDCard Unavailable</string>
     <string name="app_cms_sdCard_unavailable_error_message">Please insert SDCard in device if it supports for removeable media.  </string>
 
@@ -347,4 +352,5 @@
     <string name="content_rating_viewer_discretion">Viewer Discretion Is Advised</string>
     <string name="video_player_content_rating_key">video_player_content_rating</string>
     <string name="content_rating_description">The following may contain:&#160;</string>
+    <string name="server_client_id">525148171038-1dgfbunn8l27oilqldve5qg7cref8ua1.apps.googleusercontent.com</string>
 </resources>

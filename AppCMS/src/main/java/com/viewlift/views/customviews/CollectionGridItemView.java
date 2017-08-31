@@ -261,10 +261,12 @@ public class CollectionGridItemView extends BaseView {
                                                 scaleImageUp = true;
                                                 float widthToHeightRatio =
                                                         (float) width / (float) height;
+                                                width = (int) (imageHeight * widthToHeightRatio);
+                                                height = imageHeight;
                                                 sourceWithGradient =
                                                         Bitmap.createScaledBitmap(toTransform,
-                                                                (int) (imageHeight * widthToHeightRatio),
-                                                                imageHeight,
+                                                                width,
+                                                                height,
                                                                 false);
                                             } else {
                                                 sourceWithGradient =
@@ -282,13 +284,13 @@ public class CollectionGridItemView extends BaseView {
                                             LinearGradient shader = new LinearGradient(0,
                                                     0,
                                                     0,
-                                                    imageHeight,
+                                                    height,
                                                     0xFFFFFFFF,
                                                     0xFF000000,
                                                     Shader.TileMode.CLAMP);
                                             paint.setShader(shader);
                                             paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
-                                            canvas.drawRect(0, 0, imageWidth, imageHeight, paint);
+                                            canvas.drawRect(0, 0, width, height, paint);
                                             toTransform.recycle();
                                             paint = null;
                                             return sourceWithGradient;
