@@ -1462,31 +1462,6 @@ public class ViewCreator {
                 }
 
                 switch (componentKey) {
-                    case PAGE_BUTTON_SWITCH_KEY:
-//                        if (appCMSPresenter.getUserDownloadLocationPref(context)) {
-//                            ((Switch) componentViewResult.componentView).setChecked(true);
-//                        } else {
-//                            ((Switch) componentViewResult.componentView).setChecked(false);
-//                        }
-
-//                        ((Switch) componentViewResult.componentView)
-//                                .setOnCheckedChangeListener((buttonView, isChecked) -> {
-//                                    if (isChecked) {
-//                                        if (appCMSPresenter.isRemovableSDCardAvailable()) {
-//                                            appCMSPresenter.setUserDownloadLocationPref(context, true);
-//                                        } else {
-//                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SD_CARD_NOT_AVAILABLE,
-//                                                    null,
-//                                                    false,
-//                                                    null);
-//                                            buttonView.setChecked(false);
-//                                        }
-//                                    } else {
-//                                        appCMSPresenter.setUserDownloadLocationPref(context, false);
-//                                    }
-//                                });
-                        break;
-
                     case PAGE_SETTINGS_EDIT_PROFILE_KEY:
                     case PAGE_SETTINGS_CHANGE_PASSWORD_KEY:
                         if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken(context))) {
