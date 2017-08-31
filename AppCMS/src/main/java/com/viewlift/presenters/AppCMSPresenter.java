@@ -2990,7 +2990,8 @@ public class AppCMSPresenter {
                             }
                         }).execute(params);
             } else {
-                AppCMSPageAPI pageAPI = binder.getContentData().convertToAppCMSPageAPI();
+                AppCMSPageAPI pageAPI = binder.getContentData().convertToAppCMSPageAPI(
+                        currentActivity .getString(R.string.app_cms_page_autoplay_module_key));
 
                 if (pageAPI != null) {
                     launchAutoplayActivity(currentActivity,
