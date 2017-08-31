@@ -213,6 +213,12 @@ public class WebViewActivity extends Activity {
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.ORDER_ID,orderID));
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.REDIRECT_URL,cancelRedirectURL));
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.CANCEL_URL,cancelRedirectURL));
+			params.append(ServiceUtility.addToPostParams("billing_name",""));
+			params.append(ServiceUtility.addToPostParams("billing_email",getIntent().getStringExtra("email")));
+			params.append(ServiceUtility.addToPostParams("billing_country","India"));
+			params.append(ServiceUtility.addToPostParams("billing_tel",""));
+
+			//params.append(ServiceUtility.addToPostParams(AvenuesParams.CANCEL_URL,cancelRedirectURL));
 			if (getIntent().getBooleanExtra("renewable",false)) {
 				params.append(ServiceUtility.addToPostParams("payment_option","OPTCRDC")) ;
 			}/* else {
