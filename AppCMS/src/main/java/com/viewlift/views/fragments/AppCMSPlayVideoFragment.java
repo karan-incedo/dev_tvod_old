@@ -984,7 +984,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     .setColorFilter(highlightColor, PorterDuff.Mode.SRC_IN);
         }
 
-        if(isParentalRatingExist()) {
+        if(!isParentalRatingExist()) {
             contentRatingTitleView.setText(parentalRating);
         }
 
