@@ -4762,7 +4762,7 @@ public class AppCMSPresenter {
                     String oldVersion = main.getOldVersion();
                     Log.d(TAG, "Version: " + version);
                     Log.d(TAG, "OldVersion: " + oldVersion);
-                    loadFromFile = false;
+                    loadFromFile = main.shouldLoadFromFile();
 
                     getAppCMSSite(platformType);
                 }
