@@ -60,8 +60,6 @@ import com.viewlift.views.adapters.AppCMSViewAdapter;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
 
-import org.htmlcleaner.HtmlCleaner;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
