@@ -869,7 +869,7 @@ public class AppCMSPresenter {
 
                     if (entitlementActive) {
                         Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
-                        boolean requestAds = !svodServiceType && actionType != AppCMSActionType.PLAY_VIDEO_PAGE;
+                        boolean requestAds = !svodServiceType && actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
 
                         //Send Firebase Analytics when user is subscribed and user is Logged In
                         sendFirebaseLoginSubscribeSuccess();

@@ -626,9 +626,11 @@ public class CastHelper {
                         callBackRemoteListener.onApplicationDisconnected();
                 }
 
-                beaconBufferingThread.sendBeaconBuffering = false;
-                beaconBufferingThread.runBeaconBuffering = false;
-                beaconBufferingThread = null;
+                if (beaconBufferingThread != null) {
+                    beaconBufferingThread.sendBeaconBuffering = false;
+                    beaconBufferingThread.runBeaconBuffering = false;
+                    beaconBufferingThread = null;
+                }
             }
         };
     }

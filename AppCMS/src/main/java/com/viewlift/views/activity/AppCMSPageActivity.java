@@ -1096,88 +1096,96 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void createMenuNavItem() {
-        if (appCMSTabNavContainer.getChildCount() <= navPageIndex) {
-            navPageIndex = DEFAULT_NAV_PAGE_INDEX;
-        }
-        final NavBarItemView menuNavBarItemView =
-                (NavBarItemView) appCMSTabNavContainer.getChildAt(navPageIndex);
-        int highlightColor =
-                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
-        menuNavBarItemView.setImage(getString(R.string.app_cms_menu_icon_name));
-        menuNavBarItemView.setLabel(getString(R.string.app_cms_menu_label));
-        menuNavBarItemView.setHighlightColor(highlightColor);
-        menuNavBarItemView.setOnClickListener(v -> {
-            if (!appCMSBinderStack.isEmpty()) {
-                if (!appCMSPresenter.launchNavigationPage()) {
-                    Log.e(TAG, "Could not launch navigation page!");
-                } else {
-                    resumeInternalEvents = true;
-                    selectNavItem(menuNavBarItemView);
-                }
+        if (appCMSPresenter.getAppCMSMain() != null) {
+            if (appCMSTabNavContainer.getChildCount() <= navPageIndex) {
+                navPageIndex = DEFAULT_NAV_PAGE_INDEX;
             }
-        });
+            final NavBarItemView menuNavBarItemView =
+                    (NavBarItemView) appCMSTabNavContainer.getChildAt(navPageIndex);
+            int highlightColor =
+                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+            menuNavBarItemView.setImage(getString(R.string.app_cms_menu_icon_name));
+            menuNavBarItemView.setLabel(getString(R.string.app_cms_menu_label));
+            menuNavBarItemView.setHighlightColor(highlightColor);
+            menuNavBarItemView.setOnClickListener(v -> {
+                if (!appCMSBinderStack.isEmpty()) {
+                    if (!appCMSPresenter.launchNavigationPage()) {
+                        Log.e(TAG, "Could not launch navigation page!");
+                    } else {
+                        resumeInternalEvents = true;
+                        selectNavItem(menuNavBarItemView);
+                    }
+                }
+            });
+        }
     }
 
     private void createHomeNavItem(final NavigationPrimary homePageNav) {
-        if (homePageNav != null) {
-            if (appCMSTabNavContainer.getChildCount() <= firstPrimaryPageIndex) {
-                firstPrimaryPageIndex = DEFAULT_PRIMARY_PAGE_INDEX;
+        if (appCMSPresenter.getAppCMSMain() != null) {
+            if (homePageNav != null) {
+                if (appCMSTabNavContainer.getChildCount() <= firstPrimaryPageIndex) {
+                    firstPrimaryPageIndex = DEFAULT_PRIMARY_PAGE_INDEX;
+                }
+                final NavBarItemView homeNavBarItemView =
+                        (NavBarItemView) appCMSTabNavContainer.getChildAt(firstPrimaryPageIndex);
+                int highlightColor =
+                        Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+                homeNavBarItemView.setImage(getString(R.string.app_cms_home_icon_name));
+                homeNavBarItemView.setHighlightColor(highlightColor);
+                homeNavBarItemView.setLabel(homePageNav.getTitle());
+                homeNavBarItemView.setOnClickListener(v -> {
+                    appCMSPresenter.showMainFragmentView(true);
+                    selectNavItemAndLaunchPage(homeNavBarItemView,
+                            homePageNav.getPageId(),
+                            homePageNav.getTitle());
+                });
+                homeNavBarItemView.setTag(homePageNav.getPageId());
             }
-            final NavBarItemView homeNavBarItemView =
-                    (NavBarItemView) appCMSTabNavContainer.getChildAt(firstPrimaryPageIndex);
-            int highlightColor =
-                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
-            homeNavBarItemView.setImage(getString(R.string.app_cms_home_icon_name));
-            homeNavBarItemView.setHighlightColor(highlightColor);
-            homeNavBarItemView.setLabel(homePageNav.getTitle());
-            homeNavBarItemView.setOnClickListener(v -> {
-                appCMSPresenter.showMainFragmentView(true);
-                selectNavItemAndLaunchPage(homeNavBarItemView,
-                        homePageNav.getPageId(),
-                        homePageNav.getTitle());
-            });
-            homeNavBarItemView.setTag(homePageNav.getPageId());
         }
     }
 
     private void createMoviesNavItem(final NavigationPrimary moviePageNav) {
-        if (moviePageNav != null) {
-            if (appCMSTabNavContainer.getChildCount() <= secondPrimaryPageIndex) {
-                secondPrimaryPageIndex = DEFAULT_SECONDARY_PAGE_INDEX;
+        if (appCMSPresenter.getAppCMSMain() != null) {
+            if (moviePageNav != null) {
+                if (appCMSTabNavContainer.getChildCount() <= secondPrimaryPageIndex) {
+                    secondPrimaryPageIndex = DEFAULT_SECONDARY_PAGE_INDEX;
+                }
+                final NavBarItemView moviesNavBarItemView =
+                        (NavBarItemView) appCMSTabNavContainer.getChildAt(secondPrimaryPageIndex);
+                int highlightColor =
+                        Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+                moviesNavBarItemView.setImage(getString(R.string.app_cms_movies_icon_name));
+                moviesNavBarItemView.setHighlightColor(highlightColor);
+                moviesNavBarItemView.setLabel(moviePageNav.getTitle());
+                moviesNavBarItemView.setOnClickListener(v -> {
+                    appCMSPresenter.showMainFragmentView(true);
+                    selectNavItemAndLaunchPage(moviesNavBarItemView,
+                            moviePageNav.getPageId(),
+                            moviePageNav.getTitle());
+                });
+                moviesNavBarItemView.setTag(moviePageNav.getPageId());
             }
-            final NavBarItemView moviesNavBarItemView =
-                    (NavBarItemView) appCMSTabNavContainer.getChildAt(secondPrimaryPageIndex);
-            int highlightColor =
-                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
-            moviesNavBarItemView.setImage(getString(R.string.app_cms_movies_icon_name));
-            moviesNavBarItemView.setHighlightColor(highlightColor);
-            moviesNavBarItemView.setLabel(moviePageNav.getTitle());
-            moviesNavBarItemView.setOnClickListener(v -> {
-                appCMSPresenter.showMainFragmentView(true);
-                selectNavItemAndLaunchPage(moviesNavBarItemView,
-                        moviePageNav.getPageId(),
-                        moviePageNav.getTitle());
-            });
-            moviesNavBarItemView.setTag(moviePageNav.getPageId());
         }
     }
 
     private void createSearchNavItem(String pageId) {
-        if (appCMSTabNavContainer.getChildCount() <= searchPageIndex) {
-            searchPageIndex = DEFAULT_SEARCH_INDEX;
+        if (appCMSPresenter.getAppCMSMain() != null) {
+            if (appCMSTabNavContainer.getChildCount() <= searchPageIndex) {
+                searchPageIndex = DEFAULT_SEARCH_INDEX;
+            }
+            NavBarItemView searchNavBarItemView =
+                    (NavBarItemView) appCMSTabNavContainer.getChildAt(searchPageIndex);
+            int highlightColor =
+                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+            searchNavBarItemView.setImage(getString(R.string.app_cms_search_icon_name));
+            searchNavBarItemView.setHighlightColor(highlightColor);
+            searchNavBarItemView.setLabel(getString(R.string.app_cms_search_label));
+            searchNavBarItemView.setOnClickListener(v -> {
+                selectNavItem(searchNavBarItemView);
+                appCMSPresenter.launchSearchPage();
+            });
+            searchNavBarItemView.setTag(pageId);
         }
-        NavBarItemView searchNavBarItemView =
-                (NavBarItemView) appCMSTabNavContainer.getChildAt(searchPageIndex);
-        int highlightColor =
-                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
-        searchNavBarItemView.setImage(getString(R.string.app_cms_search_icon_name));
-        searchNavBarItemView.setHighlightColor(highlightColor);
-        searchNavBarItemView.setLabel(getString(R.string.app_cms_search_label));
-        searchNavBarItemView.setOnClickListener(v -> {
-            selectNavItem(searchNavBarItemView);
-            appCMSPresenter.launchSearchPage();
-        });
-        searchNavBarItemView.setTag(pageId);
     }
 
     private void selectNavItem(String pageId) {

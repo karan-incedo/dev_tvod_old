@@ -291,7 +291,7 @@
     <string name="download_file_prefix">file:///</string>
 
     <!-- cast receiver -->
-    <string name="chromecast_receiver_app_id">0974224E</string>
+    <string name="chromecast_receiver_app_id">9B761D16</string>
     <string name="app_cms_signup_invalid_email_and_password_message">Please enter a non-blank email and password.</string>
     <string name="app_cms_signup_invalid_email_message">Please enter a non-blank email.</string>
     <string name="app_cms_signup_blank_password_message">Please enter a non-blank password.</string>

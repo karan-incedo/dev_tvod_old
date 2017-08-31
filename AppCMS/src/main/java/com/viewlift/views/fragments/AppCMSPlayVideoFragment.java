@@ -997,24 +997,9 @@ public class AppCMSPlayVideoFragment extends Fragment
     private String getParentalRating() {
         String convertedRating = getContext().getString(R.string.age_rating_converted_default);
         if (!TextUtils.isEmpty(parentalRating) && !parentalRating.contentEquals(getContext().getString(R.string.age_rating_converted_default))) {
-            if (parentalRating.contains(getContext().getString(R.string.age_rating_y7))) {
-                convertedRating = getContext().getString(R.string.age_rating_converted_y7);
-            } else if (parentalRating.contains(getContext().getString(R.string.age_rating_y))) {
-                convertedRating = getContext().getString(R.string.age_rating_converted_y);
-            } else if (parentalRating.contains(getContext().getString(R.string.age_rating_pg))) {
-                convertedRating = getContext().getString(R.string.age_rating_converted_pg);
-            } else if (parentalRating.contains(getContext().getString(R.string.age_rating_g))) {
-                convertedRating = getContext().getString(R.string.age_rating_converted_g);
-            } else if (parentalRating.contains(getContext().getString(R.string.age_rating_fourteen))) {
-                convertedRating = getContext().getString(R.string.age_rating_converted_fourteen);
-            } else if (parentalRating.contains(getContext().getString(R.string.age_rating_converted_default))) {
-                convertedRating = getContext().getString(R.string.age_rating_converted_default);
-            } else if (parentalRating.contains(getContext().getString(R.string.age_raging_r))) {
-                convertedRating = getContext().getString(R.string.age_rating_converted_eighteen);
-            }
-            contentRatingTitleView.setText(getResources().getString(R.string.content_rating_description) + convertedRating);
+            contentRatingTitleView.setText(getResources().getString(R.string.content_rating_description) + parentalRating);
         }
-        return convertedRating;
+        return parentalRating;
     }
 
     private void startCountdown() {
