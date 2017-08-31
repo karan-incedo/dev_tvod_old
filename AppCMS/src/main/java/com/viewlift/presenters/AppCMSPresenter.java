@@ -4753,7 +4753,7 @@ public class AppCMSPresenter {
                 if (main == null) {
                     Log.e(TAG, "DialogType retrieving main.json");
                     if (!isNetworkConnected()) {//Fix for SVFA-1435 issue 2nd by manoj comment
-                        openDownloadScreenForNetworkError(true);
+                       openDownloadScreenForNetworkError(true);
                     } else {
                         launchErrorActivity(platformType);
                     }

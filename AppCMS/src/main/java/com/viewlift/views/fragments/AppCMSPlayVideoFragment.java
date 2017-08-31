@@ -55,6 +55,7 @@ import rx.functions.Action1;
  * Created by viewlift on 6/14/17.
  */
 
+@SuppressWarnings("deprecation")
 public class AppCMSPlayVideoFragment extends Fragment
         implements AdErrorEvent.AdErrorListener,
         AdEvent.AdEventListener,
@@ -86,6 +87,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private TextView videoPlayerTitleView;
     private TextView contentRatingHeaderView;
     private TextView contentRatingDiscretionView;
+    private TextView contentRatingTitleHeader;
     private TextView contentRatingTitleView;
     private TextView contentRatingBack;
     private View contentRatingBackUnderline;
@@ -969,31 +971,35 @@ public class AppCMSPlayVideoFragment extends Fragment
     private void initViewForCRW(View rootView) {
 
         contentRatingMainContainer =
-                (PercentRelativeLayout) rootView.findViewById(R.id.app_cms_content_rating_main_container);
+                rootView.findViewById(R.id.app_cms_content_rating_main_container);
 
         contentRatingAnimationContainer =
-                (PercentRelativeLayout) rootView.findViewById(R.id.app_cms_content_rating_animation_container);
+                rootView.findViewById(R.id.app_cms_content_rating_animation_container);
 
         contentRatingInfoContainer =
-                (LinearLayout) rootView.findViewById(R.id.app_cms_content_rating_info_container);
+                rootView.findViewById(R.id.app_cms_content_rating_info_container);
 
-        contentRatingHeaderView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_header_view);
+        contentRatingHeaderView = rootView.findViewById(R.id.app_cms_content_rating_header_view);
         setTypeFace(getContext(), contentRatingHeaderView, getString(R.string.helvaticaneu_bold));
 
-        contentRatingTitleView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_title_view);
+        contentRatingTitleHeader = rootView.findViewById(R.id.app_cms_content_rating_title_header);
+        setTypeFace(getContext(), contentRatingTitleHeader, getString(R.string.helvaticaneu_italic));
+
+        contentRatingTitleView = rootView.findViewById(R.id.app_cms_content_rating_title);
         setTypeFace(getContext(), contentRatingTitleView, getString(R.string.helvaticaneu_bold));
 
-        contentRatingDiscretionView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_viewer_discretion);
+        contentRatingDiscretionView = rootView.findViewById(R.id.app_cms_content_rating_viewer_discretion);
         setTypeFace(getContext(), contentRatingDiscretionView, getString(R.string.helvaticaneu_bold));
 
-        contentRatingBack = (TextView) rootView.findViewById(R.id.app_cms_content_rating_back);
+        contentRatingBack = rootView.findViewById(R.id.app_cms_content_rating_back);
         setTypeFace(getContext(), contentRatingBack, getContext().getString(R.string.helvaticaneu_bold));
 
         contentRatingBackUnderline = rootView.findViewById(R.id.app_cms_content_rating_back_underline);
 
-        progressBar = (ProgressBar) rootView.findViewById(R.id.app_cms_content_rating_progress_bar);
+        progressBar = rootView.findViewById(R.id.app_cms_content_rating_progress_bar);
 
         if (!TextUtils.isEmpty(fontColor)) {
+            contentRatingTitleHeader.setTextColor(Color.parseColor(fontColor));
             contentRatingTitleView.setTextColor(Color.parseColor(fontColor));
             contentRatingDiscretionView.setTextColor(Color.parseColor(fontColor));
             contentRatingBack.setTextColor(Color.parseColor(fontColor));
@@ -1009,13 +1015,17 @@ public class AppCMSPlayVideoFragment extends Fragment
                     .setColorFilter(highlightColor, PorterDuff.Mode.SRC_IN);
         }
 
+        if(!doesParentalRatingExist()) {
+            contentRatingTitleView.setText(parentalRating);
+        }
+
         contentRatingBack.setOnClickListener(v -> {
             getActivity().finish();
         });
     }
 
     private void createContentRatingView() {
-        if (!isTrailer && !getParentalRating().equalsIgnoreCase(getContext().getString(R.string.age_rating_converted_default))) {
+        if (!doesParentalRatingExist()) {
             animateView();
             startCountdown();
         } else {
@@ -1025,27 +1035,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
     }
 
-    private String getParentalRating() {
-        String convertedRating = getContext().getString(R.string.age_rating_converted_default);
-        if (!TextUtils.isEmpty(parentalRating) && !parentalRating.contentEquals(getContext().getString(R.string.age_rating_converted_default))) {
-            if (parentalRating.contains(getContext().getString(R.string.age_rating_y7))) {
-                convertedRating = getContext().getString(R.string.age_rating_converted_y7);
-            } else if (parentalRating.contains(getContext().getString(R.string.age_rating_y))) {
-                convertedRating = getContext().getString(R.string.age_rating_converted_y);
-            } else if (parentalRating.contains(getContext().getString(R.string.age_rating_pg))) {
-                convertedRating = getContext().getString(R.string.age_rating_converted_pg);
-            } else if (parentalRating.contains(getContext().getString(R.string.age_rating_g))) {
-                convertedRating = getContext().getString(R.string.age_rating_converted_g);
-            } else if (parentalRating.contains(getContext().getString(R.string.age_rating_fourteen))) {
-                convertedRating = getContext().getString(R.string.age_rating_converted_fourteen);
-            } else if (parentalRating.contains(getContext().getString(R.string.age_rating_converted_default))) {
-                convertedRating = getContext().getString(R.string.age_rating_converted_default);
-            } else if (parentalRating.contains(getContext().getString(R.string.age_raging_r))) {
-                convertedRating = getContext().getString(R.string.age_rating_converted_eighteen);
-            }
-            contentRatingTitleView.setText(getResources().getString(R.string.content_rating_description) + convertedRating);
-        }
-        return convertedRating;
+    private boolean doesParentalRatingExist() {
+       return (isTrailer || (parentalRating != null && (parentalRating.contentEquals(getResources().getString(R.string.age_rating_converted_default)))));
     }
 
     private void startCountdown() {
@@ -1114,7 +1105,9 @@ public class AppCMSPlayVideoFragment extends Fragment
         contentRatingInfoContainer.startAnimation(animFadeIn);
         contentRatingInfoContainer.setVisibility(View.VISIBLE);
 
+        contentRatingTitleHeader.startAnimation(animSequential);
         contentRatingTitleView.startAnimation(animSequential);
+        contentRatingTitleHeader.setVisibility(View.VISIBLE);
         contentRatingTitleView.setVisibility(View.VISIBLE);
 
     }
