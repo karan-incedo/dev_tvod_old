@@ -1472,7 +1472,7 @@ public class ViewCreator {
 //                        ((Switch) componentViewResult.componentView)
 //                                .setOnCheckedChangeListener((buttonView, isChecked) -> {
 //                                    if (isChecked) {
-//                                        if (appCMSPresenter.isRemoveableSDCardAvailable()) {
+//                                        if (appCMSPresenter.isRemovableSDCardAvailable()) {
 //                                            appCMSPresenter.setUserDownloadLocationPref(context, true);
 //                                        } else {
 //                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SD_CARD_NOT_AVAILABLE,
@@ -2571,7 +2571,7 @@ public class ViewCreator {
                     ((Switch) componentViewResult.componentView)
                             .setOnCheckedChangeListener((buttonView, isChecked) -> {
                                 if (isChecked) {
-                                    if (appCMSPresenter.isRemoveableSDCardAvailable()) {
+                                    if (appCMSPresenter.isRemovableSDCardAvailable()) {
                                         appCMSPresenter.setUserDownloadLocationPref(context, true);
                                     } else {
                                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SD_CARD_NOT_AVAILABLE,

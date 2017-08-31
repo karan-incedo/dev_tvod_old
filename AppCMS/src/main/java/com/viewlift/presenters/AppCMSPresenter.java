@@ -7637,12 +7637,9 @@ public class AppCMSPresenter {
         return platformType;
     }
 
-    public boolean isRemoveableSDCardAvailable() {
-        if (currentActivity != null) {
-            if (getStorageDirectories(currentActivity).length >= 1) {
-                return true;
-            }
-
+    public boolean isRemovableSDCardAvailable() {
+        if (currentActivity != null && getStorageDirectories(currentActivity).length >= 1) {
+            return true;
         }
         return false;
     }
@@ -7658,28 +7655,25 @@ public class AppCMSPresenter {
     }
 
     public String getSDCardPath(Context context) {
-        File baseSDCardDir = null;
+        File baseSDCardDir;
         String[] dirs = getStorageDirectories(context);
-
-
         baseSDCardDir = new File(dirs[0] + File.separator + appCMSMain.getDomainName());
-
 
         return baseSDCardDir.getAbsolutePath();
     }
 
     public String[] getStorageDirectories(Context context) {
-        HashSet<String> paths = new HashSet<String>();
+        HashSet<String> paths = new HashSet<>();
         String rawExternalStorage = System.getenv("EXTERNAL_STORAGE");
         String rawSecondaryStoragesStr = System.getenv("SECONDARY_STORAGE");
         String rawEmulatedStorageTarget = System.getenv("EMULATED_STORAGE_TARGET");
         if (TextUtils.isEmpty(rawEmulatedStorageTarget)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-                List<String> results = new ArrayList<String>();
+                List<String> results = new ArrayList<>();
                 File[] externalDirs = context.getExternalFilesDirs(null);
                 for (File file : externalDirs) {
-                    String path = null;
+                    String path;
                     try {
                         path = file.getPath().split("/Android")[0];
                     } catch (Exception e) {
@@ -7747,7 +7741,7 @@ public class AppCMSPresenter {
     public List<String> getSearchResultsFromSharePreference() {
         if (currentActivity == null)
             return null;
-        List<String> searchValues = new ArrayList<String>();
+        List<String> searchValues = new ArrayList<>();
         SharedPreferences sharePref = currentActivity.getSharedPreferences(
                 currentActivity.getString(R.string.app_cms_search_sharepref_key), Context.MODE_PRIVATE);
         int size = sharePref.getInt(currentActivity.getString(R.string.app_cms_search_value_size_key), 0);
