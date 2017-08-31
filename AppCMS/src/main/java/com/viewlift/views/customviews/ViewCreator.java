@@ -402,12 +402,14 @@ public class ViewCreator {
                                                 convertedRating = context.getString(R.string.age_rating_converted_y7);
                                             } else if (parentalRating.contains(context.getString(R.string.age_rating_y))) {
                                                 convertedRating = context.getString(R.string.age_rating_converted_y);
-                                            } else if (parentalRating.contains(context.getString(R.string.age_rating_g))) {
-                                                convertedRating = context.getString(R.string.age_rating_converted_g);
                                             } else if (parentalRating.contains(context.getString(R.string.age_rating_pg))) {
                                                 convertedRating = context.getString(R.string.age_rating_converted_pg);
+                                            } else if (parentalRating.contains(context.getString(R.string.age_rating_g))) {
+                                                convertedRating = context.getString(R.string.age_rating_converted_g);
                                             } else if (parentalRating.contains(context.getString(R.string.age_rating_fourteen))) {
                                                 convertedRating = context.getString(R.string.age_rating_converted_fourteen);
+                                            } else if (parentalRating.contains(context.getString(R.string.age_rating_converted_default))) {
+                                                convertedRating = context.getString(R.string.age_rating_converted_default);
                                             } else if (parentalRating.contains(context.getString(R.string.age_raging_r))) {
                                                 convertedRating = context.getString(R.string.age_rating_converted_eighteen);
                                             }
@@ -616,6 +618,8 @@ public class ViewCreator {
                                                             } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor)) ||
                                                                     paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly))) {
                                                                 ((TextView) settingsView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
+                                                            } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ccavenue_payment_processor))) {
+                                                                ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_ccavenue_payment_processor_friendly));
                                                             } else {
                                                                 ((TextView) settingsView).setText(context.getString(R.string.subscription_unknown_payment_processor_friendly));
                                                             }
@@ -2057,10 +2061,10 @@ public class ViewCreator {
                                     convertedRating = context.getString(R.string.age_rating_converted_y7);
                                 } else if (parentalRating.contains(context.getString(R.string.age_rating_y))) {
                                     convertedRating = context.getString(R.string.age_rating_converted_y);
-                                } else if (parentalRating.contains(context.getString(R.string.age_rating_g))) {
-                                    convertedRating = context.getString(R.string.age_rating_converted_g);
                                 } else if (parentalRating.contains(context.getString(R.string.age_rating_pg))) {
                                     convertedRating = context.getString(R.string.age_rating_converted_pg);
+                                } else if (parentalRating.contains(context.getString(R.string.age_rating_g))) {
+                                    convertedRating = context.getString(R.string.age_rating_converted_g);
                                 } else if (parentalRating.contains(context.getString(R.string.age_rating_fourteen))) {
                                     convertedRating = context.getString(R.string.age_rating_converted_fourteen);
                                 } else if (parentalRating.contains(context.getString(R.string.age_rating_converted_default))) {
@@ -2140,6 +2144,8 @@ public class ViewCreator {
                                 } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor)) ||
                                         paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly))) {
                                     ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
+                                } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ccavenue_payment_processor))) {
+                                    ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_ccavenue_payment_processor_friendly));
                                 }
                             } else {
                                 ((TextView) componentViewResult.componentView).setText("");

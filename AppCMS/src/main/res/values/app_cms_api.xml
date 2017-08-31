@@ -339,6 +339,8 @@
     <string name="subscription_ios_payment_processor_friendly">iTunes</string>
     <string name="subscription_android_payment_processor">Android</string>
     <string name="subscription_android_payment_processor_friendly">Google Play</string>
+    <string name="subscription_ccavenue_payment_processor">ccavenue</string>
+    <string name="subscription_ccavenue_payment_processor_friendly">CCAvenue</string>
     <string name="subscription_web_payment_processor_friendly">Stripe</string>
     <string name="subscription_no_payment_processor_friendly">None</string>
     <string name="subscription_unsubscribed_plan_value">Unsubscribed</string>
