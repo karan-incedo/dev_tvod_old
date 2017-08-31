@@ -216,7 +216,7 @@ public class WebViewActivity extends Activity {
 			params.append(ServiceUtility.addToPostParams("billing_name",getIntent().getStringExtra("authorizedUserName")));
 			params.append(ServiceUtility.addToPostParams("billing_email",getIntent().getStringExtra("email")));
 			params.append(ServiceUtility.addToPostParams("billing_country","India"));
-			params.append(ServiceUtility.addToPostParams("billing_tel",""));
+			params.append(ServiceUtility.addToPostParams("billing_tel",getIntent().getStringExtra("mobile_number")));
 
 			//params.append(ServiceUtility.addToPostParams(AvenuesParams.CANCEL_URL,cancelRedirectURL));
 			if (getIntent().getBooleanExtra("renewable",false)) {
