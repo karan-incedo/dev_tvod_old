@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.webkit.JavascriptInterface;
@@ -110,6 +111,35 @@ public class WebViewActivity extends Activity {
 			return null;
 		}
 
+		@SuppressWarnings("unused")
+		class MyJavaScriptInterface
+		{
+			@JavascriptInterface
+			public void processHTML(String html)
+			{
+				// process the html as needed by the app
+				String status = null;
+				if(html.indexOf("F")!=-1){
+					status = "Transaction Declined!";
+					displaySuccessPaymentDialog("Transaction Declined!", "Try again later!");
+				}else if(html.indexOf("S")!=-1){
+					try {
+					appCMSPresenter.finalizeSignupAfterCCAvenueSubscription(null) ;
+					updateStatus = new updateSubscriptionPlanAsyncTask() ;
+					updateStatus.execute();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				}else if(html.indexOf("Aborted")!=-1){
+					status = "Transaction Cancelled!";
+					displaySuccessPaymentDialog("Transaction Cancelled!", "Try again later!");
+				}else{
+					status = "Status Not Known!";
+					displaySuccessPaymentDialog("Something went wrong!", "Try again later!");
+				}
+			}
+		}
+
 		@Override
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
@@ -120,32 +150,7 @@ public class WebViewActivity extends Activity {
 					dialog = null;
 				}
 			} catch (Exception ex) {
-				Log.e(TAG, ex.getMessage());
 				dialog = null;
-			}
-			
-			@SuppressWarnings("unused")
-			class MyJavaScriptInterface
-			{
-				@JavascriptInterface
-			    public void processHTML(String html)
-			    {
-			        // process the html as needed by the app
-			    	String status = null;
-			    	if(html.indexOf("Failure")!=-1){
-			    		status = "Transaction Declined!";
-			    	}else if(html.indexOf("Success")!=-1){
-			    		status = "Transaction Successful!";
-			    	}else if(html.indexOf("Aborted")!=-1){
-			    		status = "Transaction Cancelled!";
-			    	}else{
-			    		status = "Status Not Known!";
-			    	}
-			    	//Toast.makeText(getApplicationContext(), status, Toast.LENGTH_SHORT).show();
-			    	Intent intent = new Intent(getApplicationContext(), StatusActivity.class);
-					intent.putExtra("transStatus", status);
-					startActivity(intent);
-			    }
 			}
 			
 			final WebView webview = (WebView) findViewById(R.id.webview);
@@ -161,12 +166,19 @@ public class WebViewActivity extends Activity {
 					} else {
 						backPressFlag = true ;
 					}
-					Log.v("url",url) ;
 				}
 
 				@Override
 	    	    public void onPageFinished(WebView view, String url) {
-	    	        super.onPageFinished(webview, url);
+					super.onPageFinished(webview, url);
+					final Handler handler = new Handler();
+					handler.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							//Do something after 100ms
+							webview.scrollTo(0,0);
+						}
+					}, 600);
 	    	        if(url.indexOf("/ccavResponseHandler.jsp")!=-1){
 	    	        	webview.loadUrl("javascript:window.HTMLOUT.processHTML('<head>'+document.getElementsByTagName('html')[0].innerHTML+'</head>');");
 						//webview.loadUrl("https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction");
@@ -174,13 +186,9 @@ public class WebViewActivity extends Activity {
                     //https://stgsecure.ccavenue.com/servlet/processTxn
 					///cancelRedirectURL = "https://stgsecure.ccavenue.com/servlet/processTxn" ;
 	    	        if (url.equalsIgnoreCase(cancelRedirectURL)) {
-						webview.stopLoading();
-						try {
-							 updateStatus = new updateSubscriptionPlanAsyncTask() ;
-							updateStatus.execute();
-						} catch (Exception ex) {
-							Log.e(TAG, ex.getMessage());
-						}
+	    	        	/* This call inject JavaScript into the page which just finished loading. */
+						webview.loadUrl("javascript:window.HTMLOUT.processHTML('<head>'+document.getElementsByTagName('html')[0].innerHTML+'</head>');");
+						//webview.stopLoading();
 					}
 	    	    }
 	    	    @Override
@@ -208,7 +216,7 @@ public class WebViewActivity extends Activity {
 			params.append(ServiceUtility.addToPostParams("merchant_param2",getIntent().getStringExtra(getString(R.string.app_cms_user_id))));
 			params.append(ServiceUtility.addToPostParams("merchant_param3",getIntent().getStringExtra(getString(R.string.app_cms_plan_id))));
 			params.append(ServiceUtility.addToPostParams("merchant_param4","android"));
-
+			//params.append(ServiceUtility.addToPostParams(AvenuesParams.BILLING_EMAIL,"email")) ;
 			try {
 				params.append(ServiceUtility.addToPostParams(AvenuesParams.ENC_VAL,URLEncoder.encode(encVal,"UTF-8")));
 			} catch (Exception ex) {
@@ -316,10 +324,10 @@ public class WebViewActivity extends Activity {
 		protected void onPreExecute() {
 			super.onPreExecute();
 			// Showing progress dialog
-			progressDialog = new ProgressDialog(WebViewActivity.this);
-			progressDialog.setMessage("Please wait...");
-			progressDialog.setCancelable(false);
-			progressDialog.show();
+//			progressDialog = new ProgressDialog(WebViewActivity.this);
+//			progressDialog.setMessage("Updating Subscription...");
+//			progressDialog.setCancelable(false);
+//			progressDialog.show();
 		}
 
 		@Override
@@ -447,60 +455,26 @@ public class WebViewActivity extends Activity {
 		@Override
 		protected void onPostExecute(String result) {
 			super.onPostExecute(result);
-			// Dismiss the progress dialog
-
-            if (result==null) {
-				displaySuccessPaymentDialog("Payment failed!", "Try again later!");
-			} else {
-				try {
-					JSONObject jsonObj = new JSONObject(result);
-					if (jsonObj.getString("subscriptionStatus").equalsIgnoreCase("COMPLETED")) {
-						appCMSPresenter.finalizeSignupAfterCCAvenueSubscription(null) ;
-						displaySuccessPaymentDialog("Payment Done!", "Start Watching");
-					} else {
-						displaySuccessPaymentDialog("Payment failed!", "Try again later!");
-					}
-				} catch (JSONException e) {
-					Log.e(TAG, e.getMessage());
-				}
-			}
-		}
-		private void displaySuccessPaymentDialog (String message, String buttonTitle) {
-			AlertDialog.Builder builder1 = new AlertDialog.Builder(WebViewActivity.this);
-			//builder1.setMessage("Payment Done!");
-			builder1.setMessage(message);
-			builder1.setCancelable(false);
-
-			builder1.setPositiveButton(
-					buttonTitle,
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							if (message.equalsIgnoreCase("Payment failed!")) {
-								dialog.cancel();
-								progressDialog.show();
-								onBackPressed();
-							} else {
-								dialog.cancel();
-								progressDialog.show();
-								progressDialog.setMessage("Updating Subscription...");
-								//appCMSPresenter.navigateToHomePage();
-							}
-						}
-					});
-
-			AlertDialog alert11 = builder1.create();
-			alert11.show();
-			try {
-				if (progressDialog.isShowing()) {
-					progressDialog.hide();
-					//progressDialog.dismiss();
-					//progressDialog = null ;
-				}
-			} catch (Exception ex) {
-				Log.e(TAG, ex.getMessage());
-			}
 		}
 	}
+
+	private void displaySuccessPaymentDialog (String message, String buttonTitle) {
+		AlertDialog.Builder builder1 = new AlertDialog.Builder(WebViewActivity.this);
+		builder1.setMessage(message);
+		builder1.setCancelable(false);
+		builder1.setPositiveButton(
+				buttonTitle,
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+							dialog.cancel();
+							onBackPressed();
+					}
+				});
+
+		AlertDialog alert11 = builder1.create();
+		alert11.show();
+	}
+
 	@Override
 	protected void onDestroy() {
 		if (readerViewAyncTask!=null) {
@@ -509,14 +483,6 @@ public class WebViewActivity extends Activity {
 				readerViewAyncTask = null ;
 			}
 		}
-
-		if (updateStatus!=null) {
-			if (updateStatus.getStatus() == AsyncTask.Status.RUNNING) {
-				updateStatus.cancel(true) ;
-				updateStatus = null ;
-			}
-		}
-
 		if (progressDialog!=null) {
 			try {
 				if (progressDialog.isShowing()) {
