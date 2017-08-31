@@ -3706,13 +3706,16 @@ public class AppCMSPresenter {
                         }
                     });
             result = true;
-        } else if (currentActivity != null &&
+        } else if (isNetworkConnected() &&
+                currentActivity != null &&
                 !TextUtils.isEmpty(url) &&
                 url.contains(currentActivity.getString(
                         R.string.app_cms_page_navigation_contact_us_key))) {
             if (Apptentive.canShowMessageCenter()) {
                 Apptentive.showMessageCenter(currentActivity);
             }
+        } else if (!isNetworkConnected()) {
+            showDialog(DialogType.NETWORK, null, false, null);
         } else {
             Log.d(TAG, "Resetting page navigation to previous tab");
             setNavItemToCurrentAction(currentActivity);
