@@ -286,9 +286,10 @@ public class ContentDatum {
         this.planDetails = planDetails;
     }
 
-    public AppCMSPageAPI convertToAppCMSPageAPI() {
+    public AppCMSPageAPI convertToAppCMSPageAPI(String moduleType) {
         AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
         Module module = new Module();
+        module.setModuleType(moduleType);
         List<ContentDatum> data = new ArrayList<>();
         data.add(this);
         module.setContentData(data);

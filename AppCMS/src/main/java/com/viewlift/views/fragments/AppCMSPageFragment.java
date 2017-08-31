@@ -41,6 +41,7 @@ public class AppCMSPageFragment extends Fragment {
     private PageView pageView;
     private String videoPageName = "Video Page";
     private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
+
     public interface OnPageCreation {
         void onSuccess(AppCMSBinder appCMSBinder);
 
@@ -138,7 +139,7 @@ public class AppCMSPageFragment extends Fragment {
             return;
         Bundle bundle = new Bundle();
         if (!appCMSVideoPageBinder.isUserLoggedIn()) {
-            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, appCMSVideoPageBinder.getScreenName());
+            bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, appCMSVideoPageBinder.getScreenName());
         } else {
             if (!TextUtils.isEmpty(appCMSVideoPageBinder.getScreenName()) && appCMSVideoPageBinder.getScreenName().matches(videoPageName))
                 bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, appCMSVideoPageBinder.getScreenName() + "-" + appCMSVideoPageBinder.getPageName());
@@ -224,6 +225,8 @@ public class AppCMSPageFragment extends Fragment {
 
     public void refreshView(AppCMSBinder appCMSBinder) {
         this.appCMSBinder = appCMSBinder;
+        //Send Firebase Events when refresh of page
+        sendFirebaseAnalyticsEvents(appCMSBinder);
         ViewCreator viewCreator = getViewCreator();
         List<String> modulesToIgnore = getModulesToIgnore();
         if (viewCreator != null && modulesToIgnore != null) {
