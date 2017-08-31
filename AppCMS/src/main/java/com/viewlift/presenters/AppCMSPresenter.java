@@ -5610,6 +5610,7 @@ public class AppCMSPresenter {
                 true,
                 false);*/
             if (entitlementPendingVideoData != null) {
+                isVideoPlayerStarted = false;
                 navigateToHomeToRefresh = false;
                 sendRefreshPageAction();
                 sendCloseOthersAction(null, true);
