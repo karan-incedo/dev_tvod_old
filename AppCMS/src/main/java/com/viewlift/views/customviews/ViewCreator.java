@@ -642,11 +642,13 @@ public class ViewCreator {
                                     } else if (componentType == AppCMSUIKeyType.PAGE_TOGGLE_BUTTON_KEY) {
                                         switch (componentType) {
                                             case PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY:
-                                                ((Switch) view).setChecked(appCMSPresenter.getAutoplayEnabledUserPref(context));
+                                                ((Switch) view).setChecked(appCMSPresenter
+                                                        .getAutoplayEnabledUserPref(context));
                                                 break;
 
-                                            case PAGE_CLOSED_CAPTIONS_TOGGLE_BUTTON_KEY:
-                                                ((Switch) view).setChecked(appCMSPresenter.getClosedCaptionPreference(context));
+                                            case PAGE_SD_CARD_FOR_DOWNLOADS_TOGGLE_BUTTON_KEY:
+                                                ((Switch) view).setChecked(appCMSPresenter
+                                                        .getUserDownloadLocationPref(context));
                                                 break;
 
                                             default:
@@ -1460,28 +1462,6 @@ public class ViewCreator {
                 }
 
                 switch (componentKey) {
-                    case PAGE_BUTTON_SWITCH_KEY:
-                        if (appCMSPresenter.isPreferedStorageLocationSDCard(context)) {
-                            ((Switch) componentViewResult.componentView).setChecked(true);
-                        } else {
-                            ((Switch) componentViewResult.componentView).setChecked(false);
-                        }
-
-                        ((Switch) componentViewResult.componentView).setOnCheckedChangeListener((buttonView, isChecked) -> {
-                            if (isChecked) {
-                                if (appCMSPresenter.isRemoveableSDCardAvailable()) {
-                                    appCMSPresenter.setPreferedStorageLocationSDCard(context, true);
-                                } else {
-                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SD_CARD_NOT_AVAILABLE, null, false, null);
-                                    buttonView.setChecked(false);
-                                }
-                            } else {
-                                appCMSPresenter.setPreferedStorageLocationSDCard(context, false);
-                            }
-
-                        });
-                        break;
-
                     case PAGE_SETTINGS_EDIT_PROFILE_KEY:
                     case PAGE_SETTINGS_CHANGE_PASSWORD_KEY:
                         if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken(context))) {
@@ -2560,12 +2540,25 @@ public class ViewCreator {
                                     -> appCMSPresenter.setAutoplayEnabledUserPref(context, isChecked));
                 }
 
-                if (componentKey == AppCMSUIKeyType.PAGE_CLOSED_CAPTIONS_TOGGLE_BUTTON_KEY) {
+                if (componentKey == AppCMSUIKeyType.PAGE_SD_CARD_FOR_DOWNLOADS_TOGGLE_BUTTON_KEY) {
                     ((Switch) componentViewResult.componentView)
-                            .setChecked(appCMSPresenter.getClosedCaptionPreference(context));
+                            .setChecked(appCMSPresenter.getUserDownloadLocationPref(context));
                     ((Switch) componentViewResult.componentView)
-                            .setOnCheckedChangeListener((buttonView, isChecked)
-                                    -> appCMSPresenter.setClosedCaptionPreference(context, isChecked));
+                            .setOnCheckedChangeListener((buttonView, isChecked) -> {
+                                if (isChecked) {
+                                    if (appCMSPresenter.isRemovableSDCardAvailable()) {
+                                        appCMSPresenter.setUserDownloadLocationPref(context, true);
+                                    } else {
+                                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SD_CARD_NOT_AVAILABLE,
+                                                null,
+                                                false,
+                                                null);
+                                        buttonView.setChecked(false);
+                                    }
+                                } else {
+                                    appCMSPresenter.setUserDownloadLocationPref(context, false);
+                                }
+                            });
                 }
                 break;
 
