@@ -561,8 +561,8 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         Log.e(TAG, "Ad DialogType: " + adErrorEvent.getError().getMessage());
-        createContentRatingView();
-        //videoPlayerView.resumePlayer();
+//        createContentRatingView();
+        videoPlayerView.resumePlayer();
     }
 
     @Override
