@@ -5610,6 +5610,7 @@ public class AppCMSPresenter {
                 true,
                 false);*/
             if (entitlementPendingVideoData != null) {
+                isVideoPlayerStarted = false;
                 navigateToHomeToRefresh = false;
                 sendRefreshPageAction();
                 sendCloseOthersAction(null, true);
@@ -5725,6 +5726,8 @@ public class AppCMSPresenter {
                             setActiveSubscriptionCurrency(currentActivity, currencyOfPlanToPurchase);
                             setActiveSubscriptionPlanName(currentActivity, planToPurchaseName);
                             setActiveSubscriptionPrice(currentActivity, String.valueOf(planToPurchasePrice));
+                            setActiveSubscriptionProcessor(currentActivity,
+                                    currentActivity.getString(R.string.subscription_android_payment_processor_friendly));
                             skuToPurchase = null;
                             planToPurchase = null;
                             currencyOfPlanToPurchase = null;
