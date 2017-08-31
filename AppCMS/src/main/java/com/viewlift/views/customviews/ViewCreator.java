@@ -493,23 +493,19 @@ public class ViewCreator {
                                     }
                                 } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_EDIT_PROFILE_KEY) {
                                     if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken(context))) {
-                                        componentViewResult.componentView.setVisibility(View.GONE);
-                                        componentViewResult.shouldHideComponent = true;
+                                        view.setVisibility(View.GONE);
                                     }
 
                                     if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken(context))) {
-                                        componentViewResult.componentView.setVisibility(View.GONE);
-                                        componentViewResult.shouldHideComponent = true;
+                                        view.setVisibility(View.GONE);
                                     }
                                 } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CHANGE_PASSWORD_KEY) {
                                     if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken(context))) {
-                                        componentViewResult.componentView.setVisibility(View.GONE);
-                                        componentViewResult.shouldHideComponent = true;
+                                        view.setVisibility(View.GONE);
                                     }
 
                                     if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken(context))) {
-                                        componentViewResult.componentView.setVisibility(View.GONE);
-                                        componentViewResult.shouldHideComponent = true;
+                                        view.setVisibility(View.GONE);
                                     }
                                 } else {
                                     if (componentType == AppCMSUIKeyType.PAGE_CASTVIEW_VIEW_KEY) {
@@ -619,7 +615,7 @@ public class ViewCreator {
                                                                     paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly))) {
                                                                 ((TextView) settingsView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
                                                             } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ccavenue_payment_processor))) {
-                                                                ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_ccavenue_payment_processor_friendly));
+                                                                ((TextView) settingsView).setText(context.getString(R.string.subscription_ccavenue_payment_processor_friendly));
                                                             } else {
                                                                 ((TextView) settingsView).setText(context.getString(R.string.subscription_unknown_payment_processor_friendly));
                                                             }
@@ -648,11 +644,11 @@ public class ViewCreator {
                                     } else if (componentType == AppCMSUIKeyType.PAGE_TOGGLE_BUTTON_KEY) {
                                         switch (componentType) {
                                             case PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY:
-                                                ((Switch) componentViewResult.componentView).setChecked(appCMSPresenter.getAutoplayEnabledUserPref(context));
+                                                ((Switch) view).setChecked(appCMSPresenter.getAutoplayEnabledUserPref(context));
                                                 break;
 
                                             case PAGE_CLOSED_CAPTIONS_TOGGLE_BUTTON_KEY:
-                                                ((Switch) componentViewResult.componentView).setChecked(appCMSPresenter.getClosedCaptionPreference(context));
+                                                ((Switch) view).setChecked(appCMSPresenter.getClosedCaptionPreference(context));
                                                 break;
 
                                             default:
