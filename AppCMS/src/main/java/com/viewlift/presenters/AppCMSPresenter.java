@@ -49,6 +49,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -5595,7 +5597,7 @@ public class AppCMSPresenter {
         setActiveSubscriptionCurrency(currentActivity, currencyOfPlanToPurchase);
         setActiveSubscriptionPlanName(currentActivity, planToPurchaseName);
         setActiveSubscriptionPrice(currentActivity, String.valueOf(planToPurchasePrice));
-        setActiveSubscriptionProcessor(currentActivity, "CCAvenue");
+        setActiveSubscriptionProcessor(currentActivity, currentActivity.getString(R.string.subscription_ccavenue_payment_processor_friendly));
         refreshSubscriptionData(null);
 
 //        try {
@@ -5900,6 +5902,9 @@ public class AppCMSPresenter {
                                                                                 } else if (paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_web_payment_processor_friendly))) {
                                                                                     setActiveSubscriptionProcessor(currentActivity,
                                                                                             currentActivity.getString(R.string.subscription_web_payment_processor_friendly));
+                                                                                } else if (paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ccavenue_payment_processor))) {
+                                                                                    setActiveSubscriptionProcessor(currentActivity,
+                                                                                            currentActivity.getString(R.string.subscription_ccavenue_payment_processor_friendly));
                                                                                 }
                                                                             }
 
@@ -6025,6 +6030,9 @@ public class AppCMSPresenter {
                                                                 } else if (paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_web_payment_processor_friendly))) {
                                                                     setActiveSubscriptionProcessor(currentActivity,
                                                                             currentActivity.getString(R.string.subscription_web_payment_processor_friendly));
+                                                                } else if (paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ccavenue_payment_processor))) {
+                                                                    setActiveSubscriptionProcessor(currentActivity,
+                                                                            currentActivity.getString(R.string.subscription_ccavenue_payment_processor_friendly));
                                                                 }
                                                             }
 
@@ -6144,6 +6152,7 @@ public class AppCMSPresenter {
                 .email(email)
                 .password(password)
                 .build();
+
         new PostAppCMSLoginRequestAsyncTask(appCMSSignInCall,
                 signInResponse -> {
 
