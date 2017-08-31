@@ -574,7 +574,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
                 dataSource = baseDataSource;
             }
 
-            Uri updatedUri = Uri.parse(dataSpec.uri.toString().replaceAll(" ", "%20"));
+            Uri updatedUri = Uri.parse(dataSpec.uri.toString().replaceAll(" ", "_"));
             dataSpec = new DataSpec(updatedUri,
                     dataSpec.absoluteStreamPosition,
                     dataSpec.length,
