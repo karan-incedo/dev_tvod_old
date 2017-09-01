@@ -53,7 +53,6 @@ public class AppCMSSubscriptionPlanCall {
             throws IOException {
 
         Log.d(TAG, "URL: " + url);
-        Log.d("authToken",authToken) ;
         authHeaders.clear();
         if (!TextUtils.isEmpty(apiKey) && !TextUtils.isEmpty(authToken)) {
             authHeaders.put("Authorization", authToken);
