@@ -189,6 +189,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.SoftReference;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -460,6 +462,7 @@ public class AppCMSPresenter {
     private boolean requestDownloadQualityScreen;
     private DownloadQueueThread downloadQueueThread;
     private boolean isVideoPlayerStarted;
+    private ReferenceQueue<Object> referenceQueue;
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -502,7 +505,9 @@ public class AppCMSPresenter {
                            Map<String, String> pageNameToActionMap,
                            Map<String, AppCMSPageUI> actionToPageMap,
                            Map<String, AppCMSPageAPI> actionToPageAPIMap,
-                           Map<String, AppCMSActionType> actionToActionTypeMap) {
+                           Map<String, AppCMSActionType> actionToActionTypeMap,
+
+                           ReferenceQueue<Object> referenceQueue) {
         this.gson = gson;
 
         this.appCMSMainUICall = appCMSMainUICall;
@@ -558,6 +563,8 @@ public class AppCMSPresenter {
         this.beaconMessageThread = new Thread(this.beaconMessageRunnable);
 
         this.launchType = LaunchType.LOGIN_AND_SIGNUP;
+
+        this.referenceQueue = referenceQueue;
     }
 
     public LruCache<String, PageView> getPageViewLruCache() {
@@ -1925,71 +1932,75 @@ public class AppCMSPresenter {
      */
     public void showDownloadQualityScreen(final ContentDatum contentDatum,
                                           final Action1<UserVideoDownloadStatus> resultAction1) {
-        downloadContentDatumAfterPermissionGranted = null;
-        downloadResultActionAfterPermissionGranted = null;
+        try {
+            downloadContentDatumAfterPermissionGranted = null;
+            downloadResultActionAfterPermissionGranted = null;
 
-        //Send Firebase Analytics when user is subscribed and user is Logged In
-        sendFirebaseLoginSubscribeSuccess();
-        if (isPreferedStorageLocationSDCard(currentActivity) &&
-                !hasWriteExternalStoragePermission()) {
-            requestDownloadQualityScreen = true;
-            askForPermissionToDownloadToExternalStorage(true,
-                    contentDatum,
-                    resultAction1);
-        } else {
-            AppCMSPageAPI apiData = new AppCMSPageAPI();
-            List<Module> moduleList = new ArrayList<>();
-            Module module = new Module();
+            //Send Firebase Analytics when user is subscribed and user is Logged In
+            sendFirebaseLoginSubscribeSuccess();
+            if (isPreferedStorageLocationSDCard(currentActivity) &&
+                    !hasWriteExternalStoragePermission()) {
+                requestDownloadQualityScreen = true;
+                askForPermissionToDownloadToExternalStorage(true,
+                        contentDatum,
+                        resultAction1);
+            } else {
+                AppCMSPageAPI apiData = new AppCMSPageAPI();
+                List<Module> moduleList = new ArrayList<>();
+                Module module = new Module();
 
-            getUserDownloadQualityPref(currentActivity);
+                getUserDownloadQualityPref(currentActivity);
 
-            List<ContentDatum> contentData = new ArrayList<>();
-            ContentDatum contentDatumLocal = new ContentDatum();
-            StreamingInfo streamingInfo = new StreamingInfo();
-            VideoAssets videoAssets = new VideoAssets();
-            List<Mpeg> mpegs = new ArrayList<>();
+                List<ContentDatum> contentData = new ArrayList<>();
+                ContentDatum contentDatumLocal = new ContentDatum();
+                StreamingInfo streamingInfo = new StreamingInfo();
+                VideoAssets videoAssets = new VideoAssets();
+                List<Mpeg> mpegs = new ArrayList<>();
 
-            String[] renditionValueArray = {"1080p", "720p", "360p"};
-            for (String renditionValue : renditionValueArray) {
-                Mpeg mpeg = new Mpeg();
-                mpeg.setRenditionValue(renditionValue);
-                mpegs.add(mpeg);
+                String[] renditionValueArray = {"1080p", "720p", "360p"};
+                for (String renditionValue : renditionValueArray) {
+                    Mpeg mpeg = new Mpeg();
+                    mpeg.setRenditionValue(renditionValue);
+                    mpegs.add(mpeg);
+                }
+
+                videoAssets.setMpeg(mpegs);
+                videoAssets.setType("videoAssets");
+
+                streamingInfo.setVideoAssets(videoAssets);
+                contentDatumLocal.setStreamingInfo(streamingInfo);
+
+                contentData.add(contentDatumLocal);
+                module.setContentData(contentData);
+
+                moduleList.add(module);
+                apiData.setModules(moduleList);
+
+                launchDownloadQualityActivity(currentActivity,
+                        navigationPages.get(downloadQualityPage.getPageId()),
+                        apiData,
+                        downloadQualityPage.getPageId(),
+                        downloadQualityPage.getPageName(),
+                        pageIdToPageNameMap.get(downloadQualityPage.getPageId()),
+                        loadFromFile,
+                        false,
+                        true,
+                        false,
+                        false,
+                        getAppCMSDownloadQualityBinder(currentActivity,
+                                navigationPages.get(downloadQualityPage.getPageId()),
+                                apiData,
+                                downloadQualityPage.getPageId(),
+                                downloadQualityPage.getPageName(),
+                                downloadQualityPage.getPageName(),
+                                loadFromFile,
+                                true,
+                                true,
+                                false,
+                                contentDatum, resultAction1));
             }
-
-            videoAssets.setMpeg(mpegs);
-            videoAssets.setType("videoAssets");
-
-            streamingInfo.setVideoAssets(videoAssets);
-            contentDatumLocal.setStreamingInfo(streamingInfo);
-
-            contentData.add(contentDatumLocal);
-            module.setContentData(contentData);
-
-            moduleList.add(module);
-            apiData.setModules(moduleList);
-
-            launchDownloadQualityActivity(currentActivity,
-                    navigationPages.get(downloadQualityPage.getPageId()),
-                    apiData,
-                    downloadQualityPage.getPageId(),
-                    downloadQualityPage.getPageName(),
-                    pageIdToPageNameMap.get(downloadQualityPage.getPageId()),
-                    loadFromFile,
-                    false,
-                    true,
-                    false,
-                    false,
-                    getAppCMSDownloadQualityBinder(currentActivity,
-                            navigationPages.get(downloadQualityPage.getPageId()),
-                            apiData,
-                            downloadQualityPage.getPageId(),
-                            downloadQualityPage.getPageName(),
-                            downloadQualityPage.getPageName(),
-                            loadFromFile,
-                            true,
-                            true,
-                            false,
-                            contentDatum, resultAction1));
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to display Download Quality Screen");
         }
     }
 
@@ -3823,6 +3834,7 @@ public class AppCMSPresenter {
                             new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
                         } catch (Exception e) {
                             Log.e(TAG, "Error retrieving page ID content: " + e.getMessage());
+                            showDialog(DialogType.NETWORK, null, false, null);
                         }
                     });
         } else {
@@ -4758,6 +4770,7 @@ public class AppCMSPresenter {
                     launchErrorActivity(platformType);
                 } else {
                     appCMSMain = main;
+                    new SoftReference<Object>(appCMSMain, referenceQueue);
                     String version = main.getVersion();
                     String oldVersion = main.getOldVersion();
                     Log.d(TAG, "Version: " + version);
@@ -4768,6 +4781,7 @@ public class AppCMSPresenter {
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
+                launchErrorActivity(platformType);
             }
         }).execute(params);
     }
@@ -6611,24 +6625,29 @@ public class AppCMSPresenter {
                                     boolean sendCloseAction,
                                     Uri searchQuery,
                                     ExtraScreenType extraScreenType) {
-        Bundle args = getPageActivityBundle(activity,
-                appCMSPageUI,
-                appCMSPageAPI,
-                pageId,
-                pageName,
-                pagePath,
-                screenName,
-                loadFromFile,
-                appbarPresent,
-                fullscreenEnabled,
-                navbarPresent,
-                sendCloseAction,
-                searchQuery,
-                extraScreenType);
-        Intent appCMSIntent = new Intent(activity, AppCMSPageActivity.class);
-        appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
-        appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        activity.startActivity(appCMSIntent);
+        try {
+            Bundle args = getPageActivityBundle(activity,
+                    appCMSPageUI,
+                    appCMSPageAPI,
+                    pageId,
+                    pageName,
+                    pagePath,
+                    screenName,
+                    loadFromFile,
+                    appbarPresent,
+                    fullscreenEnabled,
+                    navbarPresent,
+                    sendCloseAction,
+                    searchQuery,
+                    extraScreenType);
+            Intent appCMSIntent = new Intent(activity, AppCMSPageActivity.class);
+            appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
+            appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            activity.startActivity(appCMSIntent);
+        } catch (Exception e) {
+            Log.e(TAG, "Error launching page activity: " + pageName);
+            showDialog(DialogType.NETWORK, null, false, null);
+        }
     }
 
     private void launchAutoplayActivity(Activity activity,
@@ -6726,55 +6745,91 @@ public class AppCMSPresenter {
                             }
                         } catch (Exception e) {
                             Log.e(TAG, "Error retrieving AppCMS Site Info: " + e.getMessage());
+                            launchErrorActivity(platformType);
                         }
                     }).execute(url);
         }
     }
 
     private void getAppCMSAndroid(int tryCount) {
-        if (!isUserLoggedIn(currentActivity) && tryCount == 0) {
-            signinAnonymousUser(tryCount, null, PlatformType.ANDROID);
-        } else if (isUserLoggedIn(currentActivity) && shouldRefreshAuthToken() && tryCount == 0) {
-            refreshIdentity(getRefreshToken(currentActivity),
-                    () -> {
-                        try {
-                            getAppCMSAndroid(tryCount + 1);
-                        } catch (Exception e) {
-                            Log.e(TAG, "Error refreshing identity while attempting to retrieving AppCMS Android data: ");
-                        }
-                    });
-        } else {
-            GetAppCMSAndroidUIAsyncTask.Params params =
-                    new GetAppCMSAndroidUIAsyncTask.Params.Builder()
-                            .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                    appCMSMain.getAndroid(),
-                                    appCMSMain.getTimestamp()))
-                            .loadFromFile(loadFromFile)
-                            .build();
-            Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
-            new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
-                try {
-                    if (appCMSAndroidUI == null ||
-                            appCMSAndroidUI.getMetaPages() == null ||
-                            appCMSAndroidUI.getMetaPages().isEmpty()) {
-                        Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
-                        launchErrorActivity(platformType);
-                    } else {
-                        initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
-                        navigation = appCMSAndroidUI.getNavigation();
-                        queueMetaPages(appCMSAndroidUI.getMetaPages());
-                        Log.d(TAG, "Processing meta pages queue");
-                        processMetaPagesQueue(loadFromFile,
-                                () -> {
-                                    if (appCMSMain.getServiceType()
-                                            .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
-                                        refreshSubscriptionData(() -> {
+        try {
+            if (!isUserLoggedIn(currentActivity) && tryCount == 0) {
+                signinAnonymousUser(tryCount, null, PlatformType.ANDROID);
+            } else if (isUserLoggedIn(currentActivity) && shouldRefreshAuthToken() && tryCount == 0) {
+                refreshIdentity(getRefreshToken(currentActivity),
+                        () -> {
+                            try {
+                                getAppCMSAndroid(tryCount + 1);
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error refreshing identity while attempting to retrieving AppCMS Android data: ");
+                                launchErrorActivity(platformType);
+                            }
+                        });
+            } else {
+                GetAppCMSAndroidUIAsyncTask.Params params =
+                        new GetAppCMSAndroidUIAsyncTask.Params.Builder()
+                                .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
+                                        appCMSMain.getAndroid(),
+                                        appCMSMain.getTimestamp()))
+                                .loadFromFile(loadFromFile)
+                                .build();
+                Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
+                new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
+                    try {
+                        if (appCMSAndroidUI == null ||
+                                appCMSAndroidUI.getMetaPages() == null ||
+                                appCMSAndroidUI.getMetaPages().isEmpty()) {
+                            Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
+                            launchErrorActivity(platformType);
+                        } else {
+                            initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
+                            navigation = appCMSAndroidUI.getNavigation();
+                            queueMetaPages(appCMSAndroidUI.getMetaPages());
+                            Log.d(TAG, "Processing meta pages queue");
+                            processMetaPagesQueue(loadFromFile,
+                                    () -> {
+                                        if (appCMSMain.getServiceType()
+                                                .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
+                                            refreshSubscriptionData(() -> {
+                                                if (appCMSMain.isForceLogin()) {
+                                                    boolean launchSuccess = navigateToPage(loginPage.getPageId(),
+                                                            loginPage.getPageName(),
+                                                            loginPage.getPageUI(),
+                                                            true,
+                                                            false,
+                                                            false,
+                                                            false,
+                                                            false,
+                                                            deeplinkSearchQuery);
+                                                    if (!launchSuccess) {
+                                                        Log.e(TAG, "Failed to launch page: "
+                                                                + loginPage.getPageName());
+                                                        launchErrorActivity(platformType);
+                                                    }
+                                                } else {
+                                                    boolean launchSuccess = navigateToPage(homePage.getPageId(),
+                                                            homePage.getPageName(),
+                                                            homePage.getPageUI(),
+                                                            true,
+                                                            true,
+                                                            false,
+                                                            true,
+                                                            false,
+                                                            deeplinkSearchQuery);
+                                                    if (!launchSuccess) {
+                                                        Log.e(TAG, "Failed to launch page: "
+                                                                + loginPage.getPageName());
+                                                        launchErrorActivity(platformType);
+                                                    }
+                                                }
+                                            });
+                                        } else {
                                             if (appCMSMain.isForceLogin()) {
                                                 boolean launchSuccess = navigateToPage(loginPage.getPageId(),
                                                         loginPage.getPageName(),
                                                         loginPage.getPageUI(),
                                                         true,
-                                                        false,
+                                                        true,
                                                         false,
                                                         false,
                                                         false,
@@ -6800,46 +6855,18 @@ public class AppCMSPresenter {
                                                     launchErrorActivity(platformType);
                                                 }
                                             }
-                                        });
-                                    } else {
-                                        if (appCMSMain.isForceLogin()) {
-                                            boolean launchSuccess = navigateToPage(loginPage.getPageId(),
-                                                    loginPage.getPageName(),
-                                                    loginPage.getPageUI(),
-                                                    true,
-                                                    true,
-                                                    false,
-                                                    false,
-                                                    false,
-                                                    deeplinkSearchQuery);
-                                            if (!launchSuccess) {
-                                                Log.e(TAG, "Failed to launch page: "
-                                                        + loginPage.getPageName());
-                                                launchErrorActivity(platformType);
-                                            }
-                                        } else {
-                                            boolean launchSuccess = navigateToPage(homePage.getPageId(),
-                                                    homePage.getPageName(),
-                                                    homePage.getPageUI(),
-                                                    true,
-                                                    true,
-                                                    false,
-                                                    true,
-                                                    false,
-                                                    deeplinkSearchQuery);
-                                            if (!launchSuccess) {
-                                                Log.e(TAG, "Failed to launch page: "
-                                                        + loginPage.getPageName());
-                                                launchErrorActivity(platformType);
-                                            }
                                         }
-                                    }
-                                });
+                                    });
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error processing meta pages queue: " + e.getMessage());
+                        launchErrorActivity(platformType);
                     }
-                } catch (Exception e) {
-                    Log.e(TAG, "Error processing meta pages queue: " + e.getMessage());
-                }
-            }).execute(params);
+                }).execute(params);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to load Android json file: " + e.getMessage());
+            launchErrorActivity(PlatformType.ANDROID);
         }
     }
 
@@ -6861,26 +6888,32 @@ public class AppCMSPresenter {
             int loginPageIndex = getSigninPage(metaPageList);
             if (loginPageIndex >= 0) {
                 loginPage = metaPageList.get(loginPageIndex);
+                new SoftReference<Object>(loginPage, referenceQueue);
             }
             int downloadQualitysIndex = getdownloadQualityPage(metaPageList);
             if (downloadQualitysIndex >= 0) {
                 downloadQualityPage = metaPageList.get(downloadQualitysIndex);
+                new SoftReference<Object>(downloadQualityPage, referenceQueue);
             }
             int downloadPageIndex = getDownloadPage(metaPageList);
             if (downloadPageIndex >= 0) {
                 downloadPage = metaPageList.get(downloadPageIndex);
+                new SoftReference<Object>(downloadPage, referenceQueue);
             }
             int homePageIndex = getHomePage(metaPageList);
             if (homePageIndex >= 0) {
                 homePage = metaPageList.get(homePageIndex);
+                new SoftReference<Object>(homePage, referenceQueue);
             }
             int subscriptionPageIndex = getSubscriptionPage(metaPageList);
             if (subscriptionPageIndex >= 0) {
                 subscriptionPage = metaPageList.get(subscriptionPageIndex);
+                new SoftReference<Object>(subscriptionPage, referenceQueue);
             }
             int splashScreenIndex = getSplashPage(metaPageList);
             if (splashScreenIndex >= 0) {
                 splashPage = metaPageList.get(splashScreenIndex);
+                new SoftReference<Object>(splashPage, referenceQueue);
             }
             int pageToQueueIndex = -1;
             if (jsonValueKeyMap.get(appCMSMain.getServiceType()) == AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE

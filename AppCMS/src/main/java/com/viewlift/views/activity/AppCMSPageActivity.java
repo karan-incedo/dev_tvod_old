@@ -138,6 +138,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private IInAppBillingService inAppBillingService;
     private ServiceConnection inAppBillingServiceConn;
     private boolean handlingClose;
+    private boolean castDisabled;
 
     private ConnectivityManager connectivityManager;
     private WifiManager wifiManager;
@@ -406,6 +407,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) ==
                 ConnectionResult.SUCCESS) {
             LayoutInflater.from(this).inflate(R.layout.fragment_castminicontroller, appCMSCastController);
+            castDisabled = false;
+        } else {
+            castDisabled = true;
         }
     }
 
@@ -711,7 +715,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             shouldSendCloseOthersAction = false;
         }
 
-        setCastingInstance();
+        if (!castDisabled) {
+            setCastingInstance();
+        }
 
         registerReceiver(presenterCloseActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
@@ -827,12 +833,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             Log.e(TAG, "Failed to add Fragment to back stack");
         }
 
+        if (!castDisabled) {
         /*
          * casting button will show only on home page, movie page and player page so check which
          * page will be open
          */
 
-        setMediaRouterButtonVisibility(appCMSBinder.getPageId());
+            setMediaRouterButtonVisibility(appCMSBinder.getPageId());
+        }
     }
 
     private void selectNavItemAndLaunchPage(NavBarItemView v, String pageId, String pageTitle) {
@@ -1322,28 +1330,31 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void setMediaRouterButtonVisibility(String pageId) {
+        if (!castDisabled) {
 
+            if (appCMSPresenter.findHomePageNavItem().getPageId().equalsIgnoreCase(pageId)) {
+                ll_media_route_button.setVisibility(View.VISIBLE);
+                CastServiceProvider.getInstance(this).isHomeScreen(true);
+            } else {
+                ll_media_route_button.setVisibility(View.GONE);
+                CastServiceProvider.getInstance(this).isHomeScreen(false);
 
-        if (appCMSPresenter.findHomePageNavItem().getPageId().equalsIgnoreCase(pageId)) {
-            ll_media_route_button.setVisibility(View.VISIBLE);
-            CastServiceProvider.getInstance(this).isHomeScreen(true);
-        } else {
-            ll_media_route_button.setVisibility(View.GONE);
-            CastServiceProvider.getInstance(this).isHomeScreen(false);
+            }
 
-        }
-
-        if (CastServiceProvider.getInstance(this).isOverlayVisible()) {
-            CastServiceProvider.getInstance(this).showIntroOverLay();
+            if (CastServiceProvider.getInstance(this).isOverlayVisible()) {
+                CastServiceProvider.getInstance(this).showIntroOverLay();
+            }
         }
     }
 
     private void setCastingInstance() {
-        try {
-            CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
-            CastServiceProvider.getInstance(this).onActivityResume();
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
+        if (!castDisabled) {
+            try {
+                CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
+                CastServiceProvider.getInstance(this).onActivityResume();
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
+            }
         }
     }
 

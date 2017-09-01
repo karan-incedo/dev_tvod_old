@@ -4,7 +4,7 @@ apply plugin: 'realm-android'
 def final packageName = 'air.com.snagfilms'
 def final customApplicationId = 'SnagFilms'
 def final hostName = "www.snagfilms.com"
-def final appVersionName = "1.0.30"
+def final appVersionName = "1.0.31"
 
 buildscript {
     repositories {
@@ -34,7 +34,7 @@ android {
         applicationId packageName
         minSdkVersion 23
         targetSdkVersion 25
-        versionCode 3042072
+        versionCode 3042073
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 26
@@ -161,7 +161,6 @@ dependencies {
     compile "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofit2Version"
     compile "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
     compile "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
-    compile "com.google.android.exoplayer:exoplayer:$rootProject.ext.exoplayerVersion"
     compile "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
     compile "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
     compile "com.google.android.gms:play-services-analytics:$rootProject.ext.googlePlayServicesVersion"
@@ -171,41 +170,29 @@ dependencies {
     compile("com.crashlytics.sdk.android:crashlytics:$rootProject.ext.crashlyticsVersion") {
         transitive = true
     }
-
     compile "com.urbanairship.android:urbanairship-sdk:$rootProject.ext.urbanAirshipVersion"
-
     compile "com.jakewharton:butterknife:$rootProject.ext.butterknifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.ext.butterknifeVersion"
-
     compile("com.facebook.android:facebook-android-sdk:$rootProject.ext.facebookSdkVersion", {
         exclude group: 'com.android.support', module: 'customtabs'
     })
-
     compile 'com.github.amlcurran.showcaseview:library:5.4.3'
-
     compile "com.apptentive:apptentive-android:$rootProject.ext.apptentiveVersion"
     provided "javax.annotation:jsr250-api:$rootProject.ext.jsr250_apiVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
-
     compile "com.android.support:mediarouter-v7:$rootProject.ext.androidsupportVersion"
     implementation "com.google.android.gms:play-services-cast-framework:$rootProject.ext.googlePlayServicesVersion"
-
     compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
-
     compile "com.appsflyer:af-android-sdk:$rootProject.ext.appsFlyerVersion"
     compile "com.google.android.gms:play-services-tagmanager:$rootProject.ext.googlePlayServicesVersion"
-
     compile project(path: ':firetvcustomkeyboard')
     compile "com.android.support:percent:$rootProject.ext.androidsupportVersion"
-
     compile "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
-
     compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
-
     compile 'com.github.NightWhistler:HtmlSpanner:0.4'
-
+    compile project(':exoplayer-library')
 }
 
 apply plugin: 'com.google.gms.google-services'

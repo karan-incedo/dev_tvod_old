@@ -254,8 +254,10 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     }
 
     private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {
-        Format textFormat = Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP,
-                null, Format.NO_VALUE, C.SELECTION_FLAG_DEFAULT, "en", null);
+        Format textFormat = Format.createTextSampleFormat(null,
+                MimeTypes.APPLICATION_SUBRIP,
+                C.SELECTION_FLAG_DEFAULT,
+                "en");
         MediaSource videoSource = buildMediaSource(uri, "");
         if (ccFileUrl == null) {
             return videoSource;
@@ -346,6 +348,11 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
                 Log.e(TAG, "Failed to update player state change status: " + e.getMessage());
             }
         }
+    }
+
+    @Override
+    public void onRepeatModeChanged(int repeatMode) {
+
     }
 
     @Override
