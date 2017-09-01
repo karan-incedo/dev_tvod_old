@@ -178,7 +178,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                                 holder.appCMSContinueWatchingDeleteButton.invalidate();
                                                 loadImage(holder.itemView.getContext(), userVideoDownloadStatus.getThumbUri(), holder.appCMSContinueWatchingVideoImage);
                                                 holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
+
                                                 contentDatum.getGist().setLocalFileUrl(userVideoDownloadStatus.getVideoUri());   // Fix of SVFA-1707
+                                                if (userVideoDownloadStatus.getSubtitlesUri().trim().length()>0) {
+                                                    contentDatum.getContentDetails().getClosedCaptions().get(0).setUrl(userVideoDownloadStatus.getSubtitlesUri());   // Fix of SVFA-1707
+                                                }
                                             } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_RUNNING) {
                                                 holder.appCMSContinueWatchingSize.setText("Cancel");
                                             }
@@ -271,7 +275,15 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
             holder.appCMSContinueWatchingDeleteButton.setOnClickListener(v -> delete(contentDatum));
 
-            holder.appCMSContinueWatchingTitle.setOnClickListener(v -> click(contentDatum));
+            holder.appCMSContinueWatchingTitle.setOnClickListener(v -> {
+                if (isDownload) {
+                    playDownloaded(contentDatum,
+                            holder.itemView.getContext(),
+                            getListOfUpcomingMovies(position));
+                } else {
+                    click(contentDatum);
+                }
+            });
 
             if (contentDatum.getGist() != null) {
                 holder.appCMSContinueWatchingDuration.setText(String.valueOf(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)

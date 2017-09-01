@@ -2102,7 +2102,7 @@ public class AppCMSPresenter {
 
             if (ccEnqueueId != 0 && contentDatum.getGist().getId() != null) {
                 downloadVideoRealm.setSubtitlesId_DM(ccEnqueueId);
-                downloadVideoRealm.setSubtitlesFileURL(getPngPosterPath(contentDatum.getGist().getId()));
+                downloadVideoRealm.setSubtitlesFileURL(getClosedCaptionsPath(contentDatum.getGist().getId()));
             }
             if (contentDatum.getGist().getVideoImageUrl() != null) {
                 downloadVideoRealm.setVideoFileURL(contentDatum.getGist().getVideoImageUrl()); //This change has been done due to making thumb image available at time of videos are downloading.
@@ -3866,6 +3866,10 @@ public class AppCMSPresenter {
         return getIsUserSubscribed(context);
     }
 
+    public String getClosedCaptionsPath(String fileName) {
+        return currentActivity.getFilesDir().getAbsolutePath() + File.separator
+                + "closedCaptions" + File.separator + fileName + MEDIA_SUFFIX_SRT;
+    }
     public String getPngPosterPath(String fileName) {
         return currentActivity.getFilesDir().getAbsolutePath() + File.separator
                 + Environment.DIRECTORY_PICTURES + File.separator + fileName + MEDIA_SURFIX_PNG;
@@ -4756,6 +4760,7 @@ public class AppCMSPresenter {
                 if (main == null) {
                     Log.e(TAG, "DialogType retrieving main.json");
                     if (!isNetworkConnected()) {//Fix for SVFA-1435 issue 2nd by manoj comment
+
                        openDownloadScreenForNetworkError(true);
                     } else {
                         launchErrorActivity(platformType);
@@ -5107,19 +5112,28 @@ public class AppCMSPresenter {
     }
 
     public void openDownloadScreenForNetworkError(boolean launchActivity) {
+
         if (!isUserLoggedIn(currentActivity)) {//fix SVFA-1911
             showDialog(DialogType.NETWORK, null, false, null);
             return;
         }
+
         try { // Applied this flow for fixing SVFA-1435 App Launch Scenario
 
+            if (!isUserLoggedIn(currentActivity)) {//fix SVFA-1911
+                showDialog(DialogType.NETWORK, null, false, null);
+                return;
+            }
             showDialog(DialogType.NETWORK,
                     currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download),
                     true,
                     () -> navigateToDownloadPage(getDownloadPageId(currentActivity),
                             null, null, launchActivity));
         } catch (Exception e) {
+
+            launchErrorActivity(platformType);// Fix for SVFA-1435 after killing app
             Log.d(TAG, e.getMessage());
+            return;
         }
     }
 
@@ -5458,7 +5472,7 @@ public class AppCMSPresenter {
         StringBuffer permalinkCompletePath = new StringBuffer();
         permalinkCompletePath.append(currentActivity.getString(R.string.https_scheme));
         permalinkCompletePath.append(appCMSMain.getDomainName());
-        permalinkCompletePath.append(File.separatorChar);
+      //  permalinkCompletePath.append(File.separatorChar); //Commented due to Page path is already having '/' with it
         permalinkCompletePath.append(pagePath);
         return permalinkCompletePath.toString();
     }

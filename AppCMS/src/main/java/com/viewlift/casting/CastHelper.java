@@ -85,7 +85,7 @@ public class CastHelper {
     private boolean sentBeaconPlay;
     private boolean sentBeaconFirstFrame;
     private boolean sendBeaconPing;
-    private boolean sendBeaconBuffering;
+
     private Action1<OnApplicationEnded> onApplicationEndedAction;
     private String imageUrl = "";
     private String title = "";
@@ -96,8 +96,9 @@ public class CastHelper {
     private long mStartBufferMilliSec;
     private long mStopBufferMilliSec;
     private static double ttfirstframe = 0d;
+    private long beaconBufferingTime;
     private long beaconBufferingTimeoutMsec;
-    private BeaconBufferingThread beaconBufferingThread;
+  //  private BeaconBufferingThread beaconBufferingThread;
     private static boolean isVideoDownloaded;
 
 
@@ -352,11 +353,11 @@ public class CastHelper {
 
             beaconBufferingTimeoutMsec = (mAppContext).getResources().getInteger(R.integer.app_cms_beacon_buffering_timeout_msec);
 
-            beaconBufferingThread = new BeaconBufferingThread(beaconBufferingTimeoutMsec,
+         /*   beaconBufferingThread = new BeaconBufferingThread(beaconBufferingTimeoutMsec,
                     appCMSPresenterComponenet,
                     filmId,
                     paramLink,
-                    beaconScreenName);
+                    beaconScreenName);*/
         }
     }
 
@@ -388,11 +389,11 @@ public class CastHelper {
         }
         beaconBufferingTimeoutMsec = (mAppContext).getResources().getInteger(R.integer.app_cms_beacon_buffering_timeout_msec);
 
-        beaconBufferingThread = new BeaconBufferingThread(beaconBufferingTimeoutMsec,
+       /* beaconBufferingThread = new BeaconBufferingThread(beaconBufferingTimeoutMsec,
                 appCMSPresenterComponenet,
                 filmId,
                 paramLink,
-                beaconScreenName);
+                beaconScreenName);*/
 
     }
 
@@ -627,11 +628,7 @@ public class CastHelper {
                         callBackRemoteListener.onApplicationDisconnected();
                 }
 
-                if (beaconBufferingThread != null) {
-                    beaconBufferingThread.sendBeaconBuffering = false;
-                    beaconBufferingThread.runBeaconBuffering = false;
-                    beaconBufferingThread = null;
-                }
+
             }
         };
     }
@@ -836,10 +833,6 @@ public class CastHelper {
         switch (status) {
             case MediaStatus.PLAYER_STATE_PLAYING:
                 sendBeaconPing = true;
-                sendBeaconBuffering = false;
-                if (beaconBufferingThread != null) {
-                    beaconBufferingThread.sendBeaconBuffering = false;
-                }
                 if (!sentBeaconFirstFrame) {
 
                     if (!TextUtils.isEmpty(currentRemoteMediaId)) {
@@ -866,42 +859,44 @@ public class CastHelper {
 
             case MediaStatus.PLAYER_STATE_PAUSED:
                 sendBeaconPing = false;
-                sendBeaconBuffering = false;
-                if (beaconBufferingThread != null) {
-                    beaconBufferingThread.sendBeaconBuffering = false;
-                }
-
                 break;
 
             case MediaStatus.PLAYER_STATE_UNKNOWN:
                 sendBeaconPing = false;
-                sendBeaconBuffering = false;
-                if (beaconBufferingThread != null) {
-                    beaconBufferingThread.sendBeaconBuffering = false;
-                }
-
                 break;
 
             case MediaStatus.PLAYER_STATE_BUFFERING:
                 sendBeaconPing = false;
-                sendBeaconBuffering = true;
+                if ( ((System.currentTimeMillis()- beaconBufferingTime)/1000)>=5) {
+                    beaconBufferingTime = System.currentTimeMillis();
+                    if (appCMSPresenterComponenet != null ) {
+                        appCMSPresenterComponenet.sendBeaconMessage(currentRemoteMediaId,
+                                currentMediaParamKey,
+                                beaconScreenName,
+                                castCurrentDuration,
+                                true,
+                                AppCMSPresenter.BeaconEvent.BUFFERING,
+                                "Video",
+                                null,
+                                null,
+                                null,
+                                mStreamId,
+                                0d,
+                                0,
+                                isVideoDownloaded);
 
-                if (beaconBufferingThread != null) {
-                    beaconBufferingThread.sendBeaconBuffering = true;
+
+                    }
+
+
                 }
-                if (!beaconBufferingThread.isAlive()) {
-                    beaconBufferingThread.start();
-                }
+
 
 
                 break;
 
             case MediaStatus.PLAYER_STATE_IDLE:
                 sendBeaconPing = false;
-                sendBeaconBuffering = false;
-                if (beaconBufferingThread != null) {
-                    beaconBufferingThread.sendBeaconBuffering = false;
-                }
 
                 if (idleReason == MediaStatus.IDLE_REASON_FINISHED) {
                     //If all movies in auto play queue have been finished then finish the player activity if opened
@@ -914,10 +909,6 @@ public class CastHelper {
 
             default: // case unknown
                 sendBeaconPing = false;
-                sendBeaconBuffering = false;
-                if (beaconBufferingThread != null) {
-                    beaconBufferingThread.sendBeaconBuffering = false;
-                }
                 break;
         }
     }
@@ -988,7 +979,7 @@ public class CastHelper {
         }
     }
 
-    private static class BeaconBufferingThread extends Thread {
+   /* private static class BeaconBufferingThread extends Thread {
         final long beaconBufferTimeoutMsec;
         final AppCMSPresenter appCMSPresenter;
         final String filmId;
@@ -1041,6 +1032,6 @@ public class CastHelper {
                 }
             }
         }
-    }
+    }*/
 }
 
