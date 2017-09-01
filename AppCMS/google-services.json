@@ -1,48 +1,70 @@
 {
   "project_info": {
-    "project_number": "1021630363878",
-    "project_id": "monumental-95a71"
+    "project_number": "66550532779",
+    "firebase_url": "https://ga-app-cms-firebase.firebaseio.com",
+    "project_id": "ga-app-cms-firebase",
+    "storage_bucket": "ga-app-cms-firebase.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1021630363878:android:47ef18d279334d99",
+        "mobilesdk_app_id": "1:66550532779:android:a964804272a3feaf",
         "android_client_info": {
-          "package_name": "com.mse.monumentalnetworks"
+          "package_name": "com.appcmsvl.android"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1021630363878-2738sc74ukbjidm2tttq5eni00j5mumf.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.mse.monumentalnetworks",
-            "certificate_hash": "000787d589b3cc75b4d03ff748c345e8b8f7d408"
-          }
-        },
-        {
-          "client_id": "1021630363878-nejr2v03sr3pvpkkbr9mjm9r5mp0djq7.apps.googleusercontent.com",
+          "client_id": "66550532779-us8suu2oi5hs3elmjdrd767bd5v604mr.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCZ5vxQxPdhxywujFnymJyE3QnBoZxtxFY"
+          "current_key": "AIzaSyBTVCJvNpCURX5X-tTbC3MYpPuUDSSelE4"
         }
       ],
       "services": {
         "analytics_service": {
-          "status": 2,
-          "analytics_property": {
-            "tracking_id": "UA-99272917-3"
-          }
+          "status": 1
         },
         "appinvite_service": {
           "status": 1,
           "other_platform_oauth_client": []
         },
         "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66550532779:android:47ef18d279334d99",
+        "android_client_info": {
+          "package_name": "com.mse.monumentalnetworks"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "66550532779-us8suu2oi5hs3elmjdrd767bd5v604mr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTVCJvNpCURX5X-tTbC3MYpPuUDSSelE4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
           "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
         }
       }
     }
