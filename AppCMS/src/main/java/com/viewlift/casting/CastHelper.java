@@ -97,8 +97,8 @@ public class CastHelper {
     private long mStopBufferMilliSec;
     private static double ttfirstframe = 0d;
     private long beaconBufferingTime;
-    private long beaconBufferingTimeoutMsec;
-  //  private BeaconBufferingThread beaconBufferingThread;
+
+
     private static boolean isVideoDownloaded;
 
 
@@ -351,13 +351,9 @@ public class CastHelper {
                 mStreamId = filmId + appCMSPresenterComponenet.getCurrentTimeStamp();
             }
 
-            beaconBufferingTimeoutMsec = (mAppContext).getResources().getInteger(R.integer.app_cms_beacon_buffering_timeout_msec);
 
-         /*   beaconBufferingThread = new BeaconBufferingThread(beaconBufferingTimeoutMsec,
-                    appCMSPresenterComponenet,
-                    filmId,
-                    paramLink,
-                    beaconScreenName);*/
+
+
         }
     }
 
@@ -387,13 +383,6 @@ public class CastHelper {
             Log.e(TAG, e.getMessage());
             mStreamId = filmId + appCMSPresenterComponenet.getCurrentTimeStamp();
         }
-        beaconBufferingTimeoutMsec = (mAppContext).getResources().getInteger(R.integer.app_cms_beacon_buffering_timeout_msec);
-
-       /* beaconBufferingThread = new BeaconBufferingThread(beaconBufferingTimeoutMsec,
-                appCMSPresenterComponenet,
-                filmId,
-                paramLink,
-                beaconScreenName);*/
 
     }
 
@@ -979,59 +968,6 @@ public class CastHelper {
         }
     }
 
-   /* private static class BeaconBufferingThread extends Thread {
-        final long beaconBufferTimeoutMsec;
-        final AppCMSPresenter appCMSPresenter;
-        final String filmId;
-        final String permaLink;
-        final String parentScreenName;
-        boolean runBeaconBuffering;
-        boolean sendBeaconBuffering;
 
-        public BeaconBufferingThread(long beaconBufferTimeoutMsec,
-                                     AppCMSPresenter appCMSPresenter,
-                                     String filmId,
-                                     String permaLink,
-                                     String parentScreenName) {
-            this.beaconBufferTimeoutMsec = beaconBufferTimeoutMsec;
-            this.appCMSPresenter = appCMSPresenter;
-            this.filmId = filmId;
-            this.permaLink = permaLink;
-            this.parentScreenName = parentScreenName;
-
-        }
-
-        public void run() {
-            runBeaconBuffering = true;
-            while (runBeaconBuffering) {
-                try {
-                    Thread.sleep(beaconBufferTimeoutMsec);
-                    if (sendBeaconBuffering) {
-
-                        if (appCMSPresenter != null) { // For not to sent PIN in PAUSE mode
-                            appCMSPresenter.sendBeaconMessage(filmId,
-                                    permaLink,
-                                    parentScreenName,
-                                    castCurrentDuration,
-                                    true,
-                                    AppCMSPresenter.BeaconEvent.BUFFERING,
-                                    "Video",
-                                    null,
-                                    null,
-                                    null,
-                                    mStreamId,
-                                    0d,
-                                    0,
-                                    isVideoDownloaded);
-
-
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    Log.e("CastHelper", "beaconBufferingThread sleep interrupted");
-                }
-            }
-        }
-    }*/
 }
 

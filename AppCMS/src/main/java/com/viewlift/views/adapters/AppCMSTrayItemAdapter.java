@@ -170,28 +170,31 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         holder.appCMSContinueWatchingDeleteButton,
                                         appCMSPresenter,
                                         userVideoDownloadStatus -> {
-                                            if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
-                                                holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);// Fix of SVFA-1779
-                                                holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.ic_deleteicon));
-                                                holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
-                                                holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
-                                                holder.appCMSContinueWatchingDeleteButton.invalidate();
-                                                loadImage(holder.itemView.getContext(), userVideoDownloadStatus.getThumbUri(), holder.appCMSContinueWatchingVideoImage);
-                                                holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
+                                            if (userVideoDownloadStatus != null) {
+                                                if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
+                                                    holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);// Fix of SVFA-1779
+                                                    holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.ic_deleteicon));
+                                                    holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
+                                                    holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+                                                    holder.appCMSContinueWatchingDeleteButton.invalidate();
+                                                    loadImage(holder.itemView.getContext(), userVideoDownloadStatus.getThumbUri(), holder.appCMSContinueWatchingVideoImage);
+                                                    holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
 
-                                                contentDatum.getGist().setLocalFileUrl(userVideoDownloadStatus.getVideoUri());   // Fix of SVFA-1707
-                                                if (userVideoDownloadStatus.getSubtitlesUri().trim().length()>0) {
-                                                    contentDatum.getContentDetails().getClosedCaptions().get(0).setUrl(userVideoDownloadStatus.getSubtitlesUri());   // Fix of SVFA-1707
+                                                    contentDatum.getGist().setLocalFileUrl(userVideoDownloadStatus.getVideoUri());   // Fix of SVFA-1707
+                                                    if (userVideoDownloadStatus.getSubtitlesUri().trim().length() > 0) {
+                                                        contentDatum.getContentDetails().getClosedCaptions().get(0).setUrl(userVideoDownloadStatus.getSubtitlesUri());   // Fix of SVFA-1707
+                                                    }
+                                                } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_RUNNING) {
+                                                    holder.appCMSContinueWatchingSize.setText("Cancel");
                                                 }
-                                            } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_RUNNING) {
-                                                holder.appCMSContinueWatchingSize.setText("Cancel");
+                                                contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
                                             }
-                                            contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
                                         },
                                         userId, true);
 
                                 holder.appCMSContinueWatchingSize.setText("Cancel".toUpperCase());
                                 holder.appCMSContinueWatchingSize.setOnClickListener(v -> delete(contentDatum));
+
                             }
                             break;
 
