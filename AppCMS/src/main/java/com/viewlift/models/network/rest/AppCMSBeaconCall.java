@@ -5,6 +5,8 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.beacon.AppCMSBeaconRequest;
+import com.viewlift.models.data.appcms.beacon.BeaconRequest;
+import com.viewlift.models.data.appcms.beacon.BeaconResponse;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 
 import java.util.HashMap;
@@ -36,23 +38,23 @@ public class AppCMSBeaconCall {
     }
 
     @WorkerThread
-    public void call(String url, final Action1<Boolean> action1, AppCMSBeaconRequest request){
+    public void call(String url, final Action1<BeaconResponse> action1, AppCMSBeaconRequest request){
 
         try {
             Map<String, String> authTokenMap = new HashMap<>();
             authTokenMap.put("Content-Type", "application/json");
-            Call<Boolean> call;
+            Call<BeaconResponse> call;
 
             call = appCMSBeaconRest.sendBeaconMessage(url, authTokenMap, request.getBeaconRequest());
-            call.enqueue(new Callback<Boolean>() {
+            call.enqueue(new Callback<BeaconResponse>() {
 
                 @Override
-                public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                public void onResponse(Call<BeaconResponse> call, Response<BeaconResponse> response) {
                     Observable.just(response.body()).subscribe(action1);
                 }
 
                 @Override
-                public void onFailure(Call<Boolean> call, Throwable t) {
+                public void onFailure(Call<BeaconResponse> call, Throwable t) {
                     Log.e(TAG, "onFailure: " + t.getMessage());
                 }
             });

@@ -91,6 +91,7 @@ import com.viewlift.models.data.appcms.api.SubscriptionRequest;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.beacon.AppCMSBeaconRequest;
 import com.viewlift.models.data.appcms.beacon.BeaconRequest;
+import com.viewlift.models.data.appcms.beacon.BeaconResponse;
 import com.viewlift.models.data.appcms.beacon.OfflineBeaconData;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
@@ -3870,6 +3871,7 @@ public class AppCMSPresenter {
         return currentActivity.getFilesDir().getAbsolutePath() + File.separator
                 + "closedCaptions" + File.separator + fileName + MEDIA_SUFFIX_SRT;
     }
+
     public String getPngPosterPath(String fileName) {
         return currentActivity.getFilesDir().getAbsolutePath() + File.separator
                 + Environment.DIRECTORY_PICTURES + File.separator + fileName + MEDIA_SURFIX_PNG;
@@ -4761,7 +4763,7 @@ public class AppCMSPresenter {
                     Log.e(TAG, "DialogType retrieving main.json");
                     if (!isNetworkConnected()) {//Fix for SVFA-1435 issue 2nd by manoj comment
 
-                       openDownloadScreenForNetworkError(true);
+                        openDownloadScreenForNetworkError(true);
                     } else {
                         launchErrorActivity(platformType);
                     }
@@ -5387,11 +5389,13 @@ public class AppCMSPresenter {
         if (url != null && beaconRequests != null) {
 
             request.setBeaconRequest(beaconRequests);
-            appCMSBeaconCall.call(url, (Boolean aBoolean) -> {
+            appCMSBeaconCall.call(url,  beaconResponse -> {
                 try {
 
-                    if (aBoolean) {
-                        Log.d(TAG, "Beacon success Event: Offline " + aBoolean);
+                    if (beaconResponse.beaconRequestResponse.size() > 0 &&
+                            beaconResponse.beaconRequestResponse.get(0).recordId != null &&
+                            beaconResponse.beaconRequestResponse.get(0).recordId.length() >0) {
+                        Log.d(TAG, "Beacon success Event: Offline " + beaconResponse.beaconRequestResponse.get(0).recordId);
                         currentActivity.runOnUiThread(() -> {
                             realmController.deleteOfflineBeaconDataByUser(getLoggedInUser(currentActivity));
                         });
@@ -5439,11 +5443,13 @@ public class AppCMSPresenter {
                 request.setBeaconRequest(beaconRequests);
                 if (url != null) {
 
-                    appCMSBeaconCall.call(url, aBoolean -> {
+                    appCMSBeaconCall.call(url, beaconResponse -> {
                         try {
 
-                            if (aBoolean) {
-                                Log.d(TAG, "Beacon success Event:  " + event);
+                            if (beaconResponse.beaconRequestResponse.size() > 0 &&
+                                    beaconResponse.beaconRequestResponse.get(0).recordId != null &&
+                                    beaconResponse.beaconRequestResponse.get(0).recordId.length() >0) {
+                                Log.d(TAG, "Beacon success Event: Offline "+ event+"  " + beaconResponse.beaconRequestResponse.get(0).recordId);
                             }
                         } catch (Exception e) {
                             Log.d(TAG, "Beacon fail Event: " + event + " due to: " + e.getMessage());
@@ -5472,7 +5478,7 @@ public class AppCMSPresenter {
         StringBuffer permalinkCompletePath = new StringBuffer();
         permalinkCompletePath.append(currentActivity.getString(R.string.https_scheme));
         permalinkCompletePath.append(appCMSMain.getDomainName());
-      //  permalinkCompletePath.append(File.separatorChar); //Commented due to Page path is already having '/' with it
+        //  permalinkCompletePath.append(File.separatorChar); //Commented due to Page path is already having '/' with it
         permalinkCompletePath.append(pagePath);
         return permalinkCompletePath.toString();
     }
@@ -5503,8 +5509,8 @@ public class AppCMSPresenter {
         beaconRequest.setDp1(currentActivity.getString(R.string.app_cms_beacon_dpm_android));
         beaconRequest.setUrl(getPermalinkCompletePath(screenName));
         beaconRequest.setRef(parentScreenName);
-        beaconRequest.setVpos(currentPositionSecs);
-        beaconRequest.setApos(currentPositionSecs);
+        beaconRequest.setVpos(String.valueOf(currentPositionSecs));
+        beaconRequest.setApos(String.valueOf(currentPositionSecs));
         beaconRequest.setEnvironment(getEnvironment());
         beaconRequest.setBitrate(bitrte);
         beaconRequest.setResolutionheight(resolutionHeight);
@@ -5513,7 +5519,7 @@ public class AppCMSPresenter {
             beaconRequest.setTtfirstframe(String.format("%.2f", ttfirstframe));
         }
         if (event == BeaconEvent.AD_IMPRESSION || event == BeaconEvent.AD_REQUEST) {
-            beaconRequest.setApod(apod);
+            beaconRequest.setApod(String.valueOf(apod));
         }
 
         if (isDownloaded) {
@@ -5626,55 +5632,55 @@ public class AppCMSPresenter {
                 true,
                 true,
                 false);*/
-            if (entitlementPendingVideoData != null) {
-                isVideoPlayerStarted = false;
-                navigateToHomeToRefresh = false;
-                sendRefreshPageAction();
-                sendCloseOthersAction(null, true);
-                launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
-                        entitlementPendingVideoData.action,
-                        entitlementPendingVideoData.filmTitle,
-                        entitlementPendingVideoData.extraData,
-                        entitlementPendingVideoData.contentDatum,
-                        entitlementPendingVideoData.closeLauncher,
-                        entitlementPendingVideoData.currentlyPlayingIndex,
-                        entitlementPendingVideoData.relateVideoIds);
-                entitlementPendingVideoData.pagePath = null;
-                entitlementPendingVideoData.action = null;
-                entitlementPendingVideoData.filmTitle = null;
-                entitlementPendingVideoData.extraData = null;
-                entitlementPendingVideoData.contentDatum = null;
-                entitlementPendingVideoData.closeLauncher = false;
-                entitlementPendingVideoData.currentlyPlayingIndex = -1;
-                entitlementPendingVideoData.relateVideoIds = null;
-                entitlementPendingVideoData = null;
-            } else {
-                sendCloseOthersAction(null, true);
-                cancelInternalEvents();
-                restartInternalEvents();
+        if (entitlementPendingVideoData != null) {
+            isVideoPlayerStarted = false;
+            navigateToHomeToRefresh = false;
+            sendRefreshPageAction();
+            sendCloseOthersAction(null, true);
+            launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
+                    entitlementPendingVideoData.action,
+                    entitlementPendingVideoData.filmTitle,
+                    entitlementPendingVideoData.extraData,
+                    entitlementPendingVideoData.contentDatum,
+                    entitlementPendingVideoData.closeLauncher,
+                    entitlementPendingVideoData.currentlyPlayingIndex,
+                    entitlementPendingVideoData.relateVideoIds);
+            entitlementPendingVideoData.pagePath = null;
+            entitlementPendingVideoData.action = null;
+            entitlementPendingVideoData.filmTitle = null;
+            entitlementPendingVideoData.extraData = null;
+            entitlementPendingVideoData.contentDatum = null;
+            entitlementPendingVideoData.closeLauncher = false;
+            entitlementPendingVideoData.currentlyPlayingIndex = -1;
+            entitlementPendingVideoData.relateVideoIds = null;
+            entitlementPendingVideoData = null;
+        } else {
+            sendCloseOthersAction(null, true);
+            cancelInternalEvents();
+            restartInternalEvents();
 
-                if (TextUtils.isEmpty(getUserDownloadQualityPref(currentActivity))) {
-                    setUserDownloadQualityPref(currentActivity,
-                            currentActivity.getString(R.string.app_cms_default_download_quality));
-                }
-
-                NavigationPrimary homePageNavItem = findHomePageNavItem();
-                if (homePageNavItem != null) {
-                    cancelInternalEvents();
-                    navigateToPage(homePageNavItem.getPageId(),
-                            homePageNavItem.getTitle(),
-                            homePageNavItem.getUrl(),
-                            false,
-                            true,
-                            false,
-                            true,
-                            true,
-                            deeplinkSearchQuery);
-                }
+            if (TextUtils.isEmpty(getUserDownloadQualityPref(currentActivity))) {
+                setUserDownloadQualityPref(currentActivity,
+                        currentActivity.getString(R.string.app_cms_default_download_quality));
             }
 
+            NavigationPrimary homePageNavItem = findHomePageNavItem();
+            if (homePageNavItem != null) {
+                cancelInternalEvents();
+                navigateToPage(homePageNavItem.getPageId(),
+                        homePageNavItem.getTitle(),
+                        homePageNavItem.getUrl(),
+                        false,
+                        true,
+                        false,
+                        true,
+                        true,
+                        deeplinkSearchQuery);
+            }
+        }
 
-        setIsUserSubscribed(currentActivity,true) ;
+
+        setIsUserSubscribed(currentActivity, true);
         setActiveSubscriptionId(currentActivity, planToPurchase);
         setActiveSubscriptionCurrency(currentActivity, currencyOfPlanToPurchase);
         setActiveSubscriptionPlanName(currentActivity, planToPurchaseName);
@@ -5908,7 +5914,7 @@ public class AppCMSPresenter {
                                                                 getAuthToken(currentActivity),
                                                                 listResult -> {
                                                                     //
-                                                                    Log.v("currentActivity","currentActivity") ;
+                                                                    Log.v("currentActivity", "currentActivity");
                                                                 },
                                                                 singleResult -> {
                                                                     //
@@ -6147,7 +6153,7 @@ public class AppCMSPresenter {
             String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                     appCMSMain.getApiBaseUrl(),
                     appCMSSite.getGist().getSiteInternalName());
-                    startLoginAsyncTask(url,
+            startLoginAsyncTask(url,
                     email,
                     password,
                     false,
@@ -6223,7 +6229,7 @@ public class AppCMSPresenter {
 
         new PostAppCMSLoginRequestAsyncTask(appCMSSignInCall,
                 signInResponse -> {
-                    Log.v("ananomyousToken",getAnonymousUserToken(currentActivity)) ;
+                    Log.v("ananomyousToken", getAnonymousUserToken(currentActivity));
                     try {
                         if (signInResponse == null) {
                             // Show log error
