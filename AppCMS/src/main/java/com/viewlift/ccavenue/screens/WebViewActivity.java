@@ -140,7 +140,7 @@ public class WebViewActivity extends Activity {
 					status = "Transaction Cancelled!";
 					backPressFlag = false ;
 					displaySuccessPaymentDialog("Transaction Cancelled!", "Try again later!");
-				}else{
+				}else {
 					status = "Status Not Known!";
 					backPressFlag = false ;
 					displaySuccessPaymentDialog("Something went wrong!", "Try again later!");
@@ -312,7 +312,6 @@ public class WebViewActivity extends Activity {
 				orderID = jsonObj.getString("orderId") ;
 				accessCode = jsonObj.getString("accessCode") ;
 				cancelRedirectURL = jsonObj.getString("redirectUrl") ;
-				Log.v("cancelRedirectURL",cancelRedirectURL) ;
 				merchantID = jsonObj.getString("merchantId") ;
 			} catch (JSONException e) {
 				Log.e(TAG, e.getMessage());
