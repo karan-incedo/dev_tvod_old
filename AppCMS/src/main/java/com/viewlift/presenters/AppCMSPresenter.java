@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -91,7 +90,6 @@ import com.viewlift.models.data.appcms.api.SubscriptionRequest;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.beacon.AppCMSBeaconRequest;
 import com.viewlift.models.data.appcms.beacon.BeaconRequest;
-import com.viewlift.models.data.appcms.beacon.BeaconResponse;
 import com.viewlift.models.data.appcms.beacon.OfflineBeaconData;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
@@ -189,6 +187,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -2009,6 +2009,23 @@ public class AppCMSPresenter {
         return bytesRemainDownload / (1024L * 1024L);
     }
 
+    public long getMegabytesAvailable() {
+        File storagePath = null;
+        if (!getUserDownloadLocationPref(currentActivity)) {
+            storagePath = Environment.getExternalStorageDirectory();
+        } else {
+            storagePath = new File(getStorageDirectories(currentActivity)[0]);
+        }
+        StatFs stat = new StatFs(storagePath.getPath());
+        long bytesAvailable;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            bytesAvailable = (long) stat.getBlockSizeLong() * (long) stat.getAvailableBlocksLong();
+        } else {
+            bytesAvailable = (long) stat.getBlockSize() * (long) stat.getAvailableBlocks();
+        }
+        return bytesAvailable / (1024L * 1024L);
+    }
+
     public long getMegabytesAvailable(File f) {
         StatFs stat = new StatFs(f.getPath());
         long bytesAvailable;
@@ -2043,10 +2060,6 @@ public class AppCMSPresenter {
                              final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
         downloadContentDatumAfterPermissionGranted = null;
         downloadResultActionAfterPermissionGranted = null;
-        // Check for low storage.  If there is low storage, the native library will not be
-        // downloaded, so detection will not become operational.
-        IntentFilter lowstorageFilter = new IntentFilter(Intent.ACTION_DEVICE_STORAGE_LOW);
-        boolean hasLowStorage = currentActivity.registerReceiver(null, lowstorageFilter) != null;
 
         //Send Firebase Analytics when user is subscribed and user is Logged In
         sendFirebaseLoginSubscribeSuccess();
@@ -2057,7 +2070,7 @@ public class AppCMSPresenter {
             askForPermissionToDownloadToExternalStorage(true,
                     contentDatum,
                     resultAction1);
-        } else if (hasLowStorage) {
+        } else if (!isMemorySpaceAvailable()) {
             showDialog(DialogType.DOWNLOAD_FAILED, currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null);
 
             Log.w(TAG, currentActivity.getString(R.string.app_cms_download_failed_error_message));
@@ -2375,46 +2388,9 @@ public class AppCMSPresenter {
 
                 int bitrate = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
 
-                String downloadQualityRendition = getUserDownloadQualityPref(currentActivity);
-                Map<String, String> urlRenditionMap = new HashMap<>();
-                for (Mpeg mpeg : contentDatum.getStreamingInfo().getVideoAssets().getMpeg()) {
-                    urlRenditionMap.put(mpeg.getRenditionValue().replace("_", "").trim(),
-                            mpeg.getUrl());
-                }
-                downloadURL = urlRenditionMap.get(downloadQualityRendition);
 
-                if (downloadQualityRendition != null) {
-                    if (downloadURL == null && downloadQualityRendition.contains("360")) {
-                        if (urlRenditionMap.get("720p") != null) {
-                            downloadURL = urlRenditionMap.get("720p");
-                        } else if (urlRenditionMap.get("1080p") != null) {
-                            downloadURL = urlRenditionMap.get("1080p");
-                        }
+                downloadURL = getDownloadURL(contentDatum);
 
-                    } else if (downloadURL == null && downloadQualityRendition.contains("720")) {
-                        if (urlRenditionMap.get("360p") != null) {
-                            downloadURL = urlRenditionMap.get("360p");
-                        } else if (urlRenditionMap.get("1080p") != null) {
-                            downloadURL = urlRenditionMap.get("1080p");
-                        }
-
-                    } else if (downloadURL == null && downloadQualityRendition.contains("1080")) {
-                        if (urlRenditionMap.get("720p") != null) {
-                            downloadURL = urlRenditionMap.get("720p");
-                        } else if (urlRenditionMap.get("360p") != null) {
-                            downloadURL = urlRenditionMap.get("360p");
-                        }
-                    } else if (downloadURL == null) {
-                        //noinspection SuspiciousMethodCalls
-                        downloadURL = urlRenditionMap.get(urlRenditionMap.keySet().toArray()[0]);
-                    }
-                } else {
-                    downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
-                }
-
-                downloadURL = downloadURL != null
-                        ? downloadURL.replace("https:/", "http:/")
-                        : null;
 
                 DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
                         .setTitle(contentDatum.getGist().getTitle())
@@ -5389,12 +5365,12 @@ public class AppCMSPresenter {
         if (url != null && beaconRequests != null) {
 
             request.setBeaconRequest(beaconRequests);
-            appCMSBeaconCall.call(url,  beaconResponse -> {
+            appCMSBeaconCall.call(url, beaconResponse -> {
                 try {
 
                     if (beaconResponse.beaconRequestResponse.size() > 0 &&
                             beaconResponse.beaconRequestResponse.get(0).recordId != null &&
-                            beaconResponse.beaconRequestResponse.get(0).recordId.length() >0) {
+                            beaconResponse.beaconRequestResponse.get(0).recordId.length() > 0) {
                         Log.d(TAG, "Beacon success Event: Offline " + beaconResponse.beaconRequestResponse.get(0).recordId);
                         currentActivity.runOnUiThread(() -> {
                             realmController.deleteOfflineBeaconDataByUser(getLoggedInUser(currentActivity));
@@ -5448,8 +5424,8 @@ public class AppCMSPresenter {
 
                             if (beaconResponse.beaconRequestResponse.size() > 0 &&
                                     beaconResponse.beaconRequestResponse.get(0).recordId != null &&
-                                    beaconResponse.beaconRequestResponse.get(0).recordId.length() >0) {
-                                Log.d(TAG, "Beacon success Event: Offline "+ event+"  " + beaconResponse.beaconRequestResponse.get(0).recordId);
+                                    beaconResponse.beaconRequestResponse.get(0).recordId.length() > 0) {
+                                Log.d(TAG, "Beacon success Event: Offline " + event + "  " + beaconResponse.beaconRequestResponse.get(0).recordId);
                             }
                         } catch (Exception e) {
                             Log.d(TAG, "Beacon fail Event: " + event + " due to: " + e.getMessage());
@@ -8009,6 +7985,8 @@ public class AppCMSPresenter {
         private final AppCMSPresenter appCMSPresenter;
         private Queue<DownloadQueueItem> filmDownloadQueue;
         private List<String> filmsInQueue;
+        private String downloadURL;
+        private long file_size = 0;
 
         private boolean running;
         private boolean startNextDownload;
@@ -8042,9 +8020,29 @@ public class AppCMSPresenter {
                     if (filmsInQueue.contains(downloadQueueItem.contentDatum.getGist().getTitle())) {
                         filmsInQueue.remove(downloadQueueItem.contentDatum.getGist().getTitle());
                     }
+                    try {// Fix for SVFA-1963
+                        downloadURL = appCMSPresenter.getDownloadURL(downloadQueueItem.contentDatum);
+                        URL url = new URL(downloadURL);
+                        URLConnection urlConnection = url.openConnection();
+                        urlConnection.connect();
+                        //file_size =urlConnection.getContentLength();  // some of the video url length value go over the max limit of int for 720p  rendition
+                        file_size = Long.parseLong(urlConnection.getHeaderField("content-length"));
+                        file_size = ((file_size / 1000) / 1000);
 
-                    appCMSPresenter.startDownload(downloadQueueItem.contentDatum,
-                            downloadQueueItem.resultAction1);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (appCMSPresenter.getMegabytesAvailable() > file_size) {
+                        appCMSPresenter.startDownload(downloadQueueItem.contentDatum,
+                                downloadQueueItem.resultAction1);
+                    } else {
+
+                        appCMSPresenter.currentActivity.runOnUiThread(() -> {
+                            appCMSPresenter.showDialog(DialogType.DOWNLOAD_FAILED, appCMSPresenter.currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null);
+                        });
+
+
+                    }
                 }
                 try {
                     Thread.sleep(1000);
@@ -8065,6 +8063,53 @@ public class AppCMSPresenter {
         public void setStartNextDownload() {
             this.startNextDownload = true;
         }
+    }
+
+    public String getDownloadURL(ContentDatum contentDatum) {
+
+        String downloadURL = "";
+        String downloadQualityRendition = getUserDownloadQualityPref(currentActivity);
+        Map<String, String> urlRenditionMap = new HashMap<>();
+        for (Mpeg mpeg : contentDatum.getStreamingInfo().getVideoAssets().getMpeg()) {
+            urlRenditionMap.put(mpeg.getRenditionValue().replace("_", "").trim(),
+                    mpeg.getUrl());
+        }
+        downloadURL = urlRenditionMap.get(downloadQualityRendition);
+
+        if (downloadQualityRendition != null) {
+            if (downloadURL == null && downloadQualityRendition.contains("360")) {
+                if (urlRenditionMap.get("720p") != null) {
+                    downloadURL = urlRenditionMap.get("720p");
+                } else if (urlRenditionMap.get("1080p") != null) {
+                    downloadURL = urlRenditionMap.get("1080p");
+                }
+
+            } else if (downloadURL == null && downloadQualityRendition.contains("720")) {
+                if (urlRenditionMap.get("360p") != null) {
+                    downloadURL = urlRenditionMap.get("360p");
+                } else if (urlRenditionMap.get("1080p") != null) {
+                    downloadURL = urlRenditionMap.get("1080p");
+                }
+
+            } else if (downloadURL == null && downloadQualityRendition.contains("1080")) {
+                if (urlRenditionMap.get("720p") != null) {
+                    downloadURL = urlRenditionMap.get("720p");
+                } else if (urlRenditionMap.get("360p") != null) {
+                    downloadURL = urlRenditionMap.get("360p");
+                }
+            } else if (downloadURL == null) {
+                //noinspection SuspiciousMethodCalls
+                downloadURL = urlRenditionMap.get(urlRenditionMap.keySet().toArray()[0]);
+            }
+        } else {
+            downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+        }
+
+        downloadURL = downloadURL != null
+                ? downloadURL.replace("https:/", "http:/")
+                : null;
+
+        return downloadURL;
     }
 
     private static class BeaconRunnable implements Runnable {
