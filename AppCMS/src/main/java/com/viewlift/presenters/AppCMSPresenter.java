@@ -368,6 +368,8 @@ public class AppCMSPresenter {
     };
     boolean isRenewable;
     private String FIREBASE_CONTACT_SCREEN = "Contact Us";
+    private String FIREBASE_VIDEO_DETAIL_SCREEN = "Video Detail Screen";
+
     private String clientId;
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
@@ -3724,6 +3726,18 @@ public class AppCMSPresenter {
             getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
     }
 
+    private void sendFirebaseAnalyticsEvents(String eventValue) {
+        if (getmFireBaseAnalytics() == null)
+            return;
+        Bundle bundle = new Bundle();
+
+        bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, eventValue);
+
+        //Logs an app event.
+        getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+        //Sets whether analytics collection is enabled for this app on this device.
+        getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
+    }
 
     public void sendRefreshPageAction() {
         if (currentActivity != null) {
@@ -4756,7 +4770,7 @@ public class AppCMSPresenter {
                 if (main == null) {
                     Log.e(TAG, "DialogType retrieving main.json");
                     if (!isNetworkConnected()) {//Fix for SVFA-1435 issue 2nd by manoj comment
-                       openDownloadScreenForNetworkError(true);
+                        openDownloadScreenForNetworkError(true);
                     } else {
                         launchErrorActivity(platformType);
                     }
@@ -4845,7 +4859,8 @@ public class AppCMSPresenter {
                     currentActivity instanceof AppCompatActivity &&
                     isAdditionalFragmentViewAvailable()) {
                 pushActionInternalEvents(currentActivity.getString(R.string.more_page_action));
-
+                String eventValue=FIREBASE_VIDEO_DETAIL_SCREEN+"-"+title;
+                sendFirebaseAnalyticsEvents(eventValue);
                 clearAdditionalFragment();
                 FragmentTransaction transaction =
                         ((AppCompatActivity) currentActivity).getSupportFragmentManager().beginTransaction();
@@ -5612,55 +5627,55 @@ public class AppCMSPresenter {
                 true,
                 true,
                 false);*/
-            if (entitlementPendingVideoData != null) {
-                isVideoPlayerStarted = false;
-                navigateToHomeToRefresh = false;
-                sendRefreshPageAction();
-                sendCloseOthersAction(null, true);
-                launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
-                        entitlementPendingVideoData.action,
-                        entitlementPendingVideoData.filmTitle,
-                        entitlementPendingVideoData.extraData,
-                        entitlementPendingVideoData.contentDatum,
-                        entitlementPendingVideoData.closeLauncher,
-                        entitlementPendingVideoData.currentlyPlayingIndex,
-                        entitlementPendingVideoData.relateVideoIds);
-                entitlementPendingVideoData.pagePath = null;
-                entitlementPendingVideoData.action = null;
-                entitlementPendingVideoData.filmTitle = null;
-                entitlementPendingVideoData.extraData = null;
-                entitlementPendingVideoData.contentDatum = null;
-                entitlementPendingVideoData.closeLauncher = false;
-                entitlementPendingVideoData.currentlyPlayingIndex = -1;
-                entitlementPendingVideoData.relateVideoIds = null;
-                entitlementPendingVideoData = null;
-            } else {
-                sendCloseOthersAction(null, true);
-                cancelInternalEvents();
-                restartInternalEvents();
+        if (entitlementPendingVideoData != null) {
+            isVideoPlayerStarted = false;
+            navigateToHomeToRefresh = false;
+            sendRefreshPageAction();
+            sendCloseOthersAction(null, true);
+            launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
+                    entitlementPendingVideoData.action,
+                    entitlementPendingVideoData.filmTitle,
+                    entitlementPendingVideoData.extraData,
+                    entitlementPendingVideoData.contentDatum,
+                    entitlementPendingVideoData.closeLauncher,
+                    entitlementPendingVideoData.currentlyPlayingIndex,
+                    entitlementPendingVideoData.relateVideoIds);
+            entitlementPendingVideoData.pagePath = null;
+            entitlementPendingVideoData.action = null;
+            entitlementPendingVideoData.filmTitle = null;
+            entitlementPendingVideoData.extraData = null;
+            entitlementPendingVideoData.contentDatum = null;
+            entitlementPendingVideoData.closeLauncher = false;
+            entitlementPendingVideoData.currentlyPlayingIndex = -1;
+            entitlementPendingVideoData.relateVideoIds = null;
+            entitlementPendingVideoData = null;
+        } else {
+            sendCloseOthersAction(null, true);
+            cancelInternalEvents();
+            restartInternalEvents();
 
-                if (TextUtils.isEmpty(getUserDownloadQualityPref(currentActivity))) {
-                    setUserDownloadQualityPref(currentActivity,
-                            currentActivity.getString(R.string.app_cms_default_download_quality));
-                }
-
-                NavigationPrimary homePageNavItem = findHomePageNavItem();
-                if (homePageNavItem != null) {
-                    cancelInternalEvents();
-                    navigateToPage(homePageNavItem.getPageId(),
-                            homePageNavItem.getTitle(),
-                            homePageNavItem.getUrl(),
-                            false,
-                            true,
-                            false,
-                            true,
-                            true,
-                            deeplinkSearchQuery);
-                }
+            if (TextUtils.isEmpty(getUserDownloadQualityPref(currentActivity))) {
+                setUserDownloadQualityPref(currentActivity,
+                        currentActivity.getString(R.string.app_cms_default_download_quality));
             }
 
+            NavigationPrimary homePageNavItem = findHomePageNavItem();
+            if (homePageNavItem != null) {
+                cancelInternalEvents();
+                navigateToPage(homePageNavItem.getPageId(),
+                        homePageNavItem.getTitle(),
+                        homePageNavItem.getUrl(),
+                        false,
+                        true,
+                        false,
+                        true,
+                        true,
+                        deeplinkSearchQuery);
+            }
+        }
 
-        setIsUserSubscribed(currentActivity,true) ;
+
+        setIsUserSubscribed(currentActivity, true);
         setActiveSubscriptionId(currentActivity, planToPurchase);
         setActiveSubscriptionCurrency(currentActivity, currencyOfPlanToPurchase);
         setActiveSubscriptionPlanName(currentActivity, planToPurchaseName);
@@ -5894,7 +5909,7 @@ public class AppCMSPresenter {
                                                                 getAuthToken(currentActivity),
                                                                 listResult -> {
                                                                     //
-                                                                    Log.v("currentActivity","currentActivity") ;
+                                                                    Log.v("currentActivity", "currentActivity");
                                                                 },
                                                                 singleResult -> {
                                                                     //
@@ -6133,7 +6148,7 @@ public class AppCMSPresenter {
             String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                     appCMSMain.getApiBaseUrl(),
                     appCMSSite.getGist().getSiteInternalName());
-                    startLoginAsyncTask(url,
+            startLoginAsyncTask(url,
                     email,
                     password,
                     false,
@@ -6209,7 +6224,7 @@ public class AppCMSPresenter {
 
         new PostAppCMSLoginRequestAsyncTask(appCMSSignInCall,
                 signInResponse -> {
-                    Log.v("ananomyousToken",getAnonymousUserToken(currentActivity)) ;
+                    Log.v("ananomyousToken", getAnonymousUserToken(currentActivity));
                     try {
                         if (signInResponse == null) {
                             // Show log error
