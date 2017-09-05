@@ -323,7 +323,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         try {
             mStreamId = appCMSPresenter.getStreamingId(title);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
             mStreamId = filmId + appCMSPresenter.getCurrentTimeStamp();
         }
         isVideoDownloaded = appCMSPresenter.isVideoDownloaded(filmId);

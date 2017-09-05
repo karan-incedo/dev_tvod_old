@@ -60,7 +60,7 @@ public class AppCMSBeaconCall {
             });
 
         }catch (Exception e){
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
         }
     }
 }

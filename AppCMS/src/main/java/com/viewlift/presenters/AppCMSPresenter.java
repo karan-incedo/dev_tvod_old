@@ -1735,11 +1735,21 @@ public class AppCMSPresenter {
                     inAppBillingService != null) {
                 Log.d(TAG, "Initiating Google Play Services purchase");
                 try {
-                    Bundle activeSubs = inAppBillingService.getPurchases(3,
-                            currentActivity.getPackageName(),
-                            "subs",
-                            null);
-                    ArrayList<String> subscribedSkus = activeSubs.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
+                    Bundle activeSubs = null;
+                    try {
+                        activeSubs = inAppBillingService.getPurchases(3,
+                                currentActivity.getPackageName(),
+                                "subs",
+                                null);
+                    } catch (RemoteException e) {
+                        Log.e(TAG, "Failed to retrieve current active subscriptions: " + e.getMessage());
+                    }
+
+                    ArrayList<String> subscribedSkus = null;
+
+                    if (activeSubs != null) {
+                        subscribedSkus = activeSubs.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
+                    }
 
                     Bundle buyIntentBundle;
                     if (subscribedSkus != null && !subscribedSkus.isEmpty()) {
@@ -1774,7 +1784,8 @@ public class AppCMSPresenter {
                     }
                 } catch (RemoteException | IntentSender.SendIntentException e) {
                     Log.e(TAG, "Failed to purchase item with sku: "
-                            + getActiveSubscriptionSku(currentActivity));
+                            + skuToPurchase
+                            + e.getMessage());
                 }
             } else {
                 Log.e(TAG, "InAppBillingService: " + inAppBillingService);
@@ -8246,7 +8257,7 @@ public class AppCMSPresenter {
                         file_size = ((file_size / 1000) / 1000);
 
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Log.e(TAG, "Error trying to download: " + e.getMessage());
                     }
                     if (appCMSPresenter.getMegabytesAvailable() > file_size) {
                         appCMSPresenter.startDownload(downloadQueueItem.contentDatum,
