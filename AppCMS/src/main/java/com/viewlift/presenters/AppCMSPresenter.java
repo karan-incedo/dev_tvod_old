@@ -4806,7 +4806,10 @@ public class AppCMSPresenter {
 
     public boolean isPagePrimary(String pageId) {
         for (NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()) {
-            if (pageId != null && !TextUtils.isEmpty(pageId) && pageId.contains(navigationPrimary.getPageId())) {
+            if (pageId != null &&
+                    !TextUtils.isEmpty(pageId) &&
+                    pageId.contains(navigationPrimary.getPageId()) &&
+                    !isViewPlanPage(pageId)) {
                 return true;
             }
         }
