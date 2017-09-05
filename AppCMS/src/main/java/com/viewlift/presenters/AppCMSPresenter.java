@@ -294,6 +294,8 @@ public class AppCMSPresenter {
     private static int PAGE_LRU_CACHE_SIZE = 10;
     private final String USER_ID_KEY = "user_id";
     private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
+    private final String FIREBASE_SCREEN_BEGIN_CHECKOUT = "begin_checkout";
+
     private final String LOGIN_STATUS_KEY = "logged_in_status";
     private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
     private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
@@ -319,6 +321,12 @@ public class AppCMSPresenter {
     private final String FIREBASE_CHANGE_SUBSCRIPTION = "change_subscription";
     private final String FIREBASE_CANCEL_SUBSCRIPTION = "cancel_subscription";
     private final String DOWNLOAD_UI_ID = "download_page_id_pref";
+
+    private final String FIREBASE_PLAN_ITEM_ID = "item_id";
+    private final String FIREBASE_PLAN_ITEM_NAME = "item_name";
+    private final String FIREBASE_PLAN_ITEM_CURRENCY = "currency";
+    private final String FIREBASE_PLAN_ITEM_PRICE = "value";
+
     private final Gson gson;
     private final AppCMSMainUICall appCMSMainUICall;
     private final AppCMSAndroidUICall appCMSAndroidUICall;
@@ -369,6 +377,7 @@ public class AppCMSPresenter {
     boolean isRenewable;
     private String FIREBASE_CONTACT_SCREEN = "Contact Us";
     private String FIREBASE_VIDEO_DETAIL_SCREEN = "Video Detail Screen";
+    private String FIREBASE_EVENT_LOGIN_SCREEN = "Login Screen";
 
     private String clientId;
     private AppCMSPageAPICall appCMSPageAPICall;
@@ -1650,6 +1659,14 @@ public class AppCMSPresenter {
             currencyCode = recurringPaymentCurrencyCode;
             this.countryCode = countryCode;
             this.isRenewable = isRenewable;
+            Bundle bundle = new Bundle();
+            bundle.putString(FIREBASE_PLAN_ITEM_ID, planToPurchase);
+            bundle.putString(FIREBASE_PLAN_ITEM_NAME, planToPurchaseName);
+            bundle.putString(FIREBASE_PLAN_ITEM_CURRENCY, currencyOfPlanToPurchase);
+            bundle.putString(FIREBASE_PLAN_ITEM_PRICE, String.valueOf(planToPurchasePrice));
+
+            String firebaseSelectPlanEventKey="add_to_cart";
+            sendFirebaseSelectedEvents(firebaseSelectPlanEventKey,bundle);
             if (isUserLoggedIn(currentActivity)) {
                 initiateItemPurchase();
             } else {
@@ -3203,6 +3220,14 @@ public class AppCMSPresenter {
                     false,
                     deeplinkSearchQuery);
 
+            /**
+             *
+             * send events when click on plan page
+             */
+            Bundle bundle = new Bundle();
+            bundle.putString(FIREBASE_SCREEN_BEGIN_CHECKOUT, FIREBASE_SCREEN_BEGIN_CHECKOUT);
+            String firebaseBeginCheckotPlanEventKey=FIREBASE_SCREEN_BEGIN_CHECKOUT;
+            sendFirebaseSelectedEvents(firebaseBeginCheckotPlanEventKey,bundle);
             if (!launchSuccess) {
                 Log.e(TAG, "Failed to launch page: " + subscriptionPage.getPageName());
                 launchErrorActivity(platformType);
@@ -3345,6 +3370,7 @@ public class AppCMSPresenter {
                     false,
                     false,
                     deeplinkSearchQuery);
+            sendFirebaseAnalyticsEvents(FIREBASE_EVENT_LOGIN_SCREEN);
             if (!launchSuccess) {
                 Log.e(TAG, "Failed to launch page: " + loginPage.getPageName());
                 launchErrorActivity(platformType);
@@ -7932,6 +7958,11 @@ public class AppCMSPresenter {
         mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
         mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_ID, getActiveSubscriptionId(currentActivity));
         mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_NAME, getActiveSubscriptionPlanName(currentActivity));
+    }
+
+    public void sendFirebaseSelectedEvents(String eventKey,Bundle bundleData) {
+        getmFireBaseAnalytics().logEvent(eventKey, bundleData);
+        getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
     }
 
     public String getApiKey() {
