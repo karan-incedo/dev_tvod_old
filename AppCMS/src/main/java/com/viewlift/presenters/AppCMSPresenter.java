@@ -4321,27 +4321,50 @@ public class AppCMSPresenter {
                                     }
                                 });
                             } else {
-                                sendCloseOthersAction(null, true);
-                                cancelInternalEvents();
-                                restartInternalEvents();
-
-                                if (TextUtils.isEmpty(getUserDownloadQualityPref(currentActivity))) {
-                                    setUserDownloadQualityPref(currentActivity,
-                                            currentActivity.getString(R.string.app_cms_default_download_quality));
-                                }
-
-                                NavigationPrimary homePageNavItem = findHomePageNavItem();
-                                if (homePageNavItem != null) {
+                                if (entitlementPendingVideoData != null) {
+                                    navigateToHomeToRefresh = false;
+                                    sendRefreshPageAction();
+                                    sendCloseOthersAction(null, true);
+                                    launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
+                                            entitlementPendingVideoData.action,
+                                            entitlementPendingVideoData.filmTitle,
+                                            entitlementPendingVideoData.extraData,
+                                            entitlementPendingVideoData.contentDatum,
+                                            entitlementPendingVideoData.closeLauncher,
+                                            entitlementPendingVideoData.currentlyPlayingIndex,
+                                            entitlementPendingVideoData.relateVideoIds);
+                                    entitlementPendingVideoData.pagePath = null;
+                                    entitlementPendingVideoData.action = null;
+                                    entitlementPendingVideoData.filmTitle = null;
+                                    entitlementPendingVideoData.extraData = null;
+                                    entitlementPendingVideoData.contentDatum = null;
+                                    entitlementPendingVideoData.closeLauncher = false;
+                                    entitlementPendingVideoData.currentlyPlayingIndex = -1;
+                                    entitlementPendingVideoData.relateVideoIds = null;
+                                    entitlementPendingVideoData = null;
+                                } else {
+                                    sendCloseOthersAction(null, true);
                                     cancelInternalEvents();
-                                    navigateToPage(homePageNavItem.getPageId(),
-                                            homePageNavItem.getTitle(),
-                                            homePageNavItem.getUrl(),
-                                            false,
-                                            true,
-                                            false,
-                                            true,
-                                            true,
-                                            deeplinkSearchQuery);
+                                    restartInternalEvents();
+
+                                    if (TextUtils.isEmpty(getUserDownloadQualityPref(currentActivity))) {
+                                        setUserDownloadQualityPref(currentActivity,
+                                                currentActivity.getString(R.string.app_cms_default_download_quality));
+                                    }
+
+                                    NavigationPrimary homePageNavItem = findHomePageNavItem();
+                                    if (homePageNavItem != null) {
+                                        cancelInternalEvents();
+                                        navigateToPage(homePageNavItem.getPageId(),
+                                                homePageNavItem.getTitle(),
+                                                homePageNavItem.getUrl(),
+                                                false,
+                                                true,
+                                                false,
+                                                true,
+                                                true,
+                                                deeplinkSearchQuery);
+                                    }
                                 }
                             }
                         }
@@ -6435,27 +6458,50 @@ public class AppCMSPresenter {
                                         }
                                     });
                                 } else {
-                                    sendCloseOthersAction(null, true);
-                                    cancelInternalEvents();
-                                    restartInternalEvents();
-
-                                    if (TextUtils.isEmpty(getUserDownloadQualityPref(currentActivity))) {
-                                        setUserDownloadQualityPref(currentActivity,
-                                                currentActivity.getString(R.string.app_cms_default_download_quality));
-                                    }
-
-                                    NavigationPrimary homePageNavItem = findHomePageNavItem();
-                                    if (homePageNavItem != null) {
+                                    if (entitlementPendingVideoData != null) {
+                                        navigateToHomeToRefresh = false;
+                                        sendRefreshPageAction();
+                                        sendCloseOthersAction(null, true);
+                                        launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
+                                                entitlementPendingVideoData.action,
+                                                entitlementPendingVideoData.filmTitle,
+                                                entitlementPendingVideoData.extraData,
+                                                entitlementPendingVideoData.contentDatum,
+                                                entitlementPendingVideoData.closeLauncher,
+                                                entitlementPendingVideoData.currentlyPlayingIndex,
+                                                entitlementPendingVideoData.relateVideoIds);
+                                        entitlementPendingVideoData.pagePath = null;
+                                        entitlementPendingVideoData.action = null;
+                                        entitlementPendingVideoData.filmTitle = null;
+                                        entitlementPendingVideoData.extraData = null;
+                                        entitlementPendingVideoData.contentDatum = null;
+                                        entitlementPendingVideoData.closeLauncher = false;
+                                        entitlementPendingVideoData.currentlyPlayingIndex = -1;
+                                        entitlementPendingVideoData.relateVideoIds = null;
+                                        entitlementPendingVideoData = null;
+                                    } else {
+                                        sendCloseOthersAction(null, true);
                                         cancelInternalEvents();
-                                        navigateToPage(homePageNavItem.getPageId(),
-                                                homePageNavItem.getTitle(),
-                                                homePageNavItem.getUrl(),
-                                                false,
-                                                true,
-                                                false,
-                                                true,
-                                                true,
-                                                deeplinkSearchQuery);
+                                        restartInternalEvents();
+
+                                        if (TextUtils.isEmpty(getUserDownloadQualityPref(currentActivity))) {
+                                            setUserDownloadQualityPref(currentActivity,
+                                                    currentActivity.getString(R.string.app_cms_default_download_quality));
+                                        }
+
+                                        NavigationPrimary homePageNavItem = findHomePageNavItem();
+                                        if (homePageNavItem != null) {
+                                            cancelInternalEvents();
+                                            navigateToPage(homePageNavItem.getPageId(),
+                                                    homePageNavItem.getTitle(),
+                                                    homePageNavItem.getUrl(),
+                                                    false,
+                                                    true,
+                                                    false,
+                                                    true,
+                                                    true,
+                                                    deeplinkSearchQuery);
+                                        }
                                     }
                                 }
                             }
