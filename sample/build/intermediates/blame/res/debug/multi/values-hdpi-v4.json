@@ -1,0 +1,76 @@
+{
+    "logs": [
+        {
+            "outputFile": "/Users/viewlift/Documents/git/AppCMSAgendaTv/sample/build/intermediates/incremental/mergeDebugResources/merged.dir/values-hdpi-v4/values-hdpi-v4.xml",
+            "map": [
+                {
+                    "source": "/Users/viewlift/.gradle/caches/transforms-1/files-1.1/appcompat-v7-23.1.1.aar/721c7c0c267d795f6b31df1afbef5e71/res/values-hdpi/values-hdpi.xml",
+                    "from": {
+                        "startLines": "4",
+                        "startColumns": "4",
+                        "startOffsets": "235",
+                        "endLines": "8",
+                        "endColumns": "13",
+                        "endOffsets": "507"
+                    },
+                    "to": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "6",
+                        "endColumns": "13",
+                        "endOffsets": "327"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "/Users/viewlift/Documents/git/AndroidAppCMS/sample/build/intermediates/incremental/mergeDebugResources/merged.dir/values-hdpi-v4/values-hdpi-v4.xml",
+            "map": [
+                {
+                    "source": "/Users/viewlift/.gradle/caches/transforms-1/files-1.1/appcompat-v7-23.1.1.aar/721c7c0c267d795f6b31df1afbef5e71/res/values-hdpi/values-hdpi.xml",
+                    "from": {
+                        "startLines": "4",
+                        "startColumns": "4",
+                        "startOffsets": "235",
+                        "endLines": "8",
+                        "endColumns": "13",
+                        "endOffsets": "507"
+                    },
+                    "to": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "6",
+                        "endColumns": "13",
+                        "endOffsets": "327"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "/Users/viewlift/Documents/git/AndroidAppCMSPhase3/sample/build/intermediates/incremental/mergeDebugResources/merged.dir/values-hdpi-v4/values-hdpi-v4.xml",
+            "map": [
+                {
+                    "source": "/Users/viewlift/.gradle/caches/transforms-1/files-1.1/appcompat-v7-23.1.1.aar/1c648f1a417bbaf337d33b8279f4f2f4/res/values-hdpi/values-hdpi.xml",
+                    "from": {
+                        "startLines": "4",
+                        "startColumns": "4",
+                        "startOffsets": "235",
+                        "endLines": "8",
+                        "endColumns": "13",
+                        "endOffsets": "507"
+                    },
+                    "to": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "6",
+                        "endColumns": "13",
+                        "endOffsets": "327"
+                    }
+                }
+            ]
+        }
+    ]
+}
