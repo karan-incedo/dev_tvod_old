@@ -4738,6 +4738,13 @@ public class AppCMSPresenter {
         return null;
     }
 
+    public NavigationPrimary findLivePageNavItem() {
+        if (navigation.getNavigationPrimary().size() >= 3) {
+            return navigation.getNavigationPrimary().get(2);
+        }
+        return null;
+    }
+
     public void getAppCMSMain(final Activity activity,
                               final String siteId,
                               final Uri searchQuery,
@@ -4753,7 +4760,7 @@ public class AppCMSPresenter {
                 if (main == null) {
                     Log.e(TAG, "DialogType retrieving main.json");
                     if (!isNetworkConnected()) {//Fix for SVFA-1435 issue 2nd by manoj comment
-                       openDownloadScreenForNetworkError(true);
+                        openDownloadScreenForNetworkError(true);
                     } else {
                         launchErrorActivity(platformType);
                     }
