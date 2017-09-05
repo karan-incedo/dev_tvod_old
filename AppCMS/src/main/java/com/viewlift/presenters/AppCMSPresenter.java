@@ -3967,8 +3967,7 @@ public class AppCMSPresenter {
     public boolean setDownloadPageId(Context context, String url) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(DOWNLOAD_UI_ID, 0);
-            return sharedPrefs.edit().putString(DOWNLOAD_UI_ID, url).commit() &&
-                    setLoggedInTime(context);
+            return sharedPrefs.edit().putString(DOWNLOAD_UI_ID, url).commit();
         }
         return false;
     }
@@ -4034,7 +4033,7 @@ public class AppCMSPresenter {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, 0);
             return sharedPrefs.edit().putBoolean(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME,
-                    downloadPref).commit() && setLoggedInTime(context);
+                    downloadPref).commit();
         }
         return false;
     }
@@ -4051,7 +4050,7 @@ public class AppCMSPresenter {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME, 0);
             return sharedPrefs.edit().putBoolean(USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME,
-                    downloadPref).commit() && setLoggedInTime(context);
+                    downloadPref).commit();
         }
         return false;
     }

@@ -1,58 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/viewlift/Documents/git/AppCMSAgendaTv/sample/build/intermediates/incremental/mergeDebugResources/merged.dir/values-v16/values-v16.xml",
-            "map": [
-                {
-                    "source": "/Users/viewlift/Documents/git/AppCMSAgendaTv/sample/src/main/res/values-v16/styles.xml",
-                    "from": {
-                        "startLines": "3",
-                        "startColumns": "2",
-                        "startOffsets": "54",
-                        "endLines": "8",
-                        "endColumns": "10",
-                        "endOffsets": "335"
-                    },
-                    "to": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endLines": "7",
-                        "endColumns": "10",
-                        "endOffsets": "336"
-                    }
-                }
-            ]
-        },
-        {
             "outputFile": "/Users/viewlift/Documents/git/AndroidAppCMSPhase3/sample/build/intermediates/incremental/mergeDebugResources/merged.dir/values-v16/values-v16.xml",
             "map": [
                 {
                     "source": "/Users/viewlift/Documents/git/AndroidAppCMSPhase3/sample/src/main/res/values-v16/styles.xml",
-                    "from": {
-                        "startLines": "3",
-                        "startColumns": "2",
-                        "startOffsets": "54",
-                        "endLines": "8",
-                        "endColumns": "10",
-                        "endOffsets": "335"
-                    },
-                    "to": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endLines": "7",
-                        "endColumns": "10",
-                        "endOffsets": "336"
-                    }
-                }
-            ]
-        },
-        {
-            "outputFile": "/Users/viewlift/Documents/git/AndroidAppCMS/sample/build/intermediates/incremental/mergeDebugResources/merged.dir/values-v16/values-v16.xml",
-            "map": [
-                {
-                    "source": "/Users/viewlift/Documents/git/AndroidAppCMS/sample/src/main/res/values-v16/styles.xml",
                     "from": {
                         "startLines": "3",
                         "startColumns": "2",
