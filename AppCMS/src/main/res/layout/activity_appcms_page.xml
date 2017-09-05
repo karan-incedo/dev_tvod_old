@@ -126,16 +126,6 @@
             android:focusable="true"
             android:scaleType="centerInside" />
 
-        <com.viewlift.views.customviews.NavBarItemView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:clickable="true"
-            android:focusable="true"
-            android:scaleType="centerInside" />
-
     </LinearLayout>
 
     <RelativeLayout
