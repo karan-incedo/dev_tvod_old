@@ -306,15 +306,19 @@ public class TVViewCreator {
                 }
              }
             } else {
+                    if(module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_page_authentication_module))) {
+                        module = new GsonBuilder().create().
+                        fromJson(Utils.loadJsonFromAssets(context, "login.json"), ModuleList.class);
 
-            if(appCMSPageAPI.getId().equalsIgnoreCase("6c1b8091-a303-426e-a9a1-fa01838d5189")){
+            if (appCMSPageAPI.getId().equalsIgnoreCase("6c1b8091-a303-426e-a9a1-fa01838d5189")) {
                 module = new GsonBuilder().create().
                         fromJson(Utils.loadJsonFromAssets(context, "signup.json"), ModuleList.class);
+            }
+        }else if(module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_setting_module))){
+                        module = new GsonBuilder().create().
+                                fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
 
-            }else if(module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_page_authentication_module)))
-            module = new GsonBuilder().create().
-                    fromJson(Utils.loadJsonFromAssets(context, "login.json"), ModuleList.class);
-
+                    }
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
@@ -763,6 +767,7 @@ public class TVViewCreator {
                                 }
                                 ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
                             }
+                            ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(Utils.getFocusColor(context,appCMSPresenter)));
                             componentViewResult.componentView.setFocusable(false);
                             componentViewResult.componentView.setTag("TITLE");
                             break;
@@ -1266,6 +1271,41 @@ public class TVViewCreator {
                 componentViewResult.componentView = new HeaderView(context
                     ,component , jsonValueKeyMap , moduleAPI);
                 componentViewResult.componentView.setFocusable(false);
+                break;
+            case PAGE_SETTING_TOGGLE_SWITCH_TYPE:
+                componentViewResult.componentView = new ToggleSwitchView(
+                        context,
+                        component,
+                        jsonValueKeyMap
+                );
+
+
+                /*if (componentKey == AppCMSUIKeyType.PAGE_SETTING_AUTOPLAY_TOGGLE_SWITCH_KEY) {
+                    boolean isAutoplayEnabled = appCMSPresenter.getAutoplayEnabledUserPref(context);
+                    componentViewResult.componentView.setOnClickListener(v -> {
+                        if (isAutoplayEnabled){
+                            ((ToggleSwitchView) componentViewResult.componentView)
+                                    .getImageView().setImageResource(R.drawable.focused_off);
+                        } else {
+                            ((ToggleSwitchView) componentViewResult.componentView)
+                                    .getImageView().setImageResource(R.drawable.focused_on);
+                        }
+                    });
+                } else if (componentKey == AppCMSUIKeyType.PAGE_SETTING_CLOSED_CAPTION_TOGGLE_SWITCH_KEY) {
+                    boolean isClosedCaptionEnabled =
+                            appCMSPresenter.getClosedCaptionPreference(context);
+                    componentViewResult.componentView.setOnClickListener(v -> {
+                        if (isClosedCaptionEnabled){
+                            ((ToggleSwitchView) componentViewResult.componentView)
+                                    .getImageView().setImageResource(R.drawable.focused_off);
+                        } else {
+                            ((ToggleSwitchView) componentViewResult.componentView)
+                                    .getImageView().setImageResource(R.drawable.focused_on);
+                        }
+                    });
+                }*/
+
+
                 break;
             default:
         }

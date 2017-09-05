@@ -7252,7 +7252,7 @@ public class AppCMSPresenter {
                         pageIdToPageAPIUrlMap.get(pageId),
                         appCMSSite.getGist().getSiteInternalName(),
                         true,
-                        getPageId(appCMSPageUI),
+                        pageId,
                         new AppCMSPageAPIAction(true,
                                 false,
                                 true,
