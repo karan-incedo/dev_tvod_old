@@ -321,7 +321,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             e.printStackTrace();
             mStreamId = filmId + appCMSPresenter.getCurrentTimeStamp();
         }
-        isVideoDownloaded=appCMSPresenter.isVideoDownloaded(filmId);
+        isVideoDownloaded = appCMSPresenter.isVideoDownloaded(filmId);
         videoPlayerView.setCurrentPosition(watchedTime * SECS_TO_MSECS);
         videoPlayerView.setOnPlayerStateChanged(playerState -> {
             if (playerState.getPlaybackState() == ExoPlayer.STATE_READY && !isCastConnected) {
@@ -439,7 +439,11 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         initViewForCRW(rootView);
         if (!shouldRequestAds) {
-            createContentRatingView();
+            try {
+                createContentRatingView();
+            } catch (Exception e) {
+                Log.e(TAG, "Error ContentRatingView: " + e.getMessage());
+            }
         }
 
         beaconMessageThread = new BeaconPingThread(beaconMsgTimeoutMsec,
@@ -634,7 +638,11 @@ public class AppCMSPlayVideoFragment extends Fragment
 
             case ALL_ADS_COMPLETED:
                 videoLoadingProgress.setVisibility(View.GONE);
-                createContentRatingView();
+                try {
+                    createContentRatingView();
+                } catch (Exception e) {
+                    Log.e(TAG, "Error ContentRatingView: " + e.getMessage());
+                }
                 if (adsManager != null) {
                     adsManager.destroy();
                     adsManager = null;
@@ -985,8 +993,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         contentRatingDiscretionView.setVisibility(View.GONE);
     }
 
-    private void createContentRatingView() {
-        if (!isTrailer && !getParentalRating().equalsIgnoreCase(getString(R.string.age_rating_converted_default))) {
+    private void createContentRatingView() throws Exception {
+        if (!isTrailer && getParentalRating() != null && !getParentalRating().equalsIgnoreCase(getString(R.string.age_rating_converted_default))) {
             videoPlayerMainContainer.setVisibility(View.GONE);
             animateView();
             startCountdown();
