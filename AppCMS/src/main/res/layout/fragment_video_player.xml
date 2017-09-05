@@ -12,8 +12,7 @@
     <RelativeLayout
         android:id="@+id/app_cms_video_player_main_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:id="@+id/app_cms_video_player_info_container"
