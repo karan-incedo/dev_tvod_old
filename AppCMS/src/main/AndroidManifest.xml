@@ -106,6 +106,12 @@
             android:value="com.viewlift.casting.CastOptionsProvider" />
 
         <activity android:name=".ccavenue.screens.PaymentOptionsActivity"></activity>
+
+        <receiver android:name=".models.data.appcms.downloads.FileDownloadCompleteReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
