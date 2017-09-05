@@ -1675,6 +1675,7 @@ public class AppCMSPresenter {
             intent.putExtra("x-api-token", apikey);
             intent.putExtra("auth_token", getAuthToken(currentActivity));
             intent.putExtra("renewable", isRenewable);
+            intent.putExtra("mobile_number", "");
             currentActivity.startActivityForResult(intent, 1);
         } catch (Exception ex) {
             ex.printStackTrace();
