@@ -34,6 +34,7 @@
         <activity
             android:name=".views.activity.AppCMSPageActivity"
             android:configChanges="orientation|screenSize"
+            android:windowSoftInputMode="adjustPan"
             android:launchMode="singleTask">
             <meta-data
                 android:name="android.app.default_searchable"
