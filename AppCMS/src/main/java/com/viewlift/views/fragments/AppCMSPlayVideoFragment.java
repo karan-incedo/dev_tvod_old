@@ -442,7 +442,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             try {
                 createContentRatingView();
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "Error ContentRatingView: " + e.getMessage());
             }
         }
 
@@ -641,7 +641,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 try {
                     createContentRatingView();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "Error ContentRatingView: " + e.getMessage());
                 }
                 if (adsManager != null) {
                     adsManager.destroy();
