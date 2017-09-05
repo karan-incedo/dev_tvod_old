@@ -35,5 +35,6 @@
 
     <string name="item_position">nav_item_position</string>
     <string name="no_data_available">No Data Available.</string>
+    <string name="title_activity_app_cms_sub_nav_item">AppCmsSubNavItemActivity</string>
 
 </resources>

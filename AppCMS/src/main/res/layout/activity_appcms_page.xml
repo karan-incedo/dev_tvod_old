@@ -27,11 +27,11 @@
 
                 <ImageView
                     android:id="@+id/app_cms_toolbar_logo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="220dp"
+                    android:layout_height="?attr/actionBarSize"
                     android:layout_centerHorizontal="true"
                     android:background="@drawable/logo_icon"
-                    android:scaleType="fitCenter" />
+                    android:scaleType="centerInside" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -41,9 +41,11 @@
 
                     <LinearLayout
                         android:id="@+id/ll_media_route_button"
+
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+
                         android:orientation="horizontal">
 
                         <ImageButton
