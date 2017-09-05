@@ -303,6 +303,8 @@ public class AppCMSPresenter {
     private static int PAGE_LRU_CACHE_SIZE = 10;
     private final String USER_ID_KEY = "user_id";
     private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
+    private final String FIREBASE_SCREEN_BEGIN_CHECKOUT = "begin_checkout";
+
     private final String LOGIN_STATUS_KEY = "logged_in_status";
     private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
     private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
@@ -328,6 +330,12 @@ public class AppCMSPresenter {
     private final String FIREBASE_CHANGE_SUBSCRIPTION = "change_subscription";
     private final String FIREBASE_CANCEL_SUBSCRIPTION = "cancel_subscription";
     private final String DOWNLOAD_UI_ID = "download_page_id_pref";
+
+    private final String FIREBASE_PLAN_ITEM_ID = "item_id";
+    private final String FIREBASE_PLAN_ITEM_NAME = "item_name";
+    private final String FIREBASE_PLAN_ITEM_CURRENCY = "currency";
+    private final String FIREBASE_PLAN_ITEM_PRICE = "value";
+
     private final Gson gson;
     private final AppCMSMainUICall appCMSMainUICall;
     private final AppCMSAndroidUICall appCMSAndroidUICall;
@@ -379,6 +387,9 @@ public class AppCMSPresenter {
     };
     boolean isRenewable;
     private String FIREBASE_CONTACT_SCREEN = "Contact Us";
+    private String FIREBASE_VIDEO_DETAIL_SCREEN = "Video Detail Screen";
+    private String FIREBASE_EVENT_LOGIN_SCREEN = "Login Screen";
+
     private String clientId;
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
@@ -1669,6 +1680,14 @@ public class AppCMSPresenter {
             currencyCode = recurringPaymentCurrencyCode;
             this.countryCode = countryCode;
             this.isRenewable = isRenewable;
+            Bundle bundle = new Bundle();
+            bundle.putString(FIREBASE_PLAN_ITEM_ID, planToPurchase);
+            bundle.putString(FIREBASE_PLAN_ITEM_NAME, planToPurchaseName);
+            bundle.putString(FIREBASE_PLAN_ITEM_CURRENCY, currencyOfPlanToPurchase);
+            bundle.putString(FIREBASE_PLAN_ITEM_PRICE, String.valueOf(planToPurchasePrice));
+
+            String firebaseSelectPlanEventKey="add_to_cart";
+            sendFirebaseSelectedEvents(firebaseSelectPlanEventKey,bundle);
             if (isUserLoggedIn(currentActivity)) {
                 Log.d(TAG, "Initiating item purchase for subscription");
                 initiateItemPurchase();
@@ -3210,6 +3229,14 @@ public class AppCMSPresenter {
                     false,
                     deeplinkSearchQuery);
 
+            /**
+             *
+             * send events when click on plan page
+             */
+            Bundle bundle = new Bundle();
+            bundle.putString(FIREBASE_SCREEN_BEGIN_CHECKOUT, FIREBASE_SCREEN_BEGIN_CHECKOUT);
+            String firebaseBeginCheckotPlanEventKey=FIREBASE_SCREEN_BEGIN_CHECKOUT;
+            sendFirebaseSelectedEvents(firebaseBeginCheckotPlanEventKey,bundle);
             if (!launchSuccess) {
                 Log.e(TAG, "Failed to launch page: " + subscriptionPage.getPageName());
                 launchErrorActivity(platformType);
@@ -3352,6 +3379,7 @@ public class AppCMSPresenter {
                     false,
                     false,
                     deeplinkSearchQuery);
+            sendFirebaseAnalyticsEvents(FIREBASE_EVENT_LOGIN_SCREEN);
             if (!launchSuccess) {
                 Log.e(TAG, "Failed to launch page: " + loginPage.getPageName());
                 launchErrorActivity(platformType);
@@ -3736,6 +3764,18 @@ public class AppCMSPresenter {
             getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
     }
 
+    private void sendFirebaseAnalyticsEvents(String eventValue) {
+        if (getmFireBaseAnalytics() == null)
+            return;
+        Bundle bundle = new Bundle();
+
+        bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, eventValue);
+
+        //Logs an app event.
+        getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+        //Sets whether analytics collection is enabled for this app on this device.
+        getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
+    }
 
     public void sendRefreshPageAction() {
         if (currentActivity != null) {
@@ -4820,7 +4860,6 @@ public class AppCMSPresenter {
                 if (main == null) {
                     Log.e(TAG, "DialogType retrieving main.json");
                     if (!isNetworkConnected()) {//Fix for SVFA-1435 issue 2nd by manoj comment
-
                         openDownloadScreenForNetworkError(true);
                     } else {
                         launchErrorActivity(platformType);
@@ -4917,7 +4956,8 @@ public class AppCMSPresenter {
                     currentActivity instanceof AppCompatActivity &&
                     isAdditionalFragmentViewAvailable()) {
                 pushActionInternalEvents(currentActivity.getString(R.string.more_page_action));
-
+                String eventValue=FIREBASE_VIDEO_DETAIL_SCREEN+"-"+title;
+                sendFirebaseAnalyticsEvents(eventValue);
                 clearAdditionalFragment();
                 FragmentTransaction transaction =
                         ((AppCompatActivity) currentActivity).getSupportFragmentManager().beginTransaction();
@@ -8039,6 +8079,11 @@ public class AppCMSPresenter {
         mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
         mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_ID, getActiveSubscriptionId(currentActivity));
         mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_NAME, getActiveSubscriptionPlanName(currentActivity));
+    }
+
+    public void sendFirebaseSelectedEvents(String eventKey,Bundle bundleData) {
+        getmFireBaseAnalytics().logEvent(eventKey, bundleData);
+        getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
     }
 
     public String getApiKey() {

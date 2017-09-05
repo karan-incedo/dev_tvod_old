@@ -721,11 +721,12 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         if (progressPercent >= 25 && progressPercent < 50 && !isStream25) {
             if (!isStreamStart) {
-                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
                 isStreamStart = true;
             }
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
             isStream25 = true;
+
         }
 
         if (progressPercent >= 50 && progressPercent < 75 && !isStream50) {
@@ -735,8 +736,9 @@ public class AppCMSPlayVideoFragment extends Fragment
             }
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_50, bundle);
             isStream50 = true;
+
         }
-        if (progressPercent >= 75 && progressPercent < 100 && !isStream75) {
+        if (progressPercent >= 75 && progressPercent <= 100 && !isStream75) {
             if (!isStream25) {
                 appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
                 isStream25 = true;
