@@ -262,8 +262,10 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     }
 
     private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {
-        Format textFormat = Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP,
-                null, Format.NO_VALUE, C.SELECTION_FLAG_DEFAULT, "en", null);
+        Format textFormat = Format.createTextSampleFormat(null,
+                MimeTypes.APPLICATION_SUBRIP,
+                C.SELECTION_FLAG_DEFAULT,
+                "en");
         MediaSource videoSource = buildMediaSource(uri, "");
         if (ccFileUrl == null) {
             return videoSource;
@@ -357,6 +359,11 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     }
 
     @Override
+    public void onRepeatModeChanged(int repeatMode) {
+
+    }
+
+    @Override
     public void onPlayerError(ExoPlaybackException e) {
         mCurrentPlayerPosition = player.getCurrentPosition();
     }
@@ -406,7 +413,8 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         /**
          * We can enhance logic here depending on the error code list that we will use for cloasing the video page.
          */
-        if (error.getMessage().contains("404")
+        if ( (error.getMessage().contains("404") ||
+                error.getMessage().contains("400") )
                 && !isLoadedNext) {
             if ((player.getCurrentPosition() + 5000) >= player.getDuration()) {
                 isLoadedNext = true;

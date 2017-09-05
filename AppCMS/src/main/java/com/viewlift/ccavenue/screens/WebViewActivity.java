@@ -140,7 +140,7 @@ public class WebViewActivity extends Activity {
 					status = "Transaction Cancelled!";
 					backPressFlag = false ;
 					displaySuccessPaymentDialog("Transaction Cancelled!", "Try again later!");
-				}else{
+				}else {
 					status = "Status Not Known!";
 					backPressFlag = false ;
 					displaySuccessPaymentDialog("Something went wrong!", "Try again later!");
@@ -213,6 +213,12 @@ public class WebViewActivity extends Activity {
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.ORDER_ID,orderID));
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.REDIRECT_URL,cancelRedirectURL));
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.CANCEL_URL,cancelRedirectURL));
+			params.append(ServiceUtility.addToPostParams("billing_name",getIntent().getStringExtra("authorizedUserName")));
+			params.append(ServiceUtility.addToPostParams("billing_email",getIntent().getStringExtra("email")));
+			params.append(ServiceUtility.addToPostParams("billing_country","India"));
+			params.append(ServiceUtility.addToPostParams("billing_tel",getIntent().getStringExtra("mobile_number")));
+
+			//params.append(ServiceUtility.addToPostParams(AvenuesParams.CANCEL_URL,cancelRedirectURL));
 			if (getIntent().getBooleanExtra("renewable",false)) {
 				params.append(ServiceUtility.addToPostParams("payment_option","OPTCRDC")) ;
 			}/* else {
@@ -306,7 +312,6 @@ public class WebViewActivity extends Activity {
 				orderID = jsonObj.getString("orderId") ;
 				accessCode = jsonObj.getString("accessCode") ;
 				cancelRedirectURL = jsonObj.getString("redirectUrl") ;
-				Log.v("cancelRedirectURL",cancelRedirectURL) ;
 				merchantID = jsonObj.getString("merchantId") ;
 			} catch (JSONException e) {
 				Log.e(TAG, e.getMessage());

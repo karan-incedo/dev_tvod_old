@@ -36,6 +36,7 @@ import com.viewlift.models.network.rest.GoogleRefreshTokenRest;
 import com.viewlift.presenters.AppCMSActionType;
 import com.viewlift.presenters.AppCMSPresenter;
 
+import java.lang.ref.ReferenceQueue;
 import java.util.Map;
 
 import javax.inject.Singleton;
@@ -49,6 +50,11 @@ import dagger.Provides;
 
 @Module(includes = {AppCMSSearchModule.class})
 public class AppCMSPresenterModule {
+    @Provides
+    @Singleton
+    public ReferenceQueue<Object> providesReferenceQueue() {
+        return new ReferenceQueue<>();
+    }
 
     @Provides
     @Singleton
@@ -92,7 +98,9 @@ public class AppCMSPresenterModule {
                                                    Map<String, String> pageNameToActionMap,
                                                    Map<String, AppCMSPageUI> actionToPageMap,
                                                    Map<String, AppCMSPageAPI> actionToPageAPIMap,
-                                                   Map<String, AppCMSActionType> actionToActionTypeMap) {
+                                                   Map<String, AppCMSActionType> actionToActionTypeMap,
+
+                                                   ReferenceQueue<Object> referenceQueue) {
         return new AppCMSPresenter(gson,
                 appCMSMainUICall,
                 appCMSAndroidUICall,
@@ -133,6 +141,8 @@ public class AppCMSPresenterModule {
                 pageNameToActionMap,
                 actionToPageMap,
                 actionToPageAPIMap,
-                actionToActionTypeMap);
+                actionToActionTypeMap,
+
+                referenceQueue);
     }
 }

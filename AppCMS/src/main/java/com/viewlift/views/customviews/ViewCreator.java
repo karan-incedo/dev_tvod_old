@@ -60,6 +60,8 @@ import com.viewlift.views.adapters.AppCMSViewAdapter;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
 
+import org.htmlcleaner.HtmlCleaner;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -491,19 +493,23 @@ public class ViewCreator {
                                     }
                                 } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_EDIT_PROFILE_KEY) {
                                     if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken(context))) {
-                                        view.setVisibility(View.GONE);
+                                        componentViewResult.componentView.setVisibility(View.GONE);
+                                        componentViewResult.shouldHideComponent = true;
                                     }
 
                                     if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken(context))) {
-                                        view.setVisibility(View.GONE);
+                                        componentViewResult.componentView.setVisibility(View.GONE);
+                                        componentViewResult.shouldHideComponent = true;
                                     }
                                 } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CHANGE_PASSWORD_KEY) {
                                     if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken(context))) {
-                                        view.setVisibility(View.GONE);
+                                        componentViewResult.componentView.setVisibility(View.GONE);
+                                        componentViewResult.shouldHideComponent = true;
                                     }
 
                                     if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken(context))) {
-                                        view.setVisibility(View.GONE);
+                                        componentViewResult.componentView.setVisibility(View.GONE);
+                                        componentViewResult.shouldHideComponent = true;
                                     }
                                 } else {
                                     if (componentType == AppCMSUIKeyType.PAGE_CASTVIEW_VIEW_KEY) {
@@ -1462,6 +1468,28 @@ public class ViewCreator {
                 }
 
                 switch (componentKey) {
+                    case PAGE_BUTTON_SWITCH_KEY:
+                        if (appCMSPresenter.isPreferedStorageLocationSDCard(context)) {
+                            ((Switch) componentViewResult.componentView).setChecked(true);
+                        } else {
+                            ((Switch) componentViewResult.componentView).setChecked(false);
+                        }
+
+                        ((Switch) componentViewResult.componentView).setOnCheckedChangeListener((buttonView, isChecked) -> {
+                            if (isChecked) {
+                                if (appCMSPresenter.isRemovableSDCardAvailable()) {
+                                    appCMSPresenter.setPreferedStorageLocationSDCard(context, true);
+                                } else {
+                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SD_CARD_NOT_AVAILABLE, null, false, null);
+                                    buttonView.setChecked(false);
+                                }
+                            } else {
+                                appCMSPresenter.setPreferedStorageLocationSDCard(context, false);
+                            }
+
+                        });
+                        break;
+
                     case PAGE_SETTINGS_EDIT_PROFILE_KEY:
                     case PAGE_SETTINGS_CHANGE_PASSWORD_KEY:
                         if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken(context))) {

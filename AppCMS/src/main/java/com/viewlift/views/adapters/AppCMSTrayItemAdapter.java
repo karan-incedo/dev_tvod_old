@@ -272,7 +272,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             }
 
             if (contentDatum.getGist() != null) {
-                Spannable rawHtmlSpannable = new HtmlSpanner().fromHtml(contentDatum.getGist().getTitle());
+                Spannable rawHtmlSpannable = new HtmlSpanner().fromHtml(contentDatum.getGist().getDescription());
                 holder.appCMSContinueWatchingDescription.setText(rawHtmlSpannable);
             }
 
