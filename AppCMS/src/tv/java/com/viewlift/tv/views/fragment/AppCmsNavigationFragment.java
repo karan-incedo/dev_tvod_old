@@ -208,13 +208,15 @@ public class AppCmsNavigationFragment extends Fragment {
                                         navigation.getNavigationUser().get(0).getTitle(),
                                         navigation.getNavigationUser().get(0).getUrl(),
                                         false,
-                                        null
+                                        null,
+                                        false
                                 );
                             }else if (!appCmsPresenter.navigateToTVPage(primary.getPageId(),
                                     primary.getTitle(),
                                     primary.getUrl(),
                                     false,
-                                    null)) {
+                                    null,
+                                    true)) {
                             }
                         }
                     } , 500);

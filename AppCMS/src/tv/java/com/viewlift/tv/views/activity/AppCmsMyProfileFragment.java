@@ -48,7 +48,6 @@ public class AppCmsMyProfileFragment extends Fragment implements AppCmsSubNaviga
 
         Bundle bundle = getArguments();
         mAppCMSBinder = (AppCMSBinder)bundle.getBinder("app_cms_binder");
-
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
@@ -78,7 +77,6 @@ public class AppCmsMyProfileFragment extends Fragment implements AppCmsSubNaviga
 
         FrameLayout pageHolder = (FrameLayout)view.findViewById(R.id.profile_placeholder);
         pageHolder.addView(tvPageView);
-
         return view;
     }
 
@@ -91,7 +89,8 @@ public class AppCmsMyProfileFragment extends Fragment implements AppCmsSubNaviga
 
     private void setSubNavigationFragment(){
         appCmsSubNavigationFragment = AppCmsSubNavigationFragment.newInstance(getActivity(),this);
-        getChildFragmentManager().beginTransaction().add(R.id.sub_navigation_placholder , appCmsSubNavigationFragment ).commitAllowingStateLoss();
+        appCmsSubNavigationFragment.setSelectedPageId(mAppCMSBinder.getPageId());
+        getChildFragmentManager().beginTransaction().replace(R.id.sub_navigation_placholder , appCmsSubNavigationFragment ).commitAllowingStateLoss();
     }
 
     @Override

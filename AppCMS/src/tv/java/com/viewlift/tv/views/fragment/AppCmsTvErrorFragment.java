@@ -53,12 +53,23 @@ public class AppCmsTvErrorFragment extends AbsDialogFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_app_cms_tv_error, container, false);
         TextView errorTextView = (TextView) view.findViewById(R.id.app_cms_error_textview);
+        TextView headerView = (TextView)view.findViewById(R.id.title);
         errorTextView.setText(getString(R.string.no_inernet_error , getString(R.string.app_name)));
         RelativeLayout parentLayout = (RelativeLayout)view.findViewById(R.id.dialog_parent);
 
         final Bundle bundle = getArguments();
         final boolean shouldRetry = bundle.getBoolean(getString(R.string.retry_key));
         shouldRegisterInternetReciever = bundle.getBoolean(getString(R.string.register_internet_receiver_key));
+        String errorMsg = bundle.getString(getString(R.string.tv_dialog_msg_key));
+        String headerTitle = bundle.getString(getString(R.string.tv_dialog_header_key));
+
+        if(null != errorMsg){
+            errorTextView.setText(errorMsg);
+        }
+
+        if(null != headerTitle){
+            headerView.setText(headerTitle);
+        }
 
 
         appCMSPresenter =

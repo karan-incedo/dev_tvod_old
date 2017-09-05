@@ -226,6 +226,9 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_PASSWORDTEXTFIELD2_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_forgotpassword_key),
                 AppCMSUIKeyType.PAGE_FORGOTPASSWORD_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_login_key) ,
+                AppCMSUIKeyType.PAGE_LOGIN_BUTTON_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_mobileinput_key),
                 AppCMSUIKeyType.PAGE_MOBILETEXTFIELD_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_authentication_module),

@@ -6184,7 +6184,30 @@ public class AppCMSPresenter {
                                 }
                             }
                         } else if (!TextUtils.isEmpty(signInResponse.getError())) {
-                            showDialog(DialogType.SIGNIN, signInResponse.getError(), false, null);
+                            if(platformType == PlatformType.TV){
+                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                                //Toast.makeText(currentActivity , signInResponse.getError() , Toast.LENGTH_SHORT).show();
+                                try {
+                                    Bundle bundle = new Bundle();
+                                    bundle.putBoolean(currentActivity.getString(R.string.retry_key), false);
+                                    bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key) ,false);
+                                    bundle.putString(currentActivity.getString(R.string.tv_dialog_msg_key) , signInResponse.getError());
+                                    bundle.putString(currentActivity.getString(R.string.tv_dialog_header_key) ,
+                                                signup ? currentActivity.getString(R.string.app_cms_signup).toUpperCase() :
+                                                        currentActivity.getString(R.string.app_cms_login).toUpperCase()
+                                    );
+
+                                    Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+                                    args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+                                    currentActivity.sendBroadcast(args);
+                                } catch (Exception e) {
+                                    Log.e(TAG, "DialogType launching TV DialogType Activity");
+                                }
+
+
+                            }else{
+                                showDialog(DialogType.SIGNIN, signInResponse.getError(), false, null);
+                            }
                         } else {
                             setRefreshToken(currentActivity, signInResponse.getRefreshToken());
                             setAuthToken(currentActivity, signInResponse.getAuthorizationToken());
@@ -6283,15 +6306,26 @@ public class AppCMSPresenter {
                                     NavigationPrimary homePageNavItem = findHomePageNavItem();
                                     if (homePageNavItem != null) {
                                         cancelInternalEvents();
-                                        navigateToPage(homePageNavItem.getPageId(),
-                                                homePageNavItem.getTitle(),
-                                                homePageNavItem.getUrl(),
-                                                false,
-                                                true,
-                                                false,
-                                                true,
-                                                true,
-                                                deeplinkSearchQuery);
+                                        if(platformType == PlatformType.ANDROID) {
+                                            navigateToPage(homePageNavItem.getPageId(),
+                                                    homePageNavItem.getTitle(),
+                                                    homePageNavItem.getUrl(),
+                                                    false,
+                                                    true,
+                                                    false,
+                                                    true,
+                                                    true,
+                                                    deeplinkSearchQuery);
+                                        }else if(platformType == PlatformType.TV){
+                                            navigateToTVPage(
+                                                    homePageNavItem.getPageId(),
+                                                    homePageNavItem.getTitle(),
+                                                    homePageNavItem.getUrl(),
+                                                    false,
+                                                    deeplinkSearchQuery,
+                                                    true
+                                            );
+                                        }
                                     }
                                 }
                             }
@@ -6503,6 +6537,8 @@ public class AppCMSPresenter {
                 null, SEARCH_RETRY_ACTION
         );
         Bundle bundle = new Bundle();
+        bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
+        bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key) ,true);
         bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
         Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
         args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
@@ -7137,7 +7173,7 @@ public class AppCMSPresenter {
                             appCMSAndroidUI.getShortAppName() != null ?
                                     appCMSAndroidUI.getShortAppName() :
                                     currentActivity.getString(R.string.profile_label)));
-                    //navigation.getNavigationPrimary().add(myProfile);   //TODO : commented due to phase_1 build. This is a feature of Phase_2
+                    navigation.getNavigationPrimary().add(myProfile);   //TODO : commented due to phase_1 build. This is a feature of Phase_2
 
 
                     //add search in navigation item.
@@ -7163,7 +7199,8 @@ public class AppCMSPresenter {
                                         homePageNav.getTitle(),
                                         homePageNav.getUrl(),
                                         true,
-                                        null);
+                                        null,
+                                        false);
                                 if (!launchSuccess) {
                                     Log.e(TAG, "Failed to launch page: "
                                             + firstPage.getPageName());
@@ -7179,7 +7216,8 @@ public class AppCMSPresenter {
                                     String pageTitle,
                                     String url,
                                     boolean launchActivity,
-                                    Uri searchQuery) {
+                                    Uri searchQuery ,
+                                    boolean forcedDownload) {
         boolean result = false;
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
             loadingPage = true;
@@ -7190,6 +7228,10 @@ public class AppCMSPresenter {
 
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
 
+            if(forcedDownload){
+                appCMSPageAPI = null;
+            }
+
             if (appCMSPageAPI == null) {
                 //check internet connection here.
                 if (!isNetworkConnected()) {
@@ -7197,6 +7239,8 @@ public class AppCMSPresenter {
                             pageTitle, null,
                             null, launchActivity, pageId, PAGE_ACTION);
                     Bundle bundle = new Bundle();
+                    bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
+                    bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key) ,true);
                     bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
                     Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
                     args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
@@ -7239,7 +7283,6 @@ public class AppCMSPresenter {
                                                 this.fullscreenEnabled,
                                                 this.navbarPresent,
                                                 this.searchQuery);
-
                                         setNavItemToCurrentAction(currentActivity);
 
                                     } else {
@@ -7481,6 +7524,8 @@ public class AppCMSPresenter {
                     filmTitle, extraData,
                     null, closeLauncher, null, BUTTON_ACTION);
             Bundle bundle = new Bundle();
+            bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
+            bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key) ,true);
             bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
             Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
             args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
@@ -7548,7 +7593,8 @@ public class AppCMSPresenter {
                 sendCloseOthersAction(null, true);
             } else if (actionType == AppCMSActionType.LOGIN) {
                 Log.d(TAG, "Login action selected: " + extraData[0]);
-                closeSoftKeyboard();
+                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                //closeSoftKeyboard();
                 login(extraData[0], extraData[1]);
                 sendSignInEmailFirebase();
             } else if (actionType == AppCMSActionType.FORGOT_PASSWORD) {
@@ -7561,7 +7607,7 @@ public class AppCMSPresenter {
                 sendSignInFacebookFirebase();
             } else if (actionType == AppCMSActionType.SIGNUP) {
                 Log.d(TAG, "Sign-Up selected: " + extraData[0]);
-                closeSoftKeyboard();
+                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                 signup(extraData[0], extraData[1]);
                 sendSignUpEmailFirebase();
             } else {
@@ -7818,6 +7864,8 @@ public class AppCMSPresenter {
             );
 
             Bundle bundle = new Bundle();
+            bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
+            bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key) ,true);
             bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
             Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
             args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
