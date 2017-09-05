@@ -1,0 +1,4 @@
+#Mon Sep 04 10:38:42 EDT 2017
+base.0=/Users/viewlift/Documents/git/AppCMSAgendaTv/sample/build/intermediates/transforms/dexMerger/debug/0
+renamed.0=classes.dex
+file.0=/Users/viewlift/Documents/git/AppCMSAgendaTv/sample/build/intermediates/transforms/dexMerger/debug/0/classes.dex
