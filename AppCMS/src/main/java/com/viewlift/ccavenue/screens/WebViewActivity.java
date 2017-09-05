@@ -106,42 +106,6 @@ public class WebViewActivity extends Activity {
 			return null;
 		}
     
-		@SuppressWarnings("unused")
-		class MyJavaScriptInterface
-		{
-			@JavascriptInterface
-			public void processHTML(String html)
-			{
-				// process the html as needed by the app
-				String status = null;
-				if(html.indexOf("F")!=-1){
-					backPressFlag = false ;
-					status = "Transaction Declined!";
-					displaySuccessPaymentDialog("Transaction Declined!", "Try again later!");
-				}else if(html.indexOf("S")!=-1){
-					try {
-						backPressFlag = true ;
-					appCMSPresenter.finalizeSignupAfterCCAvenueSubscription(null) ;
-					updateStatus = new updateSubscriptionPlanAsyncTask() ;
-					updateStatus.execute();
-						sendBroadcast(new Intent(
-								AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-						finish();
-					} catch (Exception ex) {
-						ex.printStackTrace();
-					}
-				}else if(html.indexOf("Aborted")!=-1){
-					status = "Transaction Cancelled!";
-					backPressFlag = false ;
-					displaySuccessPaymentDialog("Transaction Cancelled!", "Try again later!");
-				}else {
-					status = "Status Not Known!";
-					backPressFlag = false ;
-					displaySuccessPaymentDialog("Something went wrong!", "Try again later!");
-				}
-			}
-		}
-    
 		@Override
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
