@@ -515,10 +515,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+
+        Log.d(TAG, "Received other activity result");
 
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
+                GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                 if (result != null && result.isSuccess()) {
                     if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                         handleCloseAction();
@@ -534,6 +536,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     callbackManager.onActivityResult(requestCode, resultCode, data);
                 } else if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
                     appCMSPresenter.finalizeSignupAfterSubscription(data.getStringExtra("INAPP_PURCHASE_DATA"));
+                    Log.d(TAG, "Finalizing signup after subscription");
                 }
             }
 

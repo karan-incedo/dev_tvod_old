@@ -1669,8 +1669,10 @@ public class AppCMSPresenter {
             this.countryCode = countryCode;
             this.isRenewable = isRenewable;
             if (isUserLoggedIn(currentActivity)) {
+                Log.d(TAG, "Initiating item purchase for subscription");
                 initiateItemPurchase();
             } else {
+                Log.d(TAG, "Navigating to login page for subscription");
                 navigateToLoginPage();
             }
         }
@@ -1705,11 +1707,13 @@ public class AppCMSPresenter {
     public void initiateItemPurchase() {
         if (!TextUtils.isEmpty(countryCode) && countryCode.equalsIgnoreCase("IN")) {
             if (currencyCode.equalsIgnoreCase("INR")) {
+                Log.d(TAG, "Initiating CCAvenue purchase");
                 initiateCCAvenuePurchase();
             }
         } else {
             if (currentActivity != null &&
                     inAppBillingService != null) {
+                Log.d(TAG, "Initiating Google Play Services purchase");
                 try {
                     Bundle activeSubs = inAppBillingService.getPurchases(3,
                             currentActivity.getPackageName(),
@@ -1719,6 +1723,7 @@ public class AppCMSPresenter {
 
                     Bundle buyIntentBundle;
                     if (subscribedSkus != null && !subscribedSkus.isEmpty()) {
+                        Log.d(TAG, "Initiating upgrade purchase");
                         buyIntentBundle = inAppBillingService.getBuyIntentToReplaceSkus(5,
                                 currentActivity.getPackageName(),
                                 subscribedSkus,
@@ -1726,6 +1731,7 @@ public class AppCMSPresenter {
                                 "subs",
                                 null);
                     } else {
+                        Log.d(TAG, "Initiating new item purchase");
                         buyIntentBundle = inAppBillingService.getBuyIntent(3,
                                 currentActivity.getPackageName(),
                                 skuToPurchase,
@@ -1735,6 +1741,7 @@ public class AppCMSPresenter {
 
                     PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
                     if (pendingIntent != null) {
+                        Log.d(TAG, "Launching intent to initiate item purchase");
                         currentActivity.startIntentSenderForResult(pendingIntent.getIntentSender(),
                                 RC_PURCHASE_PLAY_STORE_ITEM,
                                 new Intent(),
@@ -4268,8 +4275,15 @@ public class AppCMSPresenter {
                                             sendCloseOthersAction(null, true);
                                             cancelInternalEvents();
                                             restartInternalEvents();
+
+                                            if (TextUtils.isEmpty(getUserDownloadQualityPref(currentActivity))) {
+                                                setUserDownloadQualityPref(currentActivity,
+                                                        currentActivity.getString(R.string.app_cms_default_download_quality));
+                                            }
+
                                             NavigationPrimary homePageNavItem = findHomePageNavItem();
                                             if (homePageNavItem != null) {
+                                                cancelInternalEvents();
                                                 navigateToPage(homePageNavItem.getPageId(),
                                                         homePageNavItem.getTitle(),
                                                         homePageNavItem.getUrl(),
@@ -4277,7 +4291,7 @@ public class AppCMSPresenter {
                                                         true,
                                                         false,
                                                         true,
-                                                        false,
+                                                        true,
                                                         deeplinkSearchQuery);
                                             }
                                         }
@@ -4289,8 +4303,15 @@ public class AppCMSPresenter {
                                 sendCloseOthersAction(null, true);
                                 cancelInternalEvents();
                                 restartInternalEvents();
+
+                                if (TextUtils.isEmpty(getUserDownloadQualityPref(currentActivity))) {
+                                    setUserDownloadQualityPref(currentActivity,
+                                            currentActivity.getString(R.string.app_cms_default_download_quality));
+                                }
+
                                 NavigationPrimary homePageNavItem = findHomePageNavItem();
                                 if (homePageNavItem != null) {
+                                    cancelInternalEvents();
                                     navigateToPage(homePageNavItem.getPageId(),
                                             homePageNavItem.getTitle(),
                                             homePageNavItem.getUrl(),
@@ -4298,7 +4319,7 @@ public class AppCMSPresenter {
                                             true,
                                             false,
                                             true,
-                                            false,
+                                            true,
                                             deeplinkSearchQuery);
                                 }
                             }
@@ -4360,8 +4381,15 @@ public class AppCMSPresenter {
                                             sendCloseOthersAction(null, true);
                                             cancelInternalEvents();
                                             restartInternalEvents();
+
+                                            if (TextUtils.isEmpty(getUserDownloadQualityPref(currentActivity))) {
+                                                setUserDownloadQualityPref(currentActivity,
+                                                        currentActivity.getString(R.string.app_cms_default_download_quality));
+                                            }
+
                                             NavigationPrimary homePageNavItem = findHomePageNavItem();
                                             if (homePageNavItem != null) {
+                                                cancelInternalEvents();
                                                 navigateToPage(homePageNavItem.getPageId(),
                                                         homePageNavItem.getTitle(),
                                                         homePageNavItem.getUrl(),
@@ -4369,7 +4397,7 @@ public class AppCMSPresenter {
                                                         true,
                                                         false,
                                                         true,
-                                                        false,
+                                                        true,
                                                         deeplinkSearchQuery);
                                             }
                                         }
@@ -4391,8 +4419,15 @@ public class AppCMSPresenter {
                                         sendCloseOthersAction(null, true);
                                         cancelInternalEvents();
                                         restartInternalEvents();
+
+                                        if (TextUtils.isEmpty(getUserDownloadQualityPref(currentActivity))) {
+                                            setUserDownloadQualityPref(currentActivity,
+                                                    currentActivity.getString(R.string.app_cms_default_download_quality));
+                                        }
+
                                         NavigationPrimary homePageNavItem = findHomePageNavItem();
                                         if (homePageNavItem != null) {
+                                            cancelInternalEvents();
                                             navigateToPage(homePageNavItem.getPageId(),
                                                     homePageNavItem.getTitle(),
                                                     homePageNavItem.getUrl(),
@@ -4400,7 +4435,7 @@ public class AppCMSPresenter {
                                                     true,
                                                     false,
                                                     true,
-                                                    false,
+                                                    true,
                                                     deeplinkSearchQuery);
                                         }
                                     }
