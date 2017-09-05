@@ -8,4 +8,8 @@
 /AppCMS/release/*
 /*.apk
 /*.json
-/.idea
+/.idea/gradle.xml
+/.idea/modules.xml
+/.idea/*
+/AppCMS/mobile/release/AppCMS-mobile-release.apk
+/library/build/*
