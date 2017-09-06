@@ -172,8 +172,8 @@
     <string name="more_page_action">MorePage</string>
 
     <!-- AppCMS Facebook Login values -->
-    <string name="facebook_app_id">910134432450680</string>
-    <string name="fb_login_protocol_scheme">fb910134432450680</string>
+    <string name="facebook_app_id">1324523080924996</string>
+    <string name="fb_login_protocol_scheme">fb1324523080924996</string>
 
     <!-- AppCMS Apptentive API -->
     <string name="app_cms_apptentive_api_key">831155c17a5b911a3d13140c1e00ff34a9b111182810a751c711b1c0ac1a86d2</string>
@@ -303,8 +303,10 @@
     <string name="app_cms_download_external_storage_write_permission_info_error_title">Download to External Storage</string>
     <string name="app_cms_download_limit_message">Download is only available for 30 days after it has been downloaded.</string>
     <string name="app_cms_download_unavailable_error_title">Download Unavailable</string>
-    <string name="app_cms_download_failed_error_title">Download Failed</string>
-    <!-- <string name="app_cms_download_failed_error_message">Cannot be downloaded due to low device storage, Please manage space in your storage area and try again.</string>-->
+    <string name="app_cms_download_failed_error_title">Not Enough Storage</string>
+   <!-- <string name="app_cms_download_failed_error_message">Cannot be downloaded due to low device storage, Please manage space in your storage area and try again.</string>-->
+    <string name="app_cms_download_failed_storage_error_title">Download Failed</string>
+
     <string name="app_cms_download_failed_error_message">Your device does not have enough space to download the content! In order to free some memory : &lt;br&#47;&gt; 1. Go to Settings. &lt;br&#47;&gt; 2. Tap on Storage  </string>
 
     <string name="app_cms_sdCard_unavailable_error_title">SDCard Unavailable</string>
@@ -351,6 +353,6 @@
     <string name="content_rating_text_warning">WARNING</string>
     <string name="content_rating_viewer_discretion">Viewer Discretion Is Advised</string>
     <string name="video_player_content_rating_key">video_player_content_rating</string>
-    <string name="content_rating_description">The following content is rated: &#160;</string>
+    <string name="content_rating_description">The following may contain:&#160;</string>
     <string name="server_client_id">525148171038-1dgfbunn8l27oilqldve5qg7cref8ua1.apps.googleusercontent.com</string>
 </resources>

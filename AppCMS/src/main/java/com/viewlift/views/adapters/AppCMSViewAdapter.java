@@ -273,6 +273,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                       ContentDatum data) {
                         if (isClickable) {
                             if (collectionGridItemView.isSelectable()) {
+                                Log.d(TAG, "Initiating signup and subscription: " +
+                                    data.getIdentifier());
                                 appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
                                         data.getId(),
                                         data.getPlanDetails().get(0).getCountryCode(),

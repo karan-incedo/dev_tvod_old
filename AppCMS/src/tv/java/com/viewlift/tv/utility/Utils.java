@@ -90,7 +90,7 @@ public class Utils {
             FireTV fireTV = layout.getTv();
             float height = getViewHeight(fireTV);
             if (height != -1.0f) {
-                return height;
+                return getViewYAxisAsPerScreen(context,(int)height);
             }
         }
         return defaultHeight;
@@ -212,30 +212,38 @@ public class Utils {
         return -1.0f;
     }
 
-    public static StateListDrawable getNavigationSelector(Context context , AppCMSPresenter appCMSPresenter){
+    public static StateListDrawable getNavigationSelector(Context context , AppCMSPresenter appCMSPresenter , boolean isSubNavigation){
         StateListDrawable res = new StateListDrawable();
-        res.addState(new int[]{android.R.attr.state_focused}, getNavigationSelectedState(context ,appCMSPresenter));
-        res.addState(new int[]{android.R.attr.state_pressed}, getNavigationSelectedState(context , appCMSPresenter));
-        res.addState(new int[]{android.R.attr.state_selected},getNavigationSelectedState(context , appCMSPresenter));
+        res.addState(new int[]{android.R.attr.state_focused}, getNavigationSelectedState(context ,appCMSPresenter , isSubNavigation));
+        res.addState(new int[]{android.R.attr.state_pressed}, getNavigationSelectedState(context , appCMSPresenter , isSubNavigation));
+        res.addState(new int[]{android.R.attr.state_selected},getNavigationSelectedState(context , appCMSPresenter , isSubNavigation));
         res.addState(new int[]{}, new ColorDrawable(ContextCompat.getColor(context,android.R.color.transparent)));
         return res;
     }
 
-    private static LayerDrawable getNavigationSelectedState(Context context , AppCMSPresenter appCMSPresenter){
+    public static LayerDrawable getNavigationSelectedState(Context context , AppCMSPresenter appCMSPresenter , boolean isSubNavigation){
         GradientDrawable focusedLayer = new GradientDrawable();
         focusedLayer.setShape(GradientDrawable.RECTANGLE);
         focusedLayer.setColor(Color.parseColor(getFocusColor(context,appCMSPresenter)));
 
         GradientDrawable transparentLayer = new GradientDrawable();
         transparentLayer.setShape(GradientDrawable.RECTANGLE);
-        transparentLayer.setColor(ContextCompat.getColor(context , R.color.appcms_nav_background)/*Color.parseColor(getFocusColor(appCMSPresenter))*/);
+        if(isSubNavigation){
+            transparentLayer.setColor(ContextCompat.getColor(context , R.color.appcms_sub_nav_background));
+        }else{
+            transparentLayer.setColor(ContextCompat.getColor(context , R.color.appcms_nav_background)/*Color.parseColor(getFocusColor(appCMSPresenter))*/);
+        }
 
         LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{
                 focusedLayer,
                 transparentLayer
         });
 
-        layerDrawable.setLayerInset(1,0,5,0,0);
+        if(isSubNavigation){
+            layerDrawable.setLayerInset(1,0,0,0,5);
+        }else{
+            layerDrawable.setLayerInset(1,0,5,0,0);
+        }
         return layerDrawable;
     }
 

@@ -15,10 +15,10 @@ import android.widget.ToggleButton;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
@@ -45,7 +45,6 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.FileDataSource;
@@ -66,7 +65,7 @@ import rx.functions.Action1;
  * Created by viewlift on 5/31/17.
  */
 
-public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListener,
+public class VideoPlayerView extends FrameLayout implements Player.EventListener,
         AdaptiveMediaSourceEventListener {
     private static final String TAG = "VideoPlayerFragment";
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
@@ -262,8 +261,10 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     }
 
     private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {
-        Format textFormat = Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP,
-                null, Format.NO_VALUE, C.SELECTION_FLAG_DEFAULT, "en", null);
+        Format textFormat = Format.createTextSampleFormat(null,
+                MimeTypes.APPLICATION_SUBRIP,
+                C.SELECTION_FLAG_DEFAULT,
+                "en");
         MediaSource videoSource = buildMediaSource(uri, "");
         if (ccFileUrl == null) {
             return videoSource;
@@ -357,6 +358,11 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     }
 
     @Override
+    public void onRepeatModeChanged(int repeatMode) {
+
+    }
+
+    @Override
     public void onPlayerError(ExoPlaybackException e) {
         mCurrentPlayerPosition = player.getCurrentPosition();
     }
@@ -406,7 +412,8 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         /**
          * We can enhance logic here depending on the error code list that we will use for cloasing the video page.
          */
-        if (error.getMessage().contains("404")
+        if ( (error.getMessage().contains("404") ||
+                error.getMessage().contains("400") )
                 && !isLoadedNext) {
             if ((player.getCurrentPosition() + 5000) >= player.getDuration()) {
                 isLoadedNext = true;
@@ -574,7 +581,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
                 dataSource = baseDataSource;
             }
 
-            Uri updatedUri = Uri.parse(dataSpec.uri.toString().replaceAll(" ", "_"));
+            Uri updatedUri = Uri.parse(dataSpec.uri.toString().replaceAll(" ", "%20"));
             dataSpec = new DataSpec(updatedUri,
                     dataSpec.absoluteStreamPosition,
                     dataSpec.length,

@@ -58,11 +58,11 @@ public class OfflineBeaconData extends RealmObject{
 
     private String ref;
 
-    private int apos;
+    private String apos;
 
-    private int apod;
+    private String apod;
 
-    private int vpos;
+    private String vpos;
 
     private String url;
 
@@ -224,27 +224,27 @@ public class OfflineBeaconData extends RealmObject{
         this.ref = ref;
     }
 
-    public int getApos() {
+    public String getApos() {
         return apos;
     }
 
-    public void setApos(int apos) {
+    public void setApos(String apos) {
         this.apos = apos;
     }
 
-    public int getApod() {
+    public String getApod() {
         return apod;
     }
 
-    public void setApod(int apod) {
+    public void setApod(String apod) {
         this.apod = apod;
     }
 
-    public int getVpos() {
+    public String getVpos() {
         return vpos;
     }
 
-    public void setVpos(int vpos) {
+    public void setVpos(String vpos) {
         this.vpos = vpos;
     }
 

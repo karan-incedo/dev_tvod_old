@@ -106,11 +106,15 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             }
         });
 
-        if (!TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getGist().getTitle())) {
+        if (appCMSSearchResults.get(adapterPosition).getGist() != null &&
+                !TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getGist().getTitle())) {
             viewHolder.filmTitle.setText(appCMSSearchResults.get(adapterPosition).getGist().getTitle());
         }
 
-        if (!TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getContentDetails().getPosterImage().getUrl())) {
+        if (appCMSSearchResults.get(adapterPosition).getContentDetails() != null &&
+                appCMSSearchResults.get(adapterPosition).getContentDetails().getPosterImage() != null &&
+
+                !TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getContentDetails().getPosterImage().getUrl())) {
 
             final String imageUrl = viewHolder.view.getContext().getString(R.string.app_cms_image_with_resize_query,
                     appCMSSearchResults.get(adapterPosition).getContentDetails().getPosterImage().getUrl(),

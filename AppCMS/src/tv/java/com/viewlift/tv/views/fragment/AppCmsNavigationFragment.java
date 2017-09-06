@@ -113,14 +113,6 @@ public class AppCmsNavigationFragment extends Fragment {
                 mRecyclerView.clearFocus();
         }
     }
-   /* public void setSelectorColor() {
-        LayerDrawable layerDrawable = (LayerDrawable) ContextCompat.getDrawable(getActivity(), R.drawable.navigation_selector);
-        GradientDrawable topshape = (GradientDrawable) layerDrawable.findDrawableByLayerId(R.id.navigationTopColor);
-        GradientDrawable bottomShape = (GradientDrawable) layerDrawable.findDrawableByLayerId(R.id.navigationBottomColor);
-        if(bgColor != -1)
-            topshape.setColor(bgColor);
-        bottomShape.setColor(ContextCompat.getColor(getActivity(), R.color.appcms_nav_background));
-    }*/
 
     private String mSelectedPageId = null;
     public void setSelectedPageId(String selectedPageId) {
@@ -208,6 +200,16 @@ public class AppCmsNavigationFragment extends Fragment {
                             if(primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_search_label))){
                                 appCmsPresenter.openSearch();
                                 ((AppCmsHomeActivity)getActivity()).pageLoading(false);
+                            }else if(primary.getPageId().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label ,
+                                    getString(R.string.profile_label)))){
+                                /*appCmsPresenter.openMyProfile();*/
+                                appCmsPresenter.navigateToTVPage(
+                                        navigation.getNavigationUser().get(0).getPageId(),
+                                        navigation.getNavigationUser().get(0).getTitle(),
+                                        navigation.getNavigationUser().get(0).getUrl(),
+                                        false,
+                                        null
+                                );
                             }else if (!appCmsPresenter.navigateToTVPage(primary.getPageId(),
                                     primary.getTitle(),
                                     primary.getUrl(),
@@ -238,7 +240,7 @@ public class AppCmsNavigationFragment extends Fragment {
                 setTypeFaceValue(appCmsPresenter);
                 navItemView = (TextView) itemView.findViewById(R.id.nav_item_label);
                 navItemlayout = (RelativeLayout) itemView.findViewById(R.id.nav_item_layout);
-                navItemlayout.setBackground(Utils.getNavigationSelector(mContext , appCmsPresenter));
+                navItemlayout.setBackground(Utils.getNavigationSelector(mContext , appCmsPresenter,false));
                 navItemView.setTextColor(Color.parseColor(Utils.getTextColor(mContext,appCmsPresenter)));
                 navItemView.setTypeface(semiBoldTypeFace);
                 navItemlayout.setOnFocusChangeListener(new View.OnFocusChangeListener() {

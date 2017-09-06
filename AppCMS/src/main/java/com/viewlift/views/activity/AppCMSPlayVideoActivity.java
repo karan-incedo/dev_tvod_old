@@ -177,7 +177,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 fragmentTransaction.commit();
             }
         } catch (ClassCastException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
         }
 
         handoffReceiver = new BroadcastReceiver() {

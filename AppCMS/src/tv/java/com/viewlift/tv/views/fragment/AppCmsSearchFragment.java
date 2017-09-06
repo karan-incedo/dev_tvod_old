@@ -446,7 +446,9 @@ public class AppCmsSearchFragment extends Fragment {
                     if (searchTask != null && searchTask.getStatus() == AsyncTask.Status.RUNNING) {
                         searchTask.cancel(true);
                     }
-                    searchTask = new SearchAsyncTask(searchDataObserver, appCMSSearchCall);
+                    searchTask = new SearchAsyncTask(searchDataObserver,
+                            appCMSSearchCall,
+                            appCMSPresenter.getApiKey());
                     String encodedString  = URLEncoder.encode(editText.getText().toString().trim() , "UTF-8");
                     String secondEncoding = URLEncoder.encode(encodedString , "UTF-8");
 
@@ -466,18 +468,21 @@ public class AppCmsSearchFragment extends Fragment {
     private class SearchAsyncTask extends AsyncTask<String, Void, List<AppCMSSearchResult>> {
         final Action1<List<AppCMSSearchResult>> dataReadySubscriber;
         final AppCMSSearchCall appCMSSearchCall;
+        final String apiKey;
 
         SearchAsyncTask(Action1<List<AppCMSSearchResult>> dataReadySubscriber,
-                        AppCMSSearchCall appCMSSearchCall) {
+                        AppCMSSearchCall appCMSSearchCall,
+                        String apiKey) {
             this.dataReadySubscriber = dataReadySubscriber;
             this.appCMSSearchCall = appCMSSearchCall;
+            this.apiKey = apiKey;
         }
 
         @Override
         protected List<AppCMSSearchResult> doInBackground(String... params) {
             if (params.length > 0) {
                 try {
-                    return appCMSSearchCall.call(params[0]);
+                    return appCMSSearchCall.call(apiKey, params[0]);
                 } catch (IOException e) {
                     Log.e(TAG, "I/O DialogType retrieving search data from URL: " + params[0]);
                 }
@@ -595,7 +600,9 @@ public class AppCmsSearchFragment extends Fragment {
             if (searchTask != null && searchTask.getStatus() == AsyncTask.Status.RUNNING) {
                 searchTask.cancel(true);
             }
-            searchTask = new SearchAsyncTask(searchDataObserver, appCMSSearchCall);
+            searchTask = new SearchAsyncTask(searchDataObserver,
+                    appCMSSearchCall,
+                    appCMSPresenter.getApiKey());
 
             String encodedString = URLEncoder.encode(searchQuery.trim(), "UTF-8");
             String secondEncoding = URLEncoder.encode(encodedString, "UTF-8");

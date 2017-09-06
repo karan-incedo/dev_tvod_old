@@ -120,6 +120,7 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
                 getActivity().finish();
             });
 
+            appCMSPresenter.setDownloadQualityScreenShowBefore(getActivity(),true);
             cancelButton.setOnClickListener(v -> getActivity().finish());
             pageView.setBackgroundColor(Color.TRANSPARENT);
         }
