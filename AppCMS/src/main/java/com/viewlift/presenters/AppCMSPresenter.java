@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -77,6 +76,7 @@ import com.viewlift.ccavenue.utility.AvenuesParams;
 import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenResponse;
 import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
 import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
+import com.viewlift.models.billing.utils.IabHelper;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
@@ -440,7 +440,7 @@ public class AppCMSPresenter {
     private IInAppBillingService inAppBillingService;
     private String subscriptionUserEmail;
     private String subscriptionUserPassword;
-    private boolean signupFromFacebook;
+    private boolean isSignupFromFacebook;
     private boolean isSignupFromGoogle;
     private String facebookAccessToken;
     private String facebookUserId;
@@ -1622,7 +1622,7 @@ public class AppCMSPresenter {
 
     public void loginFacebook() {
         if (currentActivity != null) {
-            signupFromFacebook = true;
+            isSignupFromFacebook = true;
             LoginManager.getInstance().logInWithReadPermissions(currentActivity,
                     Arrays.asList("public_profile", "email", "user_friends"));
         }
@@ -1748,7 +1748,7 @@ public class AppCMSPresenter {
                         subscribedSkus = activeSubs.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
                     }
 
-                    Bundle buyIntentBundle;
+                    Bundle buyIntentBundle = null;
                     if (subscribedSkus != null && !subscribedSkus.isEmpty()) {
                         Log.d(TAG, "Initiating upgrade purchase");
                         buyIntentBundle = inAppBillingService.getBuyIntentToReplaceSkus(5,
@@ -1766,18 +1766,41 @@ public class AppCMSPresenter {
                                 null);
                     }
 
-                    PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
-                    if (pendingIntent != null) {
-                        Log.d(TAG, "Launching intent to initiate item purchase");
-                        currentActivity.startIntentSenderForResult(pendingIntent.getIntentSender(),
-                                RC_PURCHASE_PLAY_STORE_ITEM,
-                                new Intent(),
-                                0,
-                                0,
-                                0);
-                    } else {
-                        showToast(currentActivity.getString(R.string.app_cms_cancel_subscription_subscription_not_valid_message),
-                                Toast.LENGTH_LONG);
+                    if (buyIntentBundle != null) {
+                        int resultCode = buyIntentBundle.getInt("RESPONSE_CODE");
+                        if (resultCode == 0) {
+                            PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+                            if (pendingIntent != null) {
+                                Log.d(TAG, "Launching intent to initiate item purchase");
+                                currentActivity.startIntentSenderForResult(pendingIntent.getIntentSender(),
+                                        RC_PURCHASE_PLAY_STORE_ITEM,
+                                        new Intent(),
+                                        0,
+                                        0,
+                                        0);
+                            } else {
+                                showToast(currentActivity.getString(R.string.app_cms_cancel_subscription_subscription_not_valid_message),
+                                        Toast.LENGTH_LONG);
+                            }
+                        } else {
+                            if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_USER_CANCELED) {
+                                showDialog(DialogType.SUBSCRIBE, "Billing response was cnacelled by user", false, null);
+                            } else if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_SERVICE_UNAVAILABLE) {
+                                showDialog(DialogType.SUBSCRIBE, "Billing response is unavailable", false, null);
+                            } else if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_BILLING_UNAVAILABLE) {
+                                showDialog(DialogType.SUBSCRIBE, "Billing response result is unavailable", false, null);
+                            } else if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_ITEM_UNAVAILABLE) {
+                                showDialog(DialogType.SUBSCRIBE, "Billing response result item is unavailable", false, null);
+                            } else if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_DEVELOPER_ERROR) {
+                                showDialog(DialogType.SUBSCRIBE, "Billing response result developer error", false, null);
+                            } else if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_ERROR) {
+                                showDialog(DialogType.SUBSCRIBE, "Billing response result error", false, null);
+                            } else if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_ITEM_ALREADY_OWNED) {
+                                showDialog(DialogType.SUBSCRIBE, "Billing response item already purchased", false, null);
+                            } else if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_ITEM_NOT_OWNED) {
+                                showDialog(DialogType.SUBSCRIBE, "Billing response item not owned", false, null);
+                            }
+                        }
                     }
                 } catch (RemoteException | IntentSender.SendIntentException e) {
                     Log.e(TAG, "Failed to purchase item with sku: "
@@ -5912,7 +5935,9 @@ public class AppCMSPresenter {
                             planToPurchaseName = null;
                             planToPurchasePrice = 0.0f;
                             countryCode = "";
-                            if (launchType == LaunchType.SUBSCRIBE) {
+                            if (launchType == LaunchType.SUBSCRIBE &&
+                                    !isSignupFromFacebook &&
+                                    !isSignupFromGoogle) {
                                 launchType = LaunchType.LOGIN_AND_SIGNUP;
                                 String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                                         appCMSMain.getApiBaseUrl(),
@@ -5926,7 +5951,7 @@ public class AppCMSPresenter {
                                         true,
                                         false);
                             }
-                            if (signupFromFacebook) {
+                            if (isSignupFromFacebook) {
                                 setFacebookAccessToken(currentActivity,
                                         facebookAccessToken,
                                         facebookUserId,
@@ -6427,7 +6452,7 @@ public class AppCMSPresenter {
                             }
 
                             if (followWithSubscription) {
-                                signupFromFacebook = false;
+                                isSignupFromFacebook = false;
                                 isSignupFromGoogle = false;
                                 subscriptionUserEmail = email;
                                 subscriptionUserPassword = password;
