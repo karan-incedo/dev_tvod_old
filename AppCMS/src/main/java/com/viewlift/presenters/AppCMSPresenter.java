@@ -741,6 +741,8 @@ public class AppCMSPresenter {
                     updateHistoryRequest, s -> {
                         try {
                             if (currentActivity != null) {
+                                System.out.println("on progress update media id update watchhistory- ");
+
                                 sendUpdateHistoryAction();
                             }
                         } catch (Exception e) {
@@ -4821,8 +4823,10 @@ public class AppCMSPresenter {
     private void sendFireBaseLogOutEvent() {
         Bundle bundle = new Bundle();
         bundle.putString(FIREBASE_SCREEN_SIGN_OUT, FIREBASE_SCREEN_LOG_OUT);
-        if (getmFireBaseAnalytics() != null)
+        if (getmFireBaseAnalytics() != null){
+            getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
             getmFireBaseAnalytics().logEvent(FIREBASE_SCREEN_SIGN_OUT, bundle);
+        }
     }
 
     public void addInternalEvent(OnInternalEvent onInternalEvent) {
@@ -6450,6 +6454,8 @@ public class AppCMSPresenter {
                             } else {
                                 AppsFlyerUtils.loginEvent(currentActivity, signInResponse.getUserId());
                             }
+
+                            mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
 
                             if (followWithSubscription) {
                                 isSignupFromFacebook = false;
