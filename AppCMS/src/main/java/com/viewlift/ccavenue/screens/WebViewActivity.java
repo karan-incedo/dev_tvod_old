@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.ccavenue.utility.AvenuesParams;
 import com.viewlift.ccavenue.utility.Constants;
 import com.viewlift.ccavenue.utility.RSAUtility;
@@ -54,6 +55,13 @@ public class WebViewActivity extends Activity {
 	RenderView readerViewAyncTask = null ;
 	updateSubscriptionPlanAsyncTask updateStatus = null ;
 	ProgressDialog progressDialog = null ;
+
+	private final String FIREBASE_PLAN_ID = "item_id";
+	private final String FIREBASE_PLAN_NAME = "item_name";
+	private final String FIREBASE_CURRENCY_NAME = "currency";
+	private final String FIREBASE_VALUE = "value";
+	private final String FIREBASE_ECOMMERCE_PURCHASE = "ecommerce_purchase";
+
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
@@ -66,12 +74,12 @@ public class WebViewActivity extends Activity {
 		appCMSPresenter = ((AppCMSApplication) getApplication())
 				.getAppCMSPresenterComponent()
 				.appCMSPresenter();
-		
+
 		// Calling async task to get display content
 		readerViewAyncTask = new RenderView() ;
 		readerViewAyncTask.execute();
 	}
-	
+
 	/**
 	 * Async task class to get json by making HTTP call
 	 * */
@@ -102,10 +110,10 @@ public class WebViewActivity extends Activity {
 				params.add(new BasicNameValuePair(AvenuesParams.ACCESS_CODE, accessCode));
 				params.add(new BasicNameValuePair(AvenuesParams.ORDER_ID, orderID));
 			}
-			
+
 			return null;
 		}
-    
+
 		@Override
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
@@ -119,7 +127,7 @@ public class WebViewActivity extends Activity {
 				Log.e(TAG, ex.getMessage());
 				dialog = null;
 			}
-			
+
 			@SuppressWarnings("unused")
 			class MyJavaScriptInterface
 			{
@@ -143,7 +151,7 @@ public class WebViewActivity extends Activity {
 					startActivity(intent);
 			    }
 			}
-			
+
 			final WebView webview = (WebView) findViewById(R.id.webview);
 			webview.getSettings().setJavaScriptEnabled(true);
 			webview.addJavascriptInterface(new MyJavaScriptInterface(), "HTMLOUT");
@@ -212,7 +220,7 @@ public class WebViewActivity extends Activity {
 				Log.e(TAG, ex.getMessage());
 			}
 
-			
+
 			String vPostParams = params.substring(0,params.length()-1);
 			try {
 				webview.postUrl(Constants.TRANS_URL, EncodingUtils.getBytes(vPostParams, "UTF-8"));
@@ -221,7 +229,7 @@ public class WebViewActivity extends Activity {
 			}
 		}
 	}
-	
+
 	public void showToast(String msg) {
 		Toast.makeText(this, "Toast: " + msg, Toast.LENGTH_LONG).show();
 	}
@@ -456,6 +464,22 @@ public class WebViewActivity extends Activity {
 				try {
 					JSONObject jsonObj = new JSONObject(result);
 					if (jsonObj.getString("subscriptionStatus").equalsIgnoreCase("COMPLETED")) {
+
+						AppsFlyerUtils.subscriptionEvent(WebViewActivity.this,
+								true,
+								getString(R.string.app_cms_appsflyer_dev_key),
+								String.valueOf(mainIntent.getStringExtra(AvenuesParams.AMOUNT)),
+								getIntent().getStringExtra(getString(R.string.app_cms_plan_id)),
+								mainIntent.getStringExtra(AvenuesParams.CURRENCY));
+
+						Bundle bundle = new Bundle();
+						bundle.putString(FIREBASE_PLAN_ID, mainIntent.getStringExtra(getString(R.string.app_cms_plan_id)));
+						bundle.putString(FIREBASE_PLAN_NAME,  mainIntent.getStringExtra("plan_to_purchase_name"));
+						bundle.putString(FIREBASE_CURRENCY_NAME, mainIntent.getStringExtra(AvenuesParams.CURRENCY));
+						bundle.putString(FIREBASE_VALUE, String.valueOf(mainIntent.getStringExtra(AvenuesParams.AMOUNT)));
+						if (appCMSPresenter.getmFireBaseAnalytics() != null)
+							appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_ECOMMERCE_PURCHASE, bundle);
+
 						appCMSPresenter.finalizeSignupAfterCCAvenueSubscription(null) ;
 						displaySuccessPaymentDialog("Payment Done!", "Start Watching");
 					} else {
