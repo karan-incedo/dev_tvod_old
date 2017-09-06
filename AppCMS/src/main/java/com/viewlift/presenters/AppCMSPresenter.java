@@ -3293,8 +3293,7 @@ public class AppCMSPresenter {
                                 setExistingGooglePlaySubscriptionId(currentActivity, inAppPurchaseData.getProductId());
 
                                 if (inAppPurchaseData.isAutoRenewing() || !subscriptionExpired) {
-                                    if (showErrorDialogIfSubscriptionExists &&
-                                            !isUserLoggedIn(currentActivity)) {
+                                    if (showErrorDialogIfSubscriptionExists) {
                                         showDialog(DialogType.EXISTING_SUBSCRIPTION,
                                                 currentActivity.getString(R.string.app_cms_existing_subscription_error_message),
                                                 false,
