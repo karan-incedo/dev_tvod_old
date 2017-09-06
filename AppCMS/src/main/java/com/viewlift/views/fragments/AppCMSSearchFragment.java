@@ -73,8 +73,8 @@ public class AppCMSSearchFragment extends DialogFragment {
         appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         appCMSSearchView.setSuggestionsAdapter(searchSuggestionsAdapter);
         appCMSSearchView.setIconifiedByDefault(false);
-        appCMSSearchView.requestFocus();
-        appCMSPresenter.showSoftKeyboard(appCMSSearchView);
+//        appCMSSearchView.requestFocus();
+//        appCMSPresenter.showSoftKeyboard(appCMSSearchView);  //resolution for jira SVFA-1702
 
         appCMSGoButton = (Button) view.findViewById(R.id.app_cms_search_button);
         appCMSGoButton.setBackgroundColor(0xff000000 + (int) buttonColor);
