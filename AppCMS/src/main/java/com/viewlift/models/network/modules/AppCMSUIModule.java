@@ -438,6 +438,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_closed_caption_toggle_switch_key),
                 AppCMSUIKeyType.PAGE_SETTING_CLOSED_CAPTION_TOGGLE_SWITCH_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_logout_button_key),
+                AppCMSUIKeyType.PAGE_SETTING_LOGOUT_BUTTON_KEY);
+
         jsonValueKeyMap.put("", AppCMSUIKeyType.PAGE_EMPTY_KEY);
         jsonValueKeyMap.put(null, AppCMSUIKeyType.PAGE_NULL_KEY);
     }

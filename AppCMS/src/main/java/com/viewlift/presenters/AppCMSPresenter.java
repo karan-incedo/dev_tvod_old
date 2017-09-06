@@ -4669,6 +4669,43 @@ public class AppCMSPresenter {
         }
     }
 
+    public void logoutTV() {
+        if (currentActivity != null) {
+            setLoggedInUser(currentActivity, null);
+            setLoggedInUserName(currentActivity, null);
+            setLoggedInUserEmail(currentActivity, null);
+            setActiveSubscriptionPrice(currentActivity, null);
+            setActiveSubscriptionId(currentActivity, null);
+            setActiveSubscriptionSku(currentActivity, null);
+            setActiveSubscriptionPlanName(currentActivity, null);
+            setActiveSubscriptionReceipt(currentActivity, null);
+            setRefreshToken(currentActivity, null);
+            setAuthToken(currentActivity, null);
+            setIsUserSubscribed(currentActivity, false);
+            setExistingGooglePlaySubscriptionId(currentActivity, null);
+            setActiveSubscriptionProcessor(currentActivity, null);
+            setFacebookAccessToken(currentActivity, null, null, null, null, false);
+            setGoogleAccessToken(currentActivity, null, null, null, null, false);
+
+            sendUpdateHistoryAction();
+
+            signinAnonymousUser();
+            AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser(currentActivity));
+                NavigationPrimary homePageNavItem = findHomePageNavItem();
+                if (homePageNavItem != null) {
+                    cancelInternalEvents();
+                    navigateToTVPage(
+                            homePageNavItem.getPageId(),
+                            homePageNavItem.getTitle(),
+                            homePageNavItem.getUrl(),
+                            false,
+                            deeplinkSearchQuery,
+                            true
+                    );
+                }
+        }
+    }
+
     public void addInternalEvent(OnInternalEvent onInternalEvent) {
         if (!currentActions.isEmpty() &&
                 !TextUtils.isEmpty(currentActions.peek()) &&
@@ -7576,6 +7613,7 @@ public class AppCMSPresenter {
                         appCMSMain.getBrand()
                                 .getGeneral()
                                 .getBackgroundColor());
+                playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_closed_caption_key), extraData[3]);
                 if (closeLauncher) {
                     sendCloseOthersAction(null, true);
                 }
@@ -7876,18 +7914,23 @@ public class AppCMSPresenter {
                 !TextUtils.isEmpty(appCMSSite.getGist().getSiteInternalName())) {
             result = true;
             final String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
-            String url = currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
+
+            String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
-                    filmId,
-                    appCMSSite.getGist().getSiteInternalName());
-            GetAppCMSStreamingInfoAsyncTask.Params params =
-                    new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
-            new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall,
-                    appCMSStreamingInfo -> {
-                        String[] extraData = new String[3];
-                        if (appCMSStreamingInfo != null &&
-                                appCMSStreamingInfo.getStreamingInfo() != null) {
-                            StreamingInfo streamingInfo = appCMSStreamingInfo.getStreamingInfo();
+                    contentDatum.getGist().getId(),
+                    appCMSMain.getSite());
+            GetAppCMSVideoDetailAsyncTask.Params params =
+                    new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
+                            .authToken(getAuthToken(currentActivity)).build();
+
+            new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
+                    appCMSVideoDetail -> {
+                        String[] extraData = new String[4];
+                        if (appCMSVideoDetail != null &&
+                                appCMSVideoDetail.getRecords() != null &&
+                                appCMSVideoDetail.getRecords().get(0) != null &&
+                                appCMSVideoDetail.getRecords().get(0).getStreamingInfo() != null) {
+                            StreamingInfo streamingInfo = appCMSVideoDetail.getRecords().get(0).getStreamingInfo();
                             extraData[0] = pagePath;
                             if (streamingInfo.getVideoAssets() != null &&
                                     !TextUtils.isEmpty(streamingInfo.getVideoAssets().getHls())) {
@@ -7900,6 +7943,11 @@ public class AppCMSPresenter {
                                 extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
                             }
                             extraData[2] = filmId;
+                            if (appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions() != null
+                                    && appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0) != null){
+                                extraData[3] = appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0).getUrl();
+                            }
+                            extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
                             if (!TextUtils.isEmpty(extraData[1])) {
 
                                 if (platformType == PlatformType.TV) {

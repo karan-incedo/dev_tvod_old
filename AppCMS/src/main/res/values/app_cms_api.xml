@@ -1,14 +1,18 @@
 <resources>
     <!-- Primary app values -->
-    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
-    <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
+    <!--Production Server-->
+   <!-- <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
+    <string name="app_cms_app_name">00000149-86ec-d4f3-a7e9-e6fe760d0000</string>-->
+
+    <!--QA Server-->
+    <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
+    <string name="app_cms_app_name">3f5e193b-2e51-4853-839e-618e62896deb</string>
+
+
     <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
     <!--<string name="app_cms_app_name">d9162bc2-1228-43da-84bf-e0e56421fe79</string>-->
-
-    <!--<string name="app_cms_app_name">3f5e193b-2e51-4853-839e-618e62896deb</string>-->
     <!--<string name="app_cms_app_name">9d2c4ddd-94e3-44af-bee8-851e76d6b96e</string>-->
-    <!--<string name="app_cms_app_name">3f5e193b-2e51-4853-839e-618e62896deb</string>-->
-    <string name="app_cms_app_name">00000149-86ec-d4f3-a7e9-e6fe760d0000</string>
+
 
     <string name="x_api_key">7arSnLdRpj8mtRj5Ruv0V1GK9PE0zOyC76KcfTi8</string>
 
@@ -346,6 +350,7 @@
     <string name="app_cms_toggle_switch_type">toggleSwitch</string>
     <string name="app_cms_autoplay_toggle_switch_key">autoplayToggleSwitch</string>
     <string name="app_cms_closed_caption_toggle_switch_key">closedCaptionToggleSwitch</string>
+    <string name="app_cms_logout_button_key">logout button</string>
 
 
     <!-- AppCMS Payment Processor values -->

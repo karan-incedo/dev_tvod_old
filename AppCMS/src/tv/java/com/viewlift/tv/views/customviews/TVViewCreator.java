@@ -306,19 +306,6 @@ public class TVViewCreator {
                 }
              }
             } else {
-                    if(module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_page_authentication_module))) {
-                        module = new GsonBuilder().create().
-                        fromJson(Utils.loadJsonFromAssets(context, "login.json"), ModuleList.class);
-
-            if (appCMSPageAPI.getId().equalsIgnoreCase("6c1b8091-a303-426e-a9a1-fa01838d5189")) {
-                module = new GsonBuilder().create().
-                        fromJson(Utils.loadJsonFromAssets(context, "signup.json"), ModuleList.class);
-            }
-        }else if(module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_setting_module))){
-                        module = new GsonBuilder().create().
-                                fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
-
-                    }
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
@@ -616,10 +603,18 @@ public class TVViewCreator {
                                             moduleAPI.getContentData().get(0).getGist() != null &&
                                             moduleAPI.getContentData().get(0).getGist().getId() != null &&
                                             moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
-                                        String[] extraData = new String[3];
+                                        String[] extraData = new String[4];
                                         extraData[0] = moduleAPI.getContentData().get(0).getGist().getPermalink();
                                         extraData[1] = videoUrl;
                                         extraData[2] = moduleAPI.getContentData().get(0).getGist().getId();
+                                        if(null != moduleAPI.getContentData().get(0).getContentDetails()
+                                                && moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions() != null
+                                                && moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0) != null
+                                                && moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
+                                            extraData[3] = moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0).getUrl();
+                                        }
+                                        extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
+
                                         if (!appCMSPresenter.launchTVButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                                 component.getAction(),
                                                 moduleAPI.getContentData().get(0).getGist().getTitle(),
@@ -712,6 +707,19 @@ public class TVViewCreator {
 
            case PAGE_FORGOTPASSWORD_KEY:
                       //  componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+
+               componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                   @Override
+                   public void onClick(View view) {
+                       appCMSPresenter.launchTVButtonSelectedAction(
+                               null,
+                               component.getAction(),
+                               null,
+                               null,
+                               false
+                       );
+                   }
+               });
                         break;
 
                     case PAGE_LOGIN_BUTTON_KEY:
@@ -737,6 +745,9 @@ public class TVViewCreator {
                             }
                         });
                       break;
+                    case PAGE_SETTING_LOGOUT_BUTTON_KEY:
+                        componentViewResult.componentView.setOnClickListener(v -> appCMSPresenter.logoutTV());
+                        break;
 
                     default:
                 }
@@ -984,10 +995,17 @@ public class TVViewCreator {
                                                     moduleAPI.getContentData().get(0).getGist() != null &&
                                                     moduleAPI.getContentData().get(0).getGist().getId() != null &&
                                                     moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
-                                                String[] extraData = new String[3];
+                                                String[] extraData = new String[4];
                                                 extraData[0] = moduleAPI.getContentData().get(0).getGist().getPermalink();
                                                 extraData[1] = videoUrl;
                                                 extraData[2] = moduleAPI.getContentData().get(0).getGist().getId();
+                                                if(moduleAPI.getContentData().get(0).getContentDetails() != null &&
+                                                        moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions() !=  null &&
+                                                        moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0) != null &&
+                                                        moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
+                                                    extraData[3] = moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0).getUrl();
+                                                }
+                                                extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
                                                 if (!appCMSPresenter.launchTVButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                                         component.getAction(),
                                                         moduleAPI.getContentData().get(0).getGist().getTitle(),
