@@ -132,7 +132,6 @@ public class FileDownloadCompleteReceiver extends BroadcastReceiver {
             case DownloadManager.STATUS_SUCCESSFUL:
                 statusText = "STATUS_SUCCESSFUL";
                 reasonText = "Filename:\n" + filename;
-                encryptTheFile(filename);
                 break;
         }
     }
