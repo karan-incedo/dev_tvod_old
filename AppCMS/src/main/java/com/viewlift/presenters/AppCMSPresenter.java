@@ -202,7 +202,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -391,6 +390,7 @@ public class AppCMSPresenter {
     private String FIREBASE_VIDEO_DETAIL_SCREEN = "Video Detail Screen";
     private String FIREBASE_EVENT_LOGIN_SCREEN = "Login Screen";
 
+    private String serverClientId;
     private String clientId;
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
@@ -1640,7 +1640,7 @@ public class AppCMSPresenter {
             GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions
                     .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestEmail()
-                    .requestIdToken(clientId)
+                    .requestIdToken(serverClientId)
                     .build();
 
             Intent googleIntent = Auth.GoogleSignInApi
@@ -6695,7 +6695,8 @@ public class AppCMSPresenter {
         this.downloadManager = (DownloadManager) currentActivity.getSystemService(Context.DOWNLOAD_SERVICE);
         this.realmController = RealmController.with(currentActivity);
         this.downloadQueueThread = new DownloadQueueThread(this);
-        this.clientId = activity.getString(R.string.server_client_id);
+        this.clientId = activity.getString(R.string.default_web_client_id);
+        this.serverClientId = activity.getString(R.string.server_client_id);
     }
 
     private Bundle getPageActivityBundle(Activity activity,
