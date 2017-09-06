@@ -289,6 +289,7 @@ public class AppCMSPresenter {
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_SUSPENDED = "existing_google_play_subscription_suspended_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_PRICE = "existing_google_play_subscription_price_pref_key";
     private static final String USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME = "user_download_quality_pref";
+    private static final String USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME = "user_download_quality_screen_pref";
     private static final String USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME = "user_download_sd_card_pref";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
@@ -4082,6 +4083,19 @@ public class AppCMSPresenter {
                     downloadPref).commit();
         }
         return false;
+    }
+    public boolean isDownloadQualityScreenShowBefore(Context context){
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME, 0);
+            return sharedPrefs.getBoolean(USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME, false);
+        }
+        return false;
+    }
+    public void setDownloadQualityScreenShowBefore(Context context,boolean show) {
+        if (context != null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME, 0);
+            sharedPrefs.edit().putBoolean(USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME, show).apply();
+        }
     }
 
     public String getUserDownloadQualityPref(Context context) {
@@ -8008,11 +8022,12 @@ public class AppCMSPresenter {
                 paths.add(rawEmulatedStorageTarget + File.separator + rawUserId);
             }
         }
-
-        if (!TextUtils.isEmpty(rawSecondaryStoragesStr)) {
+        // Code has not any use in case of build >=23 (M)
+       /*
+       if (!TextUtils.isEmpty(rawSecondaryStoragesStr)) {
             String[] rawSecondaryStorages = rawSecondaryStoragesStr.split(File.pathSeparator);
             Collections.addAll(paths, rawSecondaryStorages);
-        }
+        }*/
         return paths.toArray(new String[paths.size()]);
     }
 
