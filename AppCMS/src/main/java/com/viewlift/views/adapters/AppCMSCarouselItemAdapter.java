@@ -307,6 +307,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
     public void resetData(RecyclerView listView) {
         super.resetData(listView);
         updatedIndex = getDefaultIndex();
+        sendCancelEventToReceivers(cancelled);
         sendEvent(new InternalEvent<Object>(updatedIndex));
         listView.scrollToPosition(updatedIndex);
         cancel(false);
@@ -329,5 +330,11 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
             return updatedIndex + (index - visibleIndexInItems);
         }
         return index;
+    }
+
+    private void sendCancelEventToReceivers(boolean cancel) {
+        for (OnInternalEvent receiver : internalEventReceivers) {
+            receiver.cancel(cancel);
+        }
     }
 }
