@@ -2791,8 +2791,7 @@ public class ViewCreator {
             addClickListener = v -> {
                 if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed(UpdateDownloadImageIconAction.this.imageButton.getContext())) ||
                         !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn(UpdateDownloadImageIconAction.this.imageButton.getContext())) {
-                    if (appCMSPresenter.getUserDownloadQualityPref(UpdateDownloadImageIconAction.this.imageButton.getContext()) != null
-                            && appCMSPresenter.getUserDownloadQualityPref(UpdateDownloadImageIconAction.this.imageButton.getContext()).length() > 0) {
+                    if (appCMSPresenter.isDownloadQualityScreenShowBefore(UpdateDownloadImageIconAction.this.imageButton.getContext())) { // Fix for SVFA-1724
                         appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
                     } else {
                         appCMSPresenter.showDownloadQualityScreen(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this);
