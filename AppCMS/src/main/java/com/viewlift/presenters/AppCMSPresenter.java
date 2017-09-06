@@ -1622,6 +1622,7 @@ public class AppCMSPresenter {
 
     public void loginFacebook() {
         if (currentActivity != null) {
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             isSignupFromFacebook = true;
             LoginManager.getInstance().logInWithReadPermissions(currentActivity,
                     Arrays.asList("public_profile", "email", "user_friends"));
@@ -1630,6 +1631,8 @@ public class AppCMSPresenter {
 
     public void loginGoogle() {
         if (currentActivity != null) {
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+
             isSignupFromGoogle = true;
 
             GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions
@@ -6327,6 +6330,7 @@ public class AppCMSPresenter {
 
     public void login(String email, String password) {
         if (currentActivity != null) {
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                     appCMSMain.getApiBaseUrl(),
                     appCMSSite.getGist().getSiteInternalName());
