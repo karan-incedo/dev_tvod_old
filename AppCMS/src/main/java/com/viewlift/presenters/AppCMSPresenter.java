@@ -4134,7 +4134,6 @@ public class AppCMSPresenter {
     public boolean setLoggedInUserName(Context context, String userName) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_NAME_SHARED_PREF_NAME, 0);
-//            return sharedPrefs.edit().putString(USER_NAME_SHARED_PREF_NAME, userName).commit();
             return sharedPrefs.edit().putString(USER_NAME_SHARED_PREF_NAME, userName).commit();
         }
         return false;
