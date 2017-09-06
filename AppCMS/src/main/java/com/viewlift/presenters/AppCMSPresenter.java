@@ -1091,7 +1091,8 @@ public class AppCMSPresenter {
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))) {
                                     showEntitlementDialog(DialogType.CANNOT_UPGRADE_SUBSCRIPTION);
-                                } else if (TextUtils.isEmpty(paymentProcessor)) {
+                                } else if (isUserSubscribed(currentActivity) &&
+                                        TextUtils.isEmpty(paymentProcessor)) {
                                     showEntitlementDialog(DialogType.UNKNOWN_SUBSCRIPTION_FOR_UPGRADE);
                                 } else if (isExistingGooglePlaySubscriptionSuspended(currentActivity) &&
                                         !upgradesAvailableForUser(getLoggedInUser(currentActivity))) {
@@ -4302,6 +4303,7 @@ public class AppCMSPresenter {
             this.facebookUsername = username;
             this.facebookEmail = email;
             initiateItemPurchase();
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
         } else if (context != null) {
             String url = currentActivity.getString(R.string.app_cms_facebook_login_api_url,
                     appCMSMain.getApiBaseUrl(),
@@ -4320,6 +4322,7 @@ public class AppCMSPresenter {
                             if (appCMSMain.getServiceType()
                                     .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
                                     refreshSubscriptionData) {
+
                                 refreshSubscriptionData(() -> {
                                     try {
                                         if (entitlementPendingVideoData != null) {
@@ -4360,6 +4363,8 @@ public class AppCMSPresenter {
                                         }
                                     } catch (Exception e) {
                                         Log.e(TAG, "Error refreshing subscription data after logging in with Facebook: " + e.getMessage());
+                                    } finally {
+                                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                     }
                                 });
                             } else {
@@ -4408,6 +4413,7 @@ public class AppCMSPresenter {
                                                 deeplinkSearchQuery);
                                     }
                                 }
+                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                             }
                         }
                     });
@@ -4487,6 +4493,7 @@ public class AppCMSPresenter {
                                                         deeplinkSearchQuery);
                                             }
                                         }
+                                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                     });
                                 } else {
                                     if (entitlementPendingVideoData != null) {
@@ -4525,6 +4532,7 @@ public class AppCMSPresenter {
                                                     deeplinkSearchQuery);
                                         }
                                     }
+                                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                 }
                             }
                         } catch (Exception e) {
@@ -4536,6 +4544,8 @@ public class AppCMSPresenter {
                     context.getSharedPreferences(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME, 0);
             return sharedPreferences.edit().putString(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME,
                     googleAccessToken).commit();
+        } else {
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
         }
         return false;
     }
@@ -5947,36 +5957,40 @@ public class AppCMSPresenter {
                             planToPurchaseName = null;
                             planToPurchasePrice = 0.0f;
                             countryCode = "";
-                            if (launchType == LaunchType.SUBSCRIBE &&
-                                    !isSignupFromFacebook &&
-                                    !isSignupFromGoogle) {
-                                launchType = LaunchType.LOGIN_AND_SIGNUP;
-                                String url = currentActivity.getString(R.string.app_cms_signin_api_url,
-                                        appCMSMain.getApiBaseUrl(),
-                                        appCMSSite.getGist().getSiteInternalName());
-                                startLoginAsyncTask(url,
-                                        subscriptionUserEmail,
-                                        subscriptionUserPassword,
-                                        false,
-                                        false,
-                                        true,
-                                        true,
-                                        false);
-                            }
-                            if (isSignupFromFacebook) {
-                                setFacebookAccessToken(currentActivity,
-                                        facebookAccessToken,
-                                        facebookUserId,
-                                        facebookUsername,
-                                        facebookEmail,
-                                        false);
-                            } else if (isSignupFromGoogle) {
-                                setGoogleAccessToken(currentActivity,
-                                        googleAccessToken,
-                                        googleUserId,
-                                        googleUsername,
-                                        googleEmail,
-                                        false);
+                            if (!isUserLoggedIn(currentActivity)) {
+                                if (launchType == LaunchType.SUBSCRIBE &&
+                                        !isSignupFromFacebook &&
+                                        !isSignupFromGoogle) {
+                                    launchType = LaunchType.LOGIN_AND_SIGNUP;
+                                    String url = currentActivity.getString(R.string.app_cms_signin_api_url,
+                                            appCMSMain.getApiBaseUrl(),
+                                            appCMSSite.getGist().getSiteInternalName());
+                                    startLoginAsyncTask(url,
+                                            subscriptionUserEmail,
+                                            subscriptionUserPassword,
+                                            false,
+                                            false,
+                                            true,
+                                            true,
+                                            false);
+                                }
+                                if (isSignupFromFacebook) {
+                                    setFacebookAccessToken(currentActivity,
+                                            facebookAccessToken,
+                                            facebookUserId,
+                                            facebookUsername,
+                                            facebookEmail,
+                                            false);
+                                } else if (isSignupFromGoogle) {
+                                    setGoogleAccessToken(currentActivity,
+                                            googleAccessToken,
+                                            googleUserId,
+                                            googleUsername,
+                                            googleEmail,
+                                            false);
+                                }
+                            } else {
+                                sendCloseOthersAction(null, true);
                             }
                             subscriptionUserEmail = null;
                             subscriptionUserPassword = null;
@@ -6434,9 +6448,12 @@ public class AppCMSPresenter {
                                     showDialog(DialogType.SIGNIN, currentActivity.getString(
                                             R.string.app_cms_error_email_password), false, null);
                                 }
+
                             }
+                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                         } else if (!TextUtils.isEmpty(signInResponse.getError())) {
                             showDialog(DialogType.SIGNIN, signInResponse.getError(), false, null);
+                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                         } else {
                             setRefreshToken(currentActivity, signInResponse.getRefreshToken());
                             setAuthToken(currentActivity, signInResponse.getAuthorizationToken());
@@ -6471,6 +6488,7 @@ public class AppCMSPresenter {
                                 subscriptionUserPassword = password;
                                 sendCloseOthersAction(null, true);
                                 initiateItemPurchase();
+                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                             } else {
                                 if (appCMSMain.getServiceType()
                                         .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
@@ -6521,6 +6539,7 @@ public class AppCMSPresenter {
                                                         deeplinkSearchQuery);
                                             }
                                         }
+                                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                     });
                                 } else {
                                     if (entitlementPendingVideoData != null) {
@@ -6568,11 +6587,13 @@ public class AppCMSPresenter {
                                                     deeplinkSearchQuery);
                                         }
                                     }
+                                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                 }
                             }
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "Error retrieving sign in response: " + e.getMessage());
+                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                     }
                 }).execute(params);
     }

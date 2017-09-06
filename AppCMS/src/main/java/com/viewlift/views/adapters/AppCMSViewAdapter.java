@@ -302,35 +302,37 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                       Component childComponent,
                                       ContentDatum data) {
                         if (isClickable) {
-                            Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
-                            String permalink = data.getGist().getPermalink();
-                            String action = defaultAction;
-                            String title = data.getGist().getTitle();
-                            String hlsUrl = getHlsUrl(data);
-                            String[] extraData = new String[3];
-                            extraData[0] = permalink;
-                            extraData[1] = hlsUrl;
-                            extraData[2] = data.getGist().getId();
-                            Log.d(TAG, "Launching " + permalink + ": " + action);
-                            List<String> relatedVideoIds = null;
-                            if (data.getContentDetails() != null &&
-                                    data.getContentDetails().getRelatedVideoIds() != null) {
-                                relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
-                            }
-                            int currentPlayingIndex = -1;
-                            if (relatedVideoIds == null) {
-                                currentPlayingIndex = 0;
-                            }
-                            if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                    action,
-                                    title,
-                                    extraData,
-                                    data,
-                                    false,
-                                    currentPlayingIndex,
-                                    relatedVideoIds)) {
-                                Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
-                                        + " action: " + action + " hlsUrl: " + hlsUrl);
+                            if (data.getGist() != null) {
+                                Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
+                                String permalink = data.getGist().getPermalink();
+                                String action = defaultAction;
+                                String title = data.getGist().getTitle();
+                                String hlsUrl = getHlsUrl(data);
+                                String[] extraData = new String[3];
+                                extraData[0] = permalink;
+                                extraData[1] = hlsUrl;
+                                extraData[2] = data.getGist().getId();
+                                Log.d(TAG, "Launching " + permalink + ": " + action);
+                                List<String> relatedVideoIds = null;
+                                if (data.getContentDetails() != null &&
+                                        data.getContentDetails().getRelatedVideoIds() != null) {
+                                    relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
+                                }
+                                int currentPlayingIndex = -1;
+                                if (relatedVideoIds == null) {
+                                    currentPlayingIndex = 0;
+                                }
+                                if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                        action,
+                                        title,
+                                        extraData,
+                                        data,
+                                        false,
+                                        currentPlayingIndex,
+                                        relatedVideoIds)) {
+                                    Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
+                                            + " action: " + action + " hlsUrl: " + hlsUrl);
+                                }
                             }
                         }
                     }
@@ -338,30 +340,32 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     @Override
                     public void play(Component childComponent, ContentDatum data) {
                         if (isClickable) {
-                            Log.d(TAG, "Playing item: " + data.getGist().getTitle());
-                            String filmId = data.getGist().getId();
-                            String permaLink = data.getGist().getPermalink();
-                            String title = data.getGist().getTitle();
-                            List<String> relatedVideoIds = null;
-                            if (data.getContentDetails() != null &&
-                                    data.getContentDetails().getRelatedVideoIds() != null) {
-                                relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
-                            }
-                            int currentPlayingIndex = -1;
-                            if (relatedVideoIds == null) {
-                                currentPlayingIndex = 0;
-                            }
-                            if (!appCMSPresenter.launchVideoPlayer(data,
-                                    currentPlayingIndex,
-                                    relatedVideoIds,
-                                    -1)) {
-                                Log.e(TAG, "Could not launch play action: " +
-                                        " filmId: " +
-                                        filmId +
-                                        " permaLink: " +
-                                        permaLink +
-                                        " title: " +
-                                        title);
+                            if (data.getGist() != null) {
+                                Log.d(TAG, "Playing item: " + data.getGist().getTitle());
+                                String filmId = data.getGist().getId();
+                                String permaLink = data.getGist().getPermalink();
+                                String title = data.getGist().getTitle();
+                                List<String> relatedVideoIds = null;
+                                if (data.getContentDetails() != null &&
+                                        data.getContentDetails().getRelatedVideoIds() != null) {
+                                    relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
+                                }
+                                int currentPlayingIndex = -1;
+                                if (relatedVideoIds == null) {
+                                    currentPlayingIndex = 0;
+                                }
+                                if (!appCMSPresenter.launchVideoPlayer(data,
+                                        currentPlayingIndex,
+                                        relatedVideoIds,
+                                        -1)) {
+                                    Log.e(TAG, "Could not launch play action: " +
+                                            " filmId: " +
+                                            filmId +
+                                            " permaLink: " +
+                                            permaLink +
+                                            " title: " +
+                                            title);
+                                }
                             }
                         }
                     }
