@@ -20,6 +20,8 @@ import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 
 import com.viewlift.R;
 
+import retrofit2.Response;
+
 /**
  * Created by viewlift on 5/9/17.
  */
@@ -97,7 +99,13 @@ public class AppCMSPageAPICall {
                 headersMap.put("Authorization", authToken);
             }
             Log.d(TAG, "AppCMSPageAPICall Authorization val "+headersMap.toString());
-            appCMSPageAPI = appCMSPageAPIRest.get(urlWithContent, headersMap).execute().body();
+            Response<AppCMSPageAPI> response = appCMSPageAPIRest.get(urlWithContent, headersMap).execute();
+            appCMSPageAPI = response.body();
+
+            if (!response.isSuccessful()) {
+                Log.e(TAG, "Response error: " + response.errorBody().string());
+            }
+
             if (filename != null) {
                 appCMSPageAPI = writePageToFile(filename, appCMSPageAPI);
             }
