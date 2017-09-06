@@ -12,3 +12,4 @@ build/*
 /AppCMS/mobile/release/AppCMS-mobile-release.apk
 /library/build/*
 /sample/build/*
+local.properties
