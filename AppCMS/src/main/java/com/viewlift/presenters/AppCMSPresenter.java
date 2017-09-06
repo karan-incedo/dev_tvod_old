@@ -352,6 +352,7 @@ public class AppCMSPresenter {
     private final AppCMSSubscriptionCall appCMSSubscriptionCall;
     private final AppCMSSubscriptionPlanCall appCMSSubscriptionPlanCall;
     private final AppCMSAnonymousAuthTokenCall appCMSAnonymousAuthTokenCall;
+    private boolean isCCAvenueEnabled = false;
     public String[] physicalPaths = {
             "/storage/sdcard0", "/storage/sdcard1", // Motorola Xoom
             "/storage/extsdcard", // Samsung SGS3
@@ -1683,7 +1684,8 @@ public class AppCMSPresenter {
     }
 
     public void initiateItemPurchase() {
-        if (!TextUtils.isEmpty(countryCode) && countryCode.equalsIgnoreCase("IN")) {
+        isCCAvenueEnabled = false ;
+        if (!TextUtils.isEmpty(countryCode) && countryCode.equalsIgnoreCase("IN") && isCCAvenueEnabled) {
             if (currencyCode.equalsIgnoreCase("INR")) {
                 initiateCCAvenuePurchase();
             }
