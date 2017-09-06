@@ -741,8 +741,6 @@ public class AppCMSPresenter {
                     updateHistoryRequest, s -> {
                         try {
                             if (currentActivity != null) {
-                                System.out.println("on progress update media id update watchhistory- ");
-
                                 sendUpdateHistoryAction();
                             }
                         } catch (Exception e) {
@@ -1756,20 +1754,16 @@ public class AppCMSPresenter {
                     Bundle buyIntentBundle = null;
                     if (subscribedSkus != null && !subscribedSkus.isEmpty()) {
                         Log.d(TAG, "Initiating upgrade purchase");
-                        buyIntentBundle = inAppBillingService.getBuyIntentToReplaceSkus(5,
-                                currentActivity.getPackageName(),
-                                subscribedSkus,
-                                skuToPurchase,
-                                "subs",
-                                null);
                     } else {
                         Log.d(TAG, "Initiating new item purchase");
-                        buyIntentBundle = inAppBillingService.getBuyIntent(3,
-                                currentActivity.getPackageName(),
-                                skuToPurchase,
-                                "subs",
-                                null);
                     }
+
+                    buyIntentBundle = inAppBillingService.getBuyIntentToReplaceSkus(5,
+                            currentActivity.getPackageName(),
+                            subscribedSkus,
+                            skuToPurchase,
+                            "subs",
+                            null);
 
                     if (buyIntentBundle != null) {
                         int resultCode = buyIntentBundle.getInt("RESPONSE_CODE");
@@ -3863,7 +3857,7 @@ public class AppCMSPresenter {
             }
         }
     }
-      
+
     public void launchErrorActivity(PlatformType platformType) {
         if (platformType == PlatformType.ANDROID) {
             try {
@@ -4825,10 +4819,8 @@ public class AppCMSPresenter {
     private void sendFireBaseLogOutEvent() {
         Bundle bundle = new Bundle();
         bundle.putString(FIREBASE_SCREEN_SIGN_OUT, FIREBASE_SCREEN_LOG_OUT);
-        if (getmFireBaseAnalytics() != null){
-            getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+        if (getmFireBaseAnalytics() != null)
             getmFireBaseAnalytics().logEvent(FIREBASE_SCREEN_SIGN_OUT, bundle);
-        }
     }
 
     public void addInternalEvent(OnInternalEvent onInternalEvent) {
@@ -5800,7 +5792,7 @@ public class AppCMSPresenter {
                 true,
                 true,
                 false);*/
-          
+
         if (entitlementPendingVideoData != null) {
             isVideoPlayerStarted = false;
             navigateToHomeToRefresh = false;
@@ -5847,7 +5839,7 @@ public class AppCMSPresenter {
                         deeplinkSearchQuery);
             }
         }
-      
+
         setIsUserSubscribed(currentActivity, true);
         setActiveSubscriptionId(currentActivity, planToPurchase);
         setActiveSubscriptionCurrency(currentActivity, currencyOfPlanToPurchase);
@@ -6415,7 +6407,7 @@ public class AppCMSPresenter {
         new PostAppCMSLoginRequestAsyncTask(appCMSSignInCall,
                 signInResponse -> {
                     Log.v("ananomyousToken", getAnonymousUserToken(currentActivity));
-                  
+
                     try {
                         if (signInResponse == null) {
                             // Show log error
@@ -6457,8 +6449,6 @@ public class AppCMSPresenter {
                             } else {
                                 AppsFlyerUtils.loginEvent(currentActivity, signInResponse.getUserId());
                             }
-
-                            mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
 
                             if (followWithSubscription) {
                                 isSignupFromFacebook = false;
