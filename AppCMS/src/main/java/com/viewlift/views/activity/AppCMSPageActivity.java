@@ -369,7 +369,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             @Override
             public void onServiceDisconnected(ComponentName name) {
                 inAppBillingService = null;
-                unbindService(this);
             }
 
             @Override
