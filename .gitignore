@@ -9,3 +9,5 @@
 /*.apk
 /*.json
 /.idea
+/sample/*
+/library/*
