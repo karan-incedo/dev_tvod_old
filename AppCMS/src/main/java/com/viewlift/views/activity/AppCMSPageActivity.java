@@ -532,6 +532,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                Log.d(TAG, "Google Signin Status Message: " + result.getStatus().getStatusMessage());
                 if (result != null && result.isSuccess()) {
                     if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                         handleCloseAction();
@@ -576,6 +577,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 } else {
                     appCMSPresenter.sendCloseOthersAction(null, true);
                 }
+            } else if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
+                GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                Log.e(TAG, "Google Signin Status Message: " + result.getStatus().getStatusMessage());
+                appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SIGNIN,
+                        result.getStatus().getStatusMessage(),
+                        false,
+                        null);
             }
         }
     }
