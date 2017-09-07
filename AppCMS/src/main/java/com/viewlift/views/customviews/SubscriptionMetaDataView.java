@@ -249,6 +249,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
                     }
                     break;
 
+
                 case PAGE_PLANMETADDATAIMAGE_KEY:
                     if (componentView instanceof ImageView) {
                         if (!TextUtils.isEmpty(featureDetail.getValue()) &&
