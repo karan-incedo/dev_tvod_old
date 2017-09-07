@@ -60,6 +60,9 @@ public class CastingUtils {
                     Log.e(TAG, "Error create session JSON object: " + e.getMessage());
                 }
 
+                int watchTime= (int) detailsRelatedVideoData.get(i).getGist().getWatchedTime();
+                Log.e(TAG, "Added watched Time: " + watchTime);
+
                 if (getPlayingUrl(detailsRelatedVideoData.get(i)) != null && !TextUtils.isEmpty(getPlayingUrl(detailsRelatedVideoData.get(i)))) {
                     int currentPlayingIndex = listCompareRelatedVideosId.indexOf(detailsRelatedVideoData.get(i).getGist().getId());
 
@@ -67,7 +70,7 @@ public class CastingUtils {
                         queueItemsArray[currentPlayingIndex] = new MediaQueueItem.Builder(buildMediaInfoFromList(detailsRelatedVideoData.get(i), appName, context))
                                 .setAutoplay(true)
                                 .setPreloadTime(PRELOAD_TIME_S)
-                                .setCustomData(seasonObj)
+                                .setCustomData(seasonObj).setStartTime(watchTime)
                                 .build();
                     }
                 }
