@@ -250,6 +250,8 @@ public class CastServiceProvider {
 
                 mShowCaseView.forceTextPosition(ShowcaseView.ABOVE_SHOWCASE);
                 mShowCaseView.setStyle(R.style.CustomShowcaseTheme);
+                mShowCaseView.setEndButtonTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+                mShowCaseView.setEndButtonBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
 
                 mShowCaseView.show();
                 mShowCaseView.invalidate();

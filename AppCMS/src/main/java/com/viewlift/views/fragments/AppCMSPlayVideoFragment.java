@@ -142,8 +142,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     Animation animSequential, animFadeIn, animFadeOut, animTranslate;
     private final int totalCountdownInMillis = 10000;
     private final int countDownIntervalInMillis = 10;
-
-
+    private boolean showCRWWarningMessage;
 
     AdsLoader.AdsLoadedListener listenerAdsLoaded = adsManagerLoadedEvent -> {
         adsManager = adsManagerLoadedEvent.getAdsManager();
@@ -178,7 +177,6 @@ public class AppCMSPlayVideoFragment extends Fragment
                     });
         }
     };
-
 
     public static AppCMSPlayVideoFragment newInstance(Context context,
                                                       String primaryCategory,
@@ -323,7 +321,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             e.printStackTrace();
             mStreamId = filmId + appCMSPresenter.getCurrentTimeStamp();
         }
-        isVideoDownloaded=appCMSPresenter.isVideoDownloaded(filmId);
+        isVideoDownloaded = appCMSPresenter.isVideoDownloaded(filmId);
         videoPlayerView.setCurrentPosition(watchedTime * SECS_TO_MSECS);
         videoPlayerView.setOnPlayerStateChanged(playerState -> {
             if (playerState.getPlaybackState() == ExoPlayer.STATE_READY && !isCastConnected) {
@@ -398,7 +396,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                         beaconBufferingThread.start();
                     }
                 }
-                videoLoadingProgress.setVisibility(View.GONE);
+                videoLoadingProgress.setVisibility(View.VISIBLE);
             }
 
             if (!sentBeaconPlay) {
@@ -441,7 +439,11 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         initViewForCRW(rootView);
         if (!shouldRequestAds) {
-            createContentRatingView();
+            try {
+                createContentRatingView();
+            } catch (Exception e) {
+                Log.e(TAG, "Error ContentRatingView: " + e.getMessage());
+            }
         }
 
         beaconMessageThread = new BeaconPingThread(beaconMsgTimeoutMsec,
@@ -464,6 +466,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoLoadingProgress.bringToFront();
         videoLoadingProgress.setVisibility(View.VISIBLE);
 
+        showCRWWarningMessage = true;
 
         return rootView;
 
@@ -634,7 +637,12 @@ public class AppCMSPlayVideoFragment extends Fragment
                 break;
 
             case ALL_ADS_COMPLETED:
-                createContentRatingView();
+                videoLoadingProgress.setVisibility(View.GONE);
+                try {
+                    createContentRatingView();
+                } catch (Exception e) {
+                    Log.e(TAG, "Error ContentRatingView: " + e.getMessage());
+                }
                 if (adsManager != null) {
                     adsManager.destroy();
                     adsManager = null;
@@ -981,10 +989,13 @@ public class AppCMSPlayVideoFragment extends Fragment
         contentRatingBack.setOnClickListener(v -> {
             getActivity().finish();
         });
+
+        contentRatingDiscretionView.setVisibility(View.GONE);
     }
 
-    private void createContentRatingView() {
-        if (!isTrailer && !getParentalRating().equalsIgnoreCase(getContext().getString(R.string.age_rating_converted_default))) {
+    private void createContentRatingView() throws Exception {
+        if (!isTrailer && getParentalRating() != null && !getParentalRating().equalsIgnoreCase(getString(R.string.age_rating_converted_default))) {
+            videoPlayerMainContainer.setVisibility(View.GONE);
             animateView();
             startCountdown();
         } else {
@@ -995,7 +1006,6 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private String getParentalRating() {
-        String convertedRating = getContext().getString(R.string.age_rating_converted_default);
         if (!TextUtils.isEmpty(parentalRating) && !parentalRating.contentEquals(getContext().getString(R.string.age_rating_converted_default))) {
             contentRatingTitleView.setText(getResources().getString(R.string.content_rating_description) + parentalRating);
         }
@@ -1064,9 +1074,15 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         contentRatingMainContainer.setVisibility(View.VISIBLE);
 
-        contentRatingHeaderView.startAnimation(animFadeIn);
-        contentRatingInfoContainer.startAnimation(animFadeIn);
+        if (getParentalRating().contains(getString(R.string.age_rating_pg)) ||
+                !getParentalRating().contains(getString(R.string.age_rating_g))) {
+            contentRatingHeaderView.startAnimation(animFadeIn);
+            contentRatingInfoContainer.startAnimation(animFadeIn);
+        } else {
+            contentRatingHeaderView.setVisibility(View.GONE);
+        }
         contentRatingInfoContainer.setVisibility(View.VISIBLE);
+
 
         contentRatingTitleView.startAnimation(animSequential);
         contentRatingTitleView.setVisibility(View.VISIBLE);
@@ -1092,9 +1108,14 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     @Override
     public void onAnimationEnd(Animation animation) {
-        if (animation == animFadeIn) {
-            contentRatingDiscretionView.setVisibility(View.VISIBLE);
+        if (showCRWWarningMessage &&
+                getParentalRating().contains(getString(R.string.age_rating_pg)) ||
+                !getParentalRating().contains(getString(R.string.age_rating_g))) {
             contentRatingDiscretionView.startAnimation(animFadeOut);
+            contentRatingDiscretionView.setVisibility(View.VISIBLE);
+            showCRWWarningMessage = false;
+        } else {
+            contentRatingDiscretionView.setVisibility(View.GONE);
         }
     }
 
