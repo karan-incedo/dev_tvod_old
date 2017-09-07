@@ -1159,7 +1159,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void showSystemUI(View decorView) {
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
     }
-          
+
     private void createHomeNavItem(final NavigationPrimary homePageNav) {
         if (homePageNav != null) {
             if (appCMSTabNavContainer.getChildCount() <= homePageIndex) {

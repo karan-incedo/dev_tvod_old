@@ -1055,7 +1055,7 @@ public class AppCMSPresenter {
                     Log.d(TAG, "Login action selected: " + extraData[0]);
                     closeSoftKeyboard();
                     login(extraData[0], extraData[1]);
-                    sendSignInEmailFirebase();
+//                    sendSignInEmailFirebase();
                 } else if (actionType == AppCMSActionType.FORGOT_PASSWORD) {
                     Log.d(TAG, "Forgot password selected: " + extraData[0]);
                     closeSoftKeyboard();
@@ -3420,7 +3420,6 @@ public class AppCMSPresenter {
                     false,
                     false,
                     deeplinkSearchQuery);
-            sendFirebaseAnalyticsEvents(FIREBASE_EVENT_LOGIN_SCREEN);
             if (!launchSuccess) {
                 Log.e(TAG, "Failed to launch page: " + loginPage.getPageName());
                 launchErrorActivity(platformType);
@@ -4046,7 +4045,7 @@ public class AppCMSPresenter {
         if (context != null) {
             //Set the user Id when user is succesfully logged_in
             if (mFireBaseAnalytics != null)
-                mFireBaseAnalytics.setUserProperty(USER_ID_KEY, userId);
+                mFireBaseAnalytics.setUserId(userId);
             SharedPreferences sharedPrefs = context.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
             return sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, userId).commit() &&
                     setLoggedInTime(context);
@@ -4095,14 +4094,16 @@ public class AppCMSPresenter {
         }
         return false;
     }
-    public boolean isDownloadQualityScreenShowBefore(Context context){
+
+    public boolean isDownloadQualityScreenShowBefore(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME, 0);
             return sharedPrefs.getBoolean(USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME, false);
         }
         return false;
     }
-    public void setDownloadQualityScreenShowBefore(Context context,boolean show) {
+
+    public void setDownloadQualityScreenShowBefore(Context context, boolean show) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME, 0);
             sharedPrefs.edit().putBoolean(USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME, show).apply();
@@ -4853,8 +4854,12 @@ public class AppCMSPresenter {
     private void sendFireBaseLogOutEvent() {
         Bundle bundle = new Bundle();
         bundle.putString(FIREBASE_SCREEN_SIGN_OUT, FIREBASE_SCREEN_LOG_OUT);
-        if (getmFireBaseAnalytics() != null)
+        if (getmFireBaseAnalytics() != null) {
+            mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+            mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
             getmFireBaseAnalytics().logEvent(FIREBASE_SCREEN_SIGN_OUT, bundle);
+
+        }
     }
 
     public void addInternalEvent(OnInternalEvent onInternalEvent) {
@@ -6468,6 +6473,7 @@ public class AppCMSPresenter {
                             setRefreshToken(currentActivity, signInResponse.getRefreshToken());
                             setAuthToken(currentActivity, signInResponse.getAuthorizationToken());
                             setLoggedInUser(currentActivity, signInResponse.getUserId());
+                            sendSignInEmailFirebase();
                             setLoggedInUserName(currentActivity, signInResponse.getName());
                             setLoggedInUserEmail(currentActivity, signInResponse.getEmail());
 
@@ -7860,7 +7866,7 @@ public class AppCMSPresenter {
                 Log.d(TAG, "Login action selected: " + extraData[0]);
                 closeSoftKeyboard();
                 login(extraData[0], extraData[1]);
-                sendSignInEmailFirebase();
+//                sendSignInEmailFirebase();
             } else if (actionType == AppCMSActionType.FORGOT_PASSWORD) {
                 Log.d(TAG, "Forgot password selected: " + extraData[0]);
                 closeSoftKeyboard();
