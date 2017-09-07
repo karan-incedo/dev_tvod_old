@@ -8,7 +8,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -16,9 +19,7 @@ import android.widget.Toast;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
-import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.ccavenue.utility.AvenuesParams;
-import com.viewlift.ccavenue.utility.Constants;
 import com.viewlift.ccavenue.utility.RSAUtility;
 import com.viewlift.ccavenue.utility.ServiceUtility;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -42,6 +43,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.viewlift.ccavenue.utility.Constants.TRANS_URL;
+
 public class WebViewActivity extends Activity {
 	private static final String TAG = "CCAvenueWebView";
 
@@ -55,13 +58,7 @@ public class WebViewActivity extends Activity {
 	RenderView readerViewAyncTask = null ;
 	updateSubscriptionPlanAsyncTask updateStatus = null ;
 	ProgressDialog progressDialog = null ;
-
-	private final String FIREBASE_PLAN_ID = "item_id";
-	private final String FIREBASE_PLAN_NAME = "item_name";
-	private final String FIREBASE_CURRENCY_NAME = "currency";
-	private final String FIREBASE_VALUE = "value";
-	private final String FIREBASE_ECOMMERCE_PURCHASE = "ecommerce_purchase";
-
+	boolean backPressFlag ;
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
@@ -69,6 +66,7 @@ public class WebViewActivity extends Activity {
 		accessCode = "" ;
 		merchantID = "" ;
 		cancelRedirectURL = "" ;
+		backPressFlag = false ;
 		setContentView(R.layout.activity_webview);
 		mainIntent = getIntent();
 		appCMSPresenter = ((AppCMSApplication) getApplication())
@@ -114,6 +112,42 @@ public class WebViewActivity extends Activity {
 			return null;
 		}
 
+		@SuppressWarnings("unused")
+		class MyJavaScriptInterface
+		{
+			@JavascriptInterface
+			public void processHTML(String html)
+			{
+				// process the html as needed by the app
+				String status = null;
+				if(html.indexOf("F")!=-1){
+					backPressFlag = false ;
+					status = "Transaction Declined!";
+					displaySuccessPaymentDialog("Transcation Failed!", "Retry Later");
+				}else if(html.indexOf("S")!=-1){
+					try {
+						backPressFlag = true ;
+						appCMSPresenter.finalizeSignupAfterCCAvenueSubscription(null) ;
+						updateStatus = new updateSubscriptionPlanAsyncTask() ;
+						updateStatus.execute();
+						sendBroadcast(new Intent(
+								AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+						finish();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				}else if(html.indexOf("Aborted")!=-1){
+					status = "Transaction Cancelled!";
+					backPressFlag = false ;
+					displaySuccessPaymentDialog("Transcation Failed!", "Retry Later");
+				}else{
+					status = "Status Not Known!";
+					backPressFlag = false ;
+					displaySuccessPaymentDialog("Transcation Failed!", "Retry Later");
+				}
+			}
+		}
+
 		@Override
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
@@ -124,32 +158,7 @@ public class WebViewActivity extends Activity {
 					dialog = null;
 				}
 			} catch (Exception ex) {
-				Log.e(TAG, ex.getMessage());
 				dialog = null;
-			}
-
-			@SuppressWarnings("unused")
-			class MyJavaScriptInterface
-			{
-				@JavascriptInterface
-			    public void processHTML(String html)
-			    {
-			        // process the html as needed by the app
-			    	String status = null;
-			    	if(html.indexOf("Failure")!=-1){
-			    		status = "Transaction Declined!";
-			    	}else if(html.indexOf("Success")!=-1){
-			    		status = "Transaction Successful!";
-			    	}else if(html.indexOf("Aborted")!=-1){
-			    		status = "Transaction Cancelled!";
-			    	}else{
-			    		status = "Status Not Known!";
-			    	}
-			    	//Toast.makeText(getApplicationContext(), status, Toast.LENGTH_SHORT).show();
-			    	Intent intent = new Intent(getApplicationContext(), StatusActivity.class);
-					intent.putExtra("transStatus", status);
-					startActivity(intent);
-			    }
 			}
 
 			final WebView webview = (WebView) findViewById(R.id.webview);
@@ -160,35 +169,44 @@ public class WebViewActivity extends Activity {
 				@Override
 				public void onPageStarted(WebView view, String url, Bitmap favicon) {
 					super.onPageStarted(view, url, favicon);
-					Log.v("url",url) ;
+					if (url.equalsIgnoreCase(TRANS_URL)) {
+						backPressFlag = false ;
+					} else {
+						backPressFlag = true ;
+					}
 				}
 
 				@Override
-	    	    public void onPageFinished(WebView view, String url) {
-	    	        super.onPageFinished(webview, url);
-	    	        if(url.indexOf("/ccavResponseHandler.jsp")!=-1){
-	    	        	webview.loadUrl("javascript:window.HTMLOUT.processHTML('<head>'+document.getElementsByTagName('html')[0].innerHTML+'</head>');");
-						//webview.loadUrl("https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction");
-	    	        }
-                    //https://stgsecure.ccavenue.com/servlet/processTxn
-					///cancelRedirectURL = "https://stgsecure.ccavenue.com/servlet/processTxn" ;
-	    	        if (url.equalsIgnoreCase(cancelRedirectURL)) {
-						webview.stopLoading();
-						try {
-							 updateStatus = new updateSubscriptionPlanAsyncTask() ;
-							updateStatus.execute();
-						} catch (Exception ex) {
-							Log.e(TAG, ex.getMessage());
+				public void onPageFinished(WebView view, String url) {
+					super.onPageFinished(webview, url);
+					final Handler handler = new Handler();
+					handler.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							//Do something after 100ms
+							webview.scrollTo(0,0);
 						}
+					}, 600);
+					if(url.indexOf("/ccavResponseHandler.jsp")!=-1){
+						webview.loadUrl("javascript:window.HTMLOUT.processHTML('<head>'+document.getElementsByTagName('html')[0].innerHTML+'</head>');");
+						//webview.loadUrl("https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction");
 					}
-	    	    }
-	    	    @Override
-	    	    public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-	    	        Toast.makeText(getApplicationContext(), "Oh no! " + description, Toast.LENGTH_SHORT).show();
-	    	    }
+					//https://stgsecure.ccavenue.com/servlet/processTxn
+					///cancelRedirectURL = "https://stgsecure.ccavenue.com/servlet/processTxn" ;
+					if (url.equalsIgnoreCase(cancelRedirectURL)) {
+						webview.setVisibility(View.GONE);
+            /* This call inject JavaScript into the page which just finished loading. */
+						webview.loadUrl("javascript:window.HTMLOUT.processHTML('<head>'+document.getElementsByTagName('html')[0].innerHTML+'</head>');");
+						//webview.stopLoading();
+					}
+				}
+				@Override
+				public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+					Toast.makeText(getApplicationContext(), "Oh no! " + description, Toast.LENGTH_SHORT).show();
+				}
 			});
 			//cancelRedirectURL = "http://release-api.viewlift.com/ccavenue/ccavenue/callback";
-			/* An instance of this class will be registered as a JavaScript interface */
+      /* An instance of this class will be registered as a JavaScript interface */
 			StringBuffer params = new StringBuffer();
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.ACCESS_CODE,accessCode));
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.MERCHANT_ID,merchantID));
@@ -204,16 +222,17 @@ public class WebViewActivity extends Activity {
 			if (getIntent().getBooleanExtra("renewable",false)) {
 				params.append(ServiceUtility.addToPostParams("payment_option","OPTCRDC")) ;
 			}/* else {
-				params.append(ServiceUtility.addToPostParams("payment_option","OPTDBCRD")) ;
-				params.append(ServiceUtility.addToPostParams("payment_option","OPTNBK")) ;
-				params.append(ServiceUtility.addToPostParams("payment_option","OPTCRDC")) ;
-			}*/
+       params.append(ServiceUtility.addToPostParams("payment_option","OPTDBCRD")) ;
+       params.append(ServiceUtility.addToPostParams("payment_option","OPTNBK")) ;
+       params.append(ServiceUtility.addToPostParams("payment_option","OPTCRDC")) ;
+       }*/
 
 			params.append(ServiceUtility.addToPostParams("merchant_param1",getIntent().getStringExtra(getString(R.string.app_cms_site_name))));
 			params.append(ServiceUtility.addToPostParams("merchant_param2",getIntent().getStringExtra(getString(R.string.app_cms_user_id))));
 			params.append(ServiceUtility.addToPostParams("merchant_param3",getIntent().getStringExtra(getString(R.string.app_cms_plan_id))));
 			params.append(ServiceUtility.addToPostParams("merchant_param4","android"));
-
+			params.append(ServiceUtility.addToPostParams("merchant_param5",""));
+			//params.append(ServiceUtility.addToPostParams(AvenuesParams.BILLING_EMAIL,"email")) ;
 			try {
 				params.append(ServiceUtility.addToPostParams(AvenuesParams.ENC_VAL,URLEncoder.encode(encVal,"UTF-8")));
 			} catch (Exception ex) {
@@ -223,7 +242,7 @@ public class WebViewActivity extends Activity {
 
 			String vPostParams = params.substring(0,params.length()-1);
 			try {
-				webview.postUrl(Constants.TRANS_URL, EncodingUtils.getBytes(vPostParams, "UTF-8"));
+				webview.postUrl(TRANS_URL, EncodingUtils.getBytes(vPostParams, "UTF-8"));
 			} catch (Exception e) {
 				showToast("Exception occured while opening webview.");
 			}
@@ -237,7 +256,7 @@ public class WebViewActivity extends Activity {
 	public String getRSAKey () {
 		String JsonResponse = null;
 		String JsonDATA = "";
-        String rsaToken = "" ;
+		String rsaToken = "" ;
 		JSONObject post_dict = new JSONObject();
 
 		try {
@@ -293,6 +312,7 @@ public class WebViewActivity extends Activity {
 				orderID = jsonObj.getString("orderId") ;
 				accessCode = jsonObj.getString("accessCode") ;
 				cancelRedirectURL = jsonObj.getString("redirectUrl") ;
+				Log.v("cancelRedirectURL",cancelRedirectURL) ;
 				merchantID = jsonObj.getString("merchantId") ;
 			} catch (JSONException e) {
 				Log.e(TAG, e.getMessage());
@@ -314,21 +334,16 @@ public class WebViewActivity extends Activity {
 		return rsaToken ;
 	}
 
-
-	private void finlizePaymentWithUpdatingBackend () {
-		appCMSPresenter.navigateToHomePage();
-	}
-
 	private  class  updateSubscriptionPlanAsyncTask extends AsyncTask<Void, Void, String> {
 
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
 			// Showing progress dialog
-			progressDialog = new ProgressDialog(WebViewActivity.this);
-			progressDialog.setMessage("Please wait...");
-			progressDialog.setCancelable(false);
-			progressDialog.show();
+			//      progressDialog = new ProgressDialog(WebViewActivity.this);
+			//      progressDialog.setMessage("Updating Subscription...");
+			//      progressDialog.setCancelable(false);
+			//      progressDialog.show();
 		}
 
 		@Override
@@ -339,23 +354,23 @@ public class WebViewActivity extends Activity {
 			JSONObject post_dict = new JSONObject();
 
 			try {
-					post_dict.put("vlTransactionId", orderID) ;
-					post_dict.put("email",getIntent().getStringExtra("email"));
-					post_dict.put("currencyCode","INR");
-					post_dict.put("siteId",getIntent().getStringExtra("siteId"));
-					post_dict.put("planId",getIntent().getStringExtra(getString(R.string.app_cms_plan_id)));
-					post_dict.put("platform","android");
-					post_dict.put("zip","");
-					post_dict.put("description","CCAvenue Subscripton");
-					post_dict.put("subscription","ccavenue"); //very important to say this is a ccavenue request
-					post_dict.put("authorizedUserName",getIntent().getStringExtra("authorizedUserName"));
-                JsonDATA = String.valueOf(post_dict);
-					try {
-                        Log.v("userid", getIntent().getStringExtra("authorizedUserName"));
-                        Log.v("JsonDATA", JsonDATA);
-                    } catch (Exception e) {
-                        Log.e(TAG, e.getMessage());
-                    }
+				post_dict.put("vlTransactionId", orderID) ;
+				post_dict.put("email",getIntent().getStringExtra("email"));
+				post_dict.put("currencyCode","INR");
+				post_dict.put("siteId",getIntent().getStringExtra("siteId"));
+				post_dict.put("planId",getIntent().getStringExtra(getString(R.string.app_cms_plan_id)));
+				post_dict.put("platform","android");
+				post_dict.put("zip","");
+				post_dict.put("description","CCAvenue Subscripton");
+				post_dict.put("subscription","ccavenue"); //very important to say this is a ccavenue request
+				post_dict.put("authorizedUserName",getIntent().getStringExtra("authorizedUserName"));
+				JsonDATA = String.valueOf(post_dict);
+				try {
+					Log.v("userid", getIntent().getStringExtra("authorizedUserName"));
+					Log.v("JsonDATA", JsonDATA);
+				} catch (Exception e) {
+					Log.e(TAG, e.getMessage());
+				}
 			} catch (JSONException e) {
 				Log.e(TAG, e.getMessage());
 			}
@@ -379,7 +394,7 @@ public class WebViewActivity extends Activity {
 				writer.close();
 				InputStream inputStream = null ;
 				try {
-					 inputStream = urlConnection.getInputStream();
+					inputStream = urlConnection.getInputStream();
 				} catch (Exception ex) {
 					Log.e(TAG, ex.getMessage());
 					closeConnection(urlConnection,reader) ;
@@ -409,26 +424,26 @@ public class WebViewActivity extends Activity {
 				closeConnection(urlConnection,reader) ;
 				Log.e(TAG, e.getMessage());
 			}
-//			} finally {
-//				if (urlConnection != null) {
-//					try {
-//						urlConnection.disconnect();
-//					} catch (Exception ex) {
-//						Log.e(TAG, ex.getMessage());
-//					}
-//				}
-//				try {
-//					if (reader != null) {
-//						try {
-//							reader.close();
-//						} catch (final IOException e) {
-//							Log.e("TAG", "Error closing stream", e);
-//						}
-//					}
-//				} catch (Exception ex) {
-//					Log.e(TAG, ex.getMessage());
-//				}
-//			}
+			//      } finally {
+			//        if (urlConnection != null) {
+			//          try {
+			//            urlConnection.disconnect();
+			//          } catch (Exception ex) {
+			//            Log.e(TAG, ex.getMessage());
+			//          }
+			//        }
+			//        try {
+			//          if (reader != null) {
+			//            try {
+			//              reader.close();
+			//            } catch (final IOException e) {
+			//              Log.e("TAG", "Error closing stream", e);
+			//            }
+			//          }
+			//        } catch (Exception ex) {
+			//          Log.e(TAG, ex.getMessage());
+			//        }
+			//      }
 			return JsonResponse;
 		}
 
@@ -451,81 +466,31 @@ public class WebViewActivity extends Activity {
 			} catch (Exception ex) {
 				Log.e(TAG, ex.getMessage());
 			}
-        }
+		}
 
 		@Override
 		protected void onPostExecute(String result) {
 			super.onPostExecute(result);
-			// Dismiss the progress dialog
-
-            if (result==null) {
-				displaySuccessPaymentDialog("Payment failed!", "Try again later!");
-			} else {
-				try {
-					JSONObject jsonObj = new JSONObject(result);
-					if (jsonObj.getString("subscriptionStatus").equalsIgnoreCase("COMPLETED")) {
-
-						AppsFlyerUtils.subscriptionEvent(WebViewActivity.this,
-								true,
-								getString(R.string.app_cms_appsflyer_dev_key),
-								String.valueOf(mainIntent.getStringExtra(AvenuesParams.AMOUNT)),
-								getIntent().getStringExtra(getString(R.string.app_cms_plan_id)),
-								mainIntent.getStringExtra(AvenuesParams.CURRENCY));
-
-						Bundle bundle = new Bundle();
-						bundle.putString(FIREBASE_PLAN_ID, mainIntent.getStringExtra(getString(R.string.app_cms_plan_id)));
-						bundle.putString(FIREBASE_PLAN_NAME,  mainIntent.getStringExtra("plan_to_purchase_name"));
-						bundle.putString(FIREBASE_CURRENCY_NAME, mainIntent.getStringExtra(AvenuesParams.CURRENCY));
-						bundle.putString(FIREBASE_VALUE, String.valueOf(mainIntent.getStringExtra(AvenuesParams.AMOUNT)));
-						if (appCMSPresenter.getmFireBaseAnalytics() != null)
-							appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_ECOMMERCE_PURCHASE, bundle);
-
-						appCMSPresenter.finalizeSignupAfterCCAvenueSubscription(null) ;
-						displaySuccessPaymentDialog("Payment Done!", "Start Watching");
-					} else {
-						displaySuccessPaymentDialog("Payment failed!", "Try again later!");
-					}
-				} catch (JSONException e) {
-					Log.e(TAG, e.getMessage());
-				}
-			}
-		}
-		private void displaySuccessPaymentDialog (String message, String buttonTitle) {
-			AlertDialog.Builder builder1 = new AlertDialog.Builder(WebViewActivity.this);
-			//builder1.setMessage("Payment Done!");
-			builder1.setMessage(message);
-			builder1.setCancelable(true);
-
-			builder1.setPositiveButton(
-					buttonTitle,
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							if (message.equalsIgnoreCase("Payment failed!")) {
-								dialog.cancel();
-								progressDialog.show();
-								onBackPressed();
-							} else {
-								dialog.cancel();
-								progressDialog.show();
-								progressDialog.setMessage("Updating Subscription...");
-								appCMSPresenter.navigateToHomePage();
-							}
-						}
-					});
-
-			AlertDialog alert11 = builder1.create();
-			alert11.show();
-			try {
-				if (progressDialog.isShowing()) {
-					progressDialog.hide();
-					//progressDialog.dismiss();
-					//progressDialog = null ;
-				}
-			} catch (Exception ex) {
-				Log.e(TAG, ex.getMessage());
-			}
 		}
 	}
+
+	private void displaySuccessPaymentDialog (String message, String buttonTitle) {
+		AlertDialog.Builder builder1 = new AlertDialog.Builder(WebViewActivity.this);
+		builder1.setMessage(message);
+		builder1.setCancelable(false);
+		builder1.setPositiveButton(
+				buttonTitle,
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+						finish();
+					}
+				});
+
+		AlertDialog alert11 = builder1.create();
+		alert11.show();
+	}
+
 	@Override
 	protected void onDestroy() {
 		if (readerViewAyncTask!=null) {
@@ -534,14 +499,6 @@ public class WebViewActivity extends Activity {
 				readerViewAyncTask = null ;
 			}
 		}
-
-		if (updateStatus!=null) {
-			if (updateStatus.getStatus() == AsyncTask.Status.RUNNING) {
-				updateStatus.cancel(true) ;
-				updateStatus = null ;
-			}
-		}
-
 		if (progressDialog!=null) {
 			try {
 				if (progressDialog.isShowing()) {
@@ -556,5 +513,14 @@ public class WebViewActivity extends Activity {
 		super.onDestroy();
 	}
 
-
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (backPressFlag) {
+			if (keyCode == KeyEvent.KEYCODE_BACK) {
+				//Do something here
+				return backPressFlag;
+			}
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 }
