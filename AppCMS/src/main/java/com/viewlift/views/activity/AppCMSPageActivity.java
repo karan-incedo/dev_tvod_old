@@ -465,6 +465,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         resume();
+        appCMSPresenter.setCurrentActivity(this);
         Log.d(TAG, "onResume()");
     }
 
@@ -540,11 +541,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         Log.d(TAG, "Received other activity result");
 
+        appCMSPresenter.setCurrentActivity(this);
+
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-                Log.d(TAG, "Google Signin Status Message: " + result.getStatus().getStatusMessage());
                 if (result != null && result.isSuccess()) {
+                    Log.d(TAG, "Google Signin Status Message: " + result.getStatus().getStatusMessage());
                     if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                         handleCloseAction();
                     }
