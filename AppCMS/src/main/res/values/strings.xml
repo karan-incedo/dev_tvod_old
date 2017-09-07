@@ -176,7 +176,7 @@
     <string name="fb_login_protocol_scheme">fb1324523080924996</string>
 
     <!-- AppCMS Apptentive API -->
-    <string name="app_cms_apptentive_api_key">dfde9505539f2dc1d24700c09fb096b5280ed4cbed0828084540ada79a2b00f7</string>
+    <string name="app_cms_apptentive_api_key">831155c17a5b911a3d13140c1e00ff34a9b111182810a751c711b1c0ac1a86d2</string>
     <string name="app_cms_button_color_key">app_cms_button_color</string>
 
     <!-- Google Authentication API -->
@@ -303,8 +303,10 @@
     <string name="app_cms_download_external_storage_write_permission_info_error_title">Download to External Storage</string>
     <string name="app_cms_download_limit_message">Download is only available for 30 days after it has been downloaded.</string>
     <string name="app_cms_download_unavailable_error_title">Download Unavailable</string>
-    <string name="app_cms_download_failed_error_title">Download Failed</string>
+    <string name="app_cms_download_failed_error_title">Not Enough Storage</string>
    <!-- <string name="app_cms_download_failed_error_message">Cannot be downloaded due to low device storage, Please manage space in your storage area and try again.</string>-->
+    <string name="app_cms_download_failed_storage_error_title">Download Failed</string>
+
     <string name="app_cms_download_failed_error_message">Your device does not have enough space to download the content! In order to free some memory : &lt;br&#47;&gt; 1. Go to Settings. &lt;br&#47;&gt; 2. Tap on Storage  </string>
 
     <string name="app_cms_sdCard_unavailable_error_title">SDCard Unavailable</string>

@@ -1,7 +1,5 @@
 package com.viewlift.models.data.appcms.ui.main;
 
-import android.text.TextUtils;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
@@ -80,6 +78,10 @@ public class AppCMSMain {
     @SerializedName("Android")
     @Expose
     String android;
+
+    @SerializedName("features")
+    @Expose
+    Features features;
 
     boolean loadFromFile;
 
@@ -284,5 +286,13 @@ public class AppCMSMain {
 
     public void setLoadFromFile(boolean loadFromFile) {
         this.loadFromFile = loadFromFile;
+    }
+
+    public Features getFeatures() {
+        return features;
+    }
+
+    public void setFeatures(Features features) {
+        this.features = features;
     }
 }

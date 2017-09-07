@@ -27,8 +27,8 @@
 
                 <ImageView
                     android:id="@+id/app_cms_toolbar_logo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="220dp"
+                    android:layout_height="?attr/actionBarSize"
                     android:layout_centerHorizontal="true"
                     android:background="@drawable/logo_icon"
                     android:scaleType="centerInside" />
@@ -57,6 +57,7 @@
                             android:padding="5dp"
                             android:src="@drawable/anim_cast"
                             android:visibility="visible" />
+
                     </LinearLayout>
 
                     <ImageButton
@@ -67,6 +68,7 @@
                         android:background="@android:color/transparent"
                         android:scaleType="fitCenter"
                         android:src="@drawable/cancel" />
+
                 </LinearLayout>
 
             </RelativeLayout>
@@ -123,6 +125,7 @@
             android:clickable="true"
             android:focusable="true"
             android:scaleType="centerInside" />
+
     </LinearLayout>
 
     <RelativeLayout
@@ -155,6 +158,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:visibility="visible" />
+
     </RelativeLayout>
 
     <ProgressBar
