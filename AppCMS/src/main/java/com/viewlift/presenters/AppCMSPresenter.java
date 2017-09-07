@@ -1738,7 +1738,7 @@ public class AppCMSPresenter {
     }
 
     public void initiateItemPurchase() {
-        isCCAvenueEnabled = false ;
+        isCCAvenueEnabled = true ;
         if (!TextUtils.isEmpty(countryCode) && countryCode.equalsIgnoreCase("IN") && isCCAvenueEnabled) {
             if (currencyCode.equalsIgnoreCase("INR")) {
                 Log.d(TAG, "Initiating CCAvenue purchase");
