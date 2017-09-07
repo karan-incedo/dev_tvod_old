@@ -86,15 +86,15 @@ public class BeaconRequest {
 
     @SerializedName("apos")
     @Expose
-    private int apos;
+    private String apos;
 
     @SerializedName("apod")
     @Expose
-    private int apod;
+    private String apod;
 
     @SerializedName("vpos")
     @Expose
-    private int vpos;
+    private String vpos;
 
     @SerializedName("url")
     @Expose
@@ -273,27 +273,27 @@ public class BeaconRequest {
         this.ref = ref;
     }
 
-    public int getApos() {
+    public String getApos() {
         return apos;
     }
 
-    public void setApos(int apos) {
+    public void setApos(String apos) {
         this.apos = apos;
     }
 
-    public int getApod() {
+    public String getApod() {
         return apod;
     }
 
-    public void setApod(int apod) {
+    public void setApod(String apod) {
         this.apod = apod;
     }
 
-    public int getVpos() {
+    public String getVpos() {
         return vpos;
     }
 
-    public void setVpos(int vpos) {
+    public void setVpos(String vpos) {
         this.vpos = vpos;
     }
 

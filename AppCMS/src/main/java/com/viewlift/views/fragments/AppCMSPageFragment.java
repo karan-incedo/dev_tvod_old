@@ -42,6 +42,10 @@ public class AppCMSPageFragment extends Fragment {
     private String videoPageName = "Video Page";
     private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
 
+    private final String LOGIN_STATUS_KEY = "logged_in_status";
+    private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
+    private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
+
     public interface OnPageCreation {
         void onSuccess(AppCMSBinder appCMSBinder);
 
@@ -139,13 +143,19 @@ public class AppCMSPageFragment extends Fragment {
             return;
         Bundle bundle = new Bundle();
         if (!appCMSVideoPageBinder.isUserLoggedIn()) {
+            appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+
             bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, appCMSVideoPageBinder.getScreenName());
         } else {
+            appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
+
             if (!TextUtils.isEmpty(appCMSVideoPageBinder.getScreenName()) && appCMSVideoPageBinder.getScreenName().matches(videoPageName))
                 bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, appCMSVideoPageBinder.getScreenName() + "-" + appCMSVideoPageBinder.getPageName());
             else
                 bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, appCMSVideoPageBinder.getScreenName());
         }
+
+
         //Logs an app event.
         appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
         //Sets whether analytics collection is enabled for this app on this device.
