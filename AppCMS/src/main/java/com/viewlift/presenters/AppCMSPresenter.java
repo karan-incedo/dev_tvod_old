@@ -6006,12 +6006,14 @@ public class AppCMSPresenter {
                                             false);
                                 }
                                 if (isSignupFromFacebook) {
+                                    launchType = LaunchType.LOGIN_AND_SIGNUP;
                                     setFacebookAccessToken(facebookAccessToken,
                                             facebookUserId,
                                             facebookUsername,
                                             facebookEmail,
                                             false);
                                 } else if (isSignupFromGoogle) {
+                                    launchType = LaunchType.LOGIN_AND_SIGNUP;
                                     setGoogleAccessToken(googleAccessToken,
                                             googleUserId,
                                             googleUsername,
