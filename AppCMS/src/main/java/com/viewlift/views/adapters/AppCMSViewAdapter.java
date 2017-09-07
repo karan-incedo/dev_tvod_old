@@ -89,14 +89,14 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
-            if (appCMSPresenter.isUserLoggedIn(context)) {
+            if (appCMSPresenter.isUserLoggedIn()) {
                 List<SubscriptionPlan> availableSubscriptionPlans =
-                        appCMSPresenter.availableUpgradesForUser(appCMSPresenter.getLoggedInUser(context));
+                        appCMSPresenter.availableUpgradesForUser(appCMSPresenter.getLoggedInUser());
 
                 double subscriptionPrice = -1.0;
 
                 try {
-                    subscriptionPrice = Double.parseDouble(appCMSPresenter.getActiveSubscriptionPrice(context));
+                    subscriptionPrice = Double.parseDouble(appCMSPresenter.getActiveSubscriptionPrice());
                 } catch (Exception e) {
                     Log.e(TAG, "Failed to parse double value for subscription price");
                 }
@@ -239,14 +239,14 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         listView.invalidate();
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
-            if (appCMSPresenter.isUserLoggedIn(listView.getContext())) {
+            if (appCMSPresenter.isUserLoggedIn()) {
                 List<SubscriptionPlan> availableSubscriptionPlans =
-                        appCMSPresenter.availableUpgradesForUser(appCMSPresenter.getLoggedInUser(listView.getContext()));
+                        appCMSPresenter.availableUpgradesForUser(appCMSPresenter.getLoggedInUser());
 
                 double subscriptionPrice = -1.0;
 
                 try {
-                    subscriptionPrice = Double.parseDouble(appCMSPresenter.getActiveSubscriptionPrice(listView.getContext()));
+                    subscriptionPrice = Double.parseDouble(appCMSPresenter.getActiveSubscriptionPrice());
                 } catch (Exception e) {
                     Log.e(TAG, "Failed to parse double value for subscription price");
                 }

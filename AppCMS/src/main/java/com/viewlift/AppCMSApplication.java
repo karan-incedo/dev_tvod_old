@@ -41,6 +41,8 @@ public class AppCMSApplication extends Application {
                 .appCMSPresenterModule(new AppCMSPresenterModule())
                 .build();
 
+        appCMSPresenterComponent.appCMSPresenter().setCurrentContext(this);
+
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {

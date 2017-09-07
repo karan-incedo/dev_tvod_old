@@ -311,9 +311,9 @@ public class AppCMSPlayVideoFragment extends Fragment
         setCasting();
 
         if (!TextUtils.isEmpty(hlsUrl)) {
-            videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference(getContext()));
+            videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference());
             videoPlayerView.getPlayerView().getSubtitleView()
-                    .setVisibility(appCMSPresenter.getClosedCaptionPreference(getContext())
+                    .setVisibility(appCMSPresenter.getClosedCaptionPreference()
                             ? View.VISIBLE
                             : View.GONE);
             videoPlayerView.setUri(Uri.parse(hlsUrl),
@@ -439,7 +439,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerView.setOnClosedCaptionButtonClicked(isChecked -> {
             videoPlayerView.getPlayerView().getSubtitleView()
                     .setVisibility(isChecked ? View.VISIBLE : View.GONE);
-            appCMSPresenter.setClosedCaptionPreference(getContext(), isChecked);
+            appCMSPresenter.setClosedCaptionPreference(isChecked);
         });
 
         initViewForCRW(rootView);

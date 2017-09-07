@@ -35,10 +35,10 @@ public class AppCMSDownloadQualityAdapter extends AppCMSDownloadRadioAdapter<Mpe
         this.tintColor = Color.parseColor(getColor(context,
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
 
-        if (appCMSPresenter.getUserDownloadQualityPref(context) != null) {
+        if (appCMSPresenter.getUserDownloadQualityPref() != null) {
             for (Integer i = 0; i < items.size(); i++) {
                 if (items.get(i).getRenditionValue().equals(appCMSPresenter
-                        .getUserDownloadQualityPref(context))) {
+                        .getUserDownloadQualityPref())) {
                     this.downloadQualityPosition = i;
                 }
             }

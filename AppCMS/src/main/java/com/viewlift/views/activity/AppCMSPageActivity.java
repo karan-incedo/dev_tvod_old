@@ -258,7 +258,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             RefreshAppCMSBinderAction appCMSBinderAction =
                                     new RefreshAppCMSBinderAction(appCMSPresenter,
                                             appCMSBinder,
-                                            appCMSPresenter.isUserLoggedIn(context));
+                                            appCMSPresenter.isUserLoggedIn());
                             appCMSPresenter.refreshPageAPIData(appCMSBinder.getAppCMSPageUI(),
                                     appCMSBinder.getPageId(),
                                     appCMSBinderAction);
@@ -276,8 +276,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
                 boolean isConnected = activeNetwork != null &&
                         activeNetwork.isConnectedOrConnecting();
-                appCMSPresenter.setNetworkConnected(AppCMSPageActivity.this,
-                        isConnected);
+                appCMSPresenter.setNetworkConnected(isConnected);
             }
         };
 
@@ -285,8 +284,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         wifiConnectedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                appCMSPresenter.setWifiConnected(AppCMSPageActivity.this,
-                        wifiManager.isWifiEnabled());
+                appCMSPresenter.setWifiConnected(wifiManager.isWifiEnabled());
             }
         };
 
@@ -349,7 +347,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                             handleCloseAction();
                                         }
                                         appCMSPresenter.setFacebookAccessToken(
-                                                AppCMSPageActivity.this,
                                                 AppCMSPageActivity.this.accessToken.getToken(),
                                                 AppCMSPageActivity.this.accessToken.getUserId(),
                                                 username,
@@ -551,7 +548,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                         handleCloseAction();
                     }
-                    appCMSPresenter.setGoogleAccessToken(this, result.getSignInAccount().getIdToken(),
+                    appCMSPresenter.setGoogleAccessToken(result.getSignInAccount().getIdToken(),
                             result.getSignInAccount().getId(),
                             result.getSignInAccount().getDisplayName(),
                             result.getSignInAccount().getEmail(),
@@ -580,7 +577,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         } else if (resultCode == RESULT_CANCELED) {
             if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
-                if (!TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionSku(this))) {
+                if (!TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionSku())) {
                     appCMSPresenter.showConfirmCancelSubscriptionDialog(retry -> {
                         if (retry) {
                             appCMSPresenter.initiateItemPurchase();
@@ -782,7 +779,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private boolean waitingForSubscriptionFinalization() {
         return (appCMSPresenter.isViewPlanPage(appCMSBinderStack.peek()) &&
-                !appCMSPresenter.isUserSubscribed(this));
+                !appCMSPresenter.isUserSubscribed());
     }
 
     private boolean atMostOneUserPageOnTopStack(String newPageId) {
@@ -852,8 +849,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 case EDIT_PROFILE:
                     appCMSPageFragment =
                             AppCMSEditProfileFragment.newInstance(this,
-                                    appCMSPresenter.getLoggedInUserName(this),
-                                    appCMSPresenter.getLoggedInUserEmail(this));
+                                    appCMSPresenter.getLoggedInUserName(),
+                                    appCMSPresenter.getLoggedInUserEmail());
                     break;
 
                 case CHANGE_PASSWORD:
@@ -1349,7 +1346,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 appCMSPageAPI -> {
                                     if (appCMSPageAPI != null) {
                                         boolean updatedHistory = false;
-                                        if (appCMSPresenter.isUserLoggedIn(this)) {
+                                        if (appCMSPresenter.isUserLoggedIn()) {
                                             if (appCMSPageAPI.getModules() != null) {
                                                 for (Module module : appCMSPageAPI.getModules()) {
                                                     AppCMSUIKeyType moduleType = appCMSPresenter.getJsonValueKeyMap().get(module.getModuleType());
@@ -1405,7 +1402,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.cancelInternalEvents();
         appCMSPresenter.restartInternalEvents();
         if (appCMSPresenter.isViewPlanPage(updatedAppCMSBinder.getPageId())) {
-            appCMSPresenter.checkForExistingSubscription(appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE && !appCMSPresenter.isUserSubscribed(this));
+            appCMSPresenter.checkForExistingSubscription(appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE && !appCMSPresenter.isUserSubscribed());
         }
         getSupportFragmentManager().removeOnBackStackChangedListener(this);
     }
@@ -1504,7 +1501,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         @Override
         public void call(AppCMSPageAPI appCMSPageAPI) {
-            userLoggedIn = appCMSPresenter.isUserLoggedIn(appCMSPresenter.getCurrentActivity());
+            userLoggedIn = appCMSPresenter.isUserLoggedIn();
             if (userLoggedIn && appCMSPageAPI != null && appCMSPageAPI.getModules() != null) {
                 for (Module module : appCMSPageAPI.getModules()) {
                     AppCMSUIKeyType moduleType = appCMSPresenter.getJsonValueKeyMap().get(module.getModuleType());
