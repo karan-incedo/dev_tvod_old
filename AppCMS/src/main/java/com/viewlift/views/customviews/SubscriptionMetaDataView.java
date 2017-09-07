@@ -245,7 +245,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
                         componentView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                         ((TextView) componentView).setText(featureDetail.getTextToDisplay());
 //                        ((TextView) componentView).setEllipsize(TextUtils.TruncateAt.END);
-//                        componentView.setLayoutParams(gridLayoutParams);
+                        componentView.setLayoutParams(gridLayoutParams);
                     }
                     break;
 
@@ -260,7 +260,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
 //                        gridLayoutParams.rowSpec=GridLayout.spec(2);
                         gridLayoutParams.columnSpec=GridLayout.spec(0);
                         gridLayoutParams.setMargins(0, 0, 16, 0);
-//                        gridLayoutParams.setGravity(Gravity.END);
+                        gridLayoutParams.setGravity(Gravity.END);
                         componentView.setLayoutParams(gridLayoutParams);
                     }
                     break;
