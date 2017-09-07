@@ -8234,53 +8234,6 @@ public class AppCMSPresenter {
     public String getDownloadURL(ContentDatum contentDatum) {
 
         String downloadURL = "";
-        String downloadQualityRendition = getUserDownloadQualityPref(currentActivity);
-        Map<String, String> urlRenditionMap = new HashMap<>();
-        for (Mpeg mpeg : contentDatum.getStreamingInfo().getVideoAssets().getMpeg()) {
-            urlRenditionMap.put(mpeg.getRenditionValue().replace("_", "").trim(),
-                    mpeg.getUrl());
-        }
-        downloadURL = urlRenditionMap.get(downloadQualityRendition);
-
-        if (downloadQualityRendition != null) {
-            if (downloadURL == null && downloadQualityRendition.contains("360")) {
-                if (urlRenditionMap.get("720p") != null) {
-                    downloadURL = urlRenditionMap.get("720p");
-                } else if (urlRenditionMap.get("1080p") != null) {
-                    downloadURL = urlRenditionMap.get("1080p");
-                }
-
-            } else if (downloadURL == null && downloadQualityRendition.contains("720")) {
-                if (urlRenditionMap.get("360p") != null) {
-                    downloadURL = urlRenditionMap.get("360p");
-                } else if (urlRenditionMap.get("1080p") != null) {
-                    downloadURL = urlRenditionMap.get("1080p");
-                }
-
-            } else if (downloadURL == null && downloadQualityRendition.contains("1080")) {
-                if (urlRenditionMap.get("720p") != null) {
-                    downloadURL = urlRenditionMap.get("720p");
-                } else if (urlRenditionMap.get("360p") != null) {
-                    downloadURL = urlRenditionMap.get("360p");
-                }
-            } else if (downloadURL == null) {
-                //noinspection SuspiciousMethodCalls
-                downloadURL = urlRenditionMap.get(urlRenditionMap.keySet().toArray()[0]);
-            }
-        } else {
-            downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
-        }
-
-        downloadURL = downloadURL != null
-                ? downloadURL.replace("https:/", "http:/")
-                : null;
-
-        return downloadURL;
-    }
-
-    public String getDownloadURL(ContentDatum contentDatum) {
-
-        String downloadURL = "";
         String downloadQualityRendition = getUserDownloadQualityPref();
         Map<String, String> urlRenditionMap = new HashMap<>();
         for (Mpeg mpeg : contentDatum.getStreamingInfo().getVideoAssets().getMpeg()) {
