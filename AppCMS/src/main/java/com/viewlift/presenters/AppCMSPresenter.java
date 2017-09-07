@@ -1686,6 +1686,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             launchType = LaunchType.SUBSCRIBE;
             skuToPurchase = sku;
+            new SoftReference<Object>(skuToPurchase, referenceQueue);
             planToPurchase = planId;
             planToPurchaseName = planName;
             currencyOfPlanToPurchase = currency;
