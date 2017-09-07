@@ -185,7 +185,7 @@ public class ViewCreator {
                                         }
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
-                                    if (appCMSPresenter.isUserLoggedIn(context)) {
+                                    if (appCMSPresenter.isUserLoggedIn()) {
                                         ((ProgressBar) view).setMax(100);
                                         ((ProgressBar) view).setProgress(0);
                                         if (moduleAPI.getContentData() != null &&
@@ -335,7 +335,7 @@ public class ViewCreator {
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0).getGist() != null &&
                                                 moduleAPI.getContentData().get(0).getGist().getId() != null) {
-                                            String userId = appCMSPresenter.getLoggedInUser(context);
+                                            String userId = appCMSPresenter.getLoggedInUser();
                                             appCMSPresenter.getUserVideoDownloadStatus(
                                                     moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) view, appCMSPresenter,
                                                             moduleAPI.getContentData().get(0), userId), userId);
@@ -492,22 +492,22 @@ public class ViewCreator {
                                         }
                                     }
                                 } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_EDIT_PROFILE_KEY) {
-                                    if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken(context))) {
+                                    if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken())) {
                                         componentViewResult.componentView.setVisibility(View.GONE);
                                         componentViewResult.shouldHideComponent = true;
                                     }
 
-                                    if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken(context))) {
+                                    if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken())) {
                                         componentViewResult.componentView.setVisibility(View.GONE);
                                         componentViewResult.shouldHideComponent = true;
                                     }
                                 } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CHANGE_PASSWORD_KEY) {
-                                    if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken(context))) {
+                                    if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken())) {
                                         componentViewResult.componentView.setVisibility(View.GONE);
                                         componentViewResult.shouldHideComponent = true;
                                     }
 
-                                    if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken(context))) {
+                                    if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken())) {
                                         componentViewResult.componentView.setVisibility(View.GONE);
                                         componentViewResult.shouldHideComponent = true;
                                     }
@@ -583,28 +583,28 @@ public class ViewCreator {
                                             View settingsView = pageView.findViewFromComponentId(module.getId()
                                                     + settingsComponent.getKey());
 
-                                            String paymentProcessor = appCMSPresenter.getActiveSubscriptionProcessor(context);
+                                            String paymentProcessor = appCMSPresenter.getActiveSubscriptionProcessor();
 
                                             if (settingsView != null) {
                                                 if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_NAME_VALUE_KEY) {
-                                                    ((TextView) settingsView).setText(appCMSPresenter.getLoggedInUserName(context));
+                                                    ((TextView) settingsView).setText(appCMSPresenter.getLoggedInUserName());
                                                 } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_VALUE_KEY) {
-                                                    ((TextView) settingsView).setText(appCMSPresenter.getLoggedInUserEmail(context));
-                                                } else if (TextUtils.isEmpty(appCMSPresenter.getLoggedInUserEmail(context))) {
+                                                    ((TextView) settingsView).setText(appCMSPresenter.getLoggedInUserEmail());
+                                                } else if (TextUtils.isEmpty(appCMSPresenter.getLoggedInUserEmail())) {
                                                     settingsView.setVisibility(View.GONE);
                                                 } else {
                                                     if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY) {
-                                                        if (appCMSPresenter.isUserSubscribed(context) &&
-                                                                !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName(context))) {
+                                                        if (appCMSPresenter.isUserSubscribed() &&
+                                                                !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName())) {
                                                             settingsView.setVisibility(View.VISIBLE);
                                                         } else {
                                                             settingsView.setVisibility(View.GONE);
                                                             shouldHideComponent = true;
                                                         }
                                                     } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_VALUE_KEY) {
-                                                        if (appCMSPresenter.isUserSubscribed(context) &&
-                                                                !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName(context))) {
-                                                            ((TextView) settingsView).setText(appCMSPresenter.getActiveSubscriptionPlanName(context));
+                                                        if (appCMSPresenter.isUserSubscribed() &&
+                                                                !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName())) {
+                                                            ((TextView) settingsView).setText(appCMSPresenter.getActiveSubscriptionPlanName());
                                                         } else {
                                                             ((TextView) settingsView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
                                                         }
@@ -627,15 +627,15 @@ public class ViewCreator {
                                                             ((TextView) settingsView).setText("");
                                                         }
                                                     } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY) {
-                                                        ((TextView) settingsView).setText(appCMSPresenter.getUserDownloadQualityPref(context));
+                                                        ((TextView) settingsView).setText(appCMSPresenter.getUserDownloadQualityPref());
                                                     } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
-                                                        if (!appCMSPresenter.isUserSubscribed(context)) {
+                                                        if (!appCMSPresenter.isUserSubscribed()) {
                                                             ((TextView) settingsView).setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
                                                         } else if (!TextUtils.isEmpty(component.getText())) {
                                                             ((TextView) settingsView).setText(component.getText());
                                                         }
                                                     } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                                                        if (appCMSPresenter.isUserSubscribed(context)) {
+                                                        if (appCMSPresenter.isUserSubscribed()) {
                                                             settingsView.setVisibility(View.VISIBLE);
                                                         } else {
                                                             settingsView.setVisibility(View.GONE);
@@ -654,7 +654,7 @@ public class ViewCreator {
 
                                             case PAGE_SD_CARD_FOR_DOWNLOADS_TOGGLE_BUTTON_KEY:
                                                 ((Switch) view).setChecked(appCMSPresenter
-                                                        .getUserDownloadLocationPref(context));
+                                                        .getUserDownloadLocationPref());
                                                 break;
 
                                             default:
@@ -815,7 +815,7 @@ public class ViewCreator {
         boolean newView = false;
         if (pageView == null || pageView.getContext() != context) {
             pageView = new PageView(context, appCMSPageUI);
-            pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn(context));
+            pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
             if (appCMSPresenter.isPageAVideoPage(screenName)) {
                 appCMSPresenter.getPageViewLruCache().put(screenName + BaseView.isLandscape(context), pageView);
             } else {
@@ -826,8 +826,8 @@ public class ViewCreator {
         }
         if (newView ||
                 (!appCMSPresenter.isPagePrimary(appCMSPageAPI.getId()) && !appCMSPresenter.isPageAVideoPage(screenName)) ||
-                appCMSPresenter.isUserLoggedIn(context) != pageView.isUserLoggedIn()) {
-            pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn(context));
+                appCMSPresenter.isUserLoggedIn() != pageView.isUserLoggedIn()) {
+            pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
             pageView.getChildrenContainer().removeAllViews();
             Runtime.getRuntime().gc();
             componentViewResult = new ComponentViewResult();
@@ -1184,7 +1184,7 @@ public class ViewCreator {
             componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
 
-        String paymentProcessor = appCMSPresenter.getActiveSubscriptionProcessor(context);
+        String paymentProcessor = appCMSPresenter.getActiveSubscriptionProcessor();
 
         AppCMSUIKeyType moduleType = jsonValueKeyMap.get(viewType);
 
@@ -1469,7 +1469,7 @@ public class ViewCreator {
 
                 switch (componentKey) {
                     case PAGE_BUTTON_SWITCH_KEY:
-                        if (appCMSPresenter.isPreferedStorageLocationSDCard(context)) {
+                        if (appCMSPresenter.isPreferedStorageLocationSDCard()) {
                             ((Switch) componentViewResult.componentView).setChecked(true);
                         } else {
                             ((Switch) componentViewResult.componentView).setChecked(false);
@@ -1478,13 +1478,13 @@ public class ViewCreator {
                         ((Switch) componentViewResult.componentView).setOnCheckedChangeListener((buttonView, isChecked) -> {
                             if (isChecked) {
                                 if (appCMSPresenter.isRemovableSDCardAvailable()) {
-                                    appCMSPresenter.setPreferedStorageLocationSDCard(context, true);
+                                    appCMSPresenter.setPreferedStorageLocationSDCard(true);
                                 } else {
                                     appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SD_CARD_NOT_AVAILABLE, null, false, null);
                                     buttonView.setChecked(false);
                                 }
                             } else {
-                                appCMSPresenter.setPreferedStorageLocationSDCard(context, false);
+                                appCMSPresenter.setPreferedStorageLocationSDCard(false);
                             }
 
                         });
@@ -1492,12 +1492,12 @@ public class ViewCreator {
 
                     case PAGE_SETTINGS_EDIT_PROFILE_KEY:
                     case PAGE_SETTINGS_CHANGE_PASSWORD_KEY:
-                        if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken(context))) {
+                        if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken())) {
                             componentViewResult.componentView.setVisibility(View.GONE);
                             componentViewResult.shouldHideComponent = true;
                         }
 
-                        if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken(context))) {
+                        if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken())) {
                             componentViewResult.componentView.setVisibility(View.GONE);
                             componentViewResult.shouldHideComponent = true;
                         }
@@ -1531,7 +1531,7 @@ public class ViewCreator {
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getGist() != null) {
-                            String userId = appCMSPresenter.getLoggedInUser(context);
+                            String userId = appCMSPresenter.getLoggedInUser();
                             appCMSPresenter.getUserVideoDownloadStatus(
                                     moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
                                             moduleAPI.getContentData().get(0), userId), userId);
@@ -1826,7 +1826,7 @@ public class ViewCreator {
                         break;
 
                     default:
-                        if (!appCMSPresenter.isUserSubscribed(context)) {
+                        if (!appCMSPresenter.isUserSubscribed()) {
                             if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
                             } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
@@ -2098,32 +2098,32 @@ public class ViewCreator {
                         case PAGE_ACTIONLABEL_KEY:
 
                         case PAGE_SETTINGS_NAME_VALUE_KEY:
-                            ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserName(context));
+                            ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserName());
                             break;
 
                         case PAGE_SETTINGS_EMAIL_VALUE_KEY:
-                            ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserEmail(context));
+                            ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserEmail());
                             break;
 
                         case PAGE_SETTINGS_EMAIL_TITLE_KEY:
-                            if (TextUtils.isEmpty(appCMSPresenter.getLoggedInUserEmail(context))) {
+                            if (TextUtils.isEmpty(appCMSPresenter.getLoggedInUserEmail())) {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                                 componentViewResult.shouldHideComponent = true;
                             }
                             break;
 
                         case PAGE_SETTINGS_PLAN_VALUE_KEY:
-                            if (appCMSPresenter.isUserSubscribed(context) &&
-                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName(context))) {
-                                ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getActiveSubscriptionPlanName(context));
-                            } else if (!appCMSPresenter.isUserSubscribed(context)) {
+                            if (appCMSPresenter.isUserSubscribed() &&
+                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName())) {
+                                ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getActiveSubscriptionPlanName());
+                            } else if (!appCMSPresenter.isUserSubscribed()) {
                                 ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
                             }
                             break;
 
                         case PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY:
-                            if (appCMSPresenter.isUserSubscribed(context) &&
-                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName(context))) {
+                            if (appCMSPresenter.isUserSubscribed() &&
+                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName())) {
                                 componentViewResult.componentView.setVisibility(View.VISIBLE);
                             } else {
                                 componentViewResult.componentView.setVisibility(View.GONE);
@@ -2155,7 +2155,7 @@ public class ViewCreator {
                             break;
 
                         case PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY:
-                            ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getUserDownloadQualityPref(context));
+                            ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getUserDownloadQualityPref());
                             break;
 
                         case PAGE_SETTINGS_APP_VERSION_VALUE_KEY:
@@ -2306,7 +2306,7 @@ public class ViewCreator {
                             .setColorFilter(color, PorterDuff.Mode.SRC_IN);
                 }
 
-                if (appCMSPresenter.isUserLoggedIn(context)) {
+                if (appCMSPresenter.isUserLoggedIn()) {
                     ((ProgressBar) componentViewResult.componentView).setMax(100);
                     ((ProgressBar) componentViewResult.componentView).setProgress(0);
                     if (moduleAPI.getContentData() != null &&
@@ -2570,12 +2570,12 @@ public class ViewCreator {
 
                 if (componentKey == AppCMSUIKeyType.PAGE_SD_CARD_FOR_DOWNLOADS_TOGGLE_BUTTON_KEY) {
                     ((Switch) componentViewResult.componentView)
-                            .setChecked(appCMSPresenter.getUserDownloadLocationPref(context));
+                            .setChecked(appCMSPresenter.getUserDownloadLocationPref());
                     ((Switch) componentViewResult.componentView)
                             .setOnCheckedChangeListener((buttonView, isChecked) -> {
                                 if (isChecked) {
                                     if (appCMSPresenter.isRemovableSDCardAvailable()) {
-                                        appCMSPresenter.setUserDownloadLocationPref(context, true);
+                                        appCMSPresenter.setUserDownloadLocationPref(true);
                                     } else {
                                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SD_CARD_NOT_AVAILABLE,
                                                 null,
@@ -2584,7 +2584,7 @@ public class ViewCreator {
                                         buttonView.setChecked(false);
                                     }
                                 } else {
-                                    appCMSPresenter.setUserDownloadLocationPref(context, false);
+                                    appCMSPresenter.setUserDownloadLocationPref(false);
                                 }
                             });
                 }
@@ -2728,7 +2728,7 @@ public class ViewCreator {
             this.filmId = filmId;
 
             addClickListener = v -> {
-                if (appCMSPresenter.isUserLoggedIn(UpdateImageIconAction.this.imageButton.getContext())) {
+                if (appCMSPresenter.isUserLoggedIn()) {
 
                     appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
                             addToWatchlistResult -> {
@@ -2738,7 +2738,7 @@ public class ViewCreator {
                             }, true);
                 } else {
                     if (appCMSPresenter.isAppSVOD() &&
-                            appCMSPresenter.isUserLoggedIn(UpdateImageIconAction.this.imageButton.getContext())) {
+                            appCMSPresenter.isUserLoggedIn()) {
                         appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED);
                     } else {
                         appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED);
@@ -2789,21 +2789,21 @@ public class ViewCreator {
             this.userId = userId;
 
             addClickListener = v -> {
-                if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed(UpdateDownloadImageIconAction.this.imageButton.getContext())) ||
-                        !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn(UpdateDownloadImageIconAction.this.imageButton.getContext())) {
-                    if (appCMSPresenter.isDownloadQualityScreenShowBefore(UpdateDownloadImageIconAction.this.imageButton.getContext())) { // Fix for SVFA-1724
+                if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
+                        !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
+                    if (appCMSPresenter.isDownloadQualityScreenShowBefore()) { // Fix for SVFA-1724
                         appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
                     } else {
                         appCMSPresenter.showDownloadQualityScreen(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this);
                     }
                 } else {
                     if (appCMSPresenter.isAppSVOD()) {
-                        if (appCMSPresenter.isUserLoggedIn(UpdateDownloadImageIconAction.this.imageButton.getContext())) {
+                        if (appCMSPresenter.isUserLoggedIn()) {
                             appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED);
                         } else {
                             appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED);
                         }
-                    } else if (!(appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn(UpdateDownloadImageIconAction.this.imageButton.getContext()))) {
+                    } else if (!(appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn())) {
                         appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED);
                     }
                 }

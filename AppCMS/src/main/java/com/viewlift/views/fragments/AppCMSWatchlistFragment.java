@@ -67,8 +67,8 @@ public class AppCMSWatchlistFragment extends Fragment {
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
-        if (appCMSPresenter.isUserLoggedIn(view.getContext())) {
-            String loggedInUser = appCMSPresenter.getLoggedInUser(view.getContext());
+        if (appCMSPresenter.isUserLoggedIn()) {
+            String loggedInUser = appCMSPresenter.getLoggedInUser();
 
             convertJsonToArrayList();
             //

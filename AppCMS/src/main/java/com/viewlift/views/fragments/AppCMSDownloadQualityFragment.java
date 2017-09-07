@@ -115,12 +115,12 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
                 if (binder.getContentDatum() != null && binder.getResultAction1() != null) {
                     appCMSPresenter.editDownload(binder.getContentDatum(), binder.getResultAction1(), true);
                 } else {
-                    appCMSPresenter.setUserDownloadQualityPref(getActivity(), downloadQuality);
+                    appCMSPresenter.setUserDownloadQualityPref(downloadQuality);
                 }
                 getActivity().finish();
             });
 
-            appCMSPresenter.setDownloadQualityScreenShowBefore(getActivity(),true);
+            appCMSPresenter.setDownloadQualityScreenShowBefore(true);
             cancelButton.setOnClickListener(v -> getActivity().finish());
             pageView.setBackgroundColor(Color.TRANSPARENT);
         }

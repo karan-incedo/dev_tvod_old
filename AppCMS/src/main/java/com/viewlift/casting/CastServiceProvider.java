@@ -281,8 +281,8 @@ public class CastServiceProvider {
 
         //Setting the Casting Overlay for Casting
         if (mCastHelper.isCastDeviceAvailable)
-            if (!appCMSPresenter.isCastOverLayShown(mActivity)) {
-                appCMSPresenter.setCastOverLay(mActivity);
+            if (!appCMSPresenter.isCastOverLayShown()) {
+                appCMSPresenter.setCastOverLay();
                 showIntroOverLay();
             }
 

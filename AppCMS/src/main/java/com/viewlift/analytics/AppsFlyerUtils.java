@@ -123,13 +123,13 @@ public class AppsFlyerUtils {
         if (!TextUtils.isEmpty(category)) {
             eventValue.put(AppsFlyerUtils.FILM_CATEGORY_EVENT_VALUE, category);
         }
-        eventValue.put(USER_ID_EVENT_VALUE, appCMSPresenter.getLoggedInUser(context));
+        eventValue.put(USER_ID_EVENT_VALUE, appCMSPresenter.getLoggedInUser());
         eventValue.put(FILM_ID_EVENT_VALUE, filmId);
         eventValue.put("true", true);
         eventValue.put(AppsFlyerUtils.USER_ENTITLEMENT_STATE_EVENT_VALUE,
-                !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionId(context)));
+                !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionId()));
 
-        AppsFlyerLib.getInstance().setCustomerUserId(appCMSPresenter.getLoggedInUser(context));
+        AppsFlyerLib.getInstance().setCustomerUserId(appCMSPresenter.getLoggedInUser());
         AppsFlyerLib.getInstance().trackEvent(context, FILM_VIEWING_EVENT_NAME, eventValue);
     }
 }

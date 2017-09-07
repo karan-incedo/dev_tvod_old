@@ -235,8 +235,6 @@ public class AppCMSPageFragment extends Fragment {
 
     public void refreshView(AppCMSBinder appCMSBinder) {
         this.appCMSBinder = appCMSBinder;
-        //Send Firebase Events when refresh of page
-        sendFirebaseAnalyticsEvents(appCMSBinder);
         ViewCreator viewCreator = getViewCreator();
         List<String> modulesToIgnore = getModulesToIgnore();
         if (viewCreator != null && modulesToIgnore != null) {

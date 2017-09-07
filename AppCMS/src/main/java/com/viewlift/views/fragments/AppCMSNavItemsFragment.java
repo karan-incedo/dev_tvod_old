@@ -79,7 +79,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
         }
 
         LinearLayout appCMSNavLoginContainer = view.findViewById(R.id.app_cms_nav_login_container);
-        if (appCMSPresenter.isUserLoggedIn(getContext())) {
+        if (appCMSPresenter.isUserLoggedIn()) {
             appCMSNavLoginContainer.setVisibility(View.GONE);
         } else {
             appCMSNavLoginContainer.setVisibility(View.VISIBLE);

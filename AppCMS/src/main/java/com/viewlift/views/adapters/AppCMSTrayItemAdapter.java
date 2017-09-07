@@ -97,7 +97,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
         this.tintColor = Color.parseColor(getColor(context,
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
-        this.userId = appCMSPresenter.getLoggedInUser(context);
+        this.userId = appCMSPresenter.getLoggedInUser();
 
         if (adapterData != null && !adapterData.isEmpty()) {
             sendEvent(null);
