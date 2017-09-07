@@ -1345,7 +1345,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 appCMSBinder.getPagePath(),
                                 appCMSPageAPI -> {
                                     if (appCMSPageAPI != null) {
-                                        boolean updatedHistory = false;
                                         if (appCMSPresenter.isUserLoggedIn()) {
                                             if (appCMSPageAPI.getModules() != null) {
                                                 for (Module module : appCMSPageAPI.getModules()) {
@@ -1363,13 +1362,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                                                 Log.d(TAG, "Updated watched history for loaded displays");
                                                             }
                                                         });
-                                                        updatedHistory = true;
                                                     }
                                                 }
                                             }
-                                        }
-                                        if (!updatedHistory) {
-                                            appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
                                         }
                                     }
                                 });
