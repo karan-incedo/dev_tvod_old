@@ -1,21 +1,16 @@
 package com.viewlift.views.fragments;
 
-import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.res.Configuration;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.SearchView;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.viewlift.AppCMSApplication;
@@ -34,6 +29,8 @@ public class AppCMSSearchFragment extends DialogFragment {
     private Button appCMSGoButton;
     private AppCMSPresenter appCMSPresenter;
 
+    LinearLayout searchLayout;
+
     public static AppCMSSearchFragment newInstance(Context context,
                                                    long bgColor,
                                                    long buttonColor,
@@ -46,6 +43,7 @@ public class AppCMSSearchFragment extends DialogFragment {
         appCMSSearchFragment.setArguments(args);
         return appCMSSearchFragment;
     }
+
 
     @Nullable
     @Override
@@ -61,7 +59,6 @@ public class AppCMSSearchFragment extends DialogFragment {
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
-
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
         SearchSuggestionsAdapter searchSuggestionsAdapter = new SearchSuggestionsAdapter(getActivity(),
                 null,
@@ -92,6 +89,7 @@ public class AppCMSSearchFragment extends DialogFragment {
         return view;
     }
 
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -99,6 +97,7 @@ public class AppCMSSearchFragment extends DialogFragment {
             appCMSPresenter.unrestrictPortraitOnly();
         }
         appCMSPresenter.closeSoftKeyboard();
+        appCMSSearchView.clearFocus();
     }
 
     @SuppressWarnings("ConstantConditions")

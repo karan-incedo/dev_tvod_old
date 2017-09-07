@@ -1055,7 +1055,7 @@ public class AppCMSPresenter {
                     Log.d(TAG, "Login action selected: " + extraData[0]);
                     closeSoftKeyboard();
                     login(extraData[0], extraData[1]);
-                    sendSignInEmailFirebase();
+//                    sendSignInEmailFirebase();
                 } else if (actionType == AppCMSActionType.FORGOT_PASSWORD) {
                     Log.d(TAG, "Forgot password selected: " + extraData[0]);
                     closeSoftKeyboard();
@@ -1698,8 +1698,8 @@ public class AppCMSPresenter {
             bundle.putString(FIREBASE_PLAN_ITEM_CURRENCY, currencyOfPlanToPurchase);
             bundle.putString(FIREBASE_PLAN_ITEM_PRICE, String.valueOf(planToPurchasePrice));
 
-            String firebaseSelectPlanEventKey="add_to_cart";
-            sendFirebaseSelectedEvents(firebaseSelectPlanEventKey,bundle);
+            String firebaseSelectPlanEventKey = "add_to_cart";
+            sendFirebaseSelectedEvents(firebaseSelectPlanEventKey, bundle);
             if (isUserLoggedIn(currentActivity)) {
                 Log.d(TAG, "Initiating item purchase for subscription");
                 initiateItemPurchase();
@@ -3277,8 +3277,8 @@ public class AppCMSPresenter {
              */
             Bundle bundle = new Bundle();
             bundle.putString(FIREBASE_SCREEN_BEGIN_CHECKOUT, FIREBASE_SCREEN_BEGIN_CHECKOUT);
-            String firebaseBeginCheckotPlanEventKey=FIREBASE_SCREEN_BEGIN_CHECKOUT;
-            sendFirebaseSelectedEvents(firebaseBeginCheckotPlanEventKey,bundle);
+            String firebaseBeginCheckotPlanEventKey = FIREBASE_SCREEN_BEGIN_CHECKOUT;
+            sendFirebaseSelectedEvents(firebaseBeginCheckotPlanEventKey, bundle);
             if (!launchSuccess) {
                 Log.e(TAG, "Failed to launch page: " + subscriptionPage.getPageName());
                 launchErrorActivity(platformType);
@@ -3420,7 +3420,6 @@ public class AppCMSPresenter {
                     false,
                     false,
                     deeplinkSearchQuery);
-            sendFirebaseAnalyticsEvents(FIREBASE_EVENT_LOGIN_SCREEN);
             if (!launchSuccess) {
                 Log.e(TAG, "Failed to launch page: " + loginPage.getPageName());
                 launchErrorActivity(platformType);
@@ -3553,7 +3552,10 @@ public class AppCMSPresenter {
                                    final String confirmPassword) {
         String url = currentActivity.getString(R.string.app_cms_change_password_api_url,
                 appCMSMain.getApiBaseUrl(), appCMSSite.getGist().getSiteInternalName());
-
+        if (!isNetworkConnected()) {
+            showDialog(DialogType.NETWORK, null, false, null);
+            return;
+        }
         if (confirmPassword.equals(newPassword)) {
             UserIdentityPassword userIdentityPassword = new UserIdentityPassword();
             userIdentityPassword.setResetToken(getAuthToken(currentActivity));
@@ -4043,7 +4045,7 @@ public class AppCMSPresenter {
         if (context != null) {
             //Set the user Id when user is succesfully logged_in
             if (mFireBaseAnalytics != null)
-                mFireBaseAnalytics.setUserProperty(USER_ID_KEY, userId);
+                mFireBaseAnalytics.setUserId(userId);
             SharedPreferences sharedPrefs = context.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
             return sharedPrefs.edit().putString(USER_ID_SHARED_PREF_NAME, userId).commit() &&
                     setLoggedInTime(context);
@@ -4092,14 +4094,16 @@ public class AppCMSPresenter {
         }
         return false;
     }
-    public boolean isDownloadQualityScreenShowBefore(Context context){
+
+    public boolean isDownloadQualityScreenShowBefore(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME, 0);
             return sharedPrefs.getBoolean(USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME, false);
         }
         return false;
     }
-    public void setDownloadQualityScreenShowBefore(Context context,boolean show) {
+
+    public void setDownloadQualityScreenShowBefore(Context context, boolean show) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME, 0);
             sharedPrefs.edit().putBoolean(USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME, show).apply();
@@ -4850,8 +4854,12 @@ public class AppCMSPresenter {
     private void sendFireBaseLogOutEvent() {
         Bundle bundle = new Bundle();
         bundle.putString(FIREBASE_SCREEN_SIGN_OUT, FIREBASE_SCREEN_LOG_OUT);
-        if (getmFireBaseAnalytics() != null)
+        if (getmFireBaseAnalytics() != null) {
+            mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+            mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
             getmFireBaseAnalytics().logEvent(FIREBASE_SCREEN_SIGN_OUT, bundle);
+
+        }
     }
 
     public void addInternalEvent(OnInternalEvent onInternalEvent) {
@@ -5044,7 +5052,7 @@ public class AppCMSPresenter {
                     currentActivity instanceof AppCompatActivity &&
                     isAdditionalFragmentViewAvailable()) {
                 pushActionInternalEvents(currentActivity.getString(R.string.more_page_action));
-                String eventValue=FIREBASE_VIDEO_DETAIL_SCREEN+"-"+title;
+                String eventValue = FIREBASE_VIDEO_DETAIL_SCREEN + "-" + title;
                 sendFirebaseAnalyticsEvents(eventValue);
                 clearAdditionalFragment();
                 FragmentTransaction transaction =
@@ -6465,6 +6473,7 @@ public class AppCMSPresenter {
                             setRefreshToken(currentActivity, signInResponse.getRefreshToken());
                             setAuthToken(currentActivity, signInResponse.getAuthorizationToken());
                             setLoggedInUser(currentActivity, signInResponse.getUserId());
+                            sendSignInEmailFirebase();
                             setLoggedInUserName(currentActivity, signInResponse.getName());
                             setLoggedInUserEmail(currentActivity, signInResponse.getEmail());
 
@@ -7257,9 +7266,9 @@ public class AppCMSPresenter {
                 metaPage.getPageId() + " " +
                 metaPage.getPageUI() + " " +
                 metaPage.getPageAPI());
-        if (metaPage.getPageName().contains("Downloads") && !metaPage.getPageName().contains("Settings")){//Fix SVFA-1435 app Launch:  setting Download page UI url in shared pref
+        if (metaPage.getPageName().contains("Downloads") && !metaPage.getPageName().contains("Settings")) {//Fix SVFA-1435 app Launch:  setting Download page UI url in shared pref
 
-            setDownloadPageId(currentActivity,metaPage.getPageId());
+            setDownloadPageId(currentActivity, metaPage.getPageId());
         }
         pageIdToPageAPIUrlMap.put(metaPage.getPageId(), metaPage.getPageAPI());
         pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
@@ -7437,10 +7446,10 @@ public class AppCMSPresenter {
 
                     //add search in navigation item.
                     NavigationPrimary myProfile = new NavigationPrimary();
-                    myProfile.setPageId(currentActivity.getString(R.string.app_cms_my_profile_label ,
-                    currentActivity.getString(R.string.profile_label)));
+                    myProfile.setPageId(currentActivity.getString(R.string.app_cms_my_profile_label,
+                            currentActivity.getString(R.string.profile_label)));
 
-                    myProfile.setTitle(currentActivity.getString(R.string.app_cms_my_profile_label ,
+                    myProfile.setTitle(currentActivity.getString(R.string.app_cms_my_profile_label,
                             appCMSAndroidUI.getShortAppName() != null ?
                                     appCMSAndroidUI.getShortAppName() :
                                     currentActivity.getString(R.string.profile_label)));
@@ -7861,7 +7870,7 @@ public class AppCMSPresenter {
                 Log.d(TAG, "Login action selected: " + extraData[0]);
                 closeSoftKeyboard();
                 login(extraData[0], extraData[1]);
-                sendSignInEmailFirebase();
+//                sendSignInEmailFirebase();
             } else if (actionType == AppCMSActionType.FORGOT_PASSWORD) {
                 Log.d(TAG, "Forgot password selected: " + extraData[0]);
                 closeSoftKeyboard();
@@ -8225,7 +8234,7 @@ public class AppCMSPresenter {
         mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_NAME, getActiveSubscriptionPlanName(currentActivity));
     }
 
-    public void sendFirebaseSelectedEvents(String eventKey,Bundle bundleData) {
+    public void sendFirebaseSelectedEvents(String eventKey, Bundle bundleData) {
         getmFireBaseAnalytics().logEvent(eventKey, bundleData);
         getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
     }

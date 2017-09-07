@@ -144,7 +144,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
         planLayout.setOrientation(GridLayout.HORIZONTAL);
         planLayout.setColumnCount(2);
         int componentIndex = 0;
-        if (component.getComponents() != null)  {
+        if (component.getComponents() != null) {
             for (componentIndex = 0;
                  componentIndex < component.getComponents().size();
                  componentIndex++) {
@@ -237,16 +237,18 @@ public class SubscriptionMetaDataView extends LinearLayout {
             }
 
             GridLayout.LayoutParams gridLayoutParams = new GridLayout.LayoutParams();
-            gridLayoutParams.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+//            gridLayoutParams.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
 
             switch (componentKeyType) {
                 case PAGE_PLANMETADATATILE_KEY:
-                    if (componentView instanceof  TextView) {
+                    if (componentView instanceof TextView) {
+                        componentView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                         ((TextView) componentView).setText(featureDetail.getTextToDisplay());
-                        ((TextView) componentView).setEllipsize(TextUtils.TruncateAt.END);
+//                        ((TextView) componentView).setEllipsize(TextUtils.TruncateAt.END);
                         componentView.setLayoutParams(gridLayoutParams);
                     }
                     break;
+
 
                 case PAGE_PLANMETADDATAIMAGE_KEY:
                     if (componentView instanceof ImageView) {
@@ -256,6 +258,8 @@ public class SubscriptionMetaDataView extends LinearLayout {
                         } else {
                             ((ImageView) componentView).setImageResource(R.drawable.crossicon);
                         }
+//                        gridLayoutParams.rowSpec=GridLayout.spec(2);
+                        gridLayoutParams.columnSpec=GridLayout.spec(0);
                         gridLayoutParams.setMargins(0, 0, 16, 0);
                         gridLayoutParams.setGravity(Gravity.END);
                         componentView.setLayoutParams(gridLayoutParams);
