@@ -1,14 +1,18 @@
 <resources>
     <!-- Primary app values -->
-    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
-    <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
+    <!--Production Server-->
+   <!-- <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
+    <string name="app_cms_app_name">00000149-86ec-d4f3-a7e9-e6fe760d0000</string>-->
+
+    <!--QA Server-->
+    <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
+    <string name="app_cms_app_name">3f5e193b-2e51-4853-839e-618e62896deb</string>
+
+
     <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
     <!--<string name="app_cms_app_name">d9162bc2-1228-43da-84bf-e0e56421fe79</string>-->
-
-    <!--<string name="app_cms_app_name">3f5e193b-2e51-4853-839e-618e62896deb</string>-->
     <!--<string name="app_cms_app_name">9d2c4ddd-94e3-44af-bee8-851e76d6b96e</string>-->
-    <!--<string name="app_cms_app_name">3f5e193b-2e51-4853-839e-618e62896deb</string>-->
-    <string name="app_cms_app_name">00000149-86ec-d4f3-a7e9-e6fe760d0000</string>
+
 
     <string name="x_api_key">7arSnLdRpj8mtRj5Ruv0V1GK9PE0zOyC76KcfTi8</string>
 
@@ -117,6 +121,7 @@
     <string name="app_cms_page_passwordtextfield_key">passwordTextField</string>
     <string name="app_cms_page_passwordtextfield2_key">password label</string>
     <string name="app_cms_page_forgotpassword_key">forgot password button</string>
+    <string name="app_cms_page_login_key">login button</string>
     <string name="app_cms_page_mobileinput_key">mobile text field</string>
     <string name="app_cms_page_authentication_module">AC Authentication 01</string>
     <string name="app_cms_page_login_component_key">AC Login Component</string>
@@ -124,6 +129,7 @@
     <string name="app_cms_page_settings_component_key">AC Settings Account 01</string>
     <string name="app_cms_page_carousel_module_key">AC Carousel 01</string>
     <string name="app_cms_page_tray_module_key">AC Tray 01</string>
+    <string name="app_cms_setting_module">AC UserManagement 01</string>
     <string name="app_cms_page_removeall_key">removeAll</string>
     <string name="app_cms_page_planmetadatatitle_key">planMetaDataTitle</string>
     <string name="app_cms_page_planmetadataimage_key">planMetaDataImage</string>
@@ -340,6 +346,12 @@
     <string name="app_cms_download_started_mesage">%1$s has started downloading.</string>
     <string name="app_cms_download_quality_cancel_button_key">cancelButton</string>
     <string name="app_cms_download_quality_continue_button_key">continueButton</string>
+
+    <string name="app_cms_toggle_switch_type">toggleSwitch</string>
+    <string name="app_cms_autoplay_toggle_switch_key">autoplayToggleSwitch</string>
+    <string name="app_cms_closed_caption_toggle_switch_key">closedCaptionToggleSwitch</string>
+    <string name="app_cms_logout_button_key">logout button</string>
+
 
     <!-- AppCMS Payment Processor values -->
     <string name="subscription_ios_payment_processor">iOS</string>

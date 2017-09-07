@@ -47,7 +47,9 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
+import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.presenters.AppCMSPresenter;
 
 import java.io.IOException;
 
@@ -62,6 +64,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         AdaptiveMediaSourceEventListener {
     private static final String TAG = "VideoPlayerFragment";
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
+    private final Context context;
     protected DataSource.Factory mediaDataSourceFactory;
     protected String userAgent;
     boolean isLoadedNext;
@@ -84,17 +87,19 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
 
     public VideoPlayerView(Context context) {
         super(context);
-        this.uri = uri;
+        this.context = context;
         init(context, null, 0);
     }
 
     public VideoPlayerView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
         init(context, attrs, 0);
     }
 
     public VideoPlayerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        this.context = context;
         init(context, attrs, defStyleAttr);
     }
 
@@ -131,13 +136,16 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         } catch (IllegalStateException e) {
             Log.e(TAG, "Unsupported video format for URI: " + videoUri.toString());
         }
-        if (closedCaptionUri == null) {
-            if (ccToggleButton != null) {
-                ccToggleButton.setVisibility(GONE);
-            }
-        } else {
-            if (ccToggleButton != null) {
-                ccToggleButton.setChecked(isClosedCaptionEnabled);
+        if (((AppCMSApplication) context.getApplicationContext()).getAppCMSPresenterComponent()
+                .appCMSPresenter().getPlatformType() == AppCMSPresenter.PlatformType.ANDROID) {
+            if (closedCaptionUri == null) {
+                if (ccToggleButton != null) {
+                    ccToggleButton.setVisibility(GONE);
+                }
+            } else {
+                if (ccToggleButton != null) {
+                    ccToggleButton.setChecked(isClosedCaptionEnabled);
+                }
             }
         }
     }

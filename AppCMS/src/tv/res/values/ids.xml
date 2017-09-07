@@ -6,5 +6,7 @@
     <item name="appcms_titleView" type="id"/>
 
     <item name="appcms_browsefragment" type="id"></item>
+    <item name="email_edit_box" type="id"></item>
+    <item name="password_edit_box" type="id"></item>
 
 </resources>

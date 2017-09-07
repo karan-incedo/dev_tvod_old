@@ -226,6 +226,9 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_PASSWORDTEXTFIELD2_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_forgotpassword_key),
                 AppCMSUIKeyType.PAGE_FORGOTPASSWORD_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_login_key) ,
+                AppCMSUIKeyType.PAGE_LOGIN_BUTTON_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_mobileinput_key),
                 AppCMSUIKeyType.PAGE_MOBILETEXTFIELD_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_authentication_module),
@@ -425,6 +428,18 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_download_quality_cancel_button_key),
                 AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_toggle_switch_type),
+                AppCMSUIKeyType.PAGE_SETTING_TOGGLE_SWITCH_TYPE);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_toggle_switch_key),
+                AppCMSUIKeyType.PAGE_SETTING_AUTOPLAY_TOGGLE_SWITCH_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_closed_caption_toggle_switch_key),
+                AppCMSUIKeyType.PAGE_SETTING_CLOSED_CAPTION_TOGGLE_SWITCH_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_logout_button_key),
+                AppCMSUIKeyType.PAGE_SETTING_LOGOUT_BUTTON_KEY);
 
         jsonValueKeyMap.put("", AppCMSUIKeyType.PAGE_EMPTY_KEY);
         jsonValueKeyMap.put(null, AppCMSUIKeyType.PAGE_NULL_KEY);

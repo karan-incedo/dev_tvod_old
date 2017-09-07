@@ -255,19 +255,39 @@ public class Utils {
      * @return
      */
     public static StateListDrawable getTrayBorder(Context context , String selectedColor , Component component){
+        boolean isEditText = false;
+        if(null != component){
+            isEditText = component.getType().equalsIgnoreCase(context.getString(R.string.app_cms_page_textfield_key));
+        }
+
         StateListDrawable res = new StateListDrawable();
-        res.addState(new int[]{android.R.attr.state_focused}, getBorder(context,selectedColor));
-        res.addState(new int[]{android.R.attr.state_pressed}, getBorder(context,selectedColor));
-        res.addState(new int[]{android.R.attr.state_selected}, getBorder(context,selectedColor));
-        res.addState(new int[]{}, new ColorDrawable(ContextCompat.getColor(context,android.R.color.transparent)));
+        res.addState(new int[]{android.R.attr.state_focused}, getBorder(context,selectedColor,isEditText , component,false));
+        res.addState(new int[]{android.R.attr.state_pressed}, getBorder(context,selectedColor,isEditText , component,false));
+        res.addState(new int[]{android.R.attr.state_selected}, getBorder(context,selectedColor,isEditText, component , false));
+        if(isEditText)
+        res.addState(new int[]{} ,getBorder(context,selectedColor,isEditText, component , true) );
+        else
+        res.addState(new int[]{}, new ColorDrawable(ContextCompat.getColor(
+                context,
+                android.R.color.transparent
+        )));
         return res;
     }
 
-    private static GradientDrawable getBorder(Context context , String borderColor){
+    private static GradientDrawable getBorder(Context context , String borderColor , boolean isEditText , Component component , boolean isNormalState){
         GradientDrawable ageBorder = new GradientDrawable();
         ageBorder.setShape(GradientDrawable.RECTANGLE);
+
+        if(isEditText)
+        ageBorder.setCornerRadius(component.getCornerRadius());
+
+        if(!isNormalState)
         ageBorder.setStroke(6,Color.parseColor(borderColor));
-        ageBorder.setColor(ContextCompat.getColor(context, android.R.color.transparent));
+
+        ageBorder.setColor(ContextCompat.getColor(
+                context,
+                isEditText ? android.R.color.white : android.R.color.transparent
+        ));
         return ageBorder;
     }
 

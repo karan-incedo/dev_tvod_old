@@ -166,6 +166,18 @@ public class Component implements ModuleWithComponents {
     @Expose
     boolean svod;
 
+    public String getHintColor() {
+        return hintColor;
+    }
+
+    public void setHintColor(String hintColor) {
+        this.hintColor = hintColor;
+    }
+
+    @SerializedName("hintColor")
+    @Expose
+    String hintColor;
+
     boolean yAxisSetManually;
 
     public String getText() {

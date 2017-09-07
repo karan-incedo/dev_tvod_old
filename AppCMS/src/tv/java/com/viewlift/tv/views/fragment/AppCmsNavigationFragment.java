@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
+import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
@@ -27,6 +28,8 @@ import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 
 import com.viewlift.R;
+
+import java.util.List;
 
 /**
  * Created by nitin.tyagi on 6/27/2017.
@@ -202,19 +205,24 @@ public class AppCmsNavigationFragment extends Fragment {
                                 ((AppCmsHomeActivity)getActivity()).pageLoading(false);
                             }else if(primary.getPageId().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label ,
                                     getString(R.string.profile_label)))){
-                                /*appCmsPresenter.openMyProfile();*/
+
+                                NavigationUser navigationUser = getNavigationUser();
+                                Log.d("","Selected Title = "+navigationUser.getTitle());
                                 appCmsPresenter.navigateToTVPage(
-                                        navigation.getNavigationUser().get(0).getPageId(),
-                                        navigation.getNavigationUser().get(0).getTitle(),
-                                        navigation.getNavigationUser().get(0).getUrl(),
+                                        navigationUser.getPageId(),
+                                        navigationUser.getTitle(),
+                                        navigationUser.getUrl(),
                                         false,
-                                        null
+                                        null,
+                                        false
                                 );
+
                             }else if (!appCmsPresenter.navigateToTVPage(primary.getPageId(),
                                     primary.getTitle(),
                                     primary.getUrl(),
                                     false,
-                                    null)) {
+                                    null,
+                                    true)) {
                             }
                         }
                     } , 500);
@@ -222,6 +230,17 @@ public class AppCmsNavigationFragment extends Fragment {
             });
         }
 
+        private NavigationUser getNavigationUser(){
+             List<NavigationUser> navigationUserList = navigation.getNavigationUser();
+                for(NavigationUser navigationUser : navigationUserList){
+                    if(appCmsPresenter.isUserLoggedIn(mContext) && navigationUser.getAccessLevels().getLoggedIn()){
+                        return navigationUser;
+                    }else if(!appCmsPresenter.isUserLoggedIn(mContext) && navigationUser.getAccessLevels().getLoggedOut()){
+                        return navigationUser;
+                    }
+                }
+             return null;
+        }
         @Override
         public int getItemCount() {
             int totalCount = 0;

@@ -118,10 +118,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     try {
                      if (isActive) {
                             if(appCMSPresenter.isPageUser(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())){
+                                openMyProfile();
                                 handleProfileFragmentAction((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)));
                             }else {
-                                updatedAppCMSBinder =
-                                        (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
+                                updatedAppCMSBinder = (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
                                 handleLaunchPageAction(updatedAppCMSBinder);
                             }
                             //appCMSPresenter.sendStopLoadingPageAction(); //stop the progress bar..
@@ -171,11 +171,17 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     }
 
     private void handleProfileFragmentAction(AppCMSBinder updatedAppCMSBinder) {
+        String tag = getTag(updatedAppCMSBinder);
+        Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
+        if(null != fragment && fragment instanceof AppCmsMyProfileFragment){
+            getFragmentManager().popBackStack();
+        }
+
         AppCmsMyProfileFragment appCmsMyProfileFragment = AppCmsMyProfileFragment.newInstance(this , updatedAppCMSBinder);
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        String tag = getTag(updatedAppCMSBinder);
-        fragmentTransaction.replace(R.id.home_placeholder ,appCmsMyProfileFragment,tag).commitAllowingStateLoss();
+
+        fragmentTransaction.replace(R.id.home_placeholder ,appCmsMyProfileFragment,tag).addToBackStack(tag).commitAllowingStateLoss();
     }
 
     @Override
@@ -206,8 +212,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     private void openErrorDialog(Intent intent){
         pageLoading(false);
         Bundle bundle = intent.getBundleExtra(getString(R.string.retryCallBundleKey));
-        bundle.putBoolean(getString(R.string.retry_key) , true);
-        bundle.putBoolean(getString(R.string.register_internet_receiver_key) , true);
+        bundle.putBoolean(getString(R.string.retry_key) , bundle.getBoolean(getString(R.string.retry_key)));
+        bundle.putBoolean(getString(R.string.register_internet_receiver_key) , bundle.getBoolean(getString(R.string.register_internet_receiver_key)));
+        bundle.putString(getString(R.string.tv_dialog_msg_key) , bundle.getString(getString(R.string.tv_dialog_msg_key)));
+        bundle.putString(getString(R.string.tv_dialog_header_key) , bundle.getString(getString(R.string.tv_dialog_header_key)));
+
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         AppCmsTvErrorFragment newFragment = AppCmsTvErrorFragment.newInstance(
                 bundle);
@@ -236,14 +245,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 );
                 break;
             case VIDEO_ACTION:
-                /*appCMSPresenter.launchVideoPlayer(
-                        retryCallBinder.getContentDatum(),
-                        -1,
-                        null,
-                        0
-
-                );*/
-
                 appCMSPresenter.launchTVVideoPlayer(
                         retryCallBinder.getFilmId(),
                         retryCallBinder.getPagePath(),
@@ -258,7 +259,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         retryCallBinder.getFilmTitle(),
                         retryCallBinder.getPagePath(),
                         retryCallBinder.isCloselauncher(),
-                        Uri.EMPTY
+                        Uri.EMPTY,
+                        false
                 );
                 break;
 
@@ -392,7 +394,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             case KeyEvent.ACTION_DOWN:
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_MENU:
-                    case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                         handleNavigationVisibility();
                         break;
                     case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
@@ -520,17 +521,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 }
             }
         }
-
         showInfoIcon(tag);
         appCMSBinderStack.push(tag);
-       // appCMSPresenter.sendGaScreen(tag);
-
-       /* AppCmsMyProfileFragment profileFragment = new AppCmsMyProfileFragment();
-        getFragmentManager().beginTransaction().replace(R.id.home_placeholder , profileFragment ,
-                tag).addToBackStack(tag).commit();*/
-
-
-
         selectNavItem(tag);
     }
 

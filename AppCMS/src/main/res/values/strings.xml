@@ -199,7 +199,8 @@
     <string name="app_cms_appsflyer_video_view">film viewing</string>
     <string name="app_cms_appsflyer_signup_success">SignUp Success</string>
     <string name="app_cms_appsflyer_login_success">Login Success</string>
-    <string name="app_cms_login">Login</string>
+    <string name="app_cms_login">Log in</string>
+    <string name="app_cms_signup">Sign Up</string>
 
     <string name="app_cms_appsflyer_app_open_key">App Open</string>
     <string name="app_cms_appsflyer_event_app_open_value">app open</string>
@@ -353,4 +354,10 @@
     <string name="video_player_content_rating_key">video_player_content_rating</string>
     <string name="content_rating_description">The following content is rated: &#160;</string>
     <string name="server_client_id">525148171038-1dgfbunn8l27oilqldve5qg7cref8ua1.apps.googleusercontent.com</string>
+
+
+    <string name="register_internet_receiver_key">shouldRegisterInternetReciever</string>
+    <string name="tv_dialog_msg_key">dialog_msg_key</string>
+    <string name="tv_dialog_header_key">dialog_header_key</string>
+
 </resources>

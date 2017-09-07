@@ -1,18 +1,17 @@
 package com.viewlift.tv.views.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -20,13 +19,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.VideoView;
 
 import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
 import com.google.ads.interactivemedia.v3.api.AdErrorEvent;
@@ -39,7 +35,6 @@ import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 import com.google.ads.interactivemedia.v3.api.player.ContentProgressProvider;
 import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate;
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -83,6 +78,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     private boolean isAdDisplayed, isADPlay;
     AppCmsTvErrorFragment errorActivityFragment;
     boolean networkConnect, networkDisconnect = true;
+    private String closedCaptionUrl;
+    private Context mContext;
 
     public interface OnClosePlayerEvent {
         void closePlayer();
@@ -140,7 +137,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                                                       String hlsUrl,
                                                       String filmId,
                                                       String adsUrl,
-                                                      boolean requestAds) {
+                                                      boolean requestAds,
+                                                      String closedCaptionUrl) {
         AppCMSPlayVideoFragment appCMSPlayVideoFragment = new AppCMSPlayVideoFragment();
         Bundle args = new Bundle();
         args.putString(context.getString(R.string.video_player_font_color_key), fontColor);
@@ -150,13 +148,21 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         args.putString(context.getString(R.string.video_layer_film_id_key), filmId);
         args.putString(context.getString(R.string.video_player_ads_url_key), adsUrl);
         args.putBoolean(context.getString(R.string.video_player_request_ads_key), requestAds);
+        args.putString(context.getString(R.string.video_player_closed_caption_key), closedCaptionUrl);
         appCMSPlayVideoFragment.setArguments(args);
         return appCMSPlayVideoFragment;
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mContext = activity;
+    }
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        this.mContext = context;
         if (context instanceof OnClosePlayerEvent) {
             onClosePlayerEvent = (OnClosePlayerEvent) context;
         }
@@ -174,6 +180,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             filmId = args.getString(getActivity().getString(R.string.video_layer_film_id_key));
             adsUrl = args.getString(getActivity().getString(R.string.video_player_ads_url_key));
             shouldRequestAds = args.getBoolean(getActivity().getString(R.string.video_player_request_ads_key));
+            closedCaptionUrl = args.getString(getString(R.string.video_player_closed_caption_key));
         }
 
         appCMSPresenter =
@@ -221,7 +228,14 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
         if (!TextUtils.isEmpty(hlsUrl)) {
-            videoPlayerView.setUri(Uri.parse(hlsUrl) , null);
+            videoPlayerView.setClosedCaptionEnabled(false);
+           /* videoPlayerView.getPlayerView().getSubtitleView()
+                    .setVisibility(appCMSPresenter.getClosedCaptionPreference(mContext)
+                            ? View.VISIBLE
+                            : View.GONE);*/
+           videoPlayerView.getPlayerView().getSubtitleView().setVisibility(View.VISIBLE);
+            videoPlayerView.setUri(Uri.parse(hlsUrl),
+                    !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
             Log.i(TAG, "Playing video: " + hlsUrl);
         }
 
@@ -286,6 +300,11 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                     videoPlayerInfoContainer.setVisibility(View.VISIBLE);
                 }
             }
+        });
+        videoPlayerView.setOnClosedCaptionButtonClicked(isChecked -> {
+            videoPlayerView.getPlayerView().getSubtitleView()
+                    .setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            appCMSPresenter.setClosedCaptionPreference(mContext, isChecked);
         });
         if (!shouldRequestAds) {
             videoPlayerView.startPlayer();
