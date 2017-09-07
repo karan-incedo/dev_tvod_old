@@ -1352,19 +1352,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                                     AppCMSUIKeyType moduleType = appCMSPresenter.getJsonValueKeyMap().get(module.getModuleType());
                                                     if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY ||
                                                             moduleType == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
-                                                        if (module.getContentData() != null &&
-                                                                !module.getContentData().isEmpty()) {
-                                                            appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
-                                                                if (appCMSHistoryResult != null) {
-                                                                    AppCMSPageAPI historyAPI =
-                                                                            appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
-                                                                    historyAPI.getModules().get(0).setId(module.getId());
-                                                                    appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);
-                                                                    appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
-                                                                }
-                                                            });
-                                                            updatedHistory = true;
-                                                        }
+                                                        appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
+                                                            if (appCMSHistoryResult != null) {
+                                                                AppCMSPageAPI historyAPI =
+                                                                        appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
+                                                                historyAPI.getModules().get(0).setId(module.getId());
+                                                                appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);
+                                                                appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
+
+                                                                Log.d(TAG, "Updated watched history for loaded displays");
+                                                            }
+                                                        });
+                                                        updatedHistory = true;
                                                     }
                                                 }
                                             }
