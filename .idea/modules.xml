@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AndroidAppCMSPhase3.iml" filepath="$PROJECT_DIR$/AndroidAppCMSPhase3.iml" />
       <module fileurl="file://$PROJECT_DIR$/AppCMS/AppCMS.iml" filepath="$PROJECT_DIR$/AppCMS/AppCMS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android-appcms.iml" filepath="$PROJECT_DIR$/android-appcms.iml" />
       <module fileurl="file://$PROJECT_DIR$/../exoplayer/extensions/ffmpeg/exoplayer-extension-ffmpeg.iml" filepath="$PROJECT_DIR$/../exoplayer/extensions/ffmpeg/exoplayer-extension-ffmpeg.iml" />
       <module fileurl="file://$PROJECT_DIR$/../exoplayer/extensions/flac/exoplayer-extension-flac.iml" filepath="$PROJECT_DIR$/../exoplayer/extensions/flac/exoplayer-extension-flac.iml" />
       <module fileurl="file://$PROJECT_DIR$/../exoplayer/extensions/gvr/exoplayer-extension-gvr.iml" filepath="$PROJECT_DIR$/../exoplayer/extensions/gvr/exoplayer-extension-gvr.iml" />

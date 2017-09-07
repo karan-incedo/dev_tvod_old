@@ -217,6 +217,7 @@
     <string name="app_cms_pagename_homescreen_key">Home Page</string>
     <string name="app_cms_pagename_subscriptionscreen_key">View Plans</string>
     <string name="app_cms_pagename_historyscreen_key">My History</string>
+    <string name="app_cms_pagename_watchlistscreen_key">My Watchlist</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
 
     <!-- AppCMS Action names -->
@@ -228,6 +229,7 @@
     <string name="app_cms_action_movies_nav">Movies</string>
     <string name="app_cms_action_videopage_key">play</string>
     <string name="app_cms_action_historypage_key">My History</string>
+    <string name="app_cms_action_watchlistpage_key">My Watchlist</string>
     <string name="app_cms_action_watchvideo_key">watchVideo</string>
     <string name="app_cms_action_watchtrailervideo_key">watchTrailer</string>
     <string name="app_cms_action_share_key">share</string>
