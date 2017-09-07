@@ -114,9 +114,13 @@ public class AppCMSMainUICall {
 
             if (mainInStorage != null) {
                 main.setOldVersion(mainInStorage.getOldVersion());
-                useExistingOldVersion = main.getOldVersion().equals(main.getVersion());
-                main.setLoadFromFile(useExistingOldVersion);
-                main.setOldVersion(main.getVersion());
+                if (main != null) {
+                    useExistingOldVersion = main.getOldVersion().equals(main.getVersion());
+                    main.setLoadFromFile(useExistingOldVersion);
+                    main.setOldVersion(main.getVersion());
+                } else {
+                    main = mainInStorage;
+                }
             }
 
             if (useExistingOldVersion) {
