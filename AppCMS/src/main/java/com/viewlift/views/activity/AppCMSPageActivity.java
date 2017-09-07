@@ -38,10 +38,13 @@ import android.widget.RelativeLayout;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.facebook.AccessToken;
-import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
@@ -148,7 +151,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private boolean shouldSendCloseOthersAction;
     private AppCMSBinder updatedAppCMSBinder;
     private CallbackManager callbackManager;
-    private AccessTokenTracker accessTokenTracker;
     private AccessToken accessToken;
     private IInAppBillingService inAppBillingService;
     private ServiceConnection inAppBillingServiceConn;
@@ -326,42 +328,53 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         callbackManager = CallbackManager.Factory.create();
 
-        accessTokenTracker = new AccessTokenTracker() {
-            @Override
-            protected void onCurrentAccessTokenChanged(
-                    AccessToken oldAccessToken,
-                    AccessToken currentAccessToken) {
-                AppCMSPageActivity.this.accessToken = currentAccessToken;
-                if (appCMSPresenter != null && currentAccessToken != null) {
-                    GraphRequest request = GraphRequest.newMeRequest(
-                            currentAccessToken,
-                            (user, response) -> {
-                                String username = null;
-                                String email = null;
-                                try {
-                                    username = user.getString("name");
-                                    email = user.getString("email");
-                                } catch (JSONException e) {
-                                    Log.e(TAG, "Error parsing Facebook Graph JSON: " + e.getMessage());
-                                }
-                                if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
-                                    handleCloseAction();
-                                }
-                                appCMSPresenter.setFacebookAccessToken(
-                                        AppCMSPageActivity.this,
-                                        currentAccessToken.getToken(),
-                                        currentAccessToken.getUserId(),
-                                        username,
-                                        email,
-                                        true);
-                            });
-                    Bundle parameters = new Bundle();
-                    parameters.putString("fields", "id,name,email");
-                    request.setParameters(parameters);
-                    request.executeAsync();
-                }
-            }
-        };
+        LoginManager.getInstance().registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        AppCMSPageActivity.this.accessToken = loginResult.getAccessToken();
+                        if (appCMSPresenter != null && AppCMSPageActivity.this.accessToken != null) {
+                            GraphRequest request = GraphRequest.newMeRequest(
+                                    AppCMSPageActivity.this.accessToken,
+                                    (user, response) -> {
+                                        String username = null;
+                                        String email = null;
+                                        try {
+                                            username = user.getString("name");
+                                            email = user.getString("email");
+                                        } catch (JSONException e) {
+                                            Log.e(TAG, "Error parsing Facebook Graph JSON: " + e.getMessage());
+                                        }
+                                        if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+                                            handleCloseAction();
+                                        }
+                                        appCMSPresenter.setFacebookAccessToken(
+                                                AppCMSPageActivity.this,
+                                                AppCMSPageActivity.this.accessToken.getToken(),
+                                                AppCMSPageActivity.this.accessToken.getUserId(),
+                                                username,
+                                                email,
+                                                true);
+                                    });
+                            Bundle parameters = new Bundle();
+                            parameters.putString("fields", "id,name,email");
+                            request.setParameters(parameters);
+                            request.executeAsync();
+                        }
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // App code
+                        Log.e(TAG, "Facebook login was cancelled");
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        // App code
+                        Log.e(TAG, "Facebook login exception: " + exception.getMessage());
+                    }
+                });
 
         accessToken = AccessToken.getCurrentAccessToken();
 
@@ -492,8 +505,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         unregisterReceiver(networkConnectedReceiver);
         unregisterReceiver(wifiConnectedReceiver);
         unregisterReceiver(downloadReceiver);
-
-        accessTokenTracker.stopTracking();
 
         if (inAppBillingServiceConn != null) {
             try {
@@ -1341,19 +1352,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                                     AppCMSUIKeyType moduleType = appCMSPresenter.getJsonValueKeyMap().get(module.getModuleType());
                                                     if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY ||
                                                             moduleType == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
-                                                        if (module.getContentData() != null &&
-                                                                !module.getContentData().isEmpty()) {
-                                                            appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
-                                                                if (appCMSHistoryResult != null) {
-                                                                    AppCMSPageAPI historyAPI =
-                                                                            appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
-                                                                    historyAPI.getModules().get(0).setId(module.getId());
-                                                                    appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);
-                                                                    appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
-                                                                }
-                                                            });
-                                                            updatedHistory = true;
-                                                        }
+                                                        appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
+                                                            if (appCMSHistoryResult != null) {
+                                                                AppCMSPageAPI historyAPI =
+                                                                        appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
+                                                                historyAPI.getModules().get(0).setId(module.getId());
+                                                                appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);
+                                                                appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
+
+                                                                Log.d(TAG, "Updated watched history for loaded displays");
+                                                            }
+                                                        });
+                                                        updatedHistory = true;
                                                     }
                                                 }
                                             }
@@ -1392,7 +1402,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.cancelInternalEvents();
         appCMSPresenter.restartInternalEvents();
         if (appCMSPresenter.isViewPlanPage(updatedAppCMSBinder.getPageId())) {
-            appCMSPresenter.checkForExistingSubscription(appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE);
+            appCMSPresenter.checkForExistingSubscription(appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE && !appCMSPresenter.isUserSubscribed(this));
         }
         getSupportFragmentManager().removeOnBackStackChangedListener(this);
     }
