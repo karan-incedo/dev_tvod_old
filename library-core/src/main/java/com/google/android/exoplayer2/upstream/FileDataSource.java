@@ -16,7 +16,9 @@
 package com.google.android.exoplayer2.upstream;
 
 import android.net.Uri;
+
 import com.google.android.exoplayer2.C;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -26,106 +28,118 @@ import java.io.RandomAccessFile;
  */
 public final class FileDataSource implements DataSource {
 
-  /**
-   * Thrown when IOException is encountered during local file read operation.
-   */
-  public static class FileDataSourceException extends IOException {
+    int mReadFileBits = 0;
 
-    public FileDataSourceException(IOException cause) {
-      super(cause);
-    }
+    /**
+     * Thrown when IOException is encountered during local file read operation.
+     */
+    public static class FileDataSourceException extends IOException {
 
-  }
-
-  private final TransferListener<? super FileDataSource> listener;
-
-  private RandomAccessFile file;
-  private Uri uri;
-  private long bytesRemaining;
-  private boolean opened;
-
-  public FileDataSource() {
-    this(null);
-  }
-
-  /**
-   * @param listener An optional listener.
-   */
-  public FileDataSource(TransferListener<? super FileDataSource> listener) {
-    this.listener = listener;
-  }
-
-  @Override
-  public long open(DataSpec dataSpec) throws FileDataSourceException {
-    try {
-      uri = dataSpec.uri;
-      file = new RandomAccessFile(dataSpec.uri.getPath(), "r");
-      file.seek(dataSpec.position);
-      bytesRemaining = dataSpec.length == C.LENGTH_UNSET ? file.length() - dataSpec.position
-          : dataSpec.length;
-      if (bytesRemaining < 0) {
-        throw new EOFException();
-      }
-    } catch (IOException e) {
-      throw new FileDataSourceException(e);
-    }
-
-    opened = true;
-    if (listener != null) {
-      listener.onTransferStart(this, dataSpec);
-    }
-
-    return bytesRemaining;
-  }
-
-  @Override
-  public int read(byte[] buffer, int offset, int readLength) throws FileDataSourceException {
-    if (readLength == 0) {
-      return 0;
-    } else if (bytesRemaining == 0) {
-      return C.RESULT_END_OF_INPUT;
-    } else {
-      int bytesRead;
-      try {
-        bytesRead = file.read(buffer, offset, (int) Math.min(bytesRemaining, readLength));
-      } catch (IOException e) {
-        throw new FileDataSourceException(e);
-      }
-
-      if (bytesRead > 0) {
-        bytesRemaining -= bytesRead;
-        if (listener != null) {
-          listener.onBytesTransferred(this, bytesRead);
+        public FileDataSourceException(IOException cause) {
+            super(cause);
         }
-      }
 
-      return bytesRead;
     }
-  }
 
-  @Override
-  public Uri getUri() {
-    return uri;
-  }
+    private final TransferListener<? super FileDataSource> listener;
 
-  @Override
-  public void close() throws FileDataSourceException {
-    uri = null;
-    try {
-      if (file != null) {
-        file.close();
-      }
-    } catch (IOException e) {
-      throw new FileDataSourceException(e);
-    } finally {
-      file = null;
-      if (opened) {
-        opened = false;
-        if (listener != null) {
-          listener.onTransferEnd(this);
+    private RandomAccessFile file;
+    private Uri uri;
+    private long bytesRemaining;
+    private boolean opened;
+
+    public FileDataSource() {
+        this(null);
+    }
+
+    /**
+     * @param listener An optional listener.
+     */
+    public FileDataSource(TransferListener<? super FileDataSource> listener) {
+        this.listener = listener;
+    }
+
+    @Override
+    public long open(DataSpec dataSpec) throws FileDataSourceException {
+        try {
+            uri = dataSpec.uri;
+            file = new RandomAccessFile(dataSpec.uri.getPath(), "r");
+            file.seek(dataSpec.position);
+            bytesRemaining = dataSpec.length == C.LENGTH_UNSET ? file.length() - dataSpec.position
+                    : dataSpec.length;
+            if (bytesRemaining < 0) {
+                throw new EOFException();
+            }
+        } catch (IOException e) {
+            throw new FileDataSourceException(e);
         }
-      }
+
+        opened = true;
+        if (listener != null) {
+            listener.onTransferStart(this, dataSpec);
+        }
+
+        return bytesRemaining;
     }
-  }
+
+    @Override
+    public int read(byte[] buffer, int offset, int readLength) throws FileDataSourceException {
+        if (readLength == 0) {
+            return 0;
+        } else if (bytesRemaining == 0) {
+            return C.RESULT_END_OF_INPUT;
+        } else {
+            int bytesRead;
+            try {
+                //Changes to be done for
+                bytesRead = file.read(buffer, offset, (int) Math.min(bytesRemaining, readLength));
+                //Decrypt the Bits Data
+                decryptTheBitsData(buffer);
+            } catch (IOException e) {
+                throw new FileDataSourceException(e);
+            }
+
+            if (bytesRead > 0) {
+                bytesRemaining -= bytesRead;
+                if (listener != null) {
+                    listener.onBytesTransferred(this, bytesRead);
+                }
+            }
+
+            return bytesRead;
+        }
+    }
+
+    public void decryptTheBitsData(byte[] exoBuffer) {
+        if (mReadFileBits < 100) {
+            exoBuffer[mReadFileBits] = (byte) ~exoBuffer[mReadFileBits];
+        }
+        mReadFileBits++;
+    }
+
+    @Override
+    public Uri getUri() {
+        return uri;
+    }
+
+    @Override
+    public void close() throws FileDataSourceException {
+        uri = null;
+        try {
+            if (file != null) {
+                file.close();
+            }
+        } catch (IOException e) {
+            throw new FileDataSourceException(e);
+        } finally {
+            file = null;
+            if (opened) {
+                opened = false;
+                if (listener != null) {
+                    listener.onTransferEnd(this);
+                }
+            }
+        }
+    }
 
 }

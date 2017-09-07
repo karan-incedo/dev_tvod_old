@@ -81,7 +81,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
         this.carouselUpdater = new Runnable() {
             @Override
             public void run() {
-                if (adapterData.size() > 1 && !cancelled) {
+                if (adapterData.size() > 1 && !cancelled && (loop || (!loop && updatedIndex < adapterData.size()))) {
                     updateCarousel(updatedIndex + 1, false);
                     postUpdateCarousel();
                 } else if (cancelled) {
@@ -313,7 +313,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
     }
 
     private int getDefaultIndex() {
-        if (adapterData.size() != 0) {
+        if (adapterData.size() != 0 && loop) {
             return Integer.MAX_VALUE / 2 - ((Integer.MAX_VALUE / 2) % adapterData.size());
         }
         return 0;
