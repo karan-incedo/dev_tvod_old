@@ -188,10 +188,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -397,11 +397,6 @@ public class AppCMSPresenter {
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
     private Activity currentActivity;
     private Context currentContext;
-
-    public Navigation getNavigation() {
-        return navigation;
-    }
-
     private Navigation navigation;
     private boolean loadFromFile;
     private boolean loadingPage;
@@ -580,6 +575,10 @@ public class AppCMSPresenter {
         this.launchType = LaunchType.LOGIN_AND_SIGNUP;
 
         this.referenceQueue = referenceQueue;
+    }
+
+    public Navigation getNavigation() {
+        return navigation;
     }
 
     public LruCache<String, PageView> getPageViewLruCache() {
@@ -2911,6 +2910,37 @@ public class AppCMSPresenter {
         }
     }
 
+    public void getWatchlistData(final Action1<AppCMSWatchlistResult> appCMSWatchlistResultAction) {
+        if (currentActivity != null) {
+            MetaPage watchlistMetaPage = actionTypeToMetaPageMap.get(AppCMSActionType.WATCHLIST_PAGE);
+            AppCMSPageUI appCMSPageUI = navigationPages.get(watchlistMetaPage.getPageId());
+            getWatchlistPageContent(appCMSMain.getApiBaseUrl(),
+                    watchlistMetaPage.getPageAPI(),
+                    appCMSSite.getGist().getSiteInternalName(),
+                    true,
+                    getPageId(appCMSPageUI),
+                    new AppCMSWatchlistAPIAction(true,
+                            false,
+                            true,
+                            appCMSPageUI,
+                            watchlistMetaPage.getPageId(),
+                            watchlistMetaPage.getPageId(),
+                            watchlistMetaPage.getPageName(),
+                            watchlistMetaPage.getPageId(),
+                            false,
+                            null) {
+                        @Override
+                        public void call(AppCMSWatchlistResult appCMSWatchlistResult) {
+                            if (appCMSWatchlistResult != null) {
+                                Observable.just(appCMSWatchlistResult).subscribe(appCMSWatchlistResultAction);
+                            } else {
+                                Observable.just((AppCMSWatchlistResult) null).subscribe(appCMSWatchlistResultAction);
+                            }
+                        }
+                    });
+        }
+    }
+
     public void navigateToWatchlistPage(String pageId, String pageTitle, String url,
                                         boolean launchActivity) {
 
@@ -4808,7 +4838,7 @@ public class AppCMSPresenter {
             setLoggedInUserEmail(null);
             setActiveSubscriptionPrice(null);
             setActiveSubscriptionId(null);
-            setActiveSubscriptionSku( null);
+            setActiveSubscriptionSku(null);
             setActiveSubscriptionPlanName(null);
             setActiveSubscriptionReceipt(null);
             setRefreshToken(null);
@@ -6660,10 +6690,6 @@ public class AppCMSPresenter {
         return currentActivity;
     }
 
-    public void setCurrentContext(Context context) {
-        this.currentContext = context;
-    }
-
     public void setCurrentActivity(Activity activity) {
         this.currentActivity = activity;
         this.downloadManager = (DownloadManager) currentActivity.getSystemService(Context.DOWNLOAD_SERVICE);
@@ -6671,6 +6697,10 @@ public class AppCMSPresenter {
         this.downloadQueueThread = new DownloadQueueThread(this);
         this.clientId = activity.getString(R.string.default_web_client_id);
         this.serverClientId = activity.getString(R.string.server_client_id);
+    }
+
+    public void setCurrentContext(Context context) {
+        this.currentContext = context;
     }
 
     private Bundle getPageActivityBundle(Activity activity,
@@ -8201,6 +8231,100 @@ public class AppCMSPresenter {
         return apikey;
     }
 
+    public String getDownloadURL(ContentDatum contentDatum) {
+
+        String downloadURL = "";
+        String downloadQualityRendition = getUserDownloadQualityPref(currentActivity);
+        Map<String, String> urlRenditionMap = new HashMap<>();
+        for (Mpeg mpeg : contentDatum.getStreamingInfo().getVideoAssets().getMpeg()) {
+            urlRenditionMap.put(mpeg.getRenditionValue().replace("_", "").trim(),
+                    mpeg.getUrl());
+        }
+        downloadURL = urlRenditionMap.get(downloadQualityRendition);
+
+        if (downloadQualityRendition != null) {
+            if (downloadURL == null && downloadQualityRendition.contains("360")) {
+                if (urlRenditionMap.get("720p") != null) {
+                    downloadURL = urlRenditionMap.get("720p");
+                } else if (urlRenditionMap.get("1080p") != null) {
+                    downloadURL = urlRenditionMap.get("1080p");
+                }
+
+            } else if (downloadURL == null && downloadQualityRendition.contains("720")) {
+                if (urlRenditionMap.get("360p") != null) {
+                    downloadURL = urlRenditionMap.get("360p");
+                } else if (urlRenditionMap.get("1080p") != null) {
+                    downloadURL = urlRenditionMap.get("1080p");
+                }
+
+            } else if (downloadURL == null && downloadQualityRendition.contains("1080")) {
+                if (urlRenditionMap.get("720p") != null) {
+                    downloadURL = urlRenditionMap.get("720p");
+                } else if (urlRenditionMap.get("360p") != null) {
+                    downloadURL = urlRenditionMap.get("360p");
+                }
+            } else if (downloadURL == null) {
+                //noinspection SuspiciousMethodCalls
+                downloadURL = urlRenditionMap.get(urlRenditionMap.keySet().toArray()[0]);
+            }
+        } else {
+            downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+        }
+
+        downloadURL = downloadURL != null
+                ? downloadURL.replace("https:/", "http:/")
+                : null;
+
+        return downloadURL;
+    }
+
+    public String getDownloadURL(ContentDatum contentDatum) {
+
+        String downloadURL = "";
+        String downloadQualityRendition = getUserDownloadQualityPref();
+        Map<String, String> urlRenditionMap = new HashMap<>();
+        for (Mpeg mpeg : contentDatum.getStreamingInfo().getVideoAssets().getMpeg()) {
+            urlRenditionMap.put(mpeg.getRenditionValue().replace("_", "").trim(),
+                    mpeg.getUrl());
+        }
+        downloadURL = urlRenditionMap.get(downloadQualityRendition);
+
+        if (downloadQualityRendition != null) {
+            if (downloadURL == null && downloadQualityRendition.contains("360")) {
+                if (urlRenditionMap.get("720p") != null) {
+                    downloadURL = urlRenditionMap.get("720p");
+                } else if (urlRenditionMap.get("1080p") != null) {
+                    downloadURL = urlRenditionMap.get("1080p");
+                }
+
+            } else if (downloadURL == null && downloadQualityRendition.contains("720")) {
+                if (urlRenditionMap.get("360p") != null) {
+                    downloadURL = urlRenditionMap.get("360p");
+                } else if (urlRenditionMap.get("1080p") != null) {
+                    downloadURL = urlRenditionMap.get("1080p");
+                }
+
+            } else if (downloadURL == null && downloadQualityRendition.contains("1080")) {
+                if (urlRenditionMap.get("720p") != null) {
+                    downloadURL = urlRenditionMap.get("720p");
+                } else if (urlRenditionMap.get("360p") != null) {
+                    downloadURL = urlRenditionMap.get("360p");
+                }
+            } else if (downloadURL == null) {
+                //noinspection SuspiciousMethodCalls
+                downloadURL = urlRenditionMap.get(urlRenditionMap.keySet().toArray()[0]);
+            }
+        } else {
+            downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+        }
+
+        downloadURL = downloadURL != null
+                ? downloadURL.replace("https:/", "http:/")
+                : null;
+
+        return downloadURL;
+    }
+
     public enum LaunchType {
         SUBSCRIBE, LOGIN_AND_SIGNUP
     }
@@ -8345,53 +8469,6 @@ public class AppCMSPresenter {
         public void setStartNextDownload() {
             this.startNextDownload = true;
         }
-    }
-
-    public String getDownloadURL(ContentDatum contentDatum) {
-
-        String downloadURL = "";
-        String downloadQualityRendition = getUserDownloadQualityPref();
-        Map<String, String> urlRenditionMap = new HashMap<>();
-        for (Mpeg mpeg : contentDatum.getStreamingInfo().getVideoAssets().getMpeg()) {
-            urlRenditionMap.put(mpeg.getRenditionValue().replace("_", "").trim(),
-                    mpeg.getUrl());
-        }
-        downloadURL = urlRenditionMap.get(downloadQualityRendition);
-
-        if (downloadQualityRendition != null) {
-            if (downloadURL == null && downloadQualityRendition.contains("360")) {
-                if (urlRenditionMap.get("720p") != null) {
-                    downloadURL = urlRenditionMap.get("720p");
-                } else if (urlRenditionMap.get("1080p") != null) {
-                    downloadURL = urlRenditionMap.get("1080p");
-                }
-
-            } else if (downloadURL == null && downloadQualityRendition.contains("720")) {
-                if (urlRenditionMap.get("360p") != null) {
-                    downloadURL = urlRenditionMap.get("360p");
-                } else if (urlRenditionMap.get("1080p") != null) {
-                    downloadURL = urlRenditionMap.get("1080p");
-                }
-
-            } else if (downloadURL == null && downloadQualityRendition.contains("1080")) {
-                if (urlRenditionMap.get("720p") != null) {
-                    downloadURL = urlRenditionMap.get("720p");
-                } else if (urlRenditionMap.get("360p") != null) {
-                    downloadURL = urlRenditionMap.get("360p");
-                }
-            } else if (downloadURL == null) {
-                //noinspection SuspiciousMethodCalls
-                downloadURL = urlRenditionMap.get(urlRenditionMap.keySet().toArray()[0]);
-            }
-        } else {
-            downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
-        }
-
-        downloadURL = downloadURL != null
-                ? downloadURL.replace("https:/", "http:/")
-                : null;
-
-        return downloadURL;
     }
 
     private static class BeaconRunnable implements Runnable {
