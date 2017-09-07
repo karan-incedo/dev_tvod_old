@@ -13,3 +13,6 @@ build/*
 /library/build/*
 /sample/build/*
 local.properties
+library/build/
+sample/build/
+.idea/modules.xml
