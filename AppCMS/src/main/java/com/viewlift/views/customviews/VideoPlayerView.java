@@ -84,7 +84,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private PlayerState playerState;
     private SimpleExoPlayer player;
     private SimpleExoPlayerView playerView;
-    private DefaultTrackSelector trackSelector;
     private int resumeWindow;
     private long resumePosition;
 
@@ -249,7 +248,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
         TrackSelection.Factory videoTrackSelectionFactory =
                 new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
-        trackSelector =
+        DefaultTrackSelector trackSelector =
                 new DefaultTrackSelector(videoTrackSelectionFactory);
 
 
@@ -370,32 +369,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     }
 
-    protected int currentTrackIndex = 0;
-    private static final TrackSelection.Factory FIXED_FACTORY = new FixedTrackSelection.Factory();
-
     @Override
     public void onPlayerError(ExoPlaybackException e) {
 
         mCurrentPlayerPosition = player.getCurrentPosition();
-        MappingTrackSelector.SelectionOverride override = new MappingTrackSelector.SelectionOverride(FIXED_FACTORY, 0, currentTrackIndex++);
-        MappingTrackSelector.MappedTrackInfo currentMappedTrackInfo = trackSelector.getCurrentMappedTrackInfo();
-
-        if (currentMappedTrackInfo != null
-                && currentMappedTrackInfo.getTrackGroups(0) != null
-                && currentMappedTrackInfo.getTrackGroups(0).get(0) != null
-                && (currentTrackIndex <= currentMappedTrackInfo.getTrackGroups(0).get(0).length)) {
-
-            if ((player.getCurrentPosition() + 5000) >= player.getDuration()) {
-
-                isLoadedNext = true;
-                mFinishListener.onFinishCallback(e.getMessage());
-                Toast.makeText(getContext(), "There is some video playback error, Skipping to next lecture.", Toast.LENGTH_LONG).show();
-            }else{
-
-                trackSelector.setSelectionOverride(0, currentMappedTrackInfo.getTrackGroups(0), override);
-                setUri(uri,closedCaptionUri);
-            }
-        }
     }
 
     @Override
