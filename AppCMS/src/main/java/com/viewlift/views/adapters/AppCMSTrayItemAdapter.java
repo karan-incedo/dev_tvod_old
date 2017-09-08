@@ -188,7 +188,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                                             contentDatum.getContentDetails().getClosedCaptions().get(0).setUrl(userVideoDownloadStatus.getSubtitlesUri());   // Fix of SVFA-1707
                                                         }
                                                     } catch (Exception e) {
-                                                        e.printStackTrace();
+                                                        Log.e(TAG,e.getMessage());
                                                     }
 
                                                 } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_RUNNING) {
