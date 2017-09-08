@@ -324,6 +324,8 @@ public class AppCMSPresenter {
     private final String FIREBASE_PLAN_NAME = "item_name";
     private final String FIREBASE_CURRENCY_NAME = "currency";
     private final String FIREBASE_VALUE = "value";
+    private final String FIREBASE_SIGNUP_SCREEN_VALUE = "Sign Up Screen";
+
     private final String FIREBASE_TRANSACTION_ID = "transaction_id";
     private final String FIREBASE_ADD_CART = "add_to_cart";
     private final String FIREBASE_ECOMMERCE_PURCHASE = "ecommerce_purchase";
@@ -1707,6 +1709,12 @@ public class AppCMSPresenter {
             } else {
                 Log.d(TAG, "Navigating to login page for subscription");
                 navigateToLoginPage();
+
+                Bundle bundleSignUp = new Bundle();
+                bundleSignUp.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_SIGNUP_SCREEN_VALUE);
+                String firebaseEventKey = FirebaseAnalytics.Event.VIEW_ITEM;
+
+                sendFirebaseSelectedEvents(firebaseEventKey, bundleSignUp);
             }
         }
     }

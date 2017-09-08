@@ -667,6 +667,10 @@ public class AppCMSPlayVideoFragment extends Fragment
         beaconMessageThread.runBeaconPing = false;
         beaconMessageThread.videoPlayerView = null;
         beaconMessageThread = null;
+        if(mProgressHandler!=null){
+            mProgressHandler.removeCallbacks(mProgressRunnable);
+            mProgressHandler=null;
+        }
 
         beaconBufferingThread.sendBeaconBuffering = false;
         beaconBufferingThread.runBeaconBuffering = false;
@@ -713,7 +717,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         //bundle.putString(FIREBASE_SERIES_NAME_KEY, "");
 
         //Logs an app event.
-        if (progressPercent == 0 && !isStreamStart) {
+        if (progressPercent == 0 || !isStreamStart) {
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
             isStreamStart = true;
         }
