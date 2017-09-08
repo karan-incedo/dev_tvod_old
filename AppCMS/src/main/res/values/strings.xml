@@ -46,6 +46,7 @@
     <string name="app_cms_signin_error_title">Sign In</string>
     <string name="app_cms_signup_error_title">Sign Up</string>
     <string name="app_cms_reset_password_title">Reset Password</string>
+    <string name="app_cms_forgot_password_title">Forgot Password</string>
     <string name="app_cms_reset_password_success_description">Please check %1$s for a reset password link.</string>
     <string name="app_cms_cancel_subscription_ask_for_confirmation_message">Are you sure you wish to cancel your subscription?</string>
     <string name="app_cms_data_error_title">Could Not Access Data</string>
@@ -359,5 +360,7 @@
     <string name="register_internet_receiver_key">shouldRegisterInternetReciever</string>
     <string name="tv_dialog_msg_key">dialog_msg_key</string>
     <string name="tv_dialog_header_key">dialog_header_key</string>
+    <string name="tv_dialog_width_key">dialog_width_key</string>
+    <string name="tv_dialog_height_key">dialog_height_key</string>
 
 </resources>

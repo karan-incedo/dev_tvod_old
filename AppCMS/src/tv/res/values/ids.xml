@@ -8,5 +8,7 @@
     <item name="appcms_browsefragment" type="id"></item>
     <item name="email_edit_box" type="id"></item>
     <item name="password_edit_box" type="id"></item>
+    <item name="reset_password_continue_button" type="id"></item>
+    <item name="reset_password_cancel_button" type="id"></item>
 
 </resources>

@@ -16,6 +16,7 @@
         <item>AC VideoPlayerWithInfo 01</item>
     </string-array>
 
+    <string name="app_cms_reset_password_module">AC ResetPassword 01</string>
     <string name="font_open_sans">OpenSans</string>
     <string name="font_open_sans_semibold">OpenSans-Semibold</string>
     <string name="retry_key">RETRY</string>
@@ -29,12 +30,15 @@
 
 
     <plurals name="mins_abbreviation">
-        <item quantity="one" >MIN</item>
-        <item quantity="other" >MINS</item>
+        <item quantity="one">MIN</item>
+        <item quantity="other">MINS</item>
     </plurals>
 
     <string name="item_position">nav_item_position</string>
     <string name="no_data_available">No Data Available.</string>
     <string name="title_activity_app_cms_sub_nav_item">AppCmsSubNavItemActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

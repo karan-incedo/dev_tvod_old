@@ -139,6 +139,16 @@ public class AppCmsTvErrorFragment extends AbsDialogFragment {
     }
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        Bundle bundle = new Bundle();
+        int width =  getResources().getDimensionPixelSize(R.dimen.text_overlay_dialog_width);
+        int height = getResources().getDimensionPixelSize(R.dimen.text_overlay_dialog_height);
+        bundle.putInt( getString(R.string.tv_dialog_width_key) , width);
+        bundle.putInt( getString(R.string.tv_dialog_height_key) , height);
+        super.onActivityCreated(bundle);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 

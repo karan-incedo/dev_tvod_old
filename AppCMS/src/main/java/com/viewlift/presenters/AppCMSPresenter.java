@@ -255,6 +255,7 @@ public class AppCMSPresenter {
     public static final String MY_PROFILE_ACTION = "MY_PROFILE_ACTION";
     public static final String ERROR_DIALOG_ACTION = "appcms_error_dialog_action";
     public static final String ACTION_LOGO_ANIMATION = "appcms_logo_animation";
+    public static final String ACTION_RESET_PASSWORD = "appcms_reset_password_action";
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String CASTING_OVERLAY_PREF_NAME = "cast_intro_pref";
@@ -1539,6 +1540,40 @@ public class AppCMSPresenter {
             if (args != null) {
                 Intent updatePageIntent =
                         new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                updatePageIntent.putExtra(
+                        currentActivity.getString(R.string.app_cms_bundle_key),
+                        args);
+                currentActivity.sendBroadcast(updatePageIntent);
+            }
+        }
+    }
+
+
+
+    public void launchResetPasswordTVPage( AppCMSPageUI appCMSPageUI) {
+        if (currentActivity != null) {
+            cancelInternalEvents();
+
+            AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
+            appCMSPageAPI.setId(getPageId(appCMSPageUI));
+            Bundle args = getPageActivityBundle(currentActivity,
+                    appCMSPageUI,
+                    appCMSPageAPI,
+                    currentActivity.getString(R.string.app_cms_reset_password_page_tag),
+                    currentActivity.getString(R.string.app_cms_reset_password_page_tag),
+                    null,
+                    currentActivity.getString(R.string.app_cms_reset_password_page_tag),
+                    false,
+                    true,
+                    false,
+                    false,
+                    false,
+                    null,
+                    ExtraScreenType.RESET_PASSWORD);
+
+            if (args != null) {
+                Intent updatePageIntent =
+                        new Intent(AppCMSPresenter.ACTION_RESET_PASSWORD);
                 updatePageIntent.putExtra(
                         currentActivity.getString(R.string.app_cms_bundle_key),
                         args);
@@ -3379,21 +3414,49 @@ public class AppCMSPresenter {
                             if (forgotPasswordResponse != null
                                     && TextUtils.isEmpty(forgotPasswordResponse.getError())) {
                                 Log.d(TAG, "Successfully reset password for email: " + email);
-                                showDialog(DialogType.RESET_PASSWORD,
-                                        currentActivity.getString(R.string.app_cms_reset_password_success_description, email),
-                                        false,
-                                        null);
+                                if (platformType == PlatformType.TV) {
+                                    openTVErrorDialog( currentActivity.getString(R.string.app_cms_reset_password_success_description, email),
+                                            currentActivity.getString(R.string.app_cms_forgot_password_title));
+                                } else {
+                                    showDialog(DialogType.RESET_PASSWORD,
+                                            currentActivity.getString(R.string.app_cms_reset_password_success_description, email),
+                                            false,
+                                            null);
+                                }
                             } else if (forgotPasswordResponse != null) {
                                 Log.e(TAG, "Failed to reset password for email: " + email);
-                                showDialog(DialogType.RESET_PASSWORD,
-                                        forgotPasswordResponse.getError(),
-                                        false,
-                                        null);
+                                if(platformType == PlatformType.TV) {
+                                    openTVErrorDialog(forgotPasswordResponse.getError(),
+                                            currentActivity.getString(R.string.app_cms_forgot_password_title));
+                                }else {
+                                    showDialog(DialogType.RESET_PASSWORD,
+                                            forgotPasswordResponse.getError(),
+                                            false,
+                                            null);
+                                }
                             }
                         } catch (Exception e) {
                             Log.e(TAG, "Error resetting password: " + e.getMessage());
                         }
                     });
+        }
+    }
+
+    private void openTVErrorDialog(String message , String headerTitle) {
+        try {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(currentActivity.getString(R.string.retry_key), false);
+            bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key) ,false);
+            bundle.putString(currentActivity.getString(R.string.tv_dialog_msg_key) , message);
+            bundle.putString(currentActivity.getString(R.string.tv_dialog_header_key) ,
+                    headerTitle.toUpperCase()
+            );
+
+            Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+            args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+            currentActivity.sendBroadcast(args);
+        } catch (Exception e) {
+            Log.e(TAG, "DialogType launching TV DialogType Activity");
         }
     }
 
@@ -7205,12 +7268,11 @@ public class AppCMSPresenter {
                     NavigationPrimary myProfile = new NavigationPrimary();
                     myProfile.setPageId(currentActivity.getString(R.string.app_cms_my_profile_label ,
                     currentActivity.getString(R.string.profile_label)));
-
                     myProfile.setTitle(currentActivity.getString(R.string.app_cms_my_profile_label ,
                             appCMSAndroidUI.getShortAppName() != null ?
                                     appCMSAndroidUI.getShortAppName() :
                                     currentActivity.getString(R.string.profile_label)));
-                    navigation.getNavigationPrimary().add(myProfile);   //TODO : commented due to phase_1 build. This is a feature of Phase_2
+                    navigation.getNavigationPrimary().add(myProfile);
 
 
                     //add search in navigation item.
@@ -7637,8 +7699,8 @@ public class AppCMSPresenter {
                 sendSignInEmailFirebase();
             } else if (actionType == AppCMSActionType.FORGOT_PASSWORD) {
                 Log.d(TAG, "Forgot password selected: " + extraData[0]);
-                closeSoftKeyboard();
-                launchResetPasswordPage(extraData[0]);
+                AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
+                launchResetPasswordTVPage(appCMSPageUI);
             } else if (actionType == AppCMSActionType.LOGIN_FACEBOOK) {
                 Log.d(TAG, "Login Facebook selected");
                 loginFacebook();

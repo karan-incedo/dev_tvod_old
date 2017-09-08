@@ -206,10 +206,6 @@ public class TVViewCreator {
                     AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
                     mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
                 }
-
-                /*module = new GsonBuilder().create().
-                        fromJson(Utils.loadJsonFromAssets(context, "carousel_ftv_component.json"), ModuleList.class);*/
-
                 for (Component component : module.getComponents()) {
                     createTrayModule(context, component, module.getLayout(), module, moduleAPI,
                             pageView, jsonValueKeyMap, appCMSPresenter, true);
@@ -306,6 +302,12 @@ public class TVViewCreator {
                 }
              }
             } else {
+
+            if(module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_reset_password_module))){
+                module = new GsonBuilder().create().
+                             fromJson(Utils.loadJsonFromAssets(context, "reset_password.json"), ModuleList.class);
+            }
+
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
@@ -470,9 +472,6 @@ public class TVViewCreator {
             return;
         }
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
-        if (moduleAPI == null) {
-            return;
-        }
         if (componentType == null) {
             componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
@@ -706,20 +705,28 @@ public class TVViewCreator {
                         break;
 
            case PAGE_FORGOTPASSWORD_KEY:
-                      //  componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
-
                componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                    @Override
                    public void onClick(View view) {
-                       appCMSPresenter.launchTVButtonSelectedAction(
-                               null,
+
+                       String[] extraData = new String[1];
+                       extraData[0] = component.getKey();
+                       appCMSPresenter.launchTVButtonSelectedAction(null,
                                component.getAction(),
                                null,
-                               null,
+                               extraData,
                                false
                        );
                    }
                });
+               break;
+
+                    case RESET_PASSWORD_CANCEL_BUTTON_KEY:
+                    case PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY:
+                        componentViewResult.componentView.setId(R.id.reset_password_cancel_button);
+                        break;
+                    case RESET_PASSWORD_CONTINUE_BUTTON_KEY:
+                        componentViewResult.componentView.setId(R.id.reset_password_continue_button);
                         break;
 
                     case PAGE_LOGIN_BUTTON_KEY:
@@ -1367,6 +1374,10 @@ public class TVViewCreator {
                 if (appCMSPageAPI.getModules() != null && appCMSPageAPI.getModules().size() > 0) {
                     return appCMSPageAPI.getModules().get(0);
                 }
+            }
+
+            if(AppCMSUIKeyType.PAGE_RESET_PASSWORD_MODULE_KEY == jsonValueKeyMap.get(module.getView())){
+                return new Module();
             }
 
             for (Module moduleAPI : appCMSPageAPI.getModules()) {
