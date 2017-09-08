@@ -33,7 +33,7 @@ android {
     defaultConfig {
         applicationId packageName
         minSdkVersion 23
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 35
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
