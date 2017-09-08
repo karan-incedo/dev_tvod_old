@@ -60,8 +60,6 @@ import com.viewlift.views.adapters.AppCMSViewAdapter;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
 
-import org.htmlcleaner.HtmlCleaner;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -2195,6 +2193,11 @@ public class ViewCreator {
                             component,
                             (TextView) componentViewResult.componentView);
                 }
+
+                if (component.getFontSize() > 0) {
+                    ((TextView) componentViewResult.componentView).setTextSize(component.getFontSize());
+                }
+
                 break;
 
             case PAGE_IMAGE_KEY:
