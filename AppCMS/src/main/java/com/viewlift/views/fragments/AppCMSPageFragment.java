@@ -40,6 +40,8 @@ public class AppCMSPageFragment extends Fragment {
     private AppCMSBinder appCMSBinder;
     private PageView pageView;
     private String videoPageName = "Video Page";
+    private String authentication_screen_name = "Authentication Screen";
+
     private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
 
     private final String LOGIN_STATUS_KEY = "logged_in_status";
@@ -149,6 +151,10 @@ public class AppCMSPageFragment extends Fragment {
     private void sendFirebaseAnalyticsEvents(AppCMSBinder appCMSVideoPageBinder) {
         if (appCMSVideoPageBinder == null)
             return;
+
+        if (appCMSVideoPageBinder.getScreenName().equalsIgnoreCase(authentication_screen_name))
+            return;
+
         Bundle bundle = new Bundle();
         if (!appCMSVideoPageBinder.isUserLoggedIn()) {
             appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);

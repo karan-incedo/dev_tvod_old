@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.ccavenue.utility.AvenuesParams;
 import com.viewlift.ccavenue.utility.RSAUtility;
 import com.viewlift.ccavenue.utility.ServiceUtility;
@@ -59,6 +60,12 @@ public class WebViewActivity extends Activity {
 	updateSubscriptionPlanAsyncTask updateStatus = null ;
 	ProgressDialog progressDialog = null ;
 	boolean backPressFlag ;
+	private final String FIREBASE_PLAN_ID = "item_id";
+	private final String FIREBASE_PLAN_NAME = "item_name";
+	private final String FIREBASE_CURRENCY_NAME = "currency";
+	private final String FIREBASE_VALUE = "value";
+	private final String FIREBASE_ECOMMERCE_PURCHASE = "ecommerce_purchase";
+
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
@@ -127,6 +134,24 @@ public class WebViewActivity extends Activity {
 				}else if(html.indexOf("S")!=-1){
 					try {
 						backPressFlag = true ;
+
+						AppsFlyerUtils.subscriptionEvent(WebViewActivity.this,
+								true,
+								getString(R.string.app_cms_appsflyer_dev_key),
+								String.valueOf(mainIntent.getStringExtra(AvenuesParams.AMOUNT)),
+								getIntent().getStringExtra(getString(R.string.app_cms_plan_id)),
+								mainIntent.getStringExtra(AvenuesParams.CURRENCY));
+
+						Bundle bundle = new Bundle();
+						bundle.putString(FIREBASE_PLAN_ID, mainIntent.getStringExtra(getString(R.string.app_cms_plan_id)));
+						bundle.putString(FIREBASE_PLAN_NAME,  mainIntent.getStringExtra("plan_to_purchase_name"));
+						bundle.putString(FIREBASE_CURRENCY_NAME, mainIntent.getStringExtra(AvenuesParams.CURRENCY));
+						bundle.putString(FIREBASE_VALUE, String.valueOf(mainIntent.getStringExtra(AvenuesParams.AMOUNT)));
+						if (appCMSPresenter.getmFireBaseAnalytics() != null)
+							appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_ECOMMERCE_PURCHASE, bundle);
+
+
+
 						appCMSPresenter.finalizeSignupAfterCCAvenueSubscription(null) ;
 						updateStatus = new updateSubscriptionPlanAsyncTask() ;
 						updateStatus.execute();
