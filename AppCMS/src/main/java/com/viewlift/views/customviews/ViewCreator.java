@@ -2777,11 +2777,10 @@ public class ViewCreator {
      * This class has been created to updated the Download Image Action and Status
      */
     public static class UpdateDownloadImageIconAction implements Action1<UserVideoDownloadStatus> {
-        private final ImageButton imageButton;
         private final AppCMSPresenter appCMSPresenter;
         private final ContentDatum contentDatum;
         private final String userId;
-
+        private ImageButton imageButton;
         private View.OnClickListener addClickListener;
 
         public UpdateDownloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
@@ -2845,6 +2844,7 @@ public class ViewCreator {
                         imageButton.setOnClickListener(null);
                         appCMSPresenter.startNextDownload();
                         break;
+
                     case STATUS_INTERRUPTED:
                         imageButton.setImageResource(android.R.drawable.stat_sys_warning);
                         imageButton.setOnClickListener(null);
