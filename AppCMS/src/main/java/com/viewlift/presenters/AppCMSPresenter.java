@@ -371,7 +371,6 @@ public class AppCMSPresenter {
     private final AppCMSSubscriptionCall appCMSSubscriptionCall;
     private final AppCMSSubscriptionPlanCall appCMSSubscriptionPlanCall;
     private final AppCMSAnonymousAuthTokenCall appCMSAnonymousAuthTokenCall;
-    private boolean isCCAvenueEnabled = false;
     public String[] physicalPaths = {
             "/storage/sdcard0", "/storage/sdcard1", // Motorola Xoom
             "/storage/extsdcard", // Samsung SGS3
@@ -387,6 +386,7 @@ public class AppCMSPresenter {
             "/storage/microsd" // ASUS ZenFone 2
     };
     boolean isRenewable;
+    private boolean isCCAvenueEnabled = false;
     private String FIREBASE_CONTACT_SCREEN = "Contact Us";
     private String FIREBASE_VIDEO_DETAIL_SCREEN = "Video Detail Screen";
     private String FIREBASE_EVENT_LOGIN_SCREEN = "Login Screen";
@@ -1352,8 +1352,7 @@ public class AppCMSPresenter {
                 if (updateToModule != null &&
                         updateToModule.getContentData() != null) {
                     AppCMSUIKeyType moduleType = jsonValueKeyMap.get(updateToModule.getModuleType());
-                    if (updateFromModule.getContentData().size() == 0 &&
-                            moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
+                    if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
                         updateToModule.setContentData(updateFromModule.getContentData());
                     } else {
                         for (ContentDatum toContentDatum : updateToModule.getContentData()) {
@@ -1739,7 +1738,7 @@ public class AppCMSPresenter {
     }
 
     public void initiateItemPurchase() {
-        isCCAvenueEnabled = true ;
+        isCCAvenueEnabled = true;
         if (!TextUtils.isEmpty(countryCode) && countryCode.equalsIgnoreCase("IN") && isCCAvenueEnabled) {
             if (currencyCode.equalsIgnoreCase("INR")) {
                 Log.d(TAG, "Initiating CCAvenue purchase");
