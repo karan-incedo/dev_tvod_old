@@ -350,29 +350,19 @@ public class CollectionGridItemView extends BaseView {
                             }
                         }
 
-                        Locale locale = null;
-
+                        Currency currency = null;
                         if (data.getPlanDetails() != null &&
                                 !data.getPlanDetails().isEmpty() &&
                                 data.getPlanDetails().get(planIndex) != null &&
-                                data.getPlanDetails().get(planIndex).getCountryCode() != null) {
+                                data.getPlanDetails().get(planIndex).getRecurringPaymentCurrencyCode() != null) {
                             try {
-                                locale = new Locale.Builder()
-                                        .setRegion(data.getPlanDetails().get(planIndex).getCountryCode())
-                                        .build();
+                                currency = Currency.getInstance(data.getPlanDetails().get(planIndex).getRecurringPaymentCurrencyCode());
                             } catch (Exception e) {
                                 Log.e(TAG, "Could not parse locale");
                             }
-                        } else {
-                            locale = getContext().getResources().getConfiguration().locale;
                         }
 
-                        Currency currency = null;
-                        if (currency != null) {
-                            currency = Currency.getInstance(locale);
-                        }
-
-                        if (data.getPlanDetails().get(planIndex).getDiscountedPrice() != 0) {
+                        if (data.getPlanDetails().get(planIndex).getRecurringPaymentAmount() != 0) {
                             StringBuilder stringBuilder = new StringBuilder();
                             if (currency != null) {
                                 stringBuilder.append(currency.getSymbol());
