@@ -14,21 +14,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.Component;
-import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.Map;
-
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 6/28/17.
@@ -77,6 +73,7 @@ public class LoginModule extends ModuleView {
         this.loginBorderPadding = context.getResources().getInteger(R.integer.app_cms_login_underline_padding);
         this.launchType = appCMSPresenter.getLaunchType();
         init();
+
     }
 
     public void init() {
@@ -158,7 +155,7 @@ public class LoginModule extends ModuleView {
                     topLayoutContainer.addView(moduleView);
                 } else if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_SIGNUP_COMPONENT_KEY &&
                         (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE ||
-                        launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP)) {
+                                launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP)) {
                     if (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP) {
                         buttonSelectors[1] = new Button(getContext());
                         FrameLayout.LayoutParams signupSelectorLayoutParams =
@@ -227,6 +224,7 @@ public class LoginModule extends ModuleView {
         applyUnderlineToComponent(underlineViews[childIndex], underlineColor);
         visibleEmailInputView = emailInputViews[childIndex];
         visiblePasswordInputView = passwordInputViews[childIndex];
+
         if (childIndex == 1) {
             visibleEmailInputView.setText("");
             visiblePasswordInputView.setText("");
@@ -322,6 +320,7 @@ public class LoginModule extends ModuleView {
                                 case PAGE_PASSWORDTEXTFIELD_KEY:
                                 case PAGE_PASSWORDTEXTFIELD2_KEY:
                                     passwordInputViews[childIndex] = ((TextInputLayout) componentView).getEditText();
+                                    AppCMSPresenter.noSpaceInEditTextFilter(passwordInputViews[childIndex]);
                                     if (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                                         visiblePasswordInputView = passwordInputViews[1];
                                     }
