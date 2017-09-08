@@ -427,9 +427,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 isLoadedNext = true;
                 mFinishListener.onFinishCallback(error.getMessage());
             }
-        }else{
-
-
         }
     }
 
