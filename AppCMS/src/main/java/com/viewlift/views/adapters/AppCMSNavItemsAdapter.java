@@ -1,5 +1,6 @@
 package com.viewlift.views.adapters;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -159,16 +160,22 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
 
                             switch (titleKey) {
                                 case ANDROID_DOWNLOAD_NAV_KEY:
+                                    appCMSPresenter.getCurrentActivity()
+                                            .sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                                     appCMSPresenter.navigateToDownloadPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
 
                                 case ANDROID_WATCHLIST_NAV_KEY:
+                                    appCMSPresenter.getCurrentActivity()
+                                            .sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                                     appCMSPresenter.navigateToWatchlistPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
 
                                 case ANDROID_HISTORY_NAV_KEY:
+                                    appCMSPresenter.getCurrentActivity()
+                                            .sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                                     appCMSPresenter.navigateToHistoryPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;

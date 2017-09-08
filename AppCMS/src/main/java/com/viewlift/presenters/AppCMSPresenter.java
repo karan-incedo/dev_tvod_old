@@ -2913,6 +2913,9 @@ public class AppCMSPresenter {
                                             dismissOpenDialogs(null);
                                         }
                                     }
+
+                                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+                                            .PRESENTER_STOP_PAGE_LOADING_ACTION));
                                 }
                             } catch (Exception e) {
                                 Log.e(TAG, "Error merging history data: " + e.getMessage());
@@ -3115,6 +3118,10 @@ public class AppCMSPresenter {
                                     currentActivity.sendBroadcast(watchlistPageIntent);
                                 }
                             }
+
+                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+                                    .PRESENTER_STOP_PAGE_LOADING_ACTION));
+
                         }
                     });
         }
@@ -3338,6 +3345,9 @@ public class AppCMSPresenter {
                                     currentActivity.sendBroadcast(historyPageIntent);
                                 }
                             }
+
+                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+                                    .PRESENTER_STOP_PAGE_LOADING_ACTION));
                         }
                     });
         }
