@@ -112,10 +112,10 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
             ((AppCMSDownloadQualityAdapter) listDownloadQuality.getAdapter()).setItemClickListener(this);
 
             continueButton.setOnClickListener(v -> {
+                appCMSPresenter.setUserDownloadQualityPref(downloadQuality); // fix for SVFA-1724
                 if (binder.getContentDatum() != null && binder.getResultAction1() != null) {
                     appCMSPresenter.editDownload(binder.getContentDatum(), binder.getResultAction1(), true);
-                } else {
-                    appCMSPresenter.setUserDownloadQualityPref(downloadQuality);
+
                 }
                 getActivity().finish();
             });

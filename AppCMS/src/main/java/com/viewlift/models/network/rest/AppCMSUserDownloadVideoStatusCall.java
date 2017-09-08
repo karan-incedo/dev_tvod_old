@@ -30,8 +30,10 @@ public class AppCMSUserDownloadVideoStatusCall {
     @UiThread
     public void call(String videoId, AppCMSPresenter appCMSPresenter,
                      final Action1<UserVideoDownloadStatus> readyAction1, String userId) {
+        DownloadVideoRealm downloadVideoRealm=null;
+        UserVideoDownloadStatus statusResponse = new UserVideoDownloadStatus();
         try {
-            DownloadVideoRealm downloadVideoRealm = appCMSPresenter.getRealmController()
+             downloadVideoRealm = appCMSPresenter.getRealmController()
                     .getDownloadByIdBelongstoUser(videoId, userId);
             if (downloadVideoRealm == null) {
 
@@ -40,7 +42,7 @@ public class AppCMSUserDownloadVideoStatusCall {
             }
 
             DownloadManager downloadManager = appCMSPresenter.getDownloadManager();
-            UserVideoDownloadStatus statusResponse = new UserVideoDownloadStatus();
+
 
             statusResponse.setVideoId_DM(downloadVideoRealm.getVideoId_DM());
             statusResponse.setVideoId(videoId);
@@ -103,7 +105,16 @@ public class AppCMSUserDownloadVideoStatusCall {
 
                 Observable.just(statusResponse).subscribe(readyAction1);
             }
+            else{
+                if (null != downloadVideoRealm ) { // fix of SVFA-1856
+                    statusResponse.setDownloadStatus(DownloadStatus.STATUS_INTERRUPTED);
+                    Observable.just(statusResponse).subscribe(readyAction1);
+                    return;
+                }
+            }
+
         } catch (Exception e) {
+
             Log.e(TAG, e.getMessage());
             Observable.just((UserVideoDownloadStatus) null).subscribe(readyAction1);
         }
