@@ -601,7 +601,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 if (appCMSHistoryResult != null) {
                     listView.setAdapter(null);
                     List<ContentDatum> adapterDataTmp;
-                    adapterData = appCMSHistoryResult.convertToAppCMSPageAPI(null).getModules().get(0).getContentData();
+                    adapterData = appCMSHistoryResult.convertToAppCMSPageAPI(null).getModules()
+                            .get(0).getContentData();
                     if (adapterData != null) {
                         adapterDataTmp = new ArrayList<>(adapterData);
                     } else {
@@ -618,30 +619,25 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             });
         } else if (isWatchlist) {
             appCMSPresenter.getWatchlistData(appCMSWatchlistResult -> {
-//                if (appCMSWatchlistResult != null) {
-//                    listView.setAdapter(null);
-//                    List<ContentDatum> adapterDataTmp;
-//                    adapterData = appCMSWatchlistResult.convertToAppCMSPageAPI(null).getModules().get(0).getContentData();
-//                    if (adapterData != null) {
-//                        adapterDataTmp = new ArrayList<>(adapterData);
-//                    } else {
-//                        adapterDataTmp = new ArrayList<>();
-//                    }
-//                    adapterData = null;
-//                    notifyDataSetChanged();
-//                    adapterData = adapterDataTmp;
-//                    sortData();
-//                    notifyDataSetChanged();
-//                    listView.setAdapter(this);
-//                    listView.invalidate();
-//                }
+                if (appCMSWatchlistResult != null) {
+                    listView.setAdapter(null);
+                    List<ContentDatum> adapterDataTmp;
+                    adapterData = appCMSWatchlistResult.convertToAppCMSPageAPI(null).getModules()
+                            .get(0).getContentData();
+                    if (adapterData != null) {
+                        adapterDataTmp = new ArrayList<>(adapterData);
+                    } else {
+                        adapterDataTmp = new ArrayList<>();
+                    }
+                    adapterData = null;
+                    notifyDataSetChanged();
+                    adapterData = adapterDataTmp;
+                    sortData();
+                    notifyDataSetChanged();
+                    listView.setAdapter(this);
+                    listView.invalidate();
+                }
             });
-        } else {
-            listView.setAdapter(null);
-            sortData();
-            notifyDataSetChanged();
-            listView.setAdapter(this);
-            listView.invalidate();
         }
     }
 
