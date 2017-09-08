@@ -729,9 +729,9 @@ public class AppCMSPresenter {
     }
 
     public void updateAllOfflineWatchTime() {
-        if (getLoggedInUser(currentActivity) != null) {
+        if (getLoggedInUser() != null) {
             currentActivity.runOnUiThread(() -> {
-                for (DownloadVideoRealm downloadVideoRealm : realmController.getAllUnSyncedWithServer(getLoggedInUser(currentActivity))) {
+                for (DownloadVideoRealm downloadVideoRealm : realmController.getAllUnSyncedWithServer(getLoggedInUser())) {
                     updateWatchedTime(downloadVideoRealm.getVideoId(), downloadVideoRealm.getWatchedTime());
                 }
             });
@@ -2555,7 +2555,7 @@ public class AppCMSPresenter {
 
     public void checkDownloadCurrentStatus(String filmId, final Action1<UserVideoDownloadStatus> responseAction) {
         appCMSUserDownloadVideoStatusCall
-                .call(filmId, this, responseAction, getLoggedInUser(currentActivity));
+                .call(filmId, this, responseAction, getLoggedInUser());
     }
 
     @UiThread
@@ -2625,7 +2625,7 @@ public class AppCMSPresenter {
                                     DownloadVideoRealm downloadVideoRealm = realmController.getRealm()
                                                             .copyFromRealm(
                                                             realmController
-                                                            .getDownloadByIdBelongstoUser(filmIdLocal, getLoggedInUser(currentActivity)));
+                                                            .getDownloadByIdBelongstoUser(filmIdLocal, getLoggedInUser()));
                                     downloadVideoRealm.setDownloadStatus(statusResponse.getDownloadStatus());
                                     realmController.updateDownload(downloadVideoRealm);
 
