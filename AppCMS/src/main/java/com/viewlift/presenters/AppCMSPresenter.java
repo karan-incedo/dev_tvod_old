@@ -733,6 +733,16 @@ public class AppCMSPresenter {
         return result;
     }
 
+    public void updateAllOfflineWatchTime() {
+        if (getLoggedInUser() != null) {
+            currentActivity.runOnUiThread(() -> {
+                for (DownloadVideoRealm downloadVideoRealm : realmController.getAllUnSyncedWithServer(getLoggedInUser())) {
+                    updateWatchedTime(downloadVideoRealm.getVideoId(), downloadVideoRealm.getWatchedTime());
+                }
+            });
+        }
+    }
+
     public void updateWatchedTime(String filmId, long watchedTime) {
         if (getLoggedInUser() != null) {
             UpdateHistoryRequest updateHistoryRequest = new UpdateHistoryRequest();
@@ -747,7 +757,7 @@ public class AppCMSPresenter {
             appCMSUpdateWatchHistoryCall.call(url, getAuthToken(),
                     updateHistoryRequest, s -> {
                         try {
-                            Log.d(TAG, "Successfully updated watched time for film with filmID: " +
+                            Log.d(TAG, " Successfully updated watched time for film with filmID: " +
                                     filmId +
                                     " watchedTime: " +
                                     watchedTime);
@@ -763,6 +773,11 @@ public class AppCMSPresenter {
                             .copyFromRealm(realmController.getDownloadById(filmId));
                     downloadedVideo.setWatchedTime(watchedTime);
                     downloadedVideo.setLastWatchDate(System.currentTimeMillis());
+                    if (!isNetworkConnected()) {
+                        downloadedVideo.setSyncedWithServer(false);
+                    } else {
+                        downloadedVideo.setSyncedWithServer(true);
+                    }
                     realmController.updateDownload(downloadedVideo);
                 } catch (Exception e) {
                     Log.e(TAG, "Film " + filmId + " has not been downloaded");
@@ -1706,7 +1721,9 @@ public class AppCMSPresenter {
 
             String firebaseSelectPlanEventKey = "add_to_cart";
             sendFirebaseSelectedEvents(firebaseSelectPlanEventKey, bundle);
+
             if (isUserLoggedIn()) {
+
                 Log.d(TAG, "Initiating item purchase for subscription");
                 initiateItemPurchase();
             } else {
@@ -2546,6 +2563,12 @@ public class AppCMSPresenter {
         });
     }
 
+
+    public void checkDownloadCurrentStatus(String filmId, final Action1<UserVideoDownloadStatus> responseAction) {
+        appCMSUserDownloadVideoStatusCall
+                .call(filmId, this, responseAction, getLoggedInUser());
+    }
+
     @UiThread
     public synchronized void updateDownloadingStatus(String filmId, final ImageView imageView,
                                                      AppCMSPresenter presenter,
@@ -2567,6 +2590,8 @@ public class AppCMSPresenter {
             updateDownloadIconTimer = new Timer();
             downloadProgressTimerList.add(updateDownloadIconTimer);
             updateDownloadIconTimer.schedule(new TimerTask() {
+                final String filmIdLocal = filmId;
+
                 @Override
                 public void run() {
                     try {
@@ -2578,7 +2603,7 @@ public class AppCMSPresenter {
                             c.close();
                             int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
                             Log.d(TAG, "download progress =" + downloaded + " total-> " + totalSize + " " + downloadPercent);
-                            Log.d(TAG, "getCanonicalName " + this);
+                            Log.d(TAG, "download getCanonicalName " + filmIdLocal);
                             if (downloaded >= totalSize || downloadPercent > 100) {
                                 if (currentActivity != null && isUserLoggedIn())
                                     currentActivity.runOnUiThread(() -> appCMSUserDownloadVideoStatusCall
@@ -2595,9 +2620,33 @@ public class AppCMSPresenter {
                                     });
                             }
 
+                        } else {
+                            System.out.println(" Downloading fails" + c.getLong(c.getColumnIndex(DownloadManager.COLUMN_STATUS)));
                         }
                     } catch (Exception exception) {
-                        Log.e(TAG, exception.getMessage());
+                        Log.e(TAG, filmIdLocal + " Removed from top +++ " + exception.getMessage());
+                        this.cancel();
+                        UserVideoDownloadStatus statusResponse = new UserVideoDownloadStatus();
+                        statusResponse.setDownloadStatus(DownloadStatus.STATUS_INTERRUPTED);
+
+
+                        if (currentActivity != null)
+                            currentActivity.runOnUiThread(() -> {
+                                try {
+                                    DownloadVideoRealm downloadVideoRealm = realmController.getRealm()
+                                                            .copyFromRealm(
+                                                            realmController
+                                                            .getDownloadByIdBelongstoUser(filmIdLocal, getLoggedInUser()));
+                                    downloadVideoRealm.setDownloadStatus(statusResponse.getDownloadStatus());
+                                    realmController.updateDownload(downloadVideoRealm);
+
+                                    Observable.just(statusResponse).subscribe(responseAction);
+                                    //   removeDownloadedFile(filmIdLocal);
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Error rendering circular image bar");
+                                }
+                            });
+
                     }
                 }
             }, 500, 1000);
@@ -2704,8 +2753,8 @@ public class AppCMSPresenter {
                 realmController.getDownloadesByUserId(getLoggedInUser())) {
             removeDownloadedFile(downloadVideoRealm.getVideoId());
         }
-
         appCMSUserDownloadVideoStatusCall.call("", this, resultAction1, getLoggedInUser());
+        cancelDownloadIconTimerTask();  
     }
 
     public void clearWatchlist(final Action1<AppCMSAddToWatchlistResult> resultAction1) {
@@ -4137,6 +4186,7 @@ public class AppCMSPresenter {
         return false;
     }
 
+
     public boolean isDownloadQualityScreenShowBefore() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME, 0);
@@ -4312,6 +4362,7 @@ public class AppCMSPresenter {
         if (currentContext != null) {
             if (networkConnected) {
                 sendOfflineBeaconMessage();
+                updateAllOfflineWatchTime();
             }
             SharedPreferences sharedPrefs =
                     currentContext.getSharedPreferences(NETWORK_CONNECTED_SHARED_PREF_NAME, 0);

@@ -2807,6 +2807,7 @@ public class ViewCreator {
                         appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED);
                     }
                 }
+                imageButton.setOnClickListener(null); //fix for SVFA-1988
             };
         }
 
@@ -2840,6 +2841,10 @@ public class ViewCreator {
                         imageButton.setImageResource(R.drawable.ic_downloaded);
                         imageButton.setOnClickListener(null);
                         appCMSPresenter.startNextDownload();
+                        break;
+                    case STATUS_INTERRUPTED:
+                        imageButton.setImageResource(android.R.drawable.stat_sys_warning);
+                        imageButton.setOnClickListener(null);
                         break;
 
                     default:
