@@ -4392,27 +4392,29 @@ public class AppCMSPresenter {
                                           final String username,
                                           final String email,
                                           boolean refreshSubscriptionData) {
-        if (launchType == LaunchType.SUBSCRIBE) {
-            this.facebookAccessToken = facebookAccessToken;
-            this.facebookUserId = facebookUserId;
-            this.facebookUsername = username;
-            this.facebookEmail = email;
-            initiateItemPurchase();
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
-        } else if (currentContext != null) {
-            String url = currentActivity.getString(R.string.app_cms_facebook_login_api_url,
-                    appCMSMain.getApiBaseUrl(),
-                    appCMSSite.getGist().getSiteInternalName());
-            appCMSFacebookLoginCall.call(url,
-                    facebookAccessToken,
-                    facebookUserId,
-                    facebookLoginResponse -> {
-                        if (facebookLoginResponse != null) {
-                            setAuthToken(facebookLoginResponse.getAuthorizationToken());
-                            setRefreshToken(facebookLoginResponse.getRefreshToken());
-                            setLoggedInUser(facebookUserId);
-                            setLoggedInUserName(username);
-                            setLoggedInUserEmail(email);
+        String url = currentActivity.getString(R.string.app_cms_facebook_login_api_url,
+                appCMSMain.getApiBaseUrl(),
+                appCMSSite.getGist().getSiteInternalName());
+        appCMSFacebookLoginCall.call(url,
+                facebookAccessToken,
+                facebookUserId,
+                facebookLoginResponse -> {
+                    if (facebookLoginResponse != null) {
+                        setAuthToken(facebookLoginResponse.getAuthorizationToken());
+                        setRefreshToken(facebookLoginResponse.getRefreshToken());
+                        setLoggedInUser(facebookUserId);
+                        setLoggedInUserName(username);
+                        setLoggedInUserEmail(email);
+                        setIsUserSubscribed(facebookLoginResponse.isSubscribed());
+
+                        if (launchType == LaunchType.SUBSCRIBE) {
+                            this.facebookAccessToken = facebookAccessToken;
+                            this.facebookUserId = facebookUserId;
+                            this.facebookUsername = username;
+                            this.facebookEmail = email;
+                            initiateItemPurchase();
+                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                        } else {
 
                             if (appCMSMain.getServiceType()
                                     .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
@@ -4511,14 +4513,13 @@ public class AppCMSPresenter {
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                             }
                         }
-                    });
+                    }
+                });
 
-            SharedPreferences sharedPreferences =
-                    currentContext.getSharedPreferences(FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME, 0);
-            return sharedPreferences.edit().putString(FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME,
-                    facebookAccessToken).commit();
-        }
-        return false;
+        SharedPreferences sharedPreferences =
+                currentContext.getSharedPreferences(FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME, 0);
+        return sharedPreferences.edit().putString(FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME,
+                facebookAccessToken).commit();
     }
 
     public boolean setGoogleAccessToken(final String googleAccessToken,
@@ -4526,26 +4527,28 @@ public class AppCMSPresenter {
                                         final String googleUsername,
                                         final String googleEmail,
                                         boolean refreshSubscriptionData) {
+        String url = currentActivity.getString(R.string.app_cms_google_login_api_url,
+                appCMSMain.getApiBaseUrl(), appCMSSite.getGist().getSiteInternalName());
 
-        if (launchType == LaunchType.SUBSCRIBE) {
-            this.googleAccessToken = googleAccessToken;
-            this.googleUserId = googleUserId;
-            this.googleUsername = googleUsername;
-            this.googleEmail = googleEmail;
-            initiateItemPurchase();
-        } else if (currentContext != null) {
-            String url = currentActivity.getString(R.string.app_cms_google_login_api_url,
-                    appCMSMain.getApiBaseUrl(), appCMSSite.getGist().getSiteInternalName());
+        appCMSGoogleLoginCall.call(url, googleAccessToken,
+                googleLoginResponse -> {
+                    try {
+                        if (googleLoginResponse != null) {
+                            setAuthToken(googleLoginResponse.getAuthorizationToken());
+                            setRefreshToken(googleLoginResponse.getRefreshToken());
+                            setLoggedInUser(googleUserId);
+                            setLoggedInUserName(googleUsername);
+                            setLoggedInUserEmail(googleEmail);
+                            setIsUserSubscribed(googleLoginResponse.isSubscribed());
 
-            appCMSGoogleLoginCall.call(url, googleAccessToken,
-                    googleLoginResponse -> {
-                        try {
-                            if (googleLoginResponse != null) {
-                                setAuthToken(googleLoginResponse.getAuthorizationToken());
-                                setRefreshToken(googleLoginResponse.getRefreshToken());
-                                setLoggedInUser(googleUserId);
-                                setLoggedInUserName(googleUsername);
-                                setLoggedInUserEmail(googleEmail);
+                            if (launchType == LaunchType.SUBSCRIBE) {
+                                this.googleAccessToken = googleAccessToken;
+                                this.googleUserId = googleUserId;
+                                this.googleUsername = googleUsername;
+                                this.googleEmail = googleEmail;
+                                initiateItemPurchase();
+                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                            } else {
 
                                 if (appCMSMain.getServiceType()
                                         .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
@@ -4624,22 +4627,18 @@ public class AppCMSPresenter {
                                                     deeplinkSearchQuery);
                                         }
                                     }
-                                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                 }
                             }
-                        } catch (Exception e) {
-                            Log.e(TAG, "Error getting Google Access Token login information: " + e.getMessage());
                         }
-                    });
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error getting Google Access Token login information: " + e.getMessage());
+                    }
+                });
 
-            SharedPreferences sharedPreferences =
-                    currentContext.getSharedPreferences(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME, 0);
-            return sharedPreferences.edit().putString(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME,
-                    googleAccessToken).commit();
-        } else {
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
-        }
-        return false;
+        SharedPreferences sharedPreferences =
+                currentContext.getSharedPreferences(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME, 0);
+        return sharedPreferences.edit().putString(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME,
+                googleAccessToken).commit();
     }
 
     public boolean getAutoplayEnabledUserPref(@NonNull Context context) {
