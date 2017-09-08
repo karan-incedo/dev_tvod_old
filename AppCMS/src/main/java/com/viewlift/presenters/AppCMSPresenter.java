@@ -259,6 +259,8 @@ public class AppCMSPresenter {
     public static final String ERROR_DIALOG_ACTION = "appcms_error_dialog_action";
     public static final String ACTION_LOGO_ANIMATION = "appcms_logo_animation";
     public static final int RC_GOOGLE_SIGN_IN = 1001;
+    public static final int ADD_GOOGLE_ACCOUNT_TO_DEVICE_REQUEST_CODE = 5555;
+    public static final int CC_AVENUE_REQUEST_CODE = 1;
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String CASTING_OVERLAY_PREF_NAME = "cast_intro_pref";
@@ -1742,7 +1744,7 @@ public class AppCMSPresenter {
             intent.putExtra("auth_token", getAuthToken());
             intent.putExtra("renewable", isRenewable);
             intent.putExtra("mobile_number", "");
-            currentActivity.startActivityForResult(intent, 1);
+            currentActivity.startActivityForResult(intent, CC_AVENUE_REQUEST_CODE);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -1808,11 +1810,11 @@ public class AppCMSPresenter {
                             }
                         } else {
                             if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_USER_CANCELED) {
-                                showDialog(DialogType.SUBSCRIBE, "Billing response was cnacelled by user", false, null);
+                                showDialog(DialogType.SUBSCRIBE, "Billing response was cancelled by user", false, null);
                             } else if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_SERVICE_UNAVAILABLE) {
                                 showDialog(DialogType.SUBSCRIBE, "Billing response is unavailable", false, null);
                             } else if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_BILLING_UNAVAILABLE) {
-                                showDialog(DialogType.SUBSCRIBE, "Billing response result is unavailable", false, null);
+                                addGoogleAccountToDevice();
                             } else if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_ITEM_UNAVAILABLE) {
                                 showDialog(DialogType.SUBSCRIBE, "Billing response result item is unavailable", false, null);
                             } else if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_DEVELOPER_ERROR) {
@@ -1835,6 +1837,13 @@ public class AppCMSPresenter {
                 Log.e(TAG, "InAppBillingService: " + inAppBillingService);
             }
         }
+    }
+
+    private void addGoogleAccountToDevice() {
+        Intent addAccountIntent = new Intent(android.provider.Settings.ACTION_ADD_ACCOUNT)
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        addAccountIntent.putExtra(android.provider.Settings.EXTRA_ACCOUNT_TYPES, new String[]{"com.google"});
+        currentActivity.startActivityForResult(addAccountIntent, ADD_GOOGLE_ACCOUNT_TO_DEVICE_REQUEST_CODE);
     }
 
     public void sendSubscriptionCancellation() {

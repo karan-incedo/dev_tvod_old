@@ -554,6 +554,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             result.getSignInAccount().getEmail(),
                             true);
                 }
+            } else if (requestCode == AppCMSPresenter.ADD_GOOGLE_ACCOUNT_TO_DEVICE_REQUEST_CODE) {
+                appCMSPresenter.initiateItemPurchase();
+            } else if (requestCode == AppCMSPresenter.CC_AVENUE_REQUEST_CODE) {
+                boolean subscriptionSuccess = data.getBooleanExtra(getString(R.string.app_cms_ccavenue_payment_success),
+                        false);
+                if (subscriptionSuccess) {
+                    appCMSPresenter.finalizeSignupAfterCCAvenueSubscription(data);
+                }
             } else {
                 if (FacebookSdk.isFacebookRequestCode(requestCode)) {
                     callbackManager.onActivityResult(requestCode, resultCode, data);
@@ -562,18 +570,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     Log.d(TAG, "Finalizing signup after subscription");
                 }
             }
-
-            //CCAvenue Callback Handling
-//            if (requestCode == 1) {
-//                //Handle Post CCAvenue Response
-//                if (resultCode == Activity.RESULT_OK) {
-//                    boolean subscriptionSuccess = data.getBooleanExtra(getString(R.string.app_cms_ccavenue_payment_success),false) ;
-//                    if (subscriptionSuccess) {
-//                        //appCMSPresenter.finalizeSignupAfterSubscription(data.getStringExtra("INAPP_PURCHASE_DATA"));
-//                        appCMSPresenter.finalizeSignupAfterCCAvenueSubscription(data);
-//                    }
-//                }
-//            }
 
         } else if (resultCode == RESULT_CANCELED) {
             if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
@@ -600,7 +596,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         switch (requestCode) {
             case AppCMSPresenter.REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS:
                 if (grantResults.length > 0
@@ -610,6 +608,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 break;
 
             default:
+                break;
         }
     }
 
