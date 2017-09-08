@@ -2,12 +2,9 @@ package com.viewlift.models.network.background.tasks;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
-
-import java.io.IOException;
 
 import rx.Observable;
 import rx.functions.Action1;
@@ -22,29 +19,6 @@ public class GetAppCMSMainUIAsyncTask extends AsyncTask<GetAppCMSMainUIAsyncTask
     private final AppCMSMainUICall call;
     private final Action1<AppCMSMain> readyAction;
 
-    public static class Params {
-        Context context;
-        String siteId;
-
-        public static class Builder {
-            Params params;
-            public Builder() {
-                params = new Params();
-            }
-            public Builder context(Context context) {
-                params.context = context;
-                return this;
-            }
-            public Builder siteId(String siteId) {
-                params.siteId = siteId;
-                return this;
-            }
-            public Params build() {
-                return params;
-            }
-        }
-    }
-
     public GetAppCMSMainUIAsyncTask(AppCMSMainUICall call,
                                     Action1<AppCMSMain> readyAction) {
         this.call = call;
@@ -54,11 +28,7 @@ public class GetAppCMSMainUIAsyncTask extends AsyncTask<GetAppCMSMainUIAsyncTask
     @Override
     protected AppCMSMain doInBackground(GetAppCMSMainUIAsyncTask.Params... params) {
         if (params.length > 0) {
-            try {
-                return call.call(params[0].context, params[0].siteId, 0);
-            } catch (IOException e) {
-                Log.e(TAG, "Could not retrieve data: " + e.getMessage());
-            }
+            return call.call(params[0].context, params[0].siteId, 0);
         }
         return null;
     }
@@ -66,5 +36,32 @@ public class GetAppCMSMainUIAsyncTask extends AsyncTask<GetAppCMSMainUIAsyncTask
     @Override
     protected void onPostExecute(AppCMSMain result) {
         Observable.just(result).subscribe(readyAction);
+    }
+
+    public static class Params {
+        Context context;
+        String siteId;
+
+        public static class Builder {
+            Params params;
+
+            public Builder() {
+                params = new Params();
+            }
+
+            public Builder context(Context context) {
+                params.context = context;
+                return this;
+            }
+
+            public Builder siteId(String siteId) {
+                params.siteId = siteId;
+                return this;
+            }
+
+            public Params build() {
+                return params;
+            }
+        }
     }
 }
