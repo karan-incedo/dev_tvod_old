@@ -8,11 +8,10 @@ build/*
 /AppCMS/release/*
 *.apk
 *.json
-/.idea/*
+/.idea/
 /AppCMS/mobile/release/AppCMS-mobile-release.apk
 /library/build/*
 /sample/build/*
 local.properties
 library/build/
 sample/build/
-.idea/modules.xml
