@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.viewlift.R;
@@ -18,6 +17,9 @@ import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.Map;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by viewlift on 5/30/17.
@@ -53,10 +55,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View view =
-                LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.nav_item,
-                        viewGroup,
-                        false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.nav_item, viewGroup,
+                false);
         return new ViewHolder(view);
     }
 
@@ -95,11 +95,11 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     viewHolder.navItemLabel.setText(navigationPrimary.getTitle().toUpperCase());
                     viewHolder.navItemLabel.setTextColor(textColor);
 
-                    if (!navigationPrimary.getItems().isEmpty()) {
-                        // TODO: 7/27/17 Implement Expandable Listview.
-                    }
+                    // TODO: 9/8/17 Implement Expandable ListView.
 
                     viewHolder.itemView.setOnClickListener(v -> {
+                        viewHolder.navItemSelector.setBackgroundColor(viewHolder.itemView.getContext()
+                                .getColor(R.color.colorAccent));
                         Log.d(TAG, "Navigating to page with Title: " + navigationPrimary.getTitle());
                         AppCMSUIKeyType titleKey = jsonValueKeyMap.get(navigationPrimary.getTitle());
                         if (titleKey == null) {
@@ -151,6 +151,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                         viewHolder.navItemLabel.setText(navigationUser.getTitle().toUpperCase());
                         viewHolder.navItemLabel.setTextColor(textColor);
                         viewHolder.itemView.setOnClickListener(v -> {
+                            viewHolder.navItemSelector.setBackgroundColor(viewHolder.itemView.getContext()
+                                    .getColor(R.color.colorAccent));
                             appCMSPresenter.cancelInternalEvents();
                             AppCMSUIKeyType titleKey = jsonValueKeyMap.get(navigationUser.getTitle());
                             if (titleKey == null) {
@@ -223,6 +225,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                         viewHolder.navItemLabel.setText(navigationFooter.getTitle().toUpperCase());
                         viewHolder.navItemLabel.setTextColor(textColor);
                         viewHolder.itemView.setOnClickListener(v -> {
+                            viewHolder.navItemSelector.setBackgroundColor(viewHolder.itemView.getContext()
+                                    .getColor(R.color.colorAccent));
                             appCMSPresenter.cancelInternalEvents();
                             itemSelected = true;
                             if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
@@ -251,7 +255,6 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 viewHolder.navItemLabel.setTextColor(textColor);
                 viewHolder.itemView.setOnClickListener(v -> {
                     if (appCMSPresenter.isDownloadUnfinished()) {
-
                         appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD);
                     } else {
                         appCMSPresenter.cancelInternalEvents();
@@ -331,14 +334,19 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        View itemView;
-        ImageView navItemIcon;
+        @BindView(R.id.nav_item_label)
         TextView navItemLabel;
+
+        @BindView(R.id.nav_item_selector)
+        View navItemSelector;
+
+        View itemView;
 
         public ViewHolder(View itemView) {
             super(itemView);
+
+            ButterKnife.bind(this, itemView);
             this.itemView = itemView;
-            this.navItemLabel = (TextView) itemView.findViewById(R.id.nav_item_label);
         }
     }
 }
