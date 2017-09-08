@@ -76,6 +76,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         this.appCMSPresenter = appCMSPresenter;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.defaultAction = getDefaultAction(context);
+
         switch (jsonValueKeyMap.get(viewType)) {
             case PAGE_HISTORY_MODULE_KEY:
                 this.isHistory = true;
@@ -109,11 +110,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private void sortData() {
         if (adapterData != null) {
             if (isWatchlist || isDownload) {
-                Collections.sort(adapterData, (o1, o2)
-                        -> Long.compare(o1.getAddedDate(), o2.getAddedDate()));
+                Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getAddedDate(),
+                        o2.getAddedDate()));
             } else if (isHistory) {
-                Collections.sort(adapterData, (o1, o2)
-                        -> Long.compare(o1.getUpdateDate(), o2.getUpdateDate()));
+                Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getUpdateDate(),
+                        o2.getUpdateDate()));
                 Collections.reverse(adapterData);
             }
         }
@@ -163,7 +164,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                         case STATUS_PENDING:
                         case STATUS_RUNNING:
                             if (contentDatum.getGist() != null) {
-                                holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(ContextCompat.getColor(holder.itemView.getContext(), R.color.transparentColor)); // Fix of SVFA-1662
+                                holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(ContextCompat.getColor(holder.itemView.getContext(), R.color.transparentColor));
                                 holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
 
                                 appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
@@ -172,7 +173,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         userVideoDownloadStatus -> {
                                             if (userVideoDownloadStatus != null) {
                                                 if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
-                                                    holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);// Fix of SVFA-1779
+                                                    holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
                                                     holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.ic_deleteicon));
                                                     holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
                                                     holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
@@ -180,15 +181,15 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                                     loadImage(holder.itemView.getContext(), userVideoDownloadStatus.getThumbUri(), holder.appCMSContinueWatchingVideoImage);
                                                     holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
 
-                                                    contentDatum.getGist().setLocalFileUrl(userVideoDownloadStatus.getVideoUri());   // Fix of SVFA-1707
+                                                    contentDatum.getGist().setLocalFileUrl(userVideoDownloadStatus.getVideoUri());
                                                     try {
                                                         if (userVideoDownloadStatus.getSubtitlesUri().trim().length() > 10 &&
                                                                 contentDatum.getContentDetails() != null &&
                                                                 contentDatum.getContentDetails().getClosedCaptions().get(0) != null) {
-                                                            contentDatum.getContentDetails().getClosedCaptions().get(0).setUrl(userVideoDownloadStatus.getSubtitlesUri());   // Fix of SVFA-1707
+                                                            contentDatum.getContentDetails().getClosedCaptions().get(0).setUrl(userVideoDownloadStatus.getSubtitlesUri());
                                                         }
                                                     } catch (Exception e) {
-                                                        Log.e(TAG,e.getMessage());
+                                                        Log.e(TAG, e.getMessage());
                                                     }
 
                                                 } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_RUNNING) {
@@ -216,17 +217,19 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                             appCMSPresenter.sendRefreshPageAction();
                             break;
+
                         case STATUS_INTERRUPTED:
                             holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
                                     android.R.drawable.stat_sys_warning));
                             holder.appCMSContinueWatchingSize.setText("Remove".toUpperCase());
                             holder.appCMSContinueWatchingSize.setOnClickListener(v -> delete(contentDatum, position));
                             break;
+
                         default:
                             break;
                     }
                     DownloadVideoRealm downloadVideoRealm = appCMSPresenter.getRealmController()
-                            .getDownloadByIdBelongstoUser(contentDatum.getGist().getId(), userId); // fix of SVFA-1707
+                            .getDownloadByIdBelongstoUser(contentDatum.getGist().getId(), userId);
                     if (downloadVideoRealm != null && contentDatum != null && contentDatum.getGist() != null) {
                         if (downloadVideoRealm.getWatchedTime() > contentDatum.getGist().getWatchedTime()) {
                             contentDatum.getGist().setWatchedTime(downloadVideoRealm.getWatchedTime());
@@ -326,7 +329,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
         } else {
             holder.appCMSNotItemLabel.setVisibility(View.VISIBLE);
-            holder.appCMSNotItemLabel.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+            holder.appCMSNotItemLabel.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                    .getBrand().getGeneral().getTextColor()));
             if (isHistory) {
                 holder.appCMSNotItemLabel.setText(holder.itemView.getContext().getString(R.string.empty_history_list_message));
             } else if (isDownload) {
@@ -386,47 +390,46 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     private void playDownloaded(ContentDatum data, Context context, int position) {
         List<String> relatedVideoIds = getListOfUpcomingMovies(position);
-            if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
-                appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
-                        null,
+        if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
+            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
+                    null,
+                    false,
+                    null);
+            return;
+        }
+        boolean networkAvailable = appCMSPresenter.isNetworkConnected();
+        String permalink = data.getGist().getPermalink();
+        String action = context.getString(R.string.app_cms_action_watchvideo_key);
+        String title = data.getGist() != null ? data.getGist().getTitle() : null;
+        String hlsUrl = data.getGist().getLocalFileUrl();
+        String[] extraData = new String[4];
+        extraData[0] = permalink;
+        extraData[1] = hlsUrl;
+        extraData[2] = data.getGist() != null ? data.getGist().getId() : null;
+        extraData[3] = "true"; // to know that this is an offline video
+        Log.d(TAG, "Launching " + permalink + ": " + action + ":File:" + data.getGist().getLocalFileUrl());
+
+        if (permalink == null ||
+                hlsUrl == null ||
+                extraData[2] == null ||
+                !appCMSPresenter.launchButtonSelectedAction(
+                        permalink,
+                        action,
+                        title,
+                        extraData,
+                        data,
                         false,
-                        null);
-                return;
-            }
-            boolean networkAvailable = appCMSPresenter.isNetworkConnected();
-            String permalink = data.getGist().getPermalink();
-            String action = context.getString(R.string.app_cms_action_watchvideo_key);
-            String title = data.getGist() != null ? data.getGist().getTitle() : null;
-            String hlsUrl = (data.getGist().getLocalFileUrl() != null) ? data.getGist().getLocalFileUrl() : null; // Fix of SVFA-1275
-            String[] extraData = new String[4];
-            extraData[0] = permalink;
-            extraData[1] = hlsUrl;
-            extraData[2] = data.getGist() != null ? data.getGist().getId() : null;
-            extraData[3] = "true"; // to know that this is an offline video
-            Log.d(TAG, "Launching " + permalink + ": " + action + ":File:" + data.getGist().getLocalFileUrl());
-
-            if (permalink == null ||
-                    hlsUrl == null ||
-                    extraData[2] == null ||
-                    !appCMSPresenter.launchButtonSelectedAction(
-                            permalink,
-                            action,
-                            title,
-                            extraData,
-                            data,
-                            false,
-                            -1,
-                            relatedVideoIds)) {
-                Log.e(TAG, "Could not launch action: " +
-                        " permalink: " +
-                        permalink +
-                        " action: " +
-                        action +
-                        " hlsUrl: " +
-                        hlsUrl);
-            }
+                        -1,
+                        relatedVideoIds)) {
+            Log.e(TAG, "Could not launch action: " +
+                    " permalink: " +
+                    permalink +
+                    " action: " +
+                    action +
+                    " hlsUrl: " +
+                    hlsUrl);
+        }
     }
-
 
     @Override
     public int getItemCount() {
@@ -726,10 +729,14 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         }
 
         if ((isDownload) && (contentDatum.getGist() != null)) {
-            appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(), userVideoDownloadStatus -> {
-                adapterData.remove(contentDatum);
-                notifyItemRangeChanged(position, getItemCount());// Fix for SVFA-1799
-            });
+            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_DOWNLOAD_ITEM,
+                    appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_download_item_message),
+                    true, () ->
+                            appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(),
+                                    userVideoDownloadStatus -> {
+                                        adapterData.remove(contentDatum);
+                                        notifyItemRangeChanged(position, getItemCount());
+                                    }));
         }
 
         if ((isWatchlist) && (contentDatum.getGist() != null)) {
@@ -772,6 +779,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }
             Typeface face;
+
             switch (fontWeight) {
                 case PAGE_TEXT_BOLD_KEY:
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_bold_ttf));

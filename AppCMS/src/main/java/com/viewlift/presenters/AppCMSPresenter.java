@@ -585,6 +585,23 @@ public class AppCMSPresenter {
         this.referenceQueue = referenceQueue;
     }
 
+    /*does not let user enter space in edittext*/
+    public static void noSpaceInEditTextFilter(EditText passwordEditText) {
+        /* To restrict Space Bar in Keyboard */
+        InputFilter filter = new InputFilter() {
+            public CharSequence filter(CharSequence source, int start, int end,
+                                       Spanned dest, int dstart, int dend) {
+                for (int i = start; i < end; i++) {
+                    if (Character.isWhitespace(source.charAt(i))) {
+                        return "";
+                    }
+                }
+                return null;
+            }
+        };
+        passwordEditText.setFilters(new InputFilter[]{filter});
+    }
+
     public Navigation getNavigation() {
         return navigation;
     }
@@ -1414,7 +1431,7 @@ public class AppCMSPresenter {
     public boolean isMainFragmentTransparent() {
         if (currentActivity != null) {
             FrameLayout mainFragmentView =
-                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_fragment);
+                    currentActivity.findViewById(R.id.app_cms_fragment);
             if (mainFragmentView != null) {
                 return (mainFragmentView.getAlpha() != 1.0f &&
                         mainFragmentView.getVisibility() == View.VISIBLE);
@@ -1426,7 +1443,7 @@ public class AppCMSPresenter {
     public boolean isMainFragmentViewVisible() {
         if (currentActivity != null) {
             FrameLayout mainFragmentView =
-                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_fragment);
+                    currentActivity.findViewById(R.id.app_cms_fragment);
             if (mainFragmentView != null) {
                 return (mainFragmentView.getVisibility() == View.VISIBLE);
             }
@@ -1437,13 +1454,13 @@ public class AppCMSPresenter {
     public void showMainFragmentView(boolean show) {
         if (currentActivity != null) {
             FrameLayout mainFragmentView =
-                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_fragment);
+                    currentActivity.findViewById(R.id.app_cms_fragment);
             if (mainFragmentView != null) {
                 if (show) {
                     mainFragmentView.setVisibility(View.VISIBLE);
                     mainFragmentView.setAlpha(1.0f);
                     FrameLayout addOnFragment =
-                            (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
+                            currentActivity.findViewById(R.id.app_cms_addon_fragment);
                     if (addOnFragment != null) {
                         addOnFragment.setVisibility(View.GONE);
                     }
@@ -1458,7 +1475,7 @@ public class AppCMSPresenter {
 
     private void setMainFragmentEnabled(boolean isEnabled) {
         FrameLayout mainFragmentView =
-                (FrameLayout) currentActivity.findViewById(R.id.app_cms_fragment);
+                currentActivity.findViewById(R.id.app_cms_fragment);
         if (mainFragmentView != null) {
             setAllChildrenEnabled(isEnabled, mainFragmentView);
         }
@@ -1491,7 +1508,7 @@ public class AppCMSPresenter {
     public void setMainFragmentTransparency(float transparency) {
         if (currentActivity != null) {
             FrameLayout mainFragmentView =
-                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_fragment);
+                    currentActivity.findViewById(R.id.app_cms_fragment);
             if (mainFragmentView != null) {
                 mainFragmentView.setAlpha(transparency);
             }
@@ -1502,7 +1519,7 @@ public class AppCMSPresenter {
         showMainFragmentView(showMainFragment);
         setMainFragmentTransparency(mainFragmentTransparency);
         FrameLayout addOnFragment =
-                (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
+                currentActivity.findViewById(R.id.app_cms_addon_fragment);
         if (addOnFragment != null) {
             addOnFragment.setVisibility(View.VISIBLE);
             addOnFragment.bringToFront();
@@ -1513,7 +1530,7 @@ public class AppCMSPresenter {
     public boolean isAdditionalFragmentViewAvailable() {
         if (currentActivity != null) {
             FrameLayout additionalFragmentView =
-                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
+                    currentActivity.findViewById(R.id.app_cms_addon_fragment);
             if (additionalFragmentView != null) {
                 return true;
             }
@@ -1524,7 +1541,7 @@ public class AppCMSPresenter {
     private void clearAdditionalFragment() {
         if (isAdditionalFragmentViewAvailable()) {
             FrameLayout additionalFragmentView =
-                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
+                    currentActivity.findViewById(R.id.app_cms_addon_fragment);
             additionalFragmentView.removeAllViews();
         }
     }
@@ -1995,9 +2012,9 @@ public class AppCMSPresenter {
     private void displayWatchlistToast(String toastMessage) {
         LayoutInflater inflater = currentActivity.getLayoutInflater();
         View layout = inflater.inflate(R.layout.custom_toast_layout,
-                (ViewGroup) currentActivity.findViewById(R.id.custom_toast_layout_root));
+                currentActivity.findViewById(R.id.custom_toast_layout_root));
 
-        TextView watchlistToastMessage = (TextView) layout.findViewById(R.id.custom_toast_message);
+        TextView watchlistToastMessage = layout.findViewById(R.id.custom_toast_message);
         watchlistToastMessage.setText(toastMessage);
 
         Toast toast = new Toast(currentActivity.getApplicationContext());
@@ -2012,7 +2029,6 @@ public class AppCMSPresenter {
 
         appCMSUserDownloadVideoStatusCall.call(filmId, this, resultAction1,
                 getLoggedInUser());
-
     }
 
     public void removeDownloadedFile(String filmId) {
@@ -2151,7 +2167,7 @@ public class AppCMSPresenter {
         StatFs stat = new StatFs(storagePath.getPath());
         long bytesAvailable;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            bytesAvailable = (long) stat.getBlockSizeLong() * (long) stat.getAvailableBlocksLong();
+            bytesAvailable = stat.getBlockSizeLong() * stat.getAvailableBlocksLong();
         } else {
             bytesAvailable = (long) stat.getBlockSize() * (long) stat.getAvailableBlocks();
         }
@@ -2162,7 +2178,7 @@ public class AppCMSPresenter {
         StatFs stat = new StatFs(f.getPath());
         long bytesAvailable;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            bytesAvailable = (long) stat.getBlockSizeLong() * (long) stat.getAvailableBlocksLong();
+            bytesAvailable = stat.getBlockSizeLong() * stat.getAvailableBlocksLong();
         } else {
             bytesAvailable = (long) stat.getBlockSize() * (long) stat.getAvailableBlocks();
         }
@@ -2218,7 +2234,6 @@ public class AppCMSPresenter {
             }
         }
     }
-
 
     public void createLocalEntry(long enqueueId,
                                  long thumbEnqueueId,
@@ -2572,7 +2587,6 @@ public class AppCMSPresenter {
         });
     }
 
-
     public void checkDownloadCurrentStatus(String filmId, final Action1<UserVideoDownloadStatus> responseAction) {
         appCMSUserDownloadVideoStatusCall
                 .call(filmId, this, responseAction, getLoggedInUser());
@@ -2643,8 +2657,8 @@ public class AppCMSPresenter {
                             currentActivity.runOnUiThread(() -> {
                                 try {
                                     DownloadVideoRealm downloadVideoRealm = realmController.getRealm()
-                                                            .copyFromRealm(
-                                                            realmController
+                                            .copyFromRealm(
+                                                    realmController
                                                             .getDownloadByIdBelongstoUser(filmIdLocal, getLoggedInUser()));
                                     downloadVideoRealm.setDownloadStatus(statusResponse.getDownloadStatus());
                                     realmController.updateDownload(downloadVideoRealm);
@@ -2758,12 +2772,17 @@ public class AppCMSPresenter {
     }
 
     public void clearDownload(final Action1<UserVideoDownloadStatus> resultAction1) {
-        for (DownloadVideoRealm downloadVideoRealm :
-                realmController.getDownloadesByUserId(getLoggedInUser())) {
-            removeDownloadedFile(downloadVideoRealm.getVideoId());
-        }
-        appCMSUserDownloadVideoStatusCall.call("", this, resultAction1, getLoggedInUser());
-        cancelDownloadIconTimerTask();  
+        showDialog(DialogType.DELETE_ALL_DOWNLOAD_ITEMS,
+                currentActivity.getString(R.string.app_cms_delete_all_download_items_message),
+                true, () -> {
+                    for (DownloadVideoRealm downloadVideoRealm :
+                            realmController.getDownloadesByUserId(getLoggedInUser())) {
+                        removeDownloadedFile(downloadVideoRealm.getVideoId());
+                    }
+                    appCMSUserDownloadVideoStatusCall.call("", this,
+                            resultAction1, getLoggedInUser());
+                    cancelDownloadIconTimerTask();
+                });
     }
 
     public void clearWatchlist(final Action1<AppCMSAddToWatchlistResult> resultAction1) {
@@ -3896,7 +3915,6 @@ public class AppCMSPresenter {
         return result;
     }
 
-
     private void sendFireBaseContactUsEvent() {
         Bundle bundle = new Bundle();
         bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_CONTACT_SCREEN);
@@ -4194,7 +4212,6 @@ public class AppCMSPresenter {
         }
         return false;
     }
-
 
     public boolean isDownloadQualityScreenShowBefore() {
         if (currentContext != null) {
@@ -5478,6 +5495,12 @@ public class AppCMSPresenter {
                     message = optionalMessage;
                     break;
 
+                case DELETE_ONE_DOWNLOAD_ITEM:
+                case DELETE_ALL_DOWNLOAD_ITEMS:
+                    title = currentActivity.getString(R.string.app_cms_delete_download_alert_title);
+                    message = optionalMessage;
+                    break;
+
                 case DOWNLOAD_INCOMPLETE:
                     title = currentActivity.getString(R.string.app_cms_download_incomplete_error_title);
                     message = currentActivity.getString(R.string.app_cms_download_incomplete_error_message);
@@ -5647,7 +5670,6 @@ public class AppCMSPresenter {
         beaconMessageRunnable.setUrl(url);
         beaconMessageThread.run();
     }
-
 
     public ArrayList<BeaconRequest> getBeaconRequestList() {
         String uid = InstanceID.getInstance(currentActivity).getId();
@@ -5850,7 +5872,6 @@ public class AppCMSPresenter {
         return environment;
 
     }
-
 
     private String getBeaconUrl() {
         return currentActivity.getString(R.string.app_cms_beacon_url_base, appCMSMain.getBeacon().getApiBaseUrl());
@@ -6698,9 +6719,9 @@ public class AppCMSPresenter {
         }
     }
 
-    public void askForPermissionToDownloadToExternalStorage(boolean checkToShowPermissionRationale,
-                                                            final ContentDatum contentDatum,
-                                                            final Action1<UserVideoDownloadStatus> resultAction1) {
+    private void askForPermissionToDownloadToExternalStorage(boolean checkToShowPermissionRationale,
+                                                             final ContentDatum contentDatum,
+                                                             final Action1<UserVideoDownloadStatus> resultAction1) {
         downloadContentDatumAfterPermissionGranted = contentDatum;
         downloadResultActionAfterPermissionGranted = resultAction1;
         if (currentActivity != null && !hasWriteExternalStoragePermission()) {
@@ -8048,10 +8069,7 @@ public class AppCMSPresenter {
     }
 
     public boolean isRemovableSDCardAvailable() {
-        if (currentActivity != null && getStorageDirectories(currentActivity).length >= 1) {
-            return true;
-        }
-        return false;
+        return currentActivity != null && getStorageDirectories(currentActivity).length >= 1;
     }
 
     public String getSDCardPath(Context context, String dirName) {
@@ -8378,6 +8396,8 @@ public class AppCMSPresenter {
         SUBSCRIBE,
         DELETE_ONE_HISTORY_ITEM,
         DELETE_ALL_HISTORY_ITEMS,
+        DELETE_ONE_DOWNLOAD_ITEM,
+        DELETE_ALL_DOWNLOAD_ITEMS,
         LOGIN_REQUIRED,
         SUBSCRIPTION_REQUIRED,
         LOGIN_AND_SUBSCRIPTION_REQUIRED,
@@ -8469,12 +8489,9 @@ public class AppCMSPresenter {
                         appCMSPresenter.startDownload(downloadQueueItem.contentDatum,
                                 downloadQueueItem.resultAction1);
                     } else {
-
                         appCMSPresenter.currentActivity.runOnUiThread(() -> {
                             appCMSPresenter.showDialog(DialogType.DOWNLOAD_FAILED, appCMSPresenter.currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null);
                         });
-
-
                     }
                 }
                 try {
@@ -8677,23 +8694,6 @@ public class AppCMSPresenter {
         boolean closeLauncher;
         int currentlyPlayingIndex;
         List<String> relateVideoIds;
-    }
-
-    /*does not let user enter space in edittext*/
-    public static void noSpaceInEditTextFilter(EditText passwordEditText) {
-        /* To restrict Space Bar in Keyboard */
-        InputFilter filter = new InputFilter() {
-            public CharSequence filter(CharSequence source, int start, int end,
-                                       Spanned dest, int dstart, int dend) {
-                for (int i = start; i < end; i++) {
-                    if (Character.isWhitespace(source.charAt(i))) {
-                        return "";
-                    }
-                }
-                return null;
-            }
-        };
-        passwordEditText.setFilters(new InputFilter[]{filter});
     }
 
 }
