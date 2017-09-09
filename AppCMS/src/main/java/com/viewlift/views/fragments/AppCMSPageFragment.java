@@ -152,7 +152,8 @@ public class AppCMSPageFragment extends Fragment {
         if (appCMSVideoPageBinder == null)
             return;
 
-        if (appCMSVideoPageBinder.getScreenName().equalsIgnoreCase(authentication_screen_name))
+        if (appCMSVideoPageBinder.getScreenName() == null ||
+                appCMSVideoPageBinder.getScreenName().equalsIgnoreCase(authentication_screen_name))
             return;
 
         Bundle bundle = new Bundle();
