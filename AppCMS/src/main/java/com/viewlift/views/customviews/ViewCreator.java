@@ -1743,7 +1743,14 @@ public class ViewCreator {
 
                             @Override
                             public void receiveEvent(InternalEvent<?> event) {
-                                removeAllButton.setVisibility(View.VISIBLE);
+                                if (event.getEventData() instanceof Integer) {
+                                    int buttonStatus = (Integer) event.getEventData();
+                                    if (buttonStatus == View.VISIBLE) {
+                                        removeAllButton.setVisibility(View.VISIBLE);
+                                    } else if (buttonStatus == View.GONE) {
+                                        removeAllButton.setVisibility(View.GONE);
+                                    }
+                                }
                             }
 
                             @Override

@@ -63,6 +63,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private List<OnInternalEvent> receivers;
     private int tintColor;
     private String userId;
+    private InternalEvent<Integer> hideRemoveAllButtonEvent;
+    private InternalEvent<Integer> showRemoveAllButtonEvent;
 
     public AppCMSTrayItemAdapter(Context context,
                                  List<ContentDatum> adapterData,
@@ -100,9 +102,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
         this.userId = appCMSPresenter.getLoggedInUser();
 
-        if (adapterData != null && !adapterData.isEmpty()) {
-            sendEvent(null);
-        }
+        this.hideRemoveAllButtonEvent = new InternalEvent<>(View.GONE);
+        this.showRemoveAllButtonEvent = new InternalEvent<>(View.VISIBLE);
 
         sortData();
     }
@@ -439,12 +440,17 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     @Override
     public void addReceiver(OnInternalEvent e) {
         receivers.add(e);
+        if (adapterData == null || adapterData.isEmpty()) {
+            sendEvent(hideRemoveAllButtonEvent);
+        } else {
+            sendEvent(showRemoveAllButtonEvent);
+        }
     }
 
     @Override
     public void sendEvent(InternalEvent<?> event) {
         for (OnInternalEvent internalEvent : receivers) {
-            internalEvent.receiveEvent(null);
+            internalEvent.receiveEvent(event);
         }
     }
 
