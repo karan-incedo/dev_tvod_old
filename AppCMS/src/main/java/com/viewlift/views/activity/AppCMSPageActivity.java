@@ -49,6 +49,7 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
@@ -447,6 +448,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             handlingClose = false;
         } else if (isPageLoading()) {
             pageLoading(false);
+            appCMSPresenter.setNavItemToCurrentAction(this);
         }
     }
 
@@ -586,11 +588,49 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             } else if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-                Log.e(TAG, "Google Signin Status Message: " + result.getStatus().getStatusMessage());
-                appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SIGNIN,
-                        result.getStatus().getStatusMessage(),
-                        false,
-                        null);
+                String message = null;
+                int statusCode = result.getStatus().getStatusCode();
+                switch (statusCode) {
+                    case CommonStatusCodes.API_NOT_CONNECTED:
+                        message = "The API is not connected.";
+                        break;
+                    case CommonStatusCodes.CANCELED:
+                        break;
+                    case CommonStatusCodes.DEVELOPER_ERROR:
+                        message = "The app is configured incorrectly.";
+                        break;
+                    case CommonStatusCodes.ERROR:
+                        message = "An error has occurred.";
+                        break;
+                    case CommonStatusCodes.INTERNAL_ERROR:
+                        message = "An internal server error has occurred.";
+                        break;
+                    case CommonStatusCodes.INTERRUPTED:
+                        message = "The login attempt was interrupted.";
+                        break;
+                    case CommonStatusCodes.INVALID_ACCOUNT:
+                        message = "An invalid account is being used.";
+                        break;
+                    case CommonStatusCodes.NETWORK_ERROR:
+                        message = "A network error has occurred.";
+                        break;
+                    case CommonStatusCodes.RESOLUTION_REQUIRED:
+                        message = "Additional resolution is required.";
+                        break;
+                    case CommonStatusCodes.SIGN_IN_REQUIRED:
+                        message = "Sign In is required.";
+                        break;
+                    case CommonStatusCodes.	TIMEOUT:
+                        message = "A timeout has occurred.";
+                        break;
+                }
+                if (!TextUtils.isEmpty(message)) {
+                    Log.e(TAG, "Google Signin Status Message: " + message);
+                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SIGNIN,
+                            message,
+                            false,
+                            null);
+                }
             }
         }
     }
