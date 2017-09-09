@@ -633,6 +633,10 @@ public class AppCMSPresenter {
         }
     }
 
+    public void addToReferenceQueue(Object object) {
+        new SoftReference<>(object, referenceQueue);
+    }
+
     public boolean launchVideoPlayer(final ContentDatum contentDatum,
                                      final int currentlyPlayingIndex,
                                      List<String> relateVideoIds,

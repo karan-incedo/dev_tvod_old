@@ -39,7 +39,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
     private final Runnable carouselUpdater;
     private final boolean loop;
     private List<OnInternalEvent> internalEventReceivers;
-    private volatile int updatedIndex;
+    private volatile Integer updatedIndex;
     private volatile boolean cancelled;
     private volatile boolean started;
     private boolean scrolled;
@@ -67,9 +67,13 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 "");
+
         this.listView = listView;
         this.loop = loop;
+
         this.updatedIndex = getDefaultIndex();
+        appCMSPresenter.addToReferenceQueue(this.updatedIndex);
+
         this.internalEventReceivers = new ArrayList<>();
         this.cancelled = false;
         this.started = false;
