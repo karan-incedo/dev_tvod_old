@@ -383,7 +383,8 @@ public class ViewCreator {
                                             ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                                         }
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY) {
-                                        if (moduleAPI.getContentData() != null) {
+                                        if (moduleAPI.getContentData() != null &&
+                                                !moduleAPI.getContentData().isEmpty()) {
                                             setViewWithSubtitle(context,
                                                     moduleAPI.getContentData().get(0),
                                                     view);
@@ -451,7 +452,8 @@ public class ViewCreator {
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
                                     if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
-                                        if (moduleAPI.getContentData() != null) {
+                                        if (moduleAPI.getContentData() != null &&
+                                                !moduleAPI.getContentData().isEmpty()) {
                                             int viewWidth = view.getWidth();
                                             int viewHeight = view.getHeight();
 
