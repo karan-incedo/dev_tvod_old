@@ -399,6 +399,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                                 int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                                 long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs,
                                 long bytesLoaded) {
+        failedMediaSourceLoads.clear();
     }
 
     @Override
