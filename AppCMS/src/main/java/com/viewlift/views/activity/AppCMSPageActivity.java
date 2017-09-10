@@ -67,6 +67,7 @@ import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.NavBarItemView;
 import com.viewlift.views.customviews.ViewCreator;
+import com.viewlift.views.fragments.AppCMSCCAvenueFragment;
 import com.viewlift.views.fragments.AppCMSChangePasswordFragment;
 import com.viewlift.views.fragments.AppCMSEditProfileFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
@@ -847,6 +848,22 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             Fragment appCMSPageFragment = null;
 
             switch (appCMSBinder.getExtraScreenType()) {
+                case CCAVENUE:
+                    try {
+                        appCMSPageFragment =
+                                AppCMSCCAvenueFragment.newInstance(this,
+                                        appCMSBinder,
+                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
+                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
+                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
+                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+                        //send menu screen event for firebase
+                        sendFireBaseMenuScreenEvent();
+                    } catch (IllegalArgumentException e) {
+                        Log.e(TAG, "Error in parsing color. " + e.getLocalizedMessage());
+                    }
+                    break;
+
                 case NAVIGATION:
                     try {
                         appCMSPageFragment =

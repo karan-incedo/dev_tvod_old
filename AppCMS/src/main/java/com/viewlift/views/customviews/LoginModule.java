@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.Module;
@@ -98,10 +99,14 @@ public class LoginModule extends ModuleView {
             topLayoutContainer.setPadding(0, 0, 0, 0);
             topLayoutContainer.setOrientation(LinearLayout.VERTICAL);
 
-            FrameLayout loginModuleSwitcherContainer = new FrameLayout(getContext());
+            LinearLayout loginModuleSwitcherContainer = new LinearLayout(getContext());
+            loginModuleSwitcherContainer.setOrientation(LinearLayout.HORIZONTAL);
             MarginLayoutParams loginModuleContainerLayoutParams =
                     new MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            loginModuleContainerLayoutParams.setMargins(0, 0, 0, 0);
+            loginModuleContainerLayoutParams.setMargins((int) convertDpToPixel(getContext().getResources().getInteger(R.integer.app_cms_login_selector_margin), getContext()),
+                    0,
+                    (int) convertDpToPixel(getContext().getResources().getInteger(R.integer.app_cms_login_selector_margin), getContext()),
+                    0);
             loginModuleSwitcherContainer.setLayoutParams(loginModuleContainerLayoutParams);
             loginModuleSwitcherContainer.setBackgroundColor(bgColor);
             loginModuleSwitcherContainer.setPadding(0, 0, 0, 0);
@@ -112,12 +117,9 @@ public class LoginModule extends ModuleView {
                 if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_LOGIN_COMPONENT_KEY &&
                         launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP) {
                     buttonSelectors[0] = new Button(getContext());
-                    FrameLayout.LayoutParams loginSelectorLayoutParams =
-                            new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    loginSelectorLayoutParams.setMargins((int) convertDpToPixel(getContext().getResources().getInteger(R.integer.app_cms_login_selector_margin), getContext()),
-                            0,
-                            0,
-                            0);
+                    LinearLayout.LayoutParams loginSelectorLayoutParams =
+                            new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    loginSelectorLayoutParams.weight = 1;
                     buttonSelectors[0].setText(R.string.app_cms_log_in_pager_title);
                     buttonSelectors[0].setTextColor(textColor);
                     buttonSelectors[0].setBackgroundColor(bgColor);
@@ -158,12 +160,9 @@ public class LoginModule extends ModuleView {
                                 launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP)) {
                     if (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP) {
                         buttonSelectors[1] = new Button(getContext());
-                        FrameLayout.LayoutParams signupSelectorLayoutParams =
-                                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        signupSelectorLayoutParams.setMargins(0,
-                                0,
-                                (int) convertDpToPixel(getContext().getResources().getInteger(R.integer.app_cms_login_selector_margin), getContext()),
-                                0);
+                        LinearLayout.LayoutParams signupSelectorLayoutParams =
+                                new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        signupSelectorLayoutParams.weight = 1;
                         buttonSelectors[1].setText(R.string.app_cms_sign_up_pager_title);
                         buttonSelectors[1].setTextColor(textColor);
                         buttonSelectors[1].setBackgroundColor(bgColor);
@@ -199,6 +198,18 @@ public class LoginModule extends ModuleView {
                         underlineViews[1].setBounds(bounds);
                         buttonSelectors[1].setCompoundDrawables(null, null, null, underlineViews[1]);
                         loginModuleSwitcherContainer.addView(buttonSelectors[1]);
+                    } else {
+                        TextView signUpTitle = new TextView(getContext());
+                        LinearLayout.LayoutParams signUpSelectorLayoutParams =
+                                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                        signUpSelectorLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                        signUpTitle.setLayoutParams(signUpSelectorLayoutParams);
+                        signUpTitle.setText(R.string.app_cms_sign_up_pager_title);
+                        signUpTitle.setTextColor(textColor);
+                        signUpTitle.setBackgroundColor(bgColor);
+                        signUpTitle.setGravity(Gravity.CENTER_HORIZONTAL);
+                        loginModuleSwitcherContainer.addView(signUpTitle);
                     }
 
                     ModuleView moduleView = new ModuleView<>(getContext(), component, false);
