@@ -1345,6 +1345,41 @@ public class AppCMSPresenter {
         isVideoPlayerStarted = false;
     }
 
+    public boolean launchCCAvenueSeamless() {
+        boolean result = false;
+
+        if (currentActivity != null) {
+            cancelInternalEvents();
+
+            Bundle args = getPageActivityBundle(currentActivity,
+                    null,
+                    null,
+                    currentActivity.getString(R.string.app_cms_ccavenue_page_tag),
+                    currentActivity.getString(R.string.app_cms_ccavenue_page_tag),
+                    null,
+                    currentActivity.getString(R.string.app_cms_ccavenue_page_tag),
+                    false,
+                    true,
+                    false,
+                    false,
+                    false,
+                    null,
+                    ExtraScreenType.CCAVENUE);
+            if (args != null) {
+                Intent updatePageIntent =
+                        new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                updatePageIntent.putExtra(
+                        currentActivity.getString(R.string.app_cms_bundle_key),
+                        args);
+                currentActivity.sendBroadcast(updatePageIntent);
+            }
+
+            result = true;
+        }
+
+        return result;
+    }
+
     public boolean launchNavigationPage() {
         boolean result = false;
 
@@ -8445,6 +8480,7 @@ public class AppCMSPresenter {
         RESET_PASSWORD,
         CHANGE_PASSWORD,
         EDIT_PROFILE,
+        CCAVENUE,
         NONE
     }
 

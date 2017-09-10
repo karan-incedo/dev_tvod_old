@@ -199,6 +199,7 @@
     <string name="app_cms_plan_meta_dataview_key">planMetaDataView</string>
 
     <string name="app_cms_navigation_page_tag">navigation</string>
+    <string anme="app_cms_ccavenue_page_tag">ccavenue</string>
     <string name="app_cms_search_page_tag">search</string>
     <string name="app_cms_video_page_tag">video</string>
     <string name="app_cms_main_page_tag">main</string>
