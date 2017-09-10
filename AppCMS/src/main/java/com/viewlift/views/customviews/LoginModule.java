@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.Module;
@@ -197,6 +198,18 @@ public class LoginModule extends ModuleView {
                         underlineViews[1].setBounds(bounds);
                         buttonSelectors[1].setCompoundDrawables(null, null, null, underlineViews[1]);
                         loginModuleSwitcherContainer.addView(buttonSelectors[1]);
+                    } else {
+                        TextView signUpTitle = new TextView(getContext());
+                        LinearLayout.LayoutParams signUpSelectorLayoutParams =
+                                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                        signUpSelectorLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                        signUpTitle.setLayoutParams(signUpSelectorLayoutParams);
+                        signUpTitle.setText(R.string.app_cms_sign_up_pager_title);
+                        signUpTitle.setTextColor(textColor);
+                        signUpTitle.setBackgroundColor(bgColor);
+                        signUpTitle.setGravity(Gravity.CENTER_HORIZONTAL);
+                        loginModuleSwitcherContainer.addView(signUpTitle);
                     }
 
                     ModuleView moduleView = new ModuleView<>(getContext(), component, false);
