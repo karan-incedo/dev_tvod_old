@@ -5078,21 +5078,21 @@ public class AppCMSPresenter {
     }
 
     public NavigationPrimary findHomePageNavItem() {
-        if (!navigation.getNavigationPrimary().isEmpty()) {
+            if (navigation != null && !navigation.getNavigationPrimary().isEmpty()) {
             return navigation.getNavigationPrimary().get(0);
         }
         return null;
     }
 
     public NavigationPrimary findMoviesPageNavItem() {
-        if (navigation.getNavigationPrimary().size() >= 2) {
+        if (navigation != null && navigation.getNavigationPrimary().size() >= 2) {
             return navigation.getNavigationPrimary().get(1);
         }
         return null;
     }
 
     public NavigationPrimary findLivePageNavItem() {
-        if (navigation.getNavigationPrimary().size() >= 3) {
+        if (navigation != null && navigation.getNavigationPrimary().size() >= 3) {
             return navigation.getNavigationPrimary().get(2);
         }
         return null;
@@ -6930,7 +6930,7 @@ public class AppCMSPresenter {
                                                                        ContentDatum contentDatum,
                                                                        Action1<UserVideoDownloadStatus> resultAction
     ) {
-        return new AppCMSDownloadQualityBinder(appCMSMain,
+        AppCMSDownloadQualityBinder appCMSDownloadQualityBinder = new AppCMSDownloadQualityBinder(appCMSMain,
                 appCMSPageUI,
                 appCMSPageAPI,
                 pageId,
@@ -6944,6 +6944,8 @@ public class AppCMSPresenter {
                 jsonValueKeyMap,
                 contentDatum,
                 resultAction);
+        new SoftReference<>(appCMSDownloadQualityBinder, referenceQueue);
+        return appCMSDownloadQualityBinder;
     }
 
     public void searchRetryDialog(String searchTerm) {
@@ -6994,7 +6996,7 @@ public class AppCMSPresenter {
                                          Uri searchQuery,
                                          ExtraScreenType extraScreenType,
                                          AppCMSSearchCall appCMSSearchCall) {
-        return new AppCMSBinder(appCMSMain,
+        AppCMSBinder appCMSBinder =  new AppCMSBinder(appCMSMain,
                 appCMSPageUI,
                 appCMSPageAPI,
                 navigation,
@@ -7013,6 +7015,8 @@ public class AppCMSPresenter {
                 jsonValueKeyMap,
                 searchQuery,
                 appCMSSearchCall);
+        new SoftReference<>(appCMSBinder, referenceQueue);
+        return appCMSBinder;
     }
 
     private AppCMSVideoPageBinder getAppCMSVideoPageBinder(Activity activity,
@@ -7036,7 +7040,7 @@ public class AppCMSPresenter {
                                                            int currentlyPlayingIndex,
                                                            boolean isOffline) {
 
-        return new AppCMSVideoPageBinder(
+        AppCMSVideoPageBinder appCMSVideoPageBinder = new AppCMSVideoPageBinder(
                 appCMSPageUI,
                 appCMSPageAPI,
                 pageID,
@@ -7059,6 +7063,8 @@ public class AppCMSPresenter {
                 relatedVideoIds,
                 currentlyPlayingIndex,
                 isOffline);
+        new SoftReference<>(appCMSVideoPageBinder, referenceQueue);
+        return appCMSVideoPageBinder;
     }
 
     private void launchPageActivity(Activity activity,
@@ -7237,6 +7243,7 @@ public class AppCMSPresenter {
                         } else {
                             initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
                             navigation = appCMSAndroidUI.getNavigation();
+                            new SoftReference<>(navigation, referenceQueue);
                             queueMetaPages(appCMSAndroidUI.getMetaPages());
                             Log.d(TAG, "Processing meta pages queue");
                             processMetaPagesQueue(loadFromFile,
