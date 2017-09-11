@@ -21,6 +21,7 @@ import android.widget.FrameLayout;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
+import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.CustomProgressBar;
@@ -28,6 +29,7 @@ import com.viewlift.tv.views.component.AppCmsTvSearchComponent;
 import com.viewlift.tv.views.component.DaggerAppCmsTvSearchComponent;
 import com.viewlift.tv.views.fragment.AppCmsBrowseFragment;
 import com.viewlift.tv.views.fragment.AppCmsNavigationFragment;
+import com.viewlift.tv.views.fragment.AppCmsResetPasswordFragment;
 import com.viewlift.tv.views.fragment.AppCmsSearchFragment;
 import com.viewlift.tv.views.fragment.AppCmsTVPageFragment;
 import com.viewlift.tv.views.fragment.AppCmsTvErrorFragment;
@@ -117,7 +119,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
                     try {
                      if (isActive) {
-                            if(appCMSPresenter.isPageUser(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())){
+                            if(appCMSPresenter.isPageUser(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())
+                                    || appCMSPresenter.isPageFooter(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())){
                                 openMyProfile();
                                 handleProfileFragmentAction((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)));
                             }else {
@@ -155,6 +158,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     openMyProfile();
                 }else if(intent.getAction().equals(AppCMSPresenter.ERROR_DIALOG_ACTION)){
                     openErrorDialog(intent);
+                }else if(intent.getAction().equals(AppCMSPresenter.ACTION_RESET_PASSWORD)){
+                    openResetPasswordScreen(intent);
                 }
 
             }
@@ -167,6 +172,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.SEARCH_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.MY_PROFILE_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.ERROR_DIALOG_ACTION));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.ACTION_RESET_PASSWORD));
 
     }
 
@@ -222,6 +228,24 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 bundle);
         newFragment.setErrorListener(this);
         newFragment.show(ft, DIALOG_FRAGMENT_TAG);
+    }
+
+
+    private void openResetPasswordScreen(Intent intent){
+
+        if(null != intent){
+            Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+            if(null != bundle){
+                AppCMSBinder appCMSBinder = (AppCMSBinder)bundle.get(getString(R.string.app_cms_binder_key));
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                AppCmsResetPasswordFragment newFragment = AppCmsResetPasswordFragment.newInstance(
+                        appCMSBinder);
+                newFragment.show(ft, DIALOG_FRAGMENT_TAG);
+                pageLoading(false);
+            }
+        }
+
+
     }
 
     @Override
@@ -315,6 +339,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 Log.d(TAG, "Popping stack to get to page item");
                 try {
                     appCMSBinderStack.pop();
+                    //getFragmentManager().popBackStack();
                 } catch (IllegalStateException e) {
                     Log.e(TAG, "Error popping back stack: " + e.getMessage());
                 }
@@ -327,11 +352,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         showInfoIcon(appCMSBinder.getPageId());
         Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
-        boolean isPoped = getFragmentManager().popBackStackImmediate(appCMSBinder.getPageId() , 0 );
-        if(!isPoped)
+        boolean isPoped = getFragmentManager().popBackStackImmediate(appCMSBinder.getPageId() , 1 );
+        //if(!isPoped)
             setPageFragment(updatedAppCMSBinder);
-        else
-        selectNavItem(updatedAppCMSBinder.getPageId());
+        //else
+        //selectNavItem(updatedAppCMSBinder.getPageId());
     }
 
 
@@ -394,6 +419,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             case KeyEvent.ACTION_DOWN:
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_MENU:
+                    //case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                         handleNavigationVisibility();
                         break;
                     case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:

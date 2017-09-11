@@ -272,40 +272,28 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 navItemView = (TextView) itemView.findViewById(R.id.nav_item_label);
                 navItemlayout = (RelativeLayout) itemView.findViewById(R.id.nav_item_layout);
                 navItemView.setTextColor(Color.parseColor(Utils.getTextColor(mContext,appCmsPresenter)));
-               // navItemView.setTypeface(semiBoldTypeFace);
 
-                navItemlayout.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View view, boolean focus) {
-                        if(focus)
-                         mRecyclerView.setAlpha(1f);
-                    }
+                navItemlayout.setOnFocusChangeListener((view, focus) -> {
+                    if(focus)
+                     mRecyclerView.setAlpha(1f);
                 });
 
-                navItemlayout.setOnKeyListener(new View.OnKeyListener() {
-                    @Override
-                    public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                        int keyCode = keyEvent.getKeyCode();
-                        int action = keyEvent.getAction();
-                        if (action == KeyEvent.ACTION_DOWN) {
-                            switch (keyCode) {
-                                case KeyEvent.KEYCODE_DPAD_LEFT:
-                                    return tryMoveSelection(mRecyclerView.getLayoutManager() , -1);
-                                case KeyEvent.KEYCODE_DPAD_RIGHT:
-                                    return tryMoveSelection(mRecyclerView.getLayoutManager() , 1);
-                                case KeyEvent.KEYCODE_DPAD_DOWN:
-                                    setFocusOnSelectedPage();
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            mRecyclerView.setAlpha(0.52f);
-                                        }
-                                    } , 50);
-                                    break;
-                            }
+                navItemlayout.setOnKeyListener((view, i, keyEvent) -> {
+                    int keyCode = keyEvent.getKeyCode();
+                    int action = keyEvent.getAction();
+                    if (action == KeyEvent.ACTION_DOWN) {
+                        switch (keyCode) {
+                            case KeyEvent.KEYCODE_DPAD_LEFT:
+                                return tryMoveSelection(mRecyclerView.getLayoutManager() , -1);
+                            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                                return tryMoveSelection(mRecyclerView.getLayoutManager() , 1);
+                            case KeyEvent.KEYCODE_DPAD_DOWN:
+                                setFocusOnSelectedPage();
+                                new Handler().postDelayed(() -> mRecyclerView.setAlpha(0.52f), 50);
+                                break;
                         }
-                        return false;
                     }
+                    return false;
                 });
             }
         }

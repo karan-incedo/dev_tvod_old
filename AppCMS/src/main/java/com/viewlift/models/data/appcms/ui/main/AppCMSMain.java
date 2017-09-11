@@ -83,6 +83,18 @@ public class AppCMSMain {
 
     boolean loadFromFile;
 
+    public CustomerService getCustomerService() {
+        return customerService;
+    }
+
+    public void setCustomerService(CustomerService customerService) {
+        this.customerService = customerService;
+    }
+
+    @SerializedName("customerService")
+    @Expose
+    CustomerService customerService;
+
     public String getFireTv() {
         return fireTv;
     }

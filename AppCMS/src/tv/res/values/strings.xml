@@ -17,6 +17,14 @@
         <item>AC VideoPlayerWithInfo 01</item>
     </string-array>
 
+    <string name="app_cms_ancillary_pages_module">AC RichText 01</string>
+    <string name="app_cms_reset_password_module">AC ResetPassword 01</string>
+    <string name="app_cms_contact_us_module">AC ContactUs 01</string>
+    <string name="app_cms_contact_number_label">contactNumber</string>
+    <string name="app_cms_email_id_label">emailId</string>
+    <string name="app_cms_contact_us_call_icon_key">call_Icon</string>
+    <string name="app_cms_contact_us_email_icon_key">email_Icon</string>
+
     <string name="font_open_sans">OpenSans</string>
     <string name="font_open_sans_semibold">OpenSans-Semibold</string>
     <string name="retry_key">RETRY</string>
@@ -30,12 +38,14 @@
 
 
     <plurals name="mins_abbreviation">
-        <item quantity="one" >MIN</item>
-        <item quantity="other" >MINS</item>
+        <item quantity="one">MIN</item>
+        <item quantity="other">MINS</item>
     </plurals>
 
     <string name="item_position">nav_item_position</string>
     <string name="no_data_available">No Data Available.</string>
     <string name="title_activity_app_cms_sub_nav_item">AppCmsSubNavItemActivity</string>
+
+    <string name="blank_email_password_error_msg">The EmailId/Password you have entered is blank.</string>
 
 </resources>
