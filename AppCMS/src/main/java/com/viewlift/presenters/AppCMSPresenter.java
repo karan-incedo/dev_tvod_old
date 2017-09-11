@@ -1831,11 +1831,15 @@ public class AppCMSPresenter {
 
     public void initiateItemPurchase() {
         isCCAvenueEnabled = false;
-        if (!TextUtils.isEmpty(countryCode) && countryCode.equalsIgnoreCase("IN") && isCCAvenueEnabled) {
-            if (currencyCode.equalsIgnoreCase("INR")) {
-                Log.d(TAG, "Initiating CCAvenue purchase");
-                initiateCCAvenuePurchase();
-            }
+
+        if (!TextUtils.isEmpty(countryCode) &&
+                appCMSMain != null &&
+                appCMSMain.getCcav() != null &&
+                !TextUtils.isEmpty(appCMSMain.getCcav().getCountry()) &&
+                appCMSMain.getCcav().getCountry().equalsIgnoreCase(countryCode)) {
+            Log.d(TAG, "Initiating CCAvenue purchase");
+            initiateCCAvenuePurchase();
+            isCCAvenueEnabled = true;
         } else {
             if (currentActivity != null &&
                     inAppBillingService != null) {
