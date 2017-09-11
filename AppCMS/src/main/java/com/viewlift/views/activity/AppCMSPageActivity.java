@@ -30,6 +30,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -621,7 +622,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     case CommonStatusCodes.SIGN_IN_REQUIRED:
                         message = "Sign In is required.";
                         break;
-                    case CommonStatusCodes.	TIMEOUT:
+                    case CommonStatusCodes.TIMEOUT:
                         message = "A timeout has occurred.";
                         break;
                 }
@@ -708,7 +709,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSFragment.setEnabled(false);
             appCMSTabNavContainer.setEnabled(false);
             loadingProgressBar.setVisibility(View.VISIBLE);
-
+            //while progress bar loading disable user interaction
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 appCMSTabNavContainer.getChildAt(i).setEnabled(false);
             }
@@ -717,6 +720,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSFragment.setEnabled(true);
             appCMSTabNavContainer.setEnabled(true);
             loadingProgressBar.setVisibility(View.GONE);
+            //clear user interaction blocker flag
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 appCMSTabNavContainer.getChildAt(i).setEnabled(true);
             }
@@ -1300,6 +1305,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 searchNavBarItemView.setHighlightColor(highlightColor);
                 searchNavBarItemView.setLabel(getString(R.string.app_cms_search_label));
                 searchNavBarItemView.setOnClickListener(v -> {
+                    if (!appCMSPresenter.isNetworkConnected()) {
+                        if (!appCMSPresenter.isUserLoggedIn()) {
+                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
+                            return;
+                        }
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                                appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
+                                true,
+                                () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
+                                        null, null, false));
+                        return;
+                    }
                     selectNavItem(searchNavBarItemView);
                     appCMSPresenter.launchSearchPage();
                 });

@@ -1160,10 +1160,10 @@ public class ViewCreator {
                                     final AppCMSPresenter appCMSPresenter,
                                     boolean gridElement,
                                     final String viewType) {
-        componentViewResult.componentView = null;
+         componentViewResult.componentView = null;
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
-        componentViewResult.shouldHideModule = false;
+          componentViewResult.shouldHideModule = false;
         componentViewResult.addToPageView = false;
         componentViewResult.shouldHideComponent = false;
         componentViewResult.onInternalEvent = null;
@@ -1172,7 +1172,7 @@ public class ViewCreator {
             return;
         }
 
-        AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
+           AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
 
         if (componentType == null) {
             componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
@@ -1745,7 +1745,7 @@ public class ViewCreator {
 
                             @Override
                             public void receiveEvent(InternalEvent<?> event) {
-                                if (event.getEventData() instanceof Integer) {
+                                if (event!=null && event.getEventData()!=null && event.getEventData() instanceof Integer) {
                                     int buttonStatus = (Integer) event.getEventData();
                                     if (buttonStatus == View.VISIBLE) {
                                         removeAllButton.setVisibility(View.VISIBLE);
@@ -2740,8 +2740,19 @@ public class ViewCreator {
             this.filmId = filmId;
 
             addClickListener = v -> {
+                if (!appCMSPresenter.isNetworkConnected()) {
+                    if (!appCMSPresenter.isUserLoggedIn()) {
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
+                        return;
+                    }
+                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                            appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
+                            true,
+                            () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
+                                    null, null, false));
+                    return;
+                }
                 if (appCMSPresenter.isUserLoggedIn()) {
-
                     appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
                             addToWatchlistResult -> {
                                 UpdateImageIconAction.this.imageButton.setImageResource(
@@ -2800,6 +2811,18 @@ public class ViewCreator {
             this.userId = userId;
 
             addClickListener = v -> {
+                if (!appCMSPresenter.isNetworkConnected()) {
+                    if (!appCMSPresenter.isUserLoggedIn()) {
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
+                        return;
+                    }
+                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                            appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
+                            true,
+                            () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
+                                    null, null, false));
+                    return;
+                }
                 if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
                         !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
                     if (appCMSPresenter.isDownloadQualityScreenShowBefore()) { // Fix for SVFA-1724
