@@ -109,6 +109,30 @@ public class Utils {
         return defaultWidth;
     }
 
+    public static float getItemViewHeight(Context context, Layout layout, float defaultHeight) {
+        if (layout != null) {
+            FireTV fireTV = layout.getTv();
+            float height = getItemViewHeight(fireTV);
+            if (height != -1.0f) {
+                return getViewYAxisAsPerScreen(context,(int)height);
+            }
+        }
+        return defaultHeight;
+    }
+
+
+    public static float getItemViewWidth(Context context, Layout layout, float defaultWidth) {
+        if (layout != null) {
+            FireTV fireTV = layout.getTv();
+            float width = getItemViewWidth(fireTV);
+            if (width != -1.0f) {
+                return getViewXAxisAsPerScreen(context,(int)width);
+               // return width;
+            }
+        }
+        return defaultWidth;
+    }
+
 
     public static int getViewXAxisAsPerScreen(Context context , int dimension){
         float dim  = context.getResources().getDisplayMetrics().widthPixels
@@ -188,6 +212,26 @@ public class Utils {
         if (fireTV != null) {
             if (fireTV.getWidth() != null) {
                 return Float.valueOf(fireTV.getWidth());
+            }
+        }
+        return -1.0f;
+    }
+
+
+    public static float getItemViewHeight(FireTV fireTV) {
+        if (fireTV != null) {
+            if (fireTV.getHeight() != null) {
+                return Float.valueOf(fireTV.getItemHeight());
+            }
+        }
+        return -1.0f;
+    }
+
+
+    public static float getItemViewWidth(FireTV fireTV) {
+        if (fireTV != null) {
+            if (fireTV.getWidth() != null) {
+                return Float.valueOf(fireTV.getItemHeight());
             }
         }
         return -1.0f;

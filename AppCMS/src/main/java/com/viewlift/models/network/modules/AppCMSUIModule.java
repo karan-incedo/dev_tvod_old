@@ -441,6 +441,12 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_logout_button_key),
                 AppCMSUIKeyType.PAGE_SETTING_LOGOUT_BUTTON_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_title_label),
+                AppCMSUIKeyType.PAGE_WATCHLIST_TITLE_LABEL);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_description_label),
+                AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_LABEL);
+
         jsonValueKeyMap.put("", AppCMSUIKeyType.PAGE_EMPTY_KEY);
         jsonValueKeyMap.put(null, AppCMSUIKeyType.PAGE_NULL_KEY);
     }
