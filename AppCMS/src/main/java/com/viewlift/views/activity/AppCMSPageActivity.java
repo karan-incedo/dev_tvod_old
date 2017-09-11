@@ -1544,7 +1544,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             handleLaunchPageAction(appCMSBinder,
                     false,
                     leavingExtraPage,
-                    true);
+                    false);
             isActive = true;
         } else {
             isActive = false;
