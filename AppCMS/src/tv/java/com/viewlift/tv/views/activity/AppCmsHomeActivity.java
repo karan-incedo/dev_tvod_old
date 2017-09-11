@@ -119,7 +119,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
                     try {
                      if (isActive) {
-                            if(appCMSPresenter.isPageUser(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())){
+                            if(appCMSPresenter.isPageUser(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())
+                                    || appCMSPresenter.isPageFooter(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())){
                                 openMyProfile();
                                 handleProfileFragmentAction((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)));
                             }else {
@@ -338,6 +339,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 Log.d(TAG, "Popping stack to get to page item");
                 try {
                     appCMSBinderStack.pop();
+                    //getFragmentManager().popBackStack();
                 } catch (IllegalStateException e) {
                     Log.e(TAG, "Error popping back stack: " + e.getMessage());
                 }
@@ -350,11 +352,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         showInfoIcon(appCMSBinder.getPageId());
         Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
-        boolean isPoped = getFragmentManager().popBackStackImmediate(appCMSBinder.getPageId() , 0 );
-        if(!isPoped)
+        boolean isPoped = getFragmentManager().popBackStackImmediate(appCMSBinder.getPageId() , 1 );
+        //if(!isPoped)
             setPageFragment(updatedAppCMSBinder);
-        else
-        selectNavItem(updatedAppCMSBinder.getPageId());
+        //else
+        //selectNavItem(updatedAppCMSBinder.getPageId());
     }
 
 

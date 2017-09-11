@@ -29,6 +29,7 @@ public class AppCmsResetPasswordFragment extends DialogFragment {
 
 
     public AppCmsResetPasswordFragment() {
+        setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Translucent_NoTitleBar);
      }
 
     public static AppCmsResetPasswordFragment newInstance(AppCMSBinder appCMSBinder) {
@@ -91,6 +92,14 @@ public class AppCmsResetPasswordFragment extends DialogFragment {
             continueButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+                    if( emailId.getEditableText().toString().length() == 0)
+                           {
+                        appCMSPresenter.openTVErrorDialog(getString(R.string.blank_email_password_error_msg) ,
+                                getString(R.string.app_cms_forgot_password_title));
+                        return;
+                    }
+
                     ((AppCmsHomeActivity)getActivity()).pageLoading(true);
                     appCMSPresenter.resetPassword(emailId.getEditableText().toString());
                 }
@@ -99,7 +108,7 @@ public class AppCmsResetPasswordFragment extends DialogFragment {
         }
 
 
-
+        tvPageView.setBackgroundResource(R.drawable.home_screen_background);
 
         return tvPageView;
     }

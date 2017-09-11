@@ -6,7 +6,9 @@
 
     <!--QA Server-->
     <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
-    <string name="app_cms_app_name">3f5e193b-2e51-4853-839e-618e62896deb</string>
+    <string name="app_cms_app_name">3f5e193b-2e51-4853-839e-618e62896deb</string> <!--Snagfilms-->
+    <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>--><!--Hoichoi QA-->
+
 
 
     <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
@@ -368,4 +370,5 @@
     <!--reset password-->
     <string name="app_cms_reset_password_cancel_button_key">cancelButton</string>
     <string name="app_cms_reset_password_continue_button_key">resetPasswordButton</string>
+    <string name="app_cms_forgotPasswordTitle_key">forgotPasswordTitle</string>
 </resources>

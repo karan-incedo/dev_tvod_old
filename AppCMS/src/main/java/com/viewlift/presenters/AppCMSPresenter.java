@@ -109,6 +109,7 @@ import com.viewlift.models.data.appcms.subscriptions.UserSubscriptionPlan;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
+import com.viewlift.models.data.appcms.ui.android.NavigationFooter;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
@@ -3442,7 +3443,13 @@ public class AppCMSPresenter {
         }
     }
 
-    private void openTVErrorDialog(String message , String headerTitle) {
+    /**
+     *
+     * this dialog is use for showing a message with OK button in case of TV.
+     * @param message
+     * @param headerTitle
+     */
+    public void openTVErrorDialog(String message , String headerTitle) {
         try {
             Bundle bundle = new Bundle();
             bundle.putBoolean(currentActivity.getString(R.string.retry_key), false);
@@ -4930,6 +4937,15 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public boolean isPageFooter(String pageId) {
+        for (NavigationFooter navigationFooter : navigation.getNavigationFooter()) {
+            if (pageId != null && !TextUtils.isEmpty(pageId) && pageId.contains(navigationFooter.getPageId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean isPageSplashPage(String pageId) {
         if (splashPage != null &&
                 !TextUtils.isEmpty(pageId) &&
@@ -6286,25 +6302,13 @@ public class AppCMSPresenter {
                         } else if (!TextUtils.isEmpty(signInResponse.getError())) {
                             if(platformType == PlatformType.TV){
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
-                                //Toast.makeText(currentActivity , signInResponse.getError() , Toast.LENGTH_SHORT).show();
-                                try {
-                                    Bundle bundle = new Bundle();
-                                    bundle.putBoolean(currentActivity.getString(R.string.retry_key), false);
-                                    bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key) ,false);
-                                    bundle.putString(currentActivity.getString(R.string.tv_dialog_msg_key) , signInResponse.getError());
-                                    bundle.putString(currentActivity.getString(R.string.tv_dialog_header_key) ,
-                                                signup ? currentActivity.getString(R.string.app_cms_signup).toUpperCase() :
-                                                        currentActivity.getString(R.string.app_cms_login).toUpperCase()
-                                    );
-
-                                    Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
-                                    args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
-                                    currentActivity.sendBroadcast(args);
+                                 try {
+                                     openTVErrorDialog(signInResponse.getError() ,
+                                             signup ? currentActivity.getString(R.string.app_cms_signup).toUpperCase() :
+                                                     currentActivity.getString(R.string.app_cms_login).toUpperCase() );
                                 } catch (Exception e) {
                                     Log.e(TAG, "DialogType launching TV DialogType Activity");
                                 }
-
-
                             }else{
                                 showDialog(DialogType.SIGNIN, signInResponse.getError(), false, null);
                             }
@@ -6320,14 +6324,11 @@ public class AppCMSPresenter {
                             } else {
                                 setIsUserSubscribed(currentActivity, signInResponse.isSubscribed());
                             }
-
                             checkForExistingSubscription(false);
-
                             if (TextUtils.isEmpty(getUserDownloadQualityPref(currentActivity))) {
                                 setUserDownloadQualityPref(currentActivity,
                                         currentActivity.getString(R.string.app_cms_default_download_quality));
                             }
-
                             if (signup) {
                                 AppsFlyerUtils.registrationEvent(currentActivity, signInResponse.getUserId(),
                                         currentActivity.getString(R.string.app_cms_appsflyer_dev_key));
@@ -7321,12 +7322,10 @@ public class AppCMSPresenter {
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
             loadingPage = true;
             Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
-            // Log.d(TAG, "Search query (optional): " + searchQuery);
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
             AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
 
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-
             if(forcedDownload){
                 appCMSPageAPI = null;
             }
@@ -7457,7 +7456,6 @@ public class AppCMSPresenter {
                         setNavItemToCurrentAction(currentActivity);
                     }
                 }
-
                 loadingPage = false;
             }
             result = true;
@@ -7473,6 +7471,7 @@ public class AppCMSPresenter {
         }
         return result;
     }
+
 
     private void launchTVPageActivity(Activity activity,
                                       AppCMSPageUI appCMSPageUI,
