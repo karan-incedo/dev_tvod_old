@@ -1745,7 +1745,7 @@ public class ViewCreator {
 
                             @Override
                             public void receiveEvent(InternalEvent<?> event) {
-                                if (event!=null && event.getEventData()!=null && event.getEventData() instanceof Integer) {
+                                if (event != null && event.getEventData()!=null && event.getEventData() instanceof Integer) {
                                     int buttonStatus = (Integer) event.getEventData();
                                     if (buttonStatus == View.VISIBLE) {
                                         removeAllButton.setVisibility(View.VISIBLE);
