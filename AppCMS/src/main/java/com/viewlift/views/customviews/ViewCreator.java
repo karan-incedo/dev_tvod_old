@@ -1160,10 +1160,10 @@ public class ViewCreator {
                                     final AppCMSPresenter appCMSPresenter,
                                     boolean gridElement,
                                     final String viewType) {
-        componentViewResult.componentView = null;
+         componentViewResult.componentView = null;
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
-        componentViewResult.shouldHideModule = false;
+          componentViewResult.shouldHideModule = false;
         componentViewResult.addToPageView = false;
         componentViewResult.shouldHideComponent = false;
         componentViewResult.onInternalEvent = null;
@@ -1172,7 +1172,7 @@ public class ViewCreator {
             return;
         }
 
-        AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
+           AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
 
         if (componentType == null) {
             componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
