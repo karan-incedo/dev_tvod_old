@@ -278,9 +278,9 @@ public class AppCMSSearchActivity extends AppCompatActivity {
 
         @Override
         protected List<AppCMSSearchResult> doInBackground(String... params) {
-            if (params.length > 0) {
+            if (params.length > 1) {
                 try {
-                    return appCMSSearchCall.call(params[0]);
+                    return appCMSSearchCall.call(params[1], params[0]);
                 } catch (IOException e) {
                     Log.e(TAG, "I/O DialogType retrieving search data from URL: " + params[0]);
                 }

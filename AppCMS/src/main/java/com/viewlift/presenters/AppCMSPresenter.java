@@ -7173,6 +7173,7 @@ public class AppCMSPresenter {
                                 appCMSSearchUrlComponent = DaggerAppCMSSearchUrlComponent.builder()
                                         .appCMSSearchUrlModule(new AppCMSSearchUrlModule(appCMSMain.getApiBaseUrl(),
                                                 appCMSSite.getGist().getSiteInternalName(),
+                                                apikey,
                                                 appCMSSearchCall))
                                         .build();
                                 appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
