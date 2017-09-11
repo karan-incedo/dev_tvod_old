@@ -82,7 +82,9 @@ public class RESTUnitTest {
     @Test
     public void test_appCMSAndroidCall() throws Exception {
         AppCMSAndroidUICall appCMSAndroidUICall = appCMSUIComponent.appCMSAndroidCall();
-        AppCMSAndroidUI appCMSAndroidUI = appCMSAndroidUICall.call(APP_CMS_ANDROID_URL, false);
+        AppCMSAndroidUI appCMSAndroidUI = appCMSAndroidUICall.call(APP_CMS_ANDROID_URL,
+                false,
+                0);
         assertNotNull(appCMSAndroidUI);
         assertNotNull(appCMSAndroidUI.getMetaPages());
         assertTrue(appCMSAndroidUI.getMetaPages().size() > 0);
