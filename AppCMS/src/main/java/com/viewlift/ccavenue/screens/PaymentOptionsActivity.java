@@ -5,7 +5,13 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,11 +58,20 @@ public class PaymentOptionsActivity extends AppCompatActivity {
     String accessCode = "" ;
     String cancelRedirectURL = "" ;
     String merchantID = "" ;
+    String rsa_key = "" ;
     TextView id_tv_text_payment ;
+    RelativeLayout id_rl_parent_layout ;
+    RecyclerView id_rv_payment_options ;
+    RecyclerView.LayoutManager mLayoutManager ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment_options);
+        id_rl_parent_layout = (RelativeLayout) findViewById(R.id.id_rl_parent_layout) ;
+        id_rv_payment_options = (RecyclerView) findViewById(R.id.id_rv_payment_options) ;
+        mLayoutManager = new LinearLayoutManager(this) ;
+        id_rv_payment_options.setLayoutManager(mLayoutManager);
+        id_rl_parent_layout.setVisibility(View.GONE);
         initialScreen = getIntent();
         id_tv_text_payment = (TextView) findViewById(R.id.id_tv_text_payment) ;
         id_tv_text_payment.setText("First Payment Rs. " + initialScreen.getStringExtra(AvenuesParams.AMOUNT).toString().trim() +
@@ -82,7 +97,7 @@ public class PaymentOptionsActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... arg0) {
-            getRSAKey() ;
+            rsa_key = getRSAKey() ;
             // Creating service handler class instance
             ServiceHandler sh = new ServiceHandler();
 
@@ -107,7 +122,7 @@ public class PaymentOptionsActivity extends AppCompatActivity {
             }
 
             //if (getIntent().getBooleanExtra("renewable",false)) {
-                vParams.add(new BasicNameValuePair("payment_option","OPTCRDC"));
+               // vParams.add(new BasicNameValuePair("payment_option","OPTCRDC"));
                 //params.append(ServiceUtility.addToPostParams("payment_option","OPTCRDC")) ;
             //}
 
@@ -170,345 +185,23 @@ public class PaymentOptionsActivity extends AppCompatActivity {
             if (pDialog.isShowing())
                 pDialog.dismiss();
 
-//            try{
-//                // bind adapter to spinner
-//                final Spinner payOpt = (Spinner) findViewById(R.id.payopt);
-//                PayOptAdapter payOptAdapter = new PayOptAdapter(BillingShippingActivity.this, android.R.layout.simple_spinner_item, payOptionList);
-//                payOpt.setAdapter(payOptAdapter);
-//
-//                //set a listener for selected items in the spinner
-//                payOpt.setOnItemSelectedListener(new OnItemSelectedListener(){
-//                    @Override
-//                    public void onItemSelected(AdapterView parent, View view, int position, long id) {
-//                        ((LinearLayout) findViewById(R.id.vCardCVVCont)).setVisibility(View.GONE);
-//
-//                        selectedPaymentOption = payOptionList.get(position).getPayOptId();
-//                        String vCustPayments = null;
-//                        try{
-//                            vCustPayments = jsonRespObj.getString("CustPayments");
-//                        }catch (Exception e) {}
-//
-//                        if(counter!=0 || vCustPayments==null){
-//                            LinearLayout ll = (LinearLayout) findViewById(R.id.cardDetails);
-//                            if(selectedPaymentOption.equals("OPTDBCRD") ||
-//                                    selectedPaymentOption.equals("OPTCRDC")){
-//                                ll.setVisibility(View.VISIBLE);
-//                            }else{
-//                                ll.setVisibility(View.GONE);
-//                            }
-//                        }
-//
-//
-//                        if(selectedPaymentOption.equals("OPTEMI")){
-//                            ((LinearLayout) findViewById(R.id.cardDetails)).setVisibility(View.VISIBLE);
-//                            ((CheckBox) findViewById(R.id.saveCard)).setVisibility(View.GONE);
-//                            if(((LinearLayout) findViewById(R.id.vaultCont))!=null)
-//                                ((LinearLayout) findViewById(R.id.vaultCont)).setVisibility(View.GONE);
-//
-//                            ((Spinner) findViewById(R.id.cardtype)).setVisibility(View.GONE);
-//                            ((TextView) findViewById(R.id.cardtypetv)).setVisibility(View.GONE);
-//
-//                            ((LinearLayout) findViewById(R.id.emiDetails)).removeAllViews();
-//
-//                            ((LinearLayout) findViewById(R.id.emiOptions)).setVisibility(View.VISIBLE);
-//                            try{
-//                                JSONArray vEmiBankArr = new JSONArray(jsonRespObj.getString("EmiBanks"));
-//                                for(int i=0;i<vEmiBankArr.length();i++){
-//                                    JSONObject vEmiBank = vEmiBankArr.getJSONObject(i);
-//
-//                                    EMIOptionDTO vEmiOptionDTO = new EMIOptionDTO();
-//                                    vEmiOptionDTO.setGtwId(vEmiBank.getString("gtwId"));
-//                                    vEmiOptionDTO.setGtwName(vEmiBank.getString("gtwName"));
-//                                    vEmiOptionDTO.setSubventionPaidBy(vEmiBank.getString("subventionPaidBy"));
-//                                    vEmiOptionDTO.setTenureMonths(vEmiBank.getString("tenureMonths"));
-//                                    vEmiOptionDTO.setProcessingFeeFlat(vEmiBank.getString("processingFeeFlat"));
-//                                    vEmiOptionDTO.setProcessingFeePercent(vEmiBank.getString("processingFeePercent"));
-//                                    vEmiOptionDTO.setCcAvenueFeeFlat(vEmiBank.getString("ccAvenueFeeFlat"));
-//                                    vEmiOptionDTO.setCcAvenueFeePercent(vEmiBank.getString("ccAvenueFeePercent"));
-//                                    vEmiOptionDTO.setTenureData(vEmiBank.getString("tenureData"));
-//                                    vEmiOptionDTO.setPlanId(vEmiBank.getString("planId"));
-//                                    vEmiOptionDTO.setAccountCurrName(vEmiBank.getString("accountCurrName"));
-//                                    vEmiOptionDTO.setEmiPlanId(vEmiBank.getString("emiPlanId"));
-//                                    vEmiOptionDTO.setMidProcesses(vEmiBank.getString("midProcesses"));
-//                                    vEmiOptionDTO.setBins(vEmiBank.getString("BINs"));
-//
-//                                    JSONArray vEmiPlanArr = new JSONArray(jsonRespObj.getString("EmiPlans"));
-//                                    for(int j=0;j<vEmiPlanArr.length();j++){
-//                                        JSONObject vEmiPlan = vEmiPlanArr.getJSONObject(j);
-//
-//                                        if(vEmiBank.getString("planId").equals(vEmiPlan.getString("planId"))){
-//                                            EMIPlansDTO vEmiPlansDTO = new EMIPlansDTO();
-//                                            vEmiPlansDTO.setGtwId(vEmiPlan.getString("gtwId"));
-//                                            vEmiPlansDTO.setGtwName(vEmiPlan.getString("gtwName"));
-//                                            vEmiPlansDTO.setSubventionPaidBy(vEmiBank.getString("subventionPaidBy"));
-//                                            vEmiPlansDTO.setTenureMonths(vEmiPlan.getString("tenureMonths"));
-//                                            vEmiPlansDTO.setProcessingFeeFlat(vEmiPlan.getString("processingFeeFlat"));
-//                                            vEmiPlansDTO.setProcessingFeePercent(vEmiPlan.getString("processingFeePercent"));
-//                                            vEmiPlansDTO.setCcAvenueFeeFlat(vEmiPlan.getString("ccAvenueFeeFlat"));
-//                                            vEmiPlansDTO.setCcAvenueFeePercent(vEmiPlan.getString("ccAvenueFeePercent"));
-//                                            vEmiPlansDTO.setTenureData(vEmiPlan.getString("tenureData"));
-//                                            vEmiPlansDTO.setPlanId(vEmiPlan.getString("planId"));
-//                                            vEmiPlansDTO.setAccountCurrName(vEmiPlan.getString("accountCurrName"));
-//                                            vEmiPlansDTO.setEmiPlanId(vEmiPlan.getString("emiPlanId"));
-//                                            vEmiPlansDTO.setTenureId(vEmiPlan.getString("tenureId"));
-//                                            vEmiPlansDTO.setMidProcesses(vEmiPlan.getString("midProcesses"));
-//                                            vEmiPlansDTO.setEmiAmount(vEmiPlan.getString("emiAmount"));
-//                                            vEmiPlansDTO.setTotal(vEmiPlan.getString("total"));
-//                                            vEmiPlansDTO.setEmiProcessingFee(vEmiPlan.getString("emiProcessingFee"));
-//                                            vEmiPlansDTO.setTenureAmtGreaterThan(vEmiPlan.getString("tenureAmtGreaterThan"));
-//                                            vEmiPlansDTO.setCurrency(vEmiPlan.getString("currency"));
-//
-//                                            vEmiOptionDTO.getEmiPlansDTO().add(vEmiPlansDTO);
-//                                        }
-//                                    }
-//                                    emiOptionList.add(vEmiOptionDTO);
-//                                }
-//                            }catch (Exception e) {
-//                                e.printStackTrace();
-//                            }
-//
-//                            Spinner emiOption = (Spinner) findViewById(R.id.emiBanks);
-//                            EMIAdapter emiAdapter = new EMIAdapter(BillingShippingActivity.this, android.R.layout.simple_spinner_item, emiOptionList);
-//                            emiOption.setAdapter(emiAdapter);
-//
-//                            emiOption.setOnItemSelectedListener(new OnItemSelectedListener(){
-//                                @Override
-//                                public void onItemSelected(AdapterView parent, View view, int position, long id) {
-//                                    EMIOptionDTO vEmiOptionDTO = (EMIOptionDTO)emiOptionList.get(position);
-//
-//                                    emiPlanId = vEmiOptionDTO.getPlanId();
-//                                    allowedBins = vEmiOptionDTO.getBins();
-//
-//                                    String[] midProcessCards = vEmiOptionDTO.getMidProcesses().split("\\|");
-//                                    final ArrayList<String> cardNameList = new ArrayList<String>();
-//                                    for(int i=0;i<midProcessCards.length;i++)
-//                                        cardNameList.add(midProcessCards[i]);
-//                                    Spinner emiCardName = (Spinner) findViewById(R.id.emiCardName);
-//                                    CardNameAdapter cardNameAdapter = new CardNameAdapter(BillingShippingActivity.this, android.R.layout.simple_spinner_item, cardNameList);
-//                                    emiCardName.setAdapter(cardNameAdapter);
-//
-//                                    emiCardName.setOnItemSelectedListener(new OnItemSelectedListener(){
-//                                        @Override
-//                                        public void onItemSelected(AdapterView parent, View view, int position, long id) {
-//                                            cardName = cardNameList.get(position);
-//                                        }
-//
-//                                        @Override
-//                                        public void onNothingSelected(AdapterView<?> parent) {}
-//                                    });
-//
-//                                    final LinearLayout vEmiDetailsCont = (LinearLayout) findViewById(R.id.emiDetails);
-//                                    vEmiDetailsCont.removeAllViews();
-//
-//                                    RadioGroup rg = new RadioGroup(BillingShippingActivity.this);
-//                                    rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener(){
-//                                        public void onCheckedChanged(RadioGroup group, int checkedId) {
-//                                            try{
-//                                                RadioButton rb = (RadioButton) findViewById(checkedId);
-//
-//                                                EMIPlansDTO vEmiPlanDTO = (EMIPlansDTO)rb.getTag();
-//
-//                                                emiTenureId = vEmiPlanDTO.getTenureId();
-//                                                amount = vEmiPlanDTO.getEmiAmount();
-//                                                currency = vEmiPlanDTO.getCurrency();
-//
-//                                                TextView vProcFee = new TextView(BillingShippingActivity.this);
-//                                                vProcFee.setId(R.id.procFee);
-//                                                if(ServiceUtility.chkNull(vEmiPlanDTO.getSubventionPaidBy()).equals("Customer")){
-//                                                    if((TextView)findViewById(R.id.procFee)!=null)
-//                                                        vEmiDetailsCont.removeView((TextView)findViewById(R.id.procFee));
-//
-//                                                    vProcFee.setText("Processing Fee: "+vEmiPlanDTO.getCurrency()+" "+vEmiPlanDTO.getEmiProcessingFee()+"(Processing fee will be charged only on the first EMI.)");
-//                                                    vEmiDetailsCont.addView(vProcFee);
-//                                                }else{
-//                                                    vEmiDetailsCont.removeView((TextView)findViewById(R.id.procFee));
-//                                                }
-//                                            }catch (Exception e) { e.printStackTrace(); }
-//                                        }
-//                                    });
-//
-//                                    Iterator<EMIPlansDTO> vEmiPlanIt = vEmiOptionDTO.getEmiPlansDTO().iterator();
-//                                    while(vEmiPlanIt.hasNext()){
-//                                        EMIPlansDTO vEmiPlansDTO = vEmiPlanIt.next();
-//
-//                                        RadioButton rb = new RadioButton(BillingShippingActivity.this);
-//
-//                                        String processingFee = !ServiceUtility.chkNull(vEmiPlansDTO.getProcessingFeePercent()).equals("")?
-//                                                (vEmiPlansDTO.getProcessingFeePercent()+"% p.a."):(vEmiPlansDTO.getProcessingFeeFlat()+" flat p.a.");
-//                                        rb.setText(vEmiPlansDTO.getTenureMonths()+" EMIs.@ "+processingFee+" - "+vEmiPlansDTO.getCurrency()
-//                                                +" "+(Math.round(Double.parseDouble(vEmiPlansDTO.getEmiAmount())*100.0)/100.0)+" (Total: "+
-//                                                vEmiPlansDTO.getCurrency()+" "+(Math.round(Double.parseDouble(vEmiPlansDTO.getTotal())*100.0)/100.0)+")");
-//                                        rb.setTag(vEmiPlansDTO);
-//                                        rg.addView(rb);
-//                                    }
-//                                    vEmiDetailsCont.addView(rg);
-//                                }
-//                                @Override
-//                                public void onNothingSelected(AdapterView<?> parent) {}
-//                            });
-//                        }else{
-//                            ((Spinner) findViewById(R.id.cardtype)).setVisibility(View.VISIBLE);
-//                            ((TextView) findViewById(R.id.cardtypetv)).setVisibility(View.VISIBLE);
-//                            ((CheckBox) findViewById(R.id.saveCard)).setVisibility(View.VISIBLE);
-//                            ((LinearLayout) findViewById(R.id.emiOptions)).setVisibility(View.GONE);
-//
-//                            Spinner cardType = (Spinner) findViewById(R.id.cardtype);
-//                            CardAdapter cardTypeAdapter = new CardAdapter(BillingShippingActivity.this, android.R.layout.simple_spinner_item, cardsList.get(selectedPaymentOption));
-//                            cardType.setAdapter(cardTypeAdapter);
-//
-//                            cardType.setOnItemSelectedListener(new OnItemSelectedListener(){
-//                                @Override
-//                                public void onItemSelected(AdapterView parent, View view, int position, long id) {
-//                                    ((LinearLayout) findViewById(R.id.vCardCVVCont)).setVisibility(View.GONE);
-//                                    selectedCardType = cardsList.get(selectedPaymentOption).get(position);
-//                                    if(ServiceUtility.chkNull(selectedPaymentOption).equals("OPTCRDC")
-//                                            || ServiceUtility.chkNull(selectedPaymentOption).equals("OPTDBCRD")){
-//                                        if(!ServiceUtility.chkNull(selectedCardType.getDataAcceptedAt()).equals("CCAvenue")){
-//                                            ((LinearLayout) findViewById(R.id.cardDetails)).setVisibility(View.GONE);
-//                                            cardNumber.setText("");
-//                                            expiryMonth.setText("");
-//                                            expiryYear.setText("");
-//                                            cardCvv.setText("");
-//                                            issuingBank.setText("");
-//                                        }
-//                                        else{
-//                                            //Setting default values here
-//                                            cardNumber.setText("4111111111111111");
-//                                            expiryMonth.setText("07");
-//                                            expiryYear.setText("2027");
-//                                            cardCvv.setText("328");
-//                                            issuingBank.setText("State Bank of India");
-//                                            ((LinearLayout) findViewById(R.id.cardDetails)).setVisibility(View.VISIBLE);
-//                                        }
-//                                    }
-//                                }
-//                                @Override
-//                                public void onNothingSelected(AdapterView<?> parent) {}
-//                            });
-//                        }
-//                        counter++;
-//                    }
-//                    @Override
-//                    public void onNothingSelected(AdapterView<?> parent) {}
-//                });
-//                try{
-//                    if(jsonRespObj!=null){
-//                        if(jsonRespObj.getString("CustPayments")!=null){
-//                            final JSONArray vJsonArr = new JSONArray(jsonRespObj.getString("CustPayments"));
-//                            if(vJsonArr.length()>0){
-//                                ((LinearLayout) findViewById(R.id.payOptions)).setVisibility(View.GONE);
-//                                ((LinearLayout) findViewById(R.id.cardDetails)).setVisibility(View.GONE);
-//
-//                                LinearLayout vDataContainer = (LinearLayout)findViewById(R.id.linDataCont);
-//
-//                                final LinearLayout vVaultOptionsCont = new LinearLayout(BillingShippingActivity.this);
-//                                vVaultOptionsCont.setId(R.id.vaultCont);
-//                                vVaultOptionsCont.setOrientation(LinearLayout.VERTICAL);
-//                                TextView tv = new TextView(BillingShippingActivity.this);
-//                                tv.setText("Vault Options");
-//                                vVaultOptionsCont.addView(tv);
-//
-//                                RadioGroup rg = new RadioGroup(BillingShippingActivity.this);
-//                                rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener(){
-//                                    public void onCheckedChanged(RadioGroup group, int checkedId) {
-//                                        try{
-//                                            for(int i=0;i<vJsonArr.length();i++){
-//                                                JSONObject vVaultOpt = vJsonArr.getJSONObject(i);
-//
-//                                                if(checkedId==Integer.parseInt(vVaultOpt.getString("payOptId"))){
-//                                                    selectedCardType = new CardTypeDTO();
-//                                                    selectedCardType.setCardName(vVaultOpt.getString("payCardName"));
-//                                                    selectedCardType.setCardType(vVaultOpt.getString("payCardType"));
-//                                                    selectedCardType.setPayOptType(vVaultOpt.getString("payOption"));
-//
-//                                                    selectedPaymentOption = vVaultOpt.getString("payOption");
-//
-//                                                    if(selectedPaymentOption.equals("OPTCRDC") || selectedPaymentOption.equals("OPTDBCRD"))
-//                                                        ((LinearLayout) findViewById(R.id.vCardCVVCont)).setVisibility(View.VISIBLE);
-//                                                    else
-//                                                        ((LinearLayout) findViewById(R.id.vCardCVVCont)).setVisibility(View.GONE);
-//
-//                                                    String vCardStr = "";
-//                                                    try{
-//                                                        vCardStr = vVaultOpt.getString("payCardNo")!=null?vVaultOpt.getString("payCardNo"):cardNumber.getText().toString();
-//                                                    }catch(Exception e){}
-//
-//                                                    cardNumber.setText(vCardStr);
-//                                                }
-//                                            }
-//                                        }catch (Exception e) {}
-//                                    }
-//                                });
-//                                for(int i=0;i<vJsonArr.length();i++){
-//                                    JSONObject vVaultOpt = vJsonArr.getJSONObject(i);
-//
-//                                    String vCardStr = "";
-//                                    try{
-//                                        vCardStr = vVaultOpt.getString("payCardNo")!=null?" - XXXX XXXX XXXX " + vVaultOpt.getString("payCardNo"):"";
-//                                    }catch(Exception e){}
-//
-//                                    //Radio Button
-//                                    String vLblText = paymentOptions.get(vVaultOpt.getString("payOption"))
-//                                            + " - " + vVaultOpt.getString("payCardName") + vCardStr;
-//                                    RadioButton rb = new RadioButton(BillingShippingActivity.this);
-//                                    rb.setId(Integer.parseInt(vVaultOpt.getString("payOptId")));
-//                                    rb.setText(vLblText);
-//                                    rb.setTextSize(11);
-//
-//                                    rg.addView(rb);
-//                                }
-//                                vVaultOptionsCont.addView(rg);
-//
-//                                vDataContainer.addView(vVaultOptionsCont);
-//
-//                                final CheckBox vChb = new CheckBox(BillingShippingActivity.this);
-//                                vChb.setText("Pay using other payment option");
-//                                vChb.setOnClickListener(new View.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(View v) {
-//                                        if(vChb.isChecked()){
-//                                            ((LinearLayout) findViewById(R.id.vCardCVVCont)).setVisibility(View.GONE);
-//                                            selectedPaymentOption = ((PaymentOptionDTO)payOpt.getItemAtPosition(payOpt.getSelectedItemPosition())).getPayOptId();
-//                                            ((LinearLayout) findViewById(R.id.payOptions)).setVisibility(View.VISIBLE);
-//                                            if(selectedPaymentOption.equals("OPTDBCRD")
-//                                                    || selectedPaymentOption.equals("OPTCRDC"))
-//                                                ((LinearLayout) findViewById(R.id.cardDetails)).setVisibility(View.VISIBLE);
-//                                            else if(selectedPaymentOption.equals("OPTEMI")){
-//                                                ((LinearLayout) findViewById(R.id.emiOptions)).setVisibility(View.VISIBLE);
-//                                                ((LinearLayout) findViewById(R.id.emiDetails)).setVisibility(View.VISIBLE);
-//                                                ((LinearLayout) findViewById(R.id.cardDetails)).setVisibility(View.VISIBLE);
-//                                            }
-//                                            else
-//                                                ((LinearLayout) findViewById(R.id.cardDetails)).setVisibility(View.GONE);
-//                                            ((CheckBox) findViewById(R.id.saveCard)).setVisibility(View.VISIBLE);
-//                                            vVaultOptionsCont.setVisibility(View.GONE);
-//                                        }
-//                                        else{
-//                                            ((LinearLayout) findViewById(R.id.payOptions)).setVisibility(View.GONE);
-//                                            ((LinearLayout) findViewById(R.id.cardDetails)).setVisibility(View.GONE);
-//                                            ((LinearLayout) findViewById(R.id.emiOptions)).setVisibility(View.GONE);
-//                                            ((CheckBox) findViewById(R.id.saveCard)).setVisibility(View.GONE);
-//                                            vVaultOptionsCont.setVisibility(View.VISIBLE);
-//                                        }
-//                                    }
-//                                });
-//                                vDataContainer.addView(vChb);
-//                            }else{
-//                                ((LinearLayout) findViewById(R.id.payOptions)).setVisibility(View.VISIBLE);
-//                            }
-//                        }else{
-//                            LinearLayout ll = (LinearLayout) findViewById(R.id.cardDetails);
-//                            if(selectedPaymentOption.equals("OPTDBCRD") ||
-//                                    selectedPaymentOption.equals("OPTCRDC")){
-//                                ll.setVisibility(View.VISIBLE);
-//                            }else{
-//                                ll.setVisibility(View.GONE);
-//                            }
-//                            counter++;
-//                        }
-//                    }
-//                }catch (Exception e) {}
-//            }catch (Exception e) { showToast("Error loading payment options"); }
+            if (paymentOptions.size()>0) {
+                id_rl_parent_layout.setVisibility(View.VISIBLE);
+                id_rv_payment_options.setAdapter(new PaymentOptionsAdapter(payOptionList, new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(PaymentOptionDTO item) {
+                        Intent intent = new Intent(PaymentOptionsActivity.this, WebViewActivity.class);
+                        intent.putExtra("payment_option",item.getPayOptId()) ;
+                        intent.putExtra("orderId",orderID) ;
+                        intent.putExtra("accessCode",accessCode) ;
+                        intent.putExtra("merchantID",merchantID) ;
+                        intent.putExtra("cancelRedirectURL",cancelRedirectURL) ;
+                        intent.putExtra("rsa_key",rsa_key) ;
+                        intent.putExtras(getIntent()) ;
+                        startActivity(intent);
+                    }
+                }));
+            }
         }
     }
 
@@ -609,5 +302,68 @@ public class PaymentOptionsActivity extends AppCompatActivity {
             }
         }
         return rsaToken ;
+    }
+
+    public class PaymentOptionsAdapter extends RecyclerView.Adapter<PaymentOptionsAdapter.ViewHolder> {
+        private ArrayList<PaymentOptionDTO> adapterPaymentOptionsList = new ArrayList <PaymentOptionDTO>();
+        private final OnItemClickListener listener;
+
+        // Provide a suitable constructor (depends on the kind of dataset)
+        public PaymentOptionsAdapter (ArrayList<PaymentOptionDTO> _payOptionsList, OnItemClickListener listener) {
+            this.adapterPaymentOptionsList = _payOptionsList;
+            this.listener = listener ;
+        }
+
+        // Provide a reference to the views for each data item
+        // Complex data items may need more than one view per item, and
+        // you provide access to all the views for a data item in a view holder
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            // each data item is just a string in this case
+            public TextView id_tv_payment_options;
+            public ViewHolder(View v) {
+                super(v);
+                id_tv_payment_options = v.findViewById(R.id.id_tv_payment_options);
+            }
+
+            public void bind(final PaymentOptionDTO item, final OnItemClickListener listener) {
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override public void onClick(View v) {
+                        listener.onItemClick(item);
+                    }
+                });
+            }
+        }
+
+
+        // Create new views (invoked by the layout manager)
+        @Override
+        public PaymentOptionsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+                                                       int viewType) {
+            // create a new view
+            View v = (View) LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.payment_options_row, parent, false);
+            // set the view's size, margins, paddings and layout parameters
+            ViewHolder vh = new ViewHolder(v);
+            return vh;
+        }
+
+        // Replace the contents of a view (invoked by the layout manager)
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            // - get element from your dataset at this position
+            // - replace the contents of the view with that element
+            holder.bind(adapterPaymentOptionsList.get(position), listener);
+            holder.id_tv_payment_options.setText(adapterPaymentOptionsList.get(position).getPayOptName());
+        }
+
+        // Return the size of your dataset (invoked by the layout manager)
+        @Override
+        public int getItemCount() {
+            return adapterPaymentOptionsList.size();
+        }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(PaymentOptionDTO item);
     }
 }
