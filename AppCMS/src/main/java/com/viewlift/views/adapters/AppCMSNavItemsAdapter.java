@@ -169,6 +169,18 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     break;
 
                                 case ANDROID_WATCHLIST_NAV_KEY:
+                                    if (!appCMSPresenter.isNetworkConnected()) {
+                                        if (!appCMSPresenter.isUserLoggedIn()) {
+                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
+                                            return;
+                                        }
+                                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                                                appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
+                                                true,
+                                                () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
+                                                        null, null, false));
+                                        return;
+                                    }
                                     appCMSPresenter.getCurrentActivity()
                                             .sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                                     appCMSPresenter.navigateToWatchlistPage(navigationUser.getPageId(),
