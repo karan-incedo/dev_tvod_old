@@ -621,7 +621,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     case CommonStatusCodes.SIGN_IN_REQUIRED:
                         message = "Sign In is required.";
                         break;
-                    case CommonStatusCodes.	TIMEOUT:
+                    case CommonStatusCodes.TIMEOUT:
                         message = "A timeout has occurred.";
                         break;
                 }
@@ -1300,6 +1300,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 searchNavBarItemView.setHighlightColor(highlightColor);
                 searchNavBarItemView.setLabel(getString(R.string.app_cms_search_label));
                 searchNavBarItemView.setOnClickListener(v -> {
+                    if (!appCMSPresenter.isNetworkConnected()) {
+                        if (!appCMSPresenter.isUserLoggedIn()) {
+                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
+                            return;
+                        }
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                                appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
+                                true,
+                                () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
+                                        null, null, false));
+                        return;
+                    }
                     selectNavItem(searchNavBarItemView);
                     appCMSPresenter.launchSearchPage();
                 });
