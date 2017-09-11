@@ -4472,6 +4472,7 @@ public class AppCMSPresenter {
                                           final String facebookUserId,
                                           final String username,
                                           final String email,
+                                          boolean forceSubscribed,
                                           boolean refreshSubscriptionData) {
         String url = currentActivity.getString(R.string.app_cms_facebook_login_api_url,
                 appCMSMain.getApiBaseUrl(),
@@ -4486,7 +4487,11 @@ public class AppCMSPresenter {
                         setLoggedInUser(facebookUserId);
                         setLoggedInUserName(username);
                         setLoggedInUserEmail(email);
-                        setIsUserSubscribed(facebookLoginResponse.isSubscribed());
+                        if (forceSubscribed) {
+                            setIsUserSubscribed(true);
+                        } else {
+                            setIsUserSubscribed(facebookLoginResponse.isSubscribed());
+                        }
 
                         if (launchType == LaunchType.SUBSCRIBE) {
                             this.facebookAccessToken = facebookAccessToken;
@@ -4515,6 +4520,15 @@ public class AppCMSPresenter {
                                                     entitlementPendingVideoData.closeLauncher,
                                                     entitlementPendingVideoData.currentlyPlayingIndex,
                                                     entitlementPendingVideoData.relateVideoIds);
+                                            entitlementPendingVideoData.pagePath = null;
+                                            entitlementPendingVideoData.action = null;
+                                            entitlementPendingVideoData.filmTitle = null;
+                                            entitlementPendingVideoData.extraData = null;
+                                            entitlementPendingVideoData.contentDatum = null;
+                                            entitlementPendingVideoData.closeLauncher = false;
+                                            entitlementPendingVideoData.currentlyPlayingIndex = -1;
+                                            entitlementPendingVideoData.relateVideoIds = null;
+                                            entitlementPendingVideoData = null;
                                         } else {
                                             sendCloseOthersAction(null, true);
                                             cancelInternalEvents();
@@ -4607,6 +4621,7 @@ public class AppCMSPresenter {
                                         final String googleUserId,
                                         final String googleUsername,
                                         final String googleEmail,
+                                        boolean forceSubscribed,
                                         boolean refreshSubscriptionData) {
         String url = currentActivity.getString(R.string.app_cms_google_login_api_url,
                 appCMSMain.getApiBaseUrl(), appCMSSite.getGist().getSiteInternalName());
@@ -4620,7 +4635,11 @@ public class AppCMSPresenter {
                             setLoggedInUser(googleUserId);
                             setLoggedInUserName(googleUsername);
                             setLoggedInUserEmail(googleEmail);
-                            setIsUserSubscribed(googleLoginResponse.isSubscribed());
+                            if (forceSubscribed) {
+                                setIsUserSubscribed(true);
+                            } else {
+                                setIsUserSubscribed(googleLoginResponse.isSubscribed());
+                            }
 
                             if (launchType == LaunchType.SUBSCRIBE) {
                                 this.googleAccessToken = googleAccessToken;
@@ -4647,6 +4666,15 @@ public class AppCMSPresenter {
                                                     entitlementPendingVideoData.closeLauncher,
                                                     entitlementPendingVideoData.currentlyPlayingIndex,
                                                     entitlementPendingVideoData.relateVideoIds);
+                                            entitlementPendingVideoData.pagePath = null;
+                                            entitlementPendingVideoData.action = null;
+                                            entitlementPendingVideoData.filmTitle = null;
+                                            entitlementPendingVideoData.extraData = null;
+                                            entitlementPendingVideoData.contentDatum = null;
+                                            entitlementPendingVideoData.closeLauncher = false;
+                                            entitlementPendingVideoData.currentlyPlayingIndex = -1;
+                                            entitlementPendingVideoData.relateVideoIds = null;
+                                            entitlementPendingVideoData = null;
                                         } else {
                                             sendCloseOthersAction(null, true);
                                             cancelInternalEvents();
@@ -4685,6 +4713,15 @@ public class AppCMSPresenter {
                                                 entitlementPendingVideoData.closeLauncher,
                                                 entitlementPendingVideoData.currentlyPlayingIndex,
                                                 entitlementPendingVideoData.relateVideoIds);
+                                        entitlementPendingVideoData.pagePath = null;
+                                        entitlementPendingVideoData.action = null;
+                                        entitlementPendingVideoData.filmTitle = null;
+                                        entitlementPendingVideoData.extraData = null;
+                                        entitlementPendingVideoData.contentDatum = null;
+                                        entitlementPendingVideoData.closeLauncher = false;
+                                        entitlementPendingVideoData.currentlyPlayingIndex = -1;
+                                        entitlementPendingVideoData.relateVideoIds = null;
+                                        entitlementPendingVideoData = null;
                                     } else {
                                         sendCloseOthersAction(null, true);
                                         cancelInternalEvents();
@@ -4990,8 +5027,8 @@ public class AppCMSPresenter {
             setIsUserSubscribed(false);
             setExistingGooglePlaySubscriptionId(null);
             setActiveSubscriptionProcessor(null);
-            setFacebookAccessToken(null, null, null, null, false);
-            setGoogleAccessToken(null, null, null, null, false);
+            setFacebookAccessToken(null, null, null, null, false, false);
+            setGoogleAccessToken(null, null, null, null, false, false);
 
             sendUpdateHistoryAction();
 
@@ -6149,6 +6186,7 @@ public class AppCMSPresenter {
                                             facebookUserId,
                                             facebookUsername,
                                             facebookEmail,
+                                            true,
                                             false);
                                 } else if (isSignupFromGoogle) {
                                     launchType = LaunchType.LOGIN_AND_SIGNUP;
@@ -6156,6 +6194,7 @@ public class AppCMSPresenter {
                                             googleUserId,
                                             googleUsername,
                                             googleEmail,
+                                            true,
                                             false);
                                 }
                             } else {

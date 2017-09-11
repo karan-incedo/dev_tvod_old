@@ -354,6 +354,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                                 AppCMSPageActivity.this.accessToken.getUserId(),
                                                 username,
                                                 email,
+                                                false,
                                                 true);
                                     });
                             Bundle parameters = new Bundle();
@@ -556,6 +557,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             result.getSignInAccount().getId(),
                             result.getSignInAccount().getDisplayName(),
                             result.getSignInAccount().getEmail(),
+                            false,
                             true);
                 }
             } else if (requestCode == AppCMSPresenter.ADD_GOOGLE_ACCOUNT_TO_DEVICE_REQUEST_CODE) {
