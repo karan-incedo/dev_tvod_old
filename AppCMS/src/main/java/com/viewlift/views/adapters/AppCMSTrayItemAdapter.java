@@ -666,8 +666,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
         adapterData = contentData;
         sortData();
-        if (adapterData != null && !adapterData.isEmpty()) {
-            sendEvent(null);
+        if (adapterData == null || adapterData.isEmpty()) {
+            sendEvent(hideRemoveAllButtonEvent);
+        } else {
+            sendEvent(showRemoveAllButtonEvent);
         }
     }
 
