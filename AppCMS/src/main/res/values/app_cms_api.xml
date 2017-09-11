@@ -6,7 +6,9 @@
 
     <!--QA Server-->
     <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
-    <string name="app_cms_app_name">3f5e193b-2e51-4853-839e-618e62896deb</string>
+    <string name="app_cms_app_name">3f5e193b-2e51-4853-839e-618e62896deb</string> <!--Snagfilms-->
+    <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>--><!--Hoichoi QA-->
+
 
 
     <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
@@ -243,6 +245,7 @@
     <string name="app_cms_action_search_key">search</string>
     <string name="app_cms_action_login_key">login</string>
     <string name="app_cms_action_forgotpassword_key">forgotPassword</string>
+    <string name="app_cms_page_name_forgotpassword">Reset Password</string>
     <string name="app_cms_action_loginfacebook_key">loginFacebook</string>
     <string name="app_cms_action_signupfacebook_key">signupfacebook</string>
     <string name="app_cms_action_editprofile_key">editProfile</string>
@@ -363,4 +366,9 @@
     <string name="subscription_unsubscribed_plan_value">Unsubscribed</string>
     <string name="subscription_unknown_payment_processor_friendly">Unknown</string>
     <string name="app_cms_view_plan_module_key">ViewPlanModule</string>
+
+    <!--reset password-->
+    <string name="app_cms_reset_password_cancel_button_key">cancelButton</string>
+    <string name="app_cms_reset_password_continue_button_key">resetPasswordButton</string>
+    <string name="app_cms_forgotPasswordTitle_key">forgotPasswordTitle</string>
 </resources>

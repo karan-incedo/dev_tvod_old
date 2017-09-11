@@ -226,6 +226,15 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_PASSWORDTEXTFIELD2_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_forgotpassword_key),
                 AppCMSUIKeyType.PAGE_FORGOTPASSWORD_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_reset_password_module),
+                AppCMSUIKeyType.PAGE_RESET_PASSWORD_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_reset_password_cancel_button_key),
+                AppCMSUIKeyType.RESET_PASSWORD_CANCEL_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_reset_password_continue_button_key),
+                AppCMSUIKeyType.RESET_PASSWORD_CONTINUE_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_forgotPasswordTitle_key),
+                AppCMSUIKeyType.RESET_PASSWORD_TITLE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_login_key) ,
                 AppCMSUIKeyType.PAGE_LOGIN_BUTTON_KEY);
 
@@ -454,6 +463,8 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_action_historypage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_videoscreen_key),
                 context.getString(R.string.app_cms_action_videopage_key));
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_page_name_forgotpassword) ,
+                context.getString(R.string.app_cms_action_forgotpassword_key));
     }
 
     private void createActionToPageMap(Context context) {
@@ -462,6 +473,7 @@ public class AppCMSUIModule {
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_historypage_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_videopage_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
+        this.actionToPageMap.put(context.getString(R.string.app_cms_action_forgotpassword_key) , null);
     }
 
     private void createActionToPageAPIMap(Context context) {
@@ -469,6 +481,7 @@ public class AppCMSUIModule {
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_homepage_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_videopage_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
+        this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_forgotpassword_key) , null);
     }
 
     private void createActionToActionTypeMap(Context context) {
