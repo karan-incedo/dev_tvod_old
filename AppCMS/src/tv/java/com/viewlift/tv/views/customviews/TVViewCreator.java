@@ -316,6 +316,11 @@ public class TVViewCreator {
                         fromJson(Utils.loadJsonFromAssets(context, "ancillary_pages.json"), ModuleList.class);
             }
 
+            if(module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_contact_us_module))){
+                module = new GsonBuilder().create().
+                        fromJson(Utils.loadJsonFromAssets(context, "contact_us.json"), ModuleList.class);
+            }
+
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
@@ -804,6 +809,8 @@ public class TVViewCreator {
                                     ((TextView) componentViewResult.componentView).setMaxLines(component.getNumberOfLines());
                                 }
                                 ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                            }else if(!TextUtils.isEmpty(component.getText())){
+                                ((TextView) componentViewResult.componentView).setText(component.getText());
                             }
                             ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(Utils.getFocusColor(context,appCMSPresenter)));
                             componentViewResult.componentView.setFocusable(false);
@@ -854,6 +861,19 @@ public class TVViewCreator {
                             }
                             break;
 
+                        case CONTACT_US_EMAIL_LABEL:
+                            if (!TextUtils.isEmpty(component.getText())) {
+                                ((TextView) componentViewResult.componentView).setText(component.getText() + " "
+                                        + appCMSPresenter.getAppCMSMain().getCustomerService().getEmail());
+                            }
+                            break;
+
+                        case CONTACT_US_PHONE_LABEL:
+                            if (!TextUtils.isEmpty(component.getText())) {
+                                ((TextView) componentViewResult.componentView).setText(component.getText() + " "
+                                        + appCMSPresenter.getAppCMSMain().getCustomerService().getPhone());
+                            }
+                            break;
                         case PAGE_TRAY_TITLE_KEY:
                             if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText().toUpperCase());
@@ -1134,6 +1154,14 @@ public class TVViewCreator {
                         });
 
 
+                        break;
+
+                    case CONTACT_US_PHONE_IMAGE:
+                        componentViewResult.componentView.setBackgroundResource(R.drawable.call_icon);
+                        break;
+
+                    case CONTACT_US_EMAIL_IMAGE:
+                        componentViewResult.componentView.setBackgroundResource(R.drawable.email_icon);
                         break;
 
                     default:
@@ -1421,7 +1449,8 @@ public class TVViewCreator {
                 }
             }
 
-            if(AppCMSUIKeyType.PAGE_RESET_PASSWORD_MODULE_KEY == jsonValueKeyMap.get(module.getView())){
+            if(AppCMSUIKeyType.PAGE_RESET_PASSWORD_MODULE_KEY == jsonValueKeyMap.get(module.getView())
+                    || AppCMSUIKeyType.PAGE_CONTACT_US_MODULE_KEY == jsonValueKeyMap.get(module.getView())){
                 return new Module();
             }
 

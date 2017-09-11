@@ -7319,7 +7319,8 @@ public class AppCMSPresenter {
                                     Uri searchQuery ,
                                     boolean forcedDownload) {
         boolean result = false;
-        if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
+        if (currentActivity != null && !TextUtils.isEmpty(pageId)
+                && !(pageTitle.equalsIgnoreCase(currentActivity.getString(R.string.contact_us)))) {
             loadingPage = true;
             Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
@@ -7461,10 +7462,9 @@ public class AppCMSPresenter {
             result = true;
         } else if (currentActivity != null &&
                 !TextUtils.isEmpty(url) &&
-                url.contains(currentActivity.getString(R.string.app_cms_page_navigation_contact_us_key))) {
-            if (Apptentive.canShowMessageCenter()) {
-                Apptentive.showMessageCenter(currentActivity);
-            }
+                pageTitle.contains(currentActivity.getString(R.string.contact_us))) {
+            openContactUsScreen(pageId,pageTitle,url);
+
         } else {
             Log.d(TAG, "Resetting page navigation to previous tab");
             setNavItemToCurrentAction(currentActivity);
@@ -7472,6 +7472,36 @@ public class AppCMSPresenter {
         return result;
     }
 
+
+    private void openContactUsScreen(String pageId,
+                                     String pageTitle,
+                                     String url){
+        AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+        AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
+        appCMSPageAPI.setId(getPageId(appCMSPageUI));
+        Bundle args = getPageActivityBundle(currentActivity,
+                appCMSPageUI,
+                appCMSPageAPI,
+                pageId,
+                pageTitle,
+                pageId,
+                pageIdToPageNameMap.get(pageId),
+                loadFromFile,
+                true,
+                false,
+                true,
+                false,
+                Uri.EMPTY,
+                ExtraScreenType.NONE);
+        if (args != null) {
+            Intent updatePageIntent =
+                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                    args);
+            currentActivity.sendBroadcast(updatePageIntent);
+            setNavItemToCurrentAction(currentActivity);
+        }
+    }
 
     private void launchTVPageActivity(Activity activity,
                                       AppCMSPageUI appCMSPageUI,

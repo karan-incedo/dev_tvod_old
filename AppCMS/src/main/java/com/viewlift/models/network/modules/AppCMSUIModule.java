@@ -228,6 +228,17 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_FORGOTPASSWORD_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_reset_password_module),
                 AppCMSUIKeyType.PAGE_RESET_PASSWORD_MODULE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_contact_us_module),
+                AppCMSUIKeyType.PAGE_CONTACT_US_MODULE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_contact_us_call_icon_key),
+                AppCMSUIKeyType.CONTACT_US_PHONE_IMAGE);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_contact_us_email_icon_key),
+                AppCMSUIKeyType.CONTACT_US_EMAIL_IMAGE);
+
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_reset_password_cancel_button_key),
                 AppCMSUIKeyType.RESET_PASSWORD_CANCEL_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_reset_password_continue_button_key),
@@ -271,6 +282,12 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_SETTINGS_EDIT_PROFILE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_change_password_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_CHANGE_PASSWORD_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_contact_number_label),
+                AppCMSUIKeyType.CONTACT_US_PHONE_LABEL);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_email_id_label),
+                AppCMSUIKeyType.CONTACT_US_EMAIL_LABEL);
+
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_cancel_subscription_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY);
