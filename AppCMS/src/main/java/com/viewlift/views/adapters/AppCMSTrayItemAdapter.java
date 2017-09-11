@@ -287,7 +287,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 holder.appCMSContinueWatchingTitle.setText(contentDatum.getGist().getTitle());
             }
 
-            if (contentDatum.getGist() != null) {
+            if (contentDatum!=null && contentDatum.getGist() != null && contentDatum.getGist().getDescription()!=null) {
                 Spannable rawHtmlSpannable = new HtmlSpanner().fromHtml(contentDatum.getGist().getDescription());
                 holder.appCMSContinueWatchingDescription.setText(rawHtmlSpannable);
             }

@@ -5472,25 +5472,18 @@ public class AppCMSPresenter {
     }
 
     public void openDownloadScreenForNetworkError(boolean launchActivity) {
-
-        if (!isUserLoggedIn()) {//fix SVFA-1911
-            showDialog(DialogType.NETWORK, null, false, null);
-            return;
-        }
-
         try { // Applied this flow for fixing SVFA-1435 App Launch Scenario
-
             if (!isUserLoggedIn()) {//fix SVFA-1911
                 showDialog(DialogType.NETWORK, null, false, null);
                 return;
             }
+
             showDialog(DialogType.NETWORK,
                     currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download),
                     true,
                     () -> navigateToDownloadPage(getDownloadPageId(),
                             null, null, launchActivity));
         } catch (Exception e) {
-
             launchErrorActivity(platformType);// Fix for SVFA-1435 after killing app
             Log.d(TAG, e.getMessage());
             return;
@@ -6674,20 +6667,19 @@ public class AppCMSPresenter {
                                             if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
                                                 setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
                                             }
-
-                                            NavigationPrimary homePageNavItem = findHomePageNavItem();
-                                            if (homePageNavItem != null) {
-                                                cancelInternalEvents();
-                                                navigateToPage(homePageNavItem.getPageId(),
-                                                        homePageNavItem.getTitle(),
-                                                        homePageNavItem.getUrl(),
-                                                        false,
-                                                        true,
-                                                        false,
-                                                        true,
-                                                        true,
-                                                        deeplinkSearchQuery);
-                                            }
+//                                            NavigationPrimary homePageNavItem = findHomePageNavItem();
+//                                            if (homePageNavItem != null) {
+//                                                cancelInternalEvents();
+//                                                navigateToPage(homePageNavItem.getPageId(),
+//                                                        homePageNavItem.getTitle(),
+//                                                        homePageNavItem.getUrl(),
+//                                                        false,
+//                                                        true,
+//                                                        false,
+//                                                        true,
+//                                                        true,
+//                                                        deeplinkSearchQuery);
+//                                            }
                                         }
                                         currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                     });
@@ -8749,6 +8741,10 @@ public class AppCMSPresenter {
         boolean closeLauncher;
         int currentlyPlayingIndex;
         List<String> relateVideoIds;
+    }
+
+    public String getNetworkConnectivityDownloadErrorMsg() {
+        return currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download);
     }
 
 }
