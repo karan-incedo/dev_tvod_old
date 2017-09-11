@@ -497,7 +497,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     switch (componentKey) {
                         case PAGE_PLAY_KEY:
                         case PAGE_PLAY_IMAGE_KEY:
+                            viewHolder.appCMSContinueWatchingPlayButton.setBackground(ContextCompat.getDrawable(viewHolder.itemView.getContext(), R.drawable.play_icon));
                             viewHolder.appCMSContinueWatchingPlayButton.getBackground().setTint(tintColor);
+                            viewHolder.appCMSContinueWatchingPlayButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+
                             break;
 
                         default:
