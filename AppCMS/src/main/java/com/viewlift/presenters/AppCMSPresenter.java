@@ -4570,7 +4570,6 @@ public class AppCMSPresenter {
                                             deeplinkSearchQuery);
                                 }
                             }
-                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                         }
                     }
                 });
