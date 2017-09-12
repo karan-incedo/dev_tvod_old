@@ -1847,7 +1847,9 @@ public class ViewCreator {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                             }
                         } else if (!appCMSPresenter.upgradesAvailableForUser()) {
-                            componentViewResult.componentView.setVisibility(View.GONE);
+                            if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
+                                componentViewResult.componentView.setVisibility(View.GONE);
+                            }
                         }
 
                         componentViewResult.componentView.setOnClickListener(v -> {
