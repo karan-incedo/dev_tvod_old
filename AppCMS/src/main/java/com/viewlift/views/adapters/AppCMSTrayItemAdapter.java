@@ -105,6 +105,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         this.hideRemoveAllButtonEvent = new InternalEvent<>(View.GONE);
         this.showRemoveAllButtonEvent = new InternalEvent<>(View.VISIBLE);
 
+        this.setHasStableIds(false);
+
         sortData();
     }
 
