@@ -237,16 +237,28 @@ public class WebViewActivity extends Activity {
 			params.append(ServiceUtility.addToPostParams("billing_country","India"));
 			params.append(ServiceUtility.addToPostParams("billing_tel",getIntent().getStringExtra("mobile_number")));
 
-			//params.append(ServiceUtility.addToPostParams(AvenuesParams.CANCEL_URL,cancelRedirectURL));
 			Log.v("payment_option",mainIntent.getStringExtra("payment_option")) ;
 			params.append(ServiceUtility.addToPostParams("payment_option",mainIntent.getStringExtra("payment_option"))) ;
-			if (getIntent().getBooleanExtra("renewable",false)) {
+			//if (getIntent().getBooleanExtra("renewable",false)) {
+			if (getIntent().getStringExtra("payment_option").equalsIgnoreCase("OPTCRDC")) {
 				//params.append(ServiceUtility.addToPostParams("payment_option","OPTCRDC")) ;
-			}/* else {
-       params.append(ServiceUtility.addToPostParams("payment_option","OPTDBCRD")) ;
-       params.append(ServiceUtility.addToPostParams("payment_option","OPTNBK")) ;
-       params.append(ServiceUtility.addToPostParams("payment_option","OPTCRDC")) ;
-       }*/
+				params.append(ServiceUtility.addToPostParams("si_type","ONDEMAND")) ;
+				params.append(ServiceUtility.addToPostParams("si_mer_ref_no",merchantID)) ;
+				params.append(ServiceUtility.addToPostParams("si_is_setup_amt","Y")) ;
+				params.append(ServiceUtility.addToPostParams("si_amount",mainIntent.getStringExtra(AvenuesParams.AMOUNT))) ;
+				params.append(ServiceUtility.addToPostParams("si_setup_amount",mainIntent.getStringExtra(AvenuesParams.AMOUNT))) ;
+				params.append(ServiceUtility.addToPostParams("si_frequency","2")) ;
+				params.append(ServiceUtility.addToPostParams("si_frequency_type","WEEK")) ;
+				params.append(ServiceUtility.addToPostParams("si_bill_cycle","2")) ;
+				/*si_type=ONDEMAND
+				si_mer_ref_no=138366
+				si_is_setup_amt=Y
+				si_amount=<plan_amount>
+						si_setup_amount=<plan_amount>
+						si_frequency=2 - Based on the plan details
+				si_frequency_type=WEEK - Based on the plan details
+				si_bill_cycle=2 - Based on the plan details*/
+			}
 
 			params.append(ServiceUtility.addToPostParams("merchant_param1",getIntent().getStringExtra(getString(R.string.app_cms_site_name))));
 			params.append(ServiceUtility.addToPostParams("merchant_param2",getIntent().getStringExtra(getString(R.string.app_cms_user_id))));
