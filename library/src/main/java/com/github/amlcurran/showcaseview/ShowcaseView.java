@@ -460,7 +460,7 @@ public class ShowcaseView extends RelativeLayout
             this.activity = activity;
             this.showcaseView = new ShowcaseView(activity, useNewStyle);
             this.showcaseView.setTarget(Target.NONE);
-            this.parent = (ViewGroup) activity.findViewById(android.R.id.content);
+            this.parent = activity.findViewById(android.R.id.content);
             this.parentIndex = parent.getChildCount();
         }
 

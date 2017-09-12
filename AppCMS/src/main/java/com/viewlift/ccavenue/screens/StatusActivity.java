@@ -16,7 +16,7 @@ public class StatusActivity extends Activity {
 		setContentView(R.layout.activity_status);
 		
 		Intent mainIntent = getIntent();
-		TextView tv4 = (TextView) findViewById(R.id.textView1);
+		TextView tv4 = findViewById(R.id.textView1);
 		tv4.setText(mainIntent.getStringExtra("transStatus"));
 	}
 	

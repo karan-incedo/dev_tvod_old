@@ -69,7 +69,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        RecyclerView appCMSSearchResultsView = (RecyclerView) findViewById(R.id.app_cms_search_results);
+        RecyclerView appCMSSearchResultsView = findViewById(R.id.app_cms_search_results);
         appCMSSearchItemAdapter =
                 new AppCMSSearchItemAdapter(this,
                         ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent()
@@ -112,7 +112,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         registerReceiver(handoffReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
 
-        appCMSSearchView = (SearchView) findViewById(R.id.app_cms_searchbar);
+        appCMSSearchView = findViewById(R.id.app_cms_searchbar);
         appCMSSearchView.setQueryHint(getString(R.string.search_films));
         //noinspection ConstantConditions
         appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -134,7 +134,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
             }
         });
         LinearLayout appCMSSearchResultsContainer =
-                (LinearLayout) findViewById(R.id.app_cms_search_results_container);
+                findViewById(R.id.app_cms_search_results_container);
         if (appCMSMain.getBrand() != null &&
                 appCMSMain.getBrand().getGeneral() != null &&
                 !TextUtils.isEmpty(appCMSMain.getBrand().getGeneral().getBackgroundColor())) {
@@ -143,9 +143,9 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                     .getBackgroundColor()));
         }
 
-        noResultsTextview = (TextView) findViewById(R.id.no_results_textview);
+        noResultsTextview = findViewById(R.id.no_results_textview);
 
-        ImageButton appCMSCloseButton = (ImageButton) findViewById(R.id.app_cms_close_button);
+        ImageButton appCMSCloseButton = findViewById(R.id.app_cms_close_button);
         appCMSCloseButton.setOnClickListener(v -> finish());
 
         handleIntent(getIntent());
