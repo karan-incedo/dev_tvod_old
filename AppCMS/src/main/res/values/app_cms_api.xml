@@ -303,7 +303,7 @@
 
     <!-- AppCMS Navigation menu -->
     <string name="app_cms_menu_icon_name">menu_</string>
-    <string name="app_cms_menu_label">More</string>
+    <string name="app_cms_menu_label">Menu</string>
     <string name="app_cms_live_icon_name">live_</string>
     <string name="app_cms_home_icon_name">home_page_</string>
     <string name="app_cms_home_label">Home</string>
