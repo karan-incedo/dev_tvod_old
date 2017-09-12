@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 import android.view.Gravity;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import java.io.File;
@@ -63,6 +65,7 @@ public class FileDownloadCompleteReceiver extends BroadcastReceiver {
 
         String downloadFilePath = null;
         String downloadFileLocalUri = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+
         if (downloadFileLocalUri != null) {
             mFile = new File(Uri.parse(downloadFileLocalUri).getPath());
             downloadFilePath = mFile.getAbsolutePath();
@@ -132,21 +135,26 @@ public class FileDownloadCompleteReceiver extends BroadcastReceiver {
             case DownloadManager.STATUS_SUCCESSFUL:
                 statusText = "STATUS_SUCCESSFUL";
                 reasonText = "Filename:\n" + filename;
-                encryptTheFile(filename);
+                String extension = MimeTypeMap.getFileExtensionFromUrl(filename.toString());
+                if (extension.equals("mp4")) {
+                    encryptTheFile(filename);
+                }
                 break;
         }
     }
 
     public void encryptTheFile(String filePath) {
         try {
-            byte[] exoBitsData = new byte[100];
+            byte[] exoBitsData = new byte[10];
             RandomAccessFile file = new RandomAccessFile(filePath, "rw");
             //We are reading the first few bits and applying on bits
-            file.read(exoBitsData, 0, 100);
+            file.read(exoBitsData, 0, 10);
             //Now we need to seek to 0th bit
             file.seek(0);
-            for (int i = 0; i < exoBitsData.length; i++)
-                exoBitsData[i] = (byte) ~exoBitsData[i];
+            for (int i = 0; i < exoBitsData.length; i++) {
+                if (~exoBitsData[i] >= -128 && ~exoBitsData[i] <= 127)
+                    exoBitsData[i] = (byte) ~exoBitsData[i];
+            }
             file.write(exoBitsData);
         } catch (Exception e1) {
             e1.printStackTrace();
