@@ -3877,6 +3877,7 @@ public class AppCMSPresenter {
                                                                     appCMSPageAPIAction.sendCloseAction,
                                                                     appCMSPageAPIAction.searchQuery,
                                                                     ExtraScreenType.NONE);
+                                                            refreshSubscriptionData(null);
                                                         } else {
                                                             Bundle args = getPageActivityBundle(currentActivity,
                                                                     appCMSPageAPIAction.appCMSPageUI,
@@ -3899,6 +3900,7 @@ public class AppCMSPresenter {
                                                                         args);
                                                                 currentActivity.sendBroadcast(updatePageIntent);
                                                                 dismissOpenDialogs(null);
+                                                                refreshSubscriptionData(null);
                                                             }
                                                         }
                                                     }
@@ -3929,6 +3931,7 @@ public class AppCMSPresenter {
                                                 this.sendCloseAction,
                                                 this.searchQuery,
                                                 ExtraScreenType.NONE);
+                                        refreshSubscriptionData(null);
                                     } else {
                                         Bundle args = getPageActivityBundle(currentActivity,
                                                 this.appCMSPageUI,
@@ -3951,6 +3954,7 @@ public class AppCMSPresenter {
                                                     args);
                                             currentActivity.sendBroadcast(updatePageIntent);
                                             dismissOpenDialogs(null);
+                                            refreshSubscriptionData(null);
                                         }
                                     }
                                 }
@@ -6114,7 +6118,6 @@ public class AppCMSPresenter {
                                 }
                             } else {
                                 setIsUserSubscribed(true);
-                                refreshSubscriptionData(null);
                                 if (entitlementPendingVideoData != null) {
                                     navigateToHomeToRefresh = false;
                                     sendRefreshPageAction();
