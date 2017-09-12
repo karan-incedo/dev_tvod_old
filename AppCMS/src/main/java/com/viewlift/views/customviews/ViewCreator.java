@@ -2216,6 +2216,8 @@ public class ViewCreator {
 
                 if (component.getFontSize() > 0) {
                     ((TextView) componentViewResult.componentView).setTextSize(component.getFontSize());
+                } else if (BaseView.getFontSize(context, component.getLayout()) > 0) {
+                    ((TextView) componentViewResult.componentView).setTextSize(BaseView.getFontSize(context, component.getLayout()));
                 }
 
                 break;
