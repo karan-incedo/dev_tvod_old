@@ -1095,7 +1095,7 @@ public class AppCMSPresenter {
                         sendIntent.setAction(Intent.ACTION_SEND);
                         sendIntent.putExtra(Intent.EXTRA_TEXT, extraData[0]);
                         sendIntent.setType(currentActivity.getString(R.string.text_plain_mime_type));
-                        Intent chooserIntent=Intent.createChooser(sendIntent,
+                        Intent chooserIntent = Intent.createChooser(sendIntent,
                                 currentActivity.getResources().getText(R.string.send_to));
                         chooserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         currentActivity.startActivity(chooserIntent);
@@ -2630,7 +2630,7 @@ public class AppCMSPresenter {
                         downloadURL);
 
                 showToast(
-                        currentActivity.getString(R.string.app_cms_download_started_mesage,
+                        currentActivity.getString(R.string.app_cms_download_started_message,
                                 contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
 
             } catch (Exception e) {
@@ -6328,7 +6328,8 @@ public class AppCMSPresenter {
                                                                                             planDetail.getCountryCode().equalsIgnoreCase(countryCode)) {
                                                                                         setActiveSubscriptionPrice(String.valueOf(planDetail.getRecurringPaymentAmount()));
                                                                                     }
-                                                                                }                                                                           }
+                                                                                }
+                                                                            }
 
                                                                             if (appCMSSubscriptionPlanResult.getSubscriptionInfo() != null &&
                                                                                     !TextUtils.isEmpty(appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler())) {
@@ -8435,6 +8436,10 @@ public class AppCMSPresenter {
         return downloadURL;
     }
 
+    public String getNetworkConnectivityDownloadErrorMsg() {
+        return currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download);
+    }
+
     public enum LaunchType {
         SUBSCRIBE, LOGIN_AND_SIGNUP
     }
@@ -8760,10 +8765,6 @@ public class AppCMSPresenter {
         boolean closeLauncher;
         int currentlyPlayingIndex;
         List<String> relateVideoIds;
-    }
-
-    public String getNetworkConnectivityDownloadErrorMsg() {
-        return currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download);
     }
 
 }
