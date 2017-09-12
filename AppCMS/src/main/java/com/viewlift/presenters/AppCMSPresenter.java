@@ -106,6 +106,7 @@ import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionResult;
+import com.viewlift.models.data.appcms.subscriptions.PlanDetail;
 import com.viewlift.models.data.appcms.subscriptions.Receipt;
 import com.viewlift.models.data.appcms.subscriptions.UserSubscriptionPlan;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -1148,7 +1149,7 @@ public class AppCMSPresenter {
                                         TextUtils.isEmpty(paymentProcessor)) {
                                     showEntitlementDialog(DialogType.UNKNOWN_SUBSCRIPTION_FOR_UPGRADE);
                                 } else if (isExistingGooglePlaySubscriptionSuspended() ||
-                                        !upgradesAvailableForUser(getLoggedInUser())) {
+                                        !upgradesAvailableForUser()) {
                                     showEntitlementDialog(DialogType.UPGRADE_UNAVAILABLE);
                                 } else {
                                     navigateToSubscriptionPlansPage(null, null);
@@ -6173,20 +6174,16 @@ public class AppCMSPresenter {
         }
     }
 
-    public List<SubscriptionPlan> availableUpgradesForUser(String userId) {
-        RealmResults<UserSubscriptionPlan> userSubscriptionPlanResult =
-                realmController.getUserSubscriptionPlan(userId);
-        if (userSubscriptionPlanResult != null) {
-            return userSubscriptionPlanResult.first().getAvailableUpgrades();
-        }
-        return null;
+    public List<SubscriptionPlan> availablePlans() {
+        RealmResults<SubscriptionPlan> userSubscriptionPlanResult =
+                realmController.getAllSubscriptionPlans();
+        return userSubscriptionPlanResult;
     }
 
-    public boolean upgradesAvailableForUser(String userId) {
-        List<SubscriptionPlan> availableUpgradesForUser =
-                availableUpgradesForUser(userId);
+    public boolean upgradesAvailableForUser() {
+        List<SubscriptionPlan> availableUpgradesForUser = availablePlans();
         double activeSubscriptionPrice = parseActiveSubscriptionPrice();
-        if (availableUpgradesForUser != null && activeSubscriptionPrice != 0.0f) {
+        if (availableUpgradesForUser != null && activeSubscriptionPrice != 0.0) {
             for (int i = 0; i < availableUpgradesForUser.size(); i++) {
                 if (activeSubscriptionPrice <
                         availableUpgradesForUser.get(i).getSubscriptionPrice()) {
@@ -6317,8 +6314,13 @@ public class AppCMSPresenter {
                                                                                 setActiveSubscriptionSku(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
                                                                                 setActiveSubscriptionId(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
                                                                                 setActiveSubscriptionPlanName(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
-                                                                                setActiveSubscriptionPrice(String.valueOf(appCMSSubscriptionPlanResult.getSubscriptionInfo().getTotalAmount()));
-                                                                            }
+                                                                                String countryCode = appCMSSubscriptionPlanResult.getSubscriptionInfo().getCountryCode();
+                                                                                for (PlanDetail planDetail : appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()) {
+                                                                                    if (!TextUtils.isEmpty(planDetail.getRecurringPaymentCurrencyCode()) &&
+                                                                                            planDetail.getCountryCode().equalsIgnoreCase(countryCode)) {
+                                                                                        setActiveSubscriptionPrice(String.valueOf(planDetail.getRecurringPaymentAmount()));
+                                                                                    }
+                                                                                }                                                                           }
 
                                                                             if (appCMSSubscriptionPlanResult.getSubscriptionInfo() != null &&
                                                                                     !TextUtils.isEmpty(appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentHandler())) {
@@ -6429,11 +6431,18 @@ public class AppCMSPresenter {
                                                                 setActiveSubscriptionId(subscribedPlan.getPlanId());
                                                                 setActiveSubscriptionPlanName(subscribedPlan.getPlanName());
                                                                 setActiveSubscriptionPrice(String.valueOf(subscribedPlan.getSubscriptionPrice()));
-                                                            } else if (appCMSSubscriptionPlanResult.getSubscriptionPlanInfo() != null) {
+                                                            } else if (appCMSSubscriptionPlanResult.getSubscriptionPlanInfo() != null &&
+                                                                    appCMSSubscriptionPlanResult.getSubscriptionInfo() != null) {
                                                                 setActiveSubscriptionSku(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
                                                                 setActiveSubscriptionId(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
                                                                 setActiveSubscriptionPlanName(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
-                                                                setActiveSubscriptionPrice(String.valueOf(appCMSSubscriptionPlanResult.getSubscriptionInfo().getTotalAmount()));
+                                                                String countryCode = appCMSSubscriptionPlanResult.getSubscriptionInfo().getCountryCode();
+                                                                for (PlanDetail planDetail : appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()) {
+                                                                    if (!TextUtils.isEmpty(planDetail.getRecurringPaymentCurrencyCode()) &&
+                                                                            planDetail.getCountryCode().equalsIgnoreCase(countryCode)) {
+                                                                        setActiveSubscriptionPrice(String.valueOf(planDetail.getRecurringPaymentAmount()));
+                                                                    }
+                                                                }
                                                             }
 
                                                             if (appCMSSubscriptionPlanResult.getSubscriptionInfo() != null &&

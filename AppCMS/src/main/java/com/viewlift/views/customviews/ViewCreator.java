@@ -636,7 +636,7 @@ public class ViewCreator {
                                                                 ((TextView) settingsView).setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
                                                             } else if (!TextUtils.isEmpty(component.getText())) {
                                                                 ((TextView) settingsView).setText(component.getText());
-                                                                if (!appCMSPresenter.upgradesAvailableForUser(appCMSPresenter.getLoggedInUser())) {
+                                                                if (!appCMSPresenter.upgradesAvailableForUser()) {
                                                                     settingsView.setVisibility(View.GONE);
                                                                 }
                                                             }
@@ -1846,7 +1846,7 @@ public class ViewCreator {
                             } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                             }
-                        } else if (!appCMSPresenter.upgradesAvailableForUser(appCMSPresenter.getLoggedInUser())) {
+                        } else if (!appCMSPresenter.upgradesAvailableForUser()) {
                             componentViewResult.componentView.setVisibility(View.GONE);
                         }
 
