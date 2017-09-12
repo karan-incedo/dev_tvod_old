@@ -326,6 +326,11 @@ public class TVViewCreator {
                         fromJson(Utils.loadJsonFromAssets(context, "contact_us.json"), ModuleList.class);
             }
 
+            if(module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_setting_module))){
+                module = new GsonBuilder().create().
+                        fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
+            }
+
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 

@@ -220,7 +220,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     NavigationSubItem navigationSubItem = navigationSubItemList.get(selectedPosition);
-                    if (mAppCMSBinder.getJsonValueKeyMap().get(navigationSubItem.title).equals(ANDROID_WATCHLIST_NAV_KEY)) {
+                    if (ANDROID_WATCHLIST_NAV_KEY.equals(mAppCMSBinder.getJsonValueKeyMap().get(navigationSubItem.title))) {
                         appCmsPresenter.navigateToWatchlistPage(
                                 navigationSubItem.pageId,
                                 navigationSubItem.title,

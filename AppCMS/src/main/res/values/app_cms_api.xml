@@ -6,7 +6,9 @@
 
     <!--QA Server-->
     <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
-    <string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>
+    <string name="app_cms_app_name">3f5e193b-2e51-4853-839e-618e62896deb</string> <!--Snagfilms-->
+    <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>--><!--Hoichoi QA-->
+
 
 
     <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
