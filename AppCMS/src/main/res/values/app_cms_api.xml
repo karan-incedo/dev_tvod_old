@@ -1,6 +1,6 @@
 <resources>
     <!-- Primary app values -->
-     <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
+    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
     <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
 
     <string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>

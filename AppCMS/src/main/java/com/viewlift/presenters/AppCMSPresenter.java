@@ -394,7 +394,7 @@ public class AppCMSPresenter {
             "/storage/microsd" // ASUS ZenFone 2
     };
     boolean isRenewable;
-    private boolean isCCAvenueEnabled = false;
+
     private String FIREBASE_CONTACT_SCREEN = "Contact Us";
     private String FIREBASE_VIDEO_DETAIL_SCREEN = "Video Detail Screen";
     private String FIREBASE_EVENT_LOGIN_SCREEN = "Login Screen";
@@ -1837,8 +1837,6 @@ public class AppCMSPresenter {
     }
 
     public void initiateItemPurchase() {
-        isCCAvenueEnabled = false;
-
         if (!TextUtils.isEmpty(countryCode) &&
                 appCMSMain != null &&
                 appCMSMain.getCcav() != null &&
@@ -1846,7 +1844,6 @@ public class AppCMSPresenter {
                 appCMSMain.getCcav().getCountry().equalsIgnoreCase(countryCode)) {
             Log.d(TAG, "Initiating CCAvenue purchase");
             initiateCCAvenuePurchase();
-            isCCAvenueEnabled = true;
         } else {
             if (currentActivity != null &&
                     inAppBillingService != null) {
@@ -1925,6 +1922,7 @@ public class AppCMSPresenter {
                 }
             } else {
                 Log.e(TAG, "InAppBillingService: " + inAppBillingService);
+                initiateCCAvenuePurchase();
             }
         }
     }
