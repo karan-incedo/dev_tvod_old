@@ -57,6 +57,9 @@ import com.google.android.exoplayer2.upstream.DataSource.Factory;
 import com.viewlift.R;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import rx.Observable;
 import rx.functions.Action1;
@@ -88,6 +91,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private long mCurrentPlayerPosition;
     private FinishListener mFinishListener;
+
+    private Map<String, Integer> failedMediaSourceLoads;
 
     public VideoPlayerView(Context context) {
         super(context);
@@ -220,6 +225,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private void init(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         initializePlayer(context, attrs, defStyleAttr);
         playerState = new PlayerState();
+        failedMediaSourceLoads = new HashMap<>();
     }
 
     private void initializePlayer(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
@@ -393,6 +399,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                                 int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                                 long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs,
                                 long bytesLoaded) {
+        failedMediaSourceLoads.clear();
     }
 
     @Override
@@ -410,14 +417,22 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                             long bytesLoaded, IOException error, boolean wasCanceled) {
         Log.d(TAG, "onLoadError : " + error.getMessage());
         /**
-         * We can enhance logic here depending on the error code list that we will use for cloasing the video page.
+         * We can enhance logic here depending on the error code list that we will use for closing the video page.
          */
         if ( (error.getMessage().contains("404") ||
                 error.getMessage().contains("400") )
                 && !isLoadedNext) {
-            if ((player.getCurrentPosition() + 5000) >= player.getDuration()) {
-                isLoadedNext = true;
-                mFinishListener.onFinishCallback(error.getMessage());
+            String failedMediaSourceLoadKey = dataSpec.uri.toString();
+            if (failedMediaSourceLoads.containsKey(failedMediaSourceLoadKey)) {
+                int tryCount = failedMediaSourceLoads.get(failedMediaSourceLoadKey);
+                if (tryCount == 3) {
+                    isLoadedNext = true;
+                    mFinishListener.onFinishCallback(error.getMessage());
+                } else {
+                    failedMediaSourceLoads.put(failedMediaSourceLoadKey, tryCount + 1);
+                }
+            } else {
+                failedMediaSourceLoads.put(failedMediaSourceLoadKey, 1);
             }
         }
     }

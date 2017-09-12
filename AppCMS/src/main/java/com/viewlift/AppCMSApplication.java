@@ -41,6 +41,8 @@ public class AppCMSApplication extends Application {
                 .appCMSPresenterModule(new AppCMSPresenterModule())
                 .build();
 
+        appCMSPresenterComponent.appCMSPresenter().setCurrentContext(this);
+
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
@@ -61,6 +63,7 @@ public class AppCMSApplication extends Application {
             @Override
             public void onActivityPaused(Activity activity) {
                 Log.d(TAG, "Activity being paused: " + activity.getLocalClassName());
+                appCMSPresenterComponent.appCMSPresenter().closeSoftKeyboard();
             }
 
             @Override

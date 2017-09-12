@@ -437,6 +437,8 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_action_homepage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_historyscreen_key),
                 context.getString(R.string.app_cms_action_historypage_key));
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_watchlistscreen_key),
+                context.getString(R.string.app_cms_action_watchlistpage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_videoscreen_key),
                 context.getString(R.string.app_cms_action_videopage_key));
     }
@@ -447,6 +449,7 @@ public class AppCMSUIModule {
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_historypage_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_videopage_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
+        this.actionToPageMap.put(context.getString(R.string.app_cms_action_watchlistpage_key), null);
     }
 
     private void createActionToPageAPIMap(Context context) {
@@ -471,6 +474,9 @@ public class AppCMSUIModule {
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_historypage_key),
                 AppCMSActionType.HISTORY_PAGE);
+
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_watchlistpage_key),
+                AppCMSActionType.WATCHLIST_PAGE);
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_videopage_key),
                 AppCMSActionType.VIDEO_PAGE);

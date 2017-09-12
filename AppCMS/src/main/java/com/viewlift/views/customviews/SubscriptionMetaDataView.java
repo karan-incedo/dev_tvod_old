@@ -2,6 +2,8 @@ package com.viewlift.views.customviews;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -44,6 +46,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
     private final Settings moduleSettings;
     private int devicesSupportedComponentIndex;
     private int devicesSupportedFeatureIndex;
+    Context context;
 
     public SubscriptionMetaDataView(Context context,
                                     Component component,
@@ -54,6 +57,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
                                     AppCMSPresenter appCMSPresenter,
                                     Settings moduleSettings) {
         super(context);
+        this.context = context;
         this.component = component;
         this.layout = layout;
         this.viewCreator = viewCreator;
@@ -144,7 +148,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
         planLayout.setOrientation(GridLayout.HORIZONTAL);
         planLayout.setColumnCount(2);
         int componentIndex = 0;
-        if (component.getComponents() != null)  {
+        if (component.getComponents() != null) {
             for (componentIndex = 0;
                  componentIndex < component.getComponents().size();
                  componentIndex++) {
@@ -237,30 +241,46 @@ public class SubscriptionMetaDataView extends LinearLayout {
             }
 
             GridLayout.LayoutParams gridLayoutParams = new GridLayout.LayoutParams();
-            gridLayoutParams.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+//            gridLayoutParams.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
 
             switch (componentKeyType) {
                 case PAGE_PLANMETADATATILE_KEY:
-                    if (componentView instanceof  TextView) {
+                    if (componentView instanceof TextView) {
+                        componentView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                         ((TextView) componentView).setText(featureDetail.getTextToDisplay());
-                        ((TextView) componentView).setEllipsize(TextUtils.TruncateAt.END);
-                        componentView.setLayoutParams(gridLayoutParams);
+
+                        if (!TextUtils.isEmpty(featureDetail.getValue()) &&
+                                featureDetail.getValue().equalsIgnoreCase("true")) {
+                            Drawable rightImage = ContextCompat.getDrawable(context, R.drawable.tickicon);
+                            rightImage.setBounds(0, 0, rightImage.getIntrinsicWidth(), rightImage.getIntrinsicHeight());
+                            ((TextView) componentView).setCompoundDrawables(null, null, rightImage, null);
+                        } else {
+                            Drawable rightImage = ContextCompat.getDrawable(context, R.drawable.crossicon);
+                            rightImage.setBounds(0, 0, rightImage.getIntrinsicWidth(), rightImage.getIntrinsicHeight());
+                            ((TextView) componentView).setCompoundDrawables(null, null, rightImage, null);
+                        }
+
+//                        ((TextView) componentView).setEllipsize(TextUtils.TruncateAt.END);
+//                        componentView.setLayoutParams(gridLayoutParams);
                     }
                     break;
 
-                case PAGE_PLANMETADDATAIMAGE_KEY:
-                    if (componentView instanceof ImageView) {
-                        if (!TextUtils.isEmpty(featureDetail.getValue()) &&
-                                featureDetail.getValue().equalsIgnoreCase("true")) {
-                            ((ImageView) componentView).setImageResource(R.drawable.tickicon);
-                        } else {
-                            ((ImageView) componentView).setImageResource(R.drawable.crossicon);
-                        }
-                        gridLayoutParams.setMargins(0, 0, 16, 0);
-                        gridLayoutParams.setGravity(Gravity.END);
-                        componentView.setLayoutParams(gridLayoutParams);
-                    }
-                    break;
+
+//                case PAGE_PLANMETADDATAIMAGE_KEY:
+//                    if (componentView instanceof ImageView) {
+//                        if (!TextUtils.isEmpty(featureDetail.getValue()) &&
+//                                featureDetail.getValue().equalsIgnoreCase("true")) {
+//                            ((ImageView) componentView).setImageResource(R.drawable.tickicon);
+//                        } else {
+//                            ((ImageView) componentView).setImageResource(R.drawable.crossicon);
+//                        }
+////                        gridLayoutParams.rowSpec=GridLayout.spec(2);
+//                        gridLayoutParams.columnSpec=GridLayout.spec(0);
+//                        gridLayoutParams.setMargins(0, 0, 16, 0);
+//                        gridLayoutParams.setGravity(Gravity.END);
+//                        componentView.setLayoutParams(gridLayoutParams);
+//                    }
+//                    break;
 
                 default:
             }

@@ -15,20 +15,23 @@ import dagger.Provides;
 public class AppCMSSearchUrlModule {
     private final String baseUrl;
     private final String siteName;
+    private final String apiKey;
     private final AppCMSSearchCall appCMSSearchCall;
 
     public AppCMSSearchUrlModule(String baseUrl,
                                  String siteName,
+                                 String apiKey,
                                  AppCMSSearchCall appCMSSearchCall) {
         this.baseUrl = baseUrl;
         this.siteName = siteName;
+        this.apiKey = apiKey;
         this.appCMSSearchCall = appCMSSearchCall;
     }
 
     @Provides
     @Singleton
     public AppCMSSearchUrlData providesSearchInitializer() {
-        return new AppCMSSearchUrlData(baseUrl, siteName);
+        return new AppCMSSearchUrlData(baseUrl, siteName, apiKey);
     }
 
     @Provides

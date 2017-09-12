@@ -4,7 +4,7 @@ apply plugin: 'realm-android'
 def final packageName = 'com.viewlift.hoichoi'
 def final customApplicationId = 'HoiChoi'
 def final hostName = "www.hoichoi.tv"
-def final appVersionName = "2.0.1"
+def final appVersionName = "2.0.10"
 
 buildscript {
     repositories {
@@ -33,8 +33,8 @@ android {
     defaultConfig {
         applicationId packageName
         minSdkVersion 23
-        targetSdkVersion 25
-        versionCode 34
+        targetSdkVersion 26
+        versionCode 43
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 26

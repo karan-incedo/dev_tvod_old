@@ -396,7 +396,7 @@ public abstract class BaseView extends FrameLayout {
 
             int fontsize = getFontsize(getContext(), childComponent);
             if (fontsize > 0) {
-                ((TextView) view).setTextSize((float) fontsize);
+//                ((TextView) view).setTextSize((float) fontsize);
             }
 
             if (maxViewWidth != -1) {

@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -30,6 +31,11 @@ public class AppCMSNavItemsFragment extends DialogFragment {
     private AppCMSPresenter appCMSPresenter;
     private AppCMSBinder appCMSBinder;
     private AppCMSNavItemsAdapter appCMSNavItemsAdapter;
+    private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
+    private final String FIREBASE_LOGIN_SCREEN_VALUE = "Login Screen";
+    private final String LOGIN_STATUS_KEY = "logged_in_status";
+    private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
+    private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
 
     public static AppCMSNavItemsFragment newInstance(Context context,
                                                      AppCMSBinder appCMSBinder,
@@ -79,7 +85,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
         }
 
         LinearLayout appCMSNavLoginContainer = view.findViewById(R.id.app_cms_nav_login_container);
-        if (appCMSPresenter.isUserLoggedIn(getContext())) {
+        if (appCMSPresenter.isUserLoggedIn()) {
             appCMSNavLoginContainer.setVisibility(View.GONE);
         } else {
             appCMSNavLoginContainer.setVisibility(View.VISIBLE);
@@ -93,6 +99,15 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 if (appCMSPresenter != null) {
                     appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
                     appCMSPresenter.navigateToLoginPage();
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_LOGIN_SCREEN_VALUE);
+                    String firebaseEventKey = FirebaseAnalytics.Event.VIEW_ITEM;
+                    if (appCMSPresenter.isUserLoggedIn()){
+                        appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
+                    }else{
+                        appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                    }
+                    appCMSPresenter.sendFirebaseSelectedEvents(firebaseEventKey, bundle);
                 }
             });
             GradientDrawable loginBorder = new GradientDrawable();
