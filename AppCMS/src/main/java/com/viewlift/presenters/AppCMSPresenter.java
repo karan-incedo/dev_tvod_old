@@ -2339,6 +2339,10 @@ public class AppCMSPresenter {
 
     }
 
+    public void clearSubscriptionPlans() {
+        realmController.deleteSubscriptionPlans();
+    }
+
     public void createSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
         realmController.addSubscriptionPlan(subscriptionPlan);
     }
@@ -6253,6 +6257,7 @@ public class AppCMSPresenter {
                                             true,
                                             subscriptionPage.getPageId(),
                                             appCMSPageAPI -> {
+                                                clearSubscriptionPlans();
                                                 if (appCMSPageAPI != null
                                                         && appCMSPageAPI.getModules() != null) {
                                                     List<SubscriptionPlan> subscriptionPlans = new ArrayList<>();
@@ -6371,6 +6376,7 @@ public class AppCMSPresenter {
                                 true,
                                 subscriptionPage.getPageId(),
                                 appCMSPageAPI -> {
+                                    clearSubscriptionPlans();
                                     try {
                                         List<SubscriptionPlan> subscriptionPlans = new ArrayList<>();
                                         for (Module module : appCMSPageAPI.getModules()) {
@@ -6679,19 +6685,19 @@ public class AppCMSPresenter {
                                             if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
                                                 setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
                                             }
-//                                            NavigationPrimary homePageNavItem = findHomePageNavItem();
-//                                            if (homePageNavItem != null) {
-//                                                cancelInternalEvents();
-//                                                navigateToPage(homePageNavItem.getPageId(),
-//                                                        homePageNavItem.getTitle(),
-//                                                        homePageNavItem.getUrl(),
-//                                                        false,
-//                                                        true,
-//                                                        false,
-//                                                        true,
-//                                                        true,
-//                                                        deeplinkSearchQuery);
-//                                            }
+                                            NavigationPrimary homePageNavItem = findHomePageNavItem();
+                                            if (homePageNavItem != null) {
+                                                cancelInternalEvents();
+                                                navigateToPage(homePageNavItem.getPageId(),
+                                                        homePageNavItem.getTitle(),
+                                                        homePageNavItem.getUrl(),
+                                                        false,
+                                                        true,
+                                                        false,
+                                                        true,
+                                                        true,
+                                                        deeplinkSearchQuery);
+                                            }
                                         }
                                         currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                     });
