@@ -105,6 +105,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         this.hideRemoveAllButtonEvent = new InternalEvent<>(View.GONE);
         this.showRemoveAllButtonEvent = new InternalEvent<>(View.VISIBLE);
 
+        this.setHasStableIds(false);
+
         sortData();
     }
 
@@ -287,7 +289,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 holder.appCMSContinueWatchingTitle.setText(contentDatum.getGist().getTitle());
             }
 
-            if (contentDatum.getGist() != null) {
+            if (contentDatum!=null && contentDatum.getGist() != null && contentDatum.getGist().getDescription()!=null) {
                 Spannable rawHtmlSpannable = new HtmlSpanner().fromHtml(contentDatum.getGist().getDescription());
                 holder.appCMSContinueWatchingDescription.setText(rawHtmlSpannable);
             }
@@ -497,7 +499,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     switch (componentKey) {
                         case PAGE_PLAY_KEY:
                         case PAGE_PLAY_IMAGE_KEY:
+                            viewHolder.appCMSContinueWatchingPlayButton.setBackground(ContextCompat.getDrawable(viewHolder.itemView.getContext(), R.drawable.play_icon));
                             viewHolder.appCMSContinueWatchingPlayButton.getBackground().setTint(tintColor);
+                            viewHolder.appCMSContinueWatchingPlayButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+
                             break;
 
                         default:
@@ -666,8 +671,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
         adapterData = contentData;
         sortData();
-        if (adapterData != null && !adapterData.isEmpty()) {
-            sendEvent(null);
+        if (adapterData == null || adapterData.isEmpty()) {
+            sendEvent(hideRemoveAllButtonEvent);
+        } else {
+            sendEvent(showRemoveAllButtonEvent);
         }
     }
 
@@ -740,8 +747,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     true, () ->
                             appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(),
                                     userVideoDownloadStatus -> {
+
+                                        notifyItemRangeRemoved(position,getItemCount());// change made for SVFA-2054
                                         adapterData.remove(contentDatum);
-                                        notifyItemRangeChanged(position, getItemCount());
+                                        notifyDataSetChanged();
+
+                                        //notifyItemRangeChanged(position, getItemCount());
                                     }));
         }
 

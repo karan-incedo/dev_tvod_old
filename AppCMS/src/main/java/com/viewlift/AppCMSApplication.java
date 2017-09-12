@@ -63,6 +63,7 @@ public class AppCMSApplication extends Application {
             @Override
             public void onActivityPaused(Activity activity) {
                 Log.d(TAG, "Activity being paused: " + activity.getLocalClassName());
+                appCMSPresenterComponent.appCMSPresenter().closeSoftKeyboard();
             }
 
             @Override

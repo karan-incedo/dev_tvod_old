@@ -180,7 +180,7 @@ public class WebViewActivity extends Activity {
 				dialog = null;
 			}
 
-			final WebView webview = (WebView) findViewById(R.id.webview);
+			final WebView webview = findViewById(R.id.webview);
 			webview.getSettings().setJavaScriptEnabled(true);
 			webview.addJavascriptInterface(new MyJavaScriptInterface(), "HTMLOUT");
 			webview.setWebViewClient(new WebViewClient(){
@@ -188,11 +188,7 @@ public class WebViewActivity extends Activity {
 				@Override
 				public void onPageStarted(WebView view, String url, Bitmap favicon) {
 					super.onPageStarted(view, url, favicon);
-					if (url.equalsIgnoreCase(TRANS_URL)) {
-						backPressFlag = false ;
-					} else {
-						backPressFlag = true ;
-					}
+                    backPressFlag = !url.equalsIgnoreCase(TRANS_URL);
 				}
 
 				@Override

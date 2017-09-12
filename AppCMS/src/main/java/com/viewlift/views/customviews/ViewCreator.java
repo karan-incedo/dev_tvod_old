@@ -571,78 +571,85 @@ public class ViewCreator {
                                         }
                                     } else if (componentType == AppCMSUIKeyType.PAGE_SETTINGS_KEY) {
                                         appCMSPresenter.checkForExistingSubscription(false);
-                                        for (Component settingsComponent : component.getComponents()) {
-                                            shouldHideComponent = false;
+                                        if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
+                                            shouldHideComponent = true;
+                                        } else {
+                                            for (Component settingsComponent : component.getComponents()) {
+                                                shouldHideComponent = false;
 
-                                            AppCMSUIKeyType settingsComponentKey = jsonValueKeyMap.get(settingsComponent.getKey());
+                                                AppCMSUIKeyType settingsComponentKey = jsonValueKeyMap.get(settingsComponent.getKey());
 
-                                            if (settingsComponentKey == null) {
-                                                settingsComponentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
-                                            }
+                                                if (settingsComponentKey == null) {
+                                                    settingsComponentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                                                }
 
-                                            View settingsView = pageView.findViewFromComponentId(module.getId()
-                                                    + settingsComponent.getKey());
+                                                View settingsView = pageView.findViewFromComponentId(module.getId()
+                                                        + settingsComponent.getKey());
 
-                                            String paymentProcessor = appCMSPresenter.getActiveSubscriptionProcessor();
+                                                String paymentProcessor = appCMSPresenter.getActiveSubscriptionProcessor();
 
-                                            if (settingsView != null) {
-                                                if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_NAME_VALUE_KEY) {
-                                                    ((TextView) settingsView).setText(appCMSPresenter.getLoggedInUserName());
-                                                } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_VALUE_KEY) {
-                                                    ((TextView) settingsView).setText(appCMSPresenter.getLoggedInUserEmail());
-                                                } else if (TextUtils.isEmpty(appCMSPresenter.getLoggedInUserEmail())) {
-                                                    settingsView.setVisibility(View.GONE);
-                                                } else {
-                                                    if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY) {
-                                                        if (appCMSPresenter.isUserSubscribed() &&
-                                                                !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName())) {
-                                                            settingsView.setVisibility(View.VISIBLE);
-                                                        } else {
-                                                            settingsView.setVisibility(View.GONE);
-                                                            shouldHideComponent = true;
-                                                        }
-                                                    } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_VALUE_KEY) {
-                                                        if (appCMSPresenter.isUserSubscribed() &&
-                                                                !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName())) {
-                                                            ((TextView) settingsView).setText(appCMSPresenter.getActiveSubscriptionPlanName());
-                                                        } else {
-                                                            ((TextView) settingsView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
-                                                        }
-                                                    } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY) {
-                                                        if (paymentProcessor != null) {
-                                                            if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor)) ||
-                                                                    paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor_friendly))) {
-                                                                ((TextView) settingsView).setText(context.getString(R.string.subscription_ios_payment_processor_friendly));
-                                                            } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_web_payment_processor_friendly))) {
-                                                                ((TextView) settingsView).setText(context.getString(R.string.subscription_web_payment_processor_friendly));
-                                                            } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor)) ||
-                                                                    paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly))) {
-                                                                ((TextView) settingsView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
-                                                            } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ccavenue_payment_processor))) {
-                                                                ((TextView) settingsView).setText(context.getString(R.string.subscription_ccavenue_payment_processor_friendly));
+                                                if (settingsView != null) {
+                                                    if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_NAME_VALUE_KEY) {
+                                                        ((TextView) settingsView).setText(appCMSPresenter.getLoggedInUserName());
+                                                    } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_VALUE_KEY) {
+                                                        ((TextView) settingsView).setText(appCMSPresenter.getLoggedInUserEmail());
+                                                    } else if (TextUtils.isEmpty(appCMSPresenter.getLoggedInUserEmail())) {
+                                                        settingsView.setVisibility(View.GONE);
+                                                    } else {
+                                                        if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY) {
+                                                            if (appCMSPresenter.isUserSubscribed() &&
+                                                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName())) {
+                                                                settingsView.setVisibility(View.VISIBLE);
                                                             } else {
-                                                                ((TextView) settingsView).setText(context.getString(R.string.subscription_unknown_payment_processor_friendly));
+                                                                settingsView.setVisibility(View.GONE);
+                                                                shouldHideComponent = true;
                                                             }
-                                                        } else {
-                                                            ((TextView) settingsView).setText("");
-                                                        }
-                                                    } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY) {
-                                                        ((TextView) settingsView).setText(appCMSPresenter.getUserDownloadQualityPref());
-                                                    } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
-                                                        if (!appCMSPresenter.isUserSubscribed()) {
-                                                            ((TextView) settingsView).setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
-                                                        } else if (!TextUtils.isEmpty(component.getText())) {
-                                                            ((TextView) settingsView).setText(component.getText());
-                                                        }
-                                                    } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                                                        if (appCMSPresenter.isUserSubscribed()) {
-                                                            settingsView.setVisibility(View.VISIBLE);
-                                                        } else {
-                                                            settingsView.setVisibility(View.GONE);
+                                                        } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_VALUE_KEY) {
+                                                            if (appCMSPresenter.isUserSubscribed() &&
+                                                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName())) {
+                                                                ((TextView) settingsView).setText(appCMSPresenter.getActiveSubscriptionPlanName());
+                                                            } else {
+                                                                ((TextView) settingsView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
+                                                            }
+                                                        } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY) {
+                                                            if (paymentProcessor != null) {
+                                                                if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor)) ||
+                                                                        paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor_friendly))) {
+                                                                    ((TextView) settingsView).setText(context.getString(R.string.subscription_ios_payment_processor_friendly));
+                                                                } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_web_payment_processor_friendly))) {
+                                                                    ((TextView) settingsView).setText(context.getString(R.string.subscription_web_payment_processor_friendly));
+                                                                } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor)) ||
+                                                                        paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly))) {
+                                                                    ((TextView) settingsView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
+                                                                } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ccavenue_payment_processor))) {
+                                                                    ((TextView) settingsView).setText(context.getString(R.string.subscription_ccavenue_payment_processor_friendly));
+                                                                } else {
+                                                                    ((TextView) settingsView).setText(context.getString(R.string.subscription_unknown_payment_processor_friendly));
+                                                                }
+                                                            } else {
+                                                                ((TextView) settingsView).setText("");
+                                                            }
+                                                        } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY) {
+                                                            ((TextView) settingsView).setText(appCMSPresenter.getUserDownloadQualityPref());
+                                                        } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
+                                                            if (!appCMSPresenter.isUserSubscribed()) {
+                                                                ((TextView) settingsView).setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
+                                                            } else if (!TextUtils.isEmpty(component.getText())) {
+                                                                ((TextView) settingsView).setText(component.getText());
+                                                                if (!appCMSPresenter.upgradesAvailableForUser()) {
+                                                                    settingsView.setVisibility(View.GONE);
+                                                                }
+                                                            }
+                                                        } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
+                                                            if (appCMSPresenter.isUserSubscribed()) {
+                                                                settingsView.setVisibility(View.VISIBLE);
+                                                            } else {
+                                                                settingsView.setVisibility(View.GONE);
+                                                            }
                                                         }
                                                     }
+                                                    settingsView.requestLayout();
                                                 }
-                                                settingsView.requestLayout();
                                             }
                                         }
                                     } else if (componentType == AppCMSUIKeyType.PAGE_TOGGLE_BUTTON_KEY) {
@@ -945,7 +952,7 @@ public class ViewCreator {
                         adjustOthers = AdjustOtherState.ADJUST_OTHERS;
                     }
 
-                    if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
+                     if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
                         componentViewResult.shouldHideComponent = true;
                         componentViewResult.componentView.setVisibility(View.GONE);
                         adjustOthers = AdjustOtherState.INITIATED;
@@ -1160,10 +1167,10 @@ public class ViewCreator {
                                     final AppCMSPresenter appCMSPresenter,
                                     boolean gridElement,
                                     final String viewType) {
-        componentViewResult.componentView = null;
+         componentViewResult.componentView = null;
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
-        componentViewResult.shouldHideModule = false;
+          componentViewResult.shouldHideModule = false;
         componentViewResult.addToPageView = false;
         componentViewResult.shouldHideComponent = false;
         componentViewResult.onInternalEvent = null;
@@ -1172,7 +1179,7 @@ public class ViewCreator {
             return;
         }
 
-        AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
+           AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
 
         if (componentType == null) {
             componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
@@ -1745,7 +1752,7 @@ public class ViewCreator {
 
                             @Override
                             public void receiveEvent(InternalEvent<?> event) {
-                                if (event.getEventData() instanceof Integer) {
+                                if (event != null && event.getEventData()!=null && event.getEventData() instanceof Integer) {
                                     int buttonStatus = (Integer) event.getEventData();
                                     if (buttonStatus == View.VISIBLE) {
                                         removeAllButton.setVisibility(View.VISIBLE);
@@ -1839,6 +1846,8 @@ public class ViewCreator {
                             } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                             }
+                        } else if (!appCMSPresenter.upgradesAvailableForUser()) {
+                            componentViewResult.componentView.setVisibility(View.GONE);
                         }
 
                         componentViewResult.componentView.setOnClickListener(v -> {
@@ -2740,8 +2749,19 @@ public class ViewCreator {
             this.filmId = filmId;
 
             addClickListener = v -> {
+                if (!appCMSPresenter.isNetworkConnected()) {
+                    if (!appCMSPresenter.isUserLoggedIn()) {
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
+                        return;
+                    }
+                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                            appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
+                            true,
+                            () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
+                                    null, null, false));
+                    return;
+                }
                 if (appCMSPresenter.isUserLoggedIn()) {
-
                     appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
                             addToWatchlistResult -> {
                                 UpdateImageIconAction.this.imageButton.setImageResource(
@@ -2800,6 +2820,18 @@ public class ViewCreator {
             this.userId = userId;
 
             addClickListener = v -> {
+                if (!appCMSPresenter.isNetworkConnected()) {
+                    if (!appCMSPresenter.isUserLoggedIn()) {
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
+                        return;
+                    }
+                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                            appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
+                            true,
+                            () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
+                                    null, null, false));
+                    return;
+                }
                 if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
                         !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
                     if (appCMSPresenter.isDownloadQualityScreenShowBefore()) { // Fix for SVFA-1724

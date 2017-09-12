@@ -91,7 +91,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
             if (appCMSPresenter.isUserLoggedIn()) {
                 List<SubscriptionPlan> availableSubscriptionPlans =
-                        appCMSPresenter.availableUpgradesForUser(appCMSPresenter.getLoggedInUser());
+                        appCMSPresenter.availablePlans();
 
                 double subscriptionPrice = -1.0;
 
@@ -117,6 +117,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.selectedColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
                 .getGeneral().getBlockTitleColor());
         this.isClickable = true;
+
+        this.setHasStableIds(false);
 
         sortPlanPricesInDescendingOrder();
     }
@@ -241,7 +243,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
             if (appCMSPresenter.isUserLoggedIn()) {
                 List<SubscriptionPlan> availableSubscriptionPlans =
-                        appCMSPresenter.availableUpgradesForUser(appCMSPresenter.getLoggedInUser());
+                        appCMSPresenter.availablePlans();
 
                 double subscriptionPrice = -1.0;
 

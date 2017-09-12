@@ -3,7 +3,7 @@
 buildscript {
     ext {
         realmVersion = "3.5.0"
-        gradleBuildVersion = "3.0.0-beta3"
+        gradleBuildVersion = "3.0.0-beta4"
         playServicesVersion = "3.0.0"
     }
     repositories {
@@ -54,7 +54,6 @@ allprojects {
         appsFlyerVersion = "4.7.4@aar"
         glideTransformationVersion = "2.0.2"
         threetenBpVersion = "1.0.5"
-        htmlspannerVersion = "0.4"
     }
 }
 

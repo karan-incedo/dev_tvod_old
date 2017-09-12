@@ -36,7 +36,7 @@ public class FragmentDemoActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_layout, container, false);
-            button = (Button) view.findViewById(R.id.fragment_demo_button);
+            button = view.findViewById(R.id.fragment_demo_button);
             return view;
         }
 
@@ -70,7 +70,7 @@ public class FragmentDemoActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_layout, container, false);
-            button = (Button) view.findViewById(R.id.fragment_demo_button);
+            button = view.findViewById(R.id.fragment_demo_button);
             return view;
         }
 
