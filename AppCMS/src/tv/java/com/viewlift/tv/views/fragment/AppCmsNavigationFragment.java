@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -30,6 +31,8 @@ import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.R;
 
 import java.util.List;
+
+import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY;
 
 /**
  * Created by nitin.tyagi on 6/27/2017.
@@ -208,15 +211,24 @@ public class AppCmsNavigationFragment extends Fragment {
 
                                 NavigationUser navigationUser = getNavigationUser();
                                 Log.d("","Selected Title = "+navigationUser.getTitle());
-                                appCmsPresenter.navigateToTVPage(
-                                        navigationUser.getPageId(),
-                                        navigationUser.getTitle(),
-                                        navigationUser.getUrl(),
-                                        false,
-                                        null,
-                                        false
-                                );
+                                if (ANDROID_WATCHLIST_NAV_KEY.equals(appCmsBinder
+                                        .getJsonValueKeyMap().get(navigationUser.getTitle()))) {
+                                    appCmsPresenter.navigateToWatchlistPage(
+                                            navigationUser.getPageId(),
+                                            navigationUser.getTitle(),
+                                            navigationUser.getUrl(),
+                                            false);
+                                } else {
 
+                                    appCmsPresenter.navigateToTVPage(
+                                            navigationUser.getPageId(),
+                                            navigationUser.getTitle(),
+                                            navigationUser.getUrl(),
+                                            false,
+                                            Uri.EMPTY,
+                                            false
+                                    );
+                                }
                             }else if (!appCmsPresenter.navigateToTVPage(primary.getPageId(),
                                     primary.getTitle(),
                                     primary.getUrl(),

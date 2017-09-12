@@ -70,6 +70,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
@@ -163,6 +164,7 @@ import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
+import com.viewlift.tv.utility.Utils;
 import com.viewlift.views.activity.AppCMSDownloadQualityActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
@@ -1881,7 +1883,9 @@ public class AppCMSPresenter {
                 filmId);
 
         //Firebase Succesfull Login Check on WatchList Add and Remove
-        mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
+        if (null != mFireBaseAnalytics) {
+            mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
+        }
 
 
         try {
@@ -2898,7 +2902,14 @@ public class AppCMSPresenter {
                                         boolean launchActivity) {
 
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
-            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+            AppCMSPageUI appCMSPageUI;
+            if (platformType.equals(PlatformType.TV)) {
+                appCMSPageUI = new GsonBuilder().create().
+                        fromJson(Utils.loadJsonFromAssets(currentActivity,
+                                "watchlist.json"), AppCMSPageUI.class);
+            } else {
+                appCMSPageUI = navigationPages.get(pageId);
+            }
 
             getWatchlistPageContent(appCMSMain.getApiBaseUrl(),
                     pageIdToPageAPIUrlMap.get(pageId),
@@ -7323,7 +7334,15 @@ public class AppCMSPresenter {
                 && !(pageTitle.equalsIgnoreCase(currentActivity.getString(R.string.contact_us)))) {
             loadingPage = true;
             Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
-            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+            // Log.d(TAG, "Search query (optional): " + searchQuery);
+            AppCMSPageUI appCMSPageUI;
+            if(pageTitle.equalsIgnoreCase("watchlist")){
+                appCMSPageUI = new GsonBuilder().create().
+                        fromJson(Utils.loadJsonFromAssets(currentActivity,
+                                "watchlist.json"), AppCMSPageUI.class);
+            } else {
+                appCMSPageUI = navigationPages.get(pageId);
+            }
             AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
 
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));

@@ -229,11 +229,11 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
         if (!TextUtils.isEmpty(hlsUrl)) {
             videoPlayerView.setClosedCaptionEnabled(false);
-           /* videoPlayerView.getPlayerView().getSubtitleView()
+            videoPlayerView.getPlayerView().getSubtitleView()
                     .setVisibility(appCMSPresenter.getClosedCaptionPreference(mContext)
                             ? View.VISIBLE
-                            : View.GONE);*/
-           videoPlayerView.getPlayerView().getSubtitleView().setVisibility(View.VISIBLE);
+                            : View.GONE);
+//           videoPlayerView.getPlayerView().getSubtitleView().setVisibility(View.VISIBLE);
             videoPlayerView.setUri(Uri.parse(hlsUrl),
                     !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
             Log.i(TAG, "Playing video: " + hlsUrl);

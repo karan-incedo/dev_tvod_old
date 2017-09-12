@@ -15,6 +15,8 @@ import android.support.annotation.Nullable;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.InputType;
 import android.text.Spannable;
@@ -48,6 +50,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.gson.GsonBuilder;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
@@ -281,7 +284,8 @@ public class TVViewCreator {
                             module.getSettings(),
                             jsonValueKeyMap,
                             appCMSPresenter,
-                            false);
+                            false,
+                            module.getView());
                     if (componentViewResult.onInternalEvent != null) {
                         appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
                     }
@@ -297,7 +301,8 @@ public class TVViewCreator {
                                 childrenContainer,
                                 jsonValueKeyMap,
                                 componentViewResult.useMarginsAsPercentagesOverride,
-                                componentViewResult.useWidthOfScreen);
+                                componentViewResult.useWidthOfScreen,
+                                module.getView());
 
                     } else {
                         moduleView.setComponentHasView(i, false);
@@ -335,7 +340,8 @@ public class TVViewCreator {
                             module.getSettings(),
                             jsonValueKeyMap,
                             appCMSPresenter,
-                            false);
+                            false,
+                            module.getView());
                     if (componentViewResult.onInternalEvent != null) {
                         appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
                     }
@@ -351,7 +357,8 @@ public class TVViewCreator {
                                 childrenContainer,
                                 jsonValueKeyMap,
                                 componentViewResult.useMarginsAsPercentagesOverride,
-                                componentViewResult.useWidthOfScreen);
+                                componentViewResult.useWidthOfScreen,
+                                module.getView());
 
                     } else {
                         moduleView.setComponentHasView(i, false);
@@ -477,7 +484,8 @@ public class TVViewCreator {
                                     final Settings settings,
                                     Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                     final AppCMSPresenter appCMSPresenter,
-                                    boolean gridElement) {
+                                    boolean gridElement,
+                                    String viewType) {
         componentViewResult.componentView = null;
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
@@ -495,6 +503,24 @@ public class TVViewCreator {
         }
 
         switch (componentType) {
+            case PAGE_TABLE_VIEW_KEY:
+                componentViewResult.componentView = new RecyclerView(context);
+                ((RecyclerView) componentViewResult.componentView)
+                        .setLayoutManager(new LinearLayoutManager(context,
+                                LinearLayoutManager.VERTICAL,
+                                false));
+                AppCMSTVTrayAdapter appCMSTVTrayItemAdapter = new AppCMSTVTrayAdapter(context,
+                        moduleAPI.getContentData(),
+                        component,
+                        component.getLayout(),
+                        appCMSPresenter,
+                        jsonValueKeyMap,
+                        viewType,
+                        this,
+                        moduleAPI);
+                ((RecyclerView) componentViewResult.componentView)
+                        .setAdapter(appCMSTVTrayItemAdapter);
+                break;
             case PAGE_BUTTON_KEY:
                 if (componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY) {
                     componentViewResult.componentView = new Button(context);
@@ -1444,6 +1470,12 @@ public class TVViewCreator {
                                             Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
         if (appCMSPageAPI != null && appCMSPageAPI.getModules() != null) {
             if (AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
+                if (appCMSPageAPI.getModules() != null && appCMSPageAPI.getModules().size() > 0) {
+                    return appCMSPageAPI.getModules().get(0);
+                }
+            }
+
+            if (AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
                 if (appCMSPageAPI.getModules() != null && appCMSPageAPI.getModules().size() > 0) {
                     return appCMSPageAPI.getModules().get(0);
                 }

@@ -89,6 +89,9 @@ public class AppCmsMyProfileFragment extends Fragment implements AppCmsSubNaviga
 
     private void setSubNavigationFragment(){
         appCmsSubNavigationFragment = AppCmsSubNavigationFragment.newInstance(getActivity(),this);
+        Bundle bundle = new Bundle();
+        bundle.putBinder("app_cms_binder" , mAppCMSBinder);
+        appCmsSubNavigationFragment.setArguments(bundle);
         appCmsSubNavigationFragment.setSelectedPageId(mAppCMSBinder.getPageId());
         getChildFragmentManager().beginTransaction().replace(R.id.sub_navigation_placholder , appCmsSubNavigationFragment ).commitAllowingStateLoss();
     }

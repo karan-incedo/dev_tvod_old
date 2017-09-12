@@ -20,7 +20,7 @@
     android:versionName="5.4.3" >
 
     <uses-sdk
-        android:minSdkVersion="23"
+        android:minSdkVersion="21"
         android:targetSdkVersion="25" />
 
 </manifest>

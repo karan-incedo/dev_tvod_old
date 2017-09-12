@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AccessLevels;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationFooter;
@@ -36,6 +37,9 @@ import com.viewlift.views.binders.AppCMSBinder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY;
 
 /**
  * Created by nitin.tyagi on 6/27/2017.
@@ -52,6 +56,8 @@ public class AppCmsSubNavigationFragment extends Fragment {
     private AppCMSBinder appCmsBinder;
     private  Navigation mNavigation;
     private boolean isUserLogin;
+    private AppCMSBinder mAppCMSBinder;
+
     public static AppCmsSubNavigationFragment newInstance(Context context,
                                                           OnNavigationVisibilityListener listener
                                                          ) {
@@ -70,6 +76,9 @@ public class AppCmsSubNavigationFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_navigation, null);
 
+
+        Bundle bundle = getArguments();
+        mAppCMSBinder = (AppCMSBinder)bundle.getBinder("app_cms_binder");
 /*
         AppCMSBinder appCMSBinder = ((AppCMSBinder) args.getBinder(getResources().getString(R.string.fragment_page_bundle_key)));
         this.appCmsBinder = appCMSBinder;
@@ -211,14 +220,23 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     NavigationSubItem navigationSubItem = navigationSubItemList.get(selectedPosition);
-                    appCmsPresenter.navigateToTVPage(
-                            navigationSubItem.pageId,
-                            navigationSubItem.title,
-                            navigationSubItem.url,
-                            false,
-                            Uri.EMPTY,
-                            false
-                    );
+                    if (mAppCMSBinder.getJsonValueKeyMap().get(navigationSubItem.title).equals(ANDROID_WATCHLIST_NAV_KEY)) {
+                        appCmsPresenter.navigateToWatchlistPage(
+                                navigationSubItem.pageId,
+                                navigationSubItem.title,
+                                navigationSubItem.url,
+                                false);
+                    } else {
+
+                        appCmsPresenter.navigateToTVPage(
+                                navigationSubItem.pageId,
+                                navigationSubItem.title,
+                                navigationSubItem.url,
+                                false,
+                                Uri.EMPTY,
+                                false
+                        );
+                    }
                 }
             });
         }
