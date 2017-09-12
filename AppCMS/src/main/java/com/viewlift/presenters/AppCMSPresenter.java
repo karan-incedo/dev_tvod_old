@@ -1839,9 +1839,10 @@ public class AppCMSPresenter {
     public void initiateItemPurchase() {
         if (!TextUtils.isEmpty(countryCode) &&
                 appCMSMain != null &&
-                appCMSMain.getCcav() != null &&
-                !TextUtils.isEmpty(appCMSMain.getCcav().getCountry()) &&
-                appCMSMain.getCcav().getCountry().equalsIgnoreCase(countryCode)) {
+                appCMSMain.getPaymentProviders() != null &&
+                appCMSMain.getPaymentProviders().getCcav() != null &&
+                !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
+                appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode)) {
             Log.d(TAG, "Initiating CCAvenue purchase");
             initiateCCAvenuePurchase();
         } else {
