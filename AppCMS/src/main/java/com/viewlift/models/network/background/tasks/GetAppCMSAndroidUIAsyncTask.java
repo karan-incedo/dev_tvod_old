@@ -1,6 +1,7 @@
 package com.viewlift.models.network.background.tasks;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.IOException;
 
@@ -14,6 +15,8 @@ import rx.functions.Action1;
  */
 
 public class GetAppCMSAndroidUIAsyncTask extends AsyncTask<GetAppCMSAndroidUIAsyncTask.Params, Integer, AppCMSAndroidUI> {
+    private static final String TAG = "AndroidAsyncTask";
+
     private final AppCMSAndroidUICall call;
     private final Action1<AppCMSAndroidUI> readyAction;
 
@@ -36,6 +39,12 @@ public class GetAppCMSAndroidUIAsyncTask extends AsyncTask<GetAppCMSAndroidUIAsy
             public Params build() {
                 return params;
             }
+            @Override
+            public String toString() {
+                StringBuilder sb = new StringBuilder();
+                sb.append("url: " + params.url + " loadFromFile: " + params.loadFromFile);
+                return sb.toString();
+            }
         }
     }
 
@@ -48,9 +57,11 @@ public class GetAppCMSAndroidUIAsyncTask extends AsyncTask<GetAppCMSAndroidUIAsy
     protected AppCMSAndroidUI doInBackground(Params... params) {
         if (params.length > 0) {
             try {
-                return call.call(params[0].url, params[0].loadFromFile);
+                return call.call(params[0].url, params[0].loadFromFile, 0);
             } catch (IOException e) {
-
+                Log.e(TAG, "Error retrieving AppCMS Android file with params " +
+                        params.toString() + ": " +
+                        e.getMessage());
             }
         }
         return null;

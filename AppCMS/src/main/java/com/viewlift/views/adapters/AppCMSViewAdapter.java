@@ -118,6 +118,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 .getGeneral().getBlockTitleColor());
         this.isClickable = true;
 
+        this.setHasStableIds(false);
+
         sortPlanPricesInDescendingOrder();
     }
 

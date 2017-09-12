@@ -113,7 +113,9 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
 
             continueButton.setOnClickListener(v -> {
                 appCMSPresenter.setUserDownloadQualityPref(downloadQuality); // fix for SVFA-1724
-                if (binder.getContentDatum() != null && binder.getResultAction1() != null) {
+                if (binder != null &&
+                        binder.getContentDatum() != null &&
+                        binder.getResultAction1() != null) {
                     appCMSPresenter.editDownload(binder.getContentDatum(), binder.getResultAction1(), true);
 
                 }
@@ -193,14 +195,19 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
     }
 
     public AppCMSViewComponent buildAppCMSViewComponent() {
-        return DaggerAppCMSViewComponent.builder()
-                .appCMSPageViewModule(new AppCMSPageViewModule(getContext(),
-                        binder.getAppCMSPageUI(),
-                        binder.getAppCMSPageAPI(),
-                        binder.getScreenName(),
-                        binder.getJsonValueKeyMap(),
-                        appCMSPresenter))
-                .build();
+        try {
+            return DaggerAppCMSViewComponent.builder()
+                    .appCMSPageViewModule(new AppCMSPageViewModule(getContext(),
+                            binder.getAppCMSPageUI(),
+                            binder.getAppCMSPageAPI(),
+                            binder.getScreenName(),
+                            binder.getJsonValueKeyMap(),
+                            appCMSPresenter))
+                    .build();
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
+        return null;
     }
 
     @Override

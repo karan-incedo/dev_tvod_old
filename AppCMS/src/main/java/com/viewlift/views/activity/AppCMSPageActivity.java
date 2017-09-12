@@ -30,6 +30,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -353,6 +354,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                                 AppCMSPageActivity.this.accessToken.getUserId(),
                                                 username,
                                                 email,
+                                                false,
                                                 true);
                                     });
                             Bundle parameters = new Bundle();
@@ -555,6 +557,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             result.getSignInAccount().getId(),
                             result.getSignInAccount().getDisplayName(),
                             result.getSignInAccount().getEmail(),
+                            false,
                             true);
                 }
             } else if (requestCode == AppCMSPresenter.ADD_GOOGLE_ACCOUNT_TO_DEVICE_REQUEST_CODE) {
@@ -708,7 +711,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSFragment.setEnabled(false);
             appCMSTabNavContainer.setEnabled(false);
             loadingProgressBar.setVisibility(View.VISIBLE);
-
+            //while progress bar loading disable user interaction
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 appCMSTabNavContainer.getChildAt(i).setEnabled(false);
             }
@@ -717,6 +722,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSFragment.setEnabled(true);
             appCMSTabNavContainer.setEnabled(true);
             loadingProgressBar.setVisibility(View.GONE);
+            //clear user interaction blocker flag
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 appCMSTabNavContainer.getChildAt(i).setEnabled(true);
             }
@@ -1537,7 +1544,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             handleLaunchPageAction(appCMSBinder,
                     false,
                     leavingExtraPage,
-                    true);
+                    false);
             isActive = true;
         } else {
             isActive = false;
