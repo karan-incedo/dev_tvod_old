@@ -7,7 +7,9 @@ import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -20,15 +22,20 @@ public class AppCMSSearchCall {
 
     private final AppCMSSearchRest appCMSSearchRest;
 
+    private Map<String, String> authHeaders;
+
     @Inject
     public AppCMSSearchCall(AppCMSSearchRest appCMSSearchRest) {
         this.appCMSSearchRest = appCMSSearchRest;
+        this.authHeaders = new HashMap<>();
     }
 
     @WorkerThread
-    public List<AppCMSSearchResult> call(String url) throws IOException {
+    public List<AppCMSSearchResult> call(String apiKey, String url) throws IOException {
         try {
-            return appCMSSearchRest.get(url).execute().body();
+            authHeaders.clear();
+            authHeaders.put("x-api-key", apiKey);
+            return appCMSSearchRest.get(authHeaders, url).execute().body();
         } catch (Exception e) {
             Log.e(TAG, "Failed to execute search query " + url + ": " + e.toString());
         }

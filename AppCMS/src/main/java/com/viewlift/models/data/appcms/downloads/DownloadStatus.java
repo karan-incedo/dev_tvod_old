@@ -9,5 +9,6 @@ public enum DownloadStatus {
     STATUS_RUNNING,
     STATUS_PAUSED,
     STATUS_SUCCESSFUL,
-    STATUS_FAILED
+    STATUS_FAILED,
+    STATUS_INTERRUPTED
 }

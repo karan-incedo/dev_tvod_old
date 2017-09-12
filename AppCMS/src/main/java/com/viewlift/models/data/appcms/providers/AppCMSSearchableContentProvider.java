@@ -97,7 +97,7 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                             selectionArgs[0]);
                     Log.d(TAG, "Search URL: " + url);
                     try {
-                        List<AppCMSSearchResult> searchResultList = appCMSSearchCall.call(url);
+                        List<AppCMSSearchResult> searchResultList = appCMSSearchCall.call(appCMSSearchUrlData.getApiKey(), url);
                         if (searchResultList != null) {
                             Log.d(TAG, "Search results received (" + searchResultList.size() + "): ");
                             cursor = new MatrixCursor(SUGGESTION_COLUMN_NAMES, searchResultList.size());

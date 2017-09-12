@@ -35,12 +35,18 @@ public class AppCMSAndroidUICall {
     }
 
     @WorkerThread
-    public AppCMSAndroidUI call(String url, boolean loadFromFile) throws IOException {
+    public AppCMSAndroidUI call(String url, boolean loadFromFile, int tryCount) throws IOException {
         String filename = getResourceFilename(url);
         if (loadFromFile) {
             return readAndroidFromFile(filename);
         }
-        return writeAndroidToFile(filename, appCMSAndroidUIRest.get(url).execute().body());
+        AppCMSAndroidUI appCMSAndroidUI = appCMSAndroidUIRest.get(url).execute().body();
+        if (appCMSAndroidUI == null && tryCount == 0) {
+            return call(url, loadFromFile, tryCount + 1);
+        } else if (appCMSAndroidUI != null) {
+            return writeAndroidToFile(filename, appCMSAndroidUI);
+        }
+        return null;
     }
 
     private AppCMSAndroidUI writeAndroidToFile(String outputFilename, AppCMSAndroidUI appCMSAndroidUI) throws IOException {

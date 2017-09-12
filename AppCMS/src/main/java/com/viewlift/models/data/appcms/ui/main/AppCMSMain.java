@@ -108,6 +108,10 @@ public class AppCMSMain {
     @Expose
     boolean forceLogin;
 
+    @SerializedName("ccav")
+    @Expose
+    CCAv ccav;
+
     public String getId() {
         return id;
     }
@@ -294,5 +298,13 @@ public class AppCMSMain {
 
     public void setFeatures(Features features) {
         this.features = features;
+    }
+
+    public CCAv getCcav() {
+        return ccav;
+    }
+
+    public void setCcav(CCAv ccav) {
+        this.ccav = ccav;
     }
 }

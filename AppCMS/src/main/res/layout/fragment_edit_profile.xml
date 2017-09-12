@@ -9,48 +9,52 @@
         android:id="@+id/app_cms_edit_profile_page_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_below="@id/app_cms_toolbar_logo"
-        android:textSize="@dimen/app_cms_settings_page_title_textsize"
+        android:layout_centerHorizontal="true"
         android:text="@string/app_cms_edit_profile_dialog_title"
-        android:textStyle="bold"/>
+        android:textSize="@dimen/app_cms_settings_page_title_textsize"
+        android:textStyle="bold" />
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/app_cms_edit_profile_name_container"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:hint="@string/app_cms_username_input_text_hint"
+        android:layout_height="wrap_content"
         android:layout_below="@id/app_cms_edit_profile_page_title"
+        android:layout_centerHorizontal="true"
+
         app:hintEnabled="false">
+
         <EditText
             android:id="@+id/app_cms_edit_profile_name_input"
             android:layout_width="@dimen/app_cms_search_bar_width"
             android:layout_height="@dimen/app_cms_text_input_height"
-            android:ems="10"
-            android:inputType="text"
             android:layout_alignParentTop="true"
+            android:layout_margin="@dimen/app_cms_text_input_margin"
+            android:hint="@string/app_cms_username_input_text_hint"
             android:background="@android:color/white"
-            android:layout_margin="@dimen/app_cms_text_input_margin"/>
+            android:ems="10"
+            android:inputType="text" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/app_cms_edit_profile_email_container"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/app_cms_edit_profile_name_container"
         android:layout_centerHorizontal="true"
         android:hint="@string/app_cms_email_input_text_hint"
-        android:layout_below="@id/app_cms_edit_profile_name_container"
         app:hintEnabled="false">
+
         <EditText
             android:id="@+id/app_cms_edit_profile_email_input"
             android:layout_width="@dimen/app_cms_search_bar_width"
             android:layout_height="@dimen/app_cms_text_input_height"
-            android:ems="10"
-            android:inputType="textEmailAddress"
             android:layout_alignParentTop="true"
+            android:hint="@string/app_cms_email_input_text_hint"
+            android:layout_margin="@dimen/app_cms_text_input_margin"
             android:background="@android:color/white"
-            android:layout_margin="@dimen/app_cms_text_input_margin"/>
+            android:ems="10"
+            android:inputType="textEmailAddress" />
     </android.support.design.widget.TextInputLayout>
 
     <Button

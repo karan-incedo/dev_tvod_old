@@ -40,11 +40,15 @@ public class AppCMSPageFragment extends Fragment {
     private AppCMSBinder appCMSBinder;
     private PageView pageView;
     private String videoPageName = "Video Page";
+    private String authentication_screen_name = "Authentication Screen";
+
     private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
 
     private final String LOGIN_STATUS_KEY = "logged_in_status";
     private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
     private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
+
+    private boolean shouldSendFirebaseViewItemEvent;
 
     public interface OnPageCreation {
         void onSuccess(AppCMSBinder appCMSBinder);
@@ -54,6 +58,7 @@ public class AppCMSPageFragment extends Fragment {
 
     public static AppCMSPageFragment newInstance(Context context, AppCMSBinder appCMSBinder) {
         AppCMSPageFragment fragment = new AppCMSPageFragment();
+        fragment.shouldSendFirebaseViewItemEvent = false;
         Bundle args = new Bundle();
         args.putBinder(context.getString(R.string.fragment_page_bundle_key), appCMSBinder);
         fragment.setArguments(args);
@@ -71,6 +76,8 @@ public class AppCMSPageFragment extends Fragment {
                         .getAppCMSPresenterComponent()
                         .appCMSPresenter();
                 appCMSViewComponent = buildAppCMSViewComponent();
+
+                shouldSendFirebaseViewItemEvent = true;
             } catch (ClassCastException e) {
                 Log.e(TAG, "Could not attach fragment: " + e.toString());
             }
@@ -120,7 +127,10 @@ public class AppCMSPageFragment extends Fragment {
          * Here we are sending analytics for the screen views. Here we will log the events for
          * the Screen which will come on AppCMSPageActivity.
          */
-        sendFirebaseAnalyticsEvents(appCMSBinder);
+        if (shouldSendFirebaseViewItemEvent) {
+            sendFirebaseAnalyticsEvents(appCMSBinder);
+            shouldSendFirebaseViewItemEvent = false;
+        }
 
         return pageView;
     }
@@ -141,6 +151,11 @@ public class AppCMSPageFragment extends Fragment {
     private void sendFirebaseAnalyticsEvents(AppCMSBinder appCMSVideoPageBinder) {
         if (appCMSVideoPageBinder == null)
             return;
+
+        if (appCMSVideoPageBinder.getScreenName() == null ||
+                appCMSVideoPageBinder.getScreenName().equalsIgnoreCase(authentication_screen_name))
+            return;
+
         Bundle bundle = new Bundle();
         if (!appCMSVideoPageBinder.isUserLoggedIn()) {
             appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
@@ -234,6 +249,7 @@ public class AppCMSPageFragment extends Fragment {
     }
 
     public void refreshView(AppCMSBinder appCMSBinder) {
+        sendFirebaseAnalyticsEvents(appCMSBinder);
         this.appCMSBinder = appCMSBinder;
         ViewCreator viewCreator = getViewCreator();
         List<String> modulesToIgnore = getModulesToIgnore();

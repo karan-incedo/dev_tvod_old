@@ -63,6 +63,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private List<OnInternalEvent> receivers;
     private int tintColor;
     private String userId;
+    private InternalEvent<Integer> hideRemoveAllButtonEvent;
+    private InternalEvent<Integer> showRemoveAllButtonEvent;
 
     public AppCMSTrayItemAdapter(Context context,
                                  List<ContentDatum> adapterData,
@@ -76,6 +78,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         this.appCMSPresenter = appCMSPresenter;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.defaultAction = getDefaultAction(context);
+
         switch (jsonValueKeyMap.get(viewType)) {
             case PAGE_HISTORY_MODULE_KEY:
                 this.isHistory = true;
@@ -99,9 +102,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
         this.userId = appCMSPresenter.getLoggedInUser();
 
-        if (adapterData != null && !adapterData.isEmpty()) {
-            sendEvent(null);
-        }
+        this.hideRemoveAllButtonEvent = new InternalEvent<>(View.GONE);
+        this.showRemoveAllButtonEvent = new InternalEvent<>(View.VISIBLE);
 
         sortData();
     }
@@ -109,11 +111,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private void sortData() {
         if (adapterData != null) {
             if (isWatchlist || isDownload) {
-                Collections.sort(adapterData, (o1, o2)
-                        -> Long.compare(o1.getAddedDate(), o2.getAddedDate()));
+                Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getAddedDate(),
+                        o2.getAddedDate()));
             } else if (isHistory) {
-                Collections.sort(adapterData, (o1, o2)
-                        -> Long.compare(o1.getUpdateDate(), o2.getUpdateDate()));
+                Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getUpdateDate(),
+                        o2.getUpdateDate()));
                 Collections.reverse(adapterData);
             }
         }
@@ -163,7 +165,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                         case STATUS_PENDING:
                         case STATUS_RUNNING:
                             if (contentDatum.getGist() != null) {
-                                holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(ContextCompat.getColor(holder.itemView.getContext(), R.color.transparentColor)); // Fix of SVFA-1662
+                                holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(ContextCompat.getColor(holder.itemView.getContext(), R.color.transparentColor));
                                 holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
 
                                 appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
@@ -172,7 +174,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         userVideoDownloadStatus -> {
                                             if (userVideoDownloadStatus != null) {
                                                 if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
-                                                    holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);// Fix of SVFA-1779
+                                                    holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
                                                     holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.ic_deleteicon));
                                                     holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
                                                     holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
@@ -180,10 +182,17 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                                     loadImage(holder.itemView.getContext(), userVideoDownloadStatus.getThumbUri(), holder.appCMSContinueWatchingVideoImage);
                                                     holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
 
-                                                    contentDatum.getGist().setLocalFileUrl(userVideoDownloadStatus.getVideoUri());   // Fix of SVFA-1707
-                                                    if (userVideoDownloadStatus.getSubtitlesUri().trim().length() > 0) {
-                                                        contentDatum.getContentDetails().getClosedCaptions().get(0).setUrl(userVideoDownloadStatus.getSubtitlesUri());   // Fix of SVFA-1707
+                                                    contentDatum.getGist().setLocalFileUrl(userVideoDownloadStatus.getVideoUri());
+                                                    try {
+                                                        if (userVideoDownloadStatus.getSubtitlesUri().trim().length() > 10 &&
+                                                                contentDatum.getContentDetails() != null &&
+                                                                contentDatum.getContentDetails().getClosedCaptions().get(0) != null) {
+                                                            contentDatum.getContentDetails().getClosedCaptions().get(0).setUrl(userVideoDownloadStatus.getSubtitlesUri());
+                                                        }
+                                                    } catch (Exception e) {
+                                                        Log.e(TAG, e.getMessage());
                                                     }
+
                                                 } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_RUNNING) {
                                                     holder.appCMSContinueWatchingSize.setText("Cancel");
                                                 }
@@ -193,7 +202,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         userId, true);
 
                                 holder.appCMSContinueWatchingSize.setText("Cancel".toUpperCase());
-                                holder.appCMSContinueWatchingSize.setOnClickListener(v -> delete(contentDatum));
+                                holder.appCMSContinueWatchingSize.setOnClickListener(v -> delete(contentDatum, position));
 
                             }
                             break;
@@ -210,11 +219,18 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             appCMSPresenter.sendRefreshPageAction();
                             break;
 
+                        case STATUS_INTERRUPTED:
+                            holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
+                                    android.R.drawable.stat_sys_warning));
+                            holder.appCMSContinueWatchingSize.setText("Remove".toUpperCase());
+                            holder.appCMSContinueWatchingSize.setOnClickListener(v -> delete(contentDatum, position));
+                            break;
+
                         default:
                             break;
                     }
                     DownloadVideoRealm downloadVideoRealm = appCMSPresenter.getRealmController()
-                            .getDownloadByIdBelongstoUser(contentDatum.getGist().getId(), userId); // fix of SVFA-1707
+                            .getDownloadByIdBelongstoUser(contentDatum.getGist().getId(), userId);
                     if (downloadVideoRealm != null && contentDatum != null && contentDatum.getGist() != null) {
                         if (downloadVideoRealm.getWatchedTime() > contentDatum.getGist().getWatchedTime()) {
                             contentDatum.getGist().setWatchedTime(downloadVideoRealm.getWatchedTime());
@@ -238,7 +254,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 if (isDownload) {
                     playDownloaded(contentDatum,
                             holder.itemView.getContext(),
-                            getListOfUpcomingMovies(position));
+                            position);
                 } else {
                     click(adapterData.get(position));
                 }
@@ -249,7 +265,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 if (isDownload) {
                     playDownloaded(contentDatum,
                             holder.itemView.getContext(),
-                            getListOfUpcomingMovies(position));
+                            position);
                 } else {
                     click(adapterData.get(position));
                 }
@@ -259,7 +275,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 if (isDownload) {
                     playDownloaded(contentDatum,
                             holder.itemView.getContext(),
-                            getListOfUpcomingMovies(position));
+                            position);
                 } else {
                     play(adapterData.get(position),
                             holder.itemView.getContext()
@@ -271,18 +287,18 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 holder.appCMSContinueWatchingTitle.setText(contentDatum.getGist().getTitle());
             }
 
-            if (contentDatum.getGist() != null) {
+            if (contentDatum!=null && contentDatum.getGist() != null && contentDatum.getGist().getDescription()!=null) {
                 Spannable rawHtmlSpannable = new HtmlSpanner().fromHtml(contentDatum.getGist().getDescription());
                 holder.appCMSContinueWatchingDescription.setText(rawHtmlSpannable);
             }
 
-            holder.appCMSContinueWatchingDeleteButton.setOnClickListener(v -> delete(contentDatum));
+            holder.appCMSContinueWatchingDeleteButton.setOnClickListener(v -> delete(contentDatum, position));
 
             holder.appCMSContinueWatchingTitle.setOnClickListener(v -> {
                 if (isDownload) {
                     playDownloaded(contentDatum,
                             holder.itemView.getContext(),
-                            getListOfUpcomingMovies(position));
+                            position);
                 } else {
                     click(contentDatum);
                 }
@@ -314,7 +330,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
         } else {
             holder.appCMSNotItemLabel.setVisibility(View.VISIBLE);
-            holder.appCMSNotItemLabel.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+            holder.appCMSNotItemLabel.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                    .getBrand().getGeneral().getTextColor()));
             if (isHistory) {
                 holder.appCMSNotItemLabel.setText(holder.itemView.getContext().getString(R.string.empty_history_list_message));
             } else if (isDownload) {
@@ -372,8 +389,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         return contentDatumList;
     }
 
-    private void playDownloaded(ContentDatum data, Context context, List<String> relatedVideoIds) {
-
+    private void playDownloaded(ContentDatum data, Context context, int position) {
+        List<String> relatedVideoIds = getListOfUpcomingMovies(position);
         if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
                     null,
@@ -385,7 +402,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         String permalink = data.getGist().getPermalink();
         String action = context.getString(R.string.app_cms_action_watchvideo_key);
         String title = data.getGist() != null ? data.getGist().getTitle() : null;
-        String hlsUrl = (data.getGist().getLocalFileUrl() != null) ? data.getGist().getLocalFileUrl() : null; // Fix of SVFA-1275
+        String hlsUrl = data.getGist().getLocalFileUrl();
         String[] extraData = new String[4];
         extraData[0] = permalink;
         extraData[1] = hlsUrl;
@@ -415,7 +432,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         }
     }
 
-
     @Override
     public int getItemCount() {
         return adapterData != null && !adapterData.isEmpty() ? adapterData.size() : 1;
@@ -424,12 +440,17 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     @Override
     public void addReceiver(OnInternalEvent e) {
         receivers.add(e);
+        if (adapterData == null || adapterData.isEmpty()) {
+            sendEvent(hideRemoveAllButtonEvent);
+        } else {
+            sendEvent(showRemoveAllButtonEvent);
+        }
     }
 
     @Override
     public void sendEvent(InternalEvent<?> event) {
         for (OnInternalEvent internalEvent : receivers) {
-            internalEvent.receiveEvent(null);
+            internalEvent.receiveEvent(event);
         }
     }
 
@@ -476,7 +497,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     switch (componentKey) {
                         case PAGE_PLAY_KEY:
                         case PAGE_PLAY_IMAGE_KEY:
+                            viewHolder.appCMSContinueWatchingPlayButton.setBackground(ContextCompat.getDrawable(viewHolder.itemView.getContext(), R.drawable.play_icon));
                             viewHolder.appCMSContinueWatchingPlayButton.getBackground().setTint(tintColor);
+                            viewHolder.appCMSContinueWatchingPlayButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+
                             break;
 
                         default:
@@ -601,7 +625,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 if (appCMSHistoryResult != null) {
                     listView.setAdapter(null);
                     List<ContentDatum> adapterDataTmp;
-                    adapterData = appCMSHistoryResult.convertToAppCMSPageAPI(null).getModules().get(0).getContentData();
+                    adapterData = appCMSHistoryResult.convertToAppCMSPageAPI(null).getModules()
+                            .get(0).getContentData();
                     if (adapterData != null) {
                         adapterDataTmp = new ArrayList<>(adapterData);
                     } else {
@@ -618,30 +643,25 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             });
         } else if (isWatchlist) {
             appCMSPresenter.getWatchlistData(appCMSWatchlistResult -> {
-//                if (appCMSWatchlistResult != null) {
-//                    listView.setAdapter(null);
-//                    List<ContentDatum> adapterDataTmp;
-//                    adapterData = appCMSWatchlistResult.convertToAppCMSPageAPI(null).getModules().get(0).getContentData();
-//                    if (adapterData != null) {
-//                        adapterDataTmp = new ArrayList<>(adapterData);
-//                    } else {
-//                        adapterDataTmp = new ArrayList<>();
-//                    }
-//                    adapterData = null;
-//                    notifyDataSetChanged();
-//                    adapterData = adapterDataTmp;
-//                    sortData();
-//                    notifyDataSetChanged();
-//                    listView.setAdapter(this);
-//                    listView.invalidate();
-//                }
+                if (appCMSWatchlistResult != null) {
+                    listView.setAdapter(null);
+                    List<ContentDatum> adapterDataTmp;
+                    adapterData = appCMSWatchlistResult.convertToAppCMSPageAPI(null).getModules()
+                            .get(0).getContentData();
+                    if (adapterData != null) {
+                        adapterDataTmp = new ArrayList<>(adapterData);
+                    } else {
+                        adapterDataTmp = new ArrayList<>();
+                    }
+                    adapterData = null;
+                    notifyDataSetChanged();
+                    adapterData = adapterDataTmp;
+                    sortData();
+                    notifyDataSetChanged();
+                    listView.setAdapter(this);
+                    listView.invalidate();
+                }
             });
-        } else {
-            listView.setAdapter(null);
-            sortData();
-            notifyDataSetChanged();
-            listView.setAdapter(this);
-            listView.invalidate();
         }
     }
 
@@ -649,8 +669,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
         adapterData = contentData;
         sortData();
-        if (adapterData != null && !adapterData.isEmpty()) {
-            sendEvent(null);
+        if (adapterData == null || adapterData.isEmpty()) {
+            sendEvent(hideRemoveAllButtonEvent);
+        } else {
+            sendEvent(showRemoveAllButtonEvent);
         }
     }
 
@@ -707,7 +729,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         Log.d(TAG, "Show delete button");
     }
 
-    private void delete(final ContentDatum contentDatum) {
+    private void delete(final ContentDatum contentDatum, int position) {
         if ((isHistory) && (contentDatum.getGist() != null)) {
             Log.d(TAG, "Deleting history item: " + contentDatum.getGist().getTitle());
             appCMSPresenter.editHistory(contentDatum.getGist().getId(),
@@ -718,11 +740,14 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         }
 
         if ((isDownload) && (contentDatum.getGist() != null)) {
-            appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(), userVideoDownloadStatus -> {
-                adapterData.remove(contentDatum);
-                notifyDataSetChanged();
-                resetData(mRecyclerView);
-            });
+            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_DOWNLOAD_ITEM,
+                    appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_download_item_message),
+                    true, () ->
+                            appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(),
+                                    userVideoDownloadStatus -> {
+                                        adapterData.remove(contentDatum);
+                                        notifyItemRangeChanged(position, getItemCount());
+                                    }));
         }
 
         if ((isWatchlist) && (contentDatum.getGist() != null)) {
@@ -765,6 +790,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }
             Typeface face;
+
             switch (fontWeight) {
                 case PAGE_TEXT_BOLD_KEY:
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_bold_ttf));

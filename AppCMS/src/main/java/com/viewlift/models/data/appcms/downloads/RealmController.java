@@ -91,7 +91,12 @@ public class RealmController {
 
         return realm.where(DownloadVideoRealm.class).contains("userId", userId).findAll();
     }
+    public RealmResults<DownloadVideoRealm> getAllUnSyncedWithServer(String userId) {
 
+        return realm.where(DownloadVideoRealm.class).equalTo("isSyncedWithServer", false)
+                .equalTo("userId", userId).findAll();
+
+    }
     public RealmResults<DownloadVideoRealm> getAllUnfinishedDownloades(String userId) {
 
         String[] status = {String.valueOf(DownloadStatus.STATUS_FAILED),
