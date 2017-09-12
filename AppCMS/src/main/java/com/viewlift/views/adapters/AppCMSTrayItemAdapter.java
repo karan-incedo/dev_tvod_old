@@ -747,8 +747,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     true, () ->
                             appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(),
                                     userVideoDownloadStatus -> {
+
+                                        notifyItemRangeRemoved(position,getItemCount());// change made for SVFA-2054
                                         adapterData.remove(contentDatum);
-                                        notifyItemRangeChanged(position, getItemCount());
+                                        notifyDataSetChanged();
+
+                                        //notifyItemRangeChanged(position, getItemCount());
                                     }));
         }
 

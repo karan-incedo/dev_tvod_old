@@ -275,14 +275,14 @@ public class AppCMSPlayVideoFragment extends Fragment
         View rootView = inflater.inflate(R.layout.fragment_video_player, container, false);
 
         videoPlayerMainContainer =
-                (RelativeLayout) rootView.findViewById(R.id.app_cms_video_player_main_container);
+                rootView.findViewById(R.id.app_cms_video_player_main_container);
 
         videoPlayerInfoContainer =
-                (LinearLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
+                rootView.findViewById(R.id.app_cms_video_player_info_container);
 
-        mMediaRouteButton = (ImageButton) rootView.findViewById(R.id.media_route_button);
+        mMediaRouteButton = rootView.findViewById(R.id.media_route_button);
 
-        videoPlayerTitleView = (TextView) rootView.findViewById(R.id.app_cms_video_player_title_view);
+        videoPlayerTitleView = rootView.findViewById(R.id.app_cms_video_player_title_view);
 
         if (!TextUtils.isEmpty(title)) {
             videoPlayerTitleView.setText(title);
@@ -293,7 +293,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         sendFirebaseAnalyticsEvents(title);
 
-        videoPlayerViewDoneButton = (ImageButton) rootView.findViewById(R.id.app_cms_video_player_done_button);
+        videoPlayerViewDoneButton = rootView.findViewById(R.id.app_cms_video_player_done_button);
         videoPlayerViewDoneButton.setOnClickListener(v -> {
             if (onClosePlayerEvent != null) {
                 videoPlayerView.releasePlayer();
@@ -303,10 +303,10 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         videoPlayerViewDoneButton.setColorFilter(Color.parseColor(fontColor));
         videoPlayerInfoContainer.bringToFront();
-        videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
+        videoPlayerView = rootView.findViewById(R.id.app_cms_video_player_container);
         videoPlayerView.setListener(this);
 
-        videoLoadingProgress = (LinearLayout) rootView.findViewById(R.id.app_cms_video_loading);
+        videoLoadingProgress = rootView.findViewById(R.id.app_cms_video_loading);
 
         setCasting();
 

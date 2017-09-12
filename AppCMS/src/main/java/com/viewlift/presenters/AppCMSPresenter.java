@@ -660,6 +660,10 @@ public class AppCMSPresenter {
                         entitlementActive = false;
                     }
                 } else {
+                    if (!isNetworkConnected()) {
+                        showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
+                        return false;
+                    }
                     showEntitlementDialog(DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED);
                     entitlementActive = false;
                 }
@@ -1091,8 +1095,10 @@ public class AppCMSPresenter {
                         sendIntent.setAction(Intent.ACTION_SEND);
                         sendIntent.putExtra(Intent.EXTRA_TEXT, extraData[0]);
                         sendIntent.setType(currentActivity.getString(R.string.text_plain_mime_type));
-                        currentActivity.startActivity(Intent.createChooser(sendIntent,
-                                currentActivity.getResources().getText(R.string.send_to)));
+                        Intent chooserIntent=Intent.createChooser(sendIntent,
+                                currentActivity.getResources().getText(R.string.send_to));
+                        chooserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        currentActivity.startActivity(chooserIntent);
                     }
                 } else if (actionType == AppCMSActionType.CLOSE) {
                     sendCloseOthersAction(null, true);
@@ -5025,7 +5031,7 @@ public class AppCMSPresenter {
     }
 
     public NavigationPrimary findHomePageNavItem() {
-            if (navigation != null && !navigation.getNavigationPrimary().isEmpty()) {
+        if (navigation != null && !navigation.getNavigationPrimary().isEmpty()) {
             return navigation.getNavigationPrimary().get(0);
         }
         return null;
@@ -6991,7 +6997,7 @@ public class AppCMSPresenter {
                                          Uri searchQuery,
                                          ExtraScreenType extraScreenType,
                                          AppCMSSearchCall appCMSSearchCall) {
-        AppCMSBinder appCMSBinder =  new AppCMSBinder(appCMSMain,
+        AppCMSBinder appCMSBinder = new AppCMSBinder(appCMSMain,
                 appCMSPageUI,
                 appCMSPageAPI,
                 navigation,
