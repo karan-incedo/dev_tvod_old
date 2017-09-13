@@ -303,7 +303,7 @@
 
     <!-- AppCMS Navigation menu -->
     <string name="app_cms_menu_icon_name">menu_</string>
-    <string name="app_cms_menu_label">More</string>
+    <string name="app_cms_menu_label">Menu</string>
     <string name="app_cms_live_icon_name">live_</string>
     <string name="app_cms_home_icon_name">home_page_</string>
     <string name="app_cms_home_label">Home</string>
@@ -339,7 +339,7 @@
     <string name="app_cms_autoplay_playing_in_label_key">playInLabel</string>
     <string name="app_cms_autoplay_timer_label_key">timerLabel</string>
 
-    <string name="app_cms_download_started_mesage">%1$s has started downloading.</string>
+    <string name="app_cms_download_started_message">%1$s has started downloading.</string>
     <string name="app_cms_download_quality_cancel_button_key">cancelButton</string>
     <string name="app_cms_download_quality_continue_button_key">continueButton</string>
 

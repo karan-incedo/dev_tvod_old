@@ -238,10 +238,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         resumeWindow = C.INDEX_UNSET;
         resumePosition = C.TIME_UNSET;
         LayoutInflater.from(context).inflate(R.layout.video_player_view, this);
-        playerView = (SimpleExoPlayerView) findViewById(R.id.videoPlayerView);
+        playerView = findViewById(R.id.videoPlayerView);
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
-        ccToggleButton = (ToggleButton) playerView.findViewById(R.id.ccButton);
+        ccToggleButton = playerView.findViewById(R.id.ccButton);
         ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (onClosedCaptionButtonClicked != null) {
                 onClosedCaptionButtonClicked.call(isChecked);

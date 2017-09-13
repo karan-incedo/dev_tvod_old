@@ -329,6 +329,17 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
     }
 
     private int calculateUpdateIndex(int index) {
+        int firstVisibleIndex =
+                ((LinearLayoutManager) listView.getLayoutManager()).findFirstVisibleItemPosition();
+        int lastVisibleIndex =
+                ((LinearLayoutManager) listView.getLayoutManager()).findLastVisibleItemPosition();
+
+        if (index < firstVisibleIndex && adapterData.size() < (firstVisibleIndex - index)) {
+            index = (firstVisibleIndex - index) % adapterData.size();
+        } else if (lastVisibleIndex < index && adapterData.size() < (index - lastVisibleIndex)) {
+            index = (index - lastVisibleIndex) % adapterData.size();
+        }
+
         if (adapterData.size() != 0 && Math.abs(updatedIndex - index) > adapterData.size()) {
             int visibleIndexInItems = updatedIndex % adapterData.size();
             return updatedIndex + (index - visibleIndexInItems);

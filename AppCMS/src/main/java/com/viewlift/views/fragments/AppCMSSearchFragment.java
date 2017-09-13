@@ -65,7 +65,7 @@ public class AppCMSSearchFragment extends DialogFragment {
                 searchManager.getSearchableInfo(getActivity().getComponentName()),
                 true);
 
-        appCMSSearchView = (SearchView) view.findViewById(R.id.app_cms_search_fragment_view);
+        appCMSSearchView = view.findViewById(R.id.app_cms_search_fragment_view);
         appCMSSearchView.setQueryHint(getString(R.string.search_films));
         appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         appCMSSearchView.setSuggestionsAdapter(searchSuggestionsAdapter);
@@ -73,7 +73,7 @@ public class AppCMSSearchFragment extends DialogFragment {
         appCMSSearchView.requestFocus();
         appCMSPresenter.showSoftKeyboard(appCMSSearchView);
 
-        appCMSGoButton = (Button) view.findViewById(R.id.app_cms_search_button);
+        appCMSGoButton = view.findViewById(R.id.app_cms_search_button);
         appCMSGoButton.setBackgroundColor(0xff000000 + (int) buttonColor);
         appCMSGoButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor, buttonColor));
 
@@ -103,7 +103,7 @@ public class AppCMSSearchFragment extends DialogFragment {
     @SuppressWarnings("ConstantConditions")
     private void setBgColor(int bgColor, View view) {
         RelativeLayout appCMSNavigationMenuMainLayout =
-                (RelativeLayout) view.findViewById(R.id.app_cms_search_fragment);
+                view.findViewById(R.id.app_cms_search_fragment);
         appCMSNavigationMenuMainLayout.setBackgroundColor(bgColor);
     }
 }

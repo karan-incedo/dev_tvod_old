@@ -92,7 +92,7 @@ public class AppCMSPageAPICall {
         AppCMSPageAPI appCMSPageAPI = null;
         try {
             headersMap.clear();
-            if (!TextUtils.isEmpty(userId)) {
+            if (!TextUtils.isEmpty(apiKey)) {
                 headersMap.put("x-api-key", apiKey);
             }
             if (!TextUtils.isEmpty(authToken)) {

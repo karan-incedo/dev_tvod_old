@@ -58,7 +58,7 @@ public class PaymentOptionsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment_options);
         initialScreen = getIntent();
-        id_tv_text_payment = (TextView) findViewById(R.id.id_tv_text_payment) ;
+        id_tv_text_payment = findViewById(R.id.id_tv_text_payment);
         id_tv_text_payment.setText("First Payment Rs. " + initialScreen.getStringExtra(AvenuesParams.AMOUNT).toString().trim() +
                 " (+tax if req'd) on MM/DD");
         getDataAsyncTask = new GetData() ;

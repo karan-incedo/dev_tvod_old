@@ -130,11 +130,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|center_horizontal">
-
+                <!-- SVFA-2053 app_cms_continue_watching_delete_button
+                need transparent bg for drawing bitmap  at runtime progress -->
                 <ImageButton
                     android:id="@+id/app_cms_continue_watching_delete_button"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
+                    android:background="@android:color/transparent"
                     android:scaleType="fitCenter" />
 
             </FrameLayout>
