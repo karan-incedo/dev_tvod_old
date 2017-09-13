@@ -190,7 +190,7 @@
     <string name="app_cms_page_subscription_page_name_key">View Plans</string>
 
     <!-- Subscription Keys -->
-    <string name="app_cms_page_subscription_selectionplan_key">AC SelectPlan 01</string>
+    <string name="app_cms_page_subscription_selectionplan_key">AC SelectPlan 02</string>
     <string name="app_cms_page_subscription_imagetextrow_key">AC ImageTextRow 01</string>
     <string name="app_cms_plan_title_key">planTitle</string>
     <string name="app_cms_plan_priceinfo_key">planPriceInfo</string>
