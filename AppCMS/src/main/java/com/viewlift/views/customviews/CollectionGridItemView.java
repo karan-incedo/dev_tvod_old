@@ -406,6 +406,10 @@ public class CollectionGridItemView extends BaseView {
                                 childComponent.getTextColor()));
                     }
                 }
+            } else if (componentType == AppCMSUIKeyType.PAGE_PLAN_META_DATA_VIEW_KEY) {
+                if (view instanceof SubscriptionMetaDataView) {
+                    ((SubscriptionMetaDataView) view).setData(data);
+                }
             }
 
             if (shouldShowView(childComponent) && bringToFront) {

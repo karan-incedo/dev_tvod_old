@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.FeatureDetail;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -24,6 +25,7 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,18 +36,16 @@ import java.util.Map;
 public class SubscriptionMetaDataView extends LinearLayout {
     private static final String TAG = "SubsMetaDataView";
 
-    private static int viewCreationPlanDetailsIndex = 0;
-
     private final Component component;
     private final Layout layout;
     private final ViewCreator viewCreator;
     private final Module moduleAPI;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final AppCMSPresenter appCMSPresenter;
-    private final int planDetailsIndex;
     private final Settings moduleSettings;
     private int devicesSupportedComponentIndex;
     private int devicesSupportedFeatureIndex;
+    private ContentDatum planData;
     Context context;
 
     public SubscriptionMetaDataView(Context context,
@@ -65,14 +65,8 @@ public class SubscriptionMetaDataView extends LinearLayout {
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.appCMSPresenter = appCMSPresenter;
         this.moduleSettings = moduleSettings;
-        if (moduleAPI.getContentData() != null) {
-            planDetailsIndex = viewCreationPlanDetailsIndex % moduleAPI.getContentData().size();
-        } else {
-            planDetailsIndex = -1;
-        }
         this.devicesSupportedComponentIndex = -1;
         this.devicesSupportedFeatureIndex = -1;
-        viewCreationPlanDetailsIndex++;
         init();
     }
 
@@ -82,17 +76,21 @@ public class SubscriptionMetaDataView extends LinearLayout {
                 new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
         setLayoutParams(layoutParams);
-        if (planDetailsIndex >= 0 &&
-                moduleAPI.getContentData() != null &&
-                moduleAPI.getContentData().get(planDetailsIndex) != null &&
-                moduleAPI.getContentData().get(planDetailsIndex).getPlanDetails() != null &&
-                moduleAPI.getContentData().get(planDetailsIndex).getPlanDetails().size() > 0 &&
-                moduleAPI.getContentData().get(planDetailsIndex).getPlanDetails().get(0) != null &&
-                moduleAPI.getContentData().get(planDetailsIndex).getPlanDetails().get(0).getFeatureDetails() != null) {
+    }
+
+    public void setData(ContentDatum planData) {
+        this.planData = planData;
+        initViews();
+    }
+
+    public void initViews() {
+        if (planData != null &&
+                planData.getPlanDetails() != null &&
+                planData.getPlanDetails().size() > 0 &&
+                planData.getPlanDetails().get(0) != null &&
+                planData.getPlanDetails().get(0).getFeatureDetails() != null) {
             List<FeatureDetail> featureDetails =
-                    moduleAPI.getContentData()
-                            .get(planDetailsIndex)
-                            .getPlanDetails()
+                   planData.getPlanDetails()
                             .get(0)
                             .getFeatureDetails();
 
@@ -119,16 +117,12 @@ public class SubscriptionMetaDataView extends LinearLayout {
                     devicesSupportedComponentIndex > 0 &&
                     devicesSupportedFeatureIndex > 0) {
                 int numDevicesSupported = -1;
-                if (!TextUtils.isEmpty(moduleAPI.getContentData()
-                        .get(planDetailsIndex)
-                        .getPlanDetails()
+                if (!TextUtils.isEmpty(planData.getPlanDetails()
                         .get(0)
                         .getFeatureDetails()
                         .get(devicesSupportedFeatureIndex)
                         .getValue())) {
-                    numDevicesSupported = Integer.valueOf(moduleAPI.getContentData()
-                            .get(planDetailsIndex)
-                            .getPlanDetails()
+                    numDevicesSupported = Integer.valueOf(planData.getPlanDetails()
                             .get(0)
                             .getFeatureDetails()
                             .get(devicesSupportedFeatureIndex)
@@ -286,8 +280,6 @@ public class SubscriptionMetaDataView extends LinearLayout {
             }
 
             Log.d(TAG, "Created child component: " +
-                    planDetailsIndex +
-                    " - " +
                     featureDetail.getTextToDisplay() +
                     " - " +
                     subComponent.getKey() +
