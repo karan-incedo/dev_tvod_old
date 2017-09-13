@@ -335,9 +335,17 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                 ((LinearLayoutManager) listView.getLayoutManager()).findLastVisibleItemPosition();
 
         if (index < firstVisibleIndex && adapterData.size() < (firstVisibleIndex - index)) {
-            index = (firstVisibleIndex - (index % adapterData.size()));
+            if ((firstVisibleIndex % adapterData.size()) < (index % adapterData.size())) {
+                index = (firstVisibleIndex + (index % adapterData.size()));
+            } else {
+                index = (firstVisibleIndex - (index % adapterData.size()));
+            }
         } else if (lastVisibleIndex < index && adapterData.size() < (index - lastVisibleIndex)) {
-            index = ((index % adapterData.size()) - lastVisibleIndex);
+            if ((lastVisibleIndex % adapterData.size()) < (index % adapterData.size())) {
+                index = ((index % adapterData.size()) + lastVisibleIndex);
+            } else {
+                index = ((index % adapterData.size()) - lastVisibleIndex);
+            }
         }
 
         return index;
