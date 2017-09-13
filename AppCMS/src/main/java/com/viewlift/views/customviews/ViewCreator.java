@@ -636,6 +636,9 @@ public class ViewCreator {
                                                                 ((TextView) settingsView).setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
                                                             } else if (!TextUtils.isEmpty(component.getText())) {
                                                                 ((TextView) settingsView).setText(component.getText());
+                                                                if (!appCMSPresenter.upgradesAvailableForUser()) {
+                                                                    settingsView.setVisibility(View.GONE);
+                                                                }
                                                             }
                                                         } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
                                                             if (appCMSPresenter.isUserSubscribed()) {
@@ -1843,6 +1846,10 @@ public class ViewCreator {
                             } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                             }
+                        } else if (!appCMSPresenter.upgradesAvailableForUser()) {
+                            if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
+                                componentViewResult.componentView.setVisibility(View.GONE);
+                            }
                         }
 
                         componentViewResult.componentView.setOnClickListener(v -> {
@@ -2209,6 +2216,8 @@ public class ViewCreator {
 
                 if (component.getFontSize() > 0) {
                     ((TextView) componentViewResult.componentView).setTextSize(component.getFontSize());
+                } else if (BaseView.getFontSize(context, component.getLayout()) > 0) {
+                    ((TextView) componentViewResult.componentView).setTextSize(BaseView.getFontSize(context, component.getLayout()));
                 }
 
                 break;

@@ -178,6 +178,12 @@ public class RealmController {
         realm.commitTransaction();
     }
 
+    public void deleteSubscriptionPlans() {
+        realm.beginTransaction();
+        realm.delete(SubscriptionPlan.class);
+        realm.commitTransaction();
+    }
+
     public RealmResults<SubscriptionPlan> getAllSubscriptionPlans() {
         if (realm.where(SubscriptionPlan.class).count() > 0) {
             return realm.where(SubscriptionPlan.class).findAll();
