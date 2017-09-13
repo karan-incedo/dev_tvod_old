@@ -10,6 +10,22 @@ import com.vimeo.stag.UseStag;
 
 @UseStag
 public class CCAv {
+    @SerializedName("apiKey")
+    @Expose
+    String apiKey;
+
+    @SerializedName("country")
+    @Expose
+    String country;
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
     public String getCountry() {
         return country;
     }
@@ -17,8 +33,4 @@ public class CCAv {
     public void setCountry(String country) {
         this.country = country;
     }
-
-    @SerializedName("country")
-    @Expose
-    String country;
 }

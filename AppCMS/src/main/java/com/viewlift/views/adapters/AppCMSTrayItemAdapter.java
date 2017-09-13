@@ -105,6 +105,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         this.hideRemoveAllButtonEvent = new InternalEvent<>(View.GONE);
         this.showRemoveAllButtonEvent = new InternalEvent<>(View.VISIBLE);
 
+        this.setHasStableIds(false);
+
         sortData();
     }
 
@@ -745,8 +747,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     true, () ->
                             appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(),
                                     userVideoDownloadStatus -> {
+
+                                        notifyItemRangeRemoved(position,getItemCount());// change made for SVFA-2054
                                         adapterData.remove(contentDatum);
-                                        notifyItemRangeChanged(position, getItemCount());
+                                        notifyDataSetChanged();
+
+                                        //notifyItemRangeChanged(position, getItemCount());
                                     }));
         }
 

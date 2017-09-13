@@ -23,7 +23,7 @@ public class EventsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_events);
 
-        TextView eventLog = (TextView) findViewById(R.id.events_log);
+        TextView eventLog = findViewById(R.id.events_log);
         Button customButton = (Button) getLayoutInflater().inflate(R.layout.view_custom_button, null);
 
         MultiEventListener multiEventListener = new MultiEventListener(new LogToTextListener(eventLog), new ShakeButtonListener(customButton));

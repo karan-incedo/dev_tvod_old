@@ -61,7 +61,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 getAppCMSPresenterComponent().appCMSPresenter();
 
         FrameLayout appCMSPlayVideoPageContainer =
-                (FrameLayout) findViewById(R.id.app_cms_play_video_page_container);
+                findViewById(R.id.app_cms_play_video_page_container);
 
         Intent intent = getIntent();
         Bundle bundleExtra = intent.getBundleExtra(getString(R.string.app_cms_video_player_bundle_binder_key));
