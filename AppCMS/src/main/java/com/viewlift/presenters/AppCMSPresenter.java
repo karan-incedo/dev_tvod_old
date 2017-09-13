@@ -1075,6 +1075,8 @@ public class AppCMSPresenter {
                                 appCMSVideoPageBinder);
                         playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), bundle);
 
+                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+
                         currentActivity.startActivity(playVideoIntent);
                     } else {
                         entitlementPendingVideoData = new EntitlementPendingVideoData();
@@ -1088,6 +1090,8 @@ public class AppCMSPresenter {
                         entitlementPendingVideoData.relateVideoIds = relateVideoIds;
                         navigateToHomeToRefresh = true;
                         isVideoPlayerStarted = false;
+
+                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                     }
                 } else if (actionType == AppCMSActionType.SHARE) {
                     if (extraData.length > 0) {
@@ -1099,6 +1103,8 @@ public class AppCMSPresenter {
                                 currentActivity.getResources().getText(R.string.send_to));
                         chooserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         currentActivity.startActivity(chooserIntent);
+
+                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                     }
                 } else if (actionType == AppCMSActionType.CLOSE) {
                     sendCloseOthersAction(null, true);
@@ -1145,7 +1151,8 @@ public class AppCMSPresenter {
                             String key = extraData[0];
                             if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
                                 String paymentProcessor = getActiveSubscriptionProcessor();
-                                if (!TextUtils.isEmpty(paymentProcessor) &&
+                                if (isUserSubscribed() &&
+                                        !TextUtils.isEmpty(paymentProcessor) &&
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)) &&
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ccavenue_payment_processor)) &&
@@ -1154,7 +1161,8 @@ public class AppCMSPresenter {
                                 } else if (isUserSubscribed() &&
                                         TextUtils.isEmpty(paymentProcessor)) {
                                     showEntitlementDialog(DialogType.UNKNOWN_SUBSCRIPTION_FOR_UPGRADE);
-                                } else if (isExistingGooglePlaySubscriptionSuspended() ||
+                                } else if (isUserSubscribed() ||
+                                        isExistingGooglePlaySubscriptionSuspended() ||
                                         !upgradesAvailableForUser()) {
                                     showEntitlementDialog(DialogType.UPGRADE_UNAVAILABLE);
                                 } else {
@@ -1300,6 +1308,7 @@ public class AppCMSPresenter {
                                                                                 args);
                                                                         currentActivity.sendBroadcast(updatePageIntent);
                                                                         dismissOpenDialogs(null);
+                                                                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                                                     }
                                                                 }
                                                             }
@@ -1333,6 +1342,7 @@ public class AppCMSPresenter {
                                                             currentActivity.getString(R.string.app_cms_bundle_key),
                                                             args);
                                                     currentActivity.sendBroadcast(updatePageIntent);
+                                                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                                 }
                                             }
                                         } else {
@@ -6064,7 +6074,6 @@ public class AppCMSPresenter {
                         //
                     },
                     appCMSSubscriptionPlanResult -> {
-                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                         try {
                             if (appCMSSubscriptionPlanResult != null) {
                                 Log.d(TAG, "Subscription response: " + gson.toJson(appCMSSubscriptionPlanResult,
@@ -7144,6 +7153,7 @@ public class AppCMSPresenter {
             appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
             appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             activity.startActivity(appCMSIntent);
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
         } catch (Exception e) {
             Log.e(TAG, "Error launching page activity: " + pageName);
             showDialog(DialogType.NETWORK, null, false, null);
