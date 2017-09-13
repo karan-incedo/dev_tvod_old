@@ -6428,7 +6428,7 @@ public class AppCMSPresenter {
                                                         subscriptionPlan.setSku(contentDatum.getIdentifier());
                                                         subscriptionPlan.setPlanId(contentDatum.getId());
                                                         if (!contentDatum.getPlanDetails().isEmpty()) {
-                                                            subscriptionPlan.setSubscriptionPrice(contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount());
+                                                            subscriptionPlan.setSubscriptionPrice(contentDatum.getPlanDetails().get(0).getStrikeThroughPrice());
                                                         }
                                                         subscriptionPlan.setPlanName(contentDatum.getName());
                                                         createSubscriptionPlan(subscriptionPlan);
