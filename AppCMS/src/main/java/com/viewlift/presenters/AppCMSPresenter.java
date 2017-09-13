@@ -58,6 +58,7 @@ import android.widget.Toast;
 import com.android.vending.billing.IInAppBillingService;
 import com.apptentive.android.sdk.Apptentive;
 import com.facebook.AccessToken;
+import com.facebook.FacebookActivity;
 import com.facebook.FacebookRequestError;
 import com.facebook.GraphRequest;
 import com.facebook.HttpMethod;
@@ -1484,6 +1485,9 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             FrameLayout mainFragmentView =
                     currentActivity.findViewById(R.id.app_cms_fragment);
+            if(currentActivity!=null && currentActivity instanceof FacebookActivity)
+                return true;
+
             if (mainFragmentView != null) {
                 return (mainFragmentView.getVisibility() == View.VISIBLE);
             }
@@ -5723,6 +5727,9 @@ public class AppCMSPresenter {
             try {
                 BeaconRequest beaconRequest = getBeaconRequest(vid, screenName, parentScreenName, currentPosition, event,
                         usingChromecast, mediaType, bitrate, height, width, streamid, ttfirstframe, apod, isDownloaded);
+
+                Log.d(TAG, "Beacon Message Request position: " + currentPosition);
+
                 if (!isNetworkConnected()) {
                     currentActivity.runOnUiThread(() -> {
                         try {
@@ -5736,6 +5743,7 @@ public class AppCMSPresenter {
                     return;
                 }
                 String url = getBeaconUrl();
+
                 AppCMSBeaconRequest request = new AppCMSBeaconRequest();
                 ArrayList<BeaconRequest> beaconRequests = new ArrayList<>();
 
@@ -6826,7 +6834,9 @@ public class AppCMSPresenter {
     }
 
     public void setCurrentActivity(Activity activity) {
-        this.currentActivity = activity;
+        if(!(activity instanceof FacebookActivity)){
+            this.currentActivity = activity;
+        }
         this.downloadManager = (DownloadManager) currentActivity.getSystemService(Context.DOWNLOAD_SERVICE);
         this.realmController = RealmController.with(currentActivity);
         this.downloadQueueThread = new DownloadQueueThread(this);

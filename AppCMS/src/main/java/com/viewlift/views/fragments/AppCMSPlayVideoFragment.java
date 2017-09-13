@@ -339,6 +339,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     if (beaconMessageThread != null) {
                         beaconMessageThread.sendBeaconPing = true;
                         if (!beaconMessageThread.isAlive()) {
+                            System.out.println("Beacon Message start in playerstate change-"+videoPlayerView.getCurrentPosition());
                             beaconMessageThread.start();
                             mTotalVideoDuration = videoPlayerView.getDuration() / 1000;
                             mTotalVideoDuration -= mTotalVideoDuration % 4;
@@ -635,6 +636,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 }
                 if (beaconMessageThread != null && !beaconMessageThread.isAlive()) {
                     beaconMessageThread.start();
+                    System.out.println("Beacon Message start in resume request-"+videoPlayerView.getCurrentPosition());
 
                     if (mProgressHandler != null)
                         mProgressHandler.post(mProgressRunnable);
@@ -885,7 +887,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                     Thread.sleep(beaconMsgTimeoutMsec);
                     if (sendBeaconPing) {
 
-                        if (appCMSPresenter != null && videoPlayerView != null && videoPlayerView.getPlayer().getPlayWhenReady()) { // For not to sent PIN in PAUSE mode
+                       long currentTime= videoPlayerView.getCurrentPosition() / 1000;
+                        if (appCMSPresenter != null && videoPlayerView != null && videoPlayerView.getPlayer().getPlayWhenReady() && currentTime%30==0) { // For not to sent PIN in PAUSE mode
                             /*appCMSPresenter.sendBeaconPingMessage(filmId,
 
                                     permaLink,
