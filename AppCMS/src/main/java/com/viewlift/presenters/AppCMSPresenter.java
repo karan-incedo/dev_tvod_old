@@ -6050,6 +6050,7 @@ public class AppCMSPresenter {
         }
 
         try {
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             appCMSSubscriptionPlanCall.call(
                     currentActivity.getString(R.string.app_cms_register_subscription_api_url,
                             appCMSMain.getApiBaseUrl(),
@@ -6063,6 +6064,7 @@ public class AppCMSPresenter {
                         //
                     },
                     appCMSSubscriptionPlanResult -> {
+                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                         try {
                             if (appCMSSubscriptionPlanResult != null) {
                                 Log.d(TAG, "Subscription response: " + gson.toJson(appCMSSubscriptionPlanResult,
@@ -6207,6 +6209,7 @@ public class AppCMSPresenter {
                     });
         } catch (IOException e) {
             Log.e(TAG, "Failed to update user subscription status");
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
         }
     }
 
