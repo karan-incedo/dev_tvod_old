@@ -6623,7 +6623,7 @@ public class AppCMSPresenter {
 
         new PostAppCMSLoginRequestAsyncTask(appCMSSignInCall,
                 signInResponse -> {
-                    Log.v("ananomyousToken", getAnonymousUserToken());
+                    Log.v("anonymousToken", getAnonymousUserToken());
 
                     try {
                         if (signInResponse == null) {

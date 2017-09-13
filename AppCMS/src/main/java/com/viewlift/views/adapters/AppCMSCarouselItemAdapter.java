@@ -340,10 +340,6 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
             index = (index - lastVisibleIndex) % adapterData.size();
         }
 
-        if (adapterData.size() != 0 && Math.abs(updatedIndex - index) > adapterData.size()) {
-            int visibleIndexInItems = updatedIndex % adapterData.size();
-            return updatedIndex + (index - visibleIndexInItems);
-        }
         return index;
     }
 
