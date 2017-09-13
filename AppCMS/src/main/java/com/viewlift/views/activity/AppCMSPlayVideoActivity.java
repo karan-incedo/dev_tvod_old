@@ -167,7 +167,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 boolean playAds = binder.isPlayAds();
                 relateVideoIds = binder.getRelateVideoIds();
                 currentlyPlayingIndex = binder.getCurrentPlayingVideoIndex();
-                contentRating = binder.getContentData().getParentalRating();
+                contentRating = binder.getContentData().getParentalRating() == null ? getString(R.string.age_rating_converted_default) : binder.getContentData().getParentalRating();
+
                 if (!TextUtils.isEmpty(bgColor)) {
                     appCMSPlayVideoPageContainer.setBackgroundColor(Color.parseColor(bgColor));
                 }
