@@ -1161,9 +1161,9 @@ public class AppCMSPresenter {
                                 } else if (isUserSubscribed() &&
                                         TextUtils.isEmpty(paymentProcessor)) {
                                     showEntitlementDialog(DialogType.UNKNOWN_SUBSCRIPTION_FOR_UPGRADE);
-                                } else if (isUserSubscribed() ||
-                                        isExistingGooglePlaySubscriptionSuspended() ||
-                                        !upgradesAvailableForUser()) {
+                                } else if (isUserSubscribed() &&
+                                        (isExistingGooglePlaySubscriptionSuspended() ||
+                                        !upgradesAvailableForUser())) {
                                     showEntitlementDialog(DialogType.UPGRADE_UNAVAILABLE);
                                 } else {
                                     navigateToSubscriptionPlansPage(null, null);
