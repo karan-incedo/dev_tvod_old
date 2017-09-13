@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -254,6 +253,7 @@ public class AppCMSPresenter {
     public static final int RC_PURCHASE_PLAY_STORE_ITEM = 1002;
     public static final int REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS = 2002;
     public static final String PRESENTER_DIALOG_ACTION = "appcms_presenter_dialog_action";
+    public static final String PRESENTER_CLEAR_DIALOG_ACTION = "appcms_presenter_clear_dialog_action";
     public static final String SEARCH_ACTION = "SEARCH_ACTION";
     public static final String MY_PROFILE_ACTION = "MY_PROFILE_ACTION";
     public static final String ERROR_DIALOG_ACTION = "appcms_error_dialog_action";
@@ -2878,7 +2878,7 @@ public class AppCMSPresenter {
             request.setPosition(1L);
             appCMSDeleteHistoryCall.call(url, getAuthToken(currentActivity),
                     appCMSDeleteHistoryResult -> {
-                        try {
+                        /*try {
                             showDialog(DialogType.DELETE_ALL_HISTORY_ITEMS,
                                     currentActivity.getString(R.string.app_cms_delete_all_history_items_message),
                                     true,
@@ -2891,6 +2891,11 @@ public class AppCMSPresenter {
                                     });
                         } catch (Exception e) {
                             Log.e(TAG, "clearHistoryContent: " + e.toString());
+                        }*/
+                        try {
+                            Observable.just(appCMSDeleteHistoryResult).subscribe(resultAction1);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error deleting all history items: " + e.getMessage());
                         }
                     }, request, false);
         } catch (Exception e) {
@@ -3129,7 +3134,15 @@ public class AppCMSPresenter {
                                       boolean launchActivity) {
 
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
-            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+            AppCMSPageUI appCMSPageUI;
+
+            if (platformType.equals(PlatformType.TV)) {
+                appCMSPageUI = new GsonBuilder().create().
+                        fromJson(Utils.loadJsonFromAssets(currentActivity,
+                                "history.json"), AppCMSPageUI.class);
+            } else {
+                appCMSPageUI = navigationPages.get(pageId);
+            }
 
             getHistoryPageContent(appCMSMain.getApiBaseUrl(),
                     pageIdToPageAPIUrlMap.get(pageId),
@@ -4999,6 +5012,17 @@ public class AppCMSPresenter {
             args.putExtra(currentActivity.getString(R.string.dialog_item_key), bundle);
             currentActivity.sendBroadcast(args);
         }
+    }
+
+    public void showClearHistoryDialog(String title, String fullText, Action1<Integer> action1) {
+        Intent args = new Intent(AppCMSPresenter.PRESENTER_CLEAR_DIALOG_ACTION);
+        Bundle bundle = new Bundle();
+        bundle.putString(currentActivity.getString(R.string.dialog_item_title_key), title);
+        bundle.putString(currentActivity.getString(R.string.dialog_item_description_key), fullText);
+
+        args.putExtra(currentActivity.getString(R.string.dialog_item_key), bundle);
+        currentActivity.sendBroadcast(args);
+
     }
 
     public boolean shouldRefreshAuthToken() {
@@ -7335,14 +7359,9 @@ public class AppCMSPresenter {
             loadingPage = true;
             Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
             // Log.d(TAG, "Search query (optional): " + searchQuery);
-            AppCMSPageUI appCMSPageUI;
-            if(pageTitle.equalsIgnoreCase("watchlist")){
-                appCMSPageUI = new GsonBuilder().create().
-                        fromJson(Utils.loadJsonFromAssets(currentActivity,
-                                "watchlist.json"), AppCMSPageUI.class);
-            } else {
-                appCMSPageUI = navigationPages.get(pageId);
-            }
+
+            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+
             AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
 
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));

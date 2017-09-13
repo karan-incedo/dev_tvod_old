@@ -9,6 +9,7 @@ def final appVersionName = "1.0.32"
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
+        google()
     }
 
     dependencies {
@@ -25,6 +26,7 @@ apply plugin: 'io.fabric'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
+    google()
 }
 
 android {

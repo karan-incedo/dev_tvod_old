@@ -15,6 +15,7 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
+import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 
 import java.util.ArrayList;
@@ -26,7 +27,9 @@ import java.util.Map;
  * Owned by ViewLift, NYC
  */
 
-public class AppCMSTVTrayAdapter extends RecyclerView.Adapter<AppCMSTVTrayAdapter.ViewHolder> {
+public class AppCMSTVTrayAdapter
+        extends RecyclerView.Adapter<AppCMSTVTrayAdapter.ViewHolder>
+        implements OnInternalEvent {
 
     private static final String TAG = AppCMSTVTrayAdapter.class.getCanonicalName();
     private final List<ContentDatum> adapterData;
@@ -42,6 +45,7 @@ public class AppCMSTVTrayAdapter extends RecyclerView.Adapter<AppCMSTVTrayAdapte
     protected String defaultAction;
     private TVCollectionGridItemView.OnClickHandler onClickHandler;
     private boolean isClickable;
+    private List<OnInternalEvent> receivers;
 
     public AppCMSTVTrayAdapter(Context context,
                                List<ContentDatum> adapterData,
@@ -67,6 +71,7 @@ public class AppCMSTVTrayAdapter extends RecyclerView.Adapter<AppCMSTVTrayAdapte
             this.viewTypeKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
         this.isClickable = true;
+        this.receivers = new ArrayList<>();
     }
 
     private String getDefaultAction(Context context) {
@@ -90,6 +95,8 @@ public class AppCMSTVTrayAdapter extends RecyclerView.Adapter<AppCMSTVTrayAdapte
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 Utils.getFocusColor(context, appCMSPresenter));
+
+
         List<OnInternalEvent> onInternalEvents = new ArrayList<>();
 
         for (int i = 0; i < component.getComponents().size(); i++) {
@@ -140,6 +147,7 @@ public class AppCMSTVTrayAdapter extends RecyclerView.Adapter<AppCMSTVTrayAdapte
             bindView(holder.componentView, adapterData.get(position));
         }
     }
+
     public boolean isClickable() {
         return isClickable;
     }
@@ -147,6 +155,7 @@ public class AppCMSTVTrayAdapter extends RecyclerView.Adapter<AppCMSTVTrayAdapte
     public void setClickable(boolean clickable) {
         isClickable = clickable;
     }
+
     private String getHlsUrl(ContentDatum data) {
         if (data.getStreamingInfo() != null &&
                 data.getStreamingInfo().getVideoAssets() != null &&
@@ -159,143 +168,59 @@ public class AppCMSTVTrayAdapter extends RecyclerView.Adapter<AppCMSTVTrayAdapte
     protected void bindView(TVCollectionGridItemView itemView,
                             final ContentDatum data) throws IllegalArgumentException {
         if (onClickHandler == null) {
-
-            if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
-                onClickHandler = new TVCollectionGridItemView.OnClickHandler() {
-
-                    @Override
-                    public void click(TVCollectionGridItemView collectionGridItemView,
-                                      Component childComponent,
-                                      ContentDatum data) {
-                        if (isClickable) {
-                            if (collectionGridItemView.isSelectable()) {
-                                appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
-                                        data.getId(),
-                                        data.getPlanDetails().get(0).getCountryCode(),
-                                        data.getName(),
-                                        data.getPlanDetails().get(0).getRecurringPaymentAmount(),
-                                        data.getPlanDetails().get(0).getRecurringPaymentCurrencyCode(),
-                                        data.getPlanDetails().get(0).getCountryCode(),
-                                        data.getRenewable()
-                                );
-                            } else {
-                                collectionGridItemView.performClick();
-                            }
+            onClickHandler = new TVCollectionGridItemView.OnClickHandler() {
+                @Override
+                public void click(TVCollectionGridItemView collectionGridItemView,
+                                  Component childComponent,
+                                  ContentDatum data) {
+                    if (isClickable) {
+                        Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
+                        String permalink = data.getGist().getPermalink();
+                        String action = defaultAction;
+                        String title = data.getGist().getTitle();
+                        String hlsUrl = getHlsUrl(data);
+                        String[] extraData = new String[3];
+                        extraData[0] = permalink;
+                        extraData[1] = hlsUrl;
+                        extraData[2] = data.getGist().getId();
+                        Log.d(TAG, "Launching " + permalink + ": " + action);
+                        List<String> relatedVideoIds = null;
+                        if (data.getContentDetails() != null &&
+                                data.getContentDetails().getRelatedVideoIds() != null) {
+                            relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
                         }
-                    }
-
-                    @Override
-                    public void play(Component childComponent, ContentDatum data) {
-                        // NO-OP - Play is not implemented here
-                    }
-                };
-            } else {
-                onClickHandler = new TVCollectionGridItemView.OnClickHandler() {
-                    @Override
-                    public void click(TVCollectionGridItemView collectionGridItemView,
-                                      Component childComponent,
-                                      ContentDatum data) {
-                        if (isClickable) {
-                            Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
-                            String permalink = data.getGist().getPermalink();
-                            String action = defaultAction;
-                            String title = data.getGist().getTitle();
-                            String hlsUrl = getHlsUrl(data);
-                            String[] extraData = new String[3];
-                            extraData[0] = permalink;
-                            extraData[1] = hlsUrl;
-                            extraData[2] = data.getGist().getId();
-                            Log.d(TAG, "Launching " + permalink + ": " + action);
-                            List<String> relatedVideoIds = null;
-                            if (data.getContentDetails() != null &&
-                                    data.getContentDetails().getRelatedVideoIds() != null) {
-                                relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
-                            }
-                            int currentPlayingIndex = -1;
-                            if (relatedVideoIds == null) {
-                                currentPlayingIndex = 0;
-                            }
-                            if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                    action,
-                                    title,
-                                    extraData,
-                                    data,
-                                    false,
-                                    currentPlayingIndex,
-                                    relatedVideoIds)) {
-                                Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
-                                        + " action: " + action + " hlsUrl: " + hlsUrl);
-                            }
+                        int currentPlayingIndex = -1;
+                        if (relatedVideoIds == null) {
+                            currentPlayingIndex = 0;
                         }
-                    }
-
-                    @Override
-                    public void play(Component childComponent, ContentDatum data) {
-                        if (isClickable) {
-                            Log.d(TAG, "Playing item: " + data.getGist().getTitle());
-                            String filmId = data.getGist().getId();
-                            String permaLink = data.getGist().getPermalink();
-                            String title = data.getGist().getTitle();
-                            List<String> relatedVideoIds = null;
-                            if (data.getContentDetails() != null &&
-                                    data.getContentDetails().getRelatedVideoIds() != null) {
-                                relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
-                            }
-                            int currentPlayingIndex = -1;
-                            if (relatedVideoIds == null) {
-                                currentPlayingIndex = 0;
-                            }
-                            if (!appCMSPresenter.launchVideoPlayer(data,
-                                    currentPlayingIndex,
-                                    relatedVideoIds,
-                                    -1)) {
-                                Log.e(TAG, "Could not launch play action: " +
-                                        " filmId: " +
-                                        filmId +
-                                        " permaLink: " +
-                                        permaLink +
-                                        " title: " +
-                                        title);
-                            }
+                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                action,
+                                title,
+                                extraData,
+                                data,
+                                false,
+                                currentPlayingIndex,
+                                relatedVideoIds)) {
+                            Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
+                                    + " action: " + action + " hlsUrl: " + hlsUrl);
                         }
-                    }
-                };
-            }
-        }
-
-        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
-            //
-        } else {
-            itemView.setOnClickListener(v -> {
-                if (isClickable) {
-                    String permalink = data.getGist().getPermalink();
-                    String title = data.getGist().getTitle();
-                    Log.d(TAG, "Launching " + permalink + ":" + defaultAction);
-                    List<String> relatedVideoIds = null;
-                    if (data.getContentDetails() != null &&
-                            data.getContentDetails().getRelatedVideoIds() != null) {
-                        relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
-                    }
-                    int currentPlayingIndex = -1;
-                    if (relatedVideoIds == null) {
-                        currentPlayingIndex = 0;
-                    }
-                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                            defaultAction,
-                            title,
-                            null,
-                            null,
-                            false,
-                            currentPlayingIndex,
-                            relatedVideoIds)) {
-                        Log.e(TAG, "Could not launch action: " +
-                                " permalink: " +
-                                permalink +
-                                " action: " +
-                                defaultAction);
                     }
                 }
-            });
+
+                @Override
+                public void play(Component childComponent, ContentDatum data) {
+                }
+
+                @Override
+                public void delete(Component childComponent, ContentDatum data) {
+                    Log.d(TAG, "Deleting watchlist item: " + data.getGist().getTitle());
+                    appCMSPresenter.editWatchlist(data.getGist().getId(),
+                            addToWatchlistResult -> {
+                                adapterData.remove(data);
+                                notifyDataSetChanged();
+                            }, false);
+                }
+            };
         }
 
         for (int i = 0; i < itemView.getNumberOfChildren(); i++) {
@@ -307,9 +232,33 @@ public class AppCMSTVTrayAdapter extends RecyclerView.Adapter<AppCMSTVTrayAdapte
                     viewTypeKey);
         }
     }
+
     @Override
     public int getItemCount() {
         return adapterData != null ? adapterData.size() : 0;
+    }
+
+    @Override
+    public void addReceiver(OnInternalEvent e) {
+        receivers.add(e);
+    }
+
+    @Override
+    public void sendEvent(InternalEvent<?> event) {
+        for (OnInternalEvent internalEvent : receivers) {
+            internalEvent.receiveEvent(event);
+        }
+    }
+
+    @Override
+    public void receiveEvent(InternalEvent<?> event) {
+        adapterData.clear();
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void cancel(boolean cancel) {
+
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

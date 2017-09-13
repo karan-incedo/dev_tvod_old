@@ -473,6 +473,12 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_description_label),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_LABEL);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_delete_item_button),
+                AppCMSUIKeyType.PAGE_WATCHLIST_DELETE_ITEM_BUTTON);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_history_last_added_label),
+                AppCMSUIKeyType.PAGE_HISTORY_LAST_ADDED_LABEL_KEY);
+
         jsonValueKeyMap.put("", AppCMSUIKeyType.PAGE_EMPTY_KEY);
         jsonValueKeyMap.put(null, AppCMSUIKeyType.PAGE_NULL_KEY);
     }

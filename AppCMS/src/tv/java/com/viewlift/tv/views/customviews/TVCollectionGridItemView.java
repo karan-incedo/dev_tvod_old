@@ -11,10 +11,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.style.StrikethroughSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,16 +29,17 @@ import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.tv.utility.Utils;
-import com.viewlift.views.customviews.ViewCreator;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Currency;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import static com.viewlift.tv.utility.Utils.getColor;
 import static com.viewlift.tv.utility.Utils.getItemViewHeight;
 import static com.viewlift.tv.utility.Utils.getItemViewWidth;
 import static com.viewlift.tv.utility.Utils.getViewHeight;
@@ -68,11 +66,11 @@ public class TVCollectionGridItemView extends TVBaseView {
 
     @Inject
     public TVCollectionGridItemView(Context context,
-                                  Layout parentLayout,
-                                  boolean useParentLayout,
-                                  Component component,
-                                  int defaultWidth,
-                                  int defaultHeight,
+                                    Layout parentLayout,
+                                    boolean useParentLayout,
+                                    Component component,
+                                    int defaultWidth,
+                                    int defaultHeight,
                                     String borderColor) {
         super(context);
         this.parentLayout = parentLayout;
@@ -135,6 +133,7 @@ public class TVCollectionGridItemView extends TVBaseView {
         }
         return null;
     }
+
     @Override
     protected Component getChildComponent(int index) {
         if (component.getComponents() != null &&
@@ -188,11 +187,11 @@ public class TVCollectionGridItemView extends TVBaseView {
 
                     if (userParentLayout) {
                         childViewWidth = (int) getViewWidth(getContext(),
-                                        parentLayout,
-                                        defaultWidth);
+                                parentLayout,
+                                defaultWidth);
                         childViewHeight = (int) getViewHeight(getContext(),
-                                        parentLayout,
-                                        defaultHeight);
+                                parentLayout,
+                                defaultHeight);
                     }
 
                     if (childViewHeight > childViewWidth &&
@@ -201,9 +200,9 @@ public class TVCollectionGridItemView extends TVBaseView {
                             !TextUtils.isEmpty(data.getGist().getPosterImageUrl())) {
                         String imageUrl =
                                 context.getString(R.string.app_cms_image_with_resize_query,
-                                data.getGist().getPosterImageUrl(),
-                                childViewWidth,
-                                childViewHeight);
+                                        data.getGist().getPosterImageUrl(),
+                                        childViewWidth,
+                                        childViewHeight);
                         Log.d(TAG, "Loading image: " + imageUrl);
                         Glide.with(context)
                                 .load(imageUrl)
@@ -215,9 +214,9 @@ public class TVCollectionGridItemView extends TVBaseView {
                             !TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
                         String imageUrl =
                                 context.getString(R.string.app_cms_image_with_resize_query,
-                                data.getGist().getVideoImageUrl(),
-                                childViewWidth,
-                                childViewHeight);
+                                        data.getGist().getVideoImageUrl(),
+                                        childViewWidth,
+                                        childViewHeight);
                         Log.d(TAG, "Loading image: " + imageUrl);
                         Glide.with(context)
                                 .load(imageUrl)
@@ -229,9 +228,9 @@ public class TVCollectionGridItemView extends TVBaseView {
                                 getContext().getResources().getDisplayMetrics().widthPixels;
                         final String imageUrl =
                                 context.getString(R.string.app_cms_image_with_resize_query,
-                                data.getGist().getVideoImageUrl(),
-                                deviceWidth,
-                                childViewHeight);
+                                        data.getGist().getVideoImageUrl(),
+                                        deviceWidth,
+                                        childViewHeight);
                         Log.d(TAG, "Loading image: " + imageUrl);
                         try {
                             final int imageWidth = deviceWidth;
@@ -241,7 +240,7 @@ public class TVCollectionGridItemView extends TVBaseView {
                             imageMetaData.append(System.currentTimeMillis() / 60000);
                             Glide.with(context)
                                     .load(imageUrl)
-                                    .placeholder(ContextCompat.getDrawable(context , R.drawable.video_image_placeholder))
+                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
                                     .signature(new StringSignature(imageMetaData.toString()))
                                     .transform(new BitmapTransformation(context) {
                                         @Override
@@ -314,136 +313,53 @@ public class TVCollectionGridItemView extends TVBaseView {
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
                     ((TextView) view).setText("");
-                } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PURCHASE_BUTTON_KEY) {
-                    ((TextView) view).setText(childComponent.getText());
-                    view.setBackgroundColor(ContextCompat.getColor(getContext(),
-                            R.color.disabledButtonColor));
-                    viewsToUpdateOnClickEvent.add(view);
+                    view.setOnClickListener(v -> onClickHandler.click(
+                            TVCollectionGridItemView.this,
+                            childComponent,
+                            data));
+                } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DELETE_ITEM_BUTTON) {
+                    view.setOnClickListener(v -> onClickHandler.delete(childComponent, data));
                 }
-                view.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        onClickHandler.click(TVCollectionGridItemView.this,
-                                childComponent,
-                                data);
-                    }
-                });
+
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
-                if (TextUtils.isEmpty(((TextView) view).getText())) {
-                    if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
-                            !TextUtils.isEmpty(data.getGist().getTitle())) {
+                if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_TITLE_LABEL) {
+                    if (!TextUtils.isEmpty(data.getGist().getTitle())) {
                         ((TextView) view).setText(data.getGist().getTitle());
-                        ((TextView) view).setMaxLines(1);
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                        }
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
-                        ViewCreator.setViewWithSubtitle(getContext(), data, view);
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
-                        ((TextView) view).setText(data.getGist().getTitle());
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
-                        ((TextView) view).setText(String.valueOf(data.getGist().getRuntime() / 60));
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE) {
-                        ((TextView) view).setText(data.getGist().getTitle());
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_API_DESCRIPTION) {
-                        ((TextView) view).setText(data.getGist().getDescription());
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY) {
-                        ((TextView) view).setText(data.getName());
-                        ((TextView) view).setTextColor(Color.parseColor(
-                                childComponent.getTextColor()));
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY) {
-
-                        int planIndex = 0;
-                        for (int i = 0; i < data.getPlanDetails().size(); i++) {
-                            if (data.getPlanDetails().get(i).getIsDefault()) {
-                                planIndex = i;
-                            }
-                        }
-
-                        Locale locale = null;
-
-                        if (data.getPlanDetails() != null &&
-                                !data.getPlanDetails().isEmpty() &&
-                                data.getPlanDetails().get(planIndex) != null &&
-                                data.getPlanDetails().get(planIndex).getCountryCode() != null) {
-                            try {
-                                locale = new Locale.Builder()
-                                        .setRegion(data.getPlanDetails().get(planIndex)
-                                                .getCountryCode())
-                                        .build();
-                            } catch (Exception e) {
-                                Log.e(TAG, "Could not parse locale");
-                            }
-                        } else {
-                            locale = getContext().getResources().getConfiguration().locale;
-                        }
-
-                        Currency currency = null;
-                        if (currency != null) {
-                            currency = Currency.getInstance(locale);
-                        }
-
-                        if (data.getPlanDetails().get(planIndex).getDiscountedPrice() != 0) {
-                            StringBuilder stringBuilder = new StringBuilder();
-                            if (currency != null) {
-                                stringBuilder.append(currency.getSymbol());
-                            }
-                            stringBuilder.append(String.valueOf(data.getPlanDetails()
-                                    .get(planIndex).getRecurringPaymentAmount()));
-
-                            int strikeThroughLength = stringBuilder.length();
-                            stringBuilder.append("     ");
-                            if (currency != null) {
-                                stringBuilder.append(currency.getSymbol());
-                            }
-
-                            stringBuilder.append(String.valueOf(data.getPlanDetails().get(0)
-                                    .getDiscountedPrice()));
-
-                            SpannableString spannableString =
-                                    new SpannableString(stringBuilder.toString());
-                            spannableString.setSpan(new StrikethroughSpan(), 0,
-                                    strikeThroughLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            ((TextView) view).setText(spannableString);
-                        } else {
-                            StringBuilder stringBuilder = new StringBuilder();
-                            if (currency != null) {
-                                stringBuilder.append(currency.getSymbol());
-                            }
-                            stringBuilder.append(data.getPlanDetails().get(0)
-                                    .getRecurringPaymentAmount());
-                            ((TextView) view).setText(String.valueOf(stringBuilder.toString()));
-                            ((TextView) view).setPaintFlags(((TextView) view).getPaintFlags());
-                        }
-
-                        ((TextView) view).setTextColor(Color.parseColor(
-                                childComponent.getTextColor()));
-
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_BESTVALUE_KEY) {
-                        ((TextView) view).setText(childComponent.getText());
-                        ((TextView) view).setTextColor(Color.parseColor(
-                                childComponent.getTextColor()));
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_TITLE_LABEL) {
-                        if (!TextUtils.isEmpty(data.getGist().getTitle())) {
-                            ((TextView) view).setText(data.getGist().getTitle());
-                            if (childComponent.getNumberOfLines() != 0) {
-                                ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
-                            }
-                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                        }
-                        setTypeFace(context, jsonValueKeyMap, childComponent, ((TextView) view));
-                        view.setFocusable(false);
-
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_LABEL) {
-
-                        if (!TextUtils.isEmpty(data.getGist().getDescription())) {
-                            ((TextView) view).setText(data.getGist().getDescription());
-                            if (childComponent.getNumberOfLines() != 0) {
-                                ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
-                            }
-                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                        }
-                        setTypeFace(context, jsonValueKeyMap, childComponent, ((TextView) view));
-                        view.setFocusable(false);
+                        int textColor = Color.parseColor(getColor(context, component.getTextColor()));
+                        ((TextView) view).setTextColor(textColor);
                     }
+                    setTypeFace(context, jsonValueKeyMap, childComponent, ((TextView) view));
+                    view.setFocusable(false);
+
+                } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_LABEL) {
+                    if (!TextUtils.isEmpty(data.getGist().getDescription())) {
+                        ((TextView) view).setText(data.getGist().getDescription());
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                        }
+                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                    }
+                    setTypeFace(context, jsonValueKeyMap, childComponent, ((TextView) view));
+                    view.setFocusable(false);
+                } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_LAST_ADDED_LABEL_KEY) {
+                    if (data.getUpdateDate() != 0
+                            /*&& data.getUpdateDate() < System.currentTimeMillis()*/) {
+                        Calendar thatDay = Calendar.getInstance();
+                        Date date = new Date(data.getUpdateDate());
+                        thatDay.setTime(date);
+                        Calendar today = Calendar.getInstance();
+                        long diff = today.getTimeInMillis() - thatDay.getTimeInMillis(); //result in millis
+                        long days = diff / (24 * 60 * 60 * 1000);
+                        String fmt = getResources().getText(R.string.item_shop).toString();
+                        ((TextView) view).setText(MessageFormat.format(fmt, days));
+                    }
+
+                    int textColor = Color.parseColor(getColor(context, component.getTextColor()));
+                    ((TextView) view).setTextColor(textColor);
                 }
             }
             view.forceLayout();
@@ -470,6 +386,8 @@ public class TVCollectionGridItemView extends TVBaseView {
                    ContentDatum data);
 
         void play(Component childComponent, ContentDatum data);
+
+        void delete(Component childComponent, ContentDatum data);
     }
 
     public static class ItemContainer {
@@ -498,6 +416,7 @@ public class TVCollectionGridItemView extends TVBaseView {
             }
         }
     }
+
     public ViewGroup getChildrenContainer() {
         if (childrenContainer == null) {
             return createChildrenContainer();

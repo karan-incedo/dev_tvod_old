@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.design.internal.NavigationSubMenu;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,27 +17,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
-import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AccessLevels;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationFooter;
-import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
-import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_HISTORY_NAV_KEY;
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY;
 
 /**
@@ -220,8 +215,16 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     NavigationSubItem navigationSubItem = navigationSubItemList.get(selectedPosition);
-                    if (mAppCMSBinder.getJsonValueKeyMap().get(navigationSubItem.title).equals(ANDROID_WATCHLIST_NAV_KEY)) {
+                    if (ANDROID_WATCHLIST_NAV_KEY.equals(mAppCMSBinder.getJsonValueKeyMap()
+                            .get(navigationSubItem.title))) {
                         appCmsPresenter.navigateToWatchlistPage(
+                                navigationSubItem.pageId,
+                                navigationSubItem.title,
+                                navigationSubItem.url,
+                                false);
+                    } else if (ANDROID_HISTORY_NAV_KEY.equals(mAppCMSBinder.getJsonValueKeyMap()
+                            .get(navigationSubItem.title))) {
+                        appCmsPresenter.navigateToHistoryPage(
                                 navigationSubItem.pageId,
                                 navigationSubItem.title,
                                 navigationSubItem.url,

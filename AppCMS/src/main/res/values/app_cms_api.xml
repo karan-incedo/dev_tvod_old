@@ -354,6 +354,8 @@
     <string name="app_cms_logout_button_key">logout button</string>
     <string name="app_cms_title_label">titleLabel</string>
     <string name="app_cms_description_label">descriptionLabel</string>
+    <string name="app_cms_delete_item_button">deleteItemButton</string>
+    <string name="app_cms_history_last_added_label">historyLastAddedLabel</string>
 
 
     <!-- AppCMS Payment Processor values -->

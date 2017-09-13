@@ -42,4 +42,7 @@
     <dimen name="text_overlay_dialog_height">286dp</dimen>
     <dimen name="text_ovelay_dialog_desc_font_size">15sp</dimen>
 
+    <dimen name="text_clear_dialog_width">437.5dp</dimen>
+    <dimen name="text_clear_dialog_height">130.5dp</dimen>
+
 </resources>

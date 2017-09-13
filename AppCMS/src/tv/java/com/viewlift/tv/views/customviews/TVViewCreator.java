@@ -22,7 +22,6 @@ import android.text.InputType;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
-import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
@@ -43,7 +42,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
- import android.widget.TextView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -79,8 +78,6 @@ import com.viewlift.views.customviews.ViewCreatorTitleLayoutListener;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import com.viewlift.R;
 
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_API_DESCRIPTION;
 
@@ -196,15 +193,24 @@ public class TVViewCreator {
                 }
             }
         }
+        List<OnInternalEvent> presenterOnInternalEvents = appCMSPresenter.getOnInternalEvents();
+        if (presenterOnInternalEvents != null) {
+            for (OnInternalEvent onInternalEvent : presenterOnInternalEvents) {
+                for (OnInternalEvent receiverInternalEvent : presenterOnInternalEvents) {
+                    onInternalEvent.addReceiver(receiverInternalEvent);
+                }
+            }
+        }
     }
 
     int trayIndex = -1;
+
     public View createModuleView(final Context context,
                                  ModuleList module,
                                  final Module moduleAPI,
                                  TVPageView pageView,
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                                 AppCMSPresenter appCMSPresenter,AppCMSPageAPI appCMSPageAPI) {
+                                 AppCMSPresenter appCMSPresenter, AppCMSPageAPI appCMSPageAPI) {
         TVModuleView moduleView = null;
         if (Arrays.asList(context.getResources().getStringArray(R.array.app_cms_tray_modules)).contains(module.getView())) {
             if (module.getView().equalsIgnoreCase(context.getResources().getString(R.string.carousel_nodule))) {
@@ -240,25 +246,25 @@ public class TVViewCreator {
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
-            if(null == moduleAPI
-                    || moduleAPI.getContentData() ==null){
+            if (null == moduleAPI
+                    || moduleAPI.getContentData() == null) {
                 TextView textView = new TextView(context);
                 textView.setText(context.getString(R.string.no_data_available));
                 textView.setGravity(Gravity.CENTER);
                 Component component = new Component();
                 component.setFontFamily(context.getString(R.string.app_cms_page_font_family_key));
                 component.setFontWeight(context.getString(R.string.app_cms_page_font_semibold_key));
-                textView.setTypeface(Utils.getTypeFace(context,jsonValueKeyMap,component));
+                textView.setTypeface(Utils.getTypeFace(context, jsonValueKeyMap, component));
                 childrenContainer.addView(textView);
-                return moduleView ;
+                return moduleView;
             }
 
             final TVPageView finalPageView = pageView;
 
-            if(null != moduleAPI.getContentData()
+            if (null != moduleAPI.getContentData()
                     && null != moduleAPI.getContentData().get(0)
                     && null != moduleAPI.getContentData().get(0).getGist()
-                    && null != moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()){
+                    && null != moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()) {
                 Glide.with(context).load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                         .asBitmap().into(new SimpleTarget<Bitmap>(TVBaseView.DEVICE_WIDTH,
                         TVBaseView.DEVICE_HEIGHT) {
@@ -308,20 +314,20 @@ public class TVViewCreator {
                         moduleView.setComponentHasView(i, false);
                     }
                 }
-             }
-            } else {
+            }
+        } else {
 
-            if(module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_reset_password_module))){
+            if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_reset_password_module))) {
                 module = new GsonBuilder().create().
-                             fromJson(Utils.loadJsonFromAssets(context, "reset_password.json"), ModuleList.class);
+                        fromJson(Utils.loadJsonFromAssets(context, "reset_password.json"), ModuleList.class);
             }
 
-            if(module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_ancillary_pages_module))){
+            if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_ancillary_pages_module))) {
                 module = new GsonBuilder().create().
                         fromJson(Utils.loadJsonFromAssets(context, "ancillary_pages.json"), ModuleList.class);
             }
 
-            if(module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_contact_us_module))){
+            if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_contact_us_module))) {
                 module = new GsonBuilder().create().
                         fromJson(Utils.loadJsonFromAssets(context, "contact_us.json"), ModuleList.class);
             }
@@ -366,20 +372,21 @@ public class TVViewCreator {
                 }
             }
         }
-            return moduleView;
-        }
+        return moduleView;
+    }
 
 
     CustomHeaderItem customHeaderItem = null;
+
     public void createTrayModule(final Context context,
-                                      final Component component,
-                                      final Layout parentLayout,
-                                      final ModuleList moduleUI,
-                                      final Module moduleData,
-                                      @Nullable TVPageView pageView,
-                                      Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                                      final AppCMSPresenter appCMSPresenter,
-                                      boolean isCarousel){
+                                 final Component component,
+                                 final Layout parentLayout,
+                                 final ModuleList moduleUI,
+                                 final Module moduleData,
+                                 @Nullable TVPageView pageView,
+                                 Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                 final AppCMSPresenter appCMSPresenter,
+                                 boolean isCarousel) {
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
         if (componentType == null) {
             componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
@@ -388,14 +395,14 @@ public class TVViewCreator {
         if (componentKey == null) {
             componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
-        switch (componentType){
+        switch (componentType) {
             case PAGE_LABEL_KEY:
                 switch (componentKey) {
                     case PAGE_TRAY_TITLE_KEY:
-                        if(moduleData != null) {
+                        if (moduleData != null) {
                             customHeaderItem = null;
                             customHeaderItem = new CustomHeaderItem(context, trayIndex++,
-                                    ( moduleData != null && moduleData.getTitle() != null) ? moduleData.getTitle().toUpperCase() : "");
+                                    (moduleData != null && moduleData.getTitle() != null) ? moduleData.getTitle().toUpperCase() : "");
                             customHeaderItem.setmIsCarousal(isCarousel);
                             customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
                             customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
@@ -408,72 +415,70 @@ public class TVViewCreator {
                         break;
                 }
                 break;
-            case PAGE_CAROUSEL_VIEW_KEY:
-                        {
-                        customHeaderItem = new CustomHeaderItem(context, trayIndex++, "");
-                        customHeaderItem.setmIsCarousal(true);
-                        customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-                        customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-                        customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
-                        customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
-                        }
-
-                        if(moduleData != null) {
-                            CardPresenter cardPresenter = new JumbotronPresenter(context, appCMSPresenter);
-                            ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(cardPresenter);
-                            if (moduleData.getContentData() != null && moduleData.getContentData().size() > 0) {
-                                List<ContentDatum> contentData1 = moduleData.getContentData();
-                                List<Component> components = component.getComponents();
-                                for (ContentDatum contentData : contentData1) {
-                                    BrowseFragmentRowData rowData = new BrowseFragmentRowData();
-                                    rowData.contentData = contentData;
-                                    rowData.uiComponentList = components;
-                                    listRowAdapter.add(rowData);
-                                    Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
-                                }
-                                mRowsAdapter.add(new ListRow(customHeaderItem, listRowAdapter));
-                            }
-                        }
-                        break;
-
-                    case PAGE_COLLECTIONGRID_KEY:
-                        /*for(Component component1 : component.getComponents()){*/
-                            if  (customHeaderItem == null ) {
-                                customHeaderItem = new CustomHeaderItem(context, trayIndex++, moduleData != null ? moduleData.getTitle() : "");
-                                customHeaderItem.setmIsCarousal(false);
-                                customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-                                customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-                                customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
-                                customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
-                                customHeaderItem.setFontFamily(component.getFontFamily());
-                                customHeaderItem.setFontWeight(component.getFontWeight());
-                                customHeaderItem.setFontSize(component.getLayout().getTv().getFontSize());
-                            }
-                            if(null != moduleData) {
-                                CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
-                                        Integer.valueOf(component.getLayout().getTv().getHeight()),
-                                        Integer.valueOf(component.getLayout().getTv().getWidth()),
-                                        jsonValueKeyMap
-                                );
-                                ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
-
-                                if (moduleData.getContentData() != null && moduleData.getContentData().size() > 0) {
-                                    List<ContentDatum> contentData1 = moduleData.getContentData();
-                                    List<Component> components = component.getComponents();
-                                    for (ContentDatum contentData : contentData1) {
-                                        BrowseFragmentRowData rowData = new BrowseFragmentRowData();
-                                        rowData.contentData = contentData;
-                                        rowData.uiComponentList = components;
-                                        traylistRowAdapter.add(rowData);
-                                        Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
-                                    }
-                                    mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
-                                }
-                            }
-                        break;
+            case PAGE_CAROUSEL_VIEW_KEY: {
+                customHeaderItem = new CustomHeaderItem(context, trayIndex++, "");
+                customHeaderItem.setmIsCarousal(true);
+                customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
+                customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
+                customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
+                customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
             }
-    }
 
+            if (moduleData != null) {
+                CardPresenter cardPresenter = new JumbotronPresenter(context, appCMSPresenter);
+                ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(cardPresenter);
+                if (moduleData.getContentData() != null && moduleData.getContentData().size() > 0) {
+                    List<ContentDatum> contentData1 = moduleData.getContentData();
+                    List<Component> components = component.getComponents();
+                    for (ContentDatum contentData : contentData1) {
+                        BrowseFragmentRowData rowData = new BrowseFragmentRowData();
+                        rowData.contentData = contentData;
+                        rowData.uiComponentList = components;
+                        listRowAdapter.add(rowData);
+                        Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
+                    }
+                    mRowsAdapter.add(new ListRow(customHeaderItem, listRowAdapter));
+                }
+            }
+            break;
+
+            case PAGE_COLLECTIONGRID_KEY:
+                        /*for(Component component1 : component.getComponents()){*/
+                if (customHeaderItem == null) {
+                    customHeaderItem = new CustomHeaderItem(context, trayIndex++, moduleData != null ? moduleData.getTitle() : "");
+                    customHeaderItem.setmIsCarousal(false);
+                    customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
+                    customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
+                    customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
+                    customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
+                    customHeaderItem.setFontFamily(component.getFontFamily());
+                    customHeaderItem.setFontWeight(component.getFontWeight());
+                    customHeaderItem.setFontSize(component.getLayout().getTv().getFontSize());
+                }
+                if (null != moduleData) {
+                    CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
+                            Integer.valueOf(component.getLayout().getTv().getHeight()),
+                            Integer.valueOf(component.getLayout().getTv().getWidth()),
+                            jsonValueKeyMap
+                    );
+                    ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
+
+                    if (moduleData.getContentData() != null && moduleData.getContentData().size() > 0) {
+                        List<ContentDatum> contentData1 = moduleData.getContentData();
+                        List<Component> components = component.getComponents();
+                        for (ContentDatum contentData : contentData1) {
+                            BrowseFragmentRowData rowData = new BrowseFragmentRowData();
+                            rowData.contentData = contentData;
+                            rowData.uiComponentList = components;
+                            traylistRowAdapter.add(rowData);
+                            Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
+                        }
+                        mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
+                    }
+                }
+                break;
+        }
+    }
 
 
     public void createComponentView(final Context context,
@@ -520,6 +525,7 @@ public class TVViewCreator {
                         moduleAPI);
                 ((RecyclerView) componentViewResult.componentView)
                         .setAdapter(appCMSTVTrayItemAdapter);
+                componentViewResult.onInternalEvent = appCMSTVTrayItemAdapter;
                 break;
             case PAGE_BUTTON_KEY:
                 if (componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY) {
@@ -540,28 +546,28 @@ public class TVViewCreator {
 
                 if (!TextUtils.isEmpty(component.getTextColor())) {
                     ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(getColor(context, component.getTextColor())));
-                    if(!TextUtils.isEmpty(component.getBorderColor())){
-                        ((TextView)componentViewResult.componentView).setTextColor(Utils.getButtonTextColorDrawable(
-                                Utils.getColor(context,component.getBorderColor()),
-                                Utils.getColor(context,component.getTextColor())));
+                    if (!TextUtils.isEmpty(component.getBorderColor())) {
+                        ((TextView) componentViewResult.componentView).setTextColor(Utils.getButtonTextColorDrawable(
+                                Utils.getColor(context, component.getBorderColor()),
+                                Utils.getColor(context, component.getTextColor())));
                     }
                 }
                 if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                     componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
                 } else {
                     componentViewResult.componentView.setBackground(
-                            Utils.setButtonBackgroundSelector(context ,
-                                                        Color.parseColor(Utils.getTitleColor(context,appCMSPresenter)),
-                                                        component ));
+                            Utils.setButtonBackgroundSelector(context,
+                                    Color.parseColor(Utils.getTitleColor(context, appCMSPresenter)),
+                                    component));
                 }
 
-                if(component.getLetetrSpacing() != 0){
-                    ((TextView)componentViewResult.componentView).
+                if (component.getLetetrSpacing() != 0) {
+                    ((TextView) componentViewResult.componentView).
                             setLetterSpacing(component.getLetetrSpacing());
                 }
 
                 int tintColor = Color.parseColor(getColor(context,
-                        Utils.getFocusColor(context,appCMSPresenter)));
+                        Utils.getFocusColor(context, appCMSPresenter)));
 
                 switch (componentKey) {
                     case PAGE_INFO_KEY:
@@ -606,7 +612,7 @@ public class TVViewCreator {
                                                         moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
                                             }
                                         }
-                                    },300);
+                                    }, 300);
                                 }
                             });
                         } else {
@@ -645,7 +651,7 @@ public class TVViewCreator {
                                         extraData[0] = moduleAPI.getContentData().get(0).getGist().getPermalink();
                                         extraData[1] = videoUrl;
                                         extraData[2] = moduleAPI.getContentData().get(0).getGist().getId();
-                                        if(null != moduleAPI.getContentData().get(0).getContentDetails()
+                                        if (null != moduleAPI.getContentData().get(0).getContentDetails()
                                                 && moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions() != null
                                                 && moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0) != null
                                                 && moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
@@ -675,7 +681,7 @@ public class TVViewCreator {
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                         componentViewResult.componentView.setFocusable(false);
                         componentViewResult.componentView.setTag("PLAY_BUTTON");
-                       // componentViewResult.componentView = null;
+                        // componentViewResult.componentView = null;
                         break;
 
                     case PAGE_PLAY_KEY:
@@ -743,22 +749,22 @@ public class TVViewCreator {
                         });
                         break;
 
-           case PAGE_FORGOTPASSWORD_KEY:
-               componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
-                   @Override
-                   public void onClick(View view) {
+                    case PAGE_FORGOTPASSWORD_KEY:
+                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
 
-                       String[] extraData = new String[1];
-                       extraData[0] = component.getKey();
-                       appCMSPresenter.launchTVButtonSelectedAction(null,
-                               component.getAction(),
-                               null,
-                               extraData,
-                               false
-                       );
-                   }
-               });
-               break;
+                                String[] extraData = new String[1];
+                                extraData[0] = component.getKey();
+                                appCMSPresenter.launchTVButtonSelectedAction(null,
+                                        component.getAction(),
+                                        null,
+                                        extraData,
+                                        false
+                                );
+                            }
+                        });
+                        break;
 
                     case RESET_PASSWORD_CANCEL_BUTTON_KEY:
                     case PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY:
@@ -773,15 +779,15 @@ public class TVViewCreator {
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                if(pageView.getChildrenContainer().getChildAt(0) instanceof TVModuleView){
-                                    TVModuleView tvModuleView = (TVModuleView)pageView.getChildrenContainer().getChildAt(0);
-                                    String emailId = ((EditText)tvModuleView.findViewById(R.id.email_edit_box)).getEditableText().toString();
-                                    String password = ((EditText)tvModuleView.findViewById(R.id.password_edit_box)).getEditableText().toString();
-                                    Log.d(TAG , "emailid = "+emailId + "password = "+password);
+                                if (pageView.getChildrenContainer().getChildAt(0) instanceof TVModuleView) {
+                                    TVModuleView tvModuleView = (TVModuleView) pageView.getChildrenContainer().getChildAt(0);
+                                    String emailId = ((EditText) tvModuleView.findViewById(R.id.email_edit_box)).getEditableText().toString();
+                                    String password = ((EditText) tvModuleView.findViewById(R.id.password_edit_box)).getEditableText().toString();
+                                    Log.d(TAG, "emailid = " + emailId + "password = " + password);
 
-                                    if( (emailId != null && emailId.length() == 0)
-                                         || (password != null && password.length() == 0) ){
-                                        appCMSPresenter.openTVErrorDialog(context.getString(R.string.blank_email_password_error_msg) ,
+                                    if ((emailId != null && emailId.length() == 0)
+                                            || (password != null && password.length() == 0)) {
+                                        appCMSPresenter.openTVErrorDialog(context.getString(R.string.blank_email_password_error_msg),
                                                 context.getString(R.string.app_cms_login));
                                         return;
                                     }
@@ -796,9 +802,48 @@ public class TVViewCreator {
                                 }
                             }
                         });
-                      break;
+                        break;
                     case PAGE_SETTING_LOGOUT_BUTTON_KEY:
                         componentViewResult.componentView.setOnClickListener(v -> appCMSPresenter.logoutTV());
+                        break;
+
+
+                    case PAGE_REMOVEALL_KEY:
+                        componentViewResult.componentView.setOnClickListener(v -> {
+                            OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
+                            switch (jsonValueKeyMap.get(viewType)) {
+                                case PAGE_HISTORY_MODULE_KEY:
+                                    appCMSPresenter.clearHistory(appCMSDeleteHistoryResult -> {
+//                                            v.setVisibility(View.GONE);
+                                        onInternalEvent.sendEvent(null);
+                                    });
+                                    break;
+
+                                case PAGE_DOWNLOAD_MODULE_KEY:
+                                    appCMSPresenter.clearDownload(appCMSAddToWatchlistResult -> {
+//                                            v.setVisibility(View.GONE);
+                                    });
+                                    break;
+
+                                case PAGE_WATCHLIST_MODULE_KEY:
+                                    appCMSPresenter.clearWatchlist(addToWatchlistResult -> {
+//                                            v.setVisibility(View.GONE);
+                                        onInternalEvent.sendEvent(null);
+                                    });
+
+
+                                   /* appCMSPresenter.showClearHistoryDialog("", "", new Action1<Integer>() {
+                                        @Override
+                                        public void call(Integer integer) {
+
+                                        }
+                                    });*/
+                                    break;
+
+                                default:
+                                    break;
+                            }
+                        });
                         break;
 
                     default:
@@ -807,9 +852,9 @@ public class TVViewCreator {
 
             case PAGE_LABEL_KEY:
             case PAGE_TEXTVIEW_KEY:
-                if(componentKey == PAGE_API_DESCRIPTION){
+                if (componentKey == PAGE_API_DESCRIPTION) {
                     componentViewResult.componentView = new ScrollView(context);
-                }else{
+                } else {
                     componentViewResult.componentView = new TextView(context);
                 }
 
@@ -824,8 +869,8 @@ public class TVViewCreator {
                                 Color.parseColor(getColor(context, component.getStyles().getTextColor()));
                     }
                 }
-                if(componentKey != PAGE_API_DESCRIPTION)
-                ((TextView) componentViewResult.componentView).setTextColor(textColor);
+                if (componentKey != PAGE_API_DESCRIPTION)
+                    ((TextView) componentViewResult.componentView).setTextColor(textColor);
                 if (!gridElement) {
                     switch (componentKey) {
                         case PAGE_API_TITLE:
@@ -835,10 +880,10 @@ public class TVViewCreator {
                                     ((TextView) componentViewResult.componentView).setMaxLines(component.getNumberOfLines());
                                 }
                                 ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
-                            }else if(!TextUtils.isEmpty(component.getText())){
+                            } else if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText());
                             }
-                            ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(Utils.getFocusColor(context,appCMSPresenter)));
+                            ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(Utils.getFocusColor(context, appCMSPresenter)));
                             componentViewResult.componentView.setFocusable(false);
                             componentViewResult.componentView.setTag("TITLE");
                             break;
@@ -853,7 +898,7 @@ public class TVViewCreator {
                                 }
 
                                 textView.setFocusable(true);
-                              //  componentViewResult.componentView.setTag("API_DSECRIPTION");
+                                //  componentViewResult.componentView.setTag("API_DSECRIPTION");
 
                                 int color = ContextCompat.getColor(context, R.color.colorAccent);
                                 if (!TextUtils.isEmpty(component.getTextColor())) {
@@ -873,15 +918,14 @@ public class TVViewCreator {
                                         component,
                                         textView);
 
-                                ((ScrollView)componentViewResult.componentView).addView(textView);
+                                ((ScrollView) componentViewResult.componentView).addView(textView);
                             }
-
 
 
                             break;
 
                         case RESET_PASSWORD_TITLE_KEY:
-                            ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(Utils.getFocusColor(context,appCMSPresenter)));
+                            ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(Utils.getFocusColor(context, appCMSPresenter)));
                             if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText());
                             }
@@ -914,7 +958,7 @@ public class TVViewCreator {
                         case PAGE_VIDEO_DESCRIPTION_KEY:
                             String videoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
 
-                            if(null == videoDescription){
+                            if (null == videoDescription) {
                                 videoDescription = moduleAPI.getContentData().get(0).getGist().getTitle();
                             }
                             if (!TextUtils.isEmpty(videoDescription)) {
@@ -937,17 +981,17 @@ public class TVViewCreator {
                             componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    appCMSPresenter.showMoreDialog( moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                    appCMSPresenter.showMoreDialog(moduleAPI.getContentData().get(0).getGist().getTitle(),
                                             fullText);
                                 }
                             });
 
-                           // componentViewResult.componentView.setFocusable(true);
+                            // componentViewResult.componentView.setFocusable(true);
                             final int _textColor = textColor;
                             componentViewResult.componentView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                                 @Override
                                 public void onFocusChange(View view, boolean b) {
-                                    viewCreatorLayoutListener.setSpanOnFocus((TextView) view , b , _textColor);
+                                    viewCreatorLayoutListener.setSpanOnFocus((TextView) view, b, _textColor);
                                 }
                             });
                             componentViewResult.componentView.setTag("VIDEO_DESC_KEY");
@@ -1022,9 +1066,9 @@ public class TVViewCreator {
                 break;
 
             case PAGE_IMAGE_KEY:
-                if(componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
+                if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
                     componentViewResult.componentView = new FrameLayout(context);
-                }else{
+                } else {
                     componentViewResult.componentView = new ImageView(context);
                 }
                 switch (componentKey) {
@@ -1032,19 +1076,19 @@ public class TVViewCreator {
                         ImageView imageView = new ImageView(componentViewResult.componentView.getContext());
 
                         int padding = Integer.valueOf(component.getLayout().getTv().getPadding());
-                        imageView.setPadding(padding+1,padding,padding+1,padding);
+                        imageView.setPadding(padding + 1, padding, padding + 1, padding);
 
                         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
                                 FrameLayout.LayoutParams.MATCH_PARENT);
                         imageView.setLayoutParams(params);
 
 
-                        ((FrameLayout)componentViewResult.componentView).addView(imageView);
-                         componentViewResult.componentView.setFocusable(false);
-                         imageView.setFocusable(true);
+                        ((FrameLayout) componentViewResult.componentView).addView(imageView);
+                        componentViewResult.componentView.setFocusable(false);
+                        imageView.setFocusable(true);
 
-                        String borderColor = Utils.getFocusColor(context,appCMSPresenter);
-                        imageView.setBackground(Utils.getTrayBorder(context,borderColor,component));
+                        String borderColor = Utils.getFocusColor(context, appCMSPresenter);
+                        imageView.setBackground(Utils.getTrayBorder(context, borderColor, component));
                         int viewWidth = (int) Utils.getViewWidth(context,
                                 component.getLayout(),
                                 ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -1058,20 +1102,20 @@ public class TVViewCreator {
                             Glide.with(context)
                                     .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()).diskCacheStrategy(DiskCacheStrategy.SOURCE)
                                     .error(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder))
-                                    .placeholder(ContextCompat.getDrawable(context , R.drawable.poster_image_placeholder))
+                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder))
                                     .into(imageView);
                         } else if (viewWidth > 0) {
                             Glide.with(context)
                                     .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                                     .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
-                                    .placeholder(ContextCompat.getDrawable(context , R.drawable.video_image_placeholder))
+                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
                                     .into(imageView);
                         } else {
                             Glide.with(context)
                                     .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()).diskCacheStrategy(DiskCacheStrategy.SOURCE)
                                     .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
-                                    .placeholder(ContextCompat.getDrawable(context , R.drawable.video_image_placeholder))
+                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
                                     .into(imageView);
                         }
                         componentViewResult.componentView.setTag(context.getString(R.string.video_image_key));
@@ -1102,8 +1146,8 @@ public class TVViewCreator {
                                             extraData[0] = moduleAPI.getContentData().get(0).getGist().getPermalink();
                                             extraData[1] = videoUrl;
                                             extraData[2] = moduleAPI.getContentData().get(0).getGist().getId();
-                                            if(moduleAPI.getContentData().get(0).getContentDetails() != null &&
-                                                    moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions() !=  null &&
+                                            if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
+                                                    moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions() != null &&
                                                     moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0) != null &&
                                                     moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
                                                 extraData[3] = moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0).getUrl();
@@ -1131,9 +1175,9 @@ public class TVViewCreator {
                         });
 
                         imageView.setOnKeyListener((view, i, keyEvent) -> {
-                            switch(keyEvent.getAction()){
+                            switch (keyEvent.getAction()) {
                                 case KeyEvent.ACTION_DOWN:
-                                    switch(keyEvent.getKeyCode()) {
+                                    switch (keyEvent.getKeyCode()) {
                                         case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                                             appCMSPresenter.showLoadingDialog(true);
 
@@ -1196,7 +1240,7 @@ public class TVViewCreator {
                                     .load(component.getImageName()).diskCacheStrategy(DiskCacheStrategy.SOURCE)
                                     //.error(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder))
                                     .into((ImageView) componentViewResult.componentView);
-                         }
+                        }
                 }
                 break;
 
@@ -1313,26 +1357,26 @@ public class TVViewCreator {
                         Utils.getFontSizeValue(context, component.getLayout()));
                 componentViewResult.componentView.setFocusable(false);
 
-           try {
-               if (TextUtils.isEmpty(directorListSb.toString())) {
-                   ((CreditBlocksView) componentViewResult.componentView).getChildAt(0).setVisibility(View.GONE);
-                   ((CreditBlocksView) componentViewResult.componentView).getChildAt(1).setVisibility(View.GONE);
-               }
+                try {
+                    if (TextUtils.isEmpty(directorListSb.toString())) {
+                        ((CreditBlocksView) componentViewResult.componentView).getChildAt(0).setVisibility(View.GONE);
+                        ((CreditBlocksView) componentViewResult.componentView).getChildAt(1).setVisibility(View.GONE);
+                    }
 
 
-               if (TextUtils.isEmpty(starringListSb.toString())) {
-                   ((CreditBlocksView) componentViewResult.componentView).getChildAt(2).setVisibility(View.GONE);
-                   ((CreditBlocksView) componentViewResult.componentView).getChildAt(3).setVisibility(View.GONE);
-               }
-           }catch (Exception e){
-               e.printStackTrace();
-           }
-           break;
+                    if (TextUtils.isEmpty(starringListSb.toString())) {
+                        ((CreditBlocksView) componentViewResult.componentView).getChildAt(2).setVisibility(View.GONE);
+                        ((CreditBlocksView) componentViewResult.componentView).getChildAt(3).setVisibility(View.GONE);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
 
             case PAGE_TEXTFIELD_KEY:
                 componentViewResult.componentView = new LinearLayout(context);
                 EditText textInputEditText = new EditText(context);
-                textInputEditText.setBackground(Utils.getTrayBorder(context,Utils.getFocusColor(context,appCMSPresenter),component));
+                textInputEditText.setBackground(Utils.getTrayBorder(context, Utils.getFocusColor(context, appCMSPresenter), component));
                 switch (componentKey) {
                     case PAGE_EMAILTEXTFIELD_KEY:
                     case PAGE_EMAILTEXTFIELD2_KEY:
@@ -1346,7 +1390,7 @@ public class TVViewCreator {
                         textInputEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
                         textInputEditText.setId(R.id.password_edit_box);
                         //textInputEditText.setNextFocusLeftId(R.id.email_edit_box);
-                       // ((TextInputLayout) componentViewResult.componentView).setPasswordVisibilityToggleEnabled(true);
+                        // ((TextInputLayout) componentViewResult.componentView).setPasswordVisibilityToggleEnabled(true);
                         break;
                     case PAGE_MOBILETEXTFIELD_KEY:
                         textInputEditText.setInputType(InputType.TYPE_CLASS_PHONE);
@@ -1390,10 +1434,9 @@ public class TVViewCreator {
                 break;
 
 
-
             case PAGE_HEADER_KEY:
                 componentViewResult.componentView = new HeaderView(context
-                    ,component , jsonValueKeyMap , moduleAPI);
+                        , component, jsonValueKeyMap, moduleAPI);
                 componentViewResult.componentView.setFocusable(false);
                 break;
             case PAGE_SETTING_TOGGLE_SWITCH_TYPE:
@@ -1481,8 +1524,8 @@ public class TVViewCreator {
                 }
             }
 
-            if(AppCMSUIKeyType.PAGE_RESET_PASSWORD_MODULE_KEY == jsonValueKeyMap.get(module.getView())
-                    || AppCMSUIKeyType.PAGE_CONTACT_US_MODULE_KEY == jsonValueKeyMap.get(module.getView())){
+            if (AppCMSUIKeyType.PAGE_RESET_PASSWORD_MODULE_KEY == jsonValueKeyMap.get(module.getView())
+                    || AppCMSUIKeyType.PAGE_CONTACT_US_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
                 return new Module();
             }
 
@@ -1522,19 +1565,19 @@ public class TVViewCreator {
             switch (fontWeight) {
                 case PAGE_TEXT_BOLD_KEY:
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_bold_ttf));
-                    Log.d(TAG , "setTypeFace===Opensans_Bold" + " text = "+component.getKey().toString());
+                    Log.d(TAG, "setTypeFace===Opensans_Bold" + " text = " + component.getKey().toString());
                     break;
                 case PAGE_TEXT_SEMIBOLD_KEY:
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_semibold_ttf));
-                    Log.d(TAG , "setTypeFace===Opensans_SemiBold" + " text = "+component.getKey().toString());
+                    Log.d(TAG, "setTypeFace===Opensans_SemiBold" + " text = " + component.getKey().toString());
                     break;
                 case PAGE_TEXT_EXTRABOLD_KEY:
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_extrabold_ttf));
-                    Log.d(TAG , "setTypeFace===Opensans_ExtraBold" + " text = "+component.getKey().toString());
+                    Log.d(TAG, "setTypeFace===Opensans_ExtraBold" + " text = " + component.getKey().toString());
                     break;
                 default:
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
-                    Log.d(TAG , "setTypeFace===Opensans_RegularBold" + " text = "+component.getKey().toString());
+                    Log.d(TAG, "setTypeFace===Opensans_RegularBold" + " text = " + component.getKey().toString());
             }
             textView.setTypeface(face);
         }
@@ -1544,13 +1587,13 @@ public class TVViewCreator {
         Spannable wordToSpan = new SpannableString(tv.getText().toString());
         int length = wordToSpan.length();
         if (hasFocus) {
-            wordToSpan.setSpan(new BackgroundColorSpan(ContextCompat.getColor(tv.getContext(),android.R.color.holo_red_dark)), length - 6, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            wordToSpan.setSpan(new BackgroundColorSpan(ContextCompat.getColor(tv.getContext(), android.R.color.holo_red_dark)), length - 6, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             wordToSpan.setSpan(new StyleSpan(Typeface.BOLD), length - 6, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             wordToSpan.setSpan(new ForegroundColorSpan(Color.BLACK), length - 6, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         } else {
             wordToSpan.setSpan(new BackgroundColorSpan(Color.TRANSPARENT), length - 6, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             wordToSpan.setSpan(new StyleSpan(Typeface.BOLD), length - 6, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            wordToSpan.setSpan(new ForegroundColorSpan(ContextCompat.getColor(tv.getContext(),android.R.color.transparent)), length - 6, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            wordToSpan.setSpan(new ForegroundColorSpan(ContextCompat.getColor(tv.getContext(), android.R.color.transparent)), length - 6, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         wordToSpan.setSpan(new AbsoluteSizeSpan(18), length - 6, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 

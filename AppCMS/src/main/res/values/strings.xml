@@ -244,6 +244,7 @@
     <string name="app_cms_cancel_subscription_title">Cancel Subscription</string>
     <string name="app_cms_confirm_alert_dialog_button_text">OK</string>
     <string name="app_cms_cancel_alert_dialog_button_text">CANCEL</string>
+    <string name="app_cms_yes_alert_dialog_button_text">YES</string>
     <string name="app_cms_cancel_subscription_confirmation_message">You have cancelled your subscription.</string>
 
     <string name="app_cms_cancel_subscription_not_subscribed_message">You are currently not subscribed to any plans.</string>
@@ -321,6 +322,7 @@
         <item quantity="one">RESULT FOR \"%1$s\"</item>
         <item quantity="other">RESULTS FOR \"%1$s\"</item>
     </plurals>
+    <string name="item_shop">{0,choice,0#Added Today|1#Added 1 Day Ago|1&lt;Added {0} Days Ago}</string>
     <string name="retryCallBinderKey">retryCallBinderKey</string>
     <string name="retryCallBundleKey">retryCallBundleKey</string>
     <string name="app_cms_default_download_quality">720p</string>
