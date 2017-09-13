@@ -1492,8 +1492,6 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             FrameLayout mainFragmentView =
                     currentActivity.findViewById(R.id.app_cms_fragment);
-            if(currentActivity!=null && currentActivity instanceof FacebookActivity)
-                return true;
 
             if (mainFragmentView != null) {
                 return (mainFragmentView.getVisibility() == View.VISIBLE);
@@ -3847,6 +3845,7 @@ public class AppCMSPresenter {
                     pageIdToPageAPIUrlMap.get(pageId),
                     appCMSSite.getGist().getSiteInternalName(),
                     true,
+
                     getPageId(appCMSPageUI),
                     new AppCMSPageAPIAction(appbarPresent,
                             fullscreenEnabled,
@@ -4985,8 +4984,15 @@ public class AppCMSPresenter {
 
     private void sendFireBaseLogOutEvent() {
         Bundle bundle = new Bundle();
+
+
         bundle.putString(FIREBASE_SCREEN_SIGN_OUT, FIREBASE_SCREEN_LOG_OUT);
         if (getmFireBaseAnalytics() != null) {
+
+            mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_ID, null);
+            mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_NAME, null);
+            mFireBaseAnalytics.setUserId(null);
+
             mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
             mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
             getmFireBaseAnalytics().logEvent(FIREBASE_SCREEN_SIGN_OUT, bundle);
@@ -5753,7 +5759,6 @@ public class AppCMSPresenter {
                 BeaconRequest beaconRequest = getBeaconRequest(vid, screenName, parentScreenName, currentPosition, event,
                         usingChromecast, mediaType, bitrate, height, width, streamid, ttfirstframe, apod, isDownloaded);
 
-                Log.d(TAG, "Beacon Message Request position: " + currentPosition);
 
                 if (!isNetworkConnected()) {
                     currentActivity.runOnUiThread(() -> {
@@ -6882,9 +6887,7 @@ public class AppCMSPresenter {
     }
 
     public void setCurrentActivity(Activity activity) {
-        if(!(activity instanceof FacebookActivity)){
-            this.currentActivity = activity;
-        }
+        this.currentActivity = activity;
         this.downloadManager = (DownloadManager) currentActivity.getSystemService(Context.DOWNLOAD_SERVICE);
         this.realmController = RealmController.with(currentActivity);
         this.downloadQueueThread = new DownloadQueueThread(this);

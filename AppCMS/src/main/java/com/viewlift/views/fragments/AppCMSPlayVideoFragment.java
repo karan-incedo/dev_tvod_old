@@ -339,7 +339,6 @@ public class AppCMSPlayVideoFragment extends Fragment
                     if (beaconMessageThread != null) {
                         beaconMessageThread.sendBeaconPing = true;
                         if (!beaconMessageThread.isAlive()) {
-                            System.out.println("Beacon Message start in playerstate change-"+videoPlayerView.getCurrentPosition());
                             beaconMessageThread.start();
                             mTotalVideoDuration = videoPlayerView.getDuration() / 1000;
                             mTotalVideoDuration -= mTotalVideoDuration % 4;
@@ -636,7 +635,6 @@ public class AppCMSPlayVideoFragment extends Fragment
                 }
                 if (beaconMessageThread != null && !beaconMessageThread.isAlive()) {
                     beaconMessageThread.start();
-                    System.out.println("Beacon Message start in resume request-"+videoPlayerView.getCurrentPosition());
 
                     if (mProgressHandler != null)
                         mProgressHandler.post(mProgressRunnable);
@@ -669,9 +667,9 @@ public class AppCMSPlayVideoFragment extends Fragment
         beaconMessageThread.runBeaconPing = false;
         beaconMessageThread.videoPlayerView = null;
         beaconMessageThread = null;
-        if(mProgressHandler!=null){
+        if (mProgressHandler != null) {
             mProgressHandler.removeCallbacks(mProgressRunnable);
-            mProgressHandler=null;
+            mProgressHandler = null;
         }
 
         beaconBufferingThread.sendBeaconBuffering = false;
@@ -719,11 +717,14 @@ public class AppCMSPlayVideoFragment extends Fragment
         //bundle.putString(FIREBASE_SERIES_NAME_KEY, "");
 
         //Logs an app event.
-        if (progressPercent == 0 || !isStreamStart) {
+        if (progressPercent == 0 && !isStreamStart) {
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
             isStreamStart = true;
         }
-
+        if (!isStreamStart) {
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
+            isStreamStart = true;
+        }
         if (progressPercent >= 25 && progressPercent < 50 && !isStream25) {
             if (!isStreamStart) {
                 appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
@@ -741,7 +742,6 @@ public class AppCMSPlayVideoFragment extends Fragment
             }
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_50, bundle);
             isStream50 = true;
-
         }
         if (progressPercent >= 75 && progressPercent <= 100 && !isStream75) {
             if (!isStream25) {
@@ -756,8 +756,6 @@ public class AppCMSPlayVideoFragment extends Fragment
             isStream75 = true;
         }
     }
-
-
 
 
     private void requestAds(String adTagUrl) {
@@ -887,8 +885,11 @@ public class AppCMSPlayVideoFragment extends Fragment
                     Thread.sleep(beaconMsgTimeoutMsec);
                     if (sendBeaconPing) {
 
-                       long currentTime= videoPlayerView.getCurrentPosition() / 1000;
-                        if (appCMSPresenter != null && videoPlayerView != null && videoPlayerView.getPlayer().getPlayWhenReady() && currentTime%30==0) { // For not to sent PIN in PAUSE mode
+                        long currentTime = videoPlayerView.getCurrentPosition() / 1000;
+                        if (appCMSPresenter != null && videoPlayerView != null && videoPlayerView.getPlayer().getPlayWhenReady() && currentTime % 30 == 0) { // For not to sent PIN in PAUSE mode
+
+                            Log.d(TAG, "Beacon Message Request position: " + currentTime);
+
                             /*appCMSPresenter.sendBeaconPingMessage(filmId,
 
                                     permaLink,
