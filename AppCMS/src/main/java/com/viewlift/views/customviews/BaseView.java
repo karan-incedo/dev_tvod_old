@@ -759,6 +759,28 @@ public abstract class BaseView extends FrameLayout {
         return defaultHeight;
     }
 
+    public static float getFontSize(Context context, Layout layout) {
+        if (context != null) {
+            if (isTablet(context)) {
+                if (isLandscape(context)) {
+                    if (layout.getTabletLandscape().getFontSize() != 0f) {
+                        return layout.getTabletLandscape().getFontSize();
+                    }
+                } else {
+                    if (layout.getTabletLandscape().getFontSize() != 0f) {
+                        return layout.getTabletLandscape().getFontSize();
+                    }
+                }
+            } else {
+                if (layout.getMobile().getFontSize() != 0f) {
+                    return layout.getMobile().getFontSize();
+                }
+            }
+        }
+
+        return -1.0f;
+    }
+
     public static float getFontSizeKey(Context context, Layout layout) {
         if (context != null) {
             if (isTablet(context)) {

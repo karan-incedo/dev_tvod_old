@@ -108,9 +108,9 @@ public class AppCMSMain {
     @Expose
     boolean forceLogin;
 
-    @SerializedName("ccav")
+    @SerializedName("paymentProviders")
     @Expose
-    CCAv ccav;
+    PaymentProviders paymentProviders;
 
     public String getId() {
         return id;
@@ -300,11 +300,11 @@ public class AppCMSMain {
         this.features = features;
     }
 
-    public CCAv getCcav() {
-        return ccav;
+    public PaymentProviders getPaymentProviders() {
+        return paymentProviders;
     }
 
-    public void setCcav(CCAv ccav) {
-        this.ccav = ccav;
+    public void setPaymentProviders(PaymentProviders paymentProviders) {
+        this.paymentProviders = paymentProviders;
     }
 }

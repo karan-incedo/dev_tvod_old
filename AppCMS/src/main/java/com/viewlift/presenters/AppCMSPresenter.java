@@ -106,6 +106,7 @@ import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionResult;
+import com.viewlift.models.data.appcms.subscriptions.PlanDetail;
 import com.viewlift.models.data.appcms.subscriptions.Receipt;
 import com.viewlift.models.data.appcms.subscriptions.UserSubscriptionPlan;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -1094,7 +1095,7 @@ public class AppCMSPresenter {
                         sendIntent.setAction(Intent.ACTION_SEND);
                         sendIntent.putExtra(Intent.EXTRA_TEXT, extraData[0]);
                         sendIntent.setType(currentActivity.getString(R.string.text_plain_mime_type));
-                        Intent chooserIntent=Intent.createChooser(sendIntent,
+                        Intent chooserIntent = Intent.createChooser(sendIntent,
                                 currentActivity.getResources().getText(R.string.send_to));
                         chooserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         currentActivity.startActivity(chooserIntent);
@@ -1153,8 +1154,8 @@ public class AppCMSPresenter {
                                 } else if (isUserSubscribed() &&
                                         TextUtils.isEmpty(paymentProcessor)) {
                                     showEntitlementDialog(DialogType.UNKNOWN_SUBSCRIPTION_FOR_UPGRADE);
-                                } else if (isExistingGooglePlaySubscriptionSuspended() &&
-                                        !upgradesAvailableForUser(getLoggedInUser())) {
+                                } else if (isExistingGooglePlaySubscriptionSuspended() ||
+                                        !upgradesAvailableForUser()) {
                                     showEntitlementDialog(DialogType.UPGRADE_UNAVAILABLE);
                                 } else {
                                     navigateToSubscriptionPlansPage(null, null);
@@ -1170,7 +1171,7 @@ public class AppCMSPresenter {
                                 } else if (isUserSubscribed() && TextUtils.isEmpty(paymentProcessor)) {
                                     showEntitlementDialog(DialogType.UNKNOWN_SUBSCRIPTION_FOR_CANCEL);
                                 } else {
-                                    sendSubscriptionCancellation();
+                                    initiateSubscriptionCancellation();
                                 }
                             }
                         }
@@ -1840,9 +1841,10 @@ public class AppCMSPresenter {
 
         if (!TextUtils.isEmpty(countryCode) &&
                 appCMSMain != null &&
-                appCMSMain.getCcav() != null &&
-                !TextUtils.isEmpty(appCMSMain.getCcav().getCountry()) &&
-                appCMSMain.getCcav().getCountry().equalsIgnoreCase(countryCode)) {
+                appCMSMain.getPaymentProviders() != null &&
+                appCMSMain.getPaymentProviders().getCcav() != null &&
+                !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
+                appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode)) {
             Log.d(TAG, "Initiating CCAvenue purchase");
             initiateCCAvenuePurchase();
             isCCAvenueEnabled = true;
@@ -1937,6 +1939,66 @@ public class AppCMSPresenter {
 
     public void sendSubscriptionCancellation() {
         if (currentActivity != null) {
+            if (!TextUtils.isEmpty(getActiveSubscriptionSku())) {
+                SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
+                subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
+                subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
+                subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
+                subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency());
+                subscriptionRequest.setPlanIdentifier(getActiveSubscriptionSku());
+                subscriptionRequest.setPlanId(getActiveSubscriptionId());
+                subscriptionRequest.setUserId(getLoggedInUser());
+                subscriptionRequest.setReceipt(getActiveSubscriptionReceipt());
+
+                Log.d(TAG, "Subscription request: " + gson.toJson(subscriptionRequest, SubscriptionRequest.class));
+
+                try {
+                    appCMSSubscriptionPlanCall.call(
+                            currentActivity.getString(R.string.app_cms_cancel_subscription_api_url,
+                                    appCMSMain.getApiBaseUrl(),
+                                    appCMSSite.getGist().getSiteInternalName(),
+                                    currentActivity.getString(R.string.app_cms_subscription_platform_key)),
+                            R.string.app_cms_subscription_plan_cancel_key,
+                            subscriptionRequest,
+                            apikey,
+                            getAuthToken(),
+                            result -> {
+                                if (result != null) {
+                                    setIsUserSubscribed(false);
+                                }
+                            },
+                            appCMSSubscriptionPlanResults -> {
+                                sendCloseOthersAction(null, true);
+
+                                AppsFlyerUtils.subscriptionEvent(currentActivity,
+                                        false,
+                                        currentActivity.getString(R.string.app_cms_appsflyer_dev_key),
+                                        getActiveSubscriptionPrice(),
+                                        subscriptionRequest.getPlanId(),
+                                        subscriptionRequest.getCurrencyCode());
+
+                                //Subscription Succes Firebase Log Event
+                                Bundle bundle = new Bundle();
+                                bundle.putString(FIREBASE_PLAN_ID, getActiveSubscriptionId());
+                                bundle.putString(FIREBASE_PLAN_NAME, getActiveSubscriptionPlanName());
+                                bundle.putString(FIREBASE_CURRENCY_NAME, getActiveSubscriptionCurrency());
+                                bundle.putString(FIREBASE_VALUE, getActiveSubscriptionPrice());
+                                //bundle.putString(FIREBASE_TRANSACTION_ID,get);
+                                if (mFireBaseAnalytics != null)
+                                    mFireBaseAnalytics.logEvent(FIREBASE_CANCEL_SUBSCRIPTION, bundle);
+                            },
+                            currentUserPlan -> {
+
+                            });
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to update user subscription status");
+                }
+            }
+        }
+    }
+
+    public void initiateSubscriptionCancellation() {
+        if (currentActivity != null) {
             String paymentProcessor = getActiveSubscriptionProcessor();
             if (!TextUtils.isEmpty(getExistingGooglePlaySubscriptionId()) ||
                     (!TextUtils.isEmpty(paymentProcessor) &&
@@ -1945,61 +2007,6 @@ public class AppCMSPresenter {
                 Intent googlePlayStoreCancelIntent = new Intent(Intent.ACTION_VIEW,
                         Uri.parse(currentActivity.getString(R.string.google_play_store_subscriptions_url)));
                 currentActivity.startActivity(googlePlayStoreCancelIntent);
-
-                if (currentActivity != null) {
-                    if (!TextUtils.isEmpty(getActiveSubscriptionSku())) {
-                        SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
-                        subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
-                        subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
-                        subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
-                        subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency());
-                        subscriptionRequest.setPlanIdentifier(getActiveSubscriptionSku());
-                        subscriptionRequest.setPlanId(getActiveSubscriptionId());
-                        subscriptionRequest.setUserId(getLoggedInUser());
-                        subscriptionRequest.setReceipt(getActiveSubscriptionReceipt());
-
-                        Log.d(TAG, "Subscription request: " + gson.toJson(subscriptionRequest, SubscriptionRequest.class));
-
-                        try {
-                            appCMSSubscriptionPlanCall.call(
-                                    currentActivity.getString(R.string.app_cms_cancel_subscription_api_url,
-                                            appCMSMain.getApiBaseUrl(),
-                                            appCMSSite.getGist().getSiteInternalName(),
-                                            currentActivity.getString(R.string.app_cms_subscription_platform_key)),
-                                    R.string.app_cms_subscription_plan_cancel_key,
-                                    subscriptionRequest,
-                                    apikey,
-                                    getAuthToken(),
-                                    result -> {
-                                    },
-                                    appCMSSubscriptionPlanResults -> {
-                                        sendCloseOthersAction(null, true);
-
-                                        AppsFlyerUtils.subscriptionEvent(currentActivity,
-                                                false,
-                                                currentActivity.getString(R.string.app_cms_appsflyer_dev_key),
-                                                getActiveSubscriptionPrice(),
-                                                subscriptionRequest.getPlanId(),
-                                                subscriptionRequest.getCurrencyCode());
-
-                                        //Subscription Succes Firebase Log Event
-                                        Bundle bundle = new Bundle();
-                                        bundle.putString(FIREBASE_PLAN_ID, getActiveSubscriptionId());
-                                        bundle.putString(FIREBASE_PLAN_NAME, getActiveSubscriptionPlanName());
-                                        bundle.putString(FIREBASE_CURRENCY_NAME, getActiveSubscriptionCurrency());
-                                        bundle.putString(FIREBASE_VALUE, getActiveSubscriptionPrice());
-                                        //bundle.putString(FIREBASE_TRANSACTION_ID,get);
-                                        if (mFireBaseAnalytics != null)
-                                            mFireBaseAnalytics.logEvent(FIREBASE_CANCEL_SUBSCRIPTION, bundle);
-                                    },
-                                    currentUserPlan -> {
-
-                                    });
-                        } catch (IOException e) {
-                            Log.e(TAG, "Failed to update user subscription status");
-                        }
-                    }
-                }
             }
         }
     }
@@ -2338,6 +2345,10 @@ public class AppCMSPresenter {
 
     }
 
+    public void clearSubscriptionPlans() {
+        realmController.deleteSubscriptionPlans();
+    }
+
     public void createSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
         realmController.addSubscriptionPlan(subscriptionPlan);
     }
@@ -2629,7 +2640,7 @@ public class AppCMSPresenter {
                         downloadURL);
 
                 showToast(
-                        currentActivity.getString(R.string.app_cms_download_started_mesage,
+                        currentActivity.getString(R.string.app_cms_download_started_message,
                                 contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
 
             } catch (Exception e) {
@@ -3526,6 +3537,11 @@ public class AppCMSPresenter {
                                                 });
                                     }
                                 }
+
+                                if (subscriptionExpired) {
+                                    sendSubscriptionCancellation();
+                                }
+
                             } catch (Exception e) {
                                 Log.e(TAG, "Error parsing Google Play subscription data: " + e.toString());
                             }
@@ -4503,6 +4519,8 @@ public class AppCMSPresenter {
                             setIsUserSubscribed(facebookLoginResponse.isSubscribed());
                         }
 
+                        checkForExistingSubscription(false);
+
                         if (launchType == LaunchType.SUBSCRIBE) {
                             this.facebookAccessToken = facebookAccessToken;
                             this.facebookUserId = facebookUserId;
@@ -4565,7 +4583,6 @@ public class AppCMSPresenter {
                                             deeplinkSearchQuery);
                                 }
                             }
-                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                         }
                     }
                 });
@@ -4599,6 +4616,8 @@ public class AppCMSPresenter {
                             } else {
                                 setIsUserSubscribed(googleLoginResponse.isSubscribed());
                             }
+
+                            checkForExistingSubscription(false);
 
                             if (launchType == LaunchType.SUBSCRIBE) {
                                 this.googleAccessToken = googleAccessToken;
@@ -6070,7 +6089,20 @@ public class AppCMSPresenter {
                             setActiveSubscriptionCurrency(currencyOfPlanToPurchase);
                             setActiveSubscriptionPlanName(planToPurchaseName);
                             setActiveSubscriptionPrice(String.valueOf(planToPurchasePrice));
-                            setActiveSubscriptionProcessor(currentActivity.getString(R.string.subscription_android_payment_processor_friendly));
+
+                            if (!TextUtils.isEmpty(countryCode) &&
+                                    appCMSMain != null &&
+                                    appCMSMain.getPaymentProviders() != null &&
+                                    appCMSMain.getPaymentProviders().getCcav() != null &&
+                                    !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
+                                    appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode)) {
+                                Log.d(TAG, "Initiating CCAvenue purchase");
+                                initiateCCAvenuePurchase();
+                                isCCAvenueEnabled = true;
+                            } else {
+                                setActiveSubscriptionProcessor(currentActivity.getString(R.string.subscription_android_payment_processor_friendly));
+                            }
+
                             skuToPurchase = null;
                             planToPurchase = null;
                             currencyOfPlanToPurchase = null;
@@ -6113,7 +6145,6 @@ public class AppCMSPresenter {
                                 }
                             } else {
                                 setIsUserSubscribed(true);
-                                refreshSubscriptionData(null);
                                 if (entitlementPendingVideoData != null) {
                                     navigateToHomeToRefresh = false;
                                     sendRefreshPageAction();
@@ -6179,20 +6210,16 @@ public class AppCMSPresenter {
         }
     }
 
-    public List<SubscriptionPlan> availableUpgradesForUser(String userId) {
-        RealmResults<UserSubscriptionPlan> userSubscriptionPlanResult =
-                realmController.getUserSubscriptionPlan(userId);
-        if (userSubscriptionPlanResult != null) {
-            return userSubscriptionPlanResult.first().getAvailableUpgrades();
-        }
-        return null;
+    public List<SubscriptionPlan> availablePlans() {
+        RealmResults<SubscriptionPlan> userSubscriptionPlanResult =
+                realmController.getAllSubscriptionPlans();
+        return userSubscriptionPlanResult;
     }
 
-    public boolean upgradesAvailableForUser(String userId) {
-        List<SubscriptionPlan> availableUpgradesForUser =
-                availableUpgradesForUser(userId);
+    public boolean upgradesAvailableForUser() {
+        List<SubscriptionPlan> availableUpgradesForUser = availablePlans();
         double activeSubscriptionPrice = parseActiveSubscriptionPrice();
-        if (availableUpgradesForUser != null && activeSubscriptionPrice != 0.0f) {
+        if (availableUpgradesForUser != null && activeSubscriptionPrice != 0.0) {
             for (int i = 0; i < availableUpgradesForUser.size(); i++) {
                 if (activeSubscriptionPrice <
                         availableUpgradesForUser.get(i).getSubscriptionPrice()) {
@@ -6254,6 +6281,7 @@ public class AppCMSPresenter {
                                             true,
                                             subscriptionPage.getPageId(),
                                             appCMSPageAPI -> {
+                                                clearSubscriptionPlans();
                                                 if (appCMSPageAPI != null
                                                         && appCMSPageAPI.getModules() != null) {
                                                     List<SubscriptionPlan> subscriptionPlans = new ArrayList<>();
@@ -6323,7 +6351,13 @@ public class AppCMSPresenter {
                                                                                 setActiveSubscriptionSku(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
                                                                                 setActiveSubscriptionId(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
                                                                                 setActiveSubscriptionPlanName(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
-                                                                                setActiveSubscriptionPrice(String.valueOf(appCMSSubscriptionPlanResult.getSubscriptionInfo().getTotalAmount()));
+                                                                                String countryCode = appCMSSubscriptionPlanResult.getSubscriptionInfo().getCountryCode();
+                                                                                for (PlanDetail planDetail : appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()) {
+                                                                                    if (!TextUtils.isEmpty(planDetail.getRecurringPaymentCurrencyCode()) &&
+                                                                                            planDetail.getCountryCode().equalsIgnoreCase(countryCode)) {
+                                                                                        setActiveSubscriptionPrice(String.valueOf(planDetail.getRecurringPaymentAmount()));
+                                                                                    }
+                                                                                }
                                                                             }
 
                                                                             if (appCMSSubscriptionPlanResult.getSubscriptionInfo() != null &&
@@ -6366,6 +6400,7 @@ public class AppCMSPresenter {
                                 true,
                                 subscriptionPage.getPageId(),
                                 appCMSPageAPI -> {
+                                    clearSubscriptionPlans();
                                     try {
                                         List<SubscriptionPlan> subscriptionPlans = new ArrayList<>();
                                         for (Module module : appCMSPageAPI.getModules()) {
@@ -6435,11 +6470,18 @@ public class AppCMSPresenter {
                                                                 setActiveSubscriptionId(subscribedPlan.getPlanId());
                                                                 setActiveSubscriptionPlanName(subscribedPlan.getPlanName());
                                                                 setActiveSubscriptionPrice(String.valueOf(subscribedPlan.getSubscriptionPrice()));
-                                                            } else if (appCMSSubscriptionPlanResult.getSubscriptionPlanInfo() != null) {
+                                                            } else if (appCMSSubscriptionPlanResult.getSubscriptionPlanInfo() != null &&
+                                                                    appCMSSubscriptionPlanResult.getSubscriptionInfo() != null) {
                                                                 setActiveSubscriptionSku(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
                                                                 setActiveSubscriptionId(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
                                                                 setActiveSubscriptionPlanName(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
-                                                                setActiveSubscriptionPrice(String.valueOf(appCMSSubscriptionPlanResult.getSubscriptionInfo().getTotalAmount()));
+                                                                String countryCode = appCMSSubscriptionPlanResult.getSubscriptionInfo().getCountryCode();
+                                                                for (PlanDetail planDetail : appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()) {
+                                                                    if (!TextUtils.isEmpty(planDetail.getRecurringPaymentCurrencyCode()) &&
+                                                                            planDetail.getCountryCode().equalsIgnoreCase(countryCode)) {
+                                                                        setActiveSubscriptionPrice(String.valueOf(planDetail.getRecurringPaymentAmount()));
+                                                                    }
+                                                                }
                                                             }
 
                                                             if (appCMSSubscriptionPlanResult.getSubscriptionInfo() != null &&
@@ -6667,19 +6709,19 @@ public class AppCMSPresenter {
                                             if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
                                                 setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
                                             }
-//                                            NavigationPrimary homePageNavItem = findHomePageNavItem();
-//                                            if (homePageNavItem != null) {
-//                                                cancelInternalEvents();
-//                                                navigateToPage(homePageNavItem.getPageId(),
-//                                                        homePageNavItem.getTitle(),
-//                                                        homePageNavItem.getUrl(),
-//                                                        false,
-//                                                        true,
-//                                                        false,
-//                                                        true,
-//                                                        true,
-//                                                        deeplinkSearchQuery);
-//                                            }
+                                            NavigationPrimary homePageNavItem = findHomePageNavItem();
+                                            if (homePageNavItem != null) {
+                                                cancelInternalEvents();
+                                                navigateToPage(homePageNavItem.getPageId(),
+                                                        homePageNavItem.getTitle(),
+                                                        homePageNavItem.getUrl(),
+                                                        false,
+                                                        true,
+                                                        false,
+                                                        true,
+                                                        true,
+                                                        deeplinkSearchQuery);
+                                            }
                                         }
                                         currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                     });
@@ -8424,6 +8466,10 @@ public class AppCMSPresenter {
         return downloadURL;
     }
 
+    public String getNetworkConnectivityDownloadErrorMsg() {
+        return currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download);
+    }
+
     public enum LaunchType {
         SUBSCRIBE, LOGIN_AND_SIGNUP
     }
@@ -8749,10 +8795,6 @@ public class AppCMSPresenter {
         boolean closeLauncher;
         int currentlyPlayingIndex;
         List<String> relateVideoIds;
-    }
-
-    public String getNetworkConnectivityDownloadErrorMsg() {
-        return currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download);
     }
 
 }

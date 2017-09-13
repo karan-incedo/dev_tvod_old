@@ -117,8 +117,8 @@ public class AutoplayFragment extends Fragment {
         }
 
         if (pageView != null) {
-            tvCountdown = (TextView) pageView.findViewById(R.id.countdown_id);
-            Button playButton = (Button) pageView.findViewById(R.id.autoplay_play_button);
+            tvCountdown = pageView.findViewById(R.id.countdown_id);
+            Button playButton = pageView.findViewById(R.id.autoplay_play_button);
 
             if (playButton != null) {
                 playButton.setOnClickListener(v -> {

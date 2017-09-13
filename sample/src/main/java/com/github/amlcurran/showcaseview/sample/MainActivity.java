@@ -57,11 +57,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
         HardcodedListAdapter adapter = new HardcodedListAdapter(this);
-        listView = (ListView) findViewById(R.id.listView);
+        listView = findViewById(R.id.listView);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
 
-        buttonBlocked = (Button) findViewById(R.id.buttonBlocked);
+        buttonBlocked = findViewById(R.id.buttonBlocked);
         buttonBlocked.setOnClickListener(this);
 
         RelativeLayout.LayoutParams lps = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
