@@ -162,7 +162,7 @@
 
     <!-- AppCMS Login values -->
     <string name="app_cms_log_in_pager_title">LOG IN</string>
-    <string name="app_cms_start_free_trial_title">START YOUR FREE TRIAL</string>
+    <string name="app_cms_subscribe_now">SUBSCRIBE NOW</string>
     <string name="app_cms_sign_up_pager_title">SIGN UP</string>
     <string name="app_cms_video_page_page_name">Video Page</string>
     <string name="app_cms_watchlist_navigation_title">Watchlist</string>
