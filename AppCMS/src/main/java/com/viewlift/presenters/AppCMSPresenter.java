@@ -1830,6 +1830,7 @@ public class AppCMSPresenter {
             intent.putExtra("auth_token", getAuthToken());
             intent.putExtra("renewable", isRenewable);
             intent.putExtra("mobile_number", "");
+            intent.putExtra("api_base_url", appCMSMain.getApiBaseUrl());
             currentActivity.startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();

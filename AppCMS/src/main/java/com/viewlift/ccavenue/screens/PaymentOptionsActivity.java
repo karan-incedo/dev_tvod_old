@@ -78,6 +78,7 @@ public class PaymentOptionsActivity extends AppCompatActivity {
                 " (+tax if req'd) on MM/DD");
         getDataAsyncTask = new GetData() ;
         getDataAsyncTask.execute() ;
+        Log.v("apibaseurl",initialScreen.getStringExtra("api_base_url")) ;
     }
 
     /**
@@ -105,7 +106,8 @@ public class PaymentOptionsActivity extends AppCompatActivity {
             List<NameValuePair> vParams = new ArrayList<NameValuePair>();
             vParams.add(new BasicNameValuePair(AvenuesParams.COMMAND,"getJsonDataVault"));
             try {
-                vParams.add(new BasicNameValuePair(AvenuesParams.ACCESS_CODE, accessCode));
+                //vParams.add(new BasicNameValuePair(AvenuesParams.ACCESS_CODE, accessCode));
+                vParams.add(new BasicNameValuePair(AvenuesParams.ACCESS_CODE, "AVFQ72EH40AR04QFRA"));
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -243,8 +245,7 @@ public class PaymentOptionsActivity extends AppCompatActivity {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         try {
-            //URL url = new URL(getString(R.string.app_cms_baseurl)+"/ccavenue/ccavenue/rsakey");
-            URL url = new URL ("http://release-api.viewlift.com/ccavenue/ccavenue/rsakey") ;
+            URL url = new URL (initialScreen.getStringExtra("api_base_url")+"/ccavenue/ccavenue/rsakey") ;
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setDoOutput(true);
             // is output buffer writter

@@ -220,7 +220,7 @@ public class WebViewActivity extends Activity {
 					Toast.makeText(getApplicationContext(), "Oh no! " + description, Toast.LENGTH_SHORT).show();
 				}
 			});
-			//cancelRedirectURL = "http://release-api.viewlift.com/ccavenue/ccavenue/callback";
+
       /* An instance of this class will be registered as a JavaScript interface */
 			StringBuffer params = new StringBuffer();
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.ACCESS_CODE,accessCode));
@@ -301,7 +301,7 @@ public class WebViewActivity extends Activity {
 		BufferedReader reader = null;
 		try {
 			//URL url = new URL(getString(R.string.app_cms_baseurl)+"/ccavenue/ccavenue/rsakey");
-			URL url = new URL ("http://release-api.viewlift.com/ccavenue/ccavenue/rsakey") ;
+			URL url = new URL (mainIntent.getStringExtra("api_base_url")+"/ccavenue/ccavenue/rsakey") ;
 			urlConnection = (HttpURLConnection) url.openConnection();
 			urlConnection.setDoOutput(true);
 			// is output buffer writter
@@ -407,7 +407,7 @@ public class WebViewActivity extends Activity {
 			HttpURLConnection urlConnection = null;
 			BufferedReader reader = null;
 			try {
-				URL url = new URL("http://release-api.viewlift.com/subscription/subscribe?site=hoichoi-tv");
+				URL url = new URL(mainIntent.getStringExtra("api_base_url")+"/subscription/subscribe?site=hoichoi-tv");
 				urlConnection = (HttpURLConnection) url.openConnection();
 				urlConnection.setDoOutput(true);
 				// is output buffer writter
