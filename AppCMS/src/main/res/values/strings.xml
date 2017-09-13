@@ -360,4 +360,8 @@
     <string name="video_player_content_rating_key">video_player_content_rating</string>
     <string name="content_rating_description">The following may contain:&#160;</string>
     <string name="server_client_id">525148171038-1dgfbunn8l27oilqldve5qg7cref8ua1.apps.googleusercontent.com</string>
+
+    <string name="password_space_error">"Character space not allowed in password"</string>
+
+
 </resources>

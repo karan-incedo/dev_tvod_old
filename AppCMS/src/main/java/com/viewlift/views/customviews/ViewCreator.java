@@ -2753,18 +2753,6 @@ public class ViewCreator {
             this.filmId = filmId;
 
             addClickListener = v -> {
-                if (!appCMSPresenter.isNetworkConnected()) {
-                    if (!appCMSPresenter.isUserLoggedIn()) {
-                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
-                        return;
-                    }
-                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
-                            appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
-                            true,
-                            () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
-                                    null, null, false));
-                    return;
-                }
                 if (appCMSPresenter.isUserLoggedIn()) {
                     appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
                             addToWatchlistResult -> {
