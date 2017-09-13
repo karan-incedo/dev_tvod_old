@@ -1179,17 +1179,19 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     protected void abandonAudioFocus() {
-        AudioManager am = (AudioManager) getActivity().getApplicationContext()
-                .getSystemService(Context.AUDIO_SERVICE);
-        int result = am.abandonAudioFocus(this);
-        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            mAudioFocusGranted = false;
+        if(getContext() != null) {
+            AudioManager am = (AudioManager) getContext().getApplicationContext()
+                    .getSystemService(Context.AUDIO_SERVICE);
+            int result = am.abandonAudioFocus(this);
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                mAudioFocusGranted = false;
+            }
         }
     }
 
     protected boolean requestAudioFocus() {
-        if (!mAudioFocusGranted) {
-            AudioManager am = (AudioManager) getActivity().getApplicationContext()
+        if (getContext() != null && !mAudioFocusGranted) {
+            AudioManager am = (AudioManager) getContext().getApplicationContext()
                     .getSystemService(Context.AUDIO_SERVICE);
             int result = am.requestAudioFocus(this,
                     AudioManager.STREAM_MUSIC,
