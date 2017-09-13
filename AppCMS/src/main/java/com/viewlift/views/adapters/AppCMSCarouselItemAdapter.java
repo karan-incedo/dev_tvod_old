@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -111,7 +112,11 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                                 nextVisibleViewIndex = firstVisibleIndex;
                             }
 
-                            listView.smoothScrollToPosition(nextVisibleViewIndex);
+                            try {
+                                listView.smoothScrollToPosition(nextVisibleViewIndex);
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error scrolling to position: " + nextVisibleViewIndex);
+                            }
                             sendEvent(new InternalEvent<Object>(nextVisibleViewIndex));
                             setUpdatedIndex(nextVisibleViewIndex);
                         }
@@ -300,7 +305,11 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
         synchronized (listView) {
             index = calculateUpdateIndex(index);
             setUpdatedIndex(index);
-            listView.smoothScrollToPosition(updatedIndex);
+            try {
+                listView.smoothScrollToPosition(updatedIndex);
+            } catch (Exception e) {
+                Log.e(TAG, "Error scrolling to position: " + updatedIndex);
+            }
             if (!fromEvent) {
                 sendEvent(new InternalEvent<Object>(index));
             }
