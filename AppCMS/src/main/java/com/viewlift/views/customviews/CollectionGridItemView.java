@@ -368,15 +368,15 @@ public class CollectionGridItemView extends BaseView {
                                 stringBuilder.append(currency.getSymbol());
                             }
                             stringBuilder.append(String.valueOf(data.getPlanDetails()
-                                    .get(planIndex).getRecurringPaymentAmount()));
+                                    .get(planIndex).getStrikeThroughPrice()));
 
-                            if (data.getPlanDetails().get(0).getDiscountedPrice() != 0) {
+                            if (data.getPlanDetails().get(0).getRecurringPaymentAmount() != 0) {
                                 int strikeThroughLength = stringBuilder.length();
                                 stringBuilder.append("     ");
                                 if (currency != null) {
                                     stringBuilder.append(currency.getSymbol());
                                 }
-                                stringBuilder.append(String.valueOf(data.getPlanDetails().get(0).getDiscountedPrice()));
+                                stringBuilder.append(String.valueOf(data.getPlanDetails().get(0).getRecurringPaymentAmount()));
 
                                 SpannableString spannableString =
                                         new SpannableString(stringBuilder.toString());
