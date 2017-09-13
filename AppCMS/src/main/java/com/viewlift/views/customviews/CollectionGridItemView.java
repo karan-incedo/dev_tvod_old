@@ -363,12 +363,29 @@ public class CollectionGridItemView extends BaseView {
                         }
 
                         if (data.getPlanDetails().get(planIndex).getRecurringPaymentAmount() != 0) {
+
+                            double recurringPaymentAmount = data.getPlanDetails().get(planIndex).getRecurringPaymentAmount();
+                            String formattedRecurringPaymentAmount = context.getString(R.string.cost_with_fraction,
+                                    recurringPaymentAmount);
+                            if (recurringPaymentAmount - (int) recurringPaymentAmount == 0) {
+                                formattedRecurringPaymentAmount = context.getString(R.string.cost_without_fraction,
+                                        recurringPaymentAmount);
+                            }
+
+                            double strikeThroughPaymentAmount = data.getPlanDetails()
+                                    .get(planIndex).getStrikeThroughPrice();
+                            String formattedStrikeThroughPaymentAmount = context.getString(R.string.cost_with_fraction,
+                                    strikeThroughPaymentAmount);
+                            if (strikeThroughPaymentAmount - (int) strikeThroughPaymentAmount == 0) {
+                                formattedStrikeThroughPaymentAmount = context.getString(R.string.cost_without_fraction,
+                                        strikeThroughPaymentAmount);
+                            }
+
                             StringBuilder stringBuilder = new StringBuilder();
                             if (currency != null) {
                                 stringBuilder.append(currency.getSymbol());
                             }
-                            stringBuilder.append(String.valueOf(data.getPlanDetails()
-                                    .get(planIndex).getStrikeThroughPrice()));
+                            stringBuilder.append(formattedStrikeThroughPaymentAmount);
 
                             if (data.getPlanDetails().get(0).getRecurringPaymentAmount() != 0) {
                                 int strikeThroughLength = stringBuilder.length();
@@ -376,7 +393,7 @@ public class CollectionGridItemView extends BaseView {
                                 if (currency != null) {
                                     stringBuilder.append(currency.getSymbol());
                                 }
-                                stringBuilder.append(String.valueOf(data.getPlanDetails().get(0).getRecurringPaymentAmount()));
+                                stringBuilder.append(String.valueOf(formattedRecurringPaymentAmount));
 
                                 SpannableString spannableString =
                                         new SpannableString(stringBuilder.toString());
@@ -387,13 +404,22 @@ public class CollectionGridItemView extends BaseView {
                                 ((TextView) view).setText(stringBuilder.toString());
                             }
                         } else {
+                            double strikeThroughPaymentAmount = data.getPlanDetails()
+                                    .get(planIndex).getStrikeThroughPrice();
+                            String formattedStrikeThroughPaymentAmount = context.getString(R.string.cost_with_fraction,
+                                    strikeThroughPaymentAmount);
+                            if (strikeThroughPaymentAmount - (int) strikeThroughPaymentAmount == 0) {
+                                formattedStrikeThroughPaymentAmount = context.getString(R.string.cost_without_fraction,
+                                        strikeThroughPaymentAmount);
+                            }
+
                             StringBuilder stringBuilder = new StringBuilder();
                             if (currency != null) {
                                 stringBuilder.append(currency.getSymbol());
                             }
                             stringBuilder.append(data.getPlanDetails().get(0)
                                     .getRecurringPaymentAmount());
-                            ((TextView) view).setText(String.valueOf(stringBuilder.toString()));
+                            ((TextView) view).setText(formattedStrikeThroughPaymentAmount);
                             ((TextView) view).setPaintFlags(((TextView) view).getPaintFlags());
                         }
 
