@@ -6391,8 +6391,6 @@ public class AppCMSPresenter {
                                                                                         setActiveSubscriptionProcessor(currentActivity.getString(R.string.subscription_ccavenue_payment_processor_friendly));
                                                                                     }
                                                                                 }
-
-                                                                                setIsUserSubscribed(true);
                                                                             }
                                                                         } catch (Exception e) {
                                                                             Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
@@ -6517,8 +6515,6 @@ public class AppCMSPresenter {
                                                                         setActiveSubscriptionProcessor(currentActivity.getString(R.string.subscription_ccavenue_payment_processor_friendly));
                                                                     }
                                                                 }
-
-                                                                setIsUserSubscribed(true);
                                                             }
 
                                                             if (onRefreshReadyAction != null) {
