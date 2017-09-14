@@ -2007,14 +2007,24 @@ public class AppCMSPresenter {
 
     public void initiateSubscriptionCancellation() {
         if (currentActivity != null) {
-            String paymentProcessor = getActiveSubscriptionProcessor();
-            if (!TextUtils.isEmpty(getExistingGooglePlaySubscriptionId()) ||
-                    (!TextUtils.isEmpty(paymentProcessor) &&
-                            (paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
-                                    paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) {
-                Intent googlePlayStoreCancelIntent = new Intent(Intent.ACTION_VIEW,
-                        Uri.parse(currentActivity.getString(R.string.google_play_store_subscriptions_url)));
-                currentActivity.startActivity(googlePlayStoreCancelIntent);
+            if (!TextUtils.isEmpty(countryCode) &&
+                    appCMSMain != null &&
+                    appCMSMain.getPaymentProviders() != null &&
+                    appCMSMain.getPaymentProviders().getCcav() != null &&
+                    !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
+                    appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode)) {
+                Log.d(TAG, "Initiating CCAvenue cancellation");
+
+            } else {
+                String paymentProcessor = getActiveSubscriptionProcessor();
+                if (!TextUtils.isEmpty(getExistingGooglePlaySubscriptionId()) ||
+                        (!TextUtils.isEmpty(paymentProcessor) &&
+                                (paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
+                                        paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) {
+                    Intent googlePlayStoreCancelIntent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(currentActivity.getString(R.string.google_play_store_subscriptions_url)));
+                    currentActivity.startActivity(googlePlayStoreCancelIntent);
+                }
             }
         }
     }
