@@ -636,10 +636,6 @@ public class AppCMSPresenter {
         }
     }
 
-    public void addToReferenceQueue(Object object) {
-        new SoftReference<>(object, referenceQueue);
-    }
-
     public boolean launchVideoPlayer(final ContentDatum contentDatum,
                                      final int currentlyPlayingIndex,
                                      List<String> relateVideoIds,
@@ -1789,7 +1785,6 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             launchType = LaunchType.SUBSCRIBE;
             skuToPurchase = sku;
-            new SoftReference<Object>(skuToPurchase, referenceQueue);
             planToPurchase = planId;
             planToPurchaseName = planName;
             currencyOfPlanToPurchase = currency;
