@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,8 @@ import com.viewlift.views.customviews.BaseView;
  */
 
 public class AppCMSNavItemsFragment extends DialogFragment {
+    private static final String TAG = "NavItemsAdapter";
+
     private AppCMSPresenter appCMSPresenter;
     private AppCMSBinder appCMSBinder;
     private AppCMSNavItemsAdapter appCMSNavItemsAdapter;
@@ -66,8 +69,12 @@ public class AppCMSNavItemsFragment extends DialogFragment {
         int borderColor = args.getInt(getContext().getString(R.string.app_cms_border_color_key));
         int buttonColor = args.getInt(getContext().getString(R.string.app_cms_button_color_key));
 
-        appCMSBinder =
-                ((AppCMSBinder) args.getBinder(getContext().getString(R.string.fragment_page_bundle_key)));
+        try {
+            appCMSBinder =
+                    ((AppCMSBinder) args.getBinder(getContext().getString(R.string.fragment_page_bundle_key)));
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to extract appCMSBinder from args");
+        }
         View view = inflater.inflate(R.layout.fragment_menu_nav, container, false);
         RecyclerView navItemsList = view.findViewById(R.id.nav_items_list);
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
