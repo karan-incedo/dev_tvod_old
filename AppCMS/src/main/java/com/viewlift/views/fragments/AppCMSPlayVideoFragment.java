@@ -159,6 +159,9 @@ public class AppCMSPlayVideoFragment extends Fragment
     private boolean isAdDisplayed;
     private int playIndex;
     private long watchedTime;
+    private long runTime;
+    private long videoPlayTime;
+
     private ImageButton mMediaRouteButton;
     private CastServiceProvider castProvider;
     private CastSession mCastSession;
@@ -198,7 +201,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                                                       long watchedTime,
                                                       String imageUrl,
                                                       String closedCaptionUrl,
-                                                      String parentalRating) {
+                                                      String parentalRating, long videoRunTime) {
         AppCMSPlayVideoFragment appCMSPlayVideoFragment = new AppCMSPlayVideoFragment();
         Bundle args = new Bundle();
         args.putString(context.getString(R.string.video_player_font_color_key), fontColor);
@@ -211,6 +214,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         args.putBoolean(context.getString(R.string.video_player_request_ads_key), requestAds);
         args.putInt(context.getString(R.string.play_index_key), playIndex);
         args.putLong(context.getString(R.string.watched_time_key), watchedTime);
+        args.putLong(context.getString(R.string.run_time_key), videoRunTime);
+
         args.putString(context.getString(R.string.played_movie_image_url), imageUrl);
         args.putString(context.getString(R.string.video_player_closed_caption_key), closedCaptionUrl);
         args.putBoolean(context.getString(R.string.video_player_is_trailer_key), isTrailer);
@@ -243,6 +248,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             shouldRequestAds = args.getBoolean(getContext().getString(R.string.video_player_request_ads_key));
             playIndex = args.getInt(getString(R.string.play_index_key));
             watchedTime = args.getLong(getContext().getString(R.string.watched_time_key));
+            runTime = args.getLong(getContext().getString(R.string.run_time_key));
+
             imageUrl = args.getString(getContext().getString(R.string.played_movie_image_url));
             closedCaptionUrl = args.getString(getContext().getString(R.string.video_player_closed_caption_key));
             primaryCategory = args.getString(getString(R.string.video_primary_category_key));
@@ -330,7 +337,23 @@ public class AppCMSPlayVideoFragment extends Fragment
             mStreamId = filmId + appCMSPresenter.getCurrentTimeStamp();
         }
         isVideoDownloaded = appCMSPresenter.isVideoDownloaded(filmId);
-        videoPlayerView.setCurrentPosition(watchedTime * SECS_TO_MSECS);
+
+        long playDifference=runTime-watchedTime;//((watchedTime*100)/runTime);
+        long playTimePercentage=((watchedTime*100)/runTime);
+        System.out.println("percentage Video percentage-"+playTimePercentage);
+
+        // if video watchtime is greater or equal to 98% of total run time and interval is less than 30 then play from start
+        if(playTimePercentage>=98 && playDifference<=30){
+            videoPlayTime=0;
+        }else{
+            videoPlayTime=watchedTime;
+        }
+
+        System.out.println("percentage Video runTime-"+runTime);
+        System.out.println("percentage Video watch time-"+watchedTime);
+
+        System.out.println("percentage Video play time-"+videoPlayTime);
+        videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
         videoPlayerView.setOnPlayerStateChanged(playerState -> {
             if (playerState.getPlaybackState() == ExoPlayer.STATE_READY && !isCastConnected) {
                 if (shouldRequestAds && !isAdDisplayed) {

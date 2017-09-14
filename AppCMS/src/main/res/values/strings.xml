@@ -134,6 +134,7 @@
     <string name="reset_password_text">RESET PASSWORD</string>
     <string name="watched_time_key">watched_time</string>
     <string name="played_movie_image_url">played_movie_image</string>
+    <string name="run_time_key">run_time</string>
 
     <!--User Management - Change Password-->
     <string name="app_cms_action_change_password_key">changePassword</string>
