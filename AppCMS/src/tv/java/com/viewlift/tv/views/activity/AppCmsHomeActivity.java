@@ -24,7 +24,6 @@ import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.component.AppCmsTvSearchComponent;
 import com.viewlift.tv.views.component.DaggerAppCmsTvSearchComponent;
 import com.viewlift.tv.views.fragment.AppCmsBrowseFragment;
@@ -33,7 +32,6 @@ import com.viewlift.tv.views.fragment.AppCmsResetPasswordFragment;
 import com.viewlift.tv.views.fragment.AppCmsSearchFragment;
 import com.viewlift.tv.views.fragment.AppCmsTVPageFragment;
 import com.viewlift.tv.views.fragment.AppCmsTvErrorFragment;
-import com.viewlift.tv.views.fragment.ClearDialogFragment;
 import com.viewlift.tv.views.fragment.TextOverlayDialogFragment;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.binders.RetryCallBinder;
@@ -160,27 +158,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 }else if(intent.getAction().equals(AppCMSPresenter.ACTION_RESET_PASSWORD)){
                     openResetPasswordScreen(intent);
                 }else if(intent.getAction().equals(AppCMSPresenter.PRESENTER_CLEAR_DIALOG_ACTION)){
-                    Bundle bundle = new Bundle();
-                    bundle.putInt(ClearDialogFragment.DIALOG_WIDTH_KEY,
-                            getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width));
-                    bundle.putInt(ClearDialogFragment.DIALOG_HEIGHT_KEY,
-                            getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height));
-                    bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_TEXT_COLOR_KEY,
-                            Utils.getTextColor(AppCmsHomeActivity.this, appCMSPresenter));
-                    bundle.putString(ClearDialogFragment.DIALOG_TITLE_KEY, "Title");
-                    bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_KEY,
-                            "CLEAR HISTORY?");
-                    Intent args = new Intent(AppCMSPresenter.PRESENTER_DIALOG_ACTION);
-                    args.putExtra(getString(R.string.dialog_item_key), bundle);
-                    android.app.FragmentTransaction ft = getFragmentManager().beginTransaction();
-                    ClearDialogFragment newFragment = ClearDialogFragment.newInstance(bundle);
-                    newFragment.setOnPositiveButtonClicked(s -> {
-                        appCMSPresenter.clearWatchlist(
-                                appCMSAddToWatchlistResult -> {
 
-                        });
-                    });
-                    newFragment.show(ft, DIALOG_FRAGMENT_TAG);
                 }
 
             }

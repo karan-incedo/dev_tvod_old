@@ -1,6 +1,7 @@
 package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -10,6 +11,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
@@ -62,9 +64,11 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.ui.page.Settings;
+import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
+import com.viewlift.tv.views.fragment.ClearDialogFragment;
 import com.viewlift.tv.views.presenter.AppCmsListRowPresenter;
 import com.viewlift.tv.views.presenter.CardPresenter;
 import com.viewlift.tv.views.presenter.JumbotronPresenter;
@@ -82,6 +86,7 @@ import java.util.Map;
 import rx.functions.Action1;
 
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_API_DESCRIPTION;
+import static com.viewlift.tv.views.activity.AppCmsHomeActivity.DIALOG_FRAGMENT_TAG;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -819,10 +824,26 @@ public class TVViewCreator {
                             OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
                             switch (jsonValueKeyMap.get(viewType)) {
                                 case PAGE_HISTORY_MODULE_KEY:
-                                    appCMSPresenter.clearHistory(appCMSDeleteHistoryResult -> {
-//                                            v.setVisibility(View.GONE);
-                                        onInternalEvent.sendEvent(null);
-                                    });
+                                    /*Bundle bundle = new Bundle();
+                                    bundle.putInt(ClearDialogFragment.DIALOG_WIDTH_KEY,
+                                            context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width));
+                                    bundle.putInt(ClearDialogFragment.DIALOG_HEIGHT_KEY,
+                                            context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height));
+                                    bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_TEXT_COLOR_KEY,
+                                            Utils.getTextColor(context, appCMSPresenter));
+                                    bundle.putString(ClearDialogFragment.DIALOG_TITLE_KEY, "Title");
+                                    bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_KEY,
+                                            "CLEAR HISTORY?");
+                                    Intent args = new Intent(AppCMSPresenter.PRESENTER_DIALOG_ACTION);
+                                    args.putExtra(context.getString(R.string.dialog_item_key), bundle);
+                                    android.app.FragmentTransaction ft = appCMSPresenter.getCurrentActivity().getFragmentManager().beginTransaction();
+                                    ClearDialogFragment newFragment = ClearDialogFragment.newInstance(bundle);
+                                    newFragment.setOnPositiveButtonClicked(s -> appCMSPresenter.clearWatchlist(
+                                            appCMSAddToWatchlistResult ->
+                                                    appCMSPresenter.clearWatchlist(
+                                                            addToWatchlistResult ->
+                                                                    onInternalEvent.sendEvent(null))));
+                                    newFragment.show(ft, DIALOG_FRAGMENT_TAG);*/
                                     break;
 
                                 case PAGE_DOWNLOAD_MODULE_KEY:
@@ -837,13 +858,45 @@ public class TVViewCreator {
                                         onInternalEvent.sendEvent(null);
                                     });*/
 
+                                    Bundle bundle = new Bundle();
+                                    bundle.putInt(ClearDialogFragment.DIALOG_WIDTH_KEY,
+                                            context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width));
+                                    bundle.putInt(ClearDialogFragment.DIALOG_HEIGHT_KEY,
+                                            context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height));
+                                    bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_TEXT_COLOR_KEY,
+                                            Utils.getTextColor(context, appCMSPresenter));
+                                    bundle.putString(ClearDialogFragment.DIALOG_TITLE_KEY, "Title");
+                                    bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_KEY,
+                                            "CLEAR HISTORY?");
+                                    Intent args = new Intent(AppCMSPresenter.PRESENTER_DIALOG_ACTION);
+                                    args.putExtra(context.getString(R.string.dialog_item_key), bundle);
+                                    android.app.FragmentTransaction ft = appCMSPresenter.getCurrentActivity().getFragmentManager().beginTransaction();
+                                    ClearDialogFragment newFragment = ClearDialogFragment.newInstance(bundle);
+                                    /*newFragment.setOnPositiveButtonClicked(s -> appCMSPresenter.clearWatchlist(
+                                            appCMSAddToWatchlistResult ->
+                                                    appCMSPresenter.clearWatchlist(
+                                                            addToWatchlistResult ->
+                                                                    onInternalEvent.sendEvent(null))));*/
 
-                                    appCMSPresenter.showClearHistoryDialog("", "", new Action1<Integer>() {
+                                    newFragment.setOnPositiveButtonClicked(new Action1<String>() {
+                                        @Override
+                                        public void call(String s) {
+                                            appCMSPresenter.clearWatchlist(new Action1<AppCMSAddToWatchlistResult>() {
+                                                @Override
+                                                public void call(AppCMSAddToWatchlistResult appCMSAddToWatchlistResult) {
+                                                    onInternalEvent.sendEvent(null);
+                                                }
+                                            });
+                                        }
+                                    });
+                                    newFragment.show(ft, DIALOG_FRAGMENT_TAG);
+
+                                    /*appCMSPresenter.showClearHistoryDialog("", "", new Action1<Integer>() {
                                         @Override
                                         public void call(Integer integer) {
 
                                         }
-                                    });
+                                    });*/
                                     break;
 
                                 default:

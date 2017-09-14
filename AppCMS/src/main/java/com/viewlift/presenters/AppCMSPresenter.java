@@ -2878,20 +2878,23 @@ public class AppCMSPresenter {
             request.setPosition(1L);
             appCMSDeleteHistoryCall.call(url, getAuthToken(currentActivity),
                     appCMSDeleteHistoryResult -> {
-                        /*try {
+                        try {
                             showDialog(DialogType.DELETE_ALL_HISTORY_ITEMS,
                                     currentActivity.getString(R.string.app_cms_delete_all_history_items_message),
                                     true,
-                                    () -> {
-                                        try {
-                                            Observable.just(appCMSDeleteHistoryResult).subscribe(resultAction1);
-                                        } catch (Exception e) {
-                                            Log.e(TAG, "Error deleting all history items: " + e.getMessage());
+                                    new Action0() {
+                                        @Override
+                                        public void call() {
+                                            try {
+                                                Observable.just(appCMSDeleteHistoryResult).subscribe(resultAction1);
+                                            } catch (Exception e) {
+                                                Log.e(TAG, "Error deleting all history items: " + e.getMessage());
+                                            }
                                         }
                                     });
                         } catch (Exception e) {
                             Log.e(TAG, "clearHistoryContent: " + e.toString());
-                        }*/
+                        }
                         try {
                             Observable.just(appCMSDeleteHistoryResult).subscribe(resultAction1);
                         } catch (Exception e) {
@@ -8076,6 +8079,7 @@ public class AppCMSPresenter {
                                     && appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0) != null){
                                 extraData[3] = appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0).getUrl();
                             }
+                            extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
                             if (!TextUtils.isEmpty(extraData[1])) {
 
                                 if (platformType == PlatformType.TV) {

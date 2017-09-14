@@ -163,6 +163,7 @@ public class ClearDialogFragment extends AbsDialogFragment {
 
         positiveButton.setOnClickListener(v -> {
             onPositiveButtonClicked.call("");
+            dismiss();
         });
         return mView;
     }

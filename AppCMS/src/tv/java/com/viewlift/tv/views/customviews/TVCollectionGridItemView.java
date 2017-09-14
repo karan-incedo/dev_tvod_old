@@ -3,7 +3,6 @@ package com.viewlift.tv.views.customviews;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -39,7 +38,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import static com.viewlift.tv.utility.Utils.getColor;
 import static com.viewlift.tv.utility.Utils.getItemViewHeight;
 import static com.viewlift.tv.utility.Utils.getItemViewWidth;
 import static com.viewlift.tv.utility.Utils.getViewHeight;
