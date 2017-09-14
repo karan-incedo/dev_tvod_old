@@ -11,7 +11,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.android.exoplayer2.C;
@@ -36,8 +35,6 @@ import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.FixedTrackSelection;
-import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
@@ -139,11 +136,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
     }
 
-    private Uri closedCaptionUri;
-
     public void setUri(Uri videoUri, Uri closedCaptionUri) {
         this.uri = videoUri;
-        this.closedCaptionUri = closedCaptionUri;
         try {
             player.prepare(buildMediaSource(videoUri, closedCaptionUri));
         } catch (IllegalStateException e) {
@@ -254,9 +248,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
         TrackSelection.Factory videoTrackSelectionFactory =
                 new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
-        DefaultTrackSelector trackSelector =
+        TrackSelector trackSelector =
                 new DefaultTrackSelector(videoTrackSelectionFactory);
-
 
         player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
         player.addListener(this);
@@ -377,7 +370,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onPlayerError(ExoPlaybackException e) {
-
         mCurrentPlayerPosition = player.getCurrentPosition();
     }
 
