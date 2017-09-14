@@ -237,10 +237,18 @@ public class CollectionGridItemView extends BaseView {
                         try {
                             final int imageWidth = deviceWidth;
                             final int imageHeight = childViewHeight;
+                            StringBuilder imageMetaData = new StringBuilder();
+                            imageMetaData.append(imageUrl);
+                            imageMetaData.append(System.currentTimeMillis() % 60000);
 
                             Glide.with(context)
                                     .load(imageUrl)
                                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                    .preload();
+
+                            Glide.with(context)
+                                    .load(imageUrl)
+                                    .signature(new StringSignature(imageMetaData.toString()))
                                     .transform(new BitmapTransformation(context) {
                                         @Override
                                         public String getId() {
