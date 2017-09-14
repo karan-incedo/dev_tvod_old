@@ -234,7 +234,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_API_DESCRIPTION);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_planmetadatatitle_key),
-                AppCMSUIKeyType.PAGE_PLANMETADATATILE_KEY);
+                AppCMSUIKeyType.PAGE_PLANMETADATATITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_planmetadataimage_key),
                 AppCMSUIKeyType.PAGE_PLANMETADDATAIMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_planmetadatadevicecount_key),

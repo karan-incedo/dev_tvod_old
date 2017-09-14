@@ -111,8 +111,8 @@ public class PaymentOptionsActivity extends AppCompatActivity {
             List<NameValuePair> vParams = new ArrayList<NameValuePair>();
             vParams.add(new BasicNameValuePair(AvenuesParams.COMMAND,"getJsonDataVault"));
             try {
-                //vParams.add(new BasicNameValuePair(AvenuesParams.ACCESS_CODE, accessCode));
-                vParams.add(new BasicNameValuePair(AvenuesParams.ACCESS_CODE, "AVFQ72EH40AR04QFRA"));
+                  vParams.add(new BasicNameValuePair(AvenuesParams.ACCESS_CODE, accessCode));
+                //vParams.add(new BasicNameValuePair(AvenuesParams.ACCESS_CODE, "AVFQ72EH40AR04QFRA"));
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
