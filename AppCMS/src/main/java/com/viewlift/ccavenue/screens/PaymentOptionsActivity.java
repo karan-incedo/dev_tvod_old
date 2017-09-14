@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -106,8 +107,8 @@ public class PaymentOptionsActivity extends AppCompatActivity {
             List<NameValuePair> vParams = new ArrayList<NameValuePair>();
             vParams.add(new BasicNameValuePair(AvenuesParams.COMMAND,"getJsonDataVault"));
             try {
-                vParams.add(new BasicNameValuePair(AvenuesParams.ACCESS_CODE, accessCode));
-                //vParams.add(new BasicNameValuePair(AvenuesParams.ACCESS_CODE, "AVFQ72EH40AR04QFRA"));
+                //vParams.add(new BasicNameValuePair(AvenuesParams.ACCESS_CODE, accessCode));
+                vParams.add(new BasicNameValuePair(AvenuesParams.ACCESS_CODE, "AVFQ72EH40AR04QFRA"));
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -321,9 +322,11 @@ public class PaymentOptionsActivity extends AppCompatActivity {
         public class ViewHolder extends RecyclerView.ViewHolder {
             // each data item is just a string in this case
             public TextView id_tv_payment_options;
+            public ImageView id_iv_card ;
             public ViewHolder(View v) {
                 super(v);
                 id_tv_payment_options = v.findViewById(R.id.id_tv_payment_options);
+                id_iv_card = v.findViewById(R.id.id_iv_card) ;
             }
 
             public void bind(final PaymentOptionDTO item, final OnItemClickListener listener) {
@@ -355,6 +358,34 @@ public class PaymentOptionsActivity extends AppCompatActivity {
             // - replace the contents of the view with that element
             holder.bind(adapterPaymentOptionsList.get(position), listener);
             holder.id_tv_payment_options.setText(adapterPaymentOptionsList.get(position).getPayOptName());
+            if (adapterPaymentOptionsList.get(position).getPayOptId().equalsIgnoreCase("OPTCRDC")) {
+                holder.id_iv_card.setBackgroundResource(R.drawable.ic_credit_card_logo);
+            }
+
+            if (adapterPaymentOptionsList.get(position).getPayOptId().equalsIgnoreCase("OPTDBCRD")) {
+                holder.id_iv_card.setBackgroundResource(R.drawable.ic_debig_card_logo);
+            }
+
+            if (adapterPaymentOptionsList.get(position).getPayOptId().equalsIgnoreCase("OPTNBK")) {
+                holder.id_iv_card.setBackgroundResource(R.drawable.ic_net_banking_logo);
+            }
+
+            if (adapterPaymentOptionsList.get(position).getPayOptId().equalsIgnoreCase("OPTCASHC")) {
+                holder.id_iv_card.setBackgroundResource(R.drawable.ic_cash_card_logo);
+            }
+
+            if (adapterPaymentOptionsList.get(position).getPayOptId().equalsIgnoreCase("OPTMOBP")) {
+                holder.id_iv_card.setBackgroundResource(R.drawable.ic_mobile_payments_logo);
+            }
+
+            if (adapterPaymentOptionsList.get(position).getPayOptId().equalsIgnoreCase("OPTWLT")) {
+                holder.id_iv_card.setBackgroundResource(R.drawable.ic_mobile_wallet_logo);
+            }
+
+            if (adapterPaymentOptionsList.get(position).getPayOptId().equalsIgnoreCase("OPTUPI")) {
+                holder.id_iv_card.setBackgroundResource(R.drawable.ic_mobile_payments_logo);
+            }
+
         }
 
         // Return the size of your dataset (invoked by the layout manager)

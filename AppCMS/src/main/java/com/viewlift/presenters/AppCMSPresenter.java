@@ -595,7 +595,7 @@ public class AppCMSPresenter {
                                        Spanned dest, int dstart, int dend) {
                 for (int i = start; i < end; i++) {
                     if (Character.isWhitespace(source.charAt(i))) {
-                       Toast.makeText(con, con.getResources().getString(R.string.password_space_error),Toast.LENGTH_SHORT).show();
+                       //Toast.makeText(con, con.getResources().getString(R.string.password_space_error),Toast.LENGTH_SHORT).show();
                         return "";
                     }
                 }

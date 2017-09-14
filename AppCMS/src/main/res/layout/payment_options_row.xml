@@ -7,7 +7,7 @@
         android:id="@+id/id_iv_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/visa"
+        android:background="@drawable/ic_mobile_payments_logo"
         android:layout_centerVertical="true"
         android:layout_marginLeft="20dp"
         />
