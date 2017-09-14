@@ -1,10 +1,10 @@
 <resources>
     <!-- Primary app values -->
-    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
-    <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
+    <!--<string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
+    <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
 
-    <string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>
-    <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>-->
+    <!--<string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>-->
+    <string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>
 
     <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
 
@@ -191,7 +191,7 @@
     <string name="app_cms_page_subscription_page_name_key">View Plans</string>
 
     <!-- Subscription Keys -->
-    <string name="app_cms_page_subscription_selectionplan_key">AC SelectPlan 01</string>
+    <string name="app_cms_page_subscription_selectionplan_key">AC SelectPlan 02</string>
     <string name="app_cms_page_subscription_imagetextrow_key">AC ImageTextRow 01</string>
     <string name="app_cms_plan_title_key">planTitle</string>
     <string name="app_cms_plan_priceinfo_key">planPriceInfo</string>

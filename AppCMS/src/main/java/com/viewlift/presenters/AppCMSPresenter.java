@@ -6110,7 +6110,6 @@ public class AppCMSPresenter {
                                     appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode)) {
                                 Log.d(TAG, "Initiating CCAvenue purchase");
                                 initiateCCAvenuePurchase();
-                                isCCAvenueEnabled = true;
                             } else {
                                 setActiveSubscriptionProcessor(currentActivity.getString(R.string.subscription_android_payment_processor_friendly));
                             }
