@@ -281,7 +281,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         data.getId(),
                                         data.getPlanDetails().get(0).getCountryCode(),
                                         data.getName(),
-                                        data.getPlanDetails().get(0).getRecurringPaymentAmount(),
+                                        data.getPlanDetails().get(0).getStrikeThroughPrice(),
                                         data.getPlanDetails().get(0).getRecurringPaymentCurrencyCode(),
                                         data.getPlanDetails().get(0).getCountryCode(),
                                         data.getRenewable()
@@ -455,8 +455,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
             Collections.sort(adapterData,
                     (datum1, datum2) -> Double.compare(datum1.getPlanDetails().get(0)
-                            .getRecurringPaymentAmount(), datum2.getPlanDetails().get(0)
-                            .getRecurringPaymentAmount()));
+                            .getStrikeThroughPrice(), datum2.getPlanDetails().get(0)
+                            .getStrikeThroughPrice()));
 
             Collections.reverse(adapterData);
         }
@@ -478,7 +478,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     !contentDatum.getPlanDetails().isEmpty() &&
                     contentDatum.getPlanDetails().get(0) != null &&
                     existingSubscriptionPrice <
-                            contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount()) {
+                            contentDatum.getPlanDetails().get(0).getStrikeThroughPrice()) {
                 updatedData.add(contentDatum);
             }
         }

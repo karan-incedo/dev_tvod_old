@@ -103,6 +103,10 @@ public class ShowcaseView extends RelativeLayout
         mEndButton.setBackgroundColor(backgroundColor);
     }
 
+    public void setShowcaseColor(int showcaseColor) {
+        showcaseDrawer.setShowcaseColour(showcaseColor);
+    }
+
     protected ShowcaseView(Context context, boolean newStyle) {
         this(context, null, R.styleable.CustomTheme_showcaseViewStyle, newStyle);
     }
