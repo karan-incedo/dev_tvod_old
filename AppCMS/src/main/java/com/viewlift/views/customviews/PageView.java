@@ -52,13 +52,17 @@ public class PageView extends BaseView {
     }
 
     public void addListWithAdapter(ListWithAdapter listWithAdapter) {
+        boolean listExists = false;
+
         for (ListWithAdapter listWithAdapter1 : adapterList) {
             if (listWithAdapter.id.equals(listWithAdapter1.id)) {
-                adapterList.remove(listWithAdapter);
+                listExists = true;
             }
         }
 
-        adapterList.add(listWithAdapter);
+        if (!listExists) {
+            adapterList.add(listWithAdapter);
+        }
     }
 
     public void notifyAdaptersOfUpdate() {
