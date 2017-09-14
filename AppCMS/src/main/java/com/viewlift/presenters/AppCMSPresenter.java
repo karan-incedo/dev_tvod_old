@@ -587,13 +587,14 @@ public class AppCMSPresenter {
     }
 
     /*does not let user enter space in edittext*/
-    public static void noSpaceInEditTextFilter(EditText passwordEditText) {
+    public static void noSpaceInEditTextFilter(EditText passwordEditText, Context con) {
         /* To restrict Space Bar in Keyboard */
         InputFilter filter = new InputFilter() {
             public CharSequence filter(CharSequence source, int start, int end,
                                        Spanned dest, int dstart, int dend) {
                 for (int i = start; i < end; i++) {
                     if (Character.isWhitespace(source.charAt(i))) {
+                       Toast.makeText(con, con.getResources().getString(R.string.password_space_error),Toast.LENGTH_SHORT).show();
                         return "";
                     }
                 }
@@ -2041,6 +2042,18 @@ public class AppCMSPresenter {
 
     public void editWatchlist(final String filmId,
                               final Action1<AppCMSAddToWatchlistResult> resultAction1, boolean add) {
+        if (!isNetworkConnected()) {
+            if (!isUserLoggedIn()) {
+                showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
+                return;
+            }
+            showDialog(AppCMSPresenter.DialogType.NETWORK,
+                    getNetworkConnectivityDownloadErrorMsg(),
+                    true,
+                    () -> navigateToDownloadPage(getDownloadPageId(),
+                            null, null, false));
+            return;
+        }
 
         final String url = currentActivity.getString(R.string.app_cms_edit_watchlist_api_url,
                 appCMSMain.getApiBaseUrl(),
@@ -3723,11 +3736,14 @@ public class AppCMSPresenter {
                     userIdentity.setEmail(email);
                     userIdentity.setId(getLoggedInUser());
                     userIdentity.setPassword(password);
-
+                    currentActivity
+                            .sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                     appCMSUserIdentityCall.callPost(url,
                             getAuthToken(),
                             userIdentity,
                             userIdentityResult -> {
+                                sendCloseOthersAction(null, true);
+                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                 try {
                                     if (userIdentityResult != null) {
                                         setLoggedInUserName(userIdentityResult.getName());
@@ -3741,6 +3757,7 @@ public class AppCMSPresenter {
                                     Log.e(TAG, "Error get user identity data: " + e.getMessage());
                                 }
                             }, errorBody -> {
+                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                 try {
                                     UserIdentity userIdentityError = gson.fromJson(errorBody.string(),
                                             UserIdentity.class);
