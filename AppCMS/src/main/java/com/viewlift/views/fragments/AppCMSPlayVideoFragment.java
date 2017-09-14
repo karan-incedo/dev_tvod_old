@@ -340,7 +340,6 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         long playDifference=runTime-watchedTime;//((watchedTime*100)/runTime);
         long playTimePercentage=((watchedTime*100)/runTime);
-        System.out.println("percentage Video percentage-"+playTimePercentage);
 
         // if video watchtime is greater or equal to 98% of total run time and interval is less than 30 then play from start
         if(playTimePercentage>=98 && playDifference<=30){
@@ -349,10 +348,6 @@ public class AppCMSPlayVideoFragment extends Fragment
             videoPlayTime=watchedTime;
         }
 
-        System.out.println("percentage Video runTime-"+runTime);
-        System.out.println("percentage Video watch time-"+watchedTime);
-
-        System.out.println("percentage Video play time-"+videoPlayTime);
         videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
         videoPlayerView.setOnPlayerStateChanged(playerState -> {
             if (playerState.getPlaybackState() == ExoPlayer.STATE_READY && !isCastConnected) {
