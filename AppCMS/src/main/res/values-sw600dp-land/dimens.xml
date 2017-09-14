@@ -4,6 +4,5 @@
     <fraction name="app_cms_content_rating_progress_bar_margin_bottom_percent">5.5%</fraction>
     <fraction name="mainContainerWidthPercent">57%</fraction>
     <fraction name="mainContainerHeightPercent">35%</fraction>
-    <dimen name="app_cms_continue_watching_tray_marginLeft">15dp</dimen>
 
 </resources>

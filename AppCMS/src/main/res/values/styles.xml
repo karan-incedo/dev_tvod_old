@@ -45,13 +45,4 @@
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
-    <!--removal of facebook progress dialog-->
-    <style name="Translucent" parent="android:Theme.Translucent.NoTitleBar">
-        <item name="android:progressBarStyle">@style/InvisibleProgress</item>
-    </style>
-
-    <style name="InvisibleProgress">
-        <item name="android:visibility">gone</item>
-    </style>
-
 </resources>

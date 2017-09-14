@@ -85,7 +85,6 @@
             android:layout_height="@dimen/app_cms_continue_watching_tray_height"
             android:layout_centerInParent="false"
             android:layout_marginTop="12dp"
-            android:layout_marginLeft="@dimen/app_cms_continue_watching_tray_marginLeft"
             android:layout_toEndOf="@id/app_cms_continue_watching_image_view"
             android:layout_toStartOf="@id/app_cms_continue_watching_button_view"
             android:orientation="vertical">
