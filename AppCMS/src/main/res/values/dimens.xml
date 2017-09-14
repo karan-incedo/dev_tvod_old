@@ -50,6 +50,7 @@
     <dimen name="app_cms_video_controller_cc_height">34dp</dimen>
     <dimen name="app_cms_not_items_label_text_size">24sp</dimen>
     <dimen name="app_cms_planmetapage_end_margin">4dp</dimen>
+    <dimen name="app_cms_continue_watching_tray_marginLeft">10dp</dimen>
 
 
     <dimen name="app_cms_download_quality_rendition_width">70dp</dimen>

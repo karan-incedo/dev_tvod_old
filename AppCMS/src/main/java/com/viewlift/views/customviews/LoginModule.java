@@ -7,8 +7,11 @@ import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -16,6 +19,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.Module;
@@ -53,7 +57,7 @@ public class LoginModule extends ModuleView {
     private int loginBorderPadding;
     private EditText visibleEmailInputView;
     private EditText visiblePasswordInputView;
-
+Context con;
     public LoginModule(Context context,
                        ModuleWithComponents module,
                        Module moduleAPI,
@@ -73,6 +77,7 @@ public class LoginModule extends ModuleView {
         this.passwordInputViews = new EditText[NUM_CHILD_VIEWS];
         this.loginBorderPadding = context.getResources().getInteger(R.integer.app_cms_login_underline_padding);
         this.launchType = appCMSPresenter.getLaunchType();
+        this.con=context;
         init();
 
     }
@@ -331,7 +336,7 @@ public class LoginModule extends ModuleView {
                                 case PAGE_PASSWORDTEXTFIELD_KEY:
                                 case PAGE_PASSWORDTEXTFIELD2_KEY:
                                     passwordInputViews[childIndex] = ((TextInputLayout) componentView).getEditText();
-                                    AppCMSPresenter.noSpaceInEditTextFilter(passwordInputViews[childIndex]);
+                                    AppCMSPresenter.noSpaceInEditTextFilter(passwordInputViews[childIndex],con);
                                     if (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                                         visiblePasswordInputView = passwordInputViews[1];
                                     }
@@ -355,4 +360,5 @@ public class LoginModule extends ModuleView {
         underline.setStroke((int) convertDpToPixel(2, getContext()), color);
         underline.setColor(transparentColor);
     }
+
 }
