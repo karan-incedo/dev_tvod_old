@@ -357,6 +357,11 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
             }
         }
 
+        if (adapterData.size() < Math.abs(index - firstVisibleIndex) ||
+                adapterData.size() < Math.abs(index - lastVisibleIndex)) {
+            index = firstVisibleIndex;
+        }
+
         return index;
     }
 
