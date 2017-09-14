@@ -404,7 +404,7 @@ public class CollectionGridItemView extends BaseView {
                             double recurringPaymentAmount = data.getPlanDetails()
                                     .get(planIndex).getRecurringPaymentAmount();
                             String formattedRecurringPaymentAmount = context.getString(R.string.cost_with_fraction,
-                                    strikeThroughPaymentAmount);
+                                    recurringPaymentAmount);
                             if (recurringPaymentAmount - (int) recurringPaymentAmount == 0) {
                                 formattedRecurringPaymentAmount = context.getString(R.string.cost_without_fraction,
                                         recurringPaymentAmount);
