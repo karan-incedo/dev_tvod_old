@@ -1473,6 +1473,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.restartInternalEvents();
         if (appCMSPresenter.isViewPlanPage(updatedAppCMSBinder.getPageId())) {
             appCMSPresenter.checkForExistingSubscription(appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE && !appCMSPresenter.isUserSubscribed());
+            appCMSPresenter.refreshSubscriptionData(null, false);
         }
         getSupportFragmentManager().removeOnBackStackChangedListener(this);
     }

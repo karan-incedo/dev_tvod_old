@@ -73,7 +73,6 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
         this.loop = loop;
 
         this.updatedIndex = getDefaultIndex();
-        appCMSPresenter.addToReferenceQueue(this.updatedIndex);
 
         this.internalEventReceivers = new ArrayList<>();
         this.cancelled = false;
