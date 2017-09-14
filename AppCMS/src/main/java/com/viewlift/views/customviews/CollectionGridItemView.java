@@ -429,10 +429,6 @@ public class CollectionGridItemView extends BaseView {
                     }
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_PLAN_META_DATA_VIEW_KEY) {
-                if (view instanceof SubscriptionMetaDataView) {
-                    ((SubscriptionMetaDataView) view).setData(data);
-                }
-
                 if (view instanceof ViewPlansMetaDataView) {
                     ((ViewPlansMetaDataView) view).setData(data);
                 }

@@ -2577,7 +2577,7 @@ public class ViewCreator {
                 break;
 
             case PAGE_PLAN_META_DATA_VIEW_KEY:
-                componentViewResult.componentView = new SubscriptionMetaDataView(context,
+                componentViewResult.componentView = new ViewPlansMetaDataView(context,
                         component,
                         component.getLayout(),
                         this,
@@ -2585,15 +2585,6 @@ public class ViewCreator {
                         jsonValueKeyMap,
                         appCMSPresenter,
                         settings);
-
-//                componentViewResult.componentView = new ViewPlansMetaDataView(context,
-//                        component,
-//                        component.getLayout(),
-//                        this,
-//                        moduleAPI,
-//                        jsonValueKeyMap,
-//                        appCMSPresenter,
-//                        settings);
                 break;
 
             case PAGE_SETTINGS_KEY:
