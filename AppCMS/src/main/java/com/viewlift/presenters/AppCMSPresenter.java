@@ -4540,7 +4540,7 @@ public class AppCMSPresenter {
                     if (facebookLoginResponse != null) {
                         setAuthToken(facebookLoginResponse.getAuthorizationToken());
                         setRefreshToken(facebookLoginResponse.getRefreshToken());
-                        setLoggedInUser(facebookUserId);
+                        setLoggedInUser(facebookLoginResponse.getUserId());
                         setLoggedInUserName(username);
                         setLoggedInUserEmail(email);
                         if (forceSubscribed) {
@@ -4638,7 +4638,7 @@ public class AppCMSPresenter {
                         if (googleLoginResponse != null) {
                             setAuthToken(googleLoginResponse.getAuthorizationToken());
                             setRefreshToken(googleLoginResponse.getRefreshToken());
-                            setLoggedInUser(googleUserId);
+                            setLoggedInUser(googleLoginResponse.getUserId());
                             setLoggedInUserName(googleUsername);
                             setLoggedInUserEmail(googleEmail);
                             if (forceSubscribed) {
