@@ -4,7 +4,7 @@
             "outputFile": "C:\\Users\\anas.azeem\\StudioProjects\\android-appcms-nitin\\sample\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v12\\values-v12.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\anas.azeem\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-23.1.1.aar\\960d7c1578ef3f39ab087a70afcfebde\\res\\values-v12\\values-v12.xml",
+                    "source": "C:\\Users\\anas.azeem\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-23.1.1.aar\\d190a5492f12429a089a9c9c107870ed\\res\\values-v12\\values-v12.xml",
                     "from": {
                         "startLines": "4,7,10,11",
                         "startColumns": "4,4,4,4",

@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AppCMS/AppCMS.iml" filepath="$PROJECT_DIR$/AppCMS/AppCMS.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/android-appcms-nitin.iml" filepath="$PROJECT_DIR$/.idea/android-appcms-nitin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android-appcms-nitin.iml" filepath="$PROJECT_DIR$/android-appcms-nitin.iml" />
       <module fileurl="file://$PROJECT_DIR$/../ExoPlayer/extensions/ffmpeg/exoplayer-extension-ffmpeg.iml" filepath="$PROJECT_DIR$/../ExoPlayer/extensions/ffmpeg/exoplayer-extension-ffmpeg.iml" />
       <module fileurl="file://$PROJECT_DIR$/../ExoPlayer/extensions/flac/exoplayer-extension-flac.iml" filepath="$PROJECT_DIR$/../ExoPlayer/extensions/flac/exoplayer-extension-flac.iml" />
       <module fileurl="file://$PROJECT_DIR$/../ExoPlayer/extensions/gvr/exoplayer-extension-gvr.iml" filepath="$PROJECT_DIR$/../ExoPlayer/extensions/gvr/exoplayer-extension-gvr.iml" />

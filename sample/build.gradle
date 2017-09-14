@@ -20,7 +20,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-beta4'
+        classpath 'com.android.tools.build:gradle:3.0.0-beta5'
     }
 }
 
@@ -29,6 +29,7 @@ repositories {
     maven {
         url 'https://oss.sonatype.org/content/repositories/snapshots'
     }
+    google()
 }
 
 apply plugin: 'com.android.application'

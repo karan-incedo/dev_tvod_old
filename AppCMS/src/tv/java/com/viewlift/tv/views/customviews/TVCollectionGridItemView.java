@@ -329,8 +329,6 @@ public class TVCollectionGridItemView extends TVBaseView {
                             ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
                         }
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                        int textColor = Color.parseColor(getColor(context, component.getTextColor()));
-                        ((TextView) view).setTextColor(textColor);
                     }
                     setTypeFace(context, jsonValueKeyMap, childComponent, ((TextView) view));
                     view.setFocusable(false);
@@ -357,9 +355,6 @@ public class TVCollectionGridItemView extends TVBaseView {
                         String fmt = getResources().getText(R.string.item_shop).toString();
                         ((TextView) view).setText(MessageFormat.format(fmt, days));
                     }
-
-                    int textColor = Color.parseColor(getColor(context, component.getTextColor()));
-                    ((TextView) view).setTextColor(textColor);
                 }
             }
             view.forceLayout();

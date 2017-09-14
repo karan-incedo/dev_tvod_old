@@ -79,6 +79,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import rx.functions.Action1;
+
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_API_DESCRIPTION;
 
 /**
@@ -330,6 +332,11 @@ public class TVViewCreator {
             if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_contact_us_module))) {
                 module = new GsonBuilder().create().
                         fromJson(Utils.loadJsonFromAssets(context, "contact_us.json"), ModuleList.class);
+            }
+
+            if(module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_setting_module))){
+                module = new GsonBuilder().create().
+                        fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
             }
 
             moduleView = new TVModuleView<>(context, module);
@@ -657,7 +664,6 @@ public class TVViewCreator {
                                                 && moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
                                             extraData[3] = moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0).getUrl();
                                         }
-                                        extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
 
                                         if (!appCMSPresenter.launchTVButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                                 component.getAction(),
@@ -826,18 +832,18 @@ public class TVViewCreator {
                                     break;
 
                                 case PAGE_WATCHLIST_MODULE_KEY:
-                                    appCMSPresenter.clearWatchlist(addToWatchlistResult -> {
+                                    /*appCMSPresenter.clearWatchlist(addToWatchlistResult -> {
 //                                            v.setVisibility(View.GONE);
                                         onInternalEvent.sendEvent(null);
-                                    });
+                                    });*/
 
 
-                                   /* appCMSPresenter.showClearHistoryDialog("", "", new Action1<Integer>() {
+                                    appCMSPresenter.showClearHistoryDialog("", "", new Action1<Integer>() {
                                         @Override
                                         public void call(Integer integer) {
 
                                         }
-                                    });*/
+                                    });
                                     break;
 
                                 default:
@@ -1152,7 +1158,6 @@ public class TVViewCreator {
                                                     moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
                                                 extraData[3] = moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0).getUrl();
                                             }
-                                            extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
                                             if (!appCMSPresenter.launchTVButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                                     component.getAction(),
                                                     moduleAPI.getContentData().get(0).getGist().getTitle(),

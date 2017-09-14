@@ -36,7 +36,7 @@
               "yAxis": 28,
               "xAxis": 96,
               "width": 255,
-              "fontSize": 9,
+              "fontSize": 12,
               "height": 60
             }
           },
@@ -158,7 +158,7 @@
                   "topMargin" : 30,
                   "leftMargin" : 1615,
                   "width": 210,
-                  "fontSize": 9,
+                  "fontSize": 12,
                   "height": 60
                 }
               },

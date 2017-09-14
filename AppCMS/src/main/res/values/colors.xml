@@ -1,7 +1,7 @@
 <resources>
     <color name="colorPrimary">#000000</color>
     <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#008ee0</color>
+    <color name="colorAccent">#ff1d10</color>
     <color name="colorNavBarText">#FFFFFF</color>
     <color name="facebookBlue">#3b5998</color>
     <color name="googleRed">#c04b4c</color>

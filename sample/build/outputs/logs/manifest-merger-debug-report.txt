@@ -4,8 +4,8 @@ ADDED from C:\Users\anas.azeem\StudioProjects\android-appcms-nitin\sample\src\ma
 INJECTED from C:\Users\anas.azeem\StudioProjects\android-appcms-nitin\sample\src\main\AndroidManifest.xml:18:1-54:12
 INJECTED from C:\Users\anas.azeem\StudioProjects\android-appcms-nitin\sample\src\main\AndroidManifest.xml:18:1-54:12
 MERGED from [:library] C:\Users\anas.azeem\StudioProjects\android-appcms-nitin\library\build\intermediates\manifests\full\debug\AndroidManifest.xml:17:1-26:12
-MERGED from [com.android.support:appcompat-v7:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\appcompat-v7-23.1.1.aar\960d7c1578ef3f39ab087a70afcfebde\AndroidManifest.xml:17:1-24:12
-MERGED from [com.android.support:support-v4:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\support-v4-23.1.1.aar\62931e53dbffa181815e993c7759d283\AndroidManifest.xml:17:1-24:12
+MERGED from [com.android.support:appcompat-v7:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\appcompat-v7-23.1.1.aar\d190a5492f12429a089a9c9c107870ed\AndroidManifest.xml:17:1-24:12
+MERGED from [com.android.support:support-v4:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\support-v4-23.1.1.aar\5a1e4cc5bc55d5559d79437dd0f897c4\AndroidManifest.xml:17:1-24:12
 INJECTED from C:\Users\anas.azeem\StudioProjects\android-appcms-nitin\sample\src\main\AndroidManifest.xml:18:1-54:12
 INJECTED from C:\Users\anas.azeem\StudioProjects\android-appcms-nitin\sample\src\main\AndroidManifest.xml:18:1-54:12
 	package
@@ -22,10 +22,10 @@ INJECTED from C:\Users\anas.azeem\StudioProjects\android-appcms-nitin\sample\src
 		ADDED from C:\Users\anas.azeem\StudioProjects\android-appcms-nitin\sample\src\main\AndroidManifest.xml:18:11-69
 application
 ADDED from C:\Users\anas.azeem\StudioProjects\android-appcms-nitin\sample\src\main\AndroidManifest.xml:21:5-53:19
-MERGED from [com.android.support:appcompat-v7:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\appcompat-v7-23.1.1.aar\960d7c1578ef3f39ab087a70afcfebde\AndroidManifest.xml:22:5-20
-MERGED from [com.android.support:appcompat-v7:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\appcompat-v7-23.1.1.aar\960d7c1578ef3f39ab087a70afcfebde\AndroidManifest.xml:22:5-20
-MERGED from [com.android.support:support-v4:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\support-v4-23.1.1.aar\62931e53dbffa181815e993c7759d283\AndroidManifest.xml:22:5-20
-MERGED from [com.android.support:support-v4:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\support-v4-23.1.1.aar\62931e53dbffa181815e993c7759d283\AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:appcompat-v7:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\appcompat-v7-23.1.1.aar\d190a5492f12429a089a9c9c107870ed\AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:appcompat-v7:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\appcompat-v7-23.1.1.aar\d190a5492f12429a089a9c9c107870ed\AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:support-v4:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\support-v4-23.1.1.aar\5a1e4cc5bc55d5559d79437dd0f897c4\AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:support-v4:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\support-v4-23.1.1.aar\5a1e4cc5bc55d5559d79437dd0f897c4\AndroidManifest.xml:22:5-20
 	android:label
 		ADDED from C:\Users\anas.azeem\StudioProjects\android-appcms-nitin\sample\src\main\AndroidManifest.xml:22:9-41
 	android:icon
@@ -90,10 +90,10 @@ INJECTED from C:\Users\anas.azeem\StudioProjects\android-appcms-nitin\sample\src
 INJECTED from C:\Users\anas.azeem\StudioProjects\android-appcms-nitin\sample\src\main\AndroidManifest.xml
 MERGED from [:library] C:\Users\anas.azeem\StudioProjects\android-appcms-nitin\library\build\intermediates\manifests\full\debug\AndroidManifest.xml:22:5-24:41
 MERGED from [:library] C:\Users\anas.azeem\StudioProjects\android-appcms-nitin\library\build\intermediates\manifests\full\debug\AndroidManifest.xml:22:5-24:41
-MERGED from [com.android.support:appcompat-v7:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\appcompat-v7-23.1.1.aar\960d7c1578ef3f39ab087a70afcfebde\AndroidManifest.xml:20:5-43
-MERGED from [com.android.support:appcompat-v7:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\appcompat-v7-23.1.1.aar\960d7c1578ef3f39ab087a70afcfebde\AndroidManifest.xml:20:5-43
-MERGED from [com.android.support:support-v4:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\support-v4-23.1.1.aar\62931e53dbffa181815e993c7759d283\AndroidManifest.xml:20:5-43
-MERGED from [com.android.support:support-v4:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\support-v4-23.1.1.aar\62931e53dbffa181815e993c7759d283\AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:appcompat-v7:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\appcompat-v7-23.1.1.aar\d190a5492f12429a089a9c9c107870ed\AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:appcompat-v7:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\appcompat-v7-23.1.1.aar\d190a5492f12429a089a9c9c107870ed\AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:support-v4:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\support-v4-23.1.1.aar\5a1e4cc5bc55d5559d79437dd0f897c4\AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:support-v4:23.1.1] C:\Users\anas.azeem\.gradle\caches\transforms-1\files-1.1\support-v4-23.1.1.aar\5a1e4cc5bc55d5559d79437dd0f897c4\AndroidManifest.xml:20:5-43
 INJECTED from C:\Users\anas.azeem\StudioProjects\android-appcms-nitin\sample\src\main\AndroidManifest.xml
 INJECTED from C:\Users\anas.azeem\StudioProjects\android-appcms-nitin\sample\src\main\AndroidManifest.xml
 	android:targetSdkVersion

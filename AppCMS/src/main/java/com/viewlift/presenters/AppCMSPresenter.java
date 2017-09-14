@@ -8076,7 +8076,6 @@ public class AppCMSPresenter {
                                     && appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0) != null){
                                 extraData[3] = appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0).getUrl();
                             }
-                            extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
                             if (!TextUtils.isEmpty(extraData[1])) {
 
                                 if (platformType == PlatformType.TV) {
