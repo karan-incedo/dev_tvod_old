@@ -76,9 +76,10 @@ public class AutoplayActivity
 
     @Override
     public void onCountdownFinished() {
+
         appCMSPresenter.playNextVideo(binder,
                 binder.getCurrentPlayingVideoIndex() + 1,
-                0);
+                binder.getContentData().getGist().getWatchedTime());
         binder.setCurrentPlayingVideoIndex(binder.getCurrentPlayingVideoIndex() + 1);
         finish();
     }
