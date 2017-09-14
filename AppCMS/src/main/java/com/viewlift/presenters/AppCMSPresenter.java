@@ -58,6 +58,7 @@ import android.widget.Toast;
 import com.android.vending.billing.IInAppBillingService;
 import com.apptentive.android.sdk.Apptentive;
 import com.facebook.AccessToken;
+import com.facebook.FacebookActivity;
 import com.facebook.FacebookRequestError;
 import com.facebook.GraphRequest;
 import com.facebook.HttpMethod;
@@ -1502,6 +1503,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             FrameLayout mainFragmentView =
                     currentActivity.findViewById(R.id.app_cms_fragment);
+
             if (mainFragmentView != null) {
                 return (mainFragmentView.getVisibility() == View.VISIBLE);
             }
@@ -3870,6 +3872,7 @@ public class AppCMSPresenter {
                     pageIdToPageAPIUrlMap.get(pageId),
                     appCMSSite.getGist().getSiteInternalName(),
                     true,
+
                     getPageId(appCMSPageUI),
                     new AppCMSPageAPIAction(appbarPresent,
                             fullscreenEnabled,
@@ -5008,8 +5011,15 @@ public class AppCMSPresenter {
 
     private void sendFireBaseLogOutEvent() {
         Bundle bundle = new Bundle();
+
+
         bundle.putString(FIREBASE_SCREEN_SIGN_OUT, FIREBASE_SCREEN_LOG_OUT);
         if (getmFireBaseAnalytics() != null) {
+
+            mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_ID, null);
+            mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_NAME, null);
+            mFireBaseAnalytics.setUserId(null);
+
             mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
             mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
             getmFireBaseAnalytics().logEvent(FIREBASE_SCREEN_SIGN_OUT, bundle);
@@ -5775,6 +5785,8 @@ public class AppCMSPresenter {
             try {
                 BeaconRequest beaconRequest = getBeaconRequest(vid, screenName, parentScreenName, currentPosition, event,
                         usingChromecast, mediaType, bitrate, height, width, streamid, ttfirstframe, apod, isDownloaded);
+
+
                 if (!isNetworkConnected()) {
                     currentActivity.runOnUiThread(() -> {
                         try {
@@ -5788,6 +5800,7 @@ public class AppCMSPresenter {
                     return;
                 }
                 String url = getBeaconUrl();
+
                 AppCMSBeaconRequest request = new AppCMSBeaconRequest();
                 ArrayList<BeaconRequest> beaconRequests = new ArrayList<>();
 

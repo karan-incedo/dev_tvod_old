@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -60,7 +61,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         implements AdErrorEvent.AdErrorListener,
         AdEvent.AdEventListener,
         VideoPlayerView.FinishListener,
-        Animation.AnimationListener {
+        Animation.AnimationListener,
+        AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = "PlayVideoFragment";
 
     private static final long SECS_TO_MSECS = 1000L;
@@ -145,6 +147,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private final int totalCountdownInMillis = 10000;
     private final int countDownIntervalInMillis = 10;
     private boolean showCRWWarningMessage;
+    private boolean mAudioFocusGranted = false;
 
     AdsLoader.AdsLoadedListener listenerAdsLoaded = adsManagerLoadedEvent -> {
         adsManager = adsManagerLoadedEvent.getAdsManager();
@@ -367,6 +370,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     }
                 }
                 videoLoadingProgress.setVisibility(View.GONE);
+                requestAudioFocus();
             } else if (playerState.getPlaybackState() == ExoPlayer.STATE_ENDED) {
                 Log.d(TAG, "Video ended");
                 if (shouldRequestAds && adsLoader != null) {
@@ -517,6 +521,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     @Override
     public void onResume() {
+        requestAudioFocus();
         resumeVideo();
         super.onResume();
     }
@@ -667,9 +672,9 @@ public class AppCMSPlayVideoFragment extends Fragment
         beaconMessageThread.runBeaconPing = false;
         beaconMessageThread.videoPlayerView = null;
         beaconMessageThread = null;
-        if(mProgressHandler!=null){
+        if (mProgressHandler != null) {
             mProgressHandler.removeCallbacks(mProgressRunnable);
-            mProgressHandler=null;
+            mProgressHandler = null;
         }
 
         beaconBufferingThread.sendBeaconBuffering = false;
@@ -717,11 +722,14 @@ public class AppCMSPlayVideoFragment extends Fragment
         //bundle.putString(FIREBASE_SERIES_NAME_KEY, "");
 
         //Logs an app event.
-        if (progressPercent == 0 || !isStreamStart) {
+        if (progressPercent == 0 && !isStreamStart) {
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
             isStreamStart = true;
         }
-
+        if (!isStreamStart) {
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
+            isStreamStart = true;
+        }
         if (progressPercent >= 25 && progressPercent < 50 && !isStream25) {
             if (!isStreamStart) {
                 appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
@@ -739,7 +747,6 @@ public class AppCMSPlayVideoFragment extends Fragment
             }
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_50, bundle);
             isStream50 = true;
-
         }
         if (progressPercent >= 75 && progressPercent <= 100 && !isStream75) {
             if (!isStream25) {
@@ -754,8 +761,6 @@ public class AppCMSPlayVideoFragment extends Fragment
             isStream75 = true;
         }
     }
-
-
 
 
     private void requestAds(String adTagUrl) {
@@ -885,7 +890,11 @@ public class AppCMSPlayVideoFragment extends Fragment
                     Thread.sleep(beaconMsgTimeoutMsec);
                     if (sendBeaconPing) {
 
-                        if (appCMSPresenter != null && videoPlayerView != null && videoPlayerView.getPlayer().getPlayWhenReady()) { // For not to sent PIN in PAUSE mode
+                        long currentTime = videoPlayerView.getCurrentPosition() / 1000;
+                        if (appCMSPresenter != null && videoPlayerView != null && videoPlayerView.getPlayer().getPlayWhenReady() && currentTime % 30 == 0) { // For not to sent PIN in PAUSE mode
+
+                            Log.d(TAG, "Beacon Message Request position: " + currentTime);
+
                             /*appCMSPresenter.sendBeaconPingMessage(filmId,
 
                                     permaLink,
@@ -1031,19 +1040,14 @@ public class AppCMSPlayVideoFragment extends Fragment
                     .setColorFilter(highlightColor, PorterDuff.Mode.SRC_IN);
         }
 
-        if (!TextUtils.isEmpty(parentalRating)) {
-            contentRatingTitleView.setText(parentalRating);
-        }
-
         contentRatingBack.setOnClickListener(v -> {
             getActivity().finish();
         });
 
-        contentRatingDiscretionView.setVisibility(View.GONE);
     }
 
     private void createContentRatingView() throws Exception {
-        if (!isTrailer && getParentalRating() != null && !getParentalRating().equalsIgnoreCase(getString(R.string.age_rating_converted_default))) {
+        if (!isTrailer && !getParentalRating().equalsIgnoreCase(getString(R.string.age_rating_converted_default))) {
             videoPlayerMainContainer.setVisibility(View.GONE);
             animateView();
             startCountdown();
@@ -1055,8 +1059,8 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private String getParentalRating() {
-        if (!TextUtils.isEmpty(parentalRating) && !parentalRating.contentEquals(getContext().getString(R.string.age_rating_converted_default))) {
-            contentRatingTitleView.setText(getResources().getString(R.string.content_rating_description) + parentalRating);
+        if (!TextUtils.isEmpty(parentalRating) && !parentalRating.contentEquals(getString(R.string.age_rating_converted_default))) {
+            contentRatingTitleView.setText(parentalRating);
         }
         return parentalRating;
     }
@@ -1134,7 +1138,10 @@ public class AppCMSPlayVideoFragment extends Fragment
 
 
         contentRatingTitleView.startAnimation(animSequential);
+        contentRatingTitleHeader.startAnimation(animSequential);
+
         contentRatingTitleView.setVisibility(View.VISIBLE);
+        contentRatingTitleHeader.setVisibility(View.VISIBLE);
 
     }
 
@@ -1157,19 +1164,65 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     @Override
     public void onAnimationEnd(Animation animation) {
-        if (showCRWWarningMessage &&
-                getParentalRating().contains(getString(R.string.age_rating_pg)) ||
-                !getParentalRating().contains(getString(R.string.age_rating_g))) {
-            contentRatingDiscretionView.startAnimation(animFadeOut);
-            contentRatingDiscretionView.setVisibility(View.VISIBLE);
-            showCRWWarningMessage = false;
-        } else {
-            contentRatingDiscretionView.setVisibility(View.GONE);
+        if (animation == animFadeIn) {
+            if (showCRWWarningMessage &&
+                    getParentalRating().contains(getString(R.string.age_rating_pg)) ||
+                    !getParentalRating().contains(getString(R.string.age_rating_g))) {
+                contentRatingDiscretionView.startAnimation(animFadeOut);
+                contentRatingDiscretionView.setVisibility(View.VISIBLE);
+                showCRWWarningMessage = false;
+            } else {
+                contentRatingDiscretionView.setVisibility(View.GONE);
+            }
         }
     }
 
     @Override
     public void onAnimationRepeat(Animation animation) {
+
+    }
+
+    protected void abandonAudioFocus() {
+        if(getContext() != null) {
+            AudioManager am = (AudioManager) getContext().getApplicationContext()
+                    .getSystemService(Context.AUDIO_SERVICE);
+            int result = am.abandonAudioFocus(this);
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                mAudioFocusGranted = false;
+            }
+        }
+    }
+
+    protected boolean requestAudioFocus() {
+        if (getContext() != null && !mAudioFocusGranted) {
+            AudioManager am = (AudioManager) getContext().getApplicationContext()
+                    .getSystemService(Context.AUDIO_SERVICE);
+            int result = am.requestAudioFocus(this,
+                    AudioManager.STREAM_MUSIC,
+                    AudioManager.AUDIOFOCUS_GAIN);
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                mAudioFocusGranted = true;
+            }
+        }
+        return mAudioFocusGranted;
+    }
+
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+        switch (focusChange) {
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                videoPlayerView.pausePlayer();
+                break;
+
+            case AudioManager.AUDIOFOCUS_GAIN:
+                videoPlayerView.startPlayer();
+                break;
+
+            case AudioManager.AUDIOFOCUS_LOSS:
+                videoPlayerView.pausePlayer();
+                abandonAudioFocus();
+                break;
+        }
 
     }
 }
