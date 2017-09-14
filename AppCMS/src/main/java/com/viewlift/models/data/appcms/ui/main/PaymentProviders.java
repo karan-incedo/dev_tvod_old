@@ -12,7 +12,7 @@ public class PaymentProviders {
     @Expose
     Stripe stripe;
 
-    @SerializedName("ccav")
+    @SerializedName("ccavenue")
     @Expose
     CCAv ccav;
 

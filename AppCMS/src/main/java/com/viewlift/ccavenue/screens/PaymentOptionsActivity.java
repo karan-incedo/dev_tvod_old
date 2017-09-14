@@ -2,6 +2,7 @@ package com.viewlift.ccavenue.screens;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -68,6 +69,9 @@ public class PaymentOptionsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment_options);
+        if (!getResources().getBoolean(R.bool.isTablet)) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
         id_rl_parent_layout = (RelativeLayout) findViewById(R.id.id_rl_parent_layout) ;
         id_rv_payment_options = (RecyclerView) findViewById(R.id.id_rv_payment_options) ;
         mLayoutManager = new LinearLayoutManager(this) ;

@@ -546,16 +546,24 @@ public class ViewCreator {
                                                     }
                                                     if (creditBlock != null && creditBlock.getCredits() != null) {
                                                         for (int j = 0; j < creditBlock.getCredits().size(); j++) {
-                                                            starringListSb.append(creditBlock.getCredits().get(j).getTitle());
-                                                            if (j < creditBlock.getCredits().size() - 1) {
-                                                                starringListSb.append(", ");
+                                                            if(creditBlock.getCredits().get(j).getTitle()!=null && !TextUtils.isEmpty(creditBlock.getCredits().get(j).getTitle())){
+                                                                starringListSb.append(creditBlock.getCredits().get(j).getTitle());
+                                                                if (j < creditBlock.getCredits().size() - 1) {
+                                                                    starringListSb.append(", ");
+                                                                }
                                                             }
+
                                                         }
                                                     }
                                                 }
                                             }
                                         }
 
+                                        if(TextUtils.isEmpty(starringListSb))
+                                        {
+                                            starringListSb.append("-");
+
+                                        }
                                         if (directorListSb.length() == 0 && starringListSb.length() == 0) {
                                             if (!BaseView.isLandscape(context)) {
                                                 shouldHideComponent = true;
