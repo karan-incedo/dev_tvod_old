@@ -417,9 +417,8 @@ public class CollectionGridItemView extends BaseView {
                             if (currency != null) {
                                 stringBuilder.append(currency.getSymbol());
                             }
-                            stringBuilder.append(data.getPlanDetails().get(0)
-                                    .getRecurringPaymentAmount());
-                            ((TextView) view).setText(formattedStrikeThroughPaymentAmount);
+                            stringBuilder.append(formattedStrikeThroughPaymentAmount);
+                            ((TextView) view).setText(stringBuilder.toString());
                             ((TextView) view).setPaintFlags(((TextView) view).getPaintFlags());
                         }
 
