@@ -298,11 +298,17 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                             if (collectionGridItemView.isSelectable()) {
                                 Log.d(TAG, "Initiating signup and subscription: " +
                                         data.getIdentifier());
+
+                                double price = data.getPlanDetails().get(0).getStrikeThroughPrice();
+                                if (price == 0) {
+                                    price = data.getPlanDetails().get(0).getRecurringPaymentAmount();
+                                }
+
                                 appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
                                         data.getId(),
                                         data.getPlanDetails().get(0).getCountryCode(),
                                         data.getName(),
-                                        data.getPlanDetails().get(0).getStrikeThroughPrice(),
+                                        price,
                                         data.getPlanDetails().get(0).getRecurringPaymentCurrencyCode(),
                                         data.getPlanDetails().get(0).getCountryCode(),
                                         data.getRenewable()
@@ -481,9 +487,17 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY && adapterData != null) {
 
             Collections.sort(adapterData,
-                    (datum1, datum2) -> Double.compare(datum2.getPlanDetails().get(0)
+                    (datum1, datum2) -> {
+                if ( datum1.getPlanDetails().get(0).getStrikeThroughPrice() == 0 &&
+                        datum2.getPlanDetails().get(0).getStrikeThroughPrice() == 0) {
+                    return Double.compare(datum2.getPlanDetails().get(0)
+                            .getRecurringPaymentAmount(), datum1.getPlanDetails().get(0)
+                            .getRecurringPaymentAmount());
+                }
+                return Double.compare(datum2.getPlanDetails().get(0)
                             .getStrikeThroughPrice(), datum1.getPlanDetails().get(0)
-                            .getStrikeThroughPrice()));
+                            .getStrikeThroughPrice());
+            });
         }
     }
 
@@ -491,6 +505,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                              double existingSubscriptionPrice) {
         List<ContentDatum> updatedData = new ArrayList<>();
         for (ContentDatum contentDatum : adapterData) {
+            double priceToCompare = contentDatum.getPlanDetails().get(0).getStrikeThroughPrice();
+            if (priceToCompare == 0) {
+                priceToCompare = contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount();
+            }
             if (availableSubscriptionPlans != null) {
                 for (SubscriptionPlan subscriptionPlan : availableSubscriptionPlans) {
                     if (!TextUtils.isEmpty(contentDatum.getIdentifier()) &&
@@ -502,8 +520,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             } else if (contentDatum.getPlanDetails() != null &&
                     !contentDatum.getPlanDetails().isEmpty() &&
                     contentDatum.getPlanDetails().get(0) != null &&
-                    existingSubscriptionPrice <
-                            contentDatum.getPlanDetails().get(0).getStrikeThroughPrice()) {
+                    existingSubscriptionPrice < priceToCompare) {
                 updatedData.add(contentDatum);
             }
         }
