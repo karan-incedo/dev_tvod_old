@@ -3,6 +3,8 @@ package com.viewlift.views.customviews;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
@@ -23,17 +25,12 @@ import java.util.Map;
  * Created by viewlift on 5/17/17.
  */
 
-public abstract class BaseView extends FrameLayout {
-    private static final String TAG = "BaseView";
-
+public abstract class BaseView extends CardView {
     public static final int STANDARD_MOBILE_WIDTH_PX = 375;
     public static final int STANDARD_MOBILE_HEIGHT_PX = 667;
-
     public static final int STANDARD_TABLET_WIDTH_PX = 768;
     public static final int STANDARD_TABLET_HEIGHT_PX = 1024;
-
     protected static final float TABLET_LANDSCAPE_HEIGHT_SCALE = 1.06f;
-
     protected static int DEVICE_WIDTH;
     protected static int DEVICE_HEIGHT;
 
@@ -44,403 +41,14 @@ public abstract class BaseView extends FrameLayout {
         super(context);
         DEVICE_WIDTH = getContext().getResources().getDisplayMetrics().widthPixels;
         DEVICE_HEIGHT = getContext().getResources().getDisplayMetrics().heightPixels;
-    }
-
-    public abstract void init();
-
-    protected abstract Component getChildComponent(int index);
-
-    protected abstract Layout getLayout();
-
-    public ViewGroup getChildrenContainer() {
-        if (childrenContainer == null) {
-            return createChildrenContainer();
-        }
-        return childrenContainer;
-    }
-
-    public void setComponentHasView(int index, boolean hasView) {
-        if (componentHasViewList != null) {
-            componentHasViewList[index] = hasView;
-        }
-    }
-
-    public void setViewMarginsFromComponent(Component childComponent,
-                                            View view,
-                                            Layout parentLayout,
-                                            View parentView,
-                                            boolean firstMeasurement,
-                                            Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                                            boolean useMarginsAsPercentages,
-                                            boolean useWidthOfScreen,
-                                            String viewType) {
-        Layout layout = childComponent.getLayout();
-
-        if (!shouldShowView(childComponent)) {
-            view.setVisibility(GONE);
-            return;
-        }
-
-        view.setPadding(0, 0, 0, 0);
-
-        int lm = 0, tm = 0, rm = 0, bm = 0;
-        int deviceHeight = getContext().getResources().getDisplayMetrics().heightPixels;
-        int viewWidth = (int) getViewWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
-        int viewHeight = (int) getViewHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
-        int parentViewWidth = (int) getViewWidth(getContext(),
-                parentLayout,
-                parentView.getMeasuredWidth());
-        int parentViewHeight = (int) getViewHeight(getContext(),
-                parentLayout,
-                parentView.getMeasuredHeight());
-        int maxViewWidth = (int) getViewMaximumWidth(getContext(), layout, -1);
-        int measuredHeight = parentViewHeight != 0 ? parentViewHeight : deviceHeight;
-        int gravity = Gravity.NO_GRAVITY;
-
-        if (isTablet(getContext())) {
-            if (isLandscape(getContext())) {
-                TabletLandscape tabletLandscape = layout.getTabletLandscape();
-                if (tabletLandscape != null) {
-                    if (getViewWidth(tabletLandscape) != -1) {
-                        if (tabletLandscape.getXAxis() != 0f) {
-                            float scaledX = DEVICE_WIDTH * (tabletLandscape.getXAxis() / STANDARD_TABLET_HEIGHT_PX);
-                            lm = Math.round(scaledX);
-                        }
-                    }
-
-                    if (getViewHeight(tabletLandscape) != -1) {
-                        if (tabletLandscape.getYAxis() != 0f) {
-                            float scaledY = DEVICE_HEIGHT * (tabletLandscape.getYAxis() / STANDARD_TABLET_WIDTH_PX);
-                            tm = Math.round(scaledY);
-                        }
-                    }
-
-                    if (getViewWidth(tabletLandscape) == -1f && tabletLandscape.getXAxis() != 0f) {
-                        float scaledX = DEVICE_WIDTH * (tabletLandscape.getXAxis() / STANDARD_TABLET_HEIGHT_PX);
-                        lm = Math.round(scaledX);
-                    } else if (tabletLandscape.getLeftMargin() != 0f) {
-                        lm = Math.round(DEVICE_WIDTH * (tabletLandscape.getLeftMargin() / STANDARD_TABLET_HEIGHT_PX));
-                    } else if (tabletLandscape.getRightMargin() != 0f) {
-                        int lmDiff = viewWidth;
-                        if (lmDiff < 0) {
-                            lmDiff = 0;
-                        }
-                        if (parentViewWidth > 0) {
-                            lm = parentViewWidth -
-                                    (int) (DEVICE_WIDTH * (tabletLandscape.getRightMargin() / STANDARD_TABLET_HEIGHT_PX)) -
-                                    lmDiff;
-                        } else {
-                            gravity = Gravity.END;
-                        }
-                    }
-                    if (useMarginsAsPercentages) {
-                        if (tabletLandscape.getTopMargin() != 0f) {
-                            tm = Math.round((tabletLandscape.getTopMargin() / 100.0f) * measuredHeight);
-                        } else if (tabletLandscape.getBottomMargin() != 0f) {
-                            int marginDiff = viewHeight;
-                            if (marginDiff < 0) {
-                                marginDiff = 0;
-                            }
-                            tm = Math.round(((100.0f - tabletLandscape.getBottomMargin()) / 100.0f) * measuredHeight) -
-                                    Math.round(convertDpToPixel(marginDiff, getContext()));
-                        }
-                    } else {
-                        if (tabletLandscape.getTopMargin() != 0f) {
-                            tm = (int) (DEVICE_HEIGHT * (tabletLandscape.getTopMargin() / STANDARD_TABLET_WIDTH_PX));
-                        } else if (tabletLandscape.getBottomMargin() != 0f && tabletLandscape.getBottomMargin() > 0) {
-                            int tmDiff = viewHeight;
-                            if (tmDiff < 0) {
-                                tmDiff = 0;
-                            }
-                            if (parentViewHeight > 0) {
-                                tm = parentViewHeight -
-                                        (int) (DEVICE_HEIGHT * (tabletLandscape.getBottomMargin() / STANDARD_TABLET_WIDTH_PX)) -
-                                        tmDiff;
-                            } else {
-                                gravity = Gravity.BOTTOM;
-                                bm = Math.round(DEVICE_HEIGHT * (tabletLandscape.getBottomMargin() / STANDARD_TABLET_WIDTH_PX));
-                            }
-                        }
-                    }
-                }
-            } else {
-                TabletPortrait tabletPortrait = layout.getTabletPortrait();
-                if (tabletPortrait != null) {
-                    if (getViewWidth(tabletPortrait) != -1) {
-                        if (tabletPortrait.getXAxis() != 0f) {
-                            float scaledX = DEVICE_WIDTH * (tabletPortrait.getXAxis() / STANDARD_TABLET_WIDTH_PX);
-                            lm = Math.round(scaledX);
-                        }
-                    }
-
-                    if (getViewHeight(tabletPortrait) != -1) {
-                        if (tabletPortrait.getYAxis() != 0f) {
-                            float scaledY = DEVICE_HEIGHT * (tabletPortrait.getYAxis() / STANDARD_TABLET_HEIGHT_PX);
-                            tm = Math.round(scaledY);
-                        }
-                    }
-
-                    if (getViewWidth(tabletPortrait) == -1 && tabletPortrait.getXAxis() != 0f) {
-                        float scaledX = DEVICE_WIDTH * (tabletPortrait.getXAxis() / STANDARD_TABLET_WIDTH_PX);
-                        lm = Math.round(scaledX);
-                    } else if (tabletPortrait.getLeftMargin() != 0f) {
-                        lm = Math.round(DEVICE_WIDTH * (tabletPortrait.getLeftMargin() / STANDARD_TABLET_WIDTH_PX));
-                    } else if (tabletPortrait.getRightMargin() != 0f) {
-                        int lmDiff = viewWidth;
-                        if (lmDiff < 0) {
-                            lmDiff = 0;
-                        }
-                        if (parentViewWidth > 0) {
-                            lm = parentViewWidth -
-                                    Math.round(DEVICE_WIDTH * (tabletPortrait.getRightMargin() / STANDARD_TABLET_WIDTH_PX)) -
-                                    lmDiff;
-                        } else {
-                            gravity = Gravity.END;
-                            rm = Math.round(DEVICE_WIDTH * (tabletPortrait.getRightMargin() / STANDARD_TABLET_WIDTH_PX));
-                        }
-                    }
-                    if (useMarginsAsPercentages) {
-                        if (tabletPortrait.getTopMargin() != 0f) {
-                            tm = Math.round((tabletPortrait.getTopMargin() / 100.0f) * measuredHeight);
-                        } else if (tabletPortrait.getBottomMargin() != 0f) {
-                            int marginDiff = viewHeight;
-                            if (marginDiff < 0) {
-                                marginDiff = 0;
-                            }
-                            tm = Math.round(((100.0f - tabletPortrait.getBottomMargin()) / 100.0f) * measuredHeight) -
-                                    Math.round(convertDpToPixel(marginDiff, getContext()));
-                        }
-                    } else {
-                        if (tabletPortrait.getTopMargin() != 0f) {
-                            tm = (int) (DEVICE_HEIGHT * (tabletPortrait.getTopMargin() / STANDARD_TABLET_HEIGHT_PX));
-                        } else if (tabletPortrait.getBottomMargin() != 0f && tabletPortrait.getBottomMargin() > 0) {
-                            int tmDiff = viewHeight;
-                            if (tmDiff < 0) {
-                                tmDiff = 0;
-                            }
-                            if (parentViewHeight > 0) {
-                                tm = parentViewHeight -
-                                        (int) (DEVICE_HEIGHT * (tabletPortrait.getBottomMargin() / STANDARD_TABLET_HEIGHT_PX)) -
-                                        tmDiff;
-                            } else {
-                                gravity = Gravity.BOTTOM;
-                                bm = Math.round(DEVICE_HEIGHT * (tabletPortrait.getBottomMargin() / STANDARD_TABLET_HEIGHT_PX));
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            Mobile mobile = layout.getMobile();
-            if (mobile != null) {
-                if (getViewWidth(mobile) != -1) {
-                    if (mobile.getXAxis() != 0f) {
-                        float scaledX = DEVICE_WIDTH * (mobile.getXAxis() / STANDARD_MOBILE_WIDTH_PX);
-                        lm = Math.round(scaledX);
-                    }
-                }
-
-                if (getViewHeight(mobile) != -1) {
-                    if (mobile.getYAxis() != 0f) {
-                        float scaledY = DEVICE_HEIGHT * (mobile.getYAxis() / STANDARD_MOBILE_HEIGHT_PX);
-                        tm = Math.round(scaledY);
-                    }
-                }
-
-                if (getViewWidth(mobile) == -1 && mobile.getXAxis() != 0f) {
-                    float scaledX = DEVICE_WIDTH * (mobile.getXAxis() / STANDARD_MOBILE_WIDTH_PX);
-                    lm = Math.round(scaledX);
-                } else if (mobile.getLeftMargin() != 0f) {
-                    float scaledLm = DEVICE_WIDTH * (mobile.getLeftMargin() / STANDARD_MOBILE_WIDTH_PX);
-                    lm = Math.round(scaledLm);
-                } else if (mobile.getRightMargin() != 0f) {
-                    int lmDiff = viewWidth;
-                    if (lmDiff < 0) {
-                        lmDiff = 0;
-                    }
-                    if (parentViewWidth > 0) {
-                        float scaledRm = DEVICE_WIDTH * (mobile.getRightMargin() / STANDARD_MOBILE_WIDTH_PX);
-                        lm = parentViewWidth - Math.round(scaledRm) - lmDiff;
-                    } else {
-                        gravity = Gravity.END;
-                        rm = Math.round(DEVICE_WIDTH * (mobile.getRightMargin() / STANDARD_MOBILE_WIDTH_PX));
-                    }
-                }
-                if (useMarginsAsPercentages) {
-                    if (mobile.getTopMargin() != 0f) {
-                        tm = Math.round((mobile.getTopMargin() / 100.0f) * measuredHeight);
-                    } else if (mobile.getBottomMargin() != 0f) {
-                        int marginDiff = viewHeight;
-                        if (marginDiff < 0) {
-                            marginDiff = 0;
-                        }
-                        tm = Math.round(((100.0f - mobile.getBottomMargin()) / 100.0f) * measuredHeight) -
-                                Math.round(convertDpToPixel(marginDiff, getContext()));
-                    }
-                } else {
-                    if (mobile.getTopMargin() != 0f) {
-                        tm = Math.round(DEVICE_HEIGHT * (mobile.getTopMargin() / STANDARD_TABLET_HEIGHT_PX));
-                    } else if (mobile.getBottomMargin() != 0f && mobile.getBottomMargin() > 0) {
-                        int tmDiff = viewHeight;
-                        if (tmDiff < 0) {
-                            tmDiff = 0;
-                        }
-                        if (parentViewHeight > 0) {
-                            tm = parentViewHeight -
-                                    (int) (DEVICE_HEIGHT * (mobile.getBottomMargin() / STANDARD_TABLET_HEIGHT_PX)) -
-                                    tmDiff;
-                        } else {
-                            gravity = Gravity.BOTTOM;
-                            bm = Math.round(DEVICE_HEIGHT * (mobile.getBottomMargin() / STANDARD_TABLET_HEIGHT_PX));
-                        }
-                    }
-                }
-            }
-        }
-
-        AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
-        if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
-                componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
-            if (viewWidth < 0) {
-                viewWidth = LayoutParams.MATCH_PARENT;
-            }
-            if (jsonValueKeyMap.get(childComponent.getTextAlignment()) == AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY) {
-                ((TextView) view).setGravity(Gravity.CENTER);
-            }
-            AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
-            if (componentKey == null) {
-                componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
-            }
-            switch (componentKey) {
-                case PAGE_TRAY_TITLE_KEY:
-                    if (isTablet(getContext())) {
-                        if (isLandscape(getContext())) {
-                            tm -= viewHeight / 6;
-                            viewHeight *= 1.5;
-                        }
-                    }
-                    break;
-
-                case PAGE_PLAY_IMAGE_KEY:
-                    if (AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY != jsonValueKeyMap.get(viewType)
-                            && AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY != jsonValueKeyMap.get(viewType)
-                            && AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY != jsonValueKeyMap.get(viewType)) {
-                        gravity = Gravity.CENTER;
-                        tm = 0;
-                        lm = 0;
-                    }
-                    break;
-                case PAGE_DOWNLOAD_SETTING_TITLE_KEY:
-                    gravity = Gravity.CENTER_HORIZONTAL;
-                    bm = viewHeight / 2;
-                    break;
-                case PAGE_CAROUSEL_TITLE_KEY:
-                    gravity = Gravity.CENTER_HORIZONTAL;
-                    if (isLandscape(getContext()) || !isTablet(getContext())) {
-                        tm -= viewHeight * 2;
-                        viewHeight *= 2;
-                    } else {
-                        tm -= viewHeight * 3;
-                        viewHeight *= 2;
-                    }
-                    lm = maxViewWidth / 2 - viewWidth / 2;
-                    break;
-
-                case PAGE_CAROUSEL_INFO_KEY:
-                    gravity = Gravity.CENTER_HORIZONTAL;
-                    if (isTablet(getContext())) {
-                        if (isLandscape(getContext())) {
-                            tm -= viewHeight * 3;
-                        } else {
-                            tm -= viewHeight * 5;
-                        }
-                    } else {
-                        tm -= viewHeight * 2;
-                    }
-                    viewHeight *= 2;
-                    lm = maxViewWidth / 2 - viewWidth / 2;
-                    break;
-
-                case PAGE_WATCH_VIDEO_KEY:
-                    gravity = Gravity.CENTER_HORIZONTAL;
-                    lm = maxViewWidth / 2;
-                    if (isTablet(getContext()) && !isLandscape(getContext())) {
-                        tm -= viewHeight / 2;
-                    }
-                    break;
-
-                case PAGE_VIDEO_SHARE_KEY:
-                    if (isTablet(getContext())) {
-                        lm -= viewWidth / 2;
-                        tm -= (int) (viewWidth * 0.25);
-                        viewHeight = (int) (viewWidth * 1.25);
-                    }
-                    break;
-
-                case PAGE_API_TITLE:
-                    viewHeight *= 1.1;
-                    break;
-
-                case PAGE_ADD_TO_WATCHLIST_KEY:
-                    if (isTablet(getContext())) {
-                        lm -= viewWidth * 1.2;
-                    }
-                    break;
-                case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
-                    if (isTablet(getContext())) {
-                        lm -= viewWidth * 2.0;
-                    }
-                    break;
-                default:
-            }
-
-            int fontsize = getFontsize(getContext(), childComponent);
-            if (fontsize > 0) {
-//                ((TextView) view).setTextSize((float) fontsize);
-            }
-
-            if (maxViewWidth != -1) {
-                ((TextView) view).setMaxWidth(maxViewWidth);
-            }
-        } else if (componentType == AppCMSUIKeyType.PAGE_TEXTFIELD_KEY) {
-            viewHeight *= 1.2;
-        }
-
-        if (useWidthOfScreen) {
-            viewWidth = DEVICE_WIDTH;
-        }
-
-        MarginLayoutParams marginLayoutParams = new MarginLayoutParams(viewWidth, viewHeight);
-        marginLayoutParams.setMargins(lm, tm, rm, bm);
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(marginLayoutParams);
-        layoutParams.width = viewWidth;
-        layoutParams.height = viewHeight;
-        if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
-                componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY ||
-                componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
-            layoutParams.gravity = gravity;
-        }
-
-        if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {
-            if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
-                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-                layoutParams.setMargins(0, tm, 0, bm);
-            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY) {
-                tm *= +1.6;
-                layoutParams.setMargins(lm, tm, rm, bm);
-            }
-        }
-
-        view.setLayoutParams(layoutParams);
+        setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
     }
 
     public static float convertDpToPixel(float dp, Context context) {
         if (context != null) {
             Resources resources = context.getResources();
             DisplayMetrics metrics = resources.getDisplayMetrics();
-            float px = dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-            return px;
+            return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         }
         return 0.0f;
     }
@@ -479,10 +87,8 @@ public abstract class BaseView extends FrameLayout {
     }
 
     public static boolean isLandscape(Context context) {
-        if (context != null) {
-            return context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
-        }
-        return false;
+        return context != null
+                && context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 
     public static float convertHorizontalValue(Context context, float value) {
@@ -839,24 +445,6 @@ public abstract class BaseView extends FrameLayout {
         DEVICE_HEIGHT = deviceHeight;
     }
 
-    protected void initializeComponentHasViewList(int size) {
-        componentHasViewList = new boolean[size];
-    }
-
-    protected ViewGroup createChildrenContainer() {
-        childrenContainer = new FrameLayout(getContext());
-        int viewWidth = (int) getViewWidth(getContext(), getLayout(), (float) LayoutParams.MATCH_PARENT);
-        int viewHeight = (int) getViewHeight(getContext(), getLayout(), (float) LayoutParams.MATCH_PARENT);
-        if (isLandscape(getContext())) {
-            viewHeight *= TABLET_LANDSCAPE_HEIGHT_SCALE;
-        }
-        FrameLayout.LayoutParams childContainerLayoutParams =
-                new FrameLayout.LayoutParams(viewWidth, viewHeight);
-        childrenContainer.setLayoutParams(childContainerLayoutParams);
-        addView(childrenContainer);
-        return childrenContainer;
-    }
-
     protected static float getViewWidth(TabletLandscape tabletLandscape) {
         if (tabletLandscape != null) {
             if (tabletLandscape.getWidth() != 0f) {
@@ -936,6 +524,435 @@ public abstract class BaseView extends FrameLayout {
             }
         }
         return -1.0f;
+    }
+
+    public abstract void init();
+
+    protected abstract Component getChildComponent(int index);
+
+    protected abstract Layout getLayout();
+
+    public ViewGroup getChildrenContainer() {
+        if (childrenContainer == null) {
+            return createChildrenContainer();
+        }
+        return childrenContainer;
+    }
+
+    public void setComponentHasView(int index, boolean hasView) {
+        if (componentHasViewList != null) {
+            componentHasViewList[index] = hasView;
+        }
+    }
+
+    public void setViewMarginsFromComponent(Component childComponent,
+                                            View view,
+                                            Layout parentLayout,
+                                            View parentView,
+                                            boolean firstMeasurement,
+                                            Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                            boolean useMarginsAsPercentages,
+                                            boolean useWidthOfScreen,
+                                            String viewType) {
+        Layout layout = childComponent.getLayout();
+
+        if (!shouldShowView(childComponent)) {
+            view.setVisibility(GONE);
+            return;
+        }
+
+        view.setPadding(0, 0, 0, 0);
+
+        int lm = 0, tm = 0, rm = 0, bm = 0;
+        int deviceHeight = getContext().getResources().getDisplayMetrics().heightPixels;
+        int viewWidth = (int) getViewWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
+        int viewHeight = (int) getViewHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
+        int parentViewWidth = (int) getViewWidth(getContext(),
+                parentLayout,
+                parentView.getMeasuredWidth());
+        int parentViewHeight = (int) getViewHeight(getContext(),
+                parentLayout,
+                parentView.getMeasuredHeight());
+        int maxViewWidth = (int) getViewMaximumWidth(getContext(), layout, -1);
+        int measuredHeight = parentViewHeight != 0 ? parentViewHeight : deviceHeight;
+        int gravity = Gravity.NO_GRAVITY;
+
+        if (isTablet(getContext())) {
+            if (isLandscape(getContext())) {
+                TabletLandscape tabletLandscape = layout.getTabletLandscape();
+                if (tabletLandscape != null) {
+                    if (getViewWidth(tabletLandscape) != -1) {
+                        if (tabletLandscape.getXAxis() != 0f) {
+                            float scaledX = DEVICE_WIDTH * (tabletLandscape.getXAxis() / STANDARD_TABLET_HEIGHT_PX);
+                            lm = Math.round(scaledX);
+                        }
+                    }
+
+                    if (getViewHeight(tabletLandscape) != -1) {
+                        if (tabletLandscape.getYAxis() != 0f) {
+                            float scaledY = DEVICE_HEIGHT * (tabletLandscape.getYAxis() / STANDARD_TABLET_WIDTH_PX);
+                            tm = Math.round(scaledY);
+                        }
+                    }
+
+                    if (getViewWidth(tabletLandscape) == -1f && tabletLandscape.getXAxis() != 0f) {
+                        float scaledX = DEVICE_WIDTH * (tabletLandscape.getXAxis() / STANDARD_TABLET_HEIGHT_PX);
+                        lm = Math.round(scaledX);
+                    } else if (tabletLandscape.getLeftMargin() != 0f) {
+                        lm = Math.round(DEVICE_WIDTH * (tabletLandscape.getLeftMargin() / STANDARD_TABLET_HEIGHT_PX));
+                    } else if (tabletLandscape.getRightMargin() != 0f) {
+                        int lmDiff = viewWidth;
+                        if (lmDiff < 0) {
+                            lmDiff = 0;
+                        }
+
+                        if (parentViewWidth > 0) {
+                            lm = parentViewWidth -
+                                    (int) (DEVICE_WIDTH * (tabletLandscape.getRightMargin() / STANDARD_TABLET_HEIGHT_PX)) -
+                                    lmDiff;
+                        } else {
+                            gravity = Gravity.END;
+                        }
+                    }
+                    if (useMarginsAsPercentages) {
+                        if (tabletLandscape.getTopMargin() != 0f) {
+                            tm = Math.round((tabletLandscape.getTopMargin() / 100.0f) * measuredHeight);
+                        } else if (tabletLandscape.getBottomMargin() != 0f) {
+                            int marginDiff = viewHeight;
+                            if (marginDiff < 0) {
+                                marginDiff = 0;
+                            }
+                            tm = Math.round(((100.0f - tabletLandscape.getBottomMargin()) / 100.0f) * measuredHeight) -
+                                    Math.round(convertDpToPixel(marginDiff, getContext()));
+                        }
+                    } else {
+                        if (tabletLandscape.getTopMargin() != 0f) {
+                            tm = (int) (DEVICE_HEIGHT * (tabletLandscape.getTopMargin() / STANDARD_TABLET_WIDTH_PX));
+                        } else if (tabletLandscape.getBottomMargin() != 0f && tabletLandscape.getBottomMargin() > 0) {
+                            int tmDiff = viewHeight;
+                            if (tmDiff < 0) {
+                                tmDiff = 0;
+                            }
+
+                            if (parentViewHeight > 0) {
+                                tm = parentViewHeight -
+                                        (int) (DEVICE_HEIGHT * (tabletLandscape.getBottomMargin() / STANDARD_TABLET_WIDTH_PX)) -
+                                        tmDiff;
+                            } else {
+                                gravity = Gravity.BOTTOM;
+                                bm = Math.round(DEVICE_HEIGHT * (tabletLandscape.getBottomMargin() / STANDARD_TABLET_WIDTH_PX));
+                            }
+                        }
+                    }
+                }
+            } else {
+                TabletPortrait tabletPortrait = layout.getTabletPortrait();
+                if (tabletPortrait != null) {
+                    if (getViewWidth(tabletPortrait) != -1) {
+                        if (tabletPortrait.getXAxis() != 0f) {
+                            float scaledX = DEVICE_WIDTH * (tabletPortrait.getXAxis() / STANDARD_TABLET_WIDTH_PX);
+                            lm = Math.round(scaledX);
+                        }
+                    }
+
+                    if (getViewHeight(tabletPortrait) != -1) {
+                        if (tabletPortrait.getYAxis() != 0f) {
+                            float scaledY = DEVICE_HEIGHT * (tabletPortrait.getYAxis() / STANDARD_TABLET_HEIGHT_PX);
+                            tm = Math.round(scaledY);
+                        }
+                    }
+
+                    if (getViewWidth(tabletPortrait) == -1 && tabletPortrait.getXAxis() != 0f) {
+                        float scaledX = DEVICE_WIDTH * (tabletPortrait.getXAxis() / STANDARD_TABLET_WIDTH_PX);
+                        lm = Math.round(scaledX);
+                    } else if (tabletPortrait.getLeftMargin() != 0f) {
+                        lm = Math.round(DEVICE_WIDTH * (tabletPortrait.getLeftMargin() / STANDARD_TABLET_WIDTH_PX));
+                    } else if (tabletPortrait.getRightMargin() != 0f) {
+                        int lmDiff = viewWidth;
+                        if (lmDiff < 0) {
+                            lmDiff = 0;
+                        }
+
+                        if (parentViewWidth > 0) {
+                            lm = parentViewWidth -
+                                    Math.round(DEVICE_WIDTH * (tabletPortrait.getRightMargin() / STANDARD_TABLET_WIDTH_PX)) -
+                                    lmDiff;
+                        } else {
+                            gravity = Gravity.END;
+                            rm = Math.round(DEVICE_WIDTH * (tabletPortrait.getRightMargin() / STANDARD_TABLET_WIDTH_PX));
+                        }
+                    }
+                    if (useMarginsAsPercentages) {
+                        if (tabletPortrait.getTopMargin() != 0f) {
+                            tm = Math.round((tabletPortrait.getTopMargin() / 100.0f) * measuredHeight);
+                        } else if (tabletPortrait.getBottomMargin() != 0f) {
+                            int marginDiff = viewHeight;
+                            if (marginDiff < 0) {
+                                marginDiff = 0;
+                            }
+                            tm = Math.round(((100.0f - tabletPortrait.getBottomMargin()) / 100.0f) * measuredHeight) -
+                                    Math.round(convertDpToPixel(marginDiff, getContext()));
+                        }
+                    } else {
+                        if (tabletPortrait.getTopMargin() != 0f) {
+                            tm = (int) (DEVICE_HEIGHT * (tabletPortrait.getTopMargin() / STANDARD_TABLET_HEIGHT_PX));
+                        } else if (tabletPortrait.getBottomMargin() != 0f && tabletPortrait.getBottomMargin() > 0) {
+                            int tmDiff = viewHeight;
+                            if (tmDiff < 0) {
+                                tmDiff = 0;
+                            }
+                            if (parentViewHeight > 0) {
+                                tm = parentViewHeight -
+                                        (int) (DEVICE_HEIGHT * (tabletPortrait.getBottomMargin() / STANDARD_TABLET_HEIGHT_PX)) -
+                                        tmDiff;
+                            } else {
+                                gravity = Gravity.BOTTOM;
+                                bm = Math.round(DEVICE_HEIGHT * (tabletPortrait.getBottomMargin() / STANDARD_TABLET_HEIGHT_PX));
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            Mobile mobile = layout.getMobile();
+            if (mobile != null) {
+                if (getViewWidth(mobile) != -1) {
+                    if (mobile.getXAxis() != 0f) {
+                        float scaledX = DEVICE_WIDTH * (mobile.getXAxis() / STANDARD_MOBILE_WIDTH_PX);
+                        lm = Math.round(scaledX);
+                    }
+                }
+
+                if (getViewHeight(mobile) != -1) {
+                    if (mobile.getYAxis() != 0f) {
+                        float scaledY = DEVICE_HEIGHT * (mobile.getYAxis() / STANDARD_MOBILE_HEIGHT_PX);
+                        tm = Math.round(scaledY);
+                    }
+                }
+
+                if (getViewWidth(mobile) == -1 && mobile.getXAxis() != 0f) {
+                    float scaledX = DEVICE_WIDTH * (mobile.getXAxis() / STANDARD_MOBILE_WIDTH_PX);
+                    lm = Math.round(scaledX);
+                } else if (mobile.getLeftMargin() != 0f) {
+                    float scaledLm = DEVICE_WIDTH * (mobile.getLeftMargin() / STANDARD_MOBILE_WIDTH_PX);
+                    lm = Math.round(scaledLm);
+                } else if (mobile.getRightMargin() != 0f) {
+                    int lmDiff = viewWidth;
+                    if (lmDiff < 0) {
+                        lmDiff = 0;
+                    }
+
+                    if (parentViewWidth > 0) {
+                        float scaledRm = DEVICE_WIDTH * (mobile.getRightMargin() / STANDARD_MOBILE_WIDTH_PX);
+                        lm = parentViewWidth - Math.round(scaledRm) - lmDiff;
+                    } else {
+                        gravity = Gravity.END;
+                        rm = Math.round(DEVICE_WIDTH * (mobile.getRightMargin() / STANDARD_MOBILE_WIDTH_PX));
+                    }
+                }
+                if (useMarginsAsPercentages) {
+                    if (mobile.getTopMargin() != 0f) {
+                        tm = Math.round((mobile.getTopMargin() / 100.0f) * measuredHeight);
+                    } else if (mobile.getBottomMargin() != 0f) {
+                        int marginDiff = viewHeight;
+                        if (marginDiff < 0) {
+                            marginDiff = 0;
+                        }
+                        tm = Math.round(((100.0f - mobile.getBottomMargin()) / 100.0f) * measuredHeight) -
+                                Math.round(convertDpToPixel(marginDiff, getContext()));
+                    }
+                } else {
+                    if (mobile.getTopMargin() != 0f) {
+                        tm = Math.round(DEVICE_HEIGHT * (mobile.getTopMargin() / STANDARD_TABLET_HEIGHT_PX));
+                    } else if (mobile.getBottomMargin() != 0f && mobile.getBottomMargin() > 0) {
+                        int tmDiff = viewHeight;
+                        if (tmDiff < 0) {
+                            tmDiff = 0;
+                        }
+                        if (parentViewHeight > 0) {
+                            tm = parentViewHeight -
+                                    (int) (DEVICE_HEIGHT * (mobile.getBottomMargin() / STANDARD_TABLET_HEIGHT_PX)) -
+                                    tmDiff;
+                        } else {
+                            gravity = Gravity.BOTTOM;
+                            bm = Math.round(DEVICE_HEIGHT * (mobile.getBottomMargin() / STANDARD_TABLET_HEIGHT_PX));
+                        }
+                    }
+                }
+            }
+        }
+
+        AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
+        if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
+                componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
+            if (viewWidth < 0) {
+                viewWidth = LayoutParams.MATCH_PARENT;
+            }
+
+            if (jsonValueKeyMap.get(childComponent.getTextAlignment()) == AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY) {
+                ((TextView) view).setGravity(Gravity.CENTER);
+            }
+
+            AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
+            if (componentKey == null) {
+                componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+            }
+
+            switch (componentKey) {
+                case PAGE_TRAY_TITLE_KEY:
+                    if (isTablet(getContext())) {
+                        if (isLandscape(getContext())) {
+                            tm -= viewHeight / 6;
+                            viewHeight *= 1.5;
+                        }
+                    }
+                    break;
+
+                case PAGE_PLAY_IMAGE_KEY:
+                    if (AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY != jsonValueKeyMap.get(viewType)
+                            && AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY != jsonValueKeyMap.get(viewType)
+                            && AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY != jsonValueKeyMap.get(viewType)) {
+                        gravity = Gravity.CENTER;
+                        tm = 0;
+                        lm = 0;
+                    }
+                    break;
+
+                case PAGE_DOWNLOAD_SETTING_TITLE_KEY:
+                    gravity = Gravity.CENTER_HORIZONTAL;
+                    bm = viewHeight / 2;
+                    break;
+
+                case PAGE_CAROUSEL_TITLE_KEY:
+                    gravity = Gravity.CENTER_HORIZONTAL;
+                    if (isLandscape(getContext()) || !isTablet(getContext())) {
+                        tm -= viewHeight * 2;
+                        viewHeight *= 2;
+                    } else {
+                        tm -= viewHeight * 3;
+                        viewHeight *= 2;
+                    }
+                    lm = maxViewWidth / 2 - viewWidth / 2;
+                    break;
+
+                case PAGE_CAROUSEL_INFO_KEY:
+                    gravity = Gravity.CENTER_HORIZONTAL;
+                    if (isTablet(getContext())) {
+                        if (isLandscape(getContext())) {
+                            tm -= viewHeight * 3;
+                        } else {
+                            tm -= viewHeight * 5;
+                        }
+                    } else {
+                        tm -= viewHeight * 2;
+                    }
+                    viewHeight *= 2;
+                    lm = maxViewWidth / 2 - viewWidth / 2;
+                    break;
+
+                case PAGE_WATCH_VIDEO_KEY:
+                    gravity = Gravity.CENTER_HORIZONTAL;
+                    lm = maxViewWidth / 2;
+                    if (isTablet(getContext()) && !isLandscape(getContext())) {
+                        tm -= viewHeight / 2;
+                    }
+                    break;
+
+                case PAGE_VIDEO_SHARE_KEY:
+                    if (isTablet(getContext())) {
+                        lm -= viewWidth / 2;
+                        tm -= (int) (viewWidth * 0.25);
+                        viewHeight = (int) (viewWidth * 1.25);
+                    }
+                    break;
+
+                case PAGE_API_TITLE:
+                    viewHeight *= 1.1;
+                    break;
+
+                case PAGE_ADD_TO_WATCHLIST_KEY:
+                    if (isTablet(getContext())) {
+                        lm -= viewWidth * 1.2;
+                    }
+                    break;
+
+                case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
+                    if (isTablet(getContext())) {
+                        lm -= viewWidth * 2.0;
+                    }
+                    break;
+
+                case PAGE_PLAN_TITLE_KEY:
+                    if (childComponent.getTextAlignment().equalsIgnoreCase("right")) {
+                        gravity = Gravity.END;
+                        view.setTextAlignment(TEXT_ALIGNMENT_TEXT_END);
+                    } else {
+                        gravity = Gravity.START;
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+
+//            int fontsize = getFontsize(getContext(), childComponent);
+//            if (fontsize > 0) {
+//                ((TextView) view).setTextSize((float) fontsize);
+//            }
+
+            if (maxViewWidth != -1) {
+                ((TextView) view).setMaxWidth(maxViewWidth);
+            }
+        } else if (componentType == AppCMSUIKeyType.PAGE_TEXTFIELD_KEY) {
+            viewHeight *= 1.2;
+        }
+
+        if (useWidthOfScreen) {
+            viewWidth = DEVICE_WIDTH;
+        }
+
+        MarginLayoutParams marginLayoutParams = new MarginLayoutParams(viewWidth, viewHeight);
+        marginLayoutParams.setMargins(lm, tm, rm, bm);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(marginLayoutParams);
+        layoutParams.width = viewWidth;
+        layoutParams.height = viewHeight;
+
+        if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
+                componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY ||
+                componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
+            layoutParams.gravity = gravity;
+        }
+
+        if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {
+            if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
+                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                layoutParams.setMargins(0, tm, 0, bm);
+            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY) {
+                tm *= +1.6;
+                layoutParams.setMargins(lm, tm, rm, bm);
+            }
+        }
+
+        view.setLayoutParams(layoutParams);
+    }
+
+    protected void initializeComponentHasViewList(int size) {
+        componentHasViewList = new boolean[size];
+    }
+
+    protected ViewGroup createChildrenContainer() {
+        childrenContainer = new FrameLayout(getContext());
+        int viewWidth = (int) getViewWidth(getContext(), getLayout(), (float) LayoutParams.MATCH_PARENT);
+        int viewHeight = (int) getViewHeight(getContext(), getLayout(), (float) LayoutParams.MATCH_PARENT);
+        if (isLandscape(getContext())) {
+            viewHeight *= TABLET_LANDSCAPE_HEIGHT_SCALE;
+        }
+        FrameLayout.LayoutParams childContainerLayoutParams =
+                new FrameLayout.LayoutParams(viewWidth, viewHeight);
+        childrenContainer.setLayoutParams(childContainerLayoutParams);
+        addView(childrenContainer);
+        return childrenContainer;
     }
 
     protected int getFontsize(Context context, Component component) {

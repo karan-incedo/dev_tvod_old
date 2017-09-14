@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class PaymentProviders {
+
     @SerializedName("stripe")
     @Expose
     Stripe stripe;

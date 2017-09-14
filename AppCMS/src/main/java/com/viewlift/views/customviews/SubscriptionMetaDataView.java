@@ -1,5 +1,6 @@
 package com.viewlift.views.customviews;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -11,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -25,7 +25,6 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +32,7 @@ import java.util.Map;
  * Created by viewlift on 7/21/17.
  */
 
+@SuppressLint("ViewConstructor")
 public class SubscriptionMetaDataView extends LinearLayout {
     private static final String TAG = "SubsMetaDataView";
 
@@ -43,10 +43,11 @@ public class SubscriptionMetaDataView extends LinearLayout {
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final AppCMSPresenter appCMSPresenter;
     private final Settings moduleSettings;
+    Context context;
     private int devicesSupportedComponentIndex;
     private int devicesSupportedFeatureIndex;
     private ContentDatum planData;
-    Context context;
+
 
     public SubscriptionMetaDataView(Context context,
                                     Component component,
@@ -90,7 +91,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
                 planData.getPlanDetails().get(0) != null &&
                 planData.getPlanDetails().get(0).getFeatureDetails() != null) {
             List<FeatureDetail> featureDetails =
-                   planData.getPlanDetails()
+                    planData.getPlanDetails()
                             .get(0)
                             .getFeatureDetails();
 
@@ -238,7 +239,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
 //            gridLayoutParams.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
 
             switch (componentKeyType) {
-                case PAGE_PLANMETADATATILE_KEY:
+                case PAGE_PLANMETADATATITLE_KEY:
                     if (componentView instanceof TextView) {
                         componentView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                         ((TextView) componentView).setText(featureDetail.getTextToDisplay());
@@ -277,6 +278,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
 //                    break;
 
                 default:
+                    break;
             }
 
             Log.d(TAG, "Created child component: " +
