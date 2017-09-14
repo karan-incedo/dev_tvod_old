@@ -45,6 +45,8 @@
 
     <string name="item_position">nav_item_position</string>
     <string name="no_data_available">No Data Available.</string>
+    <string name="no_data_in_watchlist_text">You haven\'t added anything to your watchlist.</string>
+    <string name="no_data_in_history_text">You haven\'t watched anything yet.</string>
     <string name="title_activity_app_cms_sub_nav_item">AppCmsSubNavItemActivity</string>
 
     <string name="blank_email_password_error_msg">The EmailId/Password you have entered is blank.</string>

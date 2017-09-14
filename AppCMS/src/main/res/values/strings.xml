@@ -364,5 +364,7 @@
     <string name="tv_dialog_header_key">dialog_header_key</string>
     <string name="tv_dialog_width_key">dialog_width_key</string>
     <string name="tv_dialog_height_key">dialog_height_key</string>
+    <string name="clear_history_message">CLEAR HISTORY?</string>
+    <string name="clear_watchlist_message">CLEAR WATCHLIST?</string>
 
 </resources>

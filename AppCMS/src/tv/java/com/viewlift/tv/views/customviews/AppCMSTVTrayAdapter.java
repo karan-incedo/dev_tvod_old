@@ -3,9 +3,12 @@ package com.viewlift.tv.views.customviews;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -32,7 +35,9 @@ public class AppCMSTVTrayAdapter
         implements OnInternalEvent {
 
     private static final String TAG = AppCMSTVTrayAdapter.class.getCanonicalName();
-    private final List<ContentDatum> adapterData;
+    private static final int ITEM_TYPE_DATA = 10001;
+    private static final int ITEM_TYPE_NO_DATA = 10002;
+    private List<ContentDatum> adapterData;
     private final AppCMSPresenter appCMSPresenter;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final String viewType;
@@ -72,6 +77,10 @@ public class AppCMSTVTrayAdapter
         }
         this.isClickable = true;
         this.receivers = new ArrayList<>();
+
+        if (this.adapterData == null) {
+            this.adapterData = new ArrayList<>();
+        }
     }
 
     private String getDefaultAction(Context context) {
@@ -80,70 +89,93 @@ public class AppCMSTVTrayAdapter
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        FrameLayout parentLayout = new FrameLayout(context);
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        parentLayout.setLayoutParams(params);
+        if (viewType == ITEM_TYPE_DATA) {
+            TVCollectionGridItemView collectionGridItemView;
+            FrameLayout parentLayout = new FrameLayout(context);
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            parentLayout.setLayoutParams(params);
 
-        TVViewCreator.ComponentViewResult componentViewResult =
-                tvViewCreator.getComponentViewResult();
-        TVCollectionGridItemView collectionGridItemView = new TVCollectionGridItemView(
-                context,
-                this.parentLayout,
-                false,
-                component,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                Utils.getFocusColor(context, appCMSPresenter));
-
-
-        List<OnInternalEvent> onInternalEvents = new ArrayList<>();
-
-        for (int i = 0; i < component.getComponents().size(); i++) {
-            Component childComponent = component.getComponents().get(i);
-            tvViewCreator.createComponentView(context,
-                    childComponent,
+            TVViewCreator.ComponentViewResult componentViewResult =
+                    tvViewCreator.getComponentViewResult();
+            collectionGridItemView = new TVCollectionGridItemView(
+                    context,
                     this.parentLayout,
-                    module,
-                    null,
-                    childComponent.getSettings(),
-                    jsonValueKeyMap,
-                    appCMSPresenter,
                     false,
-                    this.viewType);
+                    component,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    Utils.getFocusColor(context, appCMSPresenter));
 
-            if (componentViewResult.onInternalEvent != null) {
-                onInternalEvents.add(componentViewResult.onInternalEvent);
-            }
+            List<OnInternalEvent> onInternalEvents = new ArrayList<>();
 
-            View componentView = componentViewResult.componentView;
-            if (componentView != null) {
-                TVCollectionGridItemView.ItemContainer itemContainer =
-                        new TVCollectionGridItemView.ItemContainer.Builder()
-                                .childView(componentView)
-                                .component(childComponent)
-                                .build();
-                collectionGridItemView.addChild(itemContainer);
-                collectionGridItemView.setComponentHasView(i, true);
-                collectionGridItemView.setViewMarginsFromComponent(childComponent,
-                        componentView,
-                        collectionGridItemView.getLayout(),
-                        collectionGridItemView.getChildrenContainer(),
+            for (int i = 0; i < component.getComponents().size(); i++) {
+                Component childComponent = component.getComponents().get(i);
+                tvViewCreator.createComponentView(context,
+                        childComponent,
+                        this.parentLayout,
+                        module,
+                        null,
+                        childComponent.getSettings(),
                         jsonValueKeyMap,
-                        false,
+                        appCMSPresenter,
                         false,
                         this.viewType);
-            } else {
-                collectionGridItemView.setComponentHasView(i, false);
+
+                if (componentViewResult.onInternalEvent != null) {
+                    onInternalEvents.add(componentViewResult.onInternalEvent);
+                }
+
+                View componentView = componentViewResult.componentView;
+                if (componentView != null) {
+                    TVCollectionGridItemView.ItemContainer itemContainer =
+                            new TVCollectionGridItemView.ItemContainer.Builder()
+                                    .childView(componentView)
+                                    .component(childComponent)
+                                    .build();
+                    collectionGridItemView.addChild(itemContainer);
+                    collectionGridItemView.setComponentHasView(i, true);
+                    collectionGridItemView.setViewMarginsFromComponent(childComponent,
+                            componentView,
+                            collectionGridItemView.getLayout(),
+                            collectionGridItemView.getChildrenContainer(),
+                            jsonValueKeyMap,
+                            false,
+                            false,
+                            this.viewType);
+                } else {
+                    collectionGridItemView.setComponentHasView(i, false);
+                }
             }
+            return new ViewHolder(collectionGridItemView);
+        } else {
+
+            RelativeLayout relativeLayout = new RelativeLayout(context);
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams
+                    (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            relativeLayout.setLayoutParams(layoutParams);
+            TextView textView = new TextView(context);
+            if (this.viewType.equalsIgnoreCase(context.getString(R.string.app_cms_page_watchlist_module_key))) {
+                textView.setText(context.getString(R.string.no_data_in_watchlist_text));
+            } else {
+                textView.setText(context.getString(R.string.no_data_in_history_text));
+            }
+            textView.setGravity(Gravity.CENTER);
+            Component component1 = new Component();
+            component1.setFontFamily(context.getString(R.string.app_cms_page_font_family_key));
+            component1.setFontWeight(context.getString(R.string.app_cms_page_font_semibold_key));
+            textView.setTypeface(Utils.getTypeFace(context, jsonValueKeyMap, component1));
+            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+            textView.setLayoutParams(layoutParams);
+            relativeLayout.addView(textView);
+            return new ViewHolder(relativeLayout);
         }
-        return new ViewHolder(collectionGridItemView);
     }
 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if (0 <= position && position < adapterData.size()) {
+        if (0 <= position && adapterData != null && position < adapterData.size()) {
             bindView(holder.componentView, adapterData.get(position));
         }
     }
@@ -235,7 +267,12 @@ public class AppCMSTVTrayAdapter
 
     @Override
     public int getItemCount() {
-        return adapterData != null ? adapterData.size() : 0;
+        return adapterData != null && adapterData.size() > 0 ? adapterData.size() : 1;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return adapterData != null && adapterData.size() > 0 ? ITEM_TYPE_DATA : ITEM_TYPE_NO_DATA;
     }
 
     @Override
@@ -266,7 +303,8 @@ public class AppCMSTVTrayAdapter
 
         public ViewHolder(View itemView) {
             super(itemView);
-            this.componentView = (TVCollectionGridItemView) itemView;
+            if (itemView instanceof TVCollectionGridItemView)
+                this.componentView = (TVCollectionGridItemView) itemView;
         }
     }
 }

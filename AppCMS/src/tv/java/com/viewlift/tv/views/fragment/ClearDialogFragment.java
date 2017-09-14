@@ -86,8 +86,8 @@ public class ClearDialogFragment extends AbsDialogFragment {
         String description = arguments.getString(DIALOG_MESSAGE_KEY, null);
         String textColor = arguments.getString(DIALOG_MESSAGE_TEXT_COLOR_KEY, null);
 
-        if (title == null || description == null) {
-            throw new RuntimeException("Either title or description is null");
+        if (description == null) {
+            throw new RuntimeException("Description is null");
         }
 
         String desc_text = getString(R.string.text_with_color,

@@ -1,14 +1,6 @@
 package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.LinearGradient;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Shader;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -19,9 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
-import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
-import com.bumptech.glide.signature.StringSignature;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -191,25 +180,7 @@ public class TVCollectionGridItemView extends TVBaseView {
                                 parentLayout,
                                 defaultHeight);
                     }
-
-                    if (childViewHeight > childViewWidth &&
-                            childViewHeight > 0 &&
-                            childViewWidth > 0 &&
-                            !TextUtils.isEmpty(data.getGist().getPosterImageUrl())) {
-                        String imageUrl =
-                                context.getString(R.string.app_cms_image_with_resize_query,
-                                        data.getGist().getPosterImageUrl(),
-                                        childViewWidth,
-                                        childViewHeight);
-                        Log.d(TAG, "Loading image: " + imageUrl);
-                        Glide.with(context)
-                                .load(imageUrl)
-                                .override(childViewWidth, childViewHeight)
-                                .centerCrop()
-                                .into((ImageView) view);
-                    } else if (childViewHeight > 0 &&
-                            childViewWidth > 0 &&
-                            !TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
+                    if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
                         String imageUrl =
                                 context.getString(R.string.app_cms_image_with_resize_query,
                                         data.getGist().getVideoImageUrl(),
@@ -221,92 +192,15 @@ public class TVCollectionGridItemView extends TVBaseView {
                                 .override(childViewWidth, childViewHeight)
                                 .centerCrop()
                                 .into((ImageView) view);
-                    } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
-                        int deviceWidth =
-                                getContext().getResources().getDisplayMetrics().widthPixels;
-                        final String imageUrl =
-                                context.getString(R.string.app_cms_image_with_resize_query,
-                                        data.getGist().getVideoImageUrl(),
-                                        deviceWidth,
-                                        childViewHeight);
-                        Log.d(TAG, "Loading image: " + imageUrl);
-                        try {
-                            final int imageWidth = deviceWidth;
-                            final int imageHeight = childViewHeight;
-                            StringBuilder imageMetaData = new StringBuilder();
-                            imageMetaData.append(imageUrl);
-                            imageMetaData.append(System.currentTimeMillis() / 60000);
-                            Glide.with(context)
-                                    .load(imageUrl)
-                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
-                                    .signature(new StringSignature(imageMetaData.toString()))
-                                    .transform(new BitmapTransformation(context) {
-                                        @Override
-                                        public String getId() {
-                                            return imageUrl;
-                                        }
-
-                                        @Override
-                                        protected Bitmap transform(BitmapPool pool,
-                                                                   Bitmap toTransform,
-                                                                   int outWidth,
-                                                                   int outHeight) {
-                                            int width = toTransform.getWidth();
-                                            int height = toTransform.getHeight();
-
-                                            boolean scaleImageUp = false;
-
-                                            Bitmap sourceWithGradient;
-                                            if (width < imageWidth &&
-                                                    height < imageHeight) {
-                                                scaleImageUp = true;
-                                                float widthToHeightRatio =
-                                                        (float) width / (float) height;
-                                                width = (int) (imageHeight * widthToHeightRatio);
-                                                height = imageHeight;
-                                                sourceWithGradient =
-                                                        Bitmap.createScaledBitmap(toTransform,
-                                                                width,
-                                                                height,
-                                                                false);
-                                            } else {
-                                                sourceWithGradient =
-                                                        Bitmap.createBitmap(width,
-                                                                height,
-                                                                Bitmap.Config.ARGB_8888);
-                                            }
-
-                                            Canvas canvas = new Canvas(sourceWithGradient);
-                                            if (!scaleImageUp) {
-                                                canvas.drawBitmap(toTransform, 0, 0,
-                                                        null);
-                                            }
-
-                                            Paint paint = new Paint();
-                                            LinearGradient shader = new LinearGradient(0,
-                                                    0,
-                                                    0,
-                                                    height,
-                                                    0xFFFFFFFF,
-                                                    0xFF000000,
-                                                    Shader.TileMode.CLAMP);
-                                            paint.setShader(shader);
-                                            paint.setXfermode(new PorterDuffXfermode
-                                                    (PorterDuff.Mode.MULTIPLY));
-                                            canvas.drawRect(0, 0, width, height, paint);
-                                            toTransform.recycle();
-                                            paint = null;
-                                            return sourceWithGradient;
-                                        }
-                                    })
-                                    .into((ImageView) view);
-
-                            view.setBackground(Utils.getTrayBorder(context, borderColor, childComponent));
-                        } catch (IllegalArgumentException e) {
-                            Log.e(TAG, "Failed to load image with Glide: " + e.toString());
-                        }
                     }
                     bringToFront = false;
+                    view.setFocusable(true);
+                    view.setOnClickListener(v -> onClickHandler.click(
+                            TVCollectionGridItemView.this,
+                            childComponent,
+                            data));
+                    view.setBackground(Utils.getTrayBorder(context,borderColor,component));
+                    view.setPadding(1, 3, 1, 3);
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
@@ -315,6 +209,7 @@ public class TVCollectionGridItemView extends TVBaseView {
                             TVCollectionGridItemView.this,
                             childComponent,
                             data));
+                    view.setFocusable(false);
                 } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DELETE_ITEM_BUTTON) {
                     view.setOnClickListener(v -> onClickHandler.delete(childComponent, data));
                 }

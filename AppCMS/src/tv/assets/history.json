@@ -40,7 +40,7 @@
               "height": 60
             }
           },
-          "borderColor": "ffffff",
+          "borderColor": "66ffffff",
           "fontFamily": "OpenSans",
           "borderWidth": 4,
           "action": "clearHistory",

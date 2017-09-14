@@ -13,6 +13,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.ListRow;
@@ -64,7 +65,6 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.ui.page.Settings;
-import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
@@ -82,8 +82,6 @@ import com.viewlift.views.customviews.ViewCreatorTitleLayoutListener;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import rx.functions.Action1;
 
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_API_DESCRIPTION;
 import static com.viewlift.tv.views.activity.AppCmsHomeActivity.DIALOG_FRAGMENT_TAG;
@@ -339,7 +337,7 @@ public class TVViewCreator {
                         fromJson(Utils.loadJsonFromAssets(context, "contact_us.json"), ModuleList.class);
             }
 
-            if(module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_setting_module))){
+            if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_setting_module))) {
                 module = new GsonBuilder().create().
                         fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
             }
@@ -820,89 +818,42 @@ public class TVViewCreator {
 
 
                     case PAGE_REMOVEALL_KEY:
-                        componentViewResult.componentView.setOnClickListener(v -> {
-                            OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
-                            switch (jsonValueKeyMap.get(viewType)) {
-                                case PAGE_HISTORY_MODULE_KEY:
-                                    /*Bundle bundle = new Bundle();
-                                    bundle.putInt(ClearDialogFragment.DIALOG_WIDTH_KEY,
-                                            context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width));
-                                    bundle.putInt(ClearDialogFragment.DIALOG_HEIGHT_KEY,
-                                            context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height));
-                                    bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_TEXT_COLOR_KEY,
-                                            Utils.getTextColor(context, appCMSPresenter));
-                                    bundle.putString(ClearDialogFragment.DIALOG_TITLE_KEY, "Title");
-                                    bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_KEY,
-                                            "CLEAR HISTORY?");
-                                    Intent args = new Intent(AppCMSPresenter.PRESENTER_DIALOG_ACTION);
-                                    args.putExtra(context.getString(R.string.dialog_item_key), bundle);
-                                    android.app.FragmentTransaction ft = appCMSPresenter.getCurrentActivity().getFragmentManager().beginTransaction();
-                                    ClearDialogFragment newFragment = ClearDialogFragment.newInstance(bundle);
-                                    newFragment.setOnPositiveButtonClicked(s -> appCMSPresenter.clearWatchlist(
-                                            appCMSAddToWatchlistResult ->
-                                                    appCMSPresenter.clearWatchlist(
-                                                            addToWatchlistResult ->
-                                                                    onInternalEvent.sendEvent(null))));
-                                    newFragment.show(ft, DIALOG_FRAGMENT_TAG);*/
-                                    break;
+                        if (moduleAPI.getContentData() != null
+                                && moduleAPI.getContentData().size() > 0) {
+                            componentViewResult.componentView.setOnClickListener(v -> {
+                                OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
+                                switch (jsonValueKeyMap.get(viewType)) {
+                                    case PAGE_HISTORY_MODULE_KEY:
+                                        ClearDialogFragment newFragment = getClearDialogFragment(
+                                                context,
+                                                appCMSPresenter,
+                                                context.getString(R.string.clear_history_message)
+                                        );
+                                        newFragment.setOnPositiveButtonClicked(s ->
+                                                appCMSPresenter.clearHistory(appCMSDeleteHistoryResult ->
+                                                        onInternalEvent.sendEvent(null)
+                                                )
+                                        );
+                                        break;
 
-                                case PAGE_DOWNLOAD_MODULE_KEY:
-                                    appCMSPresenter.clearDownload(appCMSAddToWatchlistResult -> {
-//                                            v.setVisibility(View.GONE);
-                                    });
-                                    break;
+                                    case PAGE_WATCHLIST_MODULE_KEY:
+                                        ClearDialogFragment newFragment1 = getClearDialogFragment(
+                                                context,
+                                                appCMSPresenter,
+                                                context.getString(R.string.clear_watchlist_message));
+                                        newFragment1.setOnPositiveButtonClicked(s ->
+                                                appCMSPresenter.clearWatchlist(
+                                                        appCMSAddToWatchlistResult ->
+                                                                onInternalEvent.sendEvent(null)));
+                                        break;
 
-                                case PAGE_WATCHLIST_MODULE_KEY:
-                                    /*appCMSPresenter.clearWatchlist(addToWatchlistResult -> {
-//                                            v.setVisibility(View.GONE);
-                                        onInternalEvent.sendEvent(null);
-                                    });*/
-
-                                    Bundle bundle = new Bundle();
-                                    bundle.putInt(ClearDialogFragment.DIALOG_WIDTH_KEY,
-                                            context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width));
-                                    bundle.putInt(ClearDialogFragment.DIALOG_HEIGHT_KEY,
-                                            context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height));
-                                    bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_TEXT_COLOR_KEY,
-                                            Utils.getTextColor(context, appCMSPresenter));
-                                    bundle.putString(ClearDialogFragment.DIALOG_TITLE_KEY, "Title");
-                                    bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_KEY,
-                                            "CLEAR HISTORY?");
-                                    Intent args = new Intent(AppCMSPresenter.PRESENTER_DIALOG_ACTION);
-                                    args.putExtra(context.getString(R.string.dialog_item_key), bundle);
-                                    android.app.FragmentTransaction ft = appCMSPresenter.getCurrentActivity().getFragmentManager().beginTransaction();
-                                    ClearDialogFragment newFragment = ClearDialogFragment.newInstance(bundle);
-                                    /*newFragment.setOnPositiveButtonClicked(s -> appCMSPresenter.clearWatchlist(
-                                            appCMSAddToWatchlistResult ->
-                                                    appCMSPresenter.clearWatchlist(
-                                                            addToWatchlistResult ->
-                                                                    onInternalEvent.sendEvent(null))));*/
-
-                                    newFragment.setOnPositiveButtonClicked(new Action1<String>() {
-                                        @Override
-                                        public void call(String s) {
-                                            appCMSPresenter.clearWatchlist(new Action1<AppCMSAddToWatchlistResult>() {
-                                                @Override
-                                                public void call(AppCMSAddToWatchlistResult appCMSAddToWatchlistResult) {
-                                                    onInternalEvent.sendEvent(null);
-                                                }
-                                            });
-                                        }
-                                    });
-                                    newFragment.show(ft, DIALOG_FRAGMENT_TAG);
-
-                                    /*appCMSPresenter.showClearHistoryDialog("", "", new Action1<Integer>() {
-                                        @Override
-                                        public void call(Integer integer) {
-
-                                        }
-                                    });*/
-                                    break;
-
-                                default:
-                                    break;
-                            }
-                        });
+                                    default:
+                                        break;
+                                }
+                            });
+                        } else {
+                            componentViewResult.componentView.setFocusable(false);
+                        }
                         break;
 
                     default:
@@ -1534,6 +1485,28 @@ public class TVViewCreator {
                 break;
             default:
         }
+    }
+
+    @NonNull
+    private ClearDialogFragment getClearDialogFragment(Context context, AppCMSPresenter appCMSPresenter, String dialogMessage) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(ClearDialogFragment.DIALOG_WIDTH_KEY,
+                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width));
+        bundle.putInt(ClearDialogFragment.DIALOG_HEIGHT_KEY,
+                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height));
+        bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_TEXT_COLOR_KEY,
+                Utils.getTextColor(context, appCMSPresenter));
+        bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_KEY,
+                dialogMessage);
+        Intent args = new Intent(AppCMSPresenter.PRESENTER_DIALOG_ACTION);
+        args.putExtra(context.getString(R.string.dialog_item_key), bundle);
+        android.app.FragmentTransaction ft = appCMSPresenter
+                .getCurrentActivity().getFragmentManager()
+                .beginTransaction();
+        ClearDialogFragment newFragment =
+                ClearDialogFragment.newInstance(bundle);
+        newFragment.show(ft, DIALOG_FRAGMENT_TAG);
+        return newFragment;
     }
 
     public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
