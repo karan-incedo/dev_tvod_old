@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.signature.StringSignature;
@@ -230,18 +231,16 @@ public class CollectionGridItemView extends BaseView {
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
                         final String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getVideoImageUrl(),
-                                deviceWidth,
+                                childViewWidth,
                                 childViewHeight);
                         Log.d(TAG, "Loading image: " + imageUrl);
                         try {
                             final int imageWidth = deviceWidth;
                             final int imageHeight = childViewHeight;
-                            StringBuilder imageMetaData = new StringBuilder();
-                            imageMetaData.append(imageUrl);
-                            imageMetaData.append(System.currentTimeMillis() / 60000);
+
                             Glide.with(context)
                                     .load(imageUrl)
-                                    .signature(new StringSignature(imageMetaData.toString()))
+                                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                                     .transform(new BitmapTransformation(context) {
                                         @Override
                                         public String getId() {
@@ -363,20 +362,37 @@ public class CollectionGridItemView extends BaseView {
                         }
 
                         if (data.getPlanDetails().get(planIndex).getRecurringPaymentAmount() != 0) {
+
+                            double recurringPaymentAmount = data.getPlanDetails().get(planIndex).getRecurringPaymentAmount();
+                            String formattedRecurringPaymentAmount = context.getString(R.string.cost_with_fraction,
+                                    recurringPaymentAmount);
+                            if (recurringPaymentAmount - (int) recurringPaymentAmount == 0) {
+                                formattedRecurringPaymentAmount = context.getString(R.string.cost_without_fraction,
+                                        recurringPaymentAmount);
+                            }
+
+                            double strikeThroughPaymentAmount = data.getPlanDetails()
+                                    .get(planIndex).getStrikeThroughPrice();
+                            String formattedStrikeThroughPaymentAmount = context.getString(R.string.cost_with_fraction,
+                                    strikeThroughPaymentAmount);
+                            if (strikeThroughPaymentAmount - (int) strikeThroughPaymentAmount == 0) {
+                                formattedStrikeThroughPaymentAmount = context.getString(R.string.cost_without_fraction,
+                                        strikeThroughPaymentAmount);
+                            }
+
                             StringBuilder stringBuilder = new StringBuilder();
                             if (currency != null) {
                                 stringBuilder.append(currency.getSymbol());
                             }
-                            stringBuilder.append(String.valueOf(data.getPlanDetails()
-                                    .get(planIndex).getRecurringPaymentAmount()));
+                            stringBuilder.append(formattedStrikeThroughPaymentAmount);
 
-                            if (data.getPlanDetails().get(0).getDiscountedPrice() != 0) {
+                            if (data.getPlanDetails().get(0).getRecurringPaymentAmount() != 0) {
                                 int strikeThroughLength = stringBuilder.length();
                                 stringBuilder.append("     ");
                                 if (currency != null) {
                                     stringBuilder.append(currency.getSymbol());
                                 }
-                                stringBuilder.append(String.valueOf(data.getPlanDetails().get(0).getDiscountedPrice()));
+                                stringBuilder.append(String.valueOf(formattedRecurringPaymentAmount));
 
                                 SpannableString spannableString =
                                         new SpannableString(stringBuilder.toString());
@@ -387,13 +403,21 @@ public class CollectionGridItemView extends BaseView {
                                 ((TextView) view).setText(stringBuilder.toString());
                             }
                         } else {
+                            double strikeThroughPaymentAmount = data.getPlanDetails()
+                                    .get(planIndex).getStrikeThroughPrice();
+                            String formattedStrikeThroughPaymentAmount = context.getString(R.string.cost_with_fraction,
+                                    strikeThroughPaymentAmount);
+                            if (strikeThroughPaymentAmount - (int) strikeThroughPaymentAmount == 0) {
+                                formattedStrikeThroughPaymentAmount = context.getString(R.string.cost_without_fraction,
+                                        strikeThroughPaymentAmount);
+                            }
+
                             StringBuilder stringBuilder = new StringBuilder();
                             if (currency != null) {
                                 stringBuilder.append(currency.getSymbol());
                             }
-                            stringBuilder.append(data.getPlanDetails().get(0)
-                                    .getRecurringPaymentAmount());
-                            ((TextView) view).setText(String.valueOf(stringBuilder.toString()));
+                            stringBuilder.append(formattedStrikeThroughPaymentAmount);
+                            ((TextView) view).setText(stringBuilder.toString());
                             ((TextView) view).setPaintFlags(((TextView) view).getPaintFlags());
                         }
 
@@ -405,6 +429,10 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setTextColor(Color.parseColor(
                                 childComponent.getTextColor()));
                     }
+                }
+            } else if (componentType == AppCMSUIKeyType.PAGE_PLAN_META_DATA_VIEW_KEY) {
+                if (view instanceof SubscriptionMetaDataView) {
+                    ((SubscriptionMetaDataView) view).setData(data);
                 }
             }
 

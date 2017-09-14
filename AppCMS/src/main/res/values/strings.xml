@@ -162,7 +162,7 @@
 
     <!-- AppCMS Login values -->
     <string name="app_cms_log_in_pager_title">LOG IN</string>
-    <string name="app_cms_start_free_trial_title">START YOUR FREE TRIAL</string>
+    <string name="app_cms_subscribe_now">SUBSCRIBE NOW</string>
     <string name="app_cms_sign_up_pager_title">SIGN UP</string>
     <string name="app_cms_video_page_page_name">Video Page</string>
     <string name="app_cms_watchlist_navigation_title">Watchlist</string>
@@ -360,4 +360,7 @@
     <string name="video_player_content_rating_key">video_player_content_rating</string>
     <string name="content_rating_description">The following may contain:&#160;</string>
     <string name="server_client_id">525148171038-1dgfbunn8l27oilqldve5qg7cref8ua1.apps.googleusercontent.com</string>
+
+    <string name="cost_without_fraction">%.0f</string>
+    <string name="cost_with_fraction">%.2f</string>
 </resources>

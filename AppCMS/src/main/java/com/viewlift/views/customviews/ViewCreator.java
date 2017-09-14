@@ -87,7 +87,7 @@ public class ViewCreator {
                 && !TextUtils.isEmpty(primaryCategory);
         StringBuffer infoText = new StringBuffer();
         if (runtime > 0) {
-            infoText.append(runtime + context.getString(R.string.mins_abbreviation));
+            infoText.append(runtime +" "+ context.getString(R.string.mins_abbreviation));
         }
         if (appendFirstSep) {
             infoText.append(context.getString(R.string.text_separator));
@@ -1172,10 +1172,10 @@ public class ViewCreator {
                                     final AppCMSPresenter appCMSPresenter,
                                     boolean gridElement,
                                     final String viewType) {
-         componentViewResult.componentView = null;
+        componentViewResult.componentView = null;
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
-          componentViewResult.shouldHideModule = false;
+        componentViewResult.shouldHideModule = false;
         componentViewResult.addToPageView = false;
         componentViewResult.shouldHideComponent = false;
         componentViewResult.onInternalEvent = null;
@@ -2766,18 +2766,6 @@ public class ViewCreator {
             this.filmId = filmId;
 
             addClickListener = v -> {
-                if (!appCMSPresenter.isNetworkConnected()) {
-                    if (!appCMSPresenter.isUserLoggedIn()) {
-                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
-                        return;
-                    }
-                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
-                            appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
-                            true,
-                            () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
-                                    null, null, false));
-                    return;
-                }
                 if (appCMSPresenter.isUserLoggedIn()) {
                     appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
                             addToWatchlistResult -> {

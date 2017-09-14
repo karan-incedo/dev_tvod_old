@@ -58,6 +58,7 @@ import android.widget.Toast;
 import com.android.vending.billing.IInAppBillingService;
 import com.apptentive.android.sdk.Apptentive;
 import com.facebook.AccessToken;
+import com.facebook.FacebookActivity;
 import com.facebook.FacebookRequestError;
 import com.facebook.GraphRequest;
 import com.facebook.HttpMethod;
@@ -587,13 +588,14 @@ public class AppCMSPresenter {
     }
 
     /*does not let user enter space in edittext*/
-    public static void noSpaceInEditTextFilter(EditText passwordEditText) {
+    public static void noSpaceInEditTextFilter(EditText passwordEditText, Context con) {
         /* To restrict Space Bar in Keyboard */
         InputFilter filter = new InputFilter() {
             public CharSequence filter(CharSequence source, int start, int end,
                                        Spanned dest, int dstart, int dend) {
                 for (int i = start; i < end; i++) {
                     if (Character.isWhitespace(source.charAt(i))) {
+                       Toast.makeText(con, con.getResources().getString(R.string.password_space_error),Toast.LENGTH_SHORT).show();
                         return "";
                     }
                 }
@@ -1501,6 +1503,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             FrameLayout mainFragmentView =
                     currentActivity.findViewById(R.id.app_cms_fragment);
+
             if (mainFragmentView != null) {
                 return (mainFragmentView.getVisibility() == View.VISIBLE);
             }
@@ -2040,6 +2043,18 @@ public class AppCMSPresenter {
 
     public void editWatchlist(final String filmId,
                               final Action1<AppCMSAddToWatchlistResult> resultAction1, boolean add) {
+        if (!isNetworkConnected()) {
+            if (!isUserLoggedIn()) {
+                showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
+                return;
+            }
+            showDialog(AppCMSPresenter.DialogType.NETWORK,
+                    getNetworkConnectivityDownloadErrorMsg(),
+                    true,
+                    () -> navigateToDownloadPage(getDownloadPageId(),
+                            null, null, false));
+            return;
+        }
 
         final String url = currentActivity.getString(R.string.app_cms_edit_watchlist_api_url,
                 appCMSMain.getApiBaseUrl(),
@@ -3722,11 +3737,14 @@ public class AppCMSPresenter {
                     userIdentity.setEmail(email);
                     userIdentity.setId(getLoggedInUser());
                     userIdentity.setPassword(password);
-
+                    currentActivity
+                            .sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                     appCMSUserIdentityCall.callPost(url,
                             getAuthToken(),
                             userIdentity,
                             userIdentityResult -> {
+                                sendCloseOthersAction(null, true);
+                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                 try {
                                     if (userIdentityResult != null) {
                                         setLoggedInUserName(userIdentityResult.getName());
@@ -3740,6 +3758,7 @@ public class AppCMSPresenter {
                                     Log.e(TAG, "Error get user identity data: " + e.getMessage());
                                 }
                             }, errorBody -> {
+                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                 try {
                                     UserIdentity userIdentityError = gson.fromJson(errorBody.string(),
                                             UserIdentity.class);
@@ -3852,6 +3871,7 @@ public class AppCMSPresenter {
                     pageIdToPageAPIUrlMap.get(pageId),
                     appCMSSite.getGist().getSiteInternalName(),
                     true,
+
                     getPageId(appCMSPageUI),
                     new AppCMSPageAPIAction(appbarPresent,
                             fullscreenEnabled,
@@ -4990,8 +5010,15 @@ public class AppCMSPresenter {
 
     private void sendFireBaseLogOutEvent() {
         Bundle bundle = new Bundle();
+
+
         bundle.putString(FIREBASE_SCREEN_SIGN_OUT, FIREBASE_SCREEN_LOG_OUT);
         if (getmFireBaseAnalytics() != null) {
+
+            mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_ID, null);
+            mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_PLAN_NAME, null);
+            mFireBaseAnalytics.setUserId(null);
+
             mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
             mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
             getmFireBaseAnalytics().logEvent(FIREBASE_SCREEN_SIGN_OUT, bundle);
@@ -5757,6 +5784,8 @@ public class AppCMSPresenter {
             try {
                 BeaconRequest beaconRequest = getBeaconRequest(vid, screenName, parentScreenName, currentPosition, event,
                         usingChromecast, mediaType, bitrate, height, width, streamid, ttfirstframe, apod, isDownloaded);
+
+
                 if (!isNetworkConnected()) {
                     currentActivity.runOnUiThread(() -> {
                         try {
@@ -5770,6 +5799,7 @@ public class AppCMSPresenter {
                     return;
                 }
                 String url = getBeaconUrl();
+
                 AppCMSBeaconRequest request = new AppCMSBeaconRequest();
                 ArrayList<BeaconRequest> beaconRequests = new ArrayList<>();
 
@@ -6389,8 +6419,6 @@ public class AppCMSPresenter {
                                                                                         setActiveSubscriptionProcessor(currentActivity.getString(R.string.subscription_ccavenue_payment_processor_friendly));
                                                                                     }
                                                                                 }
-
-                                                                                setIsUserSubscribed(true);
                                                                             }
                                                                         } catch (Exception e) {
                                                                             Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
@@ -6428,7 +6456,7 @@ public class AppCMSPresenter {
                                                         subscriptionPlan.setSku(contentDatum.getIdentifier());
                                                         subscriptionPlan.setPlanId(contentDatum.getId());
                                                         if (!contentDatum.getPlanDetails().isEmpty()) {
-                                                            subscriptionPlan.setSubscriptionPrice(contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount());
+                                                            subscriptionPlan.setSubscriptionPrice(contentDatum.getPlanDetails().get(0).getStrikeThroughPrice());
                                                         }
                                                         subscriptionPlan.setPlanName(contentDatum.getName());
                                                         createSubscriptionPlan(subscriptionPlan);
@@ -6515,8 +6543,6 @@ public class AppCMSPresenter {
                                                                         setActiveSubscriptionProcessor(currentActivity.getString(R.string.subscription_ccavenue_payment_processor_friendly));
                                                                     }
                                                                 }
-
-                                                                setIsUserSubscribed(true);
                                                             }
 
                                                             if (onRefreshReadyAction != null) {

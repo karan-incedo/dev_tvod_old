@@ -247,7 +247,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                                 updateNoResultsDisplay(appCMSPresenter, data);
                             }
                         }
-                    }, appCMSSearchCall).execute(url);
+                    }, appCMSSearchCall).execute(url, appCMSPresenter.getApiKey());
                 }
             }
         }
