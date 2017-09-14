@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
 def final packageName = 'com.viewlift.hoichoi'
-def final customApplicationId = 'HoiChoi'
+def final customApplicationId = 'Hoichoi'
 def final hostName = "www.hoichoi.tv"
 def final appVersionName = "2.0.21"
 
