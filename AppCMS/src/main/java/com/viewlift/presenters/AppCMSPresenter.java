@@ -465,6 +465,7 @@ public class AppCMSPresenter {
     private String planToPurchaseName;
     private String apikey;
     private double planToPurchasePrice;
+    private String renewableFrequency = "";
     private String planReceipt;
     private GoogleApiClient googleApiClient;
     private long downloaded = 0L;
@@ -1781,7 +1782,8 @@ public class AppCMSPresenter {
                                               double planPrice,
                                               String recurringPaymentCurrencyCode,
                                               String countryCode,
-                                              boolean isRenewable) {
+                                              boolean isRenewable,
+                                              String getRenewableFrequency) {
         if (currentActivity != null) {
             launchType = LaunchType.SUBSCRIBE;
             skuToPurchase = sku;
@@ -1792,6 +1794,7 @@ public class AppCMSPresenter {
             currencyCode = recurringPaymentCurrencyCode;
             this.countryCode = countryCode;
             this.isRenewable = isRenewable;
+            this.renewableFrequency = getRenewableFrequency ;
             Bundle bundle = new Bundle();
             bundle.putString(FIREBASE_PLAN_ITEM_ID, planToPurchase);
             bundle.putString(FIREBASE_PLAN_ITEM_NAME, planToPurchaseName);
@@ -1839,6 +1842,7 @@ public class AppCMSPresenter {
             intent.putExtra("renewable", isRenewable);
             intent.putExtra("mobile_number", "");
             intent.putExtra("api_base_url", appCMSMain.getApiBaseUrl());
+            intent.putExtra("si_frequency",renewableFrequency) ;
             currentActivity.startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();

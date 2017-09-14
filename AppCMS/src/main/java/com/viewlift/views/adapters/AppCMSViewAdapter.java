@@ -302,10 +302,11 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         data.getId(),
                                         data.getPlanDetails().get(0).getCountryCode(),
                                         data.getName(),
-                                        data.getPlanDetails().get(0).getStrikeThroughPrice(),
+                                        data.getPlanDetails().get(0).getRecurringPaymentAmount(),
                                         data.getPlanDetails().get(0).getRecurringPaymentCurrencyCode(),
                                         data.getPlanDetails().get(0).getCountryCode(),
-                                        data.getRenewable()
+                                        data.getRenewable(),
+                                        data.getRenewalCycleType()
                                 );
                             } else {
                                 collectionGridItemView.performClick();
