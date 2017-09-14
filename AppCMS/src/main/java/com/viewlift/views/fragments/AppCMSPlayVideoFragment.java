@@ -554,6 +554,9 @@ public class AppCMSPlayVideoFragment extends Fragment
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         getPercentageFromResource();
+        if (videoPlayerView != null) {
+            videoPlayerView.setFillBasedOnOrientation();
+        }
     }
 
     private void pauseVideo() {
