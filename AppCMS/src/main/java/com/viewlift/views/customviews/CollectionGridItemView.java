@@ -26,7 +26,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
-import com.bumptech.glide.signature.StringSignature;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -36,7 +35,6 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -170,7 +168,8 @@ public class CollectionGridItemView extends BaseView {
                           final ContentDatum data,
                           Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                           final OnClickHandler onClickHandler,
-                          final AppCMSUIKeyType viewTypeKey) {
+                          final String componentViewType,
+                          int themeColor) {
         final Component childComponent = matchComponentToView(view);
         if (childComponent != null) {
             boolean bringToFront = true;
@@ -311,14 +310,9 @@ public class CollectionGridItemView extends BaseView {
                             R.color.disabledButtonColor));
                     viewsToUpdateOnClickEvent.add(view);
                 }
-                view.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        onClickHandler.click(CollectionGridItemView.this,
-                                childComponent,
-                                data);
-                    }
-                });
+
+                view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
+                        childComponent, data));
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
                 if (TextUtils.isEmpty(((TextView) view).getText())) {
                     if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
@@ -338,11 +332,15 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setText(data.getGist().getDescription());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY) {
                         ((TextView) view).setText(data.getName());
-                        ((TextView) view).setTextColor(Color.parseColor(
-                                childComponent.getTextColor()));
+                        if ("AC SelectPlan 02".equals(componentViewType)) {
+                            ((TextView) view).setTextColor(themeColor);
+                        } else {
+                            ((TextView) view).setTextColor(Color.parseColor(
+                                    childComponent.getTextColor()));
+                        }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY) {
-
                         int planIndex = 0;
+
                         for (int i = 0; i < data.getPlanDetails().size(); i++) {
                             if (data.getPlanDetails().get(i).getIsDefault()) {
                                 planIndex = i;
@@ -434,6 +432,12 @@ public class CollectionGridItemView extends BaseView {
                 if (view instanceof SubscriptionMetaDataView) {
                     ((SubscriptionMetaDataView) view).setData(data);
                 }
+
+                if (view instanceof ViewPlansMetaDataView) {
+                    ((ViewPlansMetaDataView) view).setData(data);
+                }
+            } else if (componentType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
+                view.setBackgroundColor(getResources().getColor(R.color.colorAccent));
             }
 
             if (shouldShowView(childComponent) && bringToFront) {

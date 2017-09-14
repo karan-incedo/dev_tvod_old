@@ -87,7 +87,7 @@ public class ViewCreator {
                 && !TextUtils.isEmpty(primaryCategory);
         StringBuffer infoText = new StringBuffer();
         if (runtime > 0) {
-            infoText.append(runtime +" "+ context.getString(R.string.mins_abbreviation));
+            infoText.append(runtime + " " + context.getString(R.string.mins_abbreviation));
         }
         if (appendFirstSep) {
             infoText.append(context.getString(R.string.text_separator));
@@ -546,7 +546,7 @@ public class ViewCreator {
                                                     }
                                                     if (creditBlock != null && creditBlock.getCredits() != null) {
                                                         for (int j = 0; j < creditBlock.getCredits().size(); j++) {
-                                                            if(creditBlock.getCredits().get(j).getTitle()!=null && !TextUtils.isEmpty(creditBlock.getCredits().get(j).getTitle())){
+                                                            if (creditBlock.getCredits().get(j).getTitle() != null && !TextUtils.isEmpty(creditBlock.getCredits().get(j).getTitle())) {
                                                                 starringListSb.append(creditBlock.getCredits().get(j).getTitle());
                                                                 if (j < creditBlock.getCredits().size() - 1) {
                                                                     starringListSb.append(", ");
@@ -559,8 +559,7 @@ public class ViewCreator {
                                             }
                                         }
 
-                                        if(TextUtils.isEmpty(starringListSb))
-                                        {
+                                        if (TextUtils.isEmpty(starringListSb)) {
                                             starringListSb.append("-");
 
                                         }
@@ -965,7 +964,7 @@ public class ViewCreator {
                         adjustOthers = AdjustOtherState.ADJUST_OTHERS;
                     }
 
-                     if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
+                    if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
                         componentViewResult.shouldHideComponent = true;
                         componentViewResult.componentView.setVisibility(View.GONE);
                         adjustOthers = AdjustOtherState.INITIATED;
@@ -1192,7 +1191,7 @@ public class ViewCreator {
             return;
         }
 
-           AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
+        AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
 
         if (componentType == null) {
             componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
@@ -1765,7 +1764,7 @@ public class ViewCreator {
 
                             @Override
                             public void receiveEvent(InternalEvent<?> event) {
-                                if (event != null && event.getEventData()!=null && event.getEventData() instanceof Integer) {
+                                if (event != null && event.getEventData() != null && event.getEventData() instanceof Integer) {
                                     int buttonStatus = (Integer) event.getEventData();
                                     if (buttonStatus == View.VISIBLE) {
                                         removeAllButton.setVisibility(View.VISIBLE);
@@ -2135,7 +2134,6 @@ public class ViewCreator {
                             break;
 
                         case PAGE_ACTIONLABEL_KEY:
-
                         case PAGE_SETTINGS_NAME_VALUE_KEY:
                             ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserName());
                             break;
@@ -2587,6 +2585,15 @@ public class ViewCreator {
                         jsonValueKeyMap,
                         appCMSPresenter,
                         settings);
+
+//                componentViewResult.componentView = new ViewPlansMetaDataView(context,
+//                        component,
+//                        component.getLayout(),
+//                        this,
+//                        moduleAPI,
+//                        jsonValueKeyMap,
+//                        appCMSPresenter,
+//                        settings);
                 break;
 
             case PAGE_SETTINGS_KEY:
