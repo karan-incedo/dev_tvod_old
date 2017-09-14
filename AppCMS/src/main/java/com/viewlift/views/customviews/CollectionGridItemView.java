@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.signature.StringSignature;
@@ -230,7 +231,7 @@ public class CollectionGridItemView extends BaseView {
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
                         final String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getVideoImageUrl(),
-                                deviceWidth,
+                                childViewWidth,
                                 childViewHeight);
                         Log.d(TAG, "Loading image: " + imageUrl);
                         try {
@@ -238,7 +239,13 @@ public class CollectionGridItemView extends BaseView {
                             final int imageHeight = childViewHeight;
                             StringBuilder imageMetaData = new StringBuilder();
                             imageMetaData.append(imageUrl);
-                            imageMetaData.append(System.currentTimeMillis() / 60000);
+                            imageMetaData.append(System.currentTimeMillis() % 60000);
+
+                            Glide.with(context)
+                                    .load(imageUrl)
+                                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                    .preload();
+
                             Glide.with(context)
                                     .load(imageUrl)
                                     .signature(new StringSignature(imageMetaData.toString()))
