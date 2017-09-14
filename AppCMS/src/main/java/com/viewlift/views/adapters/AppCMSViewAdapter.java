@@ -481,11 +481,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY && adapterData != null) {
 
             Collections.sort(adapterData,
-                    (datum1, datum2) -> Double.compare(datum1.getPlanDetails().get(0)
-                            .getStrikeThroughPrice(), datum2.getPlanDetails().get(0)
+                    (datum1, datum2) -> Double.compare(datum2.getPlanDetails().get(0)
+                            .getStrikeThroughPrice(), datum1.getPlanDetails().get(0)
                             .getStrikeThroughPrice()));
-
-            Collections.reverse(adapterData);
         }
     }
 
