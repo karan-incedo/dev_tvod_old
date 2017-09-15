@@ -611,7 +611,7 @@ public class TVViewCreator {
                                     new Handler().postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
-                                            String[] extraData = new String[3];
+                                            String[] extraData = new String[4];
                                             extraData[0] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink();
                                             extraData[1] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls();
                                             extraData[2] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId();

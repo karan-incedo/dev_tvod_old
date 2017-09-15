@@ -7,18 +7,12 @@
       },
       "view": "AC Masthead 01",
       "type": "AC Masthead 01",
-      "layout": {
-
-      },
-      "components": [
-
-      ]
+      "layout": {},
+      "components": []
     },
     {
       "id": "596730f6-c016-4cb8-b73e-96edda509f56",
-      "settings": {
-
-      },
+      "settings": {},
       "view": "AC History 01",
       "type": "AC History 01",
       "layout": {
@@ -110,6 +104,19 @@
             {
               "layout": {
                 "ftv": {
+                  "leftMargin": 95,
+                  "width": 0,
+                  "height": 8
+                }
+              },
+              "progressColor": "008EE0",
+              "unprogressColor": "0A151C",
+              "type": "progressView",
+              "key": "progressView"
+            },
+            {
+              "layout": {
+                "ftv": {
                   "yAxis": 35,
                   "xAxis": 179,
                   "width": 42,
@@ -122,9 +129,8 @@
             {
               "layout": {
                 "ftv": {
-                  "leftMargin" : 325,
+                  "leftMargin": 325,
                   "fontSize": 12.5
-
                 }
               },
               "fontFamily": "OpenSans",
@@ -137,8 +143,8 @@
             {
               "layout": {
                 "ftv": {
-                  "topMargin" : 35,
-                  "leftMargin" : 325,
+                  "topMargin": 35,
+                  "leftMargin": 325,
                   "width": 730,
                   "fontSize": 11.5,
                   "height": 74
@@ -155,8 +161,8 @@
             {
               "layout": {
                 "ftv": {
-                  "topMargin" : 30,
-                  "rightMargin" : 75,
+                  "topMargin": 30,
+                  "rightMargin": 75,
                   "fontSize": 9
                 }
               },
@@ -177,17 +183,11 @@
     },
     {
       "id": "73b5c3b0-c9b4-43d3-9abb-02a60ac4b5d1",
-      "settings": {
-
-      },
+      "settings": {},
       "view": "AC Footer 01",
       "type": "AC Footer 01",
-      "layout": {
-
-      },
-      "components": [
-
-      ]
+      "layout": {},
+      "components": []
     }
   ],
   "version": "0.359.0"

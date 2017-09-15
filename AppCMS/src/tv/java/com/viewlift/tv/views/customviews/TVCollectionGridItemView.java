@@ -1,6 +1,8 @@
 package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -8,14 +10,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
+import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 
 import java.text.MessageFormat;
@@ -27,6 +32,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import static com.viewlift.tv.utility.Utils.getColor;
 import static com.viewlift.tv.utility.Utils.getItemViewHeight;
 import static com.viewlift.tv.utility.Utils.getItemViewWidth;
 import static com.viewlift.tv.utility.Utils.getViewHeight;
@@ -248,6 +254,48 @@ public class TVCollectionGridItemView extends TVBaseView {
                         String fmt = getResources().getText(R.string.item_shop).toString();
                         ((TextView) view).setText(MessageFormat.format(fmt, days));
                     }
+                }
+            } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
+                ProgressBar  progressView = new ProgressBar(context,
+                        null,
+                        android.R.attr.progressBarStyleHorizontal);
+                AppCMSPresenter appCMSPresenter = ((AppCMSApplication) context.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
+                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())) {
+                    int color = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+                    ((ProgressBar) progressView).getProgressDrawable()
+                            .setColorFilter(color, PorterDuff.Mode.SRC_IN);
+                }
+
+                if (appCMSPresenter.isUserLoggedIn(context)) {
+                    ((ProgressBar) progressView).setMax(100);
+                    ((ProgressBar) progressView).setProgress(0);
+                    if (data != null &&
+                            data.getGist() != null) {
+                        if (data.getGist().getWatchedPercentage() > 0) {
+                            progressView.setVisibility(View.VISIBLE);
+                            ((ProgressBar) progressView)
+                                    .setProgress(data.getGist().getWatchedPercentage());
+                        } else {
+                            long watchedTime =
+                                    data.getGist().getWatchedTime();
+                            long runTime =
+                                    data.getGist().getRuntime();
+                            if (watchedTime > 0 && runTime > 0) {
+                                long percentageWatched = watchedTime / runTime;
+                                ((ProgressBar) progressView)
+                                        .setProgress((int) percentageWatched);
+                                progressView.setVisibility(View.VISIBLE);
+                            } else {
+                                progressView.setVisibility(View.INVISIBLE);
+                                ((ProgressBar) progressView).setProgress(0);
+                            }
+                        }
+                    } else {
+                        progressView.setVisibility(View.INVISIBLE);
+                        ((ProgressBar) progressView).setProgress(0);
+                    }
+                } else {
+                    progressView.setVisibility(View.GONE);
                 }
             }
             view.forceLayout();

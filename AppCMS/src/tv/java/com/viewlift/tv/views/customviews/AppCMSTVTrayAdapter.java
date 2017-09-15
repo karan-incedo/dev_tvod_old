@@ -211,7 +211,7 @@ public class AppCMSTVTrayAdapter
                         String action = defaultAction;
                         String title = data.getGist().getTitle();
                         String hlsUrl = getHlsUrl(data);
-                        String[] extraData = new String[3];
+                        String[] extraData = new String[4];
                         extraData[0] = permalink;
                         extraData[1] = hlsUrl;
                         extraData[2] = data.getGist().getId();
