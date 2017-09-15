@@ -58,7 +58,6 @@ import android.widget.Toast;
 import com.android.vending.billing.IInAppBillingService;
 import com.apptentive.android.sdk.Apptentive;
 import com.facebook.AccessToken;
-import com.facebook.FacebookActivity;
 import com.facebook.FacebookRequestError;
 import com.facebook.GraphRequest;
 import com.facebook.HttpMethod;
@@ -76,6 +75,7 @@ import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.ccavenue.screens.PaymentOptionsActivity;
+import com.viewlift.ccavenue.screens.WebViewActivity;
 import com.viewlift.ccavenue.utility.AvenuesParams;
 import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenResponse;
 import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
@@ -230,6 +230,7 @@ import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.HEAD;
 import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -467,6 +468,7 @@ public class AppCMSPresenter {
     private String apikey;
     private double planToPurchasePrice;
     private String renewableFrequency = "";
+    private double planToPurchaseDiscountedPrice;
     private String planReceipt;
     private GoogleApiClient googleApiClient;
     private long downloaded = 0L;
@@ -597,7 +599,7 @@ public class AppCMSPresenter {
                                        Spanned dest, int dstart, int dend) {
                 for (int i = start; i < end; i++) {
                     if (Character.isWhitespace(source.charAt(i))) {
-                       //Toast.makeText(con, con.getResources().getString(R.string.password_space_error),Toast.LENGTH_SHORT).show();
+                          Toast.makeText(con, con.getResources().getString(R.string.password_space_error), Toast.LENGTH_SHORT).show();
                         return "";
                     }
                 }
@@ -901,15 +903,16 @@ public class AppCMSPresenter {
         } catch (Exception e) {
             Log.e(TAG, e.getLocalizedMessage());
         }
+        final AppCMSActionType actionType = actionToActionTypeMap.get(action);
         if (!isNetworkConnected() && !isVideoOffline) { //checking isVideoOffline here to fix SVFA-1431 in offline mode
             // Fix of SVFA-1435
+            if (actionType == AppCMSActionType.CLOSE) {
+                sendCloseOthersAction(null, true);
+                return false;
+            }
             openDownloadScreenForNetworkError(false);
-
         } else {
-            final AppCMSActionType actionType = actionToActionTypeMap.get(action);
-
             Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
-
             /*This is to enable offline video playback even if Internet is not available*/
             if (!(actionType == AppCMSActionType.PLAY_VIDEO_PAGE && isVideoOffline) && !isNetworkConnected()) {
                 showDialog(DialogType.NETWORK, null, false, null);
@@ -1163,7 +1166,7 @@ public class AppCMSPresenter {
                                     showEntitlementDialog(DialogType.UNKNOWN_SUBSCRIPTION_FOR_UPGRADE);
                                 } else if (isUserSubscribed() &&
                                         (isExistingGooglePlaySubscriptionSuspended() ||
-                                        !upgradesAvailableForUser())) {
+                                                !upgradesAvailableForUser())) {
                                     showEntitlementDialog(DialogType.UPGRADE_UNAVAILABLE);
                                 } else {
                                     navigateToSubscriptionPlansPage(null, null);
@@ -1781,6 +1784,7 @@ public class AppCMSPresenter {
                                               String currency,
                                               String planName,
                                               double planPrice,
+                                              double discountedPrice,
                                               String recurringPaymentCurrencyCode,
                                               String countryCode,
                                               boolean isRenewable,
@@ -1792,6 +1796,7 @@ public class AppCMSPresenter {
             planToPurchaseName = planName;
             currencyOfPlanToPurchase = currency;
             planToPurchasePrice = planPrice;
+            planToPurchaseDiscountedPrice = discountedPrice;
             currencyCode = recurringPaymentCurrencyCode;
             this.countryCode = countryCode;
             this.isRenewable = isRenewable;
@@ -1826,9 +1831,10 @@ public class AppCMSPresenter {
         Log.v("authtoken", getAuthToken());
         Log.v("apikey", apikey);
         try {
-            String strAmount = Double.toString(planToPurchasePrice);
+
             //Intent intent = new Intent(currentActivity, WebViewActivity.class);
             Intent intent = new Intent(currentActivity,PaymentOptionsActivity.class);
+            String strAmount = Double.toString(planToPurchaseDiscountedPrice);
             intent.putExtra(AvenuesParams.CURRENCY, currencyCode);
             intent.putExtra(AvenuesParams.AMOUNT, strAmount);
             intent.putExtra(currentActivity.getString(R.string.app_cms_site_name), appCMSSite.getGist().getSiteInternalName());
@@ -5816,6 +5822,7 @@ public class AppCMSPresenter {
                 if (!isNetworkConnected()) {
                     currentActivity.runOnUiThread(() -> {
                         try {
+                            beaconRequest.setTstampoverride(getCurrentTimeStamp());
                             realmController.addOfflineBeaconData(beaconRequest.convertToOfflineBeaconData());
                         } catch (Exception e) {
                             Log.e(TAG, "Error adding offline Beacon data: " + e.getMessage());
@@ -5897,7 +5904,6 @@ public class AppCMSPresenter {
         beaconRequest.setUid(uid);
         beaconRequest.setPa(event.toString());
         beaconRequest.setMedia_type(mediaType);
-        beaconRequest.setTstampoverride(getCurrentTimeStamp());
         beaconRequest.setStream_id(streamId);
         beaconRequest.setDp1(currentActivity.getString(R.string.app_cms_beacon_dpm_android));
         beaconRequest.setUrl(getPermalinkCompletePath(screenName));
@@ -5925,7 +5931,7 @@ public class AppCMSPresenter {
         if (usingChromecast) {
             beaconRequest.setPlayer("Chromecast");
         } else {
-            beaconRequest.setPlayer("Video Player");
+            beaconRequest.setPlayer("Native");
         }
 
 
@@ -8874,6 +8880,29 @@ public class AppCMSPresenter {
         boolean closeLauncher;
         int currentlyPlayingIndex;
         List<String> relateVideoIds;
+    }
+
+    public void openVideoPageFromSearch(String[] searchResultClick) {
+        String permalink = searchResultClick[3];
+        String action = currentActivity.getString(R.string.app_cms_action_videopage_key);
+        String title = searchResultClick[0];
+        String runtime = searchResultClick[1];
+        Log.d(TAG, "Launching " + permalink + ":" + action);
+        if (!launchButtonSelectedAction(permalink,
+                action,
+                title,
+                null,
+                null,
+                true,
+                0,
+                null)) {
+            Log.e(TAG, "Could not launch action: " +
+                    " permalink: " +
+                    permalink +
+                    " action: " +
+                    action);
+        }
+
     }
 
 }

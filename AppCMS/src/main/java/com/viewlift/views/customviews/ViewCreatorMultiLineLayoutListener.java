@@ -35,17 +35,20 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
     private final String title;
     private final String fullText;
     private final boolean forceMaxLines;
+    private final int moreBackgroundColor;
 
     public ViewCreatorMultiLineLayoutListener(TextView textView,
                                               String title,
                                               String fullText,
                                               AppCMSPresenter appCMSPresenter,
-                                              boolean forceMaxLines) {
+                                              boolean forceMaxLines,
+                                              int moreBackgroundColor) {
         this.textView = textView;
         this.title = title;
         this.fullText = fullText;
         this.appCMSPresenter = appCMSPresenter;
         this.forceMaxLines = forceMaxLines;
+        this.moreBackgroundColor = moreBackgroundColor;
     }
 
     @Override
@@ -83,8 +86,9 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
                             if(appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV){
                                 ds.setUnderlineText(false);
                                 ds.setColor(ContextCompat.getColor(textView.getContext() , android.R.color.white));
-                            }else{
+                            } else {
                                 super.updateDrawState(ds);
+                                ds.setColor(moreBackgroundColor);
                             }
                         }
                     };

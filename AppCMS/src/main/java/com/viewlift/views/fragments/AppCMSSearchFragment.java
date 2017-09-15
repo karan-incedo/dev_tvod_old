@@ -2,10 +2,12 @@ package com.viewlift.views.fragments;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +30,7 @@ public class AppCMSSearchFragment extends DialogFragment {
     private SearchView appCMSSearchView;
     private Button appCMSGoButton;
     private AppCMSPresenter appCMSPresenter;
-
+    private static final String TAG = "SearchFragment";
     LinearLayout searchLayout;
 
     public static AppCMSSearchFragment newInstance(Context context,
@@ -72,6 +74,21 @@ public class AppCMSSearchFragment extends DialogFragment {
         appCMSSearchView.setIconifiedByDefault(false);
         appCMSSearchView.requestFocus();
         appCMSPresenter.showSoftKeyboard(appCMSSearchView);
+        appCMSSearchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+
+            @Override
+            public boolean onSuggestionSelect(int position) {
+                return true;
+            }
+
+            @Override
+            public boolean onSuggestionClick(int position) {
+                Cursor cursor = (Cursor) appCMSSearchView.getSuggestionsAdapter().getItem(position);
+                String[] searchHintResult=cursor.getString(cursor.getColumnIndex("suggest_intent_data")).split(",");
+                appCMSPresenter.openVideoPageFromSearch(searchHintResult);
+                return true;
+            }
+        });
 
         appCMSGoButton = view.findViewById(R.id.app_cms_search_button);
         appCMSGoButton.setBackgroundColor(0xff000000 + (int) buttonColor);

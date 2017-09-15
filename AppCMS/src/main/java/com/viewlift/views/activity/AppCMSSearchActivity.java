@@ -29,7 +29,6 @@ import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSSearchItemAdapter;
 import com.viewlift.views.adapters.SearchSuggestionsAdapter;
-import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
 
 import java.io.IOException;
@@ -149,6 +148,9 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         appCMSCloseButton.setOnClickListener(v -> finish());
 
         handleIntent(getIntent());
+
+
+
     }
 
     private void sendFirebaseAnalyticsEvents() {
@@ -203,26 +205,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
 
             if (Intent.ACTION_VIEW.equals(intent.getAction())) {
                 String[] searchHintResult = intent.getDataString().split(",");
-
-                String permalink = searchHintResult[3];
-                String action = getString(R.string.app_cms_action_videopage_key);
-                String title = searchHintResult[0];
-                String runtime = searchHintResult[1];
-                Log.d(TAG, "Launching " + permalink + ":" + action);
-                if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                        action,
-                        title,
-                        null,
-                        null,
-                        true,
-                        0,
-                        null)) {
-                    Log.e(TAG, "Could not launch action: " +
-                            " permalink: " +
-                            permalink +
-                            " action: " +
-                            action);
-                }
+                appCMSPresenter.openVideoPageFromSearch(searchHintResult);
 
             } else {
                 queryTerm = intent.getStringExtra(SearchManager.QUERY);

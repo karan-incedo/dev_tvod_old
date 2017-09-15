@@ -26,25 +26,26 @@ import rx.functions.Action1;
 
 public class AppCMSBeaconCall {
 
-    private static final String TAG="AppCMSBeaconCall";
+    private static final String TAG = "AppCMSBeaconCall";
     private final AppCMSBeaconRest appCMSBeaconRest;
-
+    private final String userAgent;
 
 
     @Inject
-    public AppCMSBeaconCall(AppCMSBeaconRest appCMSBeaconRest){
+    public AppCMSBeaconCall(AppCMSBeaconRest appCMSBeaconRest) {
 
-        this.appCMSBeaconRest =appCMSBeaconRest;
+        this.appCMSBeaconRest = appCMSBeaconRest;
+        this.userAgent = System.getProperty("http.agent");
     }
 
     @WorkerThread
-    public void call(String url, final Action1<BeaconResponse> action1, AppCMSBeaconRequest request){
+    public void call(String url, final Action1<BeaconResponse> action1, AppCMSBeaconRequest request) {
 
         try {
             Map<String, String> authTokenMap = new HashMap<>();
             authTokenMap.put("Content-Type", "application/json");
+            authTokenMap.put("user-agent", userAgent);
             Call<BeaconResponse> call;
-
             call = appCMSBeaconRest.sendBeaconMessage(url, authTokenMap, request.getBeaconRequest());
             call.enqueue(new Callback<BeaconResponse>() {
 
@@ -59,7 +60,7 @@ public class AppCMSBeaconCall {
                 }
             });
 
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
     }

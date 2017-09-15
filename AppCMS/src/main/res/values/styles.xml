@@ -33,8 +33,8 @@
 
     <style name="TransparentTheme" parent="AppTheme">
 
-         <item name="android:background">@color/semiTransparentColor</item>
-          <item name="background">@null</item>
+        <item name="android:background">@color/semiTransparentColor</item>
+        <item name="background">@null</item>
 
         <item name="android:windowBackground">@android:color/transparent</item>
 
@@ -53,4 +53,17 @@
         <item name="android:visibility">gone</item>
     </style>
 
+    <!--removes white screen at app launch-->
+    <style name="AppThemeTransparent" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowDisablePreview">true</item>
+    </style>
+
+    <!--removes white screen at app launch-->
+    <style name="Theme.Transparent" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
 </resources>
