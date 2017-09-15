@@ -11,6 +11,7 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -429,6 +430,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.sendCloseOthersAction(null, true));
 
         inflateCastMiniController();
+
+        if (loadingProgressBar != null) {
+            try {
+                loadingProgressBar.getIndeterminateDrawable().setTint(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to set color for loader: " + e.getMessage());
+            }
+        }
 
         Log.d(TAG, "onCreate()");
     }

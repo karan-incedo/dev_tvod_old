@@ -11,7 +11,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.android.exoplayer2.C;
@@ -36,11 +35,9 @@ import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.FixedTrackSelection;
-import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
-import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.AssetDataSource;
 import com.google.android.exoplayer2.upstream.ContentDataSource;
@@ -60,7 +57,6 @@ import com.google.android.exoplayer2.upstream.DataSource.Factory;
 import com.viewlift.R;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -228,6 +224,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         return playerView;
     }
 
+    public void setFillBasedOnOrientation() {
+        if (BaseView.isLandscape(getContext())) {
+            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
+        } else {
+            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+        }
+    }
+
     private void init(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         initializePlayer(context, attrs, defStyleAttr);
         playerState = new PlayerState();
@@ -271,6 +275,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         audioManager.requestAudioFocus(focusChange -> Log.i(TAG, "Audio focus has changed: " + focusChange),
                 AudioManager.STREAM_MUSIC,
                 AudioManager.AUDIOFOCUS_GAIN);
+
+        setFillBasedOnOrientation();
     }
 
     private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {

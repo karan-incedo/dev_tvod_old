@@ -5,6 +5,7 @@ import android.app.Application;
 import android.support.annotation.UiThread;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 import com.viewlift.models.data.appcms.beacon.OfflineBeaconData;
@@ -21,6 +22,8 @@ import io.realm.RealmResults;
 public class RealmController {
     private static RealmController instance;
     private final Realm realm;
+
+    private static final String TAG = "RealmController";
 
     public RealmController() {
         realm = Realm.getDefaultInstance();
@@ -77,45 +80,71 @@ public class RealmController {
     }
 
     public void clearAllDownloads() {
-        realm.beginTransaction();
-        realm.delete(DownloadVideoRealm.class);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.delete(DownloadVideoRealm.class);
+            realm.commitTransaction();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to clear all downloads: " + e.getMessage());
+        }
     }
 
     public RealmResults<DownloadVideoRealm> getDownloads() {
-
-        return realm.where(DownloadVideoRealm.class).findAll();
+        try {
+            return realm.where(DownloadVideoRealm.class).findAll();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get downloads: " + e.getMessage());
+        }
+        return null;
     }
 
     public RealmResults<DownloadVideoRealm> getDownloadesByUserId(String userId) {
-
-        return realm.where(DownloadVideoRealm.class).contains("userId", userId).findAll();
+        try {
+            return realm.where(DownloadVideoRealm.class).contains("userId", userId).findAll();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get downloads by user ID: " + e.getMessage());
+        }
+        return null;
     }
     public RealmResults<DownloadVideoRealm> getAllUnSyncedWithServer(String userId) {
-
-        return realm.where(DownloadVideoRealm.class).equalTo("isSyncedWithServer", false)
-                .equalTo("userId", userId).findAll();
-
+        try {
+            return realm.where(DownloadVideoRealm.class).equalTo("isSyncedWithServer", false)
+                    .equalTo("userId", userId).findAll();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get server sync status: " + e.getMessage());
+        }
+        return  null;
     }
     public RealmResults<DownloadVideoRealm> getAllUnfinishedDownloades(String userId) {
-
-        String[] status = {String.valueOf(DownloadStatus.STATUS_FAILED),
-                String.valueOf(DownloadStatus.STATUS_PAUSED),
-                String.valueOf(DownloadStatus.STATUS_PENDING),
-                String.valueOf(DownloadStatus.STATUS_RUNNING)};
-        return realm.where(DownloadVideoRealm.class).in("downloadStatus", status)
-                .equalTo("userId", userId).findAll();
-
+        try {
+            String[] status = {String.valueOf(DownloadStatus.STATUS_FAILED),
+                    String.valueOf(DownloadStatus.STATUS_PAUSED),
+                    String.valueOf(DownloadStatus.STATUS_PENDING),
+                    String.valueOf(DownloadStatus.STATUS_RUNNING)};
+            return realm.where(DownloadVideoRealm.class).in("downloadStatus", status)
+                    .equalTo("userId", userId).findAll();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get all unfinished downloads: " + e.getMessage());
+        }
+        return null;
     }
 
     public RealmResults<DownloadVideoRealm> getDownloadesByStatus(String status) {
-
-        return realm.where(DownloadVideoRealm.class).contains("downloadStatus", status).findAll();
+        try {
+            return realm.where(DownloadVideoRealm.class).contains("downloadStatus", status).findAll();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get downloads by status: " + e.getMessage());
+        }
+        return null;
     }
 
     public DownloadVideoRealm getDownloadById(String videoId) {
-
-        return realm.where(DownloadVideoRealm.class).equalTo("videoId", videoId).findFirst();
+        try {
+            return realm.where(DownloadVideoRealm.class).equalTo("videoId", videoId).findFirst();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get download by ID " + videoId + ": " + e.getMessage());
+        }
+        return null;
     }
 
     /**
@@ -128,100 +157,156 @@ public class RealmController {
         if (TextUtils.isEmpty(videoId)) {
             return false;
         }
-        DownloadVideoRealm downloadById = getDownloadById(videoId);
-        return downloadById != null && getDownloadById(videoId).getDownloadStatus()
-                .equals(DownloadStatus.STATUS_SUCCESSFUL);
+        try {
+            DownloadVideoRealm downloadById = getDownloadById(videoId);
+            return downloadById != null && getDownloadById(videoId).getDownloadStatus()
+                    .equals(DownloadStatus.STATUS_SUCCESSFUL);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get video ready to play offline: " + e.getMessage());
+        }
+        return false;
     }
 
     @UiThread
     public DownloadVideoRealm getDownloadByIdBelongstoUser(String videoId, String userId) {
-        return realm.where(DownloadVideoRealm.class)
-                .beginGroup()
-                .equalTo("videoId", videoId)
-                .equalTo("userId", userId)
-                .endGroup()
-                .findFirst();
+        try {
+            return realm.where(DownloadVideoRealm.class)
+                    .beginGroup()
+                    .equalTo("videoId", videoId)
+                    .equalTo("userId", userId)
+                    .endGroup()
+                    .findFirst();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get download by ID belonging to user " + userId + " " + videoId + ": " + e.getMessage());
+        }
+        return null;
     }
 
     public void addCurrentDownloadTitle(CurrentDownloadingVideo currentDownloadingVideo) {
-        realm.beginTransaction();
-        realm.insertOrUpdate(currentDownloadingVideo);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.insertOrUpdate(currentDownloadingVideo);
+            realm.commitTransaction();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to add current download video: " + e.getMessage());
+        }
     }
 
     public CurrentDownloadingVideo getCurrentDownloadTitle() {
-        return realm.where(CurrentDownloadingVideo.class)
-                .findFirst();
+        try {
+            return realm.where(CurrentDownloadingVideo.class)
+                    .findFirst();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get current current download title: " + e.getMessage());
+        }
+        return null;
     }
 
     public void removeCurrentDownloadTitle() {
-        realm.beginTransaction();
-        realm.delete(CurrentDownloadingVideo.class);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.delete(CurrentDownloadingVideo.class);
+            realm.commitTransaction();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to remove current download title: " + e.getMessage());
+        }
     }
 
     public void addDownload(DownloadVideoRealm downloadVideoRealm) {
-        realm.beginTransaction();
-        realm.insertOrUpdate(downloadVideoRealm);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.insertOrUpdate(downloadVideoRealm);
+            realm.commitTransaction();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to add download: " + e.getMessage());
+        }
     }
 
     public void updateDownload(DownloadVideoRealm downloadVideoRealm) {
-        realm.beginTransaction();
-        realm.insertOrUpdate(downloadVideoRealm);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.insertOrUpdate(downloadVideoRealm);
+            realm.commitTransaction();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to update download: " + e.getMessage());
+        }
     }
 
     public void addSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
-        realm.beginTransaction();
-        realm.insertOrUpdate(subscriptionPlan);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.insertOrUpdate(subscriptionPlan);
+            realm.commitTransaction();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to add subscription plan: " + e.getMessage());
+        }
     }
 
     public void deleteSubscriptionPlans() {
-        realm.beginTransaction();
-        realm.delete(SubscriptionPlan.class);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.delete(SubscriptionPlan.class);
+            realm.commitTransaction();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to delete subscription plans: " + e.getMessage());
+        }
     }
 
     public RealmResults<SubscriptionPlan> getAllSubscriptionPlans() {
-        if (realm.where(SubscriptionPlan.class).count() > 0) {
-            return realm.where(SubscriptionPlan.class).findAll();
+        try {
+            if (realm.where(SubscriptionPlan.class).count() > 0) {
+                return realm.where(SubscriptionPlan.class).findAll();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get all subscription plans: " + e.getMessage());
         }
         return null;
     }
 
     public void addUserSubscriptionPlan(UserSubscriptionPlan userSubscriptionPlan) {
-        realm.beginTransaction();
-        realm.insertOrUpdate(userSubscriptionPlan);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.insertOrUpdate(userSubscriptionPlan);
+            realm.commitTransaction();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to add user subscription plan: " + e.getMessage());
+        }
     }
 
     public RealmResults<UserSubscriptionPlan> getUserSubscriptionPlan(String userId) {
-        if (realm.where(UserSubscriptionPlan.class).equalTo("userId", userId).count() > 0) {
-            return realm.where(UserSubscriptionPlan.class).equalTo("userId", userId).distinct("userId");
+        try {
+            if (realm.where(UserSubscriptionPlan.class).equalTo("userId", userId).count() > 0) {
+                return realm.where(UserSubscriptionPlan.class).equalTo("userId", userId).distinct("userId");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get user subscription plan " + userId + ": " + e.getMessage());
         }
         return null;
     }
 
     public void updateDownloadInfo(String videoId, String filmUrl, String thumbUrl, String posterUrl,
                                    String subtitlesUrl, long totalSize, DownloadStatus status) {
-        DownloadVideoRealm toEdit = realm.where(DownloadVideoRealm.class)
-                .equalTo("videoId", videoId).findFirst();
 
-        if (!realm.isInTransaction())
-            realm.beginTransaction();
+        try {
+            DownloadVideoRealm toEdit = realm.where(DownloadVideoRealm.class)
+                    .equalTo("videoId", videoId).findFirst();
 
-        toEdit.setVideoSize(totalSize);
-        toEdit.setVideoFileURL(thumbUrl);
-        toEdit.setVideoImageUrl(thumbUrl);
-        toEdit.setPosterFileURL(posterUrl);
-        toEdit.setSubtitlesFileURL(subtitlesUrl);
-        toEdit.setLocalURI(filmUrl);
-        toEdit.setDownloadStatus(status);
+            if (!realm.isInTransaction())
+                realm.beginTransaction();
 
-        realm.copyToRealmOrUpdate(toEdit);
-        realm.commitTransaction();
+            toEdit.setVideoSize(totalSize);
+            toEdit.setVideoFileURL(thumbUrl);
+            toEdit.setVideoImageUrl(thumbUrl);
+            toEdit.setPosterFileURL(posterUrl);
+            toEdit.setSubtitlesFileURL(subtitlesUrl);
+            toEdit.setLocalURI(filmUrl);
+            toEdit.setDownloadStatus(status);
+
+            realm.copyToRealmOrUpdate(toEdit);
+            realm.commitTransaction();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to update download info: " + e.getMessage());
+        }
     }
 
     /**
@@ -236,62 +321,77 @@ public class RealmController {
      */
     public void updateDownloadInfo(String videoId, String filmUrl, String thumbUrl, long totalSize,
                                    long downloadedSoFar, DownloadStatus status) {
-        DownloadVideoRealm toEdit = realm.where(DownloadVideoRealm.class)
-                .equalTo("videoId", videoId).findFirst();
+        try {
+            DownloadVideoRealm toEdit = realm.where(DownloadVideoRealm.class)
+                    .equalTo("videoId", videoId).findFirst();
 
-        if (!realm.isInTransaction())
-            realm.beginTransaction();
+            if (!realm.isInTransaction())
+                realm.beginTransaction();
 
-        toEdit.setVideoSize(totalSize);
-        toEdit.setVideo_Downloaded_so_far(downloadedSoFar);
-        toEdit.setVideoFileURL(thumbUrl);
-        toEdit.setVideoImageUrl(thumbUrl);
-        toEdit.setLocalURI(filmUrl);
-        toEdit.setDownloadStatus(status);
+            toEdit.setVideoSize(totalSize);
+            toEdit.setVideo_Downloaded_so_far(downloadedSoFar);
+            toEdit.setVideoFileURL(thumbUrl);
+            toEdit.setVideoImageUrl(thumbUrl);
+            toEdit.setLocalURI(filmUrl);
+            toEdit.setDownloadStatus(status);
 
-        realm.copyToRealmOrUpdate(toEdit);
-        realm.commitTransaction();
-
+            realm.copyToRealmOrUpdate(toEdit);
+            realm.commitTransaction();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to update download info: " + e.getMessage());
+        }
     }
 
     public void removeFromDB(DownloadVideoRealm downloadVideoRealm) {
+        try {
+            DownloadVideoRealm toEdit = realm.where(DownloadVideoRealm.class)
+                    .equalTo("videoId", downloadVideoRealm.getVideoId()).findFirst();
 
-        DownloadVideoRealm toEdit = realm.where(DownloadVideoRealm.class)
-                .equalTo("videoId", downloadVideoRealm.getVideoId()).findFirst();
+            if (!realm.isInTransaction())
+                realm.beginTransaction();
 
-        if (!realm.isInTransaction())
-            realm.beginTransaction();
+            toEdit.deleteFromRealm();
 
-        toEdit.deleteFromRealm();
-
-        realm.commitTransaction();
-
+            realm.commitTransaction();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to to remove video from database: " + e.getMessage());
+        }
     }
 
     public void addOfflineBeaconData(OfflineBeaconData offlineBeaconData) {
-
-        if (!realm.isInTransaction()) {
-            realm.beginTransaction();
+        try {
+            if (!realm.isInTransaction()) {
+                realm.beginTransaction();
+            }
+            realm.insert(offlineBeaconData);
+            realm.commitTransaction();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to add offline beacon data: " + e.getMessage());
         }
-        realm.insert(offlineBeaconData);
-        realm.commitTransaction();
-
     }
 
     public RealmResults<OfflineBeaconData> getOfflineBeaconDataListByUser(String userId) {
-        if (realm.where(OfflineBeaconData.class).equalTo("uid", userId).count() > 0) {
-            return realm.where(OfflineBeaconData.class).equalTo("uid", userId).findAll();
+        try {
+            if (realm.where(OfflineBeaconData.class).equalTo("uid", userId).count() > 0) {
+                return realm.where(OfflineBeaconData.class).equalTo("uid", userId).findAll();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get offline beacond data list by user " + userId + ": " + e.getMessage());
         }
         return null;
     }
 
     public void deleteOfflineBeaconDataByUser(String userId) {
-        if (!realm.isInTransaction()) {
-            realm.beginTransaction();
+        try {
+            if (!realm.isInTransaction()) {
+                realm.beginTransaction();
+            }
+            RealmResults<OfflineBeaconData> resultsToDel = realm.where(OfflineBeaconData.class).equalTo("uid", userId).findAll();
+            resultsToDel.deleteAllFromRealm();
+            realm.commitTransaction();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to delete offline beacon user data " + userId + " : " + e.getMessage());
         }
-        RealmResults<OfflineBeaconData> resultsToDel = realm.where(OfflineBeaconData.class).equalTo("uid", userId).findAll();
-        resultsToDel.deleteAllFromRealm();
-        realm.commitTransaction();
     }
 
 

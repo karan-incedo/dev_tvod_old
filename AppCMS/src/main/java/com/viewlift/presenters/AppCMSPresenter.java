@@ -288,6 +288,7 @@ public class AppCMSPresenter {
     private static final String ACTIVE_SUBSCRIPTION_PLAN_NAME = "active_subscription_plan_name_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PRICE_NAME = "active_subscription_plan_price_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PROCESSOR_NAME = "active_subscription_payment_processor_key";
+    private static final String ACTIVE_SUBSCRIPTION_COUNTRY_CODE = "active_subscription_country_code_key";
     private static final String IS_USER_SUBSCRIBED = "is_user_subscribed_pref_key";
     private static final String AUTO_PLAY_ENABLED_PREF_NAME = "autoplay_enabled_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_DESCRIPTION = "existing_google_play_subscription_title_pref_key";
@@ -465,6 +466,7 @@ public class AppCMSPresenter {
     private String planToPurchaseName;
     private String apikey;
     private double planToPurchasePrice;
+    private double planToPurchaseDiscountedPrice;
     private String planReceipt;
     private GoogleApiClient googleApiClient;
     private long downloaded = 0L;
@@ -634,10 +636,6 @@ public class AppCMSPresenter {
             this.googleAnalytics = GoogleAnalytics.getInstance(currentActivity);
             this.tracker = this.googleAnalytics.newTracker(trackerId);
         }
-    }
-
-    public void addToReferenceQueue(Object object) {
-        new SoftReference<>(object, referenceQueue);
     }
 
     public boolean launchVideoPlayer(final ContentDatum contentDatum,
@@ -1783,17 +1781,18 @@ public class AppCMSPresenter {
                                               String currency,
                                               String planName,
                                               double planPrice,
+                                              double discountedPrice,
                                               String recurringPaymentCurrencyCode,
                                               String countryCode,
                                               boolean isRenewable) {
         if (currentActivity != null) {
             launchType = LaunchType.SUBSCRIBE;
             skuToPurchase = sku;
-            new SoftReference<Object>(skuToPurchase, referenceQueue);
             planToPurchase = planId;
             planToPurchaseName = planName;
             currencyOfPlanToPurchase = currency;
             planToPurchasePrice = planPrice;
+            planToPurchaseDiscountedPrice = discountedPrice;
             currencyCode = recurringPaymentCurrencyCode;
             this.countryCode = countryCode;
             this.isRenewable = isRenewable;
@@ -1827,7 +1826,7 @@ public class AppCMSPresenter {
         Log.v("authtoken", getAuthToken());
         Log.v("apikey", apikey);
         try {
-            String strAmount = Double.toString(planToPurchasePrice);
+            String strAmount = Double.toString(planToPurchaseDiscountedPrice);
             Intent intent = new Intent(currentActivity, WebViewActivity.class);
             //Intent intent = new Intent(currentActivity,PaymentOptionsActivity.class);
             intent.putExtra(AvenuesParams.CURRENCY, currencyCode);
@@ -2012,14 +2011,24 @@ public class AppCMSPresenter {
 
     public void initiateSubscriptionCancellation() {
         if (currentActivity != null) {
-            String paymentProcessor = getActiveSubscriptionProcessor();
-            if (!TextUtils.isEmpty(getExistingGooglePlaySubscriptionId()) ||
-                    (!TextUtils.isEmpty(paymentProcessor) &&
-                            (paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
-                                    paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) {
-                Intent googlePlayStoreCancelIntent = new Intent(Intent.ACTION_VIEW,
-                        Uri.parse(currentActivity.getString(R.string.google_play_store_subscriptions_url)));
-                currentActivity.startActivity(googlePlayStoreCancelIntent);
+            if (!TextUtils.isEmpty(getActiveSubscriptionCountryCode()) &&
+                    appCMSMain != null &&
+                    appCMSMain.getPaymentProviders() != null &&
+                    appCMSMain.getPaymentProviders().getCcav() != null &&
+                    !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
+                    appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode)) {
+                Log.d(TAG, "Initiating CCAvenue cancellation");
+
+            } else {
+                String paymentProcessor = getActiveSubscriptionProcessor();
+                if (!TextUtils.isEmpty(getExistingGooglePlaySubscriptionId()) ||
+                        (!TextUtils.isEmpty(paymentProcessor) &&
+                                (paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
+                                        paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) {
+                    Intent googlePlayStoreCancelIntent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(currentActivity.getString(R.string.google_play_store_subscriptions_url)));
+                    currentActivity.startActivity(googlePlayStoreCancelIntent);
+                }
             }
         }
     }
@@ -4540,7 +4549,7 @@ public class AppCMSPresenter {
                     if (facebookLoginResponse != null) {
                         setAuthToken(facebookLoginResponse.getAuthorizationToken());
                         setRefreshToken(facebookLoginResponse.getRefreshToken());
-                        setLoggedInUser(facebookUserId);
+                        setLoggedInUser(facebookLoginResponse.getUserId());
                         setLoggedInUserName(username);
                         setLoggedInUserEmail(email);
                         if (forceSubscribed) {
@@ -4638,7 +4647,7 @@ public class AppCMSPresenter {
                         if (googleLoginResponse != null) {
                             setAuthToken(googleLoginResponse.getAuthorizationToken());
                             setRefreshToken(googleLoginResponse.getRefreshToken());
-                            setLoggedInUser(googleUserId);
+                            setLoggedInUser(googleLoginResponse.getUserId());
                             setLoggedInUserName(googleUsername);
                             setLoggedInUserEmail(googleEmail);
                             if (forceSubscribed) {
@@ -4859,6 +4868,22 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public String getActiveSubscriptionCountryCode() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_SUBSCRIPTION_COUNTRY_CODE, 0);
+            return sharedPrefs.getString(ACTIVE_SUBSCRIPTION_COUNTRY_CODE, null);
+        }
+        return null;
+    }
+
+    public boolean setActiveSubscriptionCountryCode(String countryCode) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_SUBSCRIPTION_COUNTRY_CODE, 0);
+            return sharedPrefs.edit().putString(ACTIVE_SUBSCRIPTION_COUNTRY_CODE, countryCode).commit();
+        }
+        return false;
+    }
+
     public String getActiveSubscriptionId() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_SUBSCRIPTION_ID, 0);
@@ -4983,6 +5008,7 @@ public class AppCMSPresenter {
             setActiveSubscriptionPrice(null);
             setActiveSubscriptionId(null);
             setActiveSubscriptionSku(null);
+            setActiveSubscriptionCountryCode(null);
             setActiveSubscriptionPlanName(null);
             setActiveSubscriptionReceipt(null);
             setRefreshToken(null);
@@ -6110,6 +6136,7 @@ public class AppCMSPresenter {
                                         AppCMSSubscriptionPlanResult.class));
                             }
                             setActiveSubscriptionSku(skuToPurchase);
+                            setActiveSubscriptionCountryCode(countryCode);
                             AppsFlyerUtils.subscriptionEvent(currentActivity,
                                     true,
                                     currentActivity.getString(R.string.app_cms_appsflyer_dev_key),
@@ -6339,6 +6366,7 @@ public class AppCMSPresenter {
                                                                     SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
                                                                     subscriptionPlan.setSku(contentDatum.getIdentifier());
                                                                     subscriptionPlan.setPlanId(contentDatum.getId());
+                                                                    subscriptionPlan.setCountryCode(contentDatum.getPlanDetails().get(0).getCountryCode());
                                                                     if (!contentDatum.getPlanDetails().isEmpty()) {
                                                                         subscriptionPlan.setSubscriptionPrice(contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount());
                                                                     }
@@ -6393,8 +6421,11 @@ public class AppCMSPresenter {
                                                                                     setActiveSubscriptionId(subscribedPlan.getPlanId());
                                                                                     setActiveSubscriptionPlanName(subscribedPlan.getPlanName());
                                                                                     setActiveSubscriptionPrice(String.valueOf(subscribedPlan.getSubscriptionPrice()));
-                                                                                } else if (appCMSSubscriptionPlanResult.getSubscriptionPlanInfo() != null) {
+                                                                                    setActiveSubscriptionCountryCode(subscribedPlan.getCountryCode());
+                                                                                } else if (appCMSSubscriptionPlanResult.getSubscriptionPlanInfo() != null &&
+                                                                                        appCMSSubscriptionPlanResult.getSubscriptionInfo() != null) {
                                                                                     setActiveSubscriptionSku(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
+                                                                                    setActiveSubscriptionCountryCode(appCMSSubscriptionPlanResult.getSubscriptionInfo().getCountryCode());
                                                                                     setActiveSubscriptionId(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
                                                                                     setActiveSubscriptionPlanName(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
                                                                                     String countryCode = appCMSSubscriptionPlanResult.getSubscriptionInfo().getCountryCode();
@@ -6457,6 +6488,7 @@ public class AppCMSPresenter {
                                                         SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
                                                         subscriptionPlan.setSku(contentDatum.getIdentifier());
                                                         subscriptionPlan.setPlanId(contentDatum.getId());
+                                                        subscriptionPlan.setCountryCode(contentDatum.getPlanDetails().get(0).getCountryCode());
                                                         if (!contentDatum.getPlanDetails().isEmpty()) {
                                                             subscriptionPlan.setSubscriptionPrice(contentDatum.getPlanDetails().get(0).getStrikeThroughPrice());
                                                         }
@@ -6516,9 +6548,11 @@ public class AppCMSPresenter {
                                                                     setActiveSubscriptionId(subscribedPlan.getPlanId());
                                                                     setActiveSubscriptionPlanName(subscribedPlan.getPlanName());
                                                                     setActiveSubscriptionPrice(String.valueOf(subscribedPlan.getSubscriptionPrice()));
+                                                                    setActiveSubscriptionCountryCode(subscribedPlan.getCountryCode());
                                                                 } else if (appCMSSubscriptionPlanResult.getSubscriptionPlanInfo() != null &&
                                                                         appCMSSubscriptionPlanResult.getSubscriptionInfo() != null) {
                                                                     setActiveSubscriptionSku(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
+                                                                    setActiveSubscriptionCountryCode(appCMSSubscriptionPlanResult.getSubscriptionInfo().getCountryCode());
                                                                     setActiveSubscriptionId(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
                                                                     setActiveSubscriptionPlanName(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
                                                                     String countryCode = appCMSSubscriptionPlanResult.getSubscriptionInfo().getCountryCode();

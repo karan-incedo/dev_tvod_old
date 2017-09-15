@@ -1,6 +1,7 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -87,7 +88,7 @@ public class ViewCreator {
                 && !TextUtils.isEmpty(primaryCategory);
         StringBuffer infoText = new StringBuffer();
         if (runtime > 0) {
-            infoText.append(runtime +" "+ context.getString(R.string.mins_abbreviation));
+            infoText.append(runtime + " " + context.getString(R.string.mins_abbreviation));
         }
         if (appendFirstSep) {
             infoText.append(context.getString(R.string.text_separator));
@@ -546,16 +547,23 @@ public class ViewCreator {
                                                     }
                                                     if (creditBlock != null && creditBlock.getCredits() != null) {
                                                         for (int j = 0; j < creditBlock.getCredits().size(); j++) {
-                                                            starringListSb.append(creditBlock.getCredits().get(j).getTitle());
-                                                            if (j < creditBlock.getCredits().size() - 1) {
-                                                                starringListSb.append(", ");
+                                                            if (creditBlock.getCredits().get(j).getTitle() != null && !TextUtils.isEmpty(creditBlock.getCredits().get(j).getTitle())) {
+                                                                starringListSb.append(creditBlock.getCredits().get(j).getTitle());
+                                                                if (j < creditBlock.getCredits().size() - 1) {
+                                                                    starringListSb.append(", ");
+                                                                }
                                                             }
+
                                                         }
                                                     }
                                                 }
                                             }
                                         }
 
+                                        if (TextUtils.isEmpty(starringListSb)) {
+                                            starringListSb.append("-");
+
+                                        }
                                         if (directorListSb.length() == 0 && starringListSb.length() == 0) {
                                             if (!BaseView.isLandscape(context)) {
                                                 shouldHideComponent = true;
@@ -957,7 +965,7 @@ public class ViewCreator {
                         adjustOthers = AdjustOtherState.ADJUST_OTHERS;
                     }
 
-                     if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
+                    if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
                         componentViewResult.shouldHideComponent = true;
                         componentViewResult.componentView.setVisibility(View.GONE);
                         adjustOthers = AdjustOtherState.INITIATED;
@@ -1184,7 +1192,7 @@ public class ViewCreator {
             return;
         }
 
-           AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
+        AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
 
         if (componentType == null) {
             componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
@@ -1757,7 +1765,7 @@ public class ViewCreator {
 
                             @Override
                             public void receiveEvent(InternalEvent<?> event) {
-                                if (event != null && event.getEventData()!=null && event.getEventData() instanceof Integer) {
+                                if (event != null && event.getEventData() != null && event.getEventData() instanceof Integer) {
                                     int buttonStatus = (Integer) event.getEventData();
                                     if (buttonStatus == View.VISIBLE) {
                                         removeAllButton.setVisibility(View.VISIBLE);
@@ -2127,7 +2135,6 @@ public class ViewCreator {
                             break;
 
                         case PAGE_ACTIONLABEL_KEY:
-
                         case PAGE_SETTINGS_NAME_VALUE_KEY:
                             ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserName());
                             break;
@@ -2571,7 +2578,7 @@ public class ViewCreator {
                 break;
 
             case PAGE_PLAN_META_DATA_VIEW_KEY:
-                componentViewResult.componentView = new SubscriptionMetaDataView(context,
+                componentViewResult.componentView = new ViewPlansMetaDataView(context,
                         component,
                         component.getLayout(),
                         this,
@@ -2593,7 +2600,20 @@ public class ViewCreator {
             case PAGE_TOGGLE_BUTTON_KEY:
                 componentViewResult.componentView = new Switch(context);
                 ((Switch) componentViewResult.componentView).getTrackDrawable().setTint(Color.parseColor(
-                        appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+                int switchOnColor = Color.parseColor(
+                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
+                int switchOffColor = Color.parseColor(
+                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor());
+                ColorStateList colorStateList = new ColorStateList(
+                        new int[][] {
+                                new int[] {android.R.attr.state_checked},
+                                new int[] {}
+                        }, new int[] {
+                                switchOnColor,
+                                switchOffColor
+                        });
+                ((Switch) componentViewResult.componentView).setThumbTintList(colorStateList);
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                     ((Switch) componentViewResult.componentView).setTrackTintMode(PorterDuff.Mode.MULTIPLY);
                 }

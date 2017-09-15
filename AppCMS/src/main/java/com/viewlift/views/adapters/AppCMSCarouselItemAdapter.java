@@ -73,7 +73,6 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
         this.loop = loop;
 
         this.updatedIndex = getDefaultIndex();
-        appCMSPresenter.addToReferenceQueue(this.updatedIndex);
 
         this.internalEventReceivers = new ArrayList<>();
         this.cancelled = false;
@@ -223,7 +222,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                 defaultHeight,
                 useMarginsAsPercentages,
                 false,
-                this.viewType);
+                this.componentViewType);
         return new ViewHolder(view);
     }
 
@@ -355,6 +354,11 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
             } else {
                 index = ((index % adapterData.size()) - lastVisibleIndex);
             }
+        }
+
+        if (adapterData.size() < Math.abs(index - firstVisibleIndex) ||
+                adapterData.size() < Math.abs(index - lastVisibleIndex)) {
+            index = firstVisibleIndex;
         }
 
         return index;
