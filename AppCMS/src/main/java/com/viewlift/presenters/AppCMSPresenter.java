@@ -597,7 +597,7 @@ public class AppCMSPresenter {
                                        Spanned dest, int dstart, int dend) {
                 for (int i = start; i < end; i++) {
                     if (Character.isWhitespace(source.charAt(i))) {
-                       Toast.makeText(con, con.getResources().getString(R.string.password_space_error),Toast.LENGTH_SHORT).show();
+                        Toast.makeText(con, con.getResources().getString(R.string.password_space_error), Toast.LENGTH_SHORT).show();
                         return "";
                     }
                 }
@@ -901,15 +901,16 @@ public class AppCMSPresenter {
         } catch (Exception e) {
             Log.e(TAG, e.getLocalizedMessage());
         }
+        final AppCMSActionType actionType = actionToActionTypeMap.get(action);
         if (!isNetworkConnected() && !isVideoOffline) { //checking isVideoOffline here to fix SVFA-1431 in offline mode
             // Fix of SVFA-1435
+            if (actionType == AppCMSActionType.CLOSE) {
+                sendCloseOthersAction(null, true);
+                return false;
+            }
             openDownloadScreenForNetworkError(false);
-
         } else {
-            final AppCMSActionType actionType = actionToActionTypeMap.get(action);
-
             Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
-
             /*This is to enable offline video playback even if Internet is not available*/
             if (!(actionType == AppCMSActionType.PLAY_VIDEO_PAGE && isVideoOffline) && !isNetworkConnected()) {
                 showDialog(DialogType.NETWORK, null, false, null);
@@ -1163,7 +1164,7 @@ public class AppCMSPresenter {
                                     showEntitlementDialog(DialogType.UNKNOWN_SUBSCRIPTION_FOR_UPGRADE);
                                 } else if (isUserSubscribed() &&
                                         (isExistingGooglePlaySubscriptionSuspended() ||
-                                        !upgradesAvailableForUser())) {
+                                                !upgradesAvailableForUser())) {
                                     showEntitlementDialog(DialogType.UPGRADE_UNAVAILABLE);
                                 } else {
                                     navigateToSubscriptionPlansPage(null, null);
@@ -8875,6 +8876,29 @@ public class AppCMSPresenter {
         boolean closeLauncher;
         int currentlyPlayingIndex;
         List<String> relateVideoIds;
+    }
+
+    public void openVideoPageFromSearch(String[] searchResultClick) {
+        String permalink = searchResultClick[3];
+        String action = currentActivity.getString(R.string.app_cms_action_videopage_key);
+        String title = searchResultClick[0];
+        String runtime = searchResultClick[1];
+        Log.d(TAG, "Launching " + permalink + ":" + action);
+        if (!launchButtonSelectedAction(permalink,
+                action,
+                title,
+                null,
+                null,
+                true,
+                0,
+                null)) {
+            Log.e(TAG, "Could not launch action: " +
+                    " permalink: " +
+                    permalink +
+                    " action: " +
+                    action);
+        }
+
     }
 
 }
