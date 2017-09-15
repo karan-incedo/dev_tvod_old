@@ -426,8 +426,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.setmFireBaseAnalytics(mFireBaseAnalytics);
         }
 
-        closeButton.setOnClickListener(v ->
-                appCMSPresenter.sendCloseOthersAction(null, true));
+        closeButton.setOnClickListener(v ->{
+                    View view = this.getCurrentFocus();
+                    if (view != null) {
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
+                    appCMSPresenter.sendCloseOthersAction(null, true);
+                }
+                );
 
         inflateCastMiniController();
 

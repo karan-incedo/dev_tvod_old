@@ -15,6 +15,7 @@ import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -149,6 +150,9 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         appCMSCloseButton.setOnClickListener(v -> finish());
 
         handleIntent(getIntent());
+
+
+
     }
 
     private void sendFirebaseAnalyticsEvents() {

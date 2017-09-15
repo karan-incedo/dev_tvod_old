@@ -3,6 +3,7 @@
     android:id="@+id/app_cms_search_results_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
     android:orientation="vertical">
 
     <ImageButton
@@ -19,6 +20,7 @@
         android:id="@+id/app_cms_searchbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         android:background="@android:color/white" />
 
     <FrameLayout
