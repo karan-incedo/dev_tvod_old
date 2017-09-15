@@ -660,7 +660,7 @@ public class AppCMSPresenter {
         if (currentActivity != null &&
                 !loadingPage && appCMSMain != null &&
                 !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
-                !TextUtils.isEmpty(appCMSMain.getSite())) {
+                !TextUtils.isEmpty(appCMSSite.getGist().getSiteInternalName())) {
 
             boolean entitlementActive = true;
             boolean svodServiceType =
@@ -1160,7 +1160,7 @@ public class AppCMSPresenter {
                         adsUrl = currentActivity.getString(R.string.app_cms_ads_api_url,
                                 getPermalinkCompletePath(pagePath),
                                 now.getTime(),
-                                appCMSMain.getSite());
+                                appCMSSite.getGist().getSiteInternalName());
 
                         String backgroundColor = appCMSMain.getBrand()
                                 .getGeneral()
@@ -2634,7 +2634,7 @@ public class AppCMSPresenter {
         return currentActivity.getString(R.string.app_cms_streaminginfo_api_url,
                 appCMSMain.getApiBaseUrl(),
                 filmId,
-                appCMSMain.getSite());
+                appCMSSite.getGist().getSiteInternalName());
     }
 
     public String getDownloadedFileSize(String filmId) {
@@ -8075,11 +8075,11 @@ public class AppCMSPresenter {
             if (currentActivity != null &&
                     !loadingPage && appCMSMain != null &&
                     !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
-                    !TextUtils.isEmpty(appCMSMain.getSite())) {
+                    !TextUtils.isEmpty(appCMSSite.getGist().getSiteInternalName())) {
                 url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
                         appCMSMain.getApiBaseUrl(),
                         filmId,
-                        appCMSMain.getSite());
+                        appCMSSite.getGist().getSiteInternalName());
             }
         } else {
             ContentDatum contentDatum = realmController.getDownloadById(
@@ -8105,7 +8105,7 @@ public class AppCMSPresenter {
         String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
                 appCMSMain.getApiBaseUrl(),
                 filmIds,
-                appCMSMain.getSite());
+                appCMSSite.getGist().getSiteInternalName());
         GetAppCMSVideoDetailAsyncTask.Params params =
                 new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
                         .authToken(getAuthToken()).build();
@@ -8170,7 +8170,7 @@ public class AppCMSPresenter {
                         currentActivity.getString(R.string.app_cms_ads_api_url,
                                 getPermalinkCompletePath(pagePath),
                                 now.getTime(),
-                                appCMSMain.getSite()));
+                                appCMSSite.getGist().getSiteInternalName()));
                 playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_bg_color_key),
                         appCMSMain.getBrand()
                                 .getGeneral()
