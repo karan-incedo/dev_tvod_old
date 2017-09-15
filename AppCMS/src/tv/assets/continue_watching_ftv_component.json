@@ -34,7 +34,7 @@
           "height": 430
         }
       },
-      "trayClickAction": "play",
+      "trayClickAction": "watchVideo",
       "components": [
         {
           "layout": {
@@ -64,6 +64,20 @@
           "fontFamily": "OpenSans",
           "type": "label",
           "key": "thumbnailTitle"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "yAxis": 368,
+              "xAxis": 0,
+              "height": 8,
+              "padding": 6
+            }
+          },
+          "progressColor": "008EE0",
+          "unprogressColor": "0A151C",
+          "type": "progressView",
+          "key": "progressView"
         }
       ],
       "type": "collectionGrid",

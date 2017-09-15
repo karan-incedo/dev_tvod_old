@@ -104,18 +104,6 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                         " title: " +
                         title);
             }
-
-         /*   if (!appCMSPresenter.launchVideoPlayer(rowData.contentData , -1 , null , 0)) {
-                ((AppCmsHomeActivity)getActivity()).pageLoading(false);
-                Log.e(TAG, "Could not launch play action: " +
-                        " filmId: " +
-                        filmId +
-                        " permaLink: " +
-                        permaLink +
-                        " title: " +
-                        title);
-            }*/
-
         }
     }
 
@@ -128,31 +116,42 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
 
-            BrowseFragmentRowData rowData = (BrowseFragmentRowData)item;
+            BrowseFragmentRowData rowData = (BrowseFragmentRowData) item;
             ContentDatum data = rowData.contentData;
             //String hls = rowData.contentData.getStreamingInfo().getVideoAssets().getHls();
             Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
-            String permalink = data.getGist().getPermalink();
-            String action = "play";
-            String title = data.getGist().getTitle();
-            String hlsUrl = getHlsUrl(data);
-            String[] extraData = new String[3];
-            extraData[0] = permalink;
-            extraData[1] = hlsUrl;
-            extraData[2] = data.getGist().getId();
-            Log.d(TAG, "Launching " + permalink + ": " + action);
-            if (!appCMSPresenter.launchTVButtonSelectedAction(permalink,
-                    action,
-                    title,
-                    extraData,
-                    false)) {
-                Log.e(TAG, "Could not launch action: " +
-                        " permalink: " +
-                        permalink +
-                        " action: " +
-                        action +
-                        " hlsUrl: " +
-                        hlsUrl);
+
+            String action = /*"play"*/rowData.action;
+            if (action.equalsIgnoreCase(getString(R.string.app_cms_action_watchvideo_key))) {
+                pushedPlayKey();
+            } else {
+                String permalink = data.getGist().getPermalink();
+                String title = data.getGist().getTitle();
+                String hlsUrl = getHlsUrl(data);
+                String[] extraData = new String[4];
+                extraData[0] = permalink;
+                extraData[1] = hlsUrl;
+                extraData[2] = data.getGist().getId();
+                if (null != data.getContentDetails()
+                        && null != data.getContentDetails().getClosedCaptions()
+                        && null != data.getContentDetails().getClosedCaptions().get(0)
+                        && null != data.getContentDetails().getClosedCaptions().get(0).getUrl()) {
+                    extraData[3] = data.getContentDetails().getClosedCaptions().get(0).getUrl();
+                }
+                Log.d(TAG, "Launching " + permalink + ": " + action);
+                if (!appCMSPresenter.launchTVButtonSelectedAction(permalink,
+                        action,
+                        title,
+                        extraData,
+                        false)) {
+                    Log.e(TAG, "Could not launch action: " +
+                            " permalink: " +
+                            permalink +
+                            " action: " +
+                            action +
+                            " hlsUrl: " +
+                            hlsUrl);
+                }
             }
         }
     }

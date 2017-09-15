@@ -4,17 +4,21 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.ClipDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.nfc.Tag;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -265,6 +269,22 @@ public class Utils {
         return res;
     }
 
+    public static Drawable getProgressDrawable(Context context , String unProgressColor , AppCMSPresenter appCMSPresenter) {
+        ShapeDrawable shape = new ShapeDrawable();
+        shape.getPaint().setStyle(Paint.Style.FILL);
+        shape.getPaint().setColor(Color.parseColor(getColor(context,unProgressColor)));
+        ShapeDrawable shapeD = new ShapeDrawable();
+        shapeD.getPaint().setStyle(Paint.Style.FILL);
+        shapeD.getPaint().setColor(
+                Color.parseColor(getFocusColor(context,appCMSPresenter)));
+        ClipDrawable clipDrawable = new ClipDrawable(shapeD, Gravity.LEFT,
+                ClipDrawable.HORIZONTAL);
+        LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{
+                 shape , clipDrawable});
+        return layerDrawable;
+    }
+
+
     public static LayerDrawable getNavigationSelectedState(Context context , AppCMSPresenter appCMSPresenter , boolean isSubNavigation){
         GradientDrawable focusedLayer = new GradientDrawable();
         focusedLayer.setShape(GradientDrawable.RECTANGLE);
@@ -498,6 +518,12 @@ public class Utils {
             color =  appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor();
         }
         return color;
+    }
+
+    public static double getPercentage(long runtime , long watchedTime){
+        double percentage = 0;
+        percentage = ((double)watchedTime / (double) runtime ) * 100;
+        return percentage;
     }
 
 }
