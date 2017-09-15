@@ -5817,6 +5817,7 @@ public class AppCMSPresenter {
                 if (!isNetworkConnected()) {
                     currentActivity.runOnUiThread(() -> {
                         try {
+                            beaconRequest.setTstampoverride(getCurrentTimeStamp());
                             realmController.addOfflineBeaconData(beaconRequest.convertToOfflineBeaconData());
                         } catch (Exception e) {
                             Log.e(TAG, "Error adding offline Beacon data: " + e.getMessage());
@@ -5898,7 +5899,6 @@ public class AppCMSPresenter {
         beaconRequest.setUid(uid);
         beaconRequest.setPa(event.toString());
         beaconRequest.setMedia_type(mediaType);
-        beaconRequest.setTstampoverride(getCurrentTimeStamp());
         beaconRequest.setStream_id(streamId);
         beaconRequest.setDp1(currentActivity.getString(R.string.app_cms_beacon_dpm_android));
         beaconRequest.setUrl(getPermalinkCompletePath(screenName));
@@ -5926,7 +5926,7 @@ public class AppCMSPresenter {
         if (usingChromecast) {
             beaconRequest.setPlayer("Chromecast");
         } else {
-            beaconRequest.setPlayer("Video Player");
+            beaconRequest.setPlayer("Native");
         }
 
 

@@ -194,6 +194,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                                         Log.e(TAG, e.getMessage());
                                                     }
 
+                                                } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_INTERRUPTED) {
+                                                    holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
+                                                    holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
+                                                            android.R.drawable.stat_sys_warning));
+                                                    holder.appCMSContinueWatchingSize.setText("Remove".toUpperCase());
+                                                    holder.appCMSContinueWatchingSize.setOnClickListener(v -> delete(contentDatum, position));
                                                 } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_RUNNING) {
                                                     holder.appCMSContinueWatchingSize.setText("Cancel");
                                                 }
@@ -747,9 +753,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(),
                                     userVideoDownloadStatus -> {
 
+                                        ((ViewHolder) mRecyclerView.findViewHolderForAdapterPosition(position)).appCMSContinueWatchingDeleteButton.setImageBitmap(null);
                                         notifyItemRangeRemoved(position,getItemCount());// change made for SVFA-2054
                                         adapterData.remove(contentDatum);
-                                        notifyDataSetChanged();
+                                        notifyItemRangeChanged(position, getItemCount());
 
                                         //notifyItemRangeChanged(position, getItemCount());
                                     }));
