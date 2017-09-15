@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -1311,9 +1312,8 @@ public class ViewCreator {
                                             false));
                         } else {
                             ((RecyclerView) componentViewResult.componentView)
-                                    .setLayoutManager(new LinearLayoutManager(context,
-                                            LinearLayoutManager.HORIZONTAL,
-                                            false));
+                                    .setLayoutManager(new GridLayoutManager(context, 2,
+                                            GridLayoutManager.VERTICAL, false));
                         }
 
                         appCMSViewAdapter = new AppCMSViewAdapter(context,
@@ -2610,13 +2610,13 @@ public class ViewCreator {
                 int switchOffColor = Color.parseColor(
                         appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor());
                 ColorStateList colorStateList = new ColorStateList(
-                        new int[][] {
-                                new int[] {android.R.attr.state_checked},
-                                new int[] {}
-                        }, new int[] {
-                                switchOnColor,
-                                switchOffColor
-                        });
+                        new int[][]{
+                                new int[]{android.R.attr.state_checked},
+                                new int[]{}
+                        }, new int[]{
+                        switchOnColor,
+                        switchOffColor
+                });
                 ((Switch) componentViewResult.componentView).setThumbTintList(colorStateList);
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                     ((Switch) componentViewResult.componentView).setTrackTintMode(PorterDuff.Mode.MULTIPLY);
