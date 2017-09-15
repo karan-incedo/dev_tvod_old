@@ -15,7 +15,6 @@ import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -30,7 +29,6 @@ import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSSearchItemAdapter;
 import com.viewlift.views.adapters.SearchSuggestionsAdapter;
-import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
 
 import java.io.IOException;
