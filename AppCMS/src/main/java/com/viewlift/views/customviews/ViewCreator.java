@@ -447,7 +447,8 @@ public class ViewCreator {
                                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
                                                             videoDescription,
                                                             appCMSPresenter,
-                                                            false);
+                                                            false,
+                                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
                                             textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
                                         }
                                     }
@@ -1905,8 +1906,8 @@ public class ViewCreator {
             case PAGE_TEXTVIEW_KEY:
                 componentViewResult.componentView = new TextView(context);
                 int textColor = ContextCompat.getColor(context, R.color.colorAccent);
-                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())) {
-                    textColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor())) {
+                    textColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
                 } else if (component.getStyles() != null) {
                     if (!TextUtils.isEmpty(component.getStyles().getColor())) {
                         textColor = Color.parseColor(getColor(context, component.getStyles().getColor()));
@@ -2004,7 +2005,8 @@ public class ViewCreator {
                                                 moduleAPI.getContentData().get(0).getGist().getTitle(),
                                                 autoplayVideoDescription,
                                                 appCMSPresenter,
-                                                true);
+                                                true,
+                                                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
                                 viewTreeObserver.addOnGlobalLayoutListener(viewCreatorMultiLineLayoutListener);
                             }
                             break;
@@ -2041,7 +2043,8 @@ public class ViewCreator {
                                                 moduleAPI.getContentData().get(0).getGist().getTitle(),
                                                 videoDescription,
                                                 appCMSPresenter,
-                                                false);
+                                                false,
+                                                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
                                 textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
                             }
                             break;
@@ -2502,6 +2505,7 @@ public class ViewCreator {
                         starringTitle,
                         starringListSb.toString(),
                         textColor,
+                        Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()),
                         BaseView.getFontSizeKey(context, component.getLayout()),
                         BaseView.getFontSizeValue(context, component.getLayout()));
 
