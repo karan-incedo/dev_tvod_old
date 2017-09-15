@@ -304,11 +304,14 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     price = data.getPlanDetails().get(0).getRecurringPaymentAmount();
                                 }
 
+                                double discountedPrice = data.getPlanDetails().get(0).getRecurringPaymentAmount();
+
                                 appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
                                         data.getId(),
                                         data.getPlanDetails().get(0).getCountryCode(),
                                         data.getName(),
                                         price,
+                                        discountedPrice,
                                         data.getPlanDetails().get(0).getRecurringPaymentCurrencyCode(),
                                         data.getPlanDetails().get(0).getCountryCode(),
                                         data.getRenewable()

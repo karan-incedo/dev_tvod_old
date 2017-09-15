@@ -466,6 +466,7 @@ public class AppCMSPresenter {
     private String planToPurchaseName;
     private String apikey;
     private double planToPurchasePrice;
+    private double planToPurchaseDiscountedPrice;
     private String planReceipt;
     private GoogleApiClient googleApiClient;
     private long downloaded = 0L;
@@ -1780,6 +1781,7 @@ public class AppCMSPresenter {
                                               String currency,
                                               String planName,
                                               double planPrice,
+                                              double discountedPrice,
                                               String recurringPaymentCurrencyCode,
                                               String countryCode,
                                               boolean isRenewable) {
@@ -1790,6 +1792,7 @@ public class AppCMSPresenter {
             planToPurchaseName = planName;
             currencyOfPlanToPurchase = currency;
             planToPurchasePrice = planPrice;
+            planToPurchaseDiscountedPrice = discountedPrice;
             currencyCode = recurringPaymentCurrencyCode;
             this.countryCode = countryCode;
             this.isRenewable = isRenewable;
@@ -1823,7 +1826,7 @@ public class AppCMSPresenter {
         Log.v("authtoken", getAuthToken());
         Log.v("apikey", apikey);
         try {
-            String strAmount = Double.toString(planToPurchasePrice);
+            String strAmount = Double.toString(planToPurchaseDiscountedPrice);
             Intent intent = new Intent(currentActivity, WebViewActivity.class);
             //Intent intent = new Intent(currentActivity,PaymentOptionsActivity.class);
             intent.putExtra(AvenuesParams.CURRENCY, currencyCode);
