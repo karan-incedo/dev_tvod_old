@@ -288,6 +288,7 @@ public class AppCMSPresenter {
     private static final String ACTIVE_SUBSCRIPTION_PLAN_NAME = "active_subscription_plan_name_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PRICE_NAME = "active_subscription_plan_price_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PROCESSOR_NAME = "active_subscription_payment_processor_key";
+    private static final String ACTIVE_SUBSCRIPTION_COUNTRY_CODE = "active_subscription_country_code_key";
     private static final String IS_USER_SUBSCRIBED = "is_user_subscribed_pref_key";
     private static final String AUTO_PLAY_ENABLED_PREF_NAME = "autoplay_enabled_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_DESCRIPTION = "existing_google_play_subscription_title_pref_key";
@@ -2010,7 +2011,7 @@ public class AppCMSPresenter {
 
     public void initiateSubscriptionCancellation() {
         if (currentActivity != null) {
-            if (!TextUtils.isEmpty(countryCode) &&
+            if (!TextUtils.isEmpty(getActiveSubscriptionCountryCode()) &&
                     appCMSMain != null &&
                     appCMSMain.getPaymentProviders() != null &&
                     appCMSMain.getPaymentProviders().getCcav() != null &&
@@ -4867,6 +4868,22 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public String getActiveSubscriptionCountryCode() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_SUBSCRIPTION_COUNTRY_CODE, 0);
+            return sharedPrefs.getString(ACTIVE_SUBSCRIPTION_COUNTRY_CODE, null);
+        }
+        return null;
+    }
+
+    public boolean setActiveSubscriptionCountryCode(String countryCode) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_SUBSCRIPTION_COUNTRY_CODE, 0);
+            return sharedPrefs.edit().putString(ACTIVE_SUBSCRIPTION_COUNTRY_CODE, countryCode).commit();
+        }
+        return false;
+    }
+
     public String getActiveSubscriptionId() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_SUBSCRIPTION_ID, 0);
@@ -4991,6 +5008,7 @@ public class AppCMSPresenter {
             setActiveSubscriptionPrice(null);
             setActiveSubscriptionId(null);
             setActiveSubscriptionSku(null);
+            setActiveSubscriptionCountryCode(null);
             setActiveSubscriptionPlanName(null);
             setActiveSubscriptionReceipt(null);
             setRefreshToken(null);
@@ -6118,6 +6136,7 @@ public class AppCMSPresenter {
                                         AppCMSSubscriptionPlanResult.class));
                             }
                             setActiveSubscriptionSku(skuToPurchase);
+                            setActiveSubscriptionCountryCode(countryCode);
                             AppsFlyerUtils.subscriptionEvent(currentActivity,
                                     true,
                                     currentActivity.getString(R.string.app_cms_appsflyer_dev_key),
@@ -6346,6 +6365,7 @@ public class AppCMSPresenter {
                                                                     SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
                                                                     subscriptionPlan.setSku(contentDatum.getIdentifier());
                                                                     subscriptionPlan.setPlanId(contentDatum.getId());
+                                                                    subscriptionPlan.setCountryCode(contentDatum.getPlanDetails().get(0).getCountryCode());
                                                                     if (!contentDatum.getPlanDetails().isEmpty()) {
                                                                         subscriptionPlan.setSubscriptionPrice(contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount());
                                                                     }
@@ -6400,8 +6420,11 @@ public class AppCMSPresenter {
                                                                                     setActiveSubscriptionId(subscribedPlan.getPlanId());
                                                                                     setActiveSubscriptionPlanName(subscribedPlan.getPlanName());
                                                                                     setActiveSubscriptionPrice(String.valueOf(subscribedPlan.getSubscriptionPrice()));
-                                                                                } else if (appCMSSubscriptionPlanResult.getSubscriptionPlanInfo() != null) {
+                                                                                    setActiveSubscriptionCountryCode(subscribedPlan.getCountryCode());
+                                                                                } else if (appCMSSubscriptionPlanResult.getSubscriptionPlanInfo() != null &&
+                                                                                        appCMSSubscriptionPlanResult.getSubscriptionInfo() != null) {
                                                                                     setActiveSubscriptionSku(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
+                                                                                    setActiveSubscriptionCountryCode(appCMSSubscriptionPlanResult.getSubscriptionInfo().getCountryCode());
                                                                                     setActiveSubscriptionId(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
                                                                                     setActiveSubscriptionPlanName(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
                                                                                     String countryCode = appCMSSubscriptionPlanResult.getSubscriptionInfo().getCountryCode();
@@ -6464,6 +6487,7 @@ public class AppCMSPresenter {
                                                         SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
                                                         subscriptionPlan.setSku(contentDatum.getIdentifier());
                                                         subscriptionPlan.setPlanId(contentDatum.getId());
+                                                        subscriptionPlan.setCountryCode(contentDatum.getPlanDetails().get(0).getCountryCode());
                                                         if (!contentDatum.getPlanDetails().isEmpty()) {
                                                             subscriptionPlan.setSubscriptionPrice(contentDatum.getPlanDetails().get(0).getStrikeThroughPrice());
                                                         }
@@ -6523,9 +6547,11 @@ public class AppCMSPresenter {
                                                                     setActiveSubscriptionId(subscribedPlan.getPlanId());
                                                                     setActiveSubscriptionPlanName(subscribedPlan.getPlanName());
                                                                     setActiveSubscriptionPrice(String.valueOf(subscribedPlan.getSubscriptionPrice()));
+                                                                    setActiveSubscriptionCountryCode(subscribedPlan.getCountryCode());
                                                                 } else if (appCMSSubscriptionPlanResult.getSubscriptionPlanInfo() != null &&
                                                                         appCMSSubscriptionPlanResult.getSubscriptionInfo() != null) {
                                                                     setActiveSubscriptionSku(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getIdentifier());
+                                                                    setActiveSubscriptionCountryCode(appCMSSubscriptionPlanResult.getSubscriptionInfo().getCountryCode());
                                                                     setActiveSubscriptionId(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
                                                                     setActiveSubscriptionPlanName(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
                                                                     String countryCode = appCMSSubscriptionPlanResult.getSubscriptionInfo().getCountryCode();

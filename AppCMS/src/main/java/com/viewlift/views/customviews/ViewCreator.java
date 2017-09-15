@@ -1,6 +1,7 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -2599,7 +2600,20 @@ public class ViewCreator {
             case PAGE_TOGGLE_BUTTON_KEY:
                 componentViewResult.componentView = new Switch(context);
                 ((Switch) componentViewResult.componentView).getTrackDrawable().setTint(Color.parseColor(
-                        appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+                int switchOnColor = Color.parseColor(
+                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
+                int switchOffColor = Color.parseColor(
+                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor());
+                ColorStateList colorStateList = new ColorStateList(
+                        new int[][] {
+                                new int[] {android.R.attr.state_checked},
+                                new int[] {}
+                        }, new int[] {
+                                switchOnColor,
+                                switchOffColor
+                        });
+                ((Switch) componentViewResult.componentView).setThumbTintList(colorStateList);
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                     ((Switch) componentViewResult.componentView).setTrackTintMode(PorterDuff.Mode.MULTIPLY);
                 }
