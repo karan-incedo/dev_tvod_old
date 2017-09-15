@@ -485,6 +485,7 @@ public class AppCMSPresenter {
     private DownloadQueueThread downloadQueueThread;
     private boolean isVideoPlayerStarted;
     private ReferenceQueue<Object> referenceQueue;
+    private EntitlementCheckActive entitlementCheckActive;
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -587,6 +588,19 @@ public class AppCMSPresenter {
         this.launchType = LaunchType.LOGIN_AND_SIGNUP;
 
         this.referenceQueue = referenceQueue;
+
+        this.entitlementCheckActive = new EntitlementCheckActive(() -> {
+            launchButtonSelectedAction(entitlementCheckActive.getPagePath(),
+                    entitlementCheckActive.getAction(),
+                    entitlementCheckActive.getFilmTitle(),
+                    entitlementCheckActive.getExtraData(),
+                    entitlementCheckActive.getContentDatum(),
+                    entitlementCheckActive.isCloseLauncher(),
+                    entitlementCheckActive.getCurrentlyPlayingIndex(),
+                    entitlementCheckActive.getRelateVideoIds());
+        }, () -> {
+            showEntitlementDialog(DialogType.SUBSCRIPTION_REQUIRED);
+        });
     }
 
     /*does not let user enter space in edittext*/
@@ -720,8 +734,20 @@ public class AppCMSPresenter {
                                     if (!isNetworkConnected()) {
                                         // Fix of SVFA-1435
                                         openDownloadScreenForNetworkError(false);
+                                    } else {
+                                        if (watchedTime >= 0) {
+                                            contentDatum.getGist().setWatchedTime(watchedTime);
+                                        }
+                                        launchButtonSelectedAction(
+                                                contentDatum.getGist().getPermalink(),
+                                                action,
+                                                contentDatum.getGist().getTitle(),
+                                                null,
+                                                contentDatum,
+                                                false,
+                                                currentlyPlayingIndex,
+                                                relateVideoIds);
                                     }
-
                                 }
 
                             } catch (Exception e) {
@@ -886,6 +912,97 @@ public class AppCMSPresenter {
         }
     }
 
+    private static class EntitlementCheckActive implements Action1<UserIdentity> {
+        private String pagePath;
+        private String action;
+        private String filmTitle;
+        private String[] extraData;
+        private ContentDatum contentDatum;
+        private boolean closeLauncher;
+        private int currentlyPlayingIndex;
+        private List<String> relateVideoIds;
+        private final Action0 onFailAction;
+        private final Action0 onSuccessAction;
+
+        public EntitlementCheckActive(Action0 onSuccessAction, Action0 onFailAction) {
+            this.onSuccessAction = onSuccessAction;
+            this.onFailAction = onFailAction;
+        }
+
+        @Override
+        public void call(UserIdentity userIdentity) {
+            if (!userIdentity.isSubscribed()) {
+                onFailAction.call();
+            } else {
+                onSuccessAction.call();
+            }
+        }
+
+        public String getPagePath() {
+            return pagePath;
+        }
+
+        public void setPagePath(String pagePath) {
+            this.pagePath = pagePath;
+        }
+
+        public String getAction() {
+            return action;
+        }
+
+        public void setAction(String action) {
+            this.action = action;
+        }
+
+        public String getFilmTitle() {
+            return filmTitle;
+        }
+
+        public void setFilmTitle(String filmTitle) {
+            this.filmTitle = filmTitle;
+        }
+
+        public String[] getExtraData() {
+            return extraData;
+        }
+
+        public void setExtraData(String[] extraData) {
+            this.extraData = extraData;
+        }
+
+        public ContentDatum getContentDatum() {
+            return contentDatum;
+        }
+
+        public void setContentDatum(ContentDatum contentDatum) {
+            this.contentDatum = contentDatum;
+        }
+
+        public boolean isCloseLauncher() {
+            return closeLauncher;
+        }
+
+        public void setCloseLauncher(boolean closeLauncher) {
+            this.closeLauncher = closeLauncher;
+        }
+
+        public int getCurrentlyPlayingIndex() {
+            return currentlyPlayingIndex;
+        }
+
+        public void setCurrentlyPlayingIndex(int currentlyPlayingIndex) {
+            this.currentlyPlayingIndex = currentlyPlayingIndex;
+        }
+
+        public List<String> getRelateVideoIds() {
+            return relateVideoIds;
+        }
+
+        public void setRelateVideoIds(List<String> relateVideoIds) {
+            this.relateVideoIds = relateVideoIds;
+        }
+    }
+
     public boolean launchButtonSelectedAction(String pagePath,
                                               String action,
                                               String filmTitle,
@@ -926,6 +1043,7 @@ public class AppCMSPresenter {
                 if ((actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
                         actionType == AppCMSActionType.WATCH_TRAILER) &&
                         !isVideoPlayerStarted) {
+
                     isVideoPlayerStarted = true;
                     boolean entitlementActive = true;
                     boolean svodServiceType =
@@ -937,7 +1055,15 @@ public class AppCMSPresenter {
                             !contentDatum.getGist().getFree()) {
                         if (isUserLoggedIn()) {
                             if (!isUserSubscribed()) {
-                                showEntitlementDialog(DialogType.SUBSCRIPTION_REQUIRED);
+                                entitlementCheckActive.setPagePath(pagePath);
+                                entitlementCheckActive.setAction(action);
+                                entitlementCheckActive.setFilmTitle(filmTitle);
+                                entitlementCheckActive.setExtraData(extraData);
+                                entitlementCheckActive.setContentDatum(contentDatum);
+                                entitlementCheckActive.setCloseLauncher(closeLauncher);
+                                entitlementCheckActive.setCurrentlyPlayingIndex(currentlyPlayingIndex);
+                                entitlementCheckActive.setRelateVideoIds(relateVideoIds);
+                                getUserData(entitlementCheckActive);
                                 entitlementActive = false;
                             }
                         } else {
@@ -7330,16 +7456,19 @@ public class AppCMSPresenter {
         try {
             if (!isUserLoggedIn() && tryCount == 0) {
                 signinAnonymousUser(tryCount, null, PlatformType.ANDROID);
-            } else if (isUserLoggedIn() && shouldRefreshAuthToken() && tryCount == 0) {
-                refreshIdentity(getRefreshToken(),
-                        () -> {
-                            try {
-                                getAppCMSAndroid(tryCount + 1);
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error refreshing identity while attempting to retrieving AppCMS Android data: ");
-                                launchErrorActivity(platformType);
-                            }
-                        });
+            } else if (isUserLoggedIn() && tryCount == 0) {
+                getUserData(userIdentity -> {
+                    try {
+                        setLoggedInUser(userIdentity.getUserId());
+                        setLoggedInUserEmail(userIdentity.getEmail());
+                        setLoggedInUserName(userIdentity.getName());
+                        setIsUserSubscribed(userIdentity.isSubscribed());
+                        getAppCMSAndroid(tryCount + 1);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error refreshing identity while attempting to retrieving AppCMS Android data: ");
+                        launchErrorActivity(platformType);
+                    }
+                });
             } else {
                 GetAppCMSAndroidUIAsyncTask.Params params =
                         new GetAppCMSAndroidUIAsyncTask.Params.Builder()
