@@ -225,6 +225,10 @@ public class TVViewCreator {
                     AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
                     mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
                 }
+
+               /* module = new GsonBuilder().create().
+                        fromJson(Utils.loadJsonFromAssets(context, "carousel_ftv_component.json"), ModuleList.class);*/
+
                 for (Component component : module.getComponents()) {
                     createTrayModule(context, component, module.getLayout(), module, moduleAPI,
                             pageView, jsonValueKeyMap, appCMSPresenter, true);
@@ -235,8 +239,10 @@ public class TVViewCreator {
                     mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
                 }
 
-                module = new GsonBuilder().create().
-                        fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_component.json"), ModuleList.class);
+                if (context.getResources().getString(R.string.app_cms_page_continue_watching_module_key).equalsIgnoreCase(module.getView())) {
+                    module = new GsonBuilder().create().
+                            fromJson(Utils.loadJsonFromAssets(context, "continue_watching_ftv_component.json"), ModuleList.class);
+                }
 
                 for (Component component : module.getComponents()) {
                     createTrayModule(context, component, module.getLayout(), module, moduleAPI,
@@ -324,7 +330,7 @@ public class TVViewCreator {
             }
         } else {
 
-            if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_reset_password_module))) {
+           /* if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_reset_password_module))) {
                 module = new GsonBuilder().create().
                         fromJson(Utils.loadJsonFromAssets(context, "reset_password.json"), ModuleList.class);
             }
@@ -342,7 +348,7 @@ public class TVViewCreator {
             if(module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_setting_module))){
                 module = new GsonBuilder().create().
                         fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
-            }
+            }*/
 
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
@@ -446,6 +452,7 @@ public class TVViewCreator {
                         BrowseFragmentRowData rowData = new BrowseFragmentRowData();
                         rowData.contentData = contentData;
                         rowData.uiComponentList = components;
+                        rowData.action = component.getTrayClickAction();
                         listRowAdapter.add(rowData);
                         Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
                     }
@@ -482,6 +489,7 @@ public class TVViewCreator {
                             BrowseFragmentRowData rowData = new BrowseFragmentRowData();
                             rowData.contentData = contentData;
                             rowData.uiComponentList = components;
+                            rowData.action = component.getTrayClickAction();
                             traylistRowAdapter.add(rowData);
                             Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
                         }

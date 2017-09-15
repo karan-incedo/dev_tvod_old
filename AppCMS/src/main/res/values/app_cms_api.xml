@@ -9,10 +9,10 @@
 
     <!--Snagfilms-->
 
-    <!--<string name="app_cms_app_name">3f5e193b-2e51-4853-839e-618e62896deb</string>-->
+    <string name="app_cms_app_name">3f5e193b-2e51-4853-839e-618e62896deb</string>
 
     <!--Hoichoi QA-->
-    <string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>
+  <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>-->
 
 
 
@@ -241,7 +241,7 @@
     <string name="app_cms_action_homepage_nav">Home</string>
     <string name="app_cms_action_movies_nav">Movies</string>
     <string name="app_cms_action_videopage_key">play</string>
-    <string name="app_cms_action_historypage_key">My History</string>
+     <string name="app_cms_action_historypage_key">My History</string>
     <string name="app_cms_action_watchvideo_key">watchVideo</string>
     <string name="app_cms_action_watchtrailervideo_key">watchTrailer</string>
     <string name="app_cms_action_share_key">share</string>

@@ -13,4 +13,5 @@ public class BrowseFragmentRowData {
 
          public ContentDatum contentData;
          public List<Component> uiComponentList;
+         public String action;
 }
