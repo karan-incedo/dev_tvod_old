@@ -40,7 +40,9 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,9 +80,14 @@ public class PaymentOptionsActivity extends AppCompatActivity {
         id_rv_payment_options.setLayoutManager(mLayoutManager);
         id_rl_parent_layout.setVisibility(View.GONE);
         initialScreen = getIntent();
+
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM");
+        String formattedDate = df.format(c.getTime());
+
         id_tv_text_payment = findViewById(R.id.id_tv_text_payment);
         id_tv_text_payment.setText("First Payment Rs. " + initialScreen.getStringExtra(AvenuesParams.AMOUNT).toString().trim() +
-                " (+tax if req'd) on MM/DD");
+                " (+tax if req'd) on " + formattedDate);
         getDataAsyncTask = new GetData() ;
         getDataAsyncTask.execute() ;
         Log.v("apibaseurl",initialScreen.getStringExtra("api_base_url")) ;
@@ -206,6 +213,7 @@ public class PaymentOptionsActivity extends AppCompatActivity {
                         intent.putExtra("rsa_key",rsa_key) ;
                         intent.putExtras(getIntent()) ;
                         startActivity(intent);
+                        finish();
                     }
                 }));
             }
