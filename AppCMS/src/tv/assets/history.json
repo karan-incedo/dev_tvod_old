@@ -105,7 +105,10 @@
               "layout": {
                 "ftv": {
                   "leftMargin": 95,
-                  "width": 0,
+                  "yAxis": 107,
+                  "xAxis": 0,
+                  "width": 210,
+                  "padding": 6,
                   "height": 8
                 }
               },

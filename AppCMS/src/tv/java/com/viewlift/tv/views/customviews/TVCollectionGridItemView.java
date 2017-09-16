@@ -1,8 +1,6 @@
 package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -32,7 +30,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import static com.viewlift.tv.utility.Utils.getColor;
 import static com.viewlift.tv.utility.Utils.getItemViewHeight;
 import static com.viewlift.tv.utility.Utils.getItemViewWidth;
 import static com.viewlift.tv.utility.Utils.getViewHeight;
@@ -205,7 +202,7 @@ public class TVCollectionGridItemView extends TVBaseView {
                             TVCollectionGridItemView.this,
                             childComponent,
                             data));
-                    view.setBackground(Utils.getTrayBorder(context,borderColor,component));
+                    view.setBackground(Utils.getTrayBorder(context, borderColor, component));
                     view.setPadding(1, 3, 1, 3);
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
@@ -255,48 +252,23 @@ public class TVCollectionGridItemView extends TVBaseView {
                         ((TextView) view).setText(MessageFormat.format(fmt, days));
                     }
                 }
-            } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
-                ProgressBar  progressView = new ProgressBar(context,
-                        null,
-                        android.R.attr.progressBarStyleHorizontal);
-                AppCMSPresenter appCMSPresenter = ((AppCMSApplication) context.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
-                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())) {
-                    int color = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
-                    ((ProgressBar) progressView).getProgressDrawable()
-                            .setColorFilter(color, PorterDuff.Mode.SRC_IN);
-                }
-
-                if (appCMSPresenter.isUserLoggedIn(context)) {
-                    ((ProgressBar) progressView).setMax(100);
-                    ((ProgressBar) progressView).setProgress(0);
-                    if (data != null &&
-                            data.getGist() != null) {
-                        if (data.getGist().getWatchedPercentage() > 0) {
-                            progressView.setVisibility(View.VISIBLE);
-                            ((ProgressBar) progressView)
-                                    .setProgress(data.getGist().getWatchedPercentage());
-                        } else {
-                            long watchedTime =
-                                    data.getGist().getWatchedTime();
-                            long runTime =
-                                    data.getGist().getRuntime();
-                            if (watchedTime > 0 && runTime > 0) {
-                                long percentageWatched = watchedTime / runTime;
-                                ((ProgressBar) progressView)
-                                        .setProgress((int) percentageWatched);
-                                progressView.setVisibility(View.VISIBLE);
-                            } else {
-                                progressView.setVisibility(View.INVISIBLE);
-                                ((ProgressBar) progressView).setProgress(0);
-                            }
-                        }
-                    } else {
-                        progressView.setVisibility(View.INVISIBLE);
-                        ((ProgressBar) progressView).setProgress(0);
-                    }
-                } else {
-                    progressView.setVisibility(View.GONE);
-                }
+            } else if (componentKey == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
+                AppCMSPresenter appCMSPresenter =
+                        ((AppCMSApplication) context.getApplicationContext())
+                                .getAppCMSPresenterComponent().appCMSPresenter();
+                int gridImagePadding = Integer.valueOf(
+                        childComponent.getLayout().getTv().getPadding() != null
+                        ? childComponent.getLayout().getTv().getPadding()
+                        : "0");
+                view.setPadding(gridImagePadding, 0, gridImagePadding, 0);
+                ((ProgressBar) view).setProgressDrawable(Utils.getProgressDrawable(
+                        context,
+                        childComponent.getUnprogressColor(),
+                        appCMSPresenter));
+                int progress = (int) Math.ceil(Utils.getPercentage(data.getGist().getRuntime(),
+                        data.getGist().getWatchedTime()));
+                ((ProgressBar) view).setProgress(progress);
+                view.setFocusable(false);
             }
             view.forceLayout();
         }
