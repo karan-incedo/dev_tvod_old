@@ -48,7 +48,14 @@ import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.VideoPlayerView;
 
+import org.threeten.bp.DateTimeUtils;
+import org.threeten.bp.Duration;
+import org.threeten.bp.Instant;
+import org.threeten.bp.temporal.ChronoUnit;
+
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import rx.functions.Action1;
 
@@ -169,6 +176,9 @@ public class AppCMSPlayVideoFragment extends Fragment
     private String closedCaptionUrl;
     private boolean isCastConnected;
 
+    private Timer entitlementCheckTimer;
+    private TimerTask entitlementCheckTimerTask;
+
     CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
         if (onClosePlayerEvent != null) {
             pauseVideo();
@@ -274,8 +284,25 @@ public class AppCMSPlayVideoFragment extends Fragment
         parentScreenName = getContext().getString(R.string.app_cms_beacon_video_player_parent_screen_name);
         setRetainInstance(true);
 
-        AppsFlyerUtils.filmViewingEvent(getContext(), primaryCategory, filmId, appCMSPresenter);
+        if (appCMSPresenter.isAppSVOD()) {
+            entitlementCheckTimerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    appCMSPresenter.getUserData(userIdentity -> {
+                        if (!userIdentity.isSubscribed()) {
+                            pauseVideo();
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED);
+                        }
+                    });
+                }
+            };
+            entitlementCheckTimer = new Timer();
+            Date fiveMinuteStart = DateTimeUtils.toDate(Instant.now().plus(5, ChronoUnit.MINUTES));
+            long fiveMinuteDelay = Duration.ZERO.plus(5, ChronoUnit.MINUTES).get(ChronoUnit.MILLIS);
+            entitlementCheckTimer.schedule(entitlementCheckTimerTask, fiveMinuteStart, fiveMinuteDelay);
+        }
 
+        AppsFlyerUtils.filmViewingEvent(getContext(), primaryCategory, filmId, appCMSPresenter);
     }
 
     @Nullable

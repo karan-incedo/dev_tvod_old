@@ -1054,18 +1054,16 @@ public class AppCMSPresenter {
                             contentDatum.getGist() != null &&
                             !contentDatum.getGist().getFree()) {
                         if (isUserLoggedIn()) {
-                            if (!isUserSubscribed()) {
-                                entitlementCheckActive.setPagePath(pagePath);
-                                entitlementCheckActive.setAction(action);
-                                entitlementCheckActive.setFilmTitle(filmTitle);
-                                entitlementCheckActive.setExtraData(extraData);
-                                entitlementCheckActive.setContentDatum(contentDatum);
-                                entitlementCheckActive.setCloseLauncher(closeLauncher);
-                                entitlementCheckActive.setCurrentlyPlayingIndex(currentlyPlayingIndex);
-                                entitlementCheckActive.setRelateVideoIds(relateVideoIds);
-                                getUserData(entitlementCheckActive);
-                                entitlementActive = false;
-                            }
+                            entitlementCheckActive.setPagePath(pagePath);
+                            entitlementCheckActive.setAction(action);
+                            entitlementCheckActive.setFilmTitle(filmTitle);
+                            entitlementCheckActive.setExtraData(extraData);
+                            entitlementCheckActive.setContentDatum(contentDatum);
+                            entitlementCheckActive.setCloseLauncher(closeLauncher);
+                            entitlementCheckActive.setCurrentlyPlayingIndex(currentlyPlayingIndex);
+                            entitlementCheckActive.setRelateVideoIds(relateVideoIds);
+                            getUserData(entitlementCheckActive);
+                            entitlementActive = false;
                         } else {
                             showEntitlementDialog(DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED);
                             entitlementActive = false;
