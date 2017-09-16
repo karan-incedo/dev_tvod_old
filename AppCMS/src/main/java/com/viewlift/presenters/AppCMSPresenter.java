@@ -876,18 +876,22 @@ public class AppCMSPresenter {
         private List<String> relateVideoIds;
         private final Action0 onFailAction;
         private final Action0 onSuccessAction;
+        private boolean success;
 
         public EntitlementCheckActive(Action0 onSuccessAction, Action0 onFailAction) {
             this.onSuccessAction = onSuccessAction;
             this.onFailAction = onFailAction;
+            this.success = false;
         }
 
         @Override
         public void call(UserIdentity userIdentity) {
             if (!userIdentity.isSubscribed()) {
                 onFailAction.call();
+                success = false;
             } else {
                 onSuccessAction.call();
+                success = true;
             }
         }
 
@@ -954,6 +958,14 @@ public class AppCMSPresenter {
         public void setRelateVideoIds(List<String> relateVideoIds) {
             this.relateVideoIds = relateVideoIds;
         }
+
+        public boolean isSuccess() {
+            return success;
+        }
+
+        public void setSuccess(boolean success) {
+            this.success = success;
+        }
     }
 
     public boolean launchButtonSelectedAction(String pagePath,
@@ -1011,7 +1023,7 @@ public class AppCMSPresenter {
                                     appCMSMain.getFeatures().getFreePreview() != null &&
                                     appCMSMain.getFeatures().getFreePreview().isFreePreview();
 
-                            if (!freePreview) {
+                            if (!freePreview && !entitlementCheckActive.isSuccess()) {
                                 entitlementCheckActive.setPagePath(pagePath);
                                 entitlementCheckActive.setAction(action);
                                 entitlementCheckActive.setFilmTitle(filmTitle);
@@ -1030,6 +1042,7 @@ public class AppCMSPresenter {
                     }
 
                     if (entitlementActive) {
+                        entitlementCheckActive.setSuccess(false);
                         Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
                         boolean requestAds = !svodServiceType && actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
 
@@ -5378,6 +5391,7 @@ public class AppCMSPresenter {
 
     public void showEntitlementDialog(DialogType dialogType) {
         if (currentActivity != null) {
+
             String positiveButtonText = currentActivity.getString(R.string.app_cms_subscription_button_text);
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             String title = currentActivity.getString(R.string.app_cms_subscription_required_title);
