@@ -189,6 +189,12 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     appCMSPlayVideoPageContainer.setBackgroundColor(Color.parseColor(bgColor));
                 }
 
+                boolean freeContent = false;
+                if (binder.getContentData() != null && binder.getContentData().getGist() != null &&
+                        binder.getContentData().getGist().getFree()) {
+                    freeContent = binder.getContentData().getGist().getFree();
+                }
+
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 final AppCMSPlayVideoFragment appCMSPlayVideoFragment =
@@ -206,7 +212,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 watchedTime,
                                 videoImageUrl,
                                 closedCaptionUrl,
-                                contentRating,videoRunTime);
+                                contentRating,videoRunTime,
+                                freeContent);
                 fragmentTransaction.add(R.id.app_cms_play_video_page_container,
                         appCMSPlayVideoFragment,
                         getString(R.string.video_fragment_tag_key));

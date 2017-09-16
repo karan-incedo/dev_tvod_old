@@ -87,6 +87,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private String parentScreenName;
     private String adsUrl;
     private String parentalRating;
+    private boolean freeContent;
     private boolean shouldRequestAds;
     private LinearLayout videoPlayerInfoContainer;
     private RelativeLayout videoPlayerMainContainer;
@@ -212,7 +213,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                                                       long watchedTime,
                                                       String imageUrl,
                                                       String closedCaptionUrl,
-                                                      String parentalRating, long videoRunTime) {
+                                                      String parentalRating,
+                                                      long videoRunTime,
+                                                      boolean freeContent) {
         AppCMSPlayVideoFragment appCMSPlayVideoFragment = new AppCMSPlayVideoFragment();
         Bundle args = new Bundle();
         args.putString(context.getString(R.string.video_player_font_color_key), fontColor);
@@ -226,6 +229,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         args.putInt(context.getString(R.string.play_index_key), playIndex);
         args.putLong(context.getString(R.string.watched_time_key), watchedTime);
         args.putLong(context.getString(R.string.run_time_key), videoRunTime);
+        args.putBoolean(context.getString(R.string.free_content_key), freeContent);
 
         args.putString(context.getString(R.string.played_movie_image_url), imageUrl);
         args.putString(context.getString(R.string.video_player_closed_caption_key), closedCaptionUrl);
@@ -265,6 +269,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             closedCaptionUrl = args.getString(getContext().getString(R.string.video_player_closed_caption_key));
             primaryCategory = args.getString(getString(R.string.video_primary_category_key));
             parentalRating = args.getString(getString(R.string.video_player_content_rating_key));
+
+            freeContent = args.getBoolean(getString(R.string.free_content_key));
         }
 
         hlsUrl = hlsUrl.replaceAll(" ", "+");
@@ -285,7 +291,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         parentScreenName = getContext().getString(R.string.app_cms_beacon_video_player_parent_screen_name);
         setRetainInstance(true);
 
-        if (appCMSPresenter.isAppSVOD()) {
+        if (appCMSPresenter.isAppSVOD() && !freeContent) {
             entitlementCheckTimerTask = new TimerTask() {
                 @Override
                 public void run() {
@@ -738,7 +744,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     public void onDestroy() {
         super.onDestroy();
 
-        if (appCMSPresenter.isAppSVOD()) {
+        if (appCMSPresenter.isAppSVOD() && !freeContent) {
             if (entitlementCheckTimerTask != null) {
                 entitlementCheckTimerTask.cancel();
             }
