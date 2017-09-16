@@ -300,6 +300,10 @@ public class AppCMSPlayVideoFragment extends Fragment
                         if (!userIdentity.isSubscribed()) {
                             Log.d(TAG, "User is not subscribed - pausing video and showing Subscribe dialog");
                             pauseVideo();
+                            if (videoPlayerView != null) {
+                                videoPlayerView.disableController();
+                            }
+                            videoPlayerInfoContainer.setVisibility(View.VISIBLE);
                             appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED);
                         } else {
                             Log.d(TAG, "User is subscribed - resuming video");
@@ -370,6 +374,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerInfoContainer.bringToFront();
         videoPlayerView = rootView.findViewById(R.id.app_cms_video_player_container);
         videoPlayerView.setListener(this);
+        videoPlayerView.enableController();
 
         videoLoadingProgress = rootView.findViewById(R.id.app_cms_video_loading);
 
