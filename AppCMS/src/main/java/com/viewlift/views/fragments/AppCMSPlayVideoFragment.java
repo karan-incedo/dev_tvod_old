@@ -735,6 +735,20 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (appCMSPresenter.isAppSVOD()) {
+            if (entitlementCheckTimerTask != null) {
+                entitlementCheckTimerTask.cancel();
+            }
+            if (entitlementCheckTimer != null) {
+                entitlementCheckTimer.cancel();
+            }
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         videoPlayerView.setOnPlayerStateChanged(null);
         videoPlayerView.releasePlayer();
