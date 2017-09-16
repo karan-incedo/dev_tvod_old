@@ -289,9 +289,13 @@ public class AppCMSPlayVideoFragment extends Fragment
                 @Override
                 public void run() {
                     appCMSPresenter.getUserData(userIdentity -> {
+                        Log.d(TAG, "Video player entitlement check triggered");
                         if (!userIdentity.isSubscribed()) {
+                            Log.d(TAG, "User is not subscribed - pausing video and showing Subscribe dialog");
                             pauseVideo();
                             appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED);
+                        } else {
+                            Log.d(TAG, "User is subscribed - resuming video");
                         }
                     });
                 }
