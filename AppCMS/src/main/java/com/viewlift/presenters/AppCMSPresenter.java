@@ -590,6 +590,7 @@ public class AppCMSPresenter {
         this.referenceQueue = referenceQueue;
 
         this.entitlementCheckActive = new EntitlementCheckActive(() -> {
+            sendCloseOthersAction(null, true);
             launchButtonSelectedAction(entitlementCheckActive.getPagePath(),
                     entitlementCheckActive.getAction(),
                     entitlementCheckActive.getFilmTitle(),
