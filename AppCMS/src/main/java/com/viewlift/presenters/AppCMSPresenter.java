@@ -663,27 +663,6 @@ public class AppCMSPresenter {
                 !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
                 !TextUtils.isEmpty(appCMSSite.getGist().getSiteInternalName())) {
 
-            boolean entitlementActive = true;
-            boolean svodServiceType =
-                    appCMSMain.getServiceType()
-                            .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key));
-            if (svodServiceType) {
-                if (isUserLoggedIn()) {
-                    // For now just verify that the anonymous user token is available, but the subscription needs to be verified too.
-                    if (TextUtils.isEmpty(getAnonymousUserToken())) {
-                        showEntitlementDialog(DialogType.SUBSCRIPTION_REQUIRED);
-                        entitlementActive = false;
-                    }
-                } else {
-                    if (!isNetworkConnected()) {
-                        showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
-                        return false;
-                    }
-                    showEntitlementDialog(DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED);
-                    entitlementActive = false;
-                }
-            }
-
             final String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
             result = true;
 
@@ -694,12 +673,11 @@ public class AppCMSPresenter {
                 String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
                         appCMSMain.getApiBaseUrl(),
                         contentDatum.getGist().getId(),
-                        appCMSMain.getSite());
+                        appCMSSite.getGist().getSiteInternalName());
                 GetAppCMSVideoDetailAsyncTask.Params params =
                         new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
                                 .authToken(getAuthToken()).build();
 
-                final boolean resultEntitlementActive = entitlementActive;
                 new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
                         appCMSVideoDetail -> {
                             try {
@@ -707,30 +685,17 @@ public class AppCMSPresenter {
                                         appCMSVideoDetail.getRecords() != null &&
                                         appCMSVideoDetail.getRecords().get(0) != null &&
                                         appCMSVideoDetail.getRecords().get(0).getContentDetails() != null) {
-                                    if (resultEntitlementActive) {
-                                        if (watchedTime >= 0) {
-                                            appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(watchedTime);
-                                        }
-                                        launchButtonSelectedAction(appCMSVideoDetail.getRecords().get(0).getGist().getPermalink(),
-                                                action,
-                                                appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
-                                                null,
-                                                appCMSVideoDetail.getRecords().get(0),
-                                                false,
-                                                currentlyPlayingIndex,
-                                                appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds());
-                                    } else {
-                                        entitlementPendingVideoData = new EntitlementPendingVideoData();
-                                        entitlementPendingVideoData.action = action;
-                                        entitlementPendingVideoData.closeLauncher = false;
-                                        entitlementPendingVideoData.contentDatum = appCMSVideoDetail.getRecords().get(0);
-                                        entitlementPendingVideoData.currentlyPlayingIndex = currentlyPlayingIndex;
-                                        entitlementPendingVideoData.pagePath = appCMSVideoDetail.getRecords().get(0).getGist().getPermalink();
-                                        entitlementPendingVideoData.filmTitle = appCMSVideoDetail.getRecords().get(0).getGist().getTitle();
-                                        entitlementPendingVideoData.extraData = null;
-                                        entitlementPendingVideoData.relateVideoIds = appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds();
-                                        navigateToHomeToRefresh = true;
+                                    if (watchedTime >= 0) {
+                                        appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(watchedTime);
                                     }
+                                    launchButtonSelectedAction(appCMSVideoDetail.getRecords().get(0).getGist().getPermalink(),
+                                            action,
+                                            appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
+                                            null,
+                                            appCMSVideoDetail.getRecords().get(0),
+                                            false,
+                                            currentlyPlayingIndex,
+                                            appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds());
                                 } else {
                                     if (!isNetworkConnected()) {
                                         // Fix of SVFA-1435
@@ -758,31 +723,18 @@ public class AppCMSPresenter {
                             }
                         }).execute(params);
             } else {
-                if (entitlementActive) {
-                    if (watchedTime >= 0) {
-                        contentDatum.getGist().setWatchedTime(watchedTime);
-                    }
-                    launchButtonSelectedAction(
-                            contentDatum.getGist().getPermalink(),
-                            action,
-                            contentDatum.getGist().getTitle(),
-                            null,
-                            contentDatum,
-                            false,
-                            currentlyPlayingIndex,
-                            relateVideoIds);
-                } else {
-                    entitlementPendingVideoData = new EntitlementPendingVideoData();
-                    entitlementPendingVideoData.action = action;
-                    entitlementPendingVideoData.closeLauncher = false;
-                    entitlementPendingVideoData.contentDatum = contentDatum;
-                    entitlementPendingVideoData.currentlyPlayingIndex = currentlyPlayingIndex;
-                    entitlementPendingVideoData.pagePath = contentDatum.getGist().getPermalink();
-                    entitlementPendingVideoData.filmTitle = contentDatum.getGist().getTitle();
-                    entitlementPendingVideoData.extraData = null;
-                    entitlementPendingVideoData.relateVideoIds = relateVideoIds;
-                    navigateToHomeToRefresh = true;
+                if (watchedTime >= 0) {
+                    contentDatum.getGist().setWatchedTime(watchedTime);
                 }
+                launchButtonSelectedAction(
+                        contentDatum.getGist().getPermalink(),
+                        action,
+                        contentDatum.getGist().getTitle(),
+                        null,
+                        contentDatum,
+                        false,
+                        currentlyPlayingIndex,
+                        relateVideoIds);
             }
         }
         return result;
@@ -1055,16 +1007,22 @@ public class AppCMSPresenter {
                             contentDatum.getGist() != null &&
                             !contentDatum.getGist().getFree()) {
                         if (isUserLoggedIn()) {
-                            entitlementCheckActive.setPagePath(pagePath);
-                            entitlementCheckActive.setAction(action);
-                            entitlementCheckActive.setFilmTitle(filmTitle);
-                            entitlementCheckActive.setExtraData(extraData);
-                            entitlementCheckActive.setContentDatum(contentDatum);
-                            entitlementCheckActive.setCloseLauncher(closeLauncher);
-                            entitlementCheckActive.setCurrentlyPlayingIndex(currentlyPlayingIndex);
-                            entitlementCheckActive.setRelateVideoIds(relateVideoIds);
-                            getUserData(entitlementCheckActive);
-                            entitlementActive = false;
+                            boolean freePreview = appCMSMain.getFeatures() != null &&
+                                    appCMSMain.getFeatures().getFreePreview() != null &&
+                                    appCMSMain.getFeatures().getFreePreview().isFreePreview();
+
+                            if (!freePreview) {
+                                entitlementCheckActive.setPagePath(pagePath);
+                                entitlementCheckActive.setAction(action);
+                                entitlementCheckActive.setFilmTitle(filmTitle);
+                                entitlementCheckActive.setExtraData(extraData);
+                                entitlementCheckActive.setContentDatum(contentDatum);
+                                entitlementCheckActive.setCloseLauncher(closeLauncher);
+                                entitlementCheckActive.setCurrentlyPlayingIndex(currentlyPlayingIndex);
+                                entitlementCheckActive.setRelateVideoIds(relateVideoIds);
+                                getUserData(entitlementCheckActive);
+                                entitlementActive = false;
+                            }
                         } else {
                             showEntitlementDialog(DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED);
                             entitlementActive = false;

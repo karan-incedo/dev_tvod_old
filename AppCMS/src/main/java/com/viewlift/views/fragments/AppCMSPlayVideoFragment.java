@@ -45,6 +45,7 @@ import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
+import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.VideoPlayerView;
 
@@ -300,10 +301,27 @@ public class AppCMSPlayVideoFragment extends Fragment
                     });
                 }
             };
+
+            int entitlementCheckMultiplier = 5;
+
+            AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+            if (appCMSMain != null &&
+                    appCMSMain.getFeatures() != null &&
+                    appCMSMain.getFeatures().getFreePreview() != null &&
+                    appCMSMain.getFeatures().getFreePreview().isFreePreview() &&
+                    appCMSMain.getFeatures().getFreePreview().getLength() != null &&
+                    appCMSMain.getFeatures().getFreePreview().getLength().getUnit().equalsIgnoreCase("Minutes")) {
+                try {
+                    entitlementCheckMultiplier = Integer.parseInt(appCMSMain.getFeatures().getFreePreview().getLength().getMultiplier());
+                } catch (Exception e) {
+                    Log.e(TAG, "Error parsing free preview multiplier value: " + e.getMessage());
+                }
+            }
+
             entitlementCheckTimer = new Timer();
-            Date fiveMinuteStart = DateTimeUtils.toDate(Instant.now().plus(5, ChronoUnit.MINUTES));
-            long fiveMinuteDelay = Duration.ZERO.plus(5, ChronoUnit.MINUTES).get(ChronoUnit.MILLIS);
-            entitlementCheckTimer.schedule(entitlementCheckTimerTask, fiveMinuteStart, fiveMinuteDelay);
+            Date entitlementCheckStart = DateTimeUtils.toDate(Instant.now().plus(entitlementCheckMultiplier, ChronoUnit.MINUTES));
+            long entitlementCheckDelay = Duration.ZERO.plus(entitlementCheckMultiplier, ChronoUnit.MINUTES).toMillis();
+            entitlementCheckTimer.schedule(entitlementCheckTimerTask, entitlementCheckStart, entitlementCheckDelay);
         }
 
         AppsFlyerUtils.filmViewingEvent(getContext(), primaryCategory, filmId, appCMSPresenter);

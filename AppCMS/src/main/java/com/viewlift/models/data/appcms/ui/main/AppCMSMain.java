@@ -108,6 +108,10 @@ public class AppCMSMain {
     @Expose
     boolean forceLogin;
 
+    @SerializedName("isDownloadable")
+    @Expose
+    boolean isDownloadable;
+
     @SerializedName("paymentProviders")
     @Expose
     PaymentProviders paymentProviders;
@@ -306,5 +310,13 @@ public class AppCMSMain {
 
     public void setPaymentProviders(PaymentProviders paymentProviders) {
         this.paymentProviders = paymentProviders;
+    }
+
+    public boolean isDownloadable() {
+        return isDownloadable;
+    }
+
+    public void setDownloadable(boolean downloadable) {
+        isDownloadable = downloadable;
     }
 }

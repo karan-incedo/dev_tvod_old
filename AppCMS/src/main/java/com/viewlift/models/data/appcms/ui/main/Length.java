@@ -15,7 +15,7 @@ public class Length {
     String unit;
 
     @SerializedName("multiplier")
-    int multiplier;
+    String multiplier;
 
     public String getUnit() {
         return unit;
@@ -25,11 +25,11 @@ public class Length {
         this.unit = unit;
     }
 
-    public int getMultiplier() {
+    public String getMultiplier() {
         return multiplier;
     }
 
-    public void setMultiplier(int multiplier) {
+    public void setMultiplier(String multiplier) {
         this.multiplier = multiplier;
     }
 }
