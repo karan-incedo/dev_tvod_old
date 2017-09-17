@@ -86,17 +86,18 @@
       "type": "button",
       "key": "playButton"
     },
-    /*{
+    {
       "layout": {
         "ftv": {
           "leftMargin": 95,
           "yAxis": 477,
+          "width":270,
           "height": 62,
           "fontSize": 12
         }
       },
       "padding": 15,
-      "borderColor": "#ffffff",
+      "borderColor": "#66ffffff",
       "fontFamily": "OpenSans",
       "borderWidth": 4,
       "action": "addToWatchlist",
@@ -105,11 +106,11 @@
       "textColor": "ffffff",
       "fontWeight": "Semibold",
       "key": "addToWatchlist"
-    },*/
+    },
     {
       "layout": {
         "ftv": {
-          "leftMargin": 95,
+          "leftMargin": 389,
           "yAxis": 477,
           "height": 62,
           "width":270,

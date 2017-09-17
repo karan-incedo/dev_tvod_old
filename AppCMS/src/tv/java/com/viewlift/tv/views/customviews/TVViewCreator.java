@@ -251,8 +251,8 @@ public class TVViewCreator {
             return null;
         } else if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())) {
 
-            /*module = new GsonBuilder().create().
-                    fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);*/
+            module = new GsonBuilder().create().
+                    fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
 
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
@@ -636,6 +636,42 @@ public class TVViewCreator {
                         } else {
                             componentViewResult.componentView = null;
                         }
+                        break;
+
+                    case PAGE_CAROUSEL_ADD_TO_WATCHLIST_KEY:
+                        componentViewResult.componentView.setFocusable(true);
+                        componentViewResult.componentView.setTag("WATCHLIST");
+
+                        Button btn = (Button) componentViewResult.componentView;
+                        final boolean[] queued = new boolean[1];
+
+                        appCMSPresenter.getUserVideoStatus(
+                                moduleAPI.getContentData().get(0).getGist().getId(),
+                                userVideoStatusResponse -> {
+                                    queued[0] = userVideoStatusResponse.getQueued();
+                                    Log.d(TAG, "appCMSAddToWatchlistResult: qued: " + queued[0]);
+                                    if (queued[0]) {
+                                        btn.setText("REMOVE FROM WATCHLIST");
+                                    } else {
+                                        btn.setText("ADD TO WATCHLIST");
+                                    }
+                                });
+
+                        componentViewResult.componentView.setOnClickListener(v -> {
+                                    Log.d(TAG, "appCMSAddToWatchlistResult: clicked");
+                                    appCMSPresenter.editWatchlist(
+                                            moduleAPI.getContentData().get(0).getGist().getId(),
+                                            appCMSAddToWatchlistResult -> {
+                                                Log.d(TAG, "appCMSAddToWatchlistResult");
+                                                queued[0] = !queued[0];
+                                                if (queued[0]) {
+                                                    btn.setText("REMOVE FROM WATCHLIST");
+                                                } else {
+                                                    btn.setText("ADD TO WATCHLIST");
+                                                }
+                                            }, !queued[0]);
+                                }
+                        );
                         break;
 
                     case PAGE_ADD_TO_WATCHLIST_KEY:

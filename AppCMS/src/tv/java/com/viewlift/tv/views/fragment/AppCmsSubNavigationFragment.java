@@ -217,6 +217,8 @@ public class AppCmsSubNavigationFragment extends Fragment {
                     NavigationSubItem navigationSubItem = navigationSubItemList.get(selectedPosition);
                     if (ANDROID_WATCHLIST_NAV_KEY.equals(mAppCMSBinder.getJsonValueKeyMap()
                             .get(navigationSubItem.title))) {
+
+                        appCmsPresenter.showLoadingDialog(true);
                         appCmsPresenter.navigateToWatchlistPage(
                                 navigationSubItem.pageId,
                                 navigationSubItem.title,
@@ -224,6 +226,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                 false);
                     } else if (ANDROID_HISTORY_NAV_KEY.equals(mAppCMSBinder.getJsonValueKeyMap()
                             .get(navigationSubItem.title))) {
+                        appCmsPresenter.showLoadingDialog(true);
                         appCmsPresenter.navigateToHistoryPage(
                                 navigationSubItem.pageId,
                                 navigationSubItem.title,
