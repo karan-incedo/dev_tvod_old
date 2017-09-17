@@ -651,9 +651,9 @@ public class TVViewCreator {
                                     queued[0] = userVideoStatusResponse.getQueued();
                                     Log.d(TAG, "appCMSAddToWatchlistResult: qued: " + queued[0]);
                                     if (queued[0]) {
-                                        btn.setText("REMOVE FROM WATCHLIST");
+                                        btn.setText(context.getString(R.string.remove_from_watchlist));
                                     } else {
-                                        btn.setText("ADD TO WATCHLIST");
+                                        btn.setText(context.getString(R.string.add_to_watchlist));
                                     }
                                 });
 
@@ -665,9 +665,9 @@ public class TVViewCreator {
                                                 Log.d(TAG, "appCMSAddToWatchlistResult");
                                                 queued[0] = !queued[0];
                                                 if (queued[0]) {
-                                                    btn.setText("REMOVE FROM WATCHLIST");
+                                                    btn.setText(context.getString(R.string.remove_from_watchlist));
                                                 } else {
-                                                    btn.setText("ADD TO WATCHLIST");
+                                                    btn.setText(context.getString(R.string.add_to_watchlist));
                                                 }
                                             }, !queued[0]);
                                 }
