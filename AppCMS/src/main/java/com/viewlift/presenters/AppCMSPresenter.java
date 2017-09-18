@@ -288,6 +288,7 @@ public class AppCMSPresenter {
     private static final String ACTIVE_SUBSCRIPTION_CURRENCY = "active_subscription_currency_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_RECEIPT = "active_subscription_token_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PLAN_NAME = "active_subscription_plan_name_pref_key";
+    private static final String ACTIVE_SUBSCRIPTION_STATUS = "active_subscription_status_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PRICE_NAME = "active_subscription_plan_price_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PROCESSOR_NAME = "active_subscription_payment_processor_key";
     private static final String ACTIVE_SUBSCRIPTION_COUNTRY_CODE = "active_subscription_country_code_key";
@@ -5037,6 +5038,32 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public boolean isSubscriptionCompleted() {
+        String activeSubscriptionStatus = getActiveSubscriptionStatus();
+
+        if (!TextUtils.isEmpty(activeSubscriptionStatus)) {
+            return activeSubscriptionStatus.equalsIgnoreCase("COMPLETED");
+        }
+
+        return false;
+    }
+
+    public String getActiveSubscriptionStatus() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_SUBSCRIPTION_STATUS, 0);
+            return sharedPrefs.getString(ACTIVE_SUBSCRIPTION_STATUS, null);
+        }
+        return null;
+    }
+
+    public boolean setActiveSubscriptionStatus(String subscriptionStatus) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_SUBSCRIPTION_STATUS, 0);
+            return sharedPrefs.edit().putString(ACTIVE_SUBSCRIPTION_STATUS, subscriptionStatus).commit();
+        }
+        return false;
+    }
+
     public String getActiveSubscriptionPrice() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_SUBSCRIPTION_PRICE_NAME, 0);
@@ -6461,26 +6488,31 @@ public class AppCMSPresenter {
                                                 clearSubscriptionPlans();
                                                 if (appCMSPageAPI != null
                                                         && appCMSPageAPI.getModules() != null) {
+                                                    clearSubscriptionPlans();
                                                     List<SubscriptionPlan> subscriptionPlans = new ArrayList<>();
-                                                    for (Module module : appCMSPageAPI.getModules()) {
-                                                        if (!TextUtils.isEmpty(module.getModuleType()) &&
-                                                                module.getModuleType().equals(currentActivity.getString(R.string.app_cms_view_plan_module_key))) {
-                                                            if (module.getContentData() != null &&
-                                                                    !module.getContentData().isEmpty()) {
-                                                                for (ContentDatum contentDatum : module.getContentData()) {
-                                                                    SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
-                                                                    subscriptionPlan.setSku(contentDatum.getIdentifier());
-                                                                    subscriptionPlan.setPlanId(contentDatum.getId());
-                                                                    subscriptionPlan.setCountryCode(contentDatum.getPlanDetails().get(0).getCountryCode());
-                                                                    if (!contentDatum.getPlanDetails().isEmpty()) {
-                                                                        subscriptionPlan.setSubscriptionPrice(contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount());
+                                                    try {
+                                                        for (Module module : appCMSPageAPI.getModules()) {
+                                                            if (!TextUtils.isEmpty(module.getModuleType()) &&
+                                                                    module.getModuleType().equals(currentActivity.getString(R.string.app_cms_view_plan_module_key))) {
+                                                                if (module.getContentData() != null &&
+                                                                        !module.getContentData().isEmpty()) {
+                                                                    for (ContentDatum contentDatum : module.getContentData()) {
+                                                                        SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
+                                                                        subscriptionPlan.setSku(contentDatum.getIdentifier());
+                                                                        subscriptionPlan.setPlanId(contentDatum.getId());
+                                                                        subscriptionPlan.setCountryCode(contentDatum.getPlanDetails().get(0).getCountryCode());
+                                                                        if (!contentDatum.getPlanDetails().isEmpty()) {
+                                                                            subscriptionPlan.setSubscriptionPrice(contentDatum.getPlanDetails().get(0).getStrikeThroughPrice());
+                                                                        }
+                                                                        subscriptionPlan.setPlanName(contentDatum.getName());
+                                                                        createSubscriptionPlan(subscriptionPlan);
+                                                                        subscriptionPlans.add(subscriptionPlan);
                                                                     }
-                                                                    subscriptionPlan.setPlanName(contentDatum.getName());
-                                                                    createSubscriptionPlan(subscriptionPlan);
-                                                                    subscriptionPlans.add(subscriptionPlan);
                                                                 }
                                                             }
                                                         }
+                                                    } catch (Exception e) {
+                                                        Log.e(TAG, "Error retrieving subscription information: " + e.getMessage());
                                                     }
 
                                                     if (reloadUserSubscriptionData) {
@@ -6540,6 +6572,7 @@ public class AppCMSPresenter {
                                                                                             setActiveSubscriptionPrice(String.valueOf(planDetail.getRecurringPaymentAmount()));
                                                                                         }
                                                                                     }
+                                                                                    setActiveSubscriptionStatus(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus());
                                                                                 }
 
                                                                                 if (appCMSSubscriptionPlanResult.getSubscriptionInfo() != null &&
@@ -6582,8 +6615,8 @@ public class AppCMSPresenter {
                                 subscriptionPage.getPageId(),
                                 appCMSPageAPI -> {
                                     clearSubscriptionPlans();
+                                    List<SubscriptionPlan> subscriptionPlans = new ArrayList<>();
                                     try {
-                                        List<SubscriptionPlan> subscriptionPlans = new ArrayList<>();
                                         for (Module module : appCMSPageAPI.getModules()) {
                                             if (!TextUtils.isEmpty(module.getModuleType()) &&
                                                     module.getModuleType().equals(currentActivity.getString(R.string.app_cms_view_plan_module_key))) {
@@ -6667,6 +6700,7 @@ public class AppCMSPresenter {
                                                                             setActiveSubscriptionPrice(String.valueOf(planDetail.getRecurringPaymentAmount()));
                                                                         }
                                                                     }
+                                                                    setActiveSubscriptionStatus(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus());
                                                                 }
 
                                                                 if (appCMSSubscriptionPlanResult.getSubscriptionInfo() != null &&
