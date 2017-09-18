@@ -2139,8 +2139,12 @@ public class AppCMSPresenter {
                     appCMSMain.getPaymentProviders().getCcav() != null &&
                     !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
                     appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode)) {
-                Log.d(TAG, "Initiating CCAvenue cancellation");
-                sendSubscriptionCancellation();
+                showDialog(DialogType.CANCEL_SUBSCRIPTION, "Are you sure you want to cancel subscription?", true, new Action0() {
+                    @Override
+                    public void call() {
+                         sendSubscriptionCancellation();
+                    }
+                });
             } else {
                 String paymentProcessor = getActiveSubscriptionProcessor();
                 if (!TextUtils.isEmpty(getExistingGooglePlaySubscriptionId()) ||
@@ -2152,7 +2156,12 @@ public class AppCMSPresenter {
                     currentActivity.startActivity(googlePlayStoreCancelIntent);
                 } else {
                     if (paymentProcessor.equalsIgnoreCase("CCAvenue")) {
-                        sendSubscriptionCancellation();
+                        showDialog(DialogType.CANCEL_SUBSCRIPTION, "Are you sure you want to cancel subscription?", true, new Action0() {
+                            @Override
+                            public void call() {
+                                sendSubscriptionCancellation();
+                            }
+                        });
                     }
                 }
             }
