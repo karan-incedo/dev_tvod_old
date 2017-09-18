@@ -223,7 +223,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                 useMarginsAsPercentages,
                 false,
                 this.componentViewType,
-                true);
+                true,
+                false);
         return new ViewHolder(view);
     }
 

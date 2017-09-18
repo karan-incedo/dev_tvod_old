@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -28,8 +29,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import retrofit2.http.HEAD;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -140,15 +139,17 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 useMarginsAsPercentages,
                 true,
                 this.componentViewType,
-                false);
+                false,
+                useRoundedCorners());
 
         if ("AC SelectPlan 02".equals(componentViewType)) {
-            view.setBackgroundColor(selectedColor);
             applyBgColorToChildren(view, selectedColor);
         }
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
-            setBorder(view, unselectedColor);
+            if (!"AC SelectPlan 02".equals(componentViewType)) {
+                setBorder(view, unselectedColor);
+            }
 
             view.setOnClickListener(v -> {
                 if (!"AC SelectPlan 02".equals(componentViewType)) {
@@ -170,11 +171,21 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         return new ViewHolder(view);
     }
 
+    private boolean useRoundedCorners() {
+        return "AC SelectPlan 02".equals(componentViewType);
+    }
+
     private void applyBgColorToChildren(ViewGroup viewGroup, int bgColor) {
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             View child = viewGroup.getChildAt(i);
             if (child instanceof ViewGroup) {
-                child.setBackgroundColor(bgColor);
+                if (child instanceof CardView) {
+                    ((CardView) child).setUseCompatPadding(true);
+                    ((CardView) child).setPreventCornerOverlap(false);
+                    ((CardView) child).setCardBackgroundColor(bgColor);
+                } else {
+                    child.setBackgroundColor(bgColor);
+                }
                 applyBgColorToChildren((ViewGroup) child, bgColor);
             }
         }
@@ -229,7 +240,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
             if (selectableIndex == position) {
                 if (!"AC SelectPlan 02".equals(componentViewType)) {
-
                     holder.componentView.setSelectable(true);
                     holder.componentView.performClick();
                 }
@@ -495,16 +505,16 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
             Collections.sort(adapterData,
                     (datum1, datum2) -> {
-                if ( datum1.getPlanDetails().get(0).getStrikeThroughPrice() == 0 &&
-                        datum2.getPlanDetails().get(0).getStrikeThroughPrice() == 0) {
-                    return Double.compare(datum2.getPlanDetails().get(0)
-                            .getRecurringPaymentAmount(), datum1.getPlanDetails().get(0)
-                            .getRecurringPaymentAmount());
-                }
-                return Double.compare(datum2.getPlanDetails().get(0)
-                            .getStrikeThroughPrice(), datum1.getPlanDetails().get(0)
-                            .getStrikeThroughPrice());
-            });
+                        if (datum1.getPlanDetails().get(0).getStrikeThroughPrice() == 0 &&
+                                datum2.getPlanDetails().get(0).getStrikeThroughPrice() == 0) {
+                            return Double.compare(datum2.getPlanDetails().get(0)
+                                    .getRecurringPaymentAmount(), datum1.getPlanDetails().get(0)
+                                    .getRecurringPaymentAmount());
+                        }
+                        return Double.compare(datum2.getPlanDetails().get(0)
+                                .getStrikeThroughPrice(), datum1.getPlanDetails().get(0)
+                                .getStrikeThroughPrice());
+                    });
         }
     }
 
