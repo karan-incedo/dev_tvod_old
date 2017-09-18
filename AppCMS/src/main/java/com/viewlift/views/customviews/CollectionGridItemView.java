@@ -97,6 +97,9 @@ public class CollectionGridItemView extends BaseView {
         }
         int horizontalMargin = paddingRight;
         int verticalMargin = (int) convertVerticalValue(getContext(), getVerticalMargin(getContext(), parentLayout, height, 0));
+        if (verticalMargin < 0) {
+            verticalMargin = (int) convertVerticalValue(getContext(), getYAxis(getContext(), getLayout(), 0));
+        }
         MarginLayoutParams marginLayoutParams = new MarginLayoutParams(width, height);
         marginLayoutParams.setMargins(horizontalMargin,
                 verticalMargin,
