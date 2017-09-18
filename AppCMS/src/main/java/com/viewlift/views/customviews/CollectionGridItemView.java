@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -54,6 +55,7 @@ public class CollectionGridItemView extends BaseView {
     private List<ItemContainer> childItems;
     private List<View> viewsToUpdateOnClickEvent;
     private boolean selectable;
+    private boolean createMultipleContainersForChildren;
 
     @Inject
     public CollectionGridItemView(Context context,
@@ -61,7 +63,8 @@ public class CollectionGridItemView extends BaseView {
                                   boolean useParentLayout,
                                   Component component,
                                   int defaultWidth,
-                                  int defaultHeight) {
+                                  int defaultHeight,
+                                  boolean createMultipleContainersForChildren) {
         super(context);
         this.parentLayout = parentLayout;
         this.userParentLayout = useParentLayout;
@@ -69,6 +72,7 @@ public class CollectionGridItemView extends BaseView {
         this.defaultWidth = defaultWidth;
         this.defaultHeight = defaultHeight;
         this.viewsToUpdateOnClickEvent = new ArrayList<>();
+        this.createMultipleContainersForChildren = createMultipleContainersForChildren;
         init();
     }
 
@@ -130,12 +134,35 @@ public class CollectionGridItemView extends BaseView {
 
     @Override
     protected ViewGroup createChildrenContainer() {
-        childrenContainer = new CardView(getContext());
-        CardView.LayoutParams childContainerLayoutParams =
-                new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT);
-        childrenContainer.setLayoutParams(childContainerLayoutParams);
-        childrenContainer.setBackgroundResource(android.R.color.transparent);
+        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext())) {
+            childrenContainer = new LinearLayout(getContext());
+            ((LinearLayout) childrenContainer).setOrientation(LinearLayout.HORIZONTAL);
+            LinearLayout.LayoutParams childContainerLayoutParams =
+                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT);
+            childrenContainer.setLayoutParams(childContainerLayoutParams);
+            CardView imageChildView = new CardView(getContext());
+            LinearLayout.LayoutParams imageChildViewLayoutParams =
+                    new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
+            imageChildViewLayoutParams.weight = 2;
+            imageChildView.setLayoutParams(imageChildViewLayoutParams);
+            imageChildView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+            childrenContainer.addView(imageChildView);
+            CardView detailsChildView = new CardView(getContext());
+            LinearLayout.LayoutParams detailsChildViewLayoutParams =
+                    new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
+            detailsChildViewLayoutParams.weight = 1;
+            detailsChildView.setLayoutParams(detailsChildViewLayoutParams);
+            detailsChildView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+            childrenContainer.addView(detailsChildView);
+        } else {
+            childrenContainer = new CardView(getContext());
+            CardView.LayoutParams childContainerLayoutParams =
+                    new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT);
+            childrenContainer.setLayoutParams(childContainerLayoutParams);
+            childrenContainer.setBackgroundResource(android.R.color.transparent);
+        }
         addView(childrenContainer);
         return childrenContainer;
     }
@@ -145,7 +172,16 @@ public class CollectionGridItemView extends BaseView {
             createChildrenContainer();
         }
         childItems.add(itemContainer);
-        childrenContainer.addView(itemContainer.childView);
+
+        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext())) {
+            if (getContext().getString(R.string.app_cms_page_carousel_image_key).equalsIgnoreCase(itemContainer.component.getKey())) {
+                ((ViewGroup) childrenContainer.getChildAt(0)).addView(itemContainer.childView);
+            } else {
+                ((ViewGroup) childrenContainer.getChildAt(1)).addView(itemContainer.childView);
+            }
+        } else {
+            childrenContainer.addView(itemContainer.childView);
+        }
     }
 
     public View getChild(int index) {
