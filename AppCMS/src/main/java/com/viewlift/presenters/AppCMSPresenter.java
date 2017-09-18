@@ -1959,7 +1959,7 @@ public class AppCMSPresenter {
                 (!TextUtils.isEmpty(getActiveSubscriptionProcessor()) &&
                         (!getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
                                 !getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) &&
-                !TextUtils.isEmpty(getExistingGooglePlaySubscriptionId()) &&
+                TextUtils.isEmpty(getExistingGooglePlaySubscriptionId()) &&
                 !TextUtils.isEmpty(countryCode) &&
                 appCMSMain != null &&
                 appCMSMain.getPaymentProviders() != null &&
