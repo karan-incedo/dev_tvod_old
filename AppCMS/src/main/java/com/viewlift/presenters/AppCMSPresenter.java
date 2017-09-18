@@ -2151,7 +2151,8 @@ public class AppCMSPresenter {
                     currentActivity.startActivity(googlePlayStoreCancelIntent);
                 } else {
                     if (paymentProcessor.equalsIgnoreCase("CCAvenue")) {
-                        sendSubscriptionCancellation();
+                        //sendSubscriptionCancellation();
+                        showDialog(DialogType.CANCEL_SUBSCRIPTION, "Are you sure you want to cancel subscription?", false, null);
                     }
                 }
             }
