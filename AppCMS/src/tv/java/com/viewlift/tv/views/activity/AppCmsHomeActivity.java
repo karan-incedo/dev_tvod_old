@@ -296,6 +296,23 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     ((AppCmsSearchFragment) fragment).searchResult(retryCallBinder.getFilmTitle());
                 }
                 break;
+
+            case WATCHLIST_RETRY_ACTION:
+                appCMSPresenter.showLoadingDialog(true);
+                appCMSPresenter.navigateToWatchlistPage(
+                        retryCallBinder.getPageId(),
+                        retryCallBinder.getFilmTitle(),
+                        retryCallBinder.getPagePath(),
+                        false);
+                break;
+            case HISTORY_RETRY_ACTION:
+                appCMSPresenter.showLoadingDialog(true);
+                appCMSPresenter.navigateToHistoryPage(
+                        retryCallBinder.getPageId(),
+                        retryCallBinder.getFilmTitle(),
+                        retryCallBinder.getPagePath(),
+                        false);
+                break;
         }
     }
 

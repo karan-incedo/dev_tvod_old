@@ -69,7 +69,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
@@ -163,7 +162,6 @@ import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
-import com.viewlift.tv.utility.Utils;
 import com.viewlift.views.activity.AppCMSDownloadQualityActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
@@ -232,9 +230,11 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
+import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.HISTORY_RETRY_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.PAGE_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SEARCH_RETRY_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.VIDEO_ACTION;
+import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.WATCHLIST_RETRY_ACTION;
 
 /**
  * Created by viewlift on 5/3/17.
@@ -2910,13 +2910,21 @@ public class AppCMSPresenter {
                                         boolean launchActivity) {
 
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
-            AppCMSPageUI appCMSPageUI;
-            if (platformType.equals(PlatformType.TV)) {
-                appCMSPageUI = new GsonBuilder().create().
-                        fromJson(Utils.loadJsonFromAssets(currentActivity,
-                                "watchlist.json"), AppCMSPageUI.class);
-            } else {
-                appCMSPageUI = navigationPages.get(pageId);
+            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
+
+            if (platformType.equals(PlatformType.TV) && !isNetworkConnected()) {
+                RetryCallBinder retryCallBinder = getRetryCallBinder(url, null,
+                        pageTitle, null,
+                        null, false, null, WATCHLIST_RETRY_ACTION);
+                retryCallBinder.setPageId(pageId);
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
+                bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key) ,true);
+                bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
+                Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+                args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+                currentActivity.sendBroadcast(args);
+                return;
             }
 
             getWatchlistPageContent(appCMSMain.getApiBaseUrl(),
@@ -3137,14 +3145,21 @@ public class AppCMSPresenter {
                                       boolean launchActivity) {
 
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
-            AppCMSPageUI appCMSPageUI;
+            AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
 
-            if (platformType.equals(PlatformType.TV)) {
-                appCMSPageUI = new GsonBuilder().create().
-                        fromJson(Utils.loadJsonFromAssets(currentActivity,
-                                "history.json"), AppCMSPageUI.class);
-            } else {
-                appCMSPageUI = navigationPages.get(pageId);
+            if (platformType.equals(PlatformType.TV) && !isNetworkConnected()) {
+                RetryCallBinder retryCallBinder = getRetryCallBinder(url, null,
+                        pageTitle, null,
+                        null, false, null, HISTORY_RETRY_ACTION);
+                retryCallBinder.setPageId(pageId);
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
+                bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key) ,true);
+                bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
+                Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+                args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+                currentActivity.sendBroadcast(args);
+                return;
             }
 
             getHistoryPageContent(appCMSMain.getApiBaseUrl(),
@@ -8199,7 +8214,7 @@ public class AppCMSPresenter {
     }
 
     public enum RETRY_TYPE {
-        VIDEO_ACTION, BUTTON_ACTION, PAGE_ACTION, SEARCH_RETRY_ACTION
+        VIDEO_ACTION, BUTTON_ACTION, PAGE_ACTION, SEARCH_RETRY_ACTION, WATCHLIST_RETRY_ACTION, HISTORY_RETRY_ACTION
     }
 
     public enum ExtraScreenType {
