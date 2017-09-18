@@ -593,6 +593,7 @@ public class AppCMSPresenter {
         this.referenceQueue = referenceQueue;
 
         this.entitlementCheckActive = new EntitlementCheckActive(() -> {
+            sendCloseOthersAction(null, true);
             launchButtonSelectedAction(entitlementCheckActive.getPagePath(),
                     entitlementCheckActive.getAction(),
                     entitlementCheckActive.getFilmTitle(),
@@ -665,27 +666,6 @@ public class AppCMSPresenter {
                 !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
                 !TextUtils.isEmpty(appCMSSite.getGist().getSiteInternalName())) {
 
-            boolean entitlementActive = true;
-            boolean svodServiceType =
-                    appCMSMain.getServiceType()
-                            .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key));
-            if (svodServiceType) {
-                if (isUserLoggedIn()) {
-                    // For now just verify that the anonymous user token is available, but the subscription needs to be verified too.
-                    if (TextUtils.isEmpty(getAnonymousUserToken())) {
-                        showEntitlementDialog(DialogType.SUBSCRIPTION_REQUIRED);
-                        entitlementActive = false;
-                    }
-                } else {
-                    if (!isNetworkConnected()) {
-                        showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
-                        return false;
-                    }
-                    showEntitlementDialog(DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED);
-                    entitlementActive = false;
-                }
-            }
-
             final String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
             result = true;
 
@@ -696,12 +676,11 @@ public class AppCMSPresenter {
                 String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
                         appCMSMain.getApiBaseUrl(),
                         contentDatum.getGist().getId(),
-                        appCMSMain.getSite());
+                        appCMSSite.getGist().getSiteInternalName());
                 GetAppCMSVideoDetailAsyncTask.Params params =
                         new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
                                 .authToken(getAuthToken()).build();
 
-                final boolean resultEntitlementActive = entitlementActive;
                 new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
                         appCMSVideoDetail -> {
                             try {
@@ -709,30 +688,17 @@ public class AppCMSPresenter {
                                         appCMSVideoDetail.getRecords() != null &&
                                         appCMSVideoDetail.getRecords().get(0) != null &&
                                         appCMSVideoDetail.getRecords().get(0).getContentDetails() != null) {
-                                    if (resultEntitlementActive) {
-                                        if (watchedTime >= 0) {
-                                            appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(watchedTime);
-                                        }
-                                        launchButtonSelectedAction(appCMSVideoDetail.getRecords().get(0).getGist().getPermalink(),
-                                                action,
-                                                appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
-                                                null,
-                                                appCMSVideoDetail.getRecords().get(0),
-                                                false,
-                                                currentlyPlayingIndex,
-                                                appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds());
-                                    } else {
-                                        entitlementPendingVideoData = new EntitlementPendingVideoData();
-                                        entitlementPendingVideoData.action = action;
-                                        entitlementPendingVideoData.closeLauncher = false;
-                                        entitlementPendingVideoData.contentDatum = appCMSVideoDetail.getRecords().get(0);
-                                        entitlementPendingVideoData.currentlyPlayingIndex = currentlyPlayingIndex;
-                                        entitlementPendingVideoData.pagePath = appCMSVideoDetail.getRecords().get(0).getGist().getPermalink();
-                                        entitlementPendingVideoData.filmTitle = appCMSVideoDetail.getRecords().get(0).getGist().getTitle();
-                                        entitlementPendingVideoData.extraData = null;
-                                        entitlementPendingVideoData.relateVideoIds = appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds();
-                                        navigateToHomeToRefresh = true;
+                                    if (watchedTime >= 0) {
+                                        appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(watchedTime);
                                     }
+                                    launchButtonSelectedAction(appCMSVideoDetail.getRecords().get(0).getGist().getPermalink(),
+                                            action,
+                                            appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
+                                            null,
+                                            appCMSVideoDetail.getRecords().get(0),
+                                            false,
+                                            currentlyPlayingIndex,
+                                            appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds());
                                 } else {
                                     if (!isNetworkConnected()) {
                                         // Fix of SVFA-1435
@@ -760,31 +726,18 @@ public class AppCMSPresenter {
                             }
                         }).execute(params);
             } else {
-                if (entitlementActive) {
-                    if (watchedTime >= 0) {
-                        contentDatum.getGist().setWatchedTime(watchedTime);
-                    }
-                    launchButtonSelectedAction(
-                            contentDatum.getGist().getPermalink(),
-                            action,
-                            contentDatum.getGist().getTitle(),
-                            null,
-                            contentDatum,
-                            false,
-                            currentlyPlayingIndex,
-                            relateVideoIds);
-                } else {
-                    entitlementPendingVideoData = new EntitlementPendingVideoData();
-                    entitlementPendingVideoData.action = action;
-                    entitlementPendingVideoData.closeLauncher = false;
-                    entitlementPendingVideoData.contentDatum = contentDatum;
-                    entitlementPendingVideoData.currentlyPlayingIndex = currentlyPlayingIndex;
-                    entitlementPendingVideoData.pagePath = contentDatum.getGist().getPermalink();
-                    entitlementPendingVideoData.filmTitle = contentDatum.getGist().getTitle();
-                    entitlementPendingVideoData.extraData = null;
-                    entitlementPendingVideoData.relateVideoIds = relateVideoIds;
-                    navigateToHomeToRefresh = true;
+                if (watchedTime >= 0) {
+                    contentDatum.getGist().setWatchedTime(watchedTime);
                 }
+                launchButtonSelectedAction(
+                        contentDatum.getGist().getPermalink(),
+                        action,
+                        contentDatum.getGist().getTitle(),
+                        null,
+                        contentDatum,
+                        false,
+                        currentlyPlayingIndex,
+                        relateVideoIds);
             }
         }
         return result;
@@ -926,18 +879,22 @@ public class AppCMSPresenter {
         private List<String> relateVideoIds;
         private final Action0 onFailAction;
         private final Action0 onSuccessAction;
+        private boolean success;
 
         public EntitlementCheckActive(Action0 onSuccessAction, Action0 onFailAction) {
             this.onSuccessAction = onSuccessAction;
             this.onFailAction = onFailAction;
+            this.success = false;
         }
 
         @Override
         public void call(UserIdentity userIdentity) {
             if (!userIdentity.isSubscribed()) {
                 onFailAction.call();
+                success = false;
             } else {
                 onSuccessAction.call();
+                success = true;
             }
         }
 
@@ -1004,6 +961,14 @@ public class AppCMSPresenter {
         public void setRelateVideoIds(List<String> relateVideoIds) {
             this.relateVideoIds = relateVideoIds;
         }
+
+        public boolean isSuccess() {
+            return success;
+        }
+
+        public void setSuccess(boolean success) {
+            this.success = success;
+        }
     }
 
     public boolean launchButtonSelectedAction(String pagePath,
@@ -1057,7 +1022,11 @@ public class AppCMSPresenter {
                             contentDatum.getGist() != null &&
                             !contentDatum.getGist().getFree()) {
                         if (isUserLoggedIn()) {
-                            if (!isUserSubscribed()) {
+                            boolean freePreview = appCMSMain.getFeatures() != null &&
+                                    appCMSMain.getFeatures().getFreePreview() != null &&
+                                    appCMSMain.getFeatures().getFreePreview().isFreePreview();
+
+                            if (!freePreview && !entitlementCheckActive.isSuccess()) {
                                 entitlementCheckActive.setPagePath(pagePath);
                                 entitlementCheckActive.setAction(action);
                                 entitlementCheckActive.setFilmTitle(filmTitle);
@@ -1076,6 +1045,7 @@ public class AppCMSPresenter {
                     }
 
                     if (entitlementActive) {
+                        entitlementCheckActive.setSuccess(false);
                         Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
                         boolean requestAds = !svodServiceType && actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
 
@@ -1983,7 +1953,14 @@ public class AppCMSPresenter {
     }
 
     public void initiateItemPurchase() {
-        if (!TextUtils.isEmpty(countryCode) &&
+        checkForExistingSubscription(false);
+
+        if ((TextUtils.isEmpty(getActiveSubscriptionProcessor()) ||
+                (!TextUtils.isEmpty(getActiveSubscriptionProcessor()) &&
+                        (getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
+                                getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) &&
+                !TextUtils.isEmpty(getExistingGooglePlaySubscriptionId()) &&
+                !TextUtils.isEmpty(countryCode) &&
                 appCMSMain != null &&
                 appCMSMain.getPaymentProviders() != null &&
                 appCMSMain.getPaymentProviders().getCcav() != null &&
@@ -5422,6 +5399,7 @@ public class AppCMSPresenter {
 
     public void showEntitlementDialog(DialogType dialogType) {
         if (currentActivity != null) {
+
             String positiveButtonText = currentActivity.getString(R.string.app_cms_subscription_button_text);
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             String title = currentActivity.getString(R.string.app_cms_subscription_required_title);

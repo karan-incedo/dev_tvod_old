@@ -93,6 +93,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private Map<String, Integer> failedMediaSourceLoads;
 
+    private int fullscreenResizeMode;
+
     public VideoPlayerView(Context context) {
         super(context);
         this.uri = uri;
@@ -226,10 +228,18 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public void setFillBasedOnOrientation() {
         if (BaseView.isLandscape(getContext())) {
-            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
+            playerView.setResizeMode(fullscreenResizeMode);
         } else {
             playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
         }
+    }
+
+    public void enableController() {
+        playerView.setUseController(true);
+    }
+
+    public void disableController() {
+        playerView.setUseController(false);
     }
 
     private void init(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
@@ -277,6 +287,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 AudioManager.AUDIOFOCUS_GAIN);
 
         setFillBasedOnOrientation();
+
+        fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
     }
 
     private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {

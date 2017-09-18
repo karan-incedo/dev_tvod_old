@@ -134,12 +134,18 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             }
                         }
                     } else {
-                        title = gist.getTitle();
-                        VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
-                        videoUrl = videoAssets.getHls();
-                        if (TextUtils.isEmpty(videoUrl)) {
-                            for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
-                                videoUrl = videoAssets.getMpeg().get(i).getUrl();
+                        if (gist != null) {
+                            title = gist.getTitle();
+                        }
+                        if (binder.getContentData() != null &&
+                                binder.getContentData().getStreamingInfo() != null &&
+                                binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
+                            VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
+                            videoUrl = videoAssets.getHls();
+                            if (TextUtils.isEmpty(videoUrl)) {
+                                for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
+                                    videoUrl = videoAssets.getMpeg().get(i).getUrl();
+                                }
                             }
                         }
 
@@ -158,21 +164,35 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 String permaLink = gist.getPermalink();
                 hlsUrl = videoUrl;
                 videoImageUrl = gist.getVideoImageUrl();
-                filmId = binder.getContentData().getGist().getId();
-                videoRunTime= binder.getContentData().getGist().getRuntime();
+                if (binder.getContentData() != null && binder.getContentData().getGist() != null) {
+                    filmId = binder.getContentData().getGist().getId();
+                }
+                if (binder.getContentData() != null &&
+                        binder.getContentData().getGist() != null) {
+                    videoRunTime = binder.getContentData().getGist().getRuntime();
+                }
                 String adsUrl = binder.getAdsUrl();
                 String bgColor = binder.getBgColor();
                 int playIndex = binder.getCurrentPlayingVideoIndex();
                 long watchedTime = intent.getLongExtra(getString(R.string.watched_time_key), 0L);
-                if (gist.getPrimaryCategory() != null && gist.getPrimaryCategory().getTitle() != null)
+                if (gist.getPrimaryCategory() != null && gist.getPrimaryCategory().getTitle() != null) {
                     primaryCategory = gist.getPrimaryCategory().getTitle();
+                }
                 boolean playAds = binder.isPlayAds();
                 relateVideoIds = binder.getRelateVideoIds();
                 currentlyPlayingIndex = binder.getCurrentPlayingVideoIndex();
-                contentRating = binder.getContentData().getParentalRating() == null ? getString(R.string.age_rating_converted_default) : binder.getContentData().getParentalRating();
+                if (binder.getContentData() != null && binder.getContentData().getParentalRating() != null) {
+                    contentRating = binder.getContentData().getParentalRating() == null ? getString(R.string.age_rating_converted_default) : binder.getContentData().getParentalRating();
+                }
 
                 if (!TextUtils.isEmpty(bgColor)) {
                     appCMSPlayVideoPageContainer.setBackgroundColor(Color.parseColor(bgColor));
+                }
+
+                boolean freeContent = false;
+                if (binder.getContentData() != null && binder.getContentData().getGist() != null &&
+                        binder.getContentData().getGist().getFree()) {
+                    freeContent = binder.getContentData().getGist().getFree();
                 }
 
                 FragmentManager fragmentManager = getSupportFragmentManager();
@@ -192,7 +212,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 watchedTime,
                                 videoImageUrl,
                                 closedCaptionUrl,
-                                contentRating,videoRunTime);
+                                contentRating,videoRunTime,
+                                freeContent);
                 fragmentTransaction.add(R.id.app_cms_play_video_page_container,
                         appCMSPlayVideoFragment,
                         getString(R.string.video_fragment_tag_key));
