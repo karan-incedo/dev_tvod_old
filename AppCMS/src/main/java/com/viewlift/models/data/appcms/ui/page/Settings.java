@@ -2,6 +2,7 @@ package com.viewlift.models.data.appcms.ui.page;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.viewlift.models.data.appcms.api.Columns;
 import com.vimeo.stag.UseStag;
 
 @UseStag
@@ -18,6 +19,10 @@ public class Settings {
     @SerializedName("loop")
     @Expose
     boolean loop;
+
+    @SerializedName("columns")
+    @Expose
+    Columns columns;
 
     public String getTitle() {
         return title;
@@ -41,5 +46,13 @@ public class Settings {
 
     public void setLoop(boolean loop) {
         this.loop = loop;
+    }
+
+    public Columns getColumns() {
+        return columns;
+    }
+
+    public void setColumns(Columns columns) {
+        this.columns = columns;
     }
 }
