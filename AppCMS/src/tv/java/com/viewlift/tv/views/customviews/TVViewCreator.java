@@ -347,6 +347,14 @@ public class TVViewCreator {
                 module = new GsonBuilder().create().
                         fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
             }*/
+            if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_page_watchlist_module_key))) {
+                module = new GsonBuilder().create().
+                        fromJson(Utils.loadJsonFromAssets(context, "watchlist.json"), ModuleList.class);
+            }
+            if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_page_history_module_key))) {
+                module = new GsonBuilder().create().
+                        fromJson(Utils.loadJsonFromAssets(context, "history.json"), ModuleList.class);
+            }
 
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
