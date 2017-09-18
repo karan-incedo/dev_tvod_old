@@ -2137,10 +2137,10 @@ public class AppCMSPresenter {
                     Intent googlePlayStoreCancelIntent = new Intent(Intent.ACTION_VIEW,
                             Uri.parse(currentActivity.getString(R.string.google_play_store_subscriptions_url)));
                     currentActivity.startActivity(googlePlayStoreCancelIntent);
-                }
-
-                if (paymentProcessor.equalsIgnoreCase("CCAvenue")) {
-                    sendSubscriptionCancellation();
+                } else {
+                    if (paymentProcessor.equalsIgnoreCase("CCAvenue")) {
+                        sendSubscriptionCancellation();
+                    }
                 }
             }
         }
