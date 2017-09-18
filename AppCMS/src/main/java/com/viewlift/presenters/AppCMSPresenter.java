@@ -6435,14 +6435,8 @@ public class AppCMSPresenter {
 
     public boolean upgradesAvailableForUser() {
         List<SubscriptionPlan> availableUpgradesForUser = availablePlans();
-        double activeSubscriptionPrice = parseActiveSubscriptionPrice();
-        if (availableUpgradesForUser != null && activeSubscriptionPrice != 0.0) {
-            for (int i = 0; i < availableUpgradesForUser.size(); i++) {
-                if (activeSubscriptionPrice <
-                        availableUpgradesForUser.get(i).getSubscriptionPrice()) {
-                    return true;
-                }
-            }
+        if (availableUpgradesForUser != null && !availableUpgradesForUser.isEmpty()) {
+            return true;
         }
         return false;
     }
