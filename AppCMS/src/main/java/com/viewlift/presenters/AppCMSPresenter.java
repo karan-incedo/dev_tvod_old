@@ -1511,7 +1511,7 @@ public class AppCMSPresenter {
                     false,
                     true,
                     false,
-                    false,
+                    true,
                     false,
                     null,
                     ExtraScreenType.NAVIGATION);
