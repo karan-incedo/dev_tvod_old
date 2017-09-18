@@ -2091,6 +2091,8 @@ public class AppCMSPresenter {
                             appCMSSubscriptionPlanResults -> {
                                 sendCloseOthersAction(null, true);
 
+                                sendRefreshPageAction();
+
                                 AppsFlyerUtils.subscriptionEvent(currentActivity,
                                         false,
                                         currentActivity.getString(R.string.app_cms_appsflyer_dev_key),
