@@ -2093,16 +2093,9 @@ public class AppCMSPresenter {
                             appCMSSubscriptionPlanResults -> {
                                 sendCloseOthersAction(null, true);
 
-                                getUserData(userIdentity -> {
-                                    setLoggedInUser(userIdentity.getUserId());
-                                    setLoggedInUserEmail(userIdentity.getEmail());
-                                    setLoggedInUserName(userIdentity.getName());
-                                    setIsUserSubscribed(userIdentity.isSubscribed());
-                                    if (!userIdentity.isSubscribed()) {
-                                        setActiveSubscriptionProcessor(null);
-                                    }
+                                refreshSubscriptionData(() -> {
                                     sendRefreshPageAction();
-                                });
+                                }, true);
 
                                 AppsFlyerUtils.subscriptionEvent(currentActivity,
                                         false,
