@@ -653,7 +653,9 @@ public class ViewCreator {
                                                         } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
                                                             if (appCMSPresenter.isUserSubscribed()) {
                                                                 appCMSPresenter.checkForExistingSubscription(false);
-                                                                if (!appCMSPresenter.isExistingGooglePlaySubscriptionSuspended()) {
+
+                                                                if (!appCMSPresenter.isExistingGooglePlaySubscriptionSuspended() &&
+                                                                        appCMSPresenter.isSubscriptionCompleted()) {
                                                                     settingsView.setVisibility(View.VISIBLE);
                                                                 } else {
                                                                     settingsView.setVisibility(View.GONE);
@@ -1879,20 +1881,19 @@ public class ViewCreator {
                         if (!appCMSPresenter.isUserSubscribed()) {
                             if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
-                            } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                                componentViewResult.componentView.setVisibility(View.GONE);
                             }
                         } else if (!appCMSPresenter.upgradesAvailableForUser()) {
                             if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                             }
-                        } else {
-                            if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                                if (!appCMSPresenter.isExistingGooglePlaySubscriptionSuspended()) {
-                                    componentViewResult.componentView.setVisibility(View.VISIBLE);
-                                } else {
-                                    componentViewResult.componentView.setVisibility(View.GONE);
-                                }
+                        }
+
+                        if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
+                            if (!appCMSPresenter.isExistingGooglePlaySubscriptionSuspended() &&
+                                    appCMSPresenter.isSubscriptionCompleted()) {
+                                componentViewResult.componentView.setVisibility(View.VISIBLE);
+                            } else {
+                                componentViewResult.componentView.setVisibility(View.GONE);
                             }
                         }
 
