@@ -427,6 +427,7 @@ public class TVViewCreator {
                             customHeaderItem.setFontFamily(component.getFontFamily());
                             customHeaderItem.setFontWeight(component.getFontWeight());
                             customHeaderItem.setFontSize(component.getLayout().getTv().getFontSize());
+                            customHeaderItem.setmModuleId(moduleData.getId());
                         }
                         break;
                 }
@@ -438,6 +439,7 @@ public class TVViewCreator {
                 customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
                 customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
                 customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
+                customHeaderItem.setmModuleId(moduleData.getId());
             }
 
             if (moduleData != null) {
@@ -471,6 +473,7 @@ public class TVViewCreator {
                     customHeaderItem.setFontFamily(component.getFontFamily());
                     customHeaderItem.setFontWeight(component.getFontWeight());
                     customHeaderItem.setFontSize(component.getLayout().getTv().getFontSize());
+                    customHeaderItem.setmModuleId(moduleData.getId());
                 }
                 if (null != moduleData) {
                     CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
@@ -649,12 +652,14 @@ public class TVViewCreator {
                         appCMSPresenter.getUserVideoStatus(
                                 moduleAPI.getContentData().get(0).getGist().getId(),
                                 userVideoStatusResponse -> {
-                                    queued[0] = userVideoStatusResponse.getQueued();
-                                    Log.d(TAG, "appCMSAddToWatchlistResult: qued: " + queued[0]);
-                                    if (queued[0]) {
-                                        btn.setText(context.getString(R.string.remove_from_watchlist));
-                                    } else {
-                                        btn.setText(context.getString(R.string.add_to_watchlist));
+                                    if(null != userVideoStatusResponse) {
+                                        queued[0] = userVideoStatusResponse.getQueued();
+                                        Log.d(TAG, "appCMSAddToWatchlistResult: qued: " + queued[0]);
+                                        if (queued[0]) {
+                                            btn.setText(context.getString(R.string.remove_from_watchlist));
+                                        } else {
+                                            btn.setText(context.getString(R.string.add_to_watchlist));
+                                        }
                                     }
                                 });
 
