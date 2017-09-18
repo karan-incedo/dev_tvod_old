@@ -169,7 +169,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private int playIndex;
     private long watchedTime;
     private long runTime;
-    private long videoPlayTime;
+    private long videoPlayTime = 0;
 
     private ImageButton mMediaRouteButton;
     private CastServiceProvider castProvider;
@@ -180,6 +180,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     private Timer entitlementCheckTimer;
     private TimerTask entitlementCheckTimerTask;
+
 
     CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
         if (onClosePlayerEvent != null) {
@@ -398,14 +399,16 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
         isVideoDownloaded = appCMSPresenter.isVideoDownloaded(filmId);
 
-        long playDifference=runTime-watchedTime;
-        long playTimePercentage=((watchedTime*100)/runTime);
+        if (runTime > 0 && watchedTime > 0) {
+            long playDifference = runTime - watchedTime;
+            long playTimePercentage = ((watchedTime * 100) / runTime);
 
-        // if video watchtime is greater or equal to 98% of total run time and interval is less than 30 then play from start
-        if(playTimePercentage>=98 && playDifference<=30){
-            videoPlayTime=0;
-        }else{
-            videoPlayTime=watchedTime;
+            // if video watchtime is greater or equal to 98% of total run time and interval is less than 30 then play from start
+            if (playTimePercentage >= 98 && playDifference <= 30) {
+                videoPlayTime = 0;
+            } else {
+                videoPlayTime = watchedTime;
+            }
         }
 
         videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
@@ -1278,7 +1281,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     protected void abandonAudioFocus() {
-        if(getContext() != null) {
+        if (getContext() != null) {
             AudioManager am = (AudioManager) getContext().getApplicationContext()
                     .getSystemService(Context.AUDIO_SERVICE);
             int result = am.abandonAudioFocus(this);
