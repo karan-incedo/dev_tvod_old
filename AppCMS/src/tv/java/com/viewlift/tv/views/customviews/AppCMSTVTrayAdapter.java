@@ -241,6 +241,14 @@ public class AppCMSTVTrayAdapter
 
                 @Override
                 public void play(Component childComponent, ContentDatum data) {
+                    if (isClickable) {
+                        Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
+                        appCMSPresenter.launchTVVideoPlayer(
+                                data.getGist().getId(),
+                                data.getGist().getPermalink(),
+                                data.getGist().getTitle(),
+                                data);
+                    }
                 }
 
                 @Override
