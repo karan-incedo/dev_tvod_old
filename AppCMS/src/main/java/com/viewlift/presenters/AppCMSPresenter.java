@@ -2138,6 +2138,10 @@ public class AppCMSPresenter {
                             Uri.parse(currentActivity.getString(R.string.google_play_store_subscriptions_url)));
                     currentActivity.startActivity(googlePlayStoreCancelIntent);
                 }
+
+                if (paymentProcessor.equalsIgnoreCase("CCAvenue")) {
+                    sendSubscriptionCancellation();
+                }
             }
         }
     }
