@@ -32,7 +32,7 @@ android {
     buildToolsVersion "26.0.1"
     defaultConfig {
         applicationId packageName
-        minSdkVersion 23
+        minSdkVersion 21
         targetSdkVersion 26
         versionCode 55
         versionName appVersionName
@@ -45,7 +45,7 @@ android {
     productFlavors {
         mobile {
             dimension = "green"
-            minSdkVersion 23
+            minSdkVersion 21
             compileSdkVersion 23
             targetSdkVersion 25
         }
@@ -183,7 +183,7 @@ dependencies {
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
     compile "com.appsflyer:af-android-sdk:$rootProject.ext.appsFlyerVersion"
     compile "com.google.android.gms:play-services-tagmanager:$rootProject.ext.googlePlayServicesVersion"
-    compile project(path: ':firetvcustomkeyboard')
+    tvCompile project(path: ':firetvcustomkeyboard')
     compile "com.android.support:percent:$rootProject.ext.androidsupportVersion"
     compile "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
     compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
