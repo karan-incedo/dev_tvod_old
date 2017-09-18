@@ -1015,7 +1015,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                                     0,
                                     isVideoDownloaded);
 
-                            if (!isTrailer) {
+                            if (!isTrailer && videoPlayerView!=null) {
                                 appCMSPresenter.updateWatchedTime(filmId,
                                         videoPlayerView.getCurrentPosition() / 1000);
                             }

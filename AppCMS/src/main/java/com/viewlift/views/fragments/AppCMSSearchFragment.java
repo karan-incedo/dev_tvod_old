@@ -73,7 +73,6 @@ public class AppCMSSearchFragment extends DialogFragment {
         appCMSSearchView.setSuggestionsAdapter(searchSuggestionsAdapter);
         appCMSSearchView.setIconifiedByDefault(false);
         appCMSSearchView.requestFocus();
-        appCMSPresenter.showSoftKeyboard(appCMSSearchView);
         appCMSSearchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
 
             @Override
