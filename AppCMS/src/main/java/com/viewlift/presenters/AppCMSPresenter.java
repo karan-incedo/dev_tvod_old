@@ -1952,7 +1952,7 @@ public class AppCMSPresenter {
 
         if ((TextUtils.isEmpty(getActiveSubscriptionProcessor()) ||
                 (!TextUtils.isEmpty(getActiveSubscriptionProcessor()) &&
-                        (!getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
+                        (!getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
                                 !getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) &&
                 !TextUtils.isEmpty(getExistingGooglePlaySubscriptionId()) &&
                 !TextUtils.isEmpty(countryCode) &&
@@ -6994,34 +6994,39 @@ public class AppCMSPresenter {
     private void askForPermissionToDownloadToExternalStorage(boolean checkToShowPermissionRationale,
                                                              final ContentDatum contentDatum,
                                                              final Action1<UserVideoDownloadStatus> resultAction1) {
-        downloadContentDatumAfterPermissionGranted = contentDatum;
-        downloadResultActionAfterPermissionGranted = resultAction1;
-        if (currentActivity != null && !hasWriteExternalStoragePermission()) {
-            if (checkToShowPermissionRationale &&
-                    ActivityCompat.shouldShowRequestPermissionRationale(currentActivity,
-                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                showDialog(DialogType.REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_FOR_DOWNLOAD,
-                        currentActivity.getString(R.string.app_cms_download_write_external_storage_permission_rationale_message),
-                        true,
-                        () -> {
-                            try {
-                                askForPermissionToDownloadToExternalStorage(false,
-                                        downloadContentDatumAfterPermissionGranted,
-                                        downloadResultActionAfterPermissionGranted);
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error handling request permissions result: " + e.getMessage());
-                            }
-                        });
-            } else {
-                ActivityCompat.requestPermissions(currentActivity,
-                        new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            downloadContentDatumAfterPermissionGranted = contentDatum;
+            downloadResultActionAfterPermissionGranted = resultAction1;
+            if (currentActivity != null && !hasWriteExternalStoragePermission()) {
+                if (checkToShowPermissionRationale &&
+                        ActivityCompat.shouldShowRequestPermissionRationale(currentActivity,
+                                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    showDialog(DialogType.REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_FOR_DOWNLOAD,
+                            currentActivity.getString(R.string.app_cms_download_write_external_storage_permission_rationale_message),
+                            true,
+                            () -> {
+                                try {
+                                    askForPermissionToDownloadToExternalStorage(false,
+                                            downloadContentDatumAfterPermissionGranted,
+                                            downloadResultActionAfterPermissionGranted);
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Error handling request permissions result: " + e.getMessage());
+                                }
+                            });
+                } else {
+                    ActivityCompat.requestPermissions(currentActivity,
+                            new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS);
+                }
             }
         }
     }
 
     public boolean hasWriteExternalStoragePermission() {
         if (currentActivity != null) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                return true;
+            }
             return (ContextCompat.checkSelfPermission(currentActivity,
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
                     PackageManager.PERMISSION_GRANTED);
