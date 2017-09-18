@@ -86,15 +86,16 @@ public class CollectionGridItemView extends BaseView {
                         defaultHeight));
 
         FrameLayout.LayoutParams layoutParams;
+        int paddingRight = 0;
         if (component.getStyles() != null) {
-            int paddingRight = (int) convertHorizontalValue(getContext(), component.getStyles().getPadding());
+            paddingRight = (int) convertHorizontalValue(getContext(), component.getStyles().getPadding());
             setPadding(0, 0, paddingRight, 0);
         } else if (getTrayPadding(getContext(), component.getLayout()) != -1.0f) {
             int trayPadding = (int) getTrayPadding(getContext(), component.getLayout());
-            int paddingRight = (int) convertHorizontalValue(getContext(), trayPadding);
+            paddingRight = (int) convertHorizontalValue(getContext(), trayPadding);
             setPadding(0, 0, paddingRight, 0);
         }
-        int horizontalMargin = (int) convertHorizontalValue(getContext(), getHorizontalMargin(getContext(), parentLayout));
+        int horizontalMargin = paddingRight;
         int verticalMargin = (int) convertVerticalValue(getContext(), getVerticalMargin(getContext(), parentLayout, height, 0));
         MarginLayoutParams marginLayoutParams = new MarginLayoutParams(width, height);
         marginLayoutParams.setMargins(horizontalMargin,
