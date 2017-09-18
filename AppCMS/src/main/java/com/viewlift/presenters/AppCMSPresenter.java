@@ -2075,6 +2075,7 @@ public class AppCMSPresenter {
                 Log.d(TAG, "Subscription request: " + gson.toJson(subscriptionRequest, SubscriptionRequest.class));
 
                 try {
+                    Log.v("authtoken",getAuthToken()) ;
                     appCMSSubscriptionPlanCall.call(
                             currentActivity.getString(R.string.app_cms_cancel_subscription_api_url,
                                     appCMSMain.getApiBaseUrl(),
@@ -2149,6 +2150,10 @@ public class AppCMSPresenter {
                     Intent googlePlayStoreCancelIntent = new Intent(Intent.ACTION_VIEW,
                             Uri.parse(currentActivity.getString(R.string.google_play_store_subscriptions_url)));
                     currentActivity.startActivity(googlePlayStoreCancelIntent);
+                } else {
+                    if (paymentProcessor.equalsIgnoreCase("CCAvenue")) {
+                        sendSubscriptionCancellation();
+                    }
                 }
             }
         }
