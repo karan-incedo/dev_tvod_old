@@ -2074,6 +2074,7 @@ public class AppCMSPresenter {
                 Log.d(TAG, "Subscription request: " + gson.toJson(subscriptionRequest, SubscriptionRequest.class));
 
                 try {
+                    Log.v("authtoken",getAuthToken()) ;
                     appCMSSubscriptionPlanCall.call(
                             currentActivity.getString(R.string.app_cms_cancel_subscription_api_url,
                                     appCMSMain.getApiBaseUrl(),
