@@ -2096,6 +2096,9 @@ public class AppCMSPresenter {
                                     setLoggedInUserEmail(userIdentity.getEmail());
                                     setLoggedInUserName(userIdentity.getName());
                                     setIsUserSubscribed(userIdentity.isSubscribed());
+                                    if (!userIdentity.isSubscribed()) {
+                                        setActiveSubscriptionProcessor(null);
+                                    }
                                     sendRefreshPageAction();
                                 });
 
@@ -7443,6 +7446,9 @@ public class AppCMSPresenter {
                         setLoggedInUserEmail(userIdentity.getEmail());
                         setLoggedInUserName(userIdentity.getName());
                         setIsUserSubscribed(userIdentity.isSubscribed());
+                        if (!userIdentity.isSubscribed()) {
+                            setActiveSubscriptionProcessor(null);
+                        }
                         getAppCMSAndroid(tryCount + 1);
                     } catch (Exception e) {
                         Log.e(TAG, "Error refreshing identity while attempting to retrieving AppCMS Android data: ");
