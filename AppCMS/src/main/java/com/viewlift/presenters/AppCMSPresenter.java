@@ -1952,8 +1952,8 @@ public class AppCMSPresenter {
 
         if ((TextUtils.isEmpty(getActiveSubscriptionProcessor()) ||
                 (!TextUtils.isEmpty(getActiveSubscriptionProcessor()) &&
-                        (getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
-                                getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) &&
+                        (!getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) ||
+                                !getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) &&
                 !TextUtils.isEmpty(getExistingGooglePlaySubscriptionId()) &&
                 !TextUtils.isEmpty(countryCode) &&
                 appCMSMain != null &&
