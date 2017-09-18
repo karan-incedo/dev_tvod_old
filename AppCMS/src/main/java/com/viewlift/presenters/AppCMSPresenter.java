@@ -3799,39 +3799,24 @@ public class AppCMSPresenter {
 
     public void getUserData(final Action1<UserIdentity> userIdentityAction) {
         if (currentActivity != null) {
-            if (shouldRefreshAuthToken()) {
-                callRefreshIdentity(() -> {
-                    try {
-                        String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
-                                appCMSMain.getApiBaseUrl(),
-                                appCMSSite.getGist().getSiteInternalName());
-                        appCMSUserIdentityCall.callGet(url,
-                                getAuthToken(),
-                                userIdentity -> {
-                                    try {
-                                        Observable.just(userIdentity).subscribe(userIdentityAction);
-                                    } catch (Exception e) {
-                                        Log.e(TAG, "Error retrieving user identity information: " + e.getMessage());
-                                    }
-                                });
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error refreshing identity: " + e.getMessage());
-                    }
-                });
-            } else {
-                String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
-                        appCMSMain.getApiBaseUrl(),
-                        appCMSSite.getGist().getSiteInternalName());
-                appCMSUserIdentityCall.callGet(url,
-                        getAuthToken(),
-                        userIdentity -> {
-                            try {
-                                Observable.just(userIdentity).subscribe(userIdentityAction);
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error retrieving user identity data: " + e.getMessage());
-                            }
-                        });
-            }
+            callRefreshIdentity(() -> {
+                try {
+                    String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
+                            appCMSMain.getApiBaseUrl(),
+                            appCMSSite.getGist().getSiteInternalName());
+                    appCMSUserIdentityCall.callGet(url,
+                            getAuthToken(),
+                            userIdentity -> {
+                                try {
+                                    Observable.just(userIdentity).subscribe(userIdentityAction);
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Error retrieving user identity information: " + e.getMessage());
+                                }
+                            });
+                } catch (Exception e) {
+                    Log.e(TAG, "Error refreshing identity: " + e.getMessage());
+                }
+            });
         }
     }
 
