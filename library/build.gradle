@@ -43,7 +43,7 @@ android {
         versionName "5.4.3"
         versionCode 1
         targetSdkVersion 25
-        minSdkVersion 21
+        minSdkVersion 23
     }
 }
 

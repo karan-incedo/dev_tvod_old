@@ -25,8 +25,6 @@ import com.viewlift.ccavenue.utility.RSAUtility;
 import com.viewlift.ccavenue.utility.ServiceUtility;
 import com.viewlift.presenters.AppCMSPresenter;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EncodingUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,8 +39,6 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.viewlift.ccavenue.utility.Constants.TRANS_URL;
 
@@ -69,13 +65,14 @@ public class WebViewActivity extends Activity {
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
-		orderID = "" ;
-		accessCode = "" ;
-		merchantID = "" ;
-		cancelRedirectURL = "" ;
 		backPressFlag = false ;
 		setContentView(R.layout.activity_webview);
 		mainIntent = getIntent();
+		orderID = mainIntent.getStringExtra("orderId") ;
+		accessCode = mainIntent.getStringExtra("accessCode") ;
+		merchantID = mainIntent.getStringExtra("merchantID") ;
+		cancelRedirectURL = mainIntent.getStringExtra("cancelRedirectURL") ;
+
 		appCMSPresenter = ((AppCMSApplication) getApplication())
 				.getAppCMSPresenterComponent()
 				.appCMSPresenter();
@@ -102,18 +99,15 @@ public class WebViewActivity extends Activity {
 
 		@Override
 		protected Void doInBackground(Void... arg0) {
-			// Creating service handler class instance
-			// Making a request to url and getting response
-			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			String vResponse = getRSAKey() ;
+			//String vResponse = mainIntent.getStringExtra("rsa_key") ;
+			Log.v("rsa_key",vResponse) ;
 			if(!ServiceUtility.chkNull(vResponse).equals("")
 					&& ServiceUtility.chkNull(vResponse).toString().indexOf("ERROR")==-1){
 				StringBuffer vEncVal = new StringBuffer("");
 				vEncVal.append(ServiceUtility.addToPostParams(AvenuesParams.AMOUNT, mainIntent.getStringExtra(AvenuesParams.AMOUNT)));
 				vEncVal.append(ServiceUtility.addToPostParams(AvenuesParams.CURRENCY, mainIntent.getStringExtra(AvenuesParams.CURRENCY)));
 				encVal = RSAUtility.encrypt(vEncVal.substring(0,vEncVal.length()-1), vResponse);
-				params.add(new BasicNameValuePair(AvenuesParams.ACCESS_CODE, accessCode));
-				params.add(new BasicNameValuePair(AvenuesParams.ORDER_ID, orderID));
 			}
 
 			return null;
@@ -226,7 +220,7 @@ public class WebViewActivity extends Activity {
 					Toast.makeText(getApplicationContext(), "Oh no! " + description, Toast.LENGTH_SHORT).show();
 				}
 			});
-			//cancelRedirectURL = "http://release-api.viewlift.com/ccavenue/ccavenue/callback";
+
       /* An instance of this class will be registered as a JavaScript interface */
 			StringBuffer params = new StringBuffer();
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.ACCESS_CODE,accessCode));
@@ -234,19 +228,25 @@ public class WebViewActivity extends Activity {
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.ORDER_ID,orderID));
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.REDIRECT_URL,cancelRedirectURL));
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.CANCEL_URL,cancelRedirectURL));
-			params.append(ServiceUtility.addToPostParams("billing_name",getIntent().getStringExtra("authorizedUserName")));
+			//params.append(ServiceUtility.addToPostParams("billing_name",getIntent().getStringExtra("authorizedUserName")));
 			params.append(ServiceUtility.addToPostParams("billing_email",getIntent().getStringExtra("email")));
 			params.append(ServiceUtility.addToPostParams("billing_country","India"));
 			params.append(ServiceUtility.addToPostParams("billing_tel",getIntent().getStringExtra("mobile_number")));
 
-			//params.append(ServiceUtility.addToPostParams(AvenuesParams.CANCEL_URL,cancelRedirectURL));
-			if (getIntent().getBooleanExtra("renewable",false)) {
-				params.append(ServiceUtility.addToPostParams("payment_option","OPTCRDC")) ;
-			}/* else {
-       params.append(ServiceUtility.addToPostParams("payment_option","OPTDBCRD")) ;
-       params.append(ServiceUtility.addToPostParams("payment_option","OPTNBK")) ;
-       params.append(ServiceUtility.addToPostParams("payment_option","OPTCRDC")) ;
-       }*/
+			Log.v("payment_option",mainIntent.getStringExtra("payment_option")) ;
+			params.append(ServiceUtility.addToPostParams("payment_option",mainIntent.getStringExtra("payment_option"))) ;
+			//if (getIntent().getBooleanExtra("renewable",false)) {
+			if (getIntent().getStringExtra("payment_option").equalsIgnoreCase("OPTCRDC")) {
+				//params.append(ServiceUtility.addToPostParams("payment_option","OPTCRDC")) ;
+				params.append(ServiceUtility.addToPostParams("si_type","ONDEMAND")) ;
+				params.append(ServiceUtility.addToPostParams("si_mer_ref_no",merchantID)) ;
+				params.append(ServiceUtility.addToPostParams("si_is_setup_amt","Y")) ;
+				params.append(ServiceUtility.addToPostParams("si_amount",mainIntent.getStringExtra(AvenuesParams.AMOUNT))) ;
+				params.append(ServiceUtility.addToPostParams("si_setup_amount",mainIntent.getStringExtra(AvenuesParams.AMOUNT))) ;
+				params.append(ServiceUtility.addToPostParams("si_frequency","2")) ;
+				params.append(ServiceUtility.addToPostParams("si_frequency_type",mainIntent.getStringExtra("si_frequency_type"))) ;
+				params.append(ServiceUtility.addToPostParams("si_bill_cycle","2")) ;
+			}
 
 			params.append(ServiceUtility.addToPostParams("merchant_param1",getIntent().getStringExtra(getString(R.string.app_cms_site_name))));
 			params.append(ServiceUtility.addToPostParams("merchant_param2",getIntent().getStringExtra(getString(R.string.app_cms_user_id))));
@@ -293,7 +293,7 @@ public class WebViewActivity extends Activity {
 		BufferedReader reader = null;
 		try {
 			//URL url = new URL(getString(R.string.app_cms_baseurl)+"/ccavenue/ccavenue/rsakey");
-			URL url = new URL ("http://release-api.viewlift.com/ccavenue/ccavenue/rsakey") ;
+			URL url = new URL (mainIntent.getStringExtra("api_base_url")+"/ccavenue/ccavenue/rsakey") ;
 			urlConnection = (HttpURLConnection) url.openConnection();
 			urlConnection.setDoOutput(true);
 			// is output buffer writter
@@ -399,7 +399,7 @@ public class WebViewActivity extends Activity {
 			HttpURLConnection urlConnection = null;
 			BufferedReader reader = null;
 			try {
-				URL url = new URL("http://release-api.viewlift.com/subscription/subscribe?site=hoichoi-tv");
+				URL url = new URL(mainIntent.getStringExtra("api_base_url")+"/subscription/subscribe?site=hoichoi-tv");
 				urlConnection = (HttpURLConnection) url.openConnection();
 				urlConnection.setDoOutput(true);
 				// is output buffer writter

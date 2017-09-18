@@ -4,6 +4,7 @@ apply plugin: 'realm-android'
 def final packageName = 'com.viewlift.hoichoi'
 def final customApplicationId = 'Hoichoi'
 def final hostName = "www.hoichoi.tv"
+
 def final appVersionName = "2.0.24"
 
 buildscript {
@@ -32,7 +33,7 @@ android {
     buildToolsVersion "26.0.1"
     defaultConfig {
         applicationId packageName
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 26
         versionCode 56
         versionName appVersionName
@@ -45,7 +46,7 @@ android {
     productFlavors {
         mobile {
             dimension = "green"
-            minSdkVersion 21
+            minSdkVersion 23
             compileSdkVersion 23
             targetSdkVersion 25
         }

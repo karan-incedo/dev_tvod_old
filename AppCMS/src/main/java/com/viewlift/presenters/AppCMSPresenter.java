@@ -75,6 +75,7 @@ import com.google.gson.Gson;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
+import com.viewlift.ccavenue.screens.PaymentOptionsActivity;
 import com.viewlift.ccavenue.screens.WebViewActivity;
 import com.viewlift.ccavenue.utility.AvenuesParams;
 import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenResponse;
@@ -230,6 +231,7 @@ import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.HEAD;
 import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -396,7 +398,7 @@ public class AppCMSPresenter {
             "/storage/microsd" // ASUS ZenFone 2
     };
     boolean isRenewable;
-    private boolean isCCAvenueEnabled = false;
+
     private String FIREBASE_CONTACT_SCREEN = "Contact Us";
     private String FIREBASE_VIDEO_DETAIL_SCREEN = "Video Detail Screen";
     private String FIREBASE_EVENT_LOGIN_SCREEN = "Login Screen";
@@ -466,6 +468,7 @@ public class AppCMSPresenter {
     private String planToPurchaseName;
     private String apikey;
     private double planToPurchasePrice;
+    private String renewableFrequency = "";
     private double planToPurchaseDiscountedPrice;
     private String planReceipt;
     private GoogleApiClient googleApiClient;
@@ -1881,7 +1884,8 @@ public class AppCMSPresenter {
                                               double discountedPrice,
                                               String recurringPaymentCurrencyCode,
                                               String countryCode,
-                                              boolean isRenewable) {
+                                              boolean isRenewable,
+                                              String getRenewableFrequency) {
         if (currentActivity != null) {
             launchType = LaunchType.SUBSCRIBE;
             skuToPurchase = sku;
@@ -1893,6 +1897,7 @@ public class AppCMSPresenter {
             currencyCode = recurringPaymentCurrencyCode;
             this.countryCode = countryCode;
             this.isRenewable = isRenewable;
+            this.renewableFrequency = getRenewableFrequency ;
             Bundle bundle = new Bundle();
             bundle.putString(FIREBASE_PLAN_ITEM_ID, planToPurchase);
             bundle.putString(FIREBASE_PLAN_ITEM_NAME, planToPurchaseName);
@@ -1924,8 +1929,8 @@ public class AppCMSPresenter {
         Log.v("apikey", apikey);
         try {
             String strAmount = Double.toString(planToPurchaseDiscountedPrice);
-            Intent intent = new Intent(currentActivity, WebViewActivity.class);
-            //Intent intent = new Intent(currentActivity,PaymentOptionsActivity.class);
+            //Intent intent = new Intent(currentActivity, WebViewActivity.class);
+            Intent intent = new Intent(currentActivity,PaymentOptionsActivity.class);
             intent.putExtra(AvenuesParams.CURRENCY, currencyCode);
             intent.putExtra(AvenuesParams.AMOUNT, strAmount);
             intent.putExtra(currentActivity.getString(R.string.app_cms_site_name), appCMSSite.getGist().getSiteInternalName());
@@ -1939,15 +1944,15 @@ public class AppCMSPresenter {
             intent.putExtra("auth_token", getAuthToken());
             intent.putExtra("renewable", isRenewable);
             intent.putExtra("mobile_number", "");
-            currentActivity.startActivityForResult(intent, CC_AVENUE_REQUEST_CODE);
+            intent.putExtra("api_base_url", appCMSMain.getApiBaseUrl());
+            intent.putExtra("si_frequency",renewableFrequency) ;
+            currentActivity.startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
     public void initiateItemPurchase() {
-        isCCAvenueEnabled = false;
-
         checkForExistingSubscription(false);
 
         if ((TextUtils.isEmpty(getActiveSubscriptionProcessor()) ||
@@ -1963,7 +1968,6 @@ public class AppCMSPresenter {
                 appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode)) {
             Log.d(TAG, "Initiating CCAvenue purchase");
             initiateCCAvenuePurchase();
-            isCCAvenueEnabled = true;
         } else {
             if (currentActivity != null &&
                     inAppBillingService != null) {
@@ -2042,6 +2046,7 @@ public class AppCMSPresenter {
                 }
             } else {
                 Log.e(TAG, "InAppBillingService: " + inAppBillingService);
+                initiateCCAvenuePurchase();
             }
         }
     }
@@ -2122,7 +2127,7 @@ public class AppCMSPresenter {
                     !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
                     appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode)) {
                 Log.d(TAG, "Initiating CCAvenue cancellation");
-
+                sendSubscriptionCancellation();
             } else {
                 String paymentProcessor = getActiveSubscriptionProcessor();
                 if (!TextUtils.isEmpty(getExistingGooglePlaySubscriptionId()) ||
@@ -6258,7 +6263,6 @@ public class AppCMSPresenter {
                                     appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode)) {
                                 Log.d(TAG, "Initiating CCAvenue purchase");
                                 initiateCCAvenuePurchase();
-                                isCCAvenueEnabled = true;
                             } else {
                                 setActiveSubscriptionProcessor(currentActivity.getString(R.string.subscription_android_payment_processor_friendly));
                             }

@@ -29,6 +29,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import retrofit2.http.HEAD;
+
 /**
  * Created by viewlift on 5/5/17.
  */
@@ -314,7 +316,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         discountedPrice,
                                         data.getPlanDetails().get(0).getRecurringPaymentCurrencyCode(),
                                         data.getPlanDetails().get(0).getCountryCode(),
-                                        data.getRenewable()
+                                        data.getRenewable(),
+                                        data.getRenewalCycleType()
                                 );
                             } else {
                                 collectionGridItemView.performClick();
