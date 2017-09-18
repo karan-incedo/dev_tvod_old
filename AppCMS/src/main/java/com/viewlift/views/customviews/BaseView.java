@@ -891,10 +891,15 @@ public abstract class BaseView extends CardView {
                 case PAGE_PLAN_TITLE_KEY:
                     if (childComponent.getTextAlignment().equalsIgnoreCase("right")) {
                         gravity = Gravity.END;
+                        rm += convertDpToPixel(8, getContext());
                         view.setTextAlignment(TEXT_ALIGNMENT_TEXT_END);
                     } else {
                         gravity = Gravity.START;
                     }
+                    break;
+
+                case PAGE_PLAN_PRICEINFO_KEY:
+                    lm += convertDpToPixel(8, getContext());
                     break;
 
                 default:
