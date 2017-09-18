@@ -1120,13 +1120,15 @@ public class ViewCreator {
                                                                int defaultHeight,
                                                                boolean useMarginsAsPercentages,
                                                                boolean gridElement,
-                                                               String viewType) {
+                                                               String viewType,
+                                                               boolean createMultipleContainersForChildren) {
         CollectionGridItemView collectionGridItemView = new CollectionGridItemView(context,
                 parentLayout,
                 useParentLayout,
                 component,
                 defaultWidth,
-                defaultHeight);
+                defaultHeight,
+                createMultipleContainersForChildren);
         List<OnInternalEvent> onInternalEvents = new ArrayList<>();
 
         for (int i = 0; i < component.getComponents().size(); i++) {

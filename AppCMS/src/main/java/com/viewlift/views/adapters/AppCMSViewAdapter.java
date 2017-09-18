@@ -139,7 +139,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 defaultHeight,
                 useMarginsAsPercentages,
                 true,
-                this.componentViewType);
+                this.componentViewType,
+                false);
 
         if ("AC SelectPlan 02".equals(componentViewType)) {
             view.setBackgroundColor(selectedColor);
