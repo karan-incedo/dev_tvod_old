@@ -1333,10 +1333,30 @@ public class ViewCreator {
                             componentViewResult.useWidthOfScreen = true;
                         }
                     } else {
-                        ((RecyclerView) componentViewResult.componentView)
-                                .setLayoutManager(new LinearLayoutManager(context,
-                                        LinearLayoutManager.HORIZONTAL,
-                                        false));
+                        AppCMSUIKeyType parentViewType = jsonValueKeyMap.get(viewType);
+
+                        if (parentViewType == AppCMSUIKeyType.PAGE_GRID_MODULE_KEY) {
+                            int numCols = 1;
+                            if (settings != null && settings.getColumns() != null) {
+                                if (BaseView.isTablet(context)) {
+                                    numCols = settings.getColumns().getTablet();
+                                } else {
+                                    numCols = settings.getColumns().getMobile();
+                                }
+                            }
+                            ((RecyclerView) componentViewResult.componentView)
+                                    .setLayoutManager(new GridLayoutManager(context,
+                                            numCols,
+                                            LinearLayoutManager.VERTICAL,
+                                            false));
+                            componentViewResult.componentView.setForegroundGravity(Gravity.CENTER_HORIZONTAL);
+                        } else {
+                            ((RecyclerView) componentViewResult.componentView)
+                                    .setLayoutManager(new LinearLayoutManager(context,
+                                            LinearLayoutManager.HORIZONTAL,
+                                            false));
+                        }
+
                         appCMSViewAdapter = new AppCMSViewAdapter(context,
                                 this,
                                 appCMSPresenter,
