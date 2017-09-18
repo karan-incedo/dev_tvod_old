@@ -74,6 +74,7 @@
     <string name="video_player_permalink_key">video_player_permalink</string>
     <string name="video_player_font_color_key">video_player_font_color</string>
     <string name="video_player_closed_caption_key">video_player_closed_caption</string>
+    <string name="video_player_watched_time_key">video_player_watched_time</string>
     <string name="video_player_is_trailer_key">isTrailer</string>
     <string name="video_primary_category_key">video_primary_category</string>
     <string name="opensans_bold_ttf">fonts/OpenSans-Bold.ttf</string>

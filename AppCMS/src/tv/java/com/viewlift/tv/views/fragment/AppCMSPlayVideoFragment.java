@@ -53,6 +53,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     private static final String TAG = "PlayVideoFragment";
 
     private AppCMSPresenter appCMSPresenter;
+    private static final long SECONDS_TO_MILLIS = 1000L;
 
     private String fontColor;
     private String title;
@@ -303,6 +304,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         PorterDuff.Mode.MULTIPLY
                 );
 
+        videoPlayerView.setCurrentPosition(watchedTime * SECONDS_TO_MILLIS);
 
         videoPlayerView.setOnPlayerStateChanged(new Action1<VideoPlayerView.PlayerState>() {
             @Override

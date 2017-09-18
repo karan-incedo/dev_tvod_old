@@ -265,7 +265,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         retryCallBinder.getAction(),
                         retryCallBinder.getFilmTitle(),
                         retryCallBinder.getExtraData(),
-                        retryCallBinder.isCloselauncher()
+                        retryCallBinder.isCloselauncher(),
+                        retryCallBinder.getContentDatum()
                 );
                 break;
             case VIDEO_ACTION:

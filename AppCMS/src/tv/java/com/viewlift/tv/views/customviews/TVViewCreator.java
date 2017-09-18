@@ -619,7 +619,8 @@ public class TVViewCreator {
                                                     component.getAction(),
                                                     moduleAPI.getContentData().get(0).getGist().getTitle(),
                                                     extraData,
-                                                    false)) {
+                                                    false,
+                                                    moduleAPI.getContentData().get(0))) {
                                                 appCMSPresenter.showLoadingDialog(false);
                                                 Log.e(TAG, "Could not launch action: " +
                                                         " permalink: " +
@@ -716,7 +717,8 @@ public class TVViewCreator {
                                                 component.getAction(),
                                                 moduleAPI.getContentData().get(0).getGist().getTitle(),
                                                 extraData,
-                                                false)) {
+                                                false,
+                                                moduleAPI.getContentData().get(0))) {
                                             Log.e(TAG, "Could not launch action: " +
                                                     " permalink: " +
                                                     moduleAPI.getContentData().get(0).getGist().getPermalink() +
@@ -755,7 +757,8 @@ public class TVViewCreator {
                                         component.getAction(),
                                         null,
                                         null,
-                                        false)) {
+                                        false,
+                                        null)) {
                                     Log.e(TAG, "Could not launch action: " +
                                             " action: " +
                                             component.getAction());
@@ -813,7 +816,8 @@ public class TVViewCreator {
                                         component.getAction(),
                                         null,
                                         extraData,
-                                        false
+                                        false,
+                                        null
                                 );
                             }
                         });
@@ -851,7 +855,8 @@ public class TVViewCreator {
                                             component.getAction(),
                                             null,
                                             authData,
-                                            false);
+                                            false,
+                                            null);
                                 }
                             }
                         });
@@ -1210,7 +1215,8 @@ public class TVViewCreator {
                                                     component.getAction(),
                                                     moduleAPI.getContentData().get(0).getGist().getTitle(),
                                                     extraData,
-                                                    false)) {
+                                                    false,
+                                                    moduleAPI.getContentData().get(0))) {
                                                 appCMSPresenter.showLoadingDialog(false);
                                                 Log.e(TAG, "Could not launch action: " +
                                                         " permalink: " +

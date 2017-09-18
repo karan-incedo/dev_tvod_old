@@ -7685,7 +7685,8 @@ public class AppCMSPresenter {
                                                 String action,
                                                 String filmTitle,
                                                 String[] extraData,
-                                                final boolean closeLauncher) {
+                                                final boolean closeLauncher,
+                                                ContentDatum contentDatum) {
         boolean result = false;
         Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
         if (!isNetworkConnected()) {
@@ -7746,6 +7747,7 @@ public class AppCMSPresenter {
                                 .getGeneral()
                                 .getBackgroundColor());
                 playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_closed_caption_key), extraData[3]);
+                playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_watched_time_key), contentDatum.getGist().getWatchedTime());
                 if (closeLauncher) {
                     sendCloseOthersAction(null, true);
                 }
@@ -8087,7 +8089,8 @@ public class AppCMSPresenter {
                                             action,
                                             filmTitle,
                                             extraData,
-                                            false);
+                                            false,
+                                            appCMSVideoDetail.getRecords().get(0));
                                 }
 
                             }

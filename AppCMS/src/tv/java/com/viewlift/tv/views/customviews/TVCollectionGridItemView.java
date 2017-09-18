@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -202,6 +203,17 @@ public class TVCollectionGridItemView extends TVBaseView {
                             TVCollectionGridItemView.this,
                             childComponent,
                             data));
+
+                    view.setOnKeyListener((v, keyCode, event) -> {
+                        if(event.getAction() == KeyEvent.ACTION_DOWN
+                                && keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
+                            onClickHandler.play(
+                                    childComponent,
+                                    data);
+                            return true;
+                        }
+                        return false;
+                    });
                     view.setBackground(Utils.getTrayBorder(context, borderColor, component));
                     view.setPadding(1, 3, 1, 3);
                 }
