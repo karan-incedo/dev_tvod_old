@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -20,7 +21,10 @@ import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
+import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -159,6 +163,18 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     openResetPasswordScreen(intent);
                 }else if(intent.getAction().equals(AppCMSPresenter.PRESENTER_CLEAR_DIALOG_ACTION)){
 
+                }else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION)) {
+                    updateData();
+                    int totalNoOfFragment = getFragmentManager().getBackStackEntryCount();
+                    for(int i=0;i<totalNoOfFragment;i++){
+                        FragmentManager.BackStackEntry backStackEntry = getFragmentManager().getBackStackEntryAt(i);
+                        String tag = backStackEntry.getName();
+                        Fragment fragment = getFragmentManager().findFragmentByTag(tag);
+                        AppCMSBinder appCmsBinder = appCMSBinderMap.get(tag);
+                        if(fragment instanceof AppCmsTVPageFragment){
+                            ((AppCmsTVPageFragment)fragment).updateBinder(appCmsBinder);
+                        }
+                    }
                 }
 
             }
@@ -173,6 +189,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.MY_PROFILE_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.ERROR_DIALOG_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.ACTION_RESET_PASSWORD));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION));
 
     }
 
@@ -419,7 +436,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             case KeyEvent.ACTION_DOWN:
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_MENU:
-                    //case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                   // case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                         handleNavigationVisibility();
                         break;
                     case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
@@ -566,4 +583,65 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     public int getNavigationContaineer() {
         return R.id.navigation_placholder;
     }
+
+
+    private void updateData() {
+        final AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+        final AppCMSSite appCMSSite = appCMSPresenter.getAppCMSSite();
+
+        if (appCMSPresenter != null) {
+            for (Map.Entry<String, AppCMSBinder> appCMSBinderEntry : appCMSBinderMap.entrySet()) {
+                final AppCMSBinder appCMSBinder = appCMSBinderEntry.getValue();
+                if (appCMSBinder != null) {
+                    String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
+                    boolean usePageIdQueryParam = true;
+                    if (appCMSPresenter.isPageAVideoPage(appCMSBinder.getScreenName())) {
+                        endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getScreenName());
+                        usePageIdQueryParam = false;
+                    }
+
+                    if (!TextUtils.isEmpty(endPoint)) {
+                        appCMSPresenter.getPageIdContent(appCMSMain.getApiBaseUrl(),
+                                endPoint,
+                                appCMSSite.getGist().getSiteInternalName(),
+                                usePageIdQueryParam,
+                                appCMSBinder.getPagePath(),
+                                appCMSPageAPI -> {
+                                    if (appCMSPageAPI != null) {
+                                        boolean updatedHistory = false;
+                                        if (appCMSPresenter.isUserLoggedIn(this)) {
+                                            if (appCMSPageAPI.getModules() != null) {
+                                                for (Module module : appCMSPageAPI.getModules()) {
+                                                    AppCMSUIKeyType moduleType = appCMSPresenter.getJsonValueKeyMap().get(module.getModuleType());
+                                                    if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY ||
+                                                            moduleType == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
+                                                        if (module.getContentData() != null &&
+                                                                !module.getContentData().isEmpty()) {
+                                                            appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
+                                                                if (appCMSHistoryResult != null) {
+                                                                    AppCMSPageAPI historyAPI =
+                                                                            appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
+                                                                    historyAPI.getModules().get(0).setId(module.getId());
+                                                                    appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);
+                                                                    appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
+                                                                }
+                                                            });
+                                                            updatedHistory = true;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        if (!updatedHistory) {
+                                            appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
+                                        }
+                                    }
+                                });
+                    }
+                    appCMSBinderMap.put(getTag(appCMSBinder) ,appCMSBinder );
+                }
+            }
+        }
+    }
+
 }
