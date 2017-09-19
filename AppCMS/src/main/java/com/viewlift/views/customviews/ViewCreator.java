@@ -364,12 +364,8 @@ public class ViewCreator {
                                         if (moduleAPI.getContentData().get(0).getGist().getAverageStarRating() != 0f) {
                                             starRating = moduleAPI.getContentData().get(0).getGist().getAverageStarRating();
                                         }
-                                        if (starRating >= 0) {
-                                            ((StarRating) view).updateRating(starRating);
-                                        } else {
-                                            view.setVisibility(View.GONE);
-                                            shouldHideComponent = true;
-                                        }
+                                        view.setVisibility(View.GONE);
+                                        shouldHideComponent = true;
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
                                     if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_TITLE_KEY) {
@@ -2605,10 +2601,8 @@ public class ViewCreator {
                         starColor,
                         starRating);
 
-                if (starRating < 0) {
-                    componentViewResult.componentView.setVisibility(View.GONE);
-                    componentViewResult.shouldHideComponent = true;
-                }
+                componentViewResult.componentView.setVisibility(View.GONE);
+                componentViewResult.shouldHideComponent = true;
 
                 break;
 
