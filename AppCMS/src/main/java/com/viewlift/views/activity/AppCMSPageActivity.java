@@ -346,6 +346,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                             email = user.getString("email");
                                         } catch (JSONException e) {
                                             Log.e(TAG, "Error parsing Facebook Graph JSON: " + e.getMessage());
+                                        } catch (NullPointerException npe) {
+                                            Log.e(TAG, "Null pointer exception attempting to parse JSON: " + npe.getMessage());
                                         }
                                         if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                                             handleCloseAction();
@@ -678,7 +680,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSBinder != null) {
             Log.e(TAG, "Nav item - DialogType attempting to launch page: "
                     + appCMSBinder.getPageName() + " - " + appCMSBinder.getPageId());
-            if (!appCMSBinderStack.isEmpty() && appCMSBinderStack.peek().equals(appCMSBinder.getPageId())) {
+            if (!appCMSBinderStack.isEmpty() &&
+                    !TextUtils.isEmpty(appCMSBinderStack.peek()) &&
+                    appCMSBinderStack.peek().equals(appCMSBinder.getPageId())) {
                 try {
                     getSupportFragmentManager().popBackStackImmediate();
                 } catch (IllegalStateException e) {
