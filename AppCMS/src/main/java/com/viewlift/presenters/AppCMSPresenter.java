@@ -229,6 +229,7 @@ import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.HEAD;
 import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -1847,10 +1848,8 @@ public class AppCMSPresenter {
         }
     }
 
-    public void initiateItemPurchase() {
-        checkForExistingSubscription(false);
-
-        if ((TextUtils.isEmpty(getActiveSubscriptionProcessor()) ||
+    public boolean useCCAvenue() {
+        return (TextUtils.isEmpty(getActiveSubscriptionProcessor()) ||
                 (!TextUtils.isEmpty(getActiveSubscriptionProcessor()) &&
                         (!getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
                                 !getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) &&
@@ -1860,7 +1859,14 @@ public class AppCMSPresenter {
                 appCMSMain.getPaymentProviders() != null &&
                 appCMSMain.getPaymentProviders().getCcav() != null &&
                 !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
-                appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode)) {
+                appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode);
+    }
+
+    public void initiateItemPurchase() {
+        checkForExistingSubscription(false);
+
+        if (useCCAvenue()) {
+            Log.d(TAG, "Initiating CCAvenue purchase");
             if (isUserSubscribed()) {
                 SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
                 subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
@@ -6494,6 +6500,10 @@ public class AppCMSPresenter {
                                                                                         }
                                                                                     }
                                                                                     setActiveSubscriptionStatus(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus());
+                                                                                    if (useCCAvenue() && !isSubscriptionCompleted()) {
+                                                                                        setActiveSubscriptionPlanName("Scheduled to be cancelled by " +
+                                                                                                appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate());
+                                                                                    }
                                                                                 }
 
                                                                                 if (appCMSSubscriptionPlanResult.getSubscriptionInfo() != null &&
@@ -6622,6 +6632,10 @@ public class AppCMSPresenter {
                                                                         }
                                                                     }
                                                                     setActiveSubscriptionStatus(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus());
+                                                                    if (useCCAvenue() && !isSubscriptionCompleted()) {
+                                                                        setActiveSubscriptionPlanName("Scheduled to be cancelled by " +
+                                                                                appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate());
+                                                                    }
                                                                 }
 
                                                                 if (appCMSSubscriptionPlanResult.getSubscriptionInfo() != null &&

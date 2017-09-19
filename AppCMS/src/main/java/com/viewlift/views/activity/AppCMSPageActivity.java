@@ -770,9 +770,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
             Log.d(TAG, "Back pressed - handling nav bar");
             handleNavbar(appCMSBinderMap.get(appCMSBinderStack.peek()));
-            if (appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName() != null) {
+            if (appCMSBinderMap.get(appCMSBinderStack.peek()) != null &&
+                    appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName() != null) {
                 Log.d(TAG, "Resetting previous AppCMS data: "
                         + appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName());
+            } else if (appCMSBinderMap.get(appCMSBinderStack.peek()) == null) {
+                appCMSBinderStack.pop();
             }
 
         }
@@ -851,10 +854,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private boolean atMostOneUserPageOnTopStack(String newPageId) {
         return (newPageId == null ||
-                (appCMSPresenter.isPageUser(appCMSBinderStack.peek()) &&
+                !appCMSBinderStack.isEmpty() &&
+                        ((appCMSPresenter.isPageUser(appCMSBinderStack.peek()) &&
                         !appCMSPresenter.isPageUser(newPageId)) ||
                 (!appCMSPresenter.isPageUser(appCMSBinderStack.peek())) &&
-                        appCMSPresenter.isPageUser(newPageId));
+                        appCMSPresenter.isPageUser(newPageId)));
     }
 
     private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder) {
@@ -1127,7 +1131,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
             Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
             int i = 0;
-            while ((((i < distanceFromStackTop &&
+            while (((i < distanceFromStackTop && !configurationChanged) ||
+                    ((i < distanceFromStackTop &&
                     (!isBinderStackEmpty() &&
                             !isBinderStackTopNull() &&
                             !atMostOneUserPageOnTopStack(appCMSBinder.getPageId()) &&

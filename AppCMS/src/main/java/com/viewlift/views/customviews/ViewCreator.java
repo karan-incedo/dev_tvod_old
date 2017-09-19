@@ -366,6 +366,9 @@ public class ViewCreator {
                                         }
                                         if (starRating >= 0) {
                                             ((StarRating) view).updateRating(starRating);
+                                        } else {
+                                            view.setVisibility(View.GONE);
+                                            shouldHideComponent = true;
                                         }
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
@@ -2590,7 +2593,7 @@ public class ViewCreator {
             case PAGE_AUTOPLAY_MOVIE_STAR_RATING_KEY:
                 int starColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
 
-                float starRating = 0.0f;
+                float starRating = -1.0f;
                 if (moduleAPI.getContentData() != null &&
                         !moduleAPI.getContentData().isEmpty() &&
                         moduleAPI.getContentData().get(0) != null &&
@@ -2603,6 +2606,12 @@ public class ViewCreator {
                         starColor,
                         starColor,
                         starRating);
+
+                if (starRating < 0) {
+                    componentViewResult.componentView.setVisibility(View.GONE);
+                    componentViewResult.shouldHideComponent = true;
+                }
+
                 break;
 
             case PAGE_PLAN_META_DATA_VIEW_KEY:
