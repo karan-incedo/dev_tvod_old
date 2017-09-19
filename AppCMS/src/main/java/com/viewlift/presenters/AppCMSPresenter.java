@@ -3898,7 +3898,7 @@ public class AppCMSPresenter {
             }
         }
     }
-      
+
     public void launchErrorActivity(PlatformType platformType) {
         if (platformType == PlatformType.ANDROID) {
             try {
@@ -7725,49 +7725,33 @@ public class AppCMSPresenter {
             result = true;
             if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
                     actionType == AppCMSActionType.WATCH_TRAILER) {
-                sendStopLoadingPageAction();
-                Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
-                try {
-                    Class videoPlayer = Class.forName(tvVideoPlayerPackage);
-                    playVideoIntent = new Intent(currentActivity, videoPlayer);
-                } catch (Exception e) {
-                    Log.e(TAG, "Error launching TV Button Selected Action: " + e.getMessage());
-                }
 
-                if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE) {
-                    boolean requestAds = true;
-                    if (pagePath != null && pagePath.contains(currentActivity
-                            .getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
-                        requestAds = false;
-                    }
-                    playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), requestAds);
+                if(contentDatum.getGist().getWatchedTime() == 0) {
+                    getUserVideoStatus(contentDatum.getGist().getId(),
+                            userVideoStatusResponse -> {
+                                if (userVideoStatusResponse != null) {
+                                    contentDatum.getGist().setWatchedTime
+                                            (userVideoStatusResponse.getWatchedTime());
+                                }
+                                LaunchTVVideoPlayerActivity(
+                                        pagePath,
+                                        filmTitle,
+                                        extraData,
+                                        closeLauncher,
+                                        contentDatum,
+                                        actionType);
+                            });
                 } else {
-                    playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), false);
+                    LaunchTVVideoPlayerActivity(
+                            pagePath,
+                            filmTitle,
+                            extraData,
+                            closeLauncher,
+                            contentDatum,
+                            actionType);
                 }
+                sendStopLoadingPageAction();
 
-                playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_font_color_key),
-                        appCMSMain.getBrand().getGeneral().getTextColor());
-                playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_title_key),
-                        filmTitle);
-                playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_hls_url_key),
-                        extraData);
-
-                Date now = new Date();
-                playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_ads_url_key),
-                        currentActivity.getString(R.string.app_cms_ads_api_url,
-                                getPermalinkCompletePath(pagePath),
-                                now.getTime(),
-                                appCMSMain.getSite()));
-                playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_bg_color_key),
-                        appCMSMain.getBrand()
-                                .getGeneral()
-                                .getBackgroundColor());
-                playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_closed_caption_key), extraData[3]);
-                playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_watched_time_key), contentDatum.getGist().getWatchedTime());
-                if (closeLauncher) {
-                    sendCloseOthersAction(null, true);
-                }
-                currentActivity.startActivityForResult(playVideoIntent ,PLAYER_REQUEST_CODE );
             } else if (actionType == AppCMSActionType.SHARE) {
                 if (extraData != null && extraData.length > 0) {
                     Intent sendIntent = new Intent();
@@ -7885,6 +7869,51 @@ public class AppCMSPresenter {
             }
         }
         return result;
+    }
+
+    private void LaunchTVVideoPlayerActivity(String pagePath, String filmTitle, String[] extraData, boolean closeLauncher, ContentDatum contentDatum, AppCMSActionType actionType) {
+        Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
+        try {
+            Class videoPlayer = Class.forName(tvVideoPlayerPackage);
+            playVideoIntent = new Intent(currentActivity, videoPlayer);
+        } catch (Exception e) {
+            Log.e(TAG, "Error launching TV Button Selected Action: " + e.getMessage());
+        }
+
+        if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE) {
+            boolean requestAds = true;
+            if (pagePath != null && pagePath.contains(currentActivity
+                    .getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
+                requestAds = false;
+            }
+            playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), requestAds);
+        } else {
+            playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), false);
+        }
+
+        playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_font_color_key),
+                appCMSMain.getBrand().getGeneral().getTextColor());
+        playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_title_key),
+                filmTitle);
+        playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_hls_url_key),
+                extraData);
+
+        Date now = new Date();
+        playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_ads_url_key),
+                currentActivity.getString(R.string.app_cms_ads_api_url,
+                        getPermalinkCompletePath(pagePath),
+                        now.getTime(),
+                        appCMSMain.getSite()));
+        playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_bg_color_key),
+                appCMSMain.getBrand()
+                        .getGeneral()
+                        .getBackgroundColor());
+        playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_closed_caption_key), extraData[3]);
+        playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_watched_time_key), contentDatum.getGist().getWatchedTime());
+        if (closeLauncher) {
+            sendCloseOthersAction(null, true);
+        }
+        currentActivity.startActivityForResult(playVideoIntent ,PLAYER_REQUEST_CODE );
     }
 
     public void showLoadingDialog(boolean showDialog) {
@@ -8075,42 +8104,51 @@ public class AppCMSPresenter {
 
             new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
                     appCMSVideoDetail -> {
-                        String[] extraData = new String[4];
                         if (appCMSVideoDetail != null &&
                                 appCMSVideoDetail.getRecords() != null &&
-                                appCMSVideoDetail.getRecords().get(0) != null &&
-                                appCMSVideoDetail.getRecords().get(0).getStreamingInfo() != null) {
-                            StreamingInfo streamingInfo = appCMSVideoDetail.getRecords().get(0).getStreamingInfo();
-                            extraData[0] = pagePath;
-                            if (streamingInfo.getVideoAssets() != null &&
-                                    !TextUtils.isEmpty(streamingInfo.getVideoAssets().getHls())) {
-                                extraData[1] = streamingInfo.getVideoAssets().getHls();
-                            } else if (streamingInfo.getVideoAssets() != null &&
-                                    streamingInfo.getVideoAssets().getMpeg() != null &&
-                                    !streamingInfo.getVideoAssets().getMpeg().isEmpty() &&
-                                    streamingInfo.getVideoAssets().getMpeg().get(0) != null &&
-                                    !TextUtils.isEmpty(streamingInfo.getVideoAssets().getMpeg().get(0).getUrl())) {
-                                extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
-                            }
-                            extraData[2] = filmId;
-                            if (appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions() != null
-                                    && appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0) != null){
-                                extraData[3] = appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0).getUrl();
-                            }
-                            extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
-                            if (!TextUtils.isEmpty(extraData[1])) {
+                                appCMSVideoDetail.getRecords().get(0) != null) {
+                            getUserVideoStatus(appCMSVideoDetail.getRecords().get(0).getGist().getId(),
+                                    userVideoStatusResponse -> {
+                                        if (userVideoStatusResponse != null) {
+                                            long watchedTime = userVideoStatusResponse.getWatchedTime();
+                                            String[] extraData = new String[4];
+                                            appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(watchedTime);
+                                            if (appCMSVideoDetail.getRecords().get(0).getStreamingInfo() != null) {
+                                                StreamingInfo streamingInfo = appCMSVideoDetail.getRecords().get(0).getStreamingInfo();
+                                                extraData[0] = pagePath;
+                                                if (streamingInfo.getVideoAssets() != null &&
+                                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getHls())) {
+                                                    extraData[1] = streamingInfo.getVideoAssets().getHls();
+                                                } else if (streamingInfo.getVideoAssets() != null &&
+                                                        streamingInfo.getVideoAssets().getMpeg() != null &&
+                                                        !streamingInfo.getVideoAssets().getMpeg().isEmpty() &&
+                                                        streamingInfo.getVideoAssets().getMpeg().get(0) != null &&
+                                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getMpeg().get(0).getUrl())) {
+                                                    extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
+                                                }
+                                                extraData[2] = filmId;
+                                                if (appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions() != null
+                                                        && appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0) != null) {
+                                                    extraData[3] = appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0).getUrl();
+                                                }
+                                                extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
+                                                if (!TextUtils.isEmpty(extraData[1])) {
 
-                                if (platformType == PlatformType.TV) {
-                                    launchTVButtonSelectedAction(pagePath,
-                                            action,
-                                            filmTitle,
-                                            extraData,
-                                            false,
-                                            appCMSVideoDetail.getRecords().get(0));
-                                }
+                                                    if (platformType == PlatformType.TV) {
+                                                        launchTVButtonSelectedAction(pagePath,
+                                                                action,
+                                                                filmTitle,
+                                                                extraData,
+                                                                false,
+                                                                appCMSVideoDetail.getRecords().get(0));
+                                                    }
 
-                            }
+                                                }
+                                            }
+                                        }
+                                    });
                         }
+
                     }).execute(params);
         }
         return result;
