@@ -1846,10 +1846,8 @@ public class AppCMSPresenter {
         }
     }
 
-    public void initiateItemPurchase() {
-        checkForExistingSubscription(false);
-
-        if ((TextUtils.isEmpty(getActiveSubscriptionProcessor()) ||
+    public boolean useCCAvenue() {
+        return (TextUtils.isEmpty(getActiveSubscriptionProcessor()) ||
                 (!TextUtils.isEmpty(getActiveSubscriptionProcessor()) &&
                         (!getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
                                 !getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) &&
@@ -1859,7 +1857,13 @@ public class AppCMSPresenter {
                 appCMSMain.getPaymentProviders() != null &&
                 appCMSMain.getPaymentProviders().getCcav() != null &&
                 !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
-                appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode)) {
+                appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode);
+    }
+
+    public void initiateItemPurchase() {
+        checkForExistingSubscription(false);
+
+        if (useCCAvenue()) {
             Log.d(TAG, "Initiating CCAvenue purchase");
             initiateCCAvenuePurchase();
         } else {
@@ -6477,6 +6481,10 @@ public class AppCMSPresenter {
                                                                                         }
                                                                                     }
                                                                                     setActiveSubscriptionStatus(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus());
+                                                                                    if (useCCAvenue() && !isSubscriptionCompleted()) {
+                                                                                        setActiveSubscriptionPlanName("Scheduled to be cancelled by " +
+                                                                                                appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate());
+                                                                                    }
                                                                                 }
 
                                                                                 if (appCMSSubscriptionPlanResult.getSubscriptionInfo() != null &&
@@ -6605,6 +6613,10 @@ public class AppCMSPresenter {
                                                                         }
                                                                     }
                                                                     setActiveSubscriptionStatus(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus());
+                                                                    if (useCCAvenue() && !isSubscriptionCompleted()) {
+                                                                        setActiveSubscriptionPlanName("Scheduled to be cancelled by " +
+                                                                                appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate());
+                                                                    }
                                                                 }
 
                                                                 if (appCMSSubscriptionPlanResult.getSubscriptionInfo() != null &&
