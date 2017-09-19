@@ -20,6 +20,8 @@ import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 
 import com.viewlift.R;
 
+import net.nightwhistler.htmlspanner.TextUtil;
+
 import retrofit2.Response;
 
 /**
@@ -59,6 +61,9 @@ public class AppCMSPageAPICall {
                               boolean viewPlansPage,
                               int tryCount) throws IOException {
         String urlWithContent;
+        if (TextUtils.isEmpty(endpoint)) {
+            endpoint = "/content/pages";
+        }
         if (usePageIdQueryParam) {
             if (viewPlansPage) {
                 urlWithContent =

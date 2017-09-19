@@ -826,7 +826,11 @@ public abstract class BaseView extends CardView {
                 case PAGE_CAROUSEL_TITLE_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
                     if (isLandscape(getContext()) || !isTablet(getContext())) {
-                        tm -= viewHeight * 2;
+                        if (isLandscape(getContext())) {
+                            tm -= viewHeight * 5;
+                        } else {
+                            tm -= viewHeight * 2;
+                        }
                         viewHeight *= 2;
                     } else {
                         tm -= viewHeight * 3;
@@ -839,9 +843,9 @@ public abstract class BaseView extends CardView {
                     gravity = Gravity.CENTER_HORIZONTAL;
                     if (isTablet(getContext())) {
                         if (isLandscape(getContext())) {
-                            tm -= viewHeight * 3;
+                            tm -= viewHeight * 9;
                         } else {
-                            tm -= viewHeight * 5;
+                            tm -= viewHeight * 10;
                         }
                     } else {
                         tm -= viewHeight * 2;
@@ -855,6 +859,8 @@ public abstract class BaseView extends CardView {
                     lm = maxViewWidth / 2;
                     if (isTablet(getContext()) && !isLandscape(getContext())) {
                         tm -= viewHeight / 2;
+                    } else if (isLandscape(getContext())) {
+                        tm -= viewHeight * 2;
                     }
                     break;
 
@@ -885,10 +891,15 @@ public abstract class BaseView extends CardView {
                 case PAGE_PLAN_TITLE_KEY:
                     if (childComponent.getTextAlignment().equalsIgnoreCase("right")) {
                         gravity = Gravity.END;
+                        rm += convertDpToPixel(8, getContext());
                         view.setTextAlignment(TEXT_ALIGNMENT_TEXT_END);
                     } else {
                         gravity = Gravity.START;
                     }
+                    break;
+
+                case PAGE_PLAN_PRICEINFO_KEY:
+                    lm += convertDpToPixel(8, getContext());
                     break;
 
                 default:

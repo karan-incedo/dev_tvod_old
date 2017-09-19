@@ -657,7 +657,9 @@ public class ViewCreator {
                                                         } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
                                                             if (appCMSPresenter.isUserSubscribed()) {
                                                                 appCMSPresenter.checkForExistingSubscription(false);
-                                                                if (!appCMSPresenter.isExistingGooglePlaySubscriptionSuspended()) {
+
+                                                                if (!appCMSPresenter.isExistingGooglePlaySubscriptionSuspended() &&
+                                                                        appCMSPresenter.isSubscriptionCompleted()) {
                                                                     settingsView.setVisibility(View.VISIBLE);
                                                                 } else {
                                                                     settingsView.setVisibility(View.GONE);
@@ -1124,13 +1126,17 @@ public class ViewCreator {
                                                                int defaultHeight,
                                                                boolean useMarginsAsPercentages,
                                                                boolean gridElement,
-                                                               String viewType) {
+                                                               String viewType,
+                                                               boolean createMultipleContainersForChildren,
+                                                               boolean createRoundedCorners) {
         CollectionGridItemView collectionGridItemView = new CollectionGridItemView(context,
                 parentLayout,
                 useParentLayout,
                 component,
                 defaultWidth,
-                defaultHeight);
+                defaultHeight,
+                createMultipleContainersForChildren,
+                createRoundedCorners);
         List<OnInternalEvent> onInternalEvents = new ArrayList<>();
 
         for (int i = 0; i < component.getComponents().size(); i++) {
@@ -1288,7 +1294,6 @@ public class ViewCreator {
                                 .build());
                     }
                 }
-
                 break;
 
             case PAGE_COLLECTIONGRID_KEY:
@@ -1309,15 +1314,15 @@ public class ViewCreator {
 
                     AppCMSViewAdapter appCMSViewAdapter;
                     if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
-                        if (!BaseView.isTablet(context)) {
+                        if (BaseView.isTablet(context) && BaseView.isLandscape(context)) {
+                            ((RecyclerView) componentViewResult.componentView)
+                                    .setLayoutManager(new GridLayoutManager(context, 2,
+                                            GridLayoutManager.VERTICAL, false));
+                        } else {
                             ((RecyclerView) componentViewResult.componentView)
                                     .setLayoutManager(new LinearLayoutManager(context,
                                             LinearLayoutManager.VERTICAL,
                                             false));
-                        } else {
-                            ((RecyclerView) componentViewResult.componentView)
-                                    .setLayoutManager(new GridLayoutManager(context, 2,
-                                            GridLayoutManager.VERTICAL, false));
                         }
 
                         appCMSViewAdapter = new AppCMSViewAdapter(context,
@@ -1337,10 +1342,30 @@ public class ViewCreator {
                             componentViewResult.useWidthOfScreen = true;
                         }
                     } else {
-                        ((RecyclerView) componentViewResult.componentView)
-                                .setLayoutManager(new LinearLayoutManager(context,
-                                        LinearLayoutManager.HORIZONTAL,
-                                        false));
+                        AppCMSUIKeyType parentViewType = jsonValueKeyMap.get(viewType);
+
+                        if (parentViewType == AppCMSUIKeyType.PAGE_GRID_MODULE_KEY) {
+                            int numCols = 1;
+                            if (settings != null && settings.getColumns() != null) {
+                                if (BaseView.isTablet(context)) {
+                                    numCols = settings.getColumns().getTablet();
+                                } else {
+                                    numCols = settings.getColumns().getMobile();
+                                }
+                            }
+                            ((RecyclerView) componentViewResult.componentView)
+                                    .setLayoutManager(new GridLayoutManager(context,
+                                            numCols,
+                                            LinearLayoutManager.VERTICAL,
+                                            false));
+                            componentViewResult.componentView.setForegroundGravity(Gravity.CENTER_HORIZONTAL);
+                        } else {
+                            ((RecyclerView) componentViewResult.componentView)
+                                    .setLayoutManager(new LinearLayoutManager(context,
+                                            LinearLayoutManager.HORIZONTAL,
+                                            false));
+                        }
+
                         appCMSViewAdapter = new AppCMSViewAdapter(context,
                                 this,
                                 appCMSPresenter,
@@ -1861,20 +1886,19 @@ public class ViewCreator {
                         if (!appCMSPresenter.isUserSubscribed()) {
                             if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
-                            } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                                componentViewResult.componentView.setVisibility(View.GONE);
                             }
                         } else if (!appCMSPresenter.upgradesAvailableForUser()) {
                             if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                             }
-                        } else {
-                            if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                                if (!appCMSPresenter.isExistingGooglePlaySubscriptionSuspended()) {
-                                    componentViewResult.componentView.setVisibility(View.VISIBLE);
-                                } else {
-                                    componentViewResult.componentView.setVisibility(View.GONE);
-                                }
+                        }
+
+                        if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
+                            if (!appCMSPresenter.isExistingGooglePlaySubscriptionSuspended() &&
+                                    appCMSPresenter.isSubscriptionCompleted()) {
+                                componentViewResult.componentView.setVisibility(View.VISIBLE);
+                            } else {
+                                componentViewResult.componentView.setVisibility(View.GONE);
                             }
                         }
 
@@ -2804,9 +2828,9 @@ public class ViewCreator {
                 } else {
                     if (appCMSPresenter.isAppSVOD() &&
                             appCMSPresenter.isUserLoggedIn()) {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED);
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
                     } else {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED);
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED, null);
                     }
                 }
             };
@@ -2875,12 +2899,12 @@ public class ViewCreator {
                 } else {
                     if (appCMSPresenter.isAppSVOD()) {
                         if (appCMSPresenter.isUserLoggedIn()) {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED);
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
                         } else {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED);
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED, null);
                         }
                     } else if (!(appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn())) {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED);
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED, null);
                     }
                 }
                 imageButton.setOnClickListener(null); //fix for SVFA-1988

@@ -68,7 +68,7 @@ import rx.functions.Action1;
  */
 
 public class VideoPlayerView extends FrameLayout implements Player.EventListener,
-        AdaptiveMediaSourceEventListener {
+        AdaptiveMediaSourceEventListener, SimpleExoPlayer.VideoListener {
     private static final String TAG = "VideoPlayerFragment";
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     protected DataSource.Factory mediaDataSourceFactory;
@@ -271,7 +271,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         DefaultTrackSelector trackSelector =
                 new DefaultTrackSelector(videoTrackSelectionFactory);
 
-
         player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
         player.addListener(this);
         playerView.setPlayer(player);
@@ -280,6 +279,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 onPlayerControlsStateChanged.call(visibility);
             }
         });
+        player.setVideoListener(this);
 
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         audioManager.requestAudioFocus(focusChange -> Log.i(TAG, "Audio focus has changed: " + focusChange),
@@ -476,6 +476,29 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public void setListener(VideoPlayerView.FinishListener finishListener) {
         mFinishListener = finishListener;
+    }
+
+    @Override
+    public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
+        Log.i(TAG, "Video size changed: width = " +
+                width +
+                " height = " +
+                height +
+                " rotation degrees = " +
+                unappliedRotationDegrees +
+                " width/height ratio = " +
+                pixelWidthHeightRatio);
+        if (width > height) {
+            fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
+        } else {
+            fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT;
+        }
+        playerView.setResizeMode(fullscreenResizeMode);
+    }
+
+    @Override
+    public void onRenderedFirstFrame() {
+        Log.d(TAG, "Rendered first frame");
     }
 
     public interface FinishListener {
