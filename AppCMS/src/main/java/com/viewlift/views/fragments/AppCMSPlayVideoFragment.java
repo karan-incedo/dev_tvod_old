@@ -292,26 +292,6 @@ public class AppCMSPlayVideoFragment extends Fragment
         setRetainInstance(true);
 
         if (appCMSPresenter.isAppSVOD() && !freeContent) {
-            entitlementCheckTimerTask = new TimerTask() {
-                @Override
-                public void run() {
-                    appCMSPresenter.getUserData(userIdentity -> {
-                        Log.d(TAG, "Video player entitlement check triggered");
-                        if (!userIdentity.isSubscribed()) {
-                            Log.d(TAG, "User is not subscribed - pausing video and showing Subscribe dialog");
-                            pauseVideo();
-                            if (videoPlayerView != null) {
-                                videoPlayerView.disableController();
-                            }
-                            videoPlayerInfoContainer.setVisibility(View.VISIBLE);
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED);
-                        } else {
-                            Log.d(TAG, "User is subscribed - resuming video");
-                        }
-                    });
-                }
-            };
-
             int entitlementCheckMultiplier = 5;
 
             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
@@ -328,10 +308,32 @@ public class AppCMSPlayVideoFragment extends Fragment
                 }
             }
 
+            final int maxPreviewSecs = entitlementCheckMultiplier * 60;
+
+            entitlementCheckTimerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    appCMSPresenter.getUserData(userIdentity -> {
+                        Log.d(TAG, "Video player entitlement check triggered");
+                        int secsViewed = (int) videoPlayerView.getCurrentPosition() / 1000;
+                        if (maxPreviewSecs < secsViewed && !userIdentity.isSubscribed()) {
+                            Log.d(TAG, "User is not subscribed - pausing video and showing Subscribe dialog");
+                            pauseVideo();
+                            if (videoPlayerView != null) {
+                                videoPlayerView.disableController();
+                            }
+                            videoPlayerInfoContainer.setVisibility(View.VISIBLE);
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED);
+                            cancel();
+                        } else {
+                            Log.d(TAG, "User is subscribed - resuming video");
+                        }
+                    });
+                }
+            };
+
             entitlementCheckTimer = new Timer();
-            Date entitlementCheckStart = DateTimeUtils.toDate(Instant.now().plus(entitlementCheckMultiplier, ChronoUnit.MINUTES));
-            long entitlementCheckDelay = Duration.ZERO.plus(entitlementCheckMultiplier, ChronoUnit.MINUTES).toMillis();
-            entitlementCheckTimer.schedule(entitlementCheckTimerTask, entitlementCheckStart, entitlementCheckDelay);
+            entitlementCheckTimer.schedule(entitlementCheckTimerTask, 1000, 1000);
         }
 
         AppsFlyerUtils.filmViewingEvent(getContext(), primaryCategory, filmId, appCMSPresenter);
