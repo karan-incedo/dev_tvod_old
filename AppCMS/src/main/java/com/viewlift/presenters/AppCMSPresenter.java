@@ -1964,34 +1964,45 @@ public class AppCMSPresenter {
                 appCMSMain.getPaymentProviders().getCcav() != null &&
                 !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
                 appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode)) {
-//            if (isUserSubscribed()) {
-//               Log.v("upgradeplan","upgradeplan") ;
-//                SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
-//                subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
-//                subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
-//                subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
-//                subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency());
-//                subscriptionRequest.setPlanIdentifier(getActiveSubscriptionSku());
-//                subscriptionRequest.setPlanId(getActiveSubscriptionId());
-//                subscriptionRequest.setUserId(getLoggedInUser());
-//                subscriptionRequest.setReceipt(getActiveSubscriptionReceipt());
-//                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-//                appCMSSubscriptionPlanCall.call(
-//                        currentActivity.getString(R.string.app_cms_register_subscription_api_url,
-//                                appCMSMain.getApiBaseUrl(),
-//                                appCMSSite.getGist().getSiteInternalName(),
-//                                currentActivity.getString(R.string.app_cms_subscription_platform_key)),
-//                        R.string.app_cms_subscription_plan_update_key,
-//                        subscriptionRequest,
-//                        apikey,
-//                        getAuthToken(),
-//                        result -> {
-//                            //
-//                        });
-//            } else {
-//                initiateCCAvenuePurchase();
-//            }
-            initiateCCAvenuePurchase();
+            if (isUserSubscribed()) {
+                SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
+                subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
+                subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
+                subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
+                subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency());
+                subscriptionRequest.setPlanIdentifier(getActiveSubscriptionSku());
+                subscriptionRequest.setPlanId(getActiveSubscriptionId());
+                subscriptionRequest.setUserId(getLoggedInUser());
+                subscriptionRequest.setReceipt(getActiveSubscriptionReceipt());
+                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                try {
+                    appCMSSubscriptionPlanCall.call(
+                            currentActivity.getString(R.string.app_cms_register_subscription_api_url,
+                                    appCMSMain.getApiBaseUrl(),
+                                    appCMSSite.getGist().getSiteInternalName(),
+                                    currentActivity.getString(R.string.app_cms_subscription_platform_key)),
+                            R.string.app_cms_subscription_plan_update_key,
+                            subscriptionRequest,
+                            apikey,
+                            getAuthToken(),
+                            result -> {
+                                //
+                                Log.v("got result","got result") ;
+                            },appCMSSubscriptionPlanResults -> {
+                                sendCloseOthersAction(null, true);
+                                refreshSubscriptionData(() -> {
+                                    sendRefreshPageAction();
+                                }, true);
+                            },
+                            currentUserPlan -> {
+
+                            });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                initiateCCAvenuePurchase();
+            }
         } else {
             if (currentActivity != null &&
                     inAppBillingService != null) {
