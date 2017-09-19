@@ -601,7 +601,11 @@ public class AppCMSPresenter {
                     entitlementCheckActive.getCurrentlyPlayingIndex(),
                     entitlementCheckActive.getRelateVideoIds());
         }, () -> {
-            showEntitlementDialog(DialogType.SUBSCRIPTION_REQUIRED);
+            if (isUserLoggedIn()) {
+                showEntitlementDialog(DialogType.SUBSCRIPTION_REQUIRED, null);
+            } else {
+                showEntitlementDialog(DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED, null);
+            }
         });
     }
 
@@ -1019,25 +1023,20 @@ public class AppCMSPresenter {
                             !isTrailer &&
                             contentDatum.getGist() != null &&
                             !contentDatum.getGist().getFree()) {
-                        if (isUserLoggedIn()) {
-                            boolean freePreview = appCMSMain.getFeatures() != null &&
-                                    appCMSMain.getFeatures().getFreePreview() != null &&
-                                    appCMSMain.getFeatures().getFreePreview().isFreePreview();
+                        boolean freePreview = appCMSMain.getFeatures() != null &&
+                                appCMSMain.getFeatures().getFreePreview() != null &&
+                                appCMSMain.getFeatures().getFreePreview().isFreePreview();
 
-                            if (!freePreview && !entitlementCheckActive.isSuccess()) {
-                                entitlementCheckActive.setPagePath(pagePath);
-                                entitlementCheckActive.setAction(action);
-                                entitlementCheckActive.setFilmTitle(filmTitle);
-                                entitlementCheckActive.setExtraData(extraData);
-                                entitlementCheckActive.setContentDatum(contentDatum);
-                                entitlementCheckActive.setCloseLauncher(closeLauncher);
-                                entitlementCheckActive.setCurrentlyPlayingIndex(currentlyPlayingIndex);
-                                entitlementCheckActive.setRelateVideoIds(relateVideoIds);
-                                getUserData(entitlementCheckActive);
-                                entitlementActive = false;
-                            }
-                        } else {
-                            showEntitlementDialog(DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED);
+                        if (!freePreview && !entitlementCheckActive.isSuccess()) {
+                            entitlementCheckActive.setPagePath(pagePath);
+                            entitlementCheckActive.setAction(action);
+                            entitlementCheckActive.setFilmTitle(filmTitle);
+                            entitlementCheckActive.setExtraData(extraData);
+                            entitlementCheckActive.setContentDatum(contentDatum);
+                            entitlementCheckActive.setCloseLauncher(closeLauncher);
+                            entitlementCheckActive.setCurrentlyPlayingIndex(currentlyPlayingIndex);
+                            entitlementCheckActive.setRelateVideoIds(relateVideoIds);
+                            getUserData(entitlementCheckActive);
                             entitlementActive = false;
                         }
                     }
@@ -1255,14 +1254,14 @@ public class AppCMSPresenter {
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)) &&
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ccavenue_payment_processor)) &&
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ccavenue_payment_processor_friendly))) {
-                                    showEntitlementDialog(DialogType.CANNOT_UPGRADE_SUBSCRIPTION);
+                                    showEntitlementDialog(DialogType.CANNOT_UPGRADE_SUBSCRIPTION, null);
                                 } else if (isUserSubscribed() &&
                                         TextUtils.isEmpty(paymentProcessor)) {
-                                    showEntitlementDialog(DialogType.UNKNOWN_SUBSCRIPTION_FOR_UPGRADE);
+                                    showEntitlementDialog(DialogType.UNKNOWN_SUBSCRIPTION_FOR_UPGRADE, null);
                                 } else if (isUserSubscribed() &&
                                         (isExistingGooglePlaySubscriptionSuspended() ||
                                                 !upgradesAvailableForUser())) {
-                                    showEntitlementDialog(DialogType.UPGRADE_UNAVAILABLE);
+                                    showEntitlementDialog(DialogType.UPGRADE_UNAVAILABLE, null);
                                 } else {
                                     navigateToSubscriptionPlansPage(null, null);
                                 }
@@ -1273,9 +1272,9 @@ public class AppCMSPresenter {
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))) &&
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ccavenue_payment_processor)) &&
                                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ccavenue_payment_processor_friendly))) {
-                                    showEntitlementDialog(DialogType.CANNOT_CANCEL_SUBSCRIPTION);
+                                    showEntitlementDialog(DialogType.CANNOT_CANCEL_SUBSCRIPTION, null);
                                 } else if (isUserSubscribed() && TextUtils.isEmpty(paymentProcessor)) {
-                                    showEntitlementDialog(DialogType.UNKNOWN_SUBSCRIPTION_FOR_CANCEL);
+                                    showEntitlementDialog(DialogType.UNKNOWN_SUBSCRIPTION_FOR_CANCEL, null);
                                 } else {
                                     initiateSubscriptionCancellation();
                                 }
@@ -5448,7 +5447,7 @@ public class AppCMSPresenter {
         Toast.makeText(currentActivity, message, messageDuration).show();
     }
 
-    public void showEntitlementDialog(DialogType dialogType) {
+    public void showEntitlementDialog(DialogType dialogType, Action0 onCloseAction) {
         if (currentActivity != null) {
 
             String positiveButtonText = currentActivity.getString(R.string.app_cms_subscription_button_text);
@@ -5549,6 +5548,9 @@ public class AppCMSPresenter {
                                 dialog.dismiss();
                                 launchType = LaunchType.LOGIN_AND_SIGNUP;
                                 navigateToLoginPage();
+                                if (onCloseAction != null) {
+                                    onCloseAction.call();
+                                }
                             } catch (Exception e) {
                                 Log.e(TAG, "Error closing login & subscription required dialog: " + e.getMessage());
                             }
@@ -5558,6 +5560,9 @@ public class AppCMSPresenter {
                             try {
                                 dialog.dismiss();
                                 navigateToSubscriptionPlansPage(null, null);
+                                if (onCloseAction != null) {
+                                    onCloseAction.call();
+                                }
                             } catch (Exception e) {
                                 Log.e(TAG, "Error closing subscribe dialog: " + e.getMessage());
                             }
@@ -5573,6 +5578,9 @@ public class AppCMSPresenter {
                             try {
                                 dialog.dismiss();
                                 navigateToLoginPage();
+                                if (onCloseAction != null) {
+                                    onCloseAction.call();
+                                }
                             } catch (Exception e) {
                                 Log.e(TAG, "Error closing login required dialog: " + e.getMessage());
                             }
@@ -7084,7 +7092,10 @@ public class AppCMSPresenter {
     }
 
     public boolean isAppSVOD() {
-        return jsonValueKeyMap.get(appCMSMain.getServiceType()) == AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE;
+        if (appCMSMain != null) {
+            return jsonValueKeyMap.get(appCMSMain.getServiceType()) == AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE;
+        }
+        return false;
     }
 
     public void setNavItemToCurrentAction(Activity activity) {

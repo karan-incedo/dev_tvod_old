@@ -267,7 +267,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                 viewHolder.navItemLabel.setTextColor(textColor);
                 viewHolder.itemView.setOnClickListener(v -> {
                     if (appCMSPresenter.isDownloadUnfinished()) {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD);
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD, null);
                     } else {
                         appCMSPresenter.cancelInternalEvents();
                         appCMSPresenter.logout();

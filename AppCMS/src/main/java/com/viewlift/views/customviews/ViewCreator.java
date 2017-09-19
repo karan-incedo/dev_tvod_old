@@ -1123,14 +1123,16 @@ public class ViewCreator {
                                                                boolean useMarginsAsPercentages,
                                                                boolean gridElement,
                                                                String viewType,
-                                                               boolean createMultipleContainersForChildren) {
+                                                               boolean createMultipleContainersForChildren,
+                                                               boolean createRoundedCorners) {
         CollectionGridItemView collectionGridItemView = new CollectionGridItemView(context,
                 parentLayout,
                 useParentLayout,
                 component,
                 defaultWidth,
                 defaultHeight,
-                createMultipleContainersForChildren);
+                createMultipleContainersForChildren,
+                createRoundedCorners);
         List<OnInternalEvent> onInternalEvents = new ArrayList<>();
 
         for (int i = 0; i < component.getComponents().size(); i++) {
@@ -1288,7 +1290,6 @@ public class ViewCreator {
                                 .build());
                     }
                 }
-
                 break;
 
             case PAGE_COLLECTIONGRID_KEY:
@@ -1309,15 +1310,15 @@ public class ViewCreator {
 
                     AppCMSViewAdapter appCMSViewAdapter;
                     if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
-                        if (!BaseView.isTablet(context)) {
+                        if (BaseView.isTablet(context) && BaseView.isLandscape(context)) {
+                            ((RecyclerView) componentViewResult.componentView)
+                                    .setLayoutManager(new GridLayoutManager(context, 2,
+                                            GridLayoutManager.VERTICAL, false));
+                        } else {
                             ((RecyclerView) componentViewResult.componentView)
                                     .setLayoutManager(new LinearLayoutManager(context,
                                             LinearLayoutManager.VERTICAL,
                                             false));
-                        } else {
-                            ((RecyclerView) componentViewResult.componentView)
-                                    .setLayoutManager(new GridLayoutManager(context, 2,
-                                            GridLayoutManager.VERTICAL, false));
                         }
 
                         appCMSViewAdapter = new AppCMSViewAdapter(context,
@@ -2823,9 +2824,9 @@ public class ViewCreator {
                 } else {
                     if (appCMSPresenter.isAppSVOD() &&
                             appCMSPresenter.isUserLoggedIn()) {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED);
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
                     } else {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED);
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED, null);
                     }
                 }
             };
@@ -2894,12 +2895,12 @@ public class ViewCreator {
                 } else {
                     if (appCMSPresenter.isAppSVOD()) {
                         if (appCMSPresenter.isUserLoggedIn()) {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED);
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
                         } else {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED);
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED, null);
                         }
                     } else if (!(appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn())) {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED);
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED, null);
                     }
                 }
                 imageButton.setOnClickListener(null); //fix for SVFA-1988

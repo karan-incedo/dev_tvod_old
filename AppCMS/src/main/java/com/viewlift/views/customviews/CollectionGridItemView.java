@@ -56,6 +56,7 @@ public class CollectionGridItemView extends BaseView {
     private List<View> viewsToUpdateOnClickEvent;
     private boolean selectable;
     private boolean createMultipleContainersForChildren;
+    private boolean createRoundedCorners;
 
     @Inject
     public CollectionGridItemView(Context context,
@@ -64,7 +65,8 @@ public class CollectionGridItemView extends BaseView {
                                   Component component,
                                   int defaultWidth,
                                   int defaultHeight,
-                                  boolean createMultipleContainersForChildren) {
+                                  boolean createMultipleContainersForChildren,
+                                  boolean createRoundedCorners) {
         super(context);
         this.parentLayout = parentLayout;
         this.userParentLayout = useParentLayout;
@@ -73,6 +75,7 @@ public class CollectionGridItemView extends BaseView {
         this.defaultHeight = defaultHeight;
         this.viewsToUpdateOnClickEvent = new ArrayList<>();
         this.createMultipleContainersForChildren = createMultipleContainersForChildren;
+        this.createRoundedCorners = createRoundedCorners;
         init();
     }
 
@@ -161,7 +164,13 @@ public class CollectionGridItemView extends BaseView {
                     new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.MATCH_PARENT);
             childrenContainer.setLayoutParams(childContainerLayoutParams);
-            childrenContainer.setBackgroundResource(android.R.color.transparent);
+
+            if (createRoundedCorners) {
+                ((CardView) childrenContainer).setRadius(14);
+                setBackgroundResource(android.R.color.transparent);
+            } else {
+                childrenContainer.setBackgroundResource(android.R.color.transparent);
+            }
         }
         addView(childrenContainer);
         return childrenContainer;
@@ -375,8 +384,7 @@ public class CollectionGridItemView extends BaseView {
                         if ("AC SelectPlan 02".equals(componentViewType)) {
                             ((TextView) view).setTextColor(themeColor);
                         } else {
-                            ((TextView) view).setTextColor(Color.parseColor(
-                                    childComponent.getTextColor()));
+                            ((TextView) view).setTextColor(Color.parseColor(childComponent.getTextColor()));
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY) {
                         int planIndex = 0;

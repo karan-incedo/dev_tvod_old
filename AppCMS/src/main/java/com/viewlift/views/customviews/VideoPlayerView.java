@@ -279,7 +279,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 onPlayerControlsStateChanged.call(visibility);
             }
         });
-
         player.setVideoListener(this);
 
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
