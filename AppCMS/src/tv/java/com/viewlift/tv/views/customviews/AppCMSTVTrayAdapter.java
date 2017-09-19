@@ -67,7 +67,7 @@ public class AppCMSTVTrayAdapter
         this.parentLayout = parentLayout;
         this.appCMSPresenter = appCMSPresenter;
         this.jsonValueKeyMap = jsonValueKeyMap;
-        this.defaultAction = getDefaultAction(context);
+        this.defaultAction = getDefaultAction(context, component);
         this.viewType = viewType;
         this.tvViewCreator = tvViewCreator;
         this.module = moduleAPI;
@@ -83,7 +83,16 @@ public class AppCMSTVTrayAdapter
         }
     }
 
-    private String getDefaultAction(Context context) {
+
+    public void setContentData(List<ContentDatum> adapterData){
+        this.adapterData = adapterData;
+        notifyDataSetChanged();
+    }
+
+    private String getDefaultAction(Context context , Component component) {
+        if(null != component.getItemClickAction()){
+            return component.getItemClickAction();
+        }
         return context.getString(R.string.app_cms_action_videopage_key);
     }
 
@@ -225,14 +234,18 @@ public class AppCMSTVTrayAdapter
                         if (relatedVideoIds == null) {
                             currentPlayingIndex = 0;
                         }
-                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+
+                        if (defaultAction.equalsIgnoreCase(context.getString(R.string.app_cms_action_watchvideo_key))) {
+                            play(childComponent,data);
+                        }
+                        else if (!appCMSPresenter.launchTVButtonSelectedAction(permalink,
                                 action,
                                 title,
                                 extraData,
-                                data,
                                 false,
-                                currentPlayingIndex,
-                                relatedVideoIds)) {
+                                data
+                               /* currentPlayingIndex,
+                                relatedVideoIds*/)) {
                             Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
                                     + " action: " + action + " hlsUrl: " + hlsUrl);
                         }

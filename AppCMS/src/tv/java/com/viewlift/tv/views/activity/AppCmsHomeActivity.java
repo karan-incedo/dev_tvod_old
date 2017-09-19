@@ -186,6 +186,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
     private void handleProfileFragmentAction(AppCMSBinder updatedAppCMSBinder) {
         String tag = getTag(updatedAppCMSBinder);
+        appCMSBinderMap.put(tag,updatedAppCMSBinder);
         Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
         if(null != fragment && fragment instanceof AppCmsMyProfileFragment){
             getFragmentManager().popBackStack();
@@ -202,11 +203,14 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if(requestCode == AppCMSPresenter.PLAYER_REQUEST_CODE){
             Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
             if(null != fragment && fragment instanceof AppCmsTVPageFragment){
                 ((AppCmsTVPageFragment)fragment).refreshBrowseFragment();
+            }else if(null != fragment && fragment instanceof AppCmsMyProfileFragment){
+                AppCmsMyProfileFragment profileFragment = ((AppCmsMyProfileFragment)fragment);
+                AppCMSBinder appCmsBinder = appCMSBinderMap.get(profileFragment.getTag());
+                ((AppCmsMyProfileFragment)fragment).updateAdapterData(appCmsBinder);
             }
         }
 
@@ -623,7 +627,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         usePageIdQueryParam = false;
                     }
 
-                    if (!TextUtils.isEmpty(endPoint)) {
+                    if (!TextUtils.isEmpty(endPoint) && !appCMSBinder.getPageName().equalsIgnoreCase("Watchlist")
+                            && !appCMSBinder.getPageName().equalsIgnoreCase("History")) {
                         appCMSPresenter.getPageIdContent(appCMSMain.getApiBaseUrl(),
                                 endPoint,
                                 appCMSSite.getGist().getSiteInternalName(),
@@ -671,6 +676,16 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                         }
                                     }
                         });
+                    }else if(appCMSBinder.getPageName().equalsIgnoreCase("History")){
+                            AppCMSPageAPI appCMSPageAPI = appCMSBinder.getAppCMSPageAPI();
+                        appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
+                            if (appCMSHistoryResult != null) {
+                                AppCMSPageAPI historyAPI =
+                                        appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
+                                 appCMSBinder.updateAppCMSPageAPI(historyAPI);
+                            }
+                        });
+
                     }
 
                 }

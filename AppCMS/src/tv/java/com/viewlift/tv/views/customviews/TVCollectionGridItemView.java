@@ -277,8 +277,11 @@ public class TVCollectionGridItemView extends TVBaseView {
                         context,
                         childComponent.getUnprogressColor(),
                         appCMSPresenter));
+                ((ProgressBar) view).setMax(100);
                 int progress = (int) Math.ceil(Utils.getPercentage(data.getGist().getRuntime(),
                         data.getGist().getWatchedTime()));
+                Log.d(TAG , "Progress Bar = "+progress);
+                ((ProgressBar) view).setProgress(0);
                 ((ProgressBar) view).setProgress(progress);
                 view.setFocusable(false);
             }

@@ -166,7 +166,7 @@
           "fontSize": 15
         }
       ],
-      "itemClickAction": "lectureDetailPage",
+      "itemClickAction": "watchVideo",
       "type": "tableView",
       "key": "tableView"
     }

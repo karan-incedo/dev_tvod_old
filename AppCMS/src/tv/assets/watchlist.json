@@ -154,7 +154,7 @@
           "key": "deleteItemButton"
         }
       ],
-      "itemClickAction": "lectureDetailPage",
+      "itemClickAction": "play",
       "type": "tableView",
       "key": "tableView"
     }
