@@ -627,8 +627,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         usePageIdQueryParam = false;
                     }
 
-                    if (!TextUtils.isEmpty(endPoint) && !appCMSBinder.getPageName().equalsIgnoreCase("Watchlist")
-                            && !appCMSBinder.getPageName().equalsIgnoreCase("History")) {
+                    if (!TextUtils.isEmpty(endPoint)
+                            && !appCMSBinder.getPageName().equalsIgnoreCase
+                            (getString(R.string.app_cms_watchlist_navigation_title))
+                            && !appCMSBinder.getPageName().equalsIgnoreCase
+                            (getString(R.string.app_cms_history_navigation_title))) {
                         appCMSPresenter.getPageIdContent(appCMSMain.getApiBaseUrl(),
                                 endPoint,
                                 appCMSSite.getGist().getSiteInternalName(),
@@ -676,7 +679,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                         }
                                     }
                         });
-                    }else if(appCMSBinder.getPageName().equalsIgnoreCase("History")){
+                    }else if(appCMSBinder.getPageName().equalsIgnoreCase
+                            (getString(R.string.app_cms_history_navigation_title))){
                             AppCMSPageAPI appCMSPageAPI = appCMSBinder.getAppCMSPageAPI();
                         appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
                             if (appCMSHistoryResult != null) {
