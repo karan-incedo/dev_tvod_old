@@ -2572,7 +2572,7 @@ public class ViewCreator {
 
                 ((TextInputLayout) componentViewResult.componentView).setHintEnabled(false);
                 break;
-            
+
             case PAGE_PLAN_META_DATA_VIEW_KEY:
                 componentViewResult.componentView = new ViewPlansMetaDataView(context,
                         component,
