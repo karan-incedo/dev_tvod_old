@@ -124,7 +124,7 @@ public class WebViewActivity extends Activity {
 				if(html.indexOf("F")!=-1){
 					backPressFlag = false ;
 					status = "Transaction Declined!";
-					displaySuccessPaymentDialog("Transcation Failed!", "Retry Later");
+					displaySuccessPaymentDialog("Transaction Failed!", "Retry Later");
 				}else if(html.indexOf("S")!=-1){
 					try {
 						backPressFlag = true ;
@@ -158,11 +158,11 @@ public class WebViewActivity extends Activity {
 				}else if(html.indexOf("Aborted")!=-1){
 					status = "Transaction Cancelled!";
 					backPressFlag = false ;
-					displaySuccessPaymentDialog("Transcation Failed!", "Retry Later");
+					displaySuccessPaymentDialog("Transaction Failed!", "Retry Later");
 				}else{
 					status = "Status Not Known!";
 					backPressFlag = false ;
-					displaySuccessPaymentDialog("Transcation Failed!", "Retry Later");
+					displaySuccessPaymentDialog("Transaction Failed!", "Retry Later");
 				}
 			}
 		}
