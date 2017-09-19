@@ -845,7 +845,7 @@ public abstract class BaseView extends CardView {
                         if (isLandscape(getContext())) {
                             tm -= viewHeight * 9;
                         } else {
-                            tm -= viewHeight * 10;
+                            tm -= viewHeight * 5;
                         }
                     } else {
                         tm -= viewHeight * 2;

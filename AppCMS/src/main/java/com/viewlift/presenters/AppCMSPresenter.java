@@ -870,109 +870,6 @@ public class AppCMSPresenter {
         }
     }
 
-    private static class EntitlementCheckActive implements Action1<UserIdentity> {
-        private String pagePath;
-        private String action;
-        private String filmTitle;
-        private String[] extraData;
-        private ContentDatum contentDatum;
-        private boolean closeLauncher;
-        private int currentlyPlayingIndex;
-        private List<String> relateVideoIds;
-        private final Action0 onFailAction;
-        private final Action0 onSuccessAction;
-        private boolean success;
-
-        public EntitlementCheckActive(Action0 onSuccessAction, Action0 onFailAction) {
-            this.onSuccessAction = onSuccessAction;
-            this.onFailAction = onFailAction;
-            this.success = false;
-        }
-
-        @Override
-        public void call(UserIdentity userIdentity) {
-            if (!userIdentity.isSubscribed()) {
-                onFailAction.call();
-                success = false;
-            } else {
-                onSuccessAction.call();
-                success = true;
-            }
-        }
-
-        public String getPagePath() {
-            return pagePath;
-        }
-
-        public void setPagePath(String pagePath) {
-            this.pagePath = pagePath;
-        }
-
-        public String getAction() {
-            return action;
-        }
-
-        public void setAction(String action) {
-            this.action = action;
-        }
-
-        public String getFilmTitle() {
-            return filmTitle;
-        }
-
-        public void setFilmTitle(String filmTitle) {
-            this.filmTitle = filmTitle;
-        }
-
-        public String[] getExtraData() {
-            return extraData;
-        }
-
-        public void setExtraData(String[] extraData) {
-            this.extraData = extraData;
-        }
-
-        public ContentDatum getContentDatum() {
-            return contentDatum;
-        }
-
-        public void setContentDatum(ContentDatum contentDatum) {
-            this.contentDatum = contentDatum;
-        }
-
-        public boolean isCloseLauncher() {
-            return closeLauncher;
-        }
-
-        public void setCloseLauncher(boolean closeLauncher) {
-            this.closeLauncher = closeLauncher;
-        }
-
-        public int getCurrentlyPlayingIndex() {
-            return currentlyPlayingIndex;
-        }
-
-        public void setCurrentlyPlayingIndex(int currentlyPlayingIndex) {
-            this.currentlyPlayingIndex = currentlyPlayingIndex;
-        }
-
-        public List<String> getRelateVideoIds() {
-            return relateVideoIds;
-        }
-
-        public void setRelateVideoIds(List<String> relateVideoIds) {
-            this.relateVideoIds = relateVideoIds;
-        }
-
-        public boolean isSuccess() {
-            return success;
-        }
-
-        public void setSuccess(boolean success) {
-            this.success = success;
-        }
-    }
-
     public boolean launchButtonSelectedAction(String pagePath,
                                               String action,
                                               String filmTitle,
@@ -1894,7 +1791,7 @@ public class AppCMSPresenter {
             currencyCode = recurringPaymentCurrencyCode;
             this.countryCode = countryCode;
             this.isRenewable = isRenewable;
-            this.renewableFrequency = getRenewableFrequency ;
+            this.renewableFrequency = getRenewableFrequency;
             Bundle bundle = new Bundle();
             bundle.putString(FIREBASE_PLAN_ITEM_ID, planToPurchase);
             bundle.putString(FIREBASE_PLAN_ITEM_NAME, planToPurchaseName);
@@ -1927,7 +1824,7 @@ public class AppCMSPresenter {
         try {
             String strAmount = Double.toString(planToPurchaseDiscountedPrice);
             //Intent intent = new Intent(currentActivity, WebViewActivity.class);
-            Intent intent = new Intent(currentActivity,PaymentOptionsActivity.class);
+            Intent intent = new Intent(currentActivity, PaymentOptionsActivity.class);
             intent.putExtra(AvenuesParams.CURRENCY, currencyCode);
             intent.putExtra(AvenuesParams.AMOUNT, strAmount);
             intent.putExtra(currentActivity.getString(R.string.app_cms_site_name), appCMSSite.getGist().getSiteInternalName());
@@ -2108,7 +2005,7 @@ public class AppCMSPresenter {
                 Log.d(TAG, "Subscription request: " + gson.toJson(subscriptionRequest, SubscriptionRequest.class));
 
                 try {
-                    Log.v("authtoken",getAuthToken()) ;
+                    Log.v("authtoken", getAuthToken());
                     appCMSSubscriptionPlanCall.call(
                             currentActivity.getString(R.string.app_cms_cancel_subscription_api_url,
                                     appCMSMain.getApiBaseUrl(),
@@ -2168,7 +2065,7 @@ public class AppCMSPresenter {
                 showDialog(DialogType.CANCEL_SUBSCRIPTION, "Are you sure you want to cancel subscription?", true, new Action0() {
                     @Override
                     public void call() {
-                         sendSubscriptionCancellation();
+                        sendSubscriptionCancellation();
                     }
                 });
             } else {
@@ -2345,7 +2242,8 @@ public class AppCMSPresenter {
                 VideoAssets videoAssets = new VideoAssets();
                 List<Mpeg> mpegs = new ArrayList<>();
 
-                String[] renditionValueArray = {"1080p", "720p", "360p"};
+                String[] renditionValueArray = currentContext.getResources()
+                        .getStringArray(R.array.app_cms_download_quality_array);
                 for (String renditionValue : renditionValueArray) {
                     Mpeg mpeg = new Mpeg();
                     mpeg.setRenditionValue(renditionValue);
@@ -5473,7 +5371,7 @@ public class AppCMSPresenter {
             if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED) {
                 title = currentActivity.getString(R.string.app_cms_login_and_subscription_required_title);
                 message = currentActivity.getString(R.string.app_cms_login_and_subscription_required_message);
-                //Set Firbase User Propert when user is not logged_in and unsubscribed
+                //Set Firebase User Property when user is not logged in and unsubscribed
                 mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
                 mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
             }
@@ -5516,7 +5414,7 @@ public class AppCMSPresenter {
                 title = currentActivity.getString(R.string.app_cms_login_required_title);
                 message = currentActivity.getString(R.string.app_cms_login_required_message);
                 positiveButtonText = currentActivity.getString(R.string.app_cms_login_button_text);
-                //Set Firbase User Propert when user is not logged_in and unsubscribed
+                //Set Firebase User Property when user is not logged in and unsubscribed
                 mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
                 mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
             }
@@ -8726,6 +8624,29 @@ public class AppCMSPresenter {
         return currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download);
     }
 
+    public void openVideoPageFromSearch(String[] searchResultClick) {
+        String permalink = searchResultClick[3];
+        String action = currentActivity.getString(R.string.app_cms_action_videopage_key);
+        String title = searchResultClick[0];
+        String runtime = searchResultClick[1];
+        Log.d(TAG, "Launching " + permalink + ":" + action);
+        if (!launchButtonSelectedAction(permalink,
+                action,
+                title,
+                null,
+                null,
+                true,
+                0,
+                null)) {
+            Log.e(TAG, "Could not launch action: " +
+                    " permalink: " +
+                    permalink +
+                    " action: " +
+                    action);
+        }
+
+    }
+
     public enum LaunchType {
         SUBSCRIBE, LOGIN_AND_SIGNUP
     }
@@ -8784,6 +8705,109 @@ public class AppCMSPresenter {
         EDIT_PROFILE,
         CCAVENUE,
         NONE
+    }
+
+    private static class EntitlementCheckActive implements Action1<UserIdentity> {
+        private final Action0 onFailAction;
+        private final Action0 onSuccessAction;
+        private String pagePath;
+        private String action;
+        private String filmTitle;
+        private String[] extraData;
+        private ContentDatum contentDatum;
+        private boolean closeLauncher;
+        private int currentlyPlayingIndex;
+        private List<String> relateVideoIds;
+        private boolean success;
+
+        public EntitlementCheckActive(Action0 onSuccessAction, Action0 onFailAction) {
+            this.onSuccessAction = onSuccessAction;
+            this.onFailAction = onFailAction;
+            this.success = false;
+        }
+
+        @Override
+        public void call(UserIdentity userIdentity) {
+            if (!userIdentity.isSubscribed()) {
+                onFailAction.call();
+                success = false;
+            } else {
+                onSuccessAction.call();
+                success = true;
+            }
+        }
+
+        public String getPagePath() {
+            return pagePath;
+        }
+
+        public void setPagePath(String pagePath) {
+            this.pagePath = pagePath;
+        }
+
+        public String getAction() {
+            return action;
+        }
+
+        public void setAction(String action) {
+            this.action = action;
+        }
+
+        public String getFilmTitle() {
+            return filmTitle;
+        }
+
+        public void setFilmTitle(String filmTitle) {
+            this.filmTitle = filmTitle;
+        }
+
+        public String[] getExtraData() {
+            return extraData;
+        }
+
+        public void setExtraData(String[] extraData) {
+            this.extraData = extraData;
+        }
+
+        public ContentDatum getContentDatum() {
+            return contentDatum;
+        }
+
+        public void setContentDatum(ContentDatum contentDatum) {
+            this.contentDatum = contentDatum;
+        }
+
+        public boolean isCloseLauncher() {
+            return closeLauncher;
+        }
+
+        public void setCloseLauncher(boolean closeLauncher) {
+            this.closeLauncher = closeLauncher;
+        }
+
+        public int getCurrentlyPlayingIndex() {
+            return currentlyPlayingIndex;
+        }
+
+        public void setCurrentlyPlayingIndex(int currentlyPlayingIndex) {
+            this.currentlyPlayingIndex = currentlyPlayingIndex;
+        }
+
+        public List<String> getRelateVideoIds() {
+            return relateVideoIds;
+        }
+
+        public void setRelateVideoIds(List<String> relateVideoIds) {
+            this.relateVideoIds = relateVideoIds;
+        }
+
+        public boolean isSuccess() {
+            return success;
+        }
+
+        public void setSuccess(boolean success) {
+            this.success = success;
+        }
     }
 
     private static class DownloadQueueItem {
@@ -9051,29 +9075,6 @@ public class AppCMSPresenter {
         boolean closeLauncher;
         int currentlyPlayingIndex;
         List<String> relateVideoIds;
-    }
-
-    public void openVideoPageFromSearch(String[] searchResultClick) {
-        String permalink = searchResultClick[3];
-        String action = currentActivity.getString(R.string.app_cms_action_videopage_key);
-        String title = searchResultClick[0];
-        String runtime = searchResultClick[1];
-        Log.d(TAG, "Launching " + permalink + ":" + action);
-        if (!launchButtonSelectedAction(permalink,
-                action,
-                title,
-                null,
-                null,
-                true,
-                0,
-                null)) {
-            Log.e(TAG, "Could not launch action: " +
-                    " permalink: " +
-                    permalink +
-                    " action: " +
-                    action);
-        }
-
     }
 
 }
