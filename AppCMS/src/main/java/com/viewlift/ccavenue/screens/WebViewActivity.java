@@ -243,16 +243,16 @@ public class WebViewActivity extends Activity {
 				params.append(ServiceUtility.addToPostParams("si_is_setup_amt","Y")) ;
 				params.append(ServiceUtility.addToPostParams("si_amount",mainIntent.getStringExtra(AvenuesParams.AMOUNT))) ;
 				params.append(ServiceUtility.addToPostParams("si_setup_amount",mainIntent.getStringExtra(AvenuesParams.AMOUNT))) ;
-				params.append(ServiceUtility.addToPostParams("si_frequency","2")) ;
+				params.append(ServiceUtility.addToPostParams("si_frequency",mainIntent.getStringExtra("si_frequency"))) ;
+				params.append(ServiceUtility.addToPostParams("si_bill_cycle",mainIntent.getStringExtra("si_frequency"))) ;
 				params.append(ServiceUtility.addToPostParams("si_frequency_type",mainIntent.getStringExtra("si_frequency_type"))) ;
-				params.append(ServiceUtility.addToPostParams("si_bill_cycle","2")) ;
 			}
 
-			params.append(ServiceUtility.addToPostParams("merchant_param1",getIntent().getStringExtra(getString(R.string.app_cms_site_name))));
+			params.append(ServiceUtility.addToPostParams("merchant_param1","Bengali Entertainment Reinvented"));
 			params.append(ServiceUtility.addToPostParams("merchant_param2",getIntent().getStringExtra(getString(R.string.app_cms_user_id))));
 			params.append(ServiceUtility.addToPostParams("merchant_param3",getIntent().getStringExtra(getString(R.string.app_cms_plan_id))));
 			params.append(ServiceUtility.addToPostParams("merchant_param4","android"));
-			params.append(ServiceUtility.addToPostParams("merchant_param5",""));
+			params.append(ServiceUtility.addToPostParams("merchant_param5",getIntent().getStringExtra(getString(R.string.app_cms_site_name))));
 			//params.append(ServiceUtility.addToPostParams(AvenuesParams.BILLING_EMAIL,"email")) ;
 			try {
 				params.append(ServiceUtility.addToPostParams(AvenuesParams.ENC_VAL,URLEncoder.encode(encVal,"UTF-8")));

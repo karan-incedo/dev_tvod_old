@@ -229,6 +229,7 @@ import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.HEAD;
 import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -1839,7 +1840,8 @@ public class AppCMSPresenter {
             intent.putExtra("renewable", isRenewable);
             intent.putExtra("mobile_number", "");
             intent.putExtra("api_base_url", appCMSMain.getApiBaseUrl());
-            intent.putExtra("si_frequency", renewableFrequency);
+            intent.putExtra("si_frequency","2") ;
+            intent.putExtra("si_frequency_type",renewableFrequency) ;
             currentActivity.startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -1865,7 +1867,45 @@ public class AppCMSPresenter {
 
         if (useCCAvenue()) {
             Log.d(TAG, "Initiating CCAvenue purchase");
-            initiateCCAvenuePurchase();
+            if (isUserSubscribed()) {
+                SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
+                subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
+                subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
+                subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
+                subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency());
+                subscriptionRequest.setPlanIdentifier(getActiveSubscriptionSku());
+                subscriptionRequest.setPlanId(getActiveSubscriptionId());
+                subscriptionRequest.setUserId(getLoggedInUser());
+                subscriptionRequest.setReceipt(getActiveSubscriptionReceipt());
+                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                try {
+                    appCMSSubscriptionPlanCall.call(
+                            currentActivity.getString(R.string.app_cms_register_subscription_api_url,
+                                    appCMSMain.getApiBaseUrl(),
+                                    appCMSSite.getGist().getSiteInternalName(),
+                                    currentActivity.getString(R.string.app_cms_subscription_platform_key)),
+                            R.string.app_cms_subscription_plan_update_key,
+                            subscriptionRequest,
+                            apikey,
+                            getAuthToken(),
+                            result -> {
+                                //
+                                Log.v("got result","got result") ;
+                            },appCMSSubscriptionPlanResults -> {
+                                sendCloseOthersAction(null, true);
+                                refreshSubscriptionData(() -> {
+                                    sendRefreshPageAction();
+                                }, true);
+                            },
+                            currentUserPlan -> {
+
+                            });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                initiateCCAvenuePurchase();
+            }
         } else {
             if (currentActivity != null &&
                     inAppBillingService != null) {
@@ -1944,7 +1984,6 @@ public class AppCMSPresenter {
                 }
             } else {
                 Log.e(TAG, "InAppBillingService: " + inAppBillingService);
-                initiateCCAvenuePurchase();
             }
         }
     }
@@ -4272,7 +4311,6 @@ public class AppCMSPresenter {
     /**
      * Get The Value of Cast Overlay is shown or not
      *
-     * @param context
      * @return
      */
     public boolean isCastOverLayShown() {
@@ -4286,7 +4324,6 @@ public class AppCMSPresenter {
     /**
      * Set The Value for the Cast Introductory Overlay
      *
-     * @param context
      * @param userId
      * @return
      */
@@ -6122,24 +6159,6 @@ public class AppCMSPresenter {
         setActiveSubscriptionPrice(String.valueOf(planToPurchasePrice));
         setActiveSubscriptionProcessor(currentActivity.getString(R.string.subscription_ccavenue_payment_processor_friendly));
         refreshSubscriptionData(null, true);
-
-//        try {
-//            appCMSSubscriptionPlanCall.call(
-//                    currentActivity.getString(R.string.app_cms_register_subscription_api_url,
-//                            appCMSMain.getApiBaseUrl(),
-//                            appCMSSite.getGist().getSiteInternalName(),
-//                            currentActivity.getString(R.string.app_cms_subscription_platform_key)),
-//                    subscriptionCallType,
-//                    subscriptionRequest,
-//                    apikey,
-//                    getAuthToken(currentActivity),
-//                    result -> {
-//                        //
-//                    });
-//        } catch (Exception ex) {
-//            Log.e(TAG, ex.getMessage());
-//        }
-
     }
 
     public void finalizeSignupAfterSubscription(String receiptData) {

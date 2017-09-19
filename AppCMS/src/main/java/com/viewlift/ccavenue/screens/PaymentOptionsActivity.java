@@ -87,7 +87,7 @@ public class PaymentOptionsActivity extends AppCompatActivity {
 
         id_tv_text_payment = findViewById(R.id.id_tv_text_payment);
         id_tv_text_payment.setText("First Payment Rs. " + initialScreen.getStringExtra(AvenuesParams.AMOUNT).toString().trim() +
-                " (+tax if req'd) on " + formattedDate);
+                " on " + formattedDate);
         getDataAsyncTask = new GetData() ;
         getDataAsyncTask.execute() ;
         Log.v("apibaseurl",initialScreen.getStringExtra("api_base_url")) ;
