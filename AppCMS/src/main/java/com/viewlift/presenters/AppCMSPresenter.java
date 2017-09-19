@@ -2205,7 +2205,8 @@ public class AppCMSPresenter {
                 VideoAssets videoAssets = new VideoAssets();
                 List<Mpeg> mpegs = new ArrayList<>();
 
-                String[] renditionValueArray = {"1080p", "720p", "360p"};
+                String[] renditionValueArray = currentContext.getResources()
+                        .getStringArray(R.array.app_cms_download_quality_array);
                 for (String renditionValue : renditionValueArray) {
                     Mpeg mpeg = new Mpeg();
                     mpeg.setRenditionValue(renditionValue);
