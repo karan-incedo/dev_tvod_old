@@ -58,6 +58,7 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import rx.functions.Action0;
 import rx.functions.Action1;
 
 /**
@@ -316,14 +317,24 @@ public class AppCMSPlayVideoFragment extends Fragment
                     appCMSPresenter.getUserData(userIdentity -> {
                         Log.d(TAG, "Video player entitlement check triggered");
                         int secsViewed = (int) videoPlayerView.getCurrentPosition() / 1000;
-                        if (maxPreviewSecs < secsViewed && !userIdentity.isSubscribed()) {
+                        if (maxPreviewSecs < secsViewed && (userIdentity == null || !userIdentity.isSubscribed())) {
                             Log.d(TAG, "User is not subscribed - pausing video and showing Subscribe dialog");
                             pauseVideo();
                             if (videoPlayerView != null) {
                                 videoPlayerView.disableController();
                             }
                             videoPlayerInfoContainer.setVisibility(View.VISIBLE);
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED);
+                            if (appCMSPresenter.isUserLoggedIn()) {
+                                appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                                        () -> {
+                                            onClosePlayerEvent.closePlayer();
+                                        });
+                            } else {
+                                appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                                        () -> {
+                                            onClosePlayerEvent.closePlayer();
+                                        });
+                            }
                             cancel();
                         } else {
                             Log.d(TAG, "User is subscribed - resuming video");
