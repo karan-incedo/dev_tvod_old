@@ -7089,7 +7089,10 @@ public class AppCMSPresenter {
     }
 
     public boolean isAppSVOD() {
-        return jsonValueKeyMap.get(appCMSMain.getServiceType()) == AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE;
+        if (appCMSMain != null) {
+            return jsonValueKeyMap.get(appCMSMain.getServiceType()) == AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE;
+        }
+        return false;
     }
 
     public void setNavItemToCurrentAction(Activity activity) {

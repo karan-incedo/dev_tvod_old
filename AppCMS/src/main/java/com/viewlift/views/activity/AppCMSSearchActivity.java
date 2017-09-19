@@ -134,7 +134,8 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         });
         LinearLayout appCMSSearchResultsContainer =
                 findViewById(R.id.app_cms_search_results_container);
-        if (appCMSMain.getBrand() != null &&
+        if (appCMSMain != null &&
+                appCMSMain.getBrand() != null &&
                 appCMSMain.getBrand().getGeneral() != null &&
                 !TextUtils.isEmpty(appCMSMain.getBrand().getGeneral().getBackgroundColor())) {
             appCMSSearchResultsContainer.setBackgroundColor(Color.parseColor(appCMSMain.getBrand()
@@ -158,10 +159,12 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_SCREEN_NAME);
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent().appCMSPresenter();
-        //Logs an app event.
-        appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
-        //Sets whether analytics collection is enabled for this app on this device.
-        appCMSPresenter.getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
+        if (appCMSPresenter.getmFireBaseAnalytics() != null) {
+            //Logs an app event.
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+            //Sets whether analytics collection is enabled for this app on this device.
+            appCMSPresenter.getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
+        }
     }
 
     @Override
