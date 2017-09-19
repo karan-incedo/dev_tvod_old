@@ -76,7 +76,7 @@
 
     <string-array name="app_cms_download_quality_array">
         <item>720p</item>
-        <item>360</item>
+        <item>360p</item>
     </string-array>
 
     <string name="app_cms_main_svod_service_type_key">SVOD</string>
