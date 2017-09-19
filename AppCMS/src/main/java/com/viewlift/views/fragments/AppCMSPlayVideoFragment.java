@@ -375,7 +375,6 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerViewDoneButton.setColorFilter(Color.parseColor(fontColor));
         videoPlayerInfoContainer.bringToFront();
         videoPlayerView = rootView.findViewById(R.id.app_cms_video_player_container);
-        videoPlayerView.setListener(this);
         videoPlayerView.enableController();
 
         videoLoadingProgress = rootView.findViewById(R.id.app_cms_video_loading);
