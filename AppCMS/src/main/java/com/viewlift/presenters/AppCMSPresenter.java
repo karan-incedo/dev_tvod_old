@@ -2266,6 +2266,10 @@ public class AppCMSPresenter {
     }
 
     public void removeDownloadAndLogout() {
+
+
+        getCurrentActivity()
+                .sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
         for (DownloadVideoRealm downloadVideoRealm :
                 realmController.getAllUnfinishedDownloades(getLoggedInUser())) {
             removeDownloadedFile(downloadVideoRealm.getVideoId());
