@@ -292,6 +292,7 @@ public class AppCMSPresenter {
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_PRICE = "existing_google_play_subscription_price_pref_key";
     private static final String USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME = "user_download_quality_pref";
     private static final String USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME = "user_download_sd_card_pref";
+    public static final int PLAYER_REQUEST_CODE = 1111;
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String ANONYMOUS_AUTH_TOKEN_PREF_NAME = "anonymous_auth_token_pref_key";
@@ -7766,7 +7767,7 @@ public class AppCMSPresenter {
                 if (closeLauncher) {
                     sendCloseOthersAction(null, true);
                 }
-                currentActivity.startActivity(playVideoIntent);
+                currentActivity.startActivityForResult(playVideoIntent ,PLAYER_REQUEST_CODE );
             } else if (actionType == AppCMSActionType.SHARE) {
                 if (extraData != null && extraData.length > 0) {
                     Intent sendIntent = new Intent();

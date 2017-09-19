@@ -165,16 +165,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
                 }else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION)) {
                     updateData();
-                    int totalNoOfFragment = getFragmentManager().getBackStackEntryCount();
-                    for(int i=0;i<totalNoOfFragment;i++){
-                        FragmentManager.BackStackEntry backStackEntry = getFragmentManager().getBackStackEntryAt(i);
-                        String tag = backStackEntry.getName();
-                        Fragment fragment = getFragmentManager().findFragmentByTag(tag);
-                        AppCMSBinder appCmsBinder = appCMSBinderMap.get(tag);
-                        if(fragment instanceof AppCmsTVPageFragment){
-                            ((AppCmsTVPageFragment)fragment).updateBinder(appCmsBinder);
-                        }
-                    }
+
                 }
 
             }
@@ -205,6 +196,20 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         fragmentTransaction.replace(R.id.home_placeholder ,appCmsMyProfileFragment,tag).addToBackStack(tag).commitAllowingStateLoss();
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == AppCMSPresenter.PLAYER_REQUEST_CODE){
+            Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
+            if(null != fragment && fragment instanceof AppCmsTVPageFragment){
+                ((AppCmsTVPageFragment)fragment).refreshBrowseFragment();
+            }
+        }
+
     }
 
     @Override
@@ -454,7 +459,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             case KeyEvent.ACTION_DOWN:
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_MENU:
-                   // case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                    case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                         handleNavigationVisibility();
                         break;
                     case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
@@ -653,10 +658,21 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                         if (!updatedHistory) {
                                             appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
                                         }
+                                        appCMSBinderMap.put(getTag(appCMSBinder) ,appCMSBinder );
+                                        int totalNoOfFragment = getFragmentManager().getBackStackEntryCount();
+                                        for(int i=0;i<totalNoOfFragment;i++){
+                                            FragmentManager.BackStackEntry backStackEntry = getFragmentManager().getBackStackEntryAt(i);
+                                            String tag = backStackEntry.getName();
+                                            Fragment fragment = getFragmentManager().findFragmentByTag(tag);
+                                            AppCMSBinder appCmsBinder = appCMSBinderMap.get(tag);
+                                            if(fragment instanceof AppCmsTVPageFragment){
+                                                ((AppCmsTVPageFragment)fragment).updateBinder(appCmsBinder);
+                                            }
+                                        }
                                     }
-                                });
+                        });
                     }
-                    appCMSBinderMap.put(getTag(appCMSBinder) ,appCMSBinder );
+
                 }
             }
         }

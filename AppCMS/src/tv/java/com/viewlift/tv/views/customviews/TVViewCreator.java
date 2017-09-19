@@ -224,9 +224,6 @@ public class TVViewCreator {
                     mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
                 }
 
-               /* module = new GsonBuilder().create().
-                        fromJson(Utils.loadJsonFromAssets(context, "carousel_ftv_component.json"), ModuleList.class);*/
-
                 for (Component component : module.getComponents()) {
                     createTrayModule(context, component, module.getLayout(), module, moduleAPI,
                             pageView, jsonValueKeyMap, appCMSPresenter, true);
@@ -237,127 +234,57 @@ public class TVViewCreator {
                     mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
                 }
 
-                if (context.getResources().getString(R.string.app_cms_page_continue_watching_module_key).equalsIgnoreCase(module.getView())) {
-                    module = new GsonBuilder().create().
-                            fromJson(Utils.loadJsonFromAssets(context, "continue_watching_ftv_component.json"), ModuleList.class);
-                }
-
                 for (Component component : module.getComponents()) {
                     createTrayModule(context, component, module.getLayout(), module, moduleAPI,
                             pageView, jsonValueKeyMap, appCMSPresenter, false);
                 }
             }
-
             return null;
-        } else if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())) {
-
-            module = new GsonBuilder().create().
-                    fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
-
-            moduleView = new TVModuleView<>(context, module);
-            ViewGroup childrenContainer = moduleView.getChildrenContainer();
-
-            if (null == moduleAPI
-                    || moduleAPI.getContentData() == null) {
-                TextView textView = new TextView(context);
-                textView.setText(context.getString(R.string.no_data_available));
-                textView.setGravity(Gravity.CENTER);
-                Component component = new Component();
-                component.setFontFamily(context.getString(R.string.app_cms_page_font_family_key));
-                component.setFontWeight(context.getString(R.string.app_cms_page_font_semibold_key));
-                textView.setTypeface(Utils.getTypeFace(context, jsonValueKeyMap, component));
-                childrenContainer.addView(textView);
-                return moduleView;
-            }
-
-            final TVPageView finalPageView = pageView;
-
-            if (null != moduleAPI.getContentData()
-                    && null != moduleAPI.getContentData().get(0)
-                    && null != moduleAPI.getContentData().get(0).getGist()
-                    && null != moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()) {
-                Glide.with(context).load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                        .asBitmap().into(new SimpleTarget<Bitmap>(TVBaseView.DEVICE_WIDTH,
-                        TVBaseView.DEVICE_HEIGHT) {
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        Drawable drawable = new BitmapDrawable(context.getResources(), resource);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                            finalPageView.setBackground(drawable);
-                            finalPageView.getChildrenContainer().setBackgroundColor(ContextCompat.getColor(context, R.color.appcms_detail_screen_shadow_color));
-                        }
-                    }
-                });
-            }
-
-            if (module.getComponents() != null) {
-                for (int i = 0; i < module.getComponents().size(); i++) {
-                    Component component = module.getComponents().get(i);
-                    createComponentView(context,
-                            component,
-                            module.getLayout(),
-                            moduleAPI,
-                            pageView,
-                            module.getSettings(),
-                            jsonValueKeyMap,
-                            appCMSPresenter,
-                            false,
-                            module.getView());
-                    if (componentViewResult.onInternalEvent != null) {
-                        appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
-                    }
-
-                    View componentView = componentViewResult.componentView;
-                    if (componentView != null) {
-                        childrenContainer.addView(componentView);
-                        moduleView.setComponentHasView(i, true);
-
-                        moduleView.setViewMarginsFromComponent(component,
-                                componentView,
-                                moduleView.getLayout(),
-                                childrenContainer,
-                                jsonValueKeyMap,
-                                componentViewResult.useMarginsAsPercentagesOverride,
-                                componentViewResult.useWidthOfScreen,
-                                module.getView());
-
-                    } else {
-                        moduleView.setComponentHasView(i, false);
-                    }
-                }
-            }
         } else {
 
            /* if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_reset_password_module))) {
                 module = new GsonBuilder().create().
                         fromJson(Utils.loadJsonFromAssets(context, "reset_password.json"), ModuleList.class);
-            }
-
-            if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_ancillary_pages_module))) {
-                module = new GsonBuilder().create().
-                        fromJson(Utils.loadJsonFromAssets(context, "ancillary_pages.json"), ModuleList.class);
-            }
-
-            if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_contact_us_module))) {
-                module = new GsonBuilder().create().
-                        fromJson(Utils.loadJsonFromAssets(context, "contact_us.json"), ModuleList.class);
-            }
-
-            if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_setting_module))) {
-                module = new GsonBuilder().create().
-                        fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
             }*/
-            if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_page_watchlist_module_key))) {
-                module = new GsonBuilder().create().
-                        fromJson(Utils.loadJsonFromAssets(context, "watchlist.json"), ModuleList.class);
-            }
-            if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_page_history_module_key))) {
-                module = new GsonBuilder().create().
-                        fromJson(Utils.loadJsonFromAssets(context, "history.json"), ModuleList.class);
-            }
 
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
+
+            if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())) {
+
+                if (null == moduleAPI
+                        || moduleAPI.getContentData() == null) {
+                    TextView textView = new TextView(context);
+                    textView.setText(context.getString(R.string.no_data_available));
+                    textView.setGravity(Gravity.CENTER);
+                    Component component = new Component();
+                    component.setFontFamily(context.getString(R.string.app_cms_page_font_family_key));
+                    component.setFontWeight(context.getString(R.string.app_cms_page_font_semibold_key));
+                    textView.setTypeface(Utils.getTypeFace(context, jsonValueKeyMap, component));
+                    childrenContainer.addView(textView);
+                    return moduleView;
+                }
+
+                final TVPageView finalPageView = pageView;
+                if (null != moduleAPI.getContentData()
+                        && null != moduleAPI.getContentData().get(0)
+                        && null != moduleAPI.getContentData().get(0).getGist()
+                        && null != moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()) {
+                    Glide.with(context).load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                            .asBitmap().into(new SimpleTarget<Bitmap>(TVBaseView.DEVICE_WIDTH,
+                            TVBaseView.DEVICE_HEIGHT) {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            Drawable drawable = new BitmapDrawable(context.getResources(), resource);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                finalPageView.setBackground(drawable);
+                                finalPageView.getChildrenContainer().setBackgroundColor(ContextCompat.getColor(context, R.color.appcms_detail_screen_shadow_color));
+                            }
+                        }
+                    });
+                }
+
+            }
 
             if (module.getComponents() != null) {
                 for (int i = 0; i < module.getComponents().size(); i++) {

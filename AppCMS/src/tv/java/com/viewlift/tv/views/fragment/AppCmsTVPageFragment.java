@@ -102,36 +102,7 @@ public class AppCmsTVPageFragment extends Fragment {
                 browseFragment.setAdapter(appCmsViewComponent.tvviewCreator().mRowsAdapter);
                 getChildFragmentManager().beginTransaction().replace(R.id.appcms_browsefragment, browseFragment, mAppCMSBinder.getScreenName()).commitAllowingStateLoss();
             } else {
-                try {
-                    if (null != appCmsViewComponent.tvviewCreator() && null != appCmsViewComponent.tvviewCreator().mRowsAdapter) {
-                        int totalNumber = 0;
-                        for (int i = 0; i < appCmsViewComponent.tvviewCreator().mRowsAdapter.size(); i++) {
-                            ListRow listRow = (ListRow) appCmsViewComponent.tvviewCreator().mRowsAdapter.get(i);
-                            CustomHeaderItem customHeaderItem = (CustomHeaderItem) listRow.getHeaderItem();
-                            for (Module module : mAppCMSBinder.getAppCMSPageAPI().getModules()) {
-                                if (module.getId().equalsIgnoreCase(customHeaderItem.getmModuleId())) {
-                                    List<ContentDatum> contentData = module.getContentData();
-                                    for (int i1 = 0; i1 < contentData.size(); i1++) {
-                                        ContentDatum contentDatum = contentData.get(i1);
-
-                                        for (int j = 0; j < listRow.getAdapter().size(); j++) {
-                                            if (((BrowseFragmentRowData) listRow.getAdapter().get(j)).contentData.getGist().getId().equalsIgnoreCase(contentDatum.getGist().getId())) {
-                                                BrowseFragmentRowData rowData = (BrowseFragmentRowData) listRow.getAdapter().get(j);
-                                                rowData.contentData = module.getContentData().get(i1);
-                                                totalNumber++;
-                                                break;
-                                            }
-                                        }
-
-                                    }
-                                }
-                            }
-                        }
-                        appCmsViewComponent.tvviewCreator().mRowsAdapter.notifyArrayItemRangeChanged(0, totalNumber);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+               refreshBrowseFragment();
             }
         }
         return tvPageView;
@@ -194,6 +165,38 @@ public class AppCmsTVPageFragment extends Fragment {
         }, 10);
     }
 
+
+    public void refreshBrowseFragment(){
+        try {
+            if (null != appCmsViewComponent.tvviewCreator() && null != appCmsViewComponent.tvviewCreator().mRowsAdapter) {
+                int totalNumber = 0;
+                for (int i = 0; i < appCmsViewComponent.tvviewCreator().mRowsAdapter.size(); i++) {
+                    ListRow listRow = (ListRow) appCmsViewComponent.tvviewCreator().mRowsAdapter.get(i);
+                    CustomHeaderItem customHeaderItem = (CustomHeaderItem) listRow.getHeaderItem();
+                    for (Module module : mAppCMSBinder.getAppCMSPageAPI().getModules()) {
+                        if (module.getId().equalsIgnoreCase(customHeaderItem.getmModuleId())) {
+                            List<ContentDatum> contentData = module.getContentData();
+                            for (int i1 = 0; i1 < contentData.size(); i1++) {
+                                ContentDatum contentDatum = contentData.get(i1);
+                                for (int j = 0; j < listRow.getAdapter().size(); j++) {
+                                    if (((BrowseFragmentRowData) listRow.getAdapter().get(j)).contentData.getGist().getId().equalsIgnoreCase(contentDatum.getGist().getId())) {
+                                        BrowseFragmentRowData rowData = (BrowseFragmentRowData) listRow.getAdapter().get(j);
+                                        rowData.contentData = module.getContentData().get(i1);
+                                        totalNumber++;
+                                        break;
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+                appCmsViewComponent.tvviewCreator().mRowsAdapter.notifyArrayItemRangeChanged(0, totalNumber);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     @Override
     public void onDestroyView() {
         if (tvPageView != null)
