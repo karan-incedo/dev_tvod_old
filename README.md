@@ -47,7 +47,7 @@ section of your module level ```build.gradle``` file,
 2. Clean Project, 
 3. Rebuild Project.
 
-#### After Installing successfully
+#### After Installing successfully (Make sure you have a google-services.json file)
 ```
 * Open the Module level build.gradle file,
 * Change your packageName,
@@ -56,12 +56,63 @@ section of your module level ```build.gradle``` file,
 * Change your versionCode & your versionName to what you need for your project,
 * Finally, sync your project.
 ```
-Then
+Then do the following:
 
+* Go to [Exoplayer](https://github.com/google/ExoPlayer) github library and clone it.
+* Go to ```com/google/android/exoplayer2/SimpleExoPlayer.java``` and replace ```private VideoListener videolistener``` with 
+```private List<VideoListener> videoListeners;```
+* Initialize the list in the SimpleExoPlayer constructor: ```videoListeners = new ArrayList<>();```
+* Replace ```setVideoListener``` method with:
 ```
+public void setVideoListener(VideoListener listener) {
+    videoListeners.add(listener);
+  }
+```
+* Replace ```clearVideoListener``` method with:
+```
+public void clearVideoListener(VideoListener listener) {
+    for (VideoListener videoListener : videoListeners) {
+      if (videoListener == listener) {
+        videoListeners.remove(videoListener);
+      }
+    }
+  }
+```
+* Replace ```onVideoSizeChanged``` method with:
+```
+@Override
+    public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees,
+        float pixelWidthHeightRatio) {
+      for (VideoListener videoListener : videoListeners) {
+        if (videoListener != null) {
+          videoListener.onVideoSizeChanged(width, height, unappliedRotationDegrees,
+                  pixelWidthHeightRatio);
+        }
+        if (videoDebugListener != null) {
+          videoDebugListener.onVideoSizeChanged(width, height, unappliedRotationDegrees,
+                  pixelWidthHeightRatio);
+        }
+      }
+    }
+ ```
+ * Replaced ```onRenderedFirstFrame``` method with:
+ ```
+ @Override
+    public void onRenderedFirstFrame(Surface surface) {
+      for (VideoListener videoListener : videoListeners) {
+        if (videoListener != null && SimpleExoPlayer.this.surface == surface) {
+          videoListener.onRenderedFirstFrame();
+        }
+        if (videoDebugListener != null) {
+          videoDebugListener.onRenderedFirstFrame(surface);
+        }
+      }
+    }
+ ```    
+* Go to AppCMS/src/main/java/com/viewlift/views/customviews/VideoPlayerView.java and add ```player.setVideoListener(this);``` in the initializePlayer method.
 * Go to AppCMS/src/main/res/drawable and add your icons, logos, etc that you need for your project.
 * Go to AppCMS/src/main/res/values/app_cms_api and change your app_cms_base_url and your app_cms_app_name.
-```
+
 
 ## Deployment
 
