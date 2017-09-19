@@ -58,7 +58,6 @@ import android.widget.Toast;
 import com.android.vending.billing.IInAppBillingService;
 import com.apptentive.android.sdk.Apptentive;
 import com.facebook.AccessToken;
-import com.facebook.FacebookActivity;
 import com.facebook.FacebookRequestError;
 import com.facebook.GraphRequest;
 import com.facebook.HttpMethod;
@@ -76,7 +75,6 @@ import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.ccavenue.screens.PaymentOptionsActivity;
-import com.viewlift.ccavenue.screens.WebViewActivity;
 import com.viewlift.ccavenue.utility.AvenuesParams;
 import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenResponse;
 import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
@@ -231,7 +229,6 @@ import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.http.HEAD;
 import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -1946,7 +1943,8 @@ public class AppCMSPresenter {
             intent.putExtra("renewable", isRenewable);
             intent.putExtra("mobile_number", "");
             intent.putExtra("api_base_url", appCMSMain.getApiBaseUrl());
-            intent.putExtra("si_frequency",renewableFrequency) ;
+            intent.putExtra("si_frequency","2") ;
+            intent.putExtra("si_frequency_type",renewableFrequency) ;
             currentActivity.startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -1967,7 +1965,33 @@ public class AppCMSPresenter {
                 appCMSMain.getPaymentProviders().getCcav() != null &&
                 !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
                 appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode)) {
-            Log.d(TAG, "Initiating CCAvenue purchase");
+//            if (isUserSubscribed()) {
+//               Log.v("upgradeplan","upgradeplan") ;
+//                SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
+//                subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
+//                subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
+//                subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
+//                subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency());
+//                subscriptionRequest.setPlanIdentifier(getActiveSubscriptionSku());
+//                subscriptionRequest.setPlanId(getActiveSubscriptionId());
+//                subscriptionRequest.setUserId(getLoggedInUser());
+//                subscriptionRequest.setReceipt(getActiveSubscriptionReceipt());
+//                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+//                appCMSSubscriptionPlanCall.call(
+//                        currentActivity.getString(R.string.app_cms_register_subscription_api_url,
+//                                appCMSMain.getApiBaseUrl(),
+//                                appCMSSite.getGist().getSiteInternalName(),
+//                                currentActivity.getString(R.string.app_cms_subscription_platform_key)),
+//                        R.string.app_cms_subscription_plan_update_key,
+//                        subscriptionRequest,
+//                        apikey,
+//                        getAuthToken(),
+//                        result -> {
+//                            //
+//                        });
+//            } else {
+//                initiateCCAvenuePurchase();
+//            }
             initiateCCAvenuePurchase();
         } else {
             if (currentActivity != null &&
@@ -2047,7 +2071,6 @@ public class AppCMSPresenter {
                 }
             } else {
                 Log.e(TAG, "InAppBillingService: " + inAppBillingService);
-                initiateCCAvenuePurchase();
             }
         }
     }
@@ -4374,7 +4397,6 @@ public class AppCMSPresenter {
     /**
      * Get The Value of Cast Overlay is shown or not
      *
-     * @param context
      * @return
      */
     public boolean isCastOverLayShown() {
@@ -4388,7 +4410,6 @@ public class AppCMSPresenter {
     /**
      * Set The Value for the Cast Introductory Overlay
      *
-     * @param context
      * @param userId
      * @return
      */
@@ -6215,24 +6236,6 @@ public class AppCMSPresenter {
         setActiveSubscriptionPrice(String.valueOf(planToPurchasePrice));
         setActiveSubscriptionProcessor(currentActivity.getString(R.string.subscription_ccavenue_payment_processor_friendly));
         refreshSubscriptionData(null, true);
-
-//        try {
-//            appCMSSubscriptionPlanCall.call(
-//                    currentActivity.getString(R.string.app_cms_register_subscription_api_url,
-//                            appCMSMain.getApiBaseUrl(),
-//                            appCMSSite.getGist().getSiteInternalName(),
-//                            currentActivity.getString(R.string.app_cms_subscription_platform_key)),
-//                    subscriptionCallType,
-//                    subscriptionRequest,
-//                    apikey,
-//                    getAuthToken(currentActivity),
-//                    result -> {
-//                        //
-//                    });
-//        } catch (Exception ex) {
-//            Log.e(TAG, ex.getMessage());
-//        }
-
     }
 
     public void finalizeSignupAfterSubscription(String receiptData) {
