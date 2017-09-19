@@ -280,8 +280,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }
         });
 
-        player.setVideoListener(this);
-
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         audioManager.requestAudioFocus(focusChange -> Log.i(TAG, "Audio focus has changed: " + focusChange),
                 AudioManager.STREAM_MUSIC,
