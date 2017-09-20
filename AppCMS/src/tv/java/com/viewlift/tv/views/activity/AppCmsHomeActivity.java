@@ -192,6 +192,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             getFragmentManager().popBackStack();
         }
 
+        appCMSPresenter.sendGaScreen(updatedAppCMSBinder.getScreenName());
         AppCmsMyProfileFragment appCmsMyProfileFragment = AppCmsMyProfileFragment.newInstance(this , updatedAppCMSBinder);
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
