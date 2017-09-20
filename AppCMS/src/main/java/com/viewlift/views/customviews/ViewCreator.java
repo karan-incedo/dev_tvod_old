@@ -355,18 +355,6 @@ public class ViewCreator {
                                         }
                                         view.setVisibility(View.VISIBLE);
                                     }
-                                } else if (componentType == AppCMSUIKeyType.PAGE_VIDEO_STARRATING_KEY ||
-                                        componentType == AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_STAR_RATING_KEY) {
-                                    float starRating = -1.0f;
-                                    if (moduleAPI.getContentData() != null &&
-                                            !moduleAPI.getContentData().isEmpty() &&
-                                            moduleAPI.getContentData().get(0).getGist() != null) {
-                                        if (moduleAPI.getContentData().get(0).getGist().getAverageStarRating() != 0f) {
-                                            starRating = moduleAPI.getContentData().get(0).getGist().getAverageStarRating();
-                                        }
-                                        view.setVisibility(View.GONE);
-                                        shouldHideComponent = true;
-                                    }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
                                     if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_TITLE_KEY) {
                                         if (moduleAPI.getContentData() != null &&
@@ -645,7 +633,9 @@ public class ViewCreator {
                                                                 ((TextView) settingsView).setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
                                                             } else if (!TextUtils.isEmpty(component.getText())) {
                                                                 ((TextView) settingsView).setText(component.getText());
-                                                                settingsView.setVisibility(View.GONE);
+                                                                if (!appCMSPresenter.upgradesAvailableForUser()) {
+                                                                    settingsView.setVisibility(View.GONE);
+                                                                }
                                                             }
                                                         } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
                                                             if (appCMSPresenter.isUserSubscribed()) {
@@ -1880,10 +1870,10 @@ public class ViewCreator {
                             if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
                             }
-                        }
-
-                        if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
-                            componentViewResult.componentView.setVisibility(View.GONE);
+                        } else if (!appCMSPresenter.upgradesAvailableForUser()) {
+                            if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
+                                componentViewResult.componentView.setVisibility(View.GONE);
+                            }
                         }
 
                         if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
@@ -2581,29 +2571,6 @@ public class ViewCreator {
                 ((TextInputLayout) componentViewResult.componentView).addView(textInputEditText);
 
                 ((TextInputLayout) componentViewResult.componentView).setHintEnabled(false);
-                break;
-
-            case PAGE_VIDEO_STARRATING_KEY:
-            case PAGE_AUTOPLAY_MOVIE_STAR_RATING_KEY:
-                int starColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
-
-                float starRating = -1.0f;
-                if (moduleAPI.getContentData() != null &&
-                        !moduleAPI.getContentData().isEmpty() &&
-                        moduleAPI.getContentData().get(0) != null &&
-                        moduleAPI.getContentData().get(0).getGist() != null) {
-                    if (moduleAPI.getContentData().get(0).getGist().getAverageStarRating() != 0f) {
-                        starRating = moduleAPI.getContentData().get(0).getGist().getAverageStarRating();
-                    }
-                }
-                componentViewResult.componentView = new StarRating(context,
-                        starColor,
-                        starColor,
-                        starRating);
-
-                componentViewResult.componentView.setVisibility(View.GONE);
-                componentViewResult.shouldHideComponent = true;
-
                 break;
 
             case PAGE_PLAN_META_DATA_VIEW_KEY:

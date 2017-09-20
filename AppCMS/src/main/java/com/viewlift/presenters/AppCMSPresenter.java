@@ -229,7 +229,6 @@ import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.http.HEAD;
 import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -1873,8 +1872,8 @@ public class AppCMSPresenter {
                 subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
                 subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
                 subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency());
-                subscriptionRequest.setPlanIdentifier(getActiveSubscriptionSku());
-                subscriptionRequest.setPlanId(getActiveSubscriptionId());
+                subscriptionRequest.setPlanIdentifier(skuToPurchase);
+                subscriptionRequest.setPlanId(planToPurchase);
                 subscriptionRequest.setUserId(getLoggedInUser());
                 subscriptionRequest.setReceipt(getActiveSubscriptionReceipt());
                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
