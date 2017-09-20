@@ -414,7 +414,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         isVideoDownloaded = appCMSPresenter.isVideoDownloaded(filmId);
 
         long playDifference=runTime-watchedTime;//((watchedTime*100)/runTime);
-        long playTimePercentage=((watchedTime*100)/runTime);
+        long playTimePercentage= runTime > 0 ? ((watchedTime*100)/runTime) : 0;
 
         // if video watchtime is greater or equal to 98% of total run time and interval is less than 30 then play from start
         if(playTimePercentage>=98 && playDifference<=30){
