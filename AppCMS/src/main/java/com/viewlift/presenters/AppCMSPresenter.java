@@ -1839,8 +1839,8 @@ public class AppCMSPresenter {
             intent.putExtra("renewable", isRenewable);
             intent.putExtra("mobile_number", "");
             intent.putExtra("api_base_url", appCMSMain.getApiBaseUrl());
-            intent.putExtra("si_frequency","2") ;
-            intent.putExtra("si_frequency_type",renewableFrequency) ;
+            intent.putExtra("si_frequency", "2");
+            intent.putExtra("si_frequency_type", renewableFrequency);
             currentActivity.startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -1889,8 +1889,8 @@ public class AppCMSPresenter {
                             getAuthToken(),
                             result -> {
                                 //
-                                Log.v("got result","got result") ;
-                            },appCMSSubscriptionPlanResults -> {
+                                Log.v("got result", "got result");
+                            }, appCMSSubscriptionPlanResults -> {
                                 sendCloseOthersAction(null, true);
                                 refreshSubscriptionData(() -> {
                                     sendRefreshPageAction();
@@ -2202,16 +2202,16 @@ public class AppCMSPresenter {
                 }
             }
             if (downloadVideoRealm == null) {
-            return;
+                return;
             } else if (downloadVideoRealm != null && downloadVideoRealmList.size() > 1) {
                 realmController.removeFromDB(downloadVideoRealm);
                 return;
             }
-        downloadManager.remove(downloadVideoRealm.getVideoId_DM());
-        downloadManager.remove(downloadVideoRealm.getVideoThumbId_DM());
-        downloadManager.remove(downloadVideoRealm.getPosterThumbId_DM());
-        downloadManager.remove(downloadVideoRealm.getSubtitlesId_DM());
-        realmController.removeFromDB(downloadVideoRealm);
+            downloadManager.remove(downloadVideoRealm.getVideoId_DM());
+            downloadManager.remove(downloadVideoRealm.getVideoThumbId_DM());
+            downloadManager.remove(downloadVideoRealm.getPosterThumbId_DM());
+            downloadManager.remove(downloadVideoRealm.getSubtitlesId_DM());
+            realmController.removeFromDB(downloadVideoRealm);
         }
     }
 
@@ -2431,6 +2431,7 @@ public class AppCMSPresenter {
                     resultAction1, getLoggedInUser());
         });
     }
+
     public void createLocalEntry(long enqueueId,
                                  long thumbEnqueueId,
                                  long posterEnqueueId,
@@ -2660,10 +2661,12 @@ public class AppCMSPresenter {
         DownloadVideoRealm downloadVideoRealm = realmController.getDownloadById(videoId);
         return downloadVideoRealm != null && downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId);
     }
+
     @UiThread
     public DownloadVideoRealm getVideoDownloadedByOtherUser(String videoId) {
         return realmController.getDownloadById(videoId);
     }
+
     public String getDownloadedFileSize(long size) {
         String fileSize;
         DecimalFormat dec = new DecimalFormat("0");
@@ -3013,7 +3016,16 @@ public class AppCMSPresenter {
             appCMSAddToWatchlistCall.call(url, getAuthToken(),
                     addToWatchlistResult -> {
                         try {
-                            Observable.just(addToWatchlistResult).subscribe(resultAction1);
+                            showDialog(DialogType.DELETE_ALL_WATCHLIST_ITEMS,
+                                    currentActivity.getString(R.string.app_cms_delete_all_watchlist_items_message),
+                                    true,
+                                    () -> {
+                                        try {
+                                            Observable.just(addToWatchlistResult).subscribe(resultAction1);
+                                        } catch (Exception e) {
+                                            Log.e(TAG, "Error deleting all watchlist items: " + e.getMessage());
+                                        }
+                                    });
                         } catch (Exception e) {
                             Log.e(TAG, "clearWatchlistContent: " + e.toString());
                         }
@@ -3024,7 +3036,8 @@ public class AppCMSPresenter {
     }
 
     public boolean isMemorySpaceAvailable() {
-        Log.d(TAG, getRemainingDownloadSize() + "  Available storage space:=  " + getMegabytesAvailable(Environment.getExternalStorageDirectory()));
+        Log.d(TAG, getRemainingDownloadSize() + "  Available storage space:=  "
+                + getMegabytesAvailable(Environment.getExternalStorageDirectory()));
         File storagePath = null;
         if (!getUserDownloadLocationPref()) {
             storagePath = Environment.getExternalStorageDirectory();
@@ -5706,6 +5719,12 @@ public class AppCMSPresenter {
                 case DELETE_ONE_HISTORY_ITEM:
                 case DELETE_ALL_HISTORY_ITEMS:
                     title = currentActivity.getString(R.string.app_cms_delete_history_alert_title);
+                    message = optionalMessage;
+                    break;
+
+                case DELETE_ONE_WATCHLIST_ITEM:
+                case DELETE_ALL_WATCHLIST_ITEMS:
+                    title = currentActivity.getString(R.string.app_cms_delete_watchlist_alert_title);
                     message = optionalMessage;
                     break;
 
@@ -8736,6 +8755,8 @@ public class AppCMSPresenter {
         SUBSCRIBE,
         DELETE_ONE_HISTORY_ITEM,
         DELETE_ALL_HISTORY_ITEMS,
+        DELETE_ONE_WATCHLIST_ITEM,
+        DELETE_ALL_WATCHLIST_ITEMS,
         DELETE_ONE_DOWNLOAD_ITEM,
         DELETE_ALL_DOWNLOAD_ITEMS,
         LOGIN_REQUIRED,
