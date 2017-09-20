@@ -739,14 +739,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private void delete(final ContentDatum contentDatum, int position) {
         if ((isHistory) && (contentDatum.getGist() != null)) {
             Log.d(TAG, "Deleting history item: " + contentDatum.getGist().getTitle());
-            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_HISTORY_ITEM,
-                    appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_history_item_message),
-                    true, () ->
-                            appCMSPresenter.editHistory(contentDatum.getGist().getId(),
-                                    appCMSDeleteHistoryResult -> {
-                                        adapterData.remove(contentDatum);
-                                        notifyDataSetChanged();
-                                    }, false));
+            appCMSPresenter.editHistory(contentDatum.getGist().getId(),
+                    appCMSDeleteHistoryResult -> {
+                        adapterData.remove(contentDatum);
+                        notifyDataSetChanged();
+                    }, false);
         }
 
         if ((isDownload) && (contentDatum.getGist() != null)) {
