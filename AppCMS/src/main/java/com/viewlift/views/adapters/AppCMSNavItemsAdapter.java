@@ -1,6 +1,8 @@
 package com.viewlift.views.adapters;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -98,8 +100,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     // TODO: 9/8/17 Implement Expandable ListView.
 
                     viewHolder.itemView.setOnClickListener(v -> {
-                        viewHolder.navItemSelector.setBackgroundColor(viewHolder.itemView.getContext()
-                                .getColor(R.color.colorAccent));
+                        viewHolder.navItemSelector.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
                         Log.d(TAG, "Navigating to page with Title: " + navigationPrimary.getTitle());
                         AppCMSUIKeyType titleKey = jsonValueKeyMap.get(navigationPrimary.getTitle());
                         if (titleKey == null) {
@@ -151,8 +152,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                         viewHolder.navItemLabel.setText(navigationUser.getTitle().toUpperCase());
                         viewHolder.navItemLabel.setTextColor(textColor);
                         viewHolder.itemView.setOnClickListener(v -> {
-                            viewHolder.navItemSelector.setBackgroundColor(viewHolder.itemView.getContext()
-                                    .getColor(R.color.colorAccent));
+                            viewHolder.navItemSelector.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
                             appCMSPresenter.cancelInternalEvents();
                             AppCMSUIKeyType titleKey = jsonValueKeyMap.get(navigationUser.getTitle());
                             if (titleKey == null) {
@@ -237,8 +237,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                         viewHolder.navItemLabel.setText(navigationFooter.getTitle().toUpperCase());
                         viewHolder.navItemLabel.setTextColor(textColor);
                         viewHolder.itemView.setOnClickListener(v -> {
-                            viewHolder.navItemSelector.setBackgroundColor(viewHolder.itemView.getContext()
-                                    .getColor(R.color.colorAccent));
+                            viewHolder.navItemSelector.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
                             appCMSPresenter.cancelInternalEvents();
                             itemSelected = true;
                             if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),

@@ -294,7 +294,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 holder.appCMSContinueWatchingTitle.setText(contentDatum.getGist().getTitle());
             }
 
-            if (contentDatum!=null && contentDatum.getGist() != null && contentDatum.getGist().getDescription()!=null) {
+            if (contentDatum != null && contentDatum.getGist() != null && contentDatum.getGist().getDescription() != null) {
                 Spannable rawHtmlSpannable = new HtmlSpanner().fromHtml(contentDatum.getGist().getDescription());
                 holder.appCMSContinueWatchingDescription.setText(rawHtmlSpannable);
             }
@@ -739,36 +739,42 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private void delete(final ContentDatum contentDatum, int position) {
         if ((isHistory) && (contentDatum.getGist() != null)) {
             Log.d(TAG, "Deleting history item: " + contentDatum.getGist().getTitle());
-            appCMSPresenter.editHistory(contentDatum.getGist().getId(),
-                    appCMSDeleteHistoryResult -> {
-                        adapterData.remove(contentDatum);
-                        notifyDataSetChanged();
-                    }, false);
+            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_HISTORY_ITEM,
+                    appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_history_item_message),
+                    true, () ->
+                            appCMSPresenter.editHistory(contentDatum.getGist().getId(),
+                                    appCMSDeleteHistoryResult -> {
+                                        adapterData.remove(contentDatum);
+                                        notifyDataSetChanged();
+                                    }, false));
         }
 
         if ((isDownload) && (contentDatum.getGist() != null)) {
+            Log.d(TAG, "Deleting download item: " + contentDatum.getGist().getTitle());
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_DOWNLOAD_ITEM,
                     appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_download_item_message),
                     true, () ->
                             appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(),
                                     userVideoDownloadStatus -> {
 
-                                        ((ViewHolder) mRecyclerView.findViewHolderForAdapterPosition(position)).appCMSContinueWatchingDeleteButton.setImageBitmap(null);
-                                        notifyItemRangeRemoved(position,getItemCount());// change made for SVFA-2054
+                                        ((ViewHolder) mRecyclerView.findViewHolderForAdapterPosition(position))
+                                                .appCMSContinueWatchingDeleteButton.setImageBitmap(null);
+                                        notifyItemRangeRemoved(position, getItemCount());
                                         adapterData.remove(contentDatum);
                                         notifyItemRangeChanged(position, getItemCount());
-
-                                        //notifyItemRangeChanged(position, getItemCount());
                                     }));
         }
 
         if ((isWatchlist) && (contentDatum.getGist() != null)) {
             Log.d(TAG, "Deleting watchlist item: " + contentDatum.getGist().getTitle());
-            appCMSPresenter.editWatchlist(contentDatum.getGist().getId(),
-                    addToWatchlistResult -> {
-                        adapterData.remove(contentDatum);
-                        notifyDataSetChanged();
-                    }, false);
+            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_WATCHLIST_ITEM,
+                    appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_watchlist_item_message),
+                    true, () ->
+                            appCMSPresenter.editWatchlist(contentDatum.getGist().getId(),
+                                    addToWatchlistResult -> {
+                                        adapterData.remove(contentDatum);
+                                        notifyDataSetChanged();
+                                    }, false));
         }
     }
 

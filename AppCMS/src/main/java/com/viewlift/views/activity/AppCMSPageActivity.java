@@ -346,6 +346,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                             email = user.getString("email");
                                         } catch (JSONException e) {
                                             Log.e(TAG, "Error parsing Facebook Graph JSON: " + e.getMessage());
+                                        } catch (NullPointerException npe) {
+                                            Log.e(TAG, "Null pointer exception attempting to parse JSON: " + npe.getMessage());
                                         }
                                         if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                                             handleCloseAction();
@@ -446,6 +448,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
+        appCMSPresenter.sendCloseOthersAction(null, false);
+
         Log.d(TAG, "onCreate()");
     }
 
@@ -533,6 +537,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             } catch (Exception e) {
                 Log.e(TAG, "Unable to unbind Google Play Services connection: " + e.getMessage());
             }
+        }
+
+        InputMethodManager imm =
+                (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null && appCMSParentView != null) {
+            imm.hideSoftInputFromWindow(appCMSParentView.getWindowToken(), 0);
         }
 
         Log.d(TAG, "onDestroy()");
@@ -678,7 +688,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSBinder != null) {
             Log.e(TAG, "Nav item - DialogType attempting to launch page: "
                     + appCMSBinder.getPageName() + " - " + appCMSBinder.getPageId());
-            if (!appCMSBinderStack.isEmpty() && appCMSBinderStack.peek().equals(appCMSBinder.getPageId())) {
+            if (!appCMSBinderStack.isEmpty() &&
+                    !TextUtils.isEmpty(appCMSBinderStack.peek()) &&
+                    appCMSBinderStack.peek().equals(appCMSBinder.getPageId())) {
                 try {
                     getSupportFragmentManager().popBackStackImmediate();
                 } catch (IllegalStateException e) {
@@ -766,9 +778,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
             Log.d(TAG, "Back pressed - handling nav bar");
             handleNavbar(appCMSBinderMap.get(appCMSBinderStack.peek()));
-            if (appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName() != null) {
+            if (appCMSBinderMap.get(appCMSBinderStack.peek()) != null &&
+                    appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName() != null) {
                 Log.d(TAG, "Resetting previous AppCMS data: "
                         + appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName());
+            } else if (appCMSBinderMap.get(appCMSBinderStack.peek()) == null) {
+                appCMSBinderStack.pop();
             }
 
         }
@@ -847,10 +862,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private boolean atMostOneUserPageOnTopStack(String newPageId) {
         return (newPageId == null ||
-                (appCMSPresenter.isPageUser(appCMSBinderStack.peek()) &&
+                !appCMSBinderStack.isEmpty() &&
+                        ((appCMSPresenter.isPageUser(appCMSBinderStack.peek()) &&
                         !appCMSPresenter.isPageUser(newPageId)) ||
                 (!appCMSPresenter.isPageUser(appCMSBinderStack.peek())) &&
-                        appCMSPresenter.isPageUser(newPageId));
+                        appCMSPresenter.isPageUser(newPageId)));
     }
 
     private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder) {
@@ -1123,7 +1139,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
             Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
             int i = 0;
-            while ((((i < distanceFromStackTop &&
+            while (((i < distanceFromStackTop && !configurationChanged) ||
+                    ((i < distanceFromStackTop &&
                     (!isBinderStackEmpty() &&
                             !isBinderStackTopNull() &&
                             !atMostOneUserPageOnTopStack(appCMSBinder.getPageId()) &&

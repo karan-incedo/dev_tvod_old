@@ -126,6 +126,9 @@ public class ViewCreator {
                                 Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                 AppCMSPresenter appCMSPresenter,
                                 List<String> modulesToIgnore) {
+        if (appCMSPageUI == null) {
+            return;
+        }
         for (ModuleList module : appCMSPageUI.getModuleList()) {
             boolean createModule = !modulesToIgnore.contains(module.getType()) && pageView != null;
 
@@ -358,19 +361,6 @@ public class ViewCreator {
                                                             .get(0).getGist().getId()));
                                         }
                                         view.setVisibility(View.VISIBLE);
-                                    }
-                                } else if (componentType == AppCMSUIKeyType.PAGE_VIDEO_STARRATING_KEY ||
-                                        componentType == AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_STAR_RATING_KEY) {
-                                    float starRating = -1.0f;
-                                    if (moduleAPI.getContentData() != null &&
-                                            !moduleAPI.getContentData().isEmpty() &&
-                                            moduleAPI.getContentData().get(0).getGist() != null) {
-                                        if (moduleAPI.getContentData().get(0).getGist().getAverageStarRating() != 0f) {
-                                            starRating = moduleAPI.getContentData().get(0).getGist().getAverageStarRating();
-                                        }
-                                        if (starRating >= 0) {
-                                            ((StarRating) view).updateRating(starRating);
-                                        }
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
                                     if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_TITLE_KEY) {
@@ -2588,25 +2578,6 @@ public class ViewCreator {
                 ((TextInputLayout) componentViewResult.componentView).addView(textInputEditText);
 
                 ((TextInputLayout) componentViewResult.componentView).setHintEnabled(false);
-                break;
-
-            case PAGE_VIDEO_STARRATING_KEY:
-            case PAGE_AUTOPLAY_MOVIE_STAR_RATING_KEY:
-                int starColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
-
-                float starRating = 0.0f;
-                if (moduleAPI.getContentData() != null &&
-                        !moduleAPI.getContentData().isEmpty() &&
-                        moduleAPI.getContentData().get(0) != null &&
-                        moduleAPI.getContentData().get(0).getGist() != null) {
-                    if (moduleAPI.getContentData().get(0).getGist().getAverageStarRating() != 0f) {
-                        starRating = moduleAPI.getContentData().get(0).getGist().getAverageStarRating();
-                    }
-                }
-                componentViewResult.componentView = new StarRating(context,
-                        starColor,
-                        starColor,
-                        starRating);
                 break;
 
             case PAGE_PLAN_META_DATA_VIEW_KEY:
