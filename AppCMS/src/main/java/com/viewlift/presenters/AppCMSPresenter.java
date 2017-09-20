@@ -2192,14 +2192,28 @@ public class AppCMSPresenter {
     }
 
     public void removeDownloadedFile(String filmId) {
-        DownloadVideoRealm downloadVideoRealm = realmController.getDownloadById(filmId);
-        if (downloadVideoRealm == null)
+        List<DownloadVideoRealm> downloadVideoRealmList = realmController.getDownloadsById(filmId);
+        if (downloadVideoRealmList == null && downloadVideoRealmList.get(0) == null) {
             return;
+        } else {
+            DownloadVideoRealm downloadVideoRealm = null;
+            for (DownloadVideoRealm downloadVideoRealm1 : downloadVideoRealmList) {
+                if (downloadVideoRealm1.getUserId().trim().equalsIgnoreCase(getLoggedInUser().trim())) {
+                    downloadVideoRealm = downloadVideoRealm1;
+                }
+            }
+            if (downloadVideoRealm == null) {
+            return;
+            } else if (downloadVideoRealm != null && downloadVideoRealmList.size() > 1) {
+                realmController.removeFromDB(downloadVideoRealm);
+                return;
+            }
         downloadManager.remove(downloadVideoRealm.getVideoId_DM());
         downloadManager.remove(downloadVideoRealm.getVideoThumbId_DM());
         downloadManager.remove(downloadVideoRealm.getPosterThumbId_DM());
         downloadManager.remove(downloadVideoRealm.getSubtitlesId_DM());
         realmController.removeFromDB(downloadVideoRealm);
+        }
     }
 
     public void removeDownloadAndLogout() {
@@ -2388,6 +2402,7 @@ public class AppCMSPresenter {
                 DownloadQueueItem downloadQueueItem = new DownloadQueueItem();
                 downloadQueueItem.contentDatum = contentDatum;
                 downloadQueueItem.resultAction1 = resultAction1;
+                downloadQueueItem.isDownloadedFromOther = isVideoDownloadedByOtherUser(contentDatum.getGist().getId());
                 downloadQueueThread.addToQueue(downloadQueueItem);
                 if (!downloadQueueThread.running()) {
                     downloadQueueThread.start();
@@ -2396,6 +2411,27 @@ public class AppCMSPresenter {
         }
     }
 
+    public void createLocalCopyForUser(ContentDatum contentDatum,
+                                       Action1<UserVideoDownloadStatus> resultAction1) {
+        currentActivity.runOnUiThread(() -> {
+            showToast(
+                    currentActivity.getString(R.string.app_cms_download_available_already_message,
+                            contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
+            DownloadVideoRealm videoDownloaded = getVideoDownloadedByOtherUser(contentDatum.getGist().getId());
+            DownloadVideoRealm downloadVideoRealm = videoDownloaded.createCopy();
+            try {
+                downloadVideoRealm.setVideoIdDB(getStreamingId(videoDownloaded.getVideoTitle()));
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage());
+                downloadVideoRealm.setVideoIdDB(videoDownloaded.getVideoId() + getCurrentTimeStamp());
+            }
+            downloadVideoRealm.setWatchedTime(contentDatum.getGist().getWatchedTime());
+            downloadVideoRealm.setUserId(getLoggedInUser());
+            realmController.addDownload(downloadVideoRealm);
+            appCMSUserDownloadVideoStatusCall.call(videoDownloaded.getVideoId(), this,
+                    resultAction1, getLoggedInUser());
+        });
+    }
     public void createLocalEntry(long enqueueId,
                                  long thumbEnqueueId,
                                  long posterEnqueueId,
@@ -2403,7 +2439,12 @@ public class AppCMSPresenter {
                                  ContentDatum contentDatum,
                                  String downloadURL) {
         DownloadVideoRealm downloadVideoRealm = new DownloadVideoRealm();
-
+        try {
+            downloadVideoRealm.setVideoIdDB(getStreamingId(downloadVideoRealm.getVideoTitle()));
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+            downloadVideoRealm.setVideoIdDB(downloadVideoRealm.getVideoId() + getCurrentTimeStamp());
+        }
         if (contentDatum != null && contentDatum.getGist() != null) {
             downloadVideoRealm.setVideoThumbId_DM(thumbEnqueueId);
             downloadVideoRealm.setPosterThumbId_DM(posterEnqueueId);
@@ -2615,6 +2656,15 @@ public class AppCMSPresenter {
         return downloadVideoRealm != null && downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId);
     }
 
+    @UiThread
+    public boolean isVideoDownloadedByOtherUser(String videoId) {
+        DownloadVideoRealm downloadVideoRealm = realmController.getDownloadById(videoId);
+        return downloadVideoRealm != null && downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId);
+    }
+    @UiThread
+    public DownloadVideoRealm getVideoDownloadedByOtherUser(String videoId) {
+        return realmController.getDownloadById(videoId);
+    }
     public String getDownloadedFileSize(long size) {
         String fileSize;
         DecimalFormat dec = new DecimalFormat("0");
@@ -4384,7 +4434,7 @@ public class AppCMSPresenter {
     public boolean isDownloadQualityScreenShowBefore() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME, 0);
-            return sharedPrefs.getBoolean(USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME, false);
+            return sharedPrefs.getBoolean(getLoggedInUser(), false);
         }
         return false;
     }
@@ -4392,7 +4442,7 @@ public class AppCMSPresenter {
     public void setDownloadQualityScreenShowBefore(boolean show) {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME, 0);
-            sharedPrefs.edit().putBoolean(USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME, show).apply();
+            sharedPrefs.edit().putBoolean(getLoggedInUser(), show).apply();
         }
     }
 
@@ -8827,6 +8877,7 @@ public class AppCMSPresenter {
     private static class DownloadQueueItem {
         ContentDatum contentDatum;
         Action1<UserVideoDownloadStatus> resultAction1;
+        boolean isDownloadedFromOther;
     }
 
     private static class DownloadQueueThread extends Thread {
@@ -8880,7 +8931,9 @@ public class AppCMSPresenter {
                     } catch (Exception e) {
                         Log.e(TAG, "Error trying to download: " + e.getMessage());
                     }
-                    if (appCMSPresenter.getMegabytesAvailable() > file_size) {
+                    if (downloadQueueItem.isDownloadedFromOther) {
+                        appCMSPresenter.createLocalCopyForUser(downloadQueueItem.contentDatum, downloadQueueItem.resultAction1);
+                    } else if (appCMSPresenter.getMegabytesAvailable() > file_size) {
                         appCMSPresenter.startDownload(downloadQueueItem.contentDatum,
                                 downloadQueueItem.resultAction1);
                     } else {
