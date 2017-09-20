@@ -1,11 +1,13 @@
 <resources>
     <!-- Primary app values -->
-    <!--<string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
-    <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
+   <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
+   <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
+
     <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
 
-    <!--<string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>-->
-    <string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>
+    <string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>
+    <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>-->
+
 
     <string name="app_cms_url_with_appended_timestamp">%1$s?x=%2$d</string>
     <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
@@ -72,6 +74,11 @@
         <item>AC RawHtml 01</item>
     </string-array>
 
+    <string-array name="app_cms_download_quality_array">
+        <item>720p</item>
+        <item>360p</item>
+    </string-array>
+
     <string name="app_cms_main_svod_service_type_key">SVOD</string>
     <string name="app_cms_android_navigation_key">navigation</string>
     <string name="app_cms_page_button_key">button</string>
@@ -122,6 +129,7 @@
     <string name="app_cms_page_settings_component_key">AC Settings Account 01</string>
     <string name="app_cms_page_carousel_module_key">AC Carousel 01</string>
     <string name="app_cms_page_tray_module_key">AC Tray 01</string>
+    <string name="app_cms_page_grid_module_key">AC Grid 01</string>
     <string name="app_cms_page_removeall_key">removeAll</string>
     <string name="app_cms_page_planmetadatatitle_key">planMetaDataTitle</string>
     <string name="app_cms_page_planmetadataimage_key">planMetaDataImage</string>

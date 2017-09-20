@@ -45,11 +45,20 @@ import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
+import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.VideoPlayerView;
 
-import java.util.Date;
+import org.threeten.bp.DateTimeUtils;
+import org.threeten.bp.Duration;
+import org.threeten.bp.Instant;
+import org.threeten.bp.temporal.ChronoUnit;
 
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import rx.functions.Action0;
 import rx.functions.Action1;
 
 /**
@@ -79,6 +88,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private String parentScreenName;
     private String adsUrl;
     private String parentalRating;
+    private boolean freeContent;
     private boolean shouldRequestAds;
     private LinearLayout videoPlayerInfoContainer;
     private RelativeLayout videoPlayerMainContainer;
@@ -169,6 +179,9 @@ public class AppCMSPlayVideoFragment extends Fragment
     private String closedCaptionUrl;
     private boolean isCastConnected;
 
+    private Timer entitlementCheckTimer;
+    private TimerTask entitlementCheckTimerTask;
+
     CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
         if (onClosePlayerEvent != null) {
             pauseVideo();
@@ -201,7 +214,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                                                       long watchedTime,
                                                       String imageUrl,
                                                       String closedCaptionUrl,
-                                                      String parentalRating, long videoRunTime) {
+                                                      String parentalRating,
+                                                      long videoRunTime,
+                                                      boolean freeContent) {
         AppCMSPlayVideoFragment appCMSPlayVideoFragment = new AppCMSPlayVideoFragment();
         Bundle args = new Bundle();
         args.putString(context.getString(R.string.video_player_font_color_key), fontColor);
@@ -215,6 +230,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         args.putInt(context.getString(R.string.play_index_key), playIndex);
         args.putLong(context.getString(R.string.watched_time_key), watchedTime);
         args.putLong(context.getString(R.string.run_time_key), videoRunTime);
+        args.putBoolean(context.getString(R.string.free_content_key), freeContent);
 
         args.putString(context.getString(R.string.played_movie_image_url), imageUrl);
         args.putString(context.getString(R.string.video_player_closed_caption_key), closedCaptionUrl);
@@ -254,6 +270,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             closedCaptionUrl = args.getString(getContext().getString(R.string.video_player_closed_caption_key));
             primaryCategory = args.getString(getString(R.string.video_primary_category_key));
             parentalRating = args.getString(getString(R.string.video_player_content_rating_key));
+
+            freeContent = args.getBoolean(getString(R.string.free_content_key));
         }
 
         hlsUrl = hlsUrl.replaceAll(" ", "+");
@@ -274,8 +292,64 @@ public class AppCMSPlayVideoFragment extends Fragment
         parentScreenName = getContext().getString(R.string.app_cms_beacon_video_player_parent_screen_name);
         setRetainInstance(true);
 
-        AppsFlyerUtils.filmViewingEvent(getContext(), primaryCategory, filmId, appCMSPresenter);
+        if (appCMSPresenter.isAppSVOD() &&
+                !freeContent &&
+                !appCMSPresenter.isUserSubscribed()) {
+            int entitlementCheckMultiplier = 5;
 
+            AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+            if (appCMSMain != null &&
+                    appCMSMain.getFeatures() != null &&
+                    appCMSMain.getFeatures().getFreePreview() != null &&
+                    appCMSMain.getFeatures().getFreePreview().isFreePreview() &&
+                    appCMSMain.getFeatures().getFreePreview().getLength() != null &&
+                    appCMSMain.getFeatures().getFreePreview().getLength().getUnit().equalsIgnoreCase("Minutes")) {
+                try {
+                    entitlementCheckMultiplier = Integer.parseInt(appCMSMain.getFeatures().getFreePreview().getLength().getMultiplier());
+                } catch (Exception e) {
+                    Log.e(TAG, "Error parsing free preview multiplier value: " + e.getMessage());
+                }
+            }
+
+            final int maxPreviewSecs = entitlementCheckMultiplier * 60;
+
+            entitlementCheckTimerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    appCMSPresenter.getUserData(userIdentity -> {
+                        Log.d(TAG, "Video player entitlement check triggered");
+                        int secsViewed = (int) videoPlayerView.getCurrentPosition() / 1000;
+                        if (maxPreviewSecs < secsViewed && (userIdentity == null || !userIdentity.isSubscribed())) {
+                            Log.d(TAG, "User is not subscribed - pausing video and showing Subscribe dialog");
+                            pauseVideo();
+                            if (videoPlayerView != null) {
+                                videoPlayerView.disableController();
+                            }
+                            videoPlayerInfoContainer.setVisibility(View.VISIBLE);
+                            if (appCMSPresenter.isUserLoggedIn()) {
+                                appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                                        () -> {
+                                            onClosePlayerEvent.closePlayer();
+                                        });
+                            } else {
+                                appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                                        () -> {
+                                            onClosePlayerEvent.closePlayer();
+                                        });
+                            }
+                            cancel();
+                        } else {
+                            Log.d(TAG, "User is subscribed - resuming video");
+                        }
+                    });
+                }
+            };
+
+            entitlementCheckTimer = new Timer();
+            entitlementCheckTimer.schedule(entitlementCheckTimerTask, 1000, 1000);
+        }
+
+        AppsFlyerUtils.filmViewingEvent(getContext(), primaryCategory, filmId, appCMSPresenter);
     }
 
     @Nullable
@@ -315,6 +389,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerInfoContainer.bringToFront();
         videoPlayerView = rootView.findViewById(R.id.app_cms_video_player_container);
         videoPlayerView.setListener(this);
+        videoPlayerView.enableController();
 
         videoLoadingProgress = rootView.findViewById(R.id.app_cms_video_loading);
 
@@ -682,6 +757,20 @@ public class AppCMSPlayVideoFragment extends Fragment
 
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (appCMSPresenter.isAppSVOD() && !freeContent) {
+            if (entitlementCheckTimerTask != null) {
+                entitlementCheckTimerTask.cancel();
+            }
+            if (entitlementCheckTimer != null) {
+                entitlementCheckTimer.cancel();
+            }
         }
     }
 

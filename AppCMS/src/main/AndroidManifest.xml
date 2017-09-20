@@ -34,7 +34,7 @@
         <activity
             android:name=".views.activity.AppCMSPageActivity"
             android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustPan"
+            android:windowSoftInputMode="adjustPan|stateHidden"
             android:launchMode="singleTask">
             <meta-data
                 android:name="android.app.default_searchable"
@@ -42,12 +42,14 @@
         </activity>
         <activity
             android:name=".views.activity.AppCMSErrorActivity"
-            android:configChanges="orientation|screenSize" />
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTask"/>
         <activity
             android:name=".views.activity.AppCMSPlayVideoActivity"
             android:configChanges="orientation|screenSize" />
         <activity
             android:name=".views.activity.AppCMSSearchActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />

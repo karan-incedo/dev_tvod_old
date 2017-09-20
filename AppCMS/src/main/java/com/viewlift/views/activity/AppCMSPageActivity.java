@@ -11,7 +11,6 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -32,6 +31,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -346,6 +346,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                             email = user.getString("email");
                                         } catch (JSONException e) {
                                             Log.e(TAG, "Error parsing Facebook Graph JSON: " + e.getMessage());
+                                        } catch (NullPointerException npe) {
+                                            Log.e(TAG, "Null pointer exception attempting to parse JSON: " + npe.getMessage());
                                         }
                                         if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                                             handleCloseAction();
@@ -426,8 +428,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.setmFireBaseAnalytics(mFireBaseAnalytics);
         }
 
-        closeButton.setOnClickListener(v ->
-                appCMSPresenter.sendCloseOthersAction(null, true));
+        closeButton.setOnClickListener(v ->{
+                    View view = this.getCurrentFocus();
+                    if (view != null) {
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
+                    appCMSPresenter.sendCloseOthersAction(null, true);
+                }
+                );
 
         inflateCastMiniController();
 
@@ -671,7 +680,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSBinder != null) {
             Log.e(TAG, "Nav item - DialogType attempting to launch page: "
                     + appCMSBinder.getPageName() + " - " + appCMSBinder.getPageId());
-            if (!appCMSBinderStack.isEmpty() && appCMSBinderStack.peek().equals(appCMSBinder.getPageId())) {
+            if (!appCMSBinderStack.isEmpty() &&
+                    !TextUtils.isEmpty(appCMSBinderStack.peek()) &&
+                    appCMSBinderStack.peek().equals(appCMSBinder.getPageId())) {
                 try {
                     getSupportFragmentManager().popBackStackImmediate();
                 } catch (IllegalStateException e) {
@@ -759,9 +770,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
             Log.d(TAG, "Back pressed - handling nav bar");
             handleNavbar(appCMSBinderMap.get(appCMSBinderStack.peek()));
-            if (appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName() != null) {
+            if (appCMSBinderMap.get(appCMSBinderStack.peek()) != null &&
+                    appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName() != null) {
                 Log.d(TAG, "Resetting previous AppCMS data: "
                         + appCMSBinderMap.get(appCMSBinderStack.peek()).getPageName());
+            } else if (appCMSBinderMap.get(appCMSBinderStack.peek()) == null) {
+                appCMSBinderStack.pop();
             }
 
         }
@@ -840,10 +854,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private boolean atMostOneUserPageOnTopStack(String newPageId) {
         return (newPageId == null ||
-                (appCMSPresenter.isPageUser(appCMSBinderStack.peek()) &&
+                !appCMSBinderStack.isEmpty() &&
+                        ((appCMSPresenter.isPageUser(appCMSBinderStack.peek()) &&
                         !appCMSPresenter.isPageUser(newPageId)) ||
                 (!appCMSPresenter.isPageUser(appCMSBinderStack.peek())) &&
-                        appCMSPresenter.isPageUser(newPageId));
+                        appCMSPresenter.isPageUser(newPageId)));
     }
 
     private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder) {
@@ -1116,7 +1131,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
             Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
             int i = 0;
-            while ((((i < distanceFromStackTop &&
+            while (((i < distanceFromStackTop && !configurationChanged) ||
+                    ((i < distanceFromStackTop &&
                     (!isBinderStackEmpty() &&
                             !isBinderStackTopNull() &&
                             !atMostOneUserPageOnTopStack(appCMSBinder.getPageId()) &&
