@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\anas.azeem\\StudioProjects\\android-appcms-nitin\\sample\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-ldrtl-v23\\values-ldrtl-v23.xml",
+            "outputFile": "D:\\project\\FTV\\AppCms_Android_Phase3\\android-appcms\\sample\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-ldrtl-v23\\values-ldrtl-v23.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\anas.azeem\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-23.1.1.aar\\d190a5492f12429a089a9c9c107870ed\\res\\values-ldrtl-v23\\values-ldrtl-v23.xml",
+                    "source": "C:\\Users\\nitin.tyagi\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-23.1.1.aar\\a2069d10f22a7a9336ea8d7ad4beba82\\res\\values-ldrtl-v23\\values-ldrtl-v23.xml",
                     "from": {
                         "startLines": "4",
                         "startColumns": "4",

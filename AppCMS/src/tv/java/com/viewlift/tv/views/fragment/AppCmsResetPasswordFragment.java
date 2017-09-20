@@ -95,7 +95,7 @@ public class AppCmsResetPasswordFragment extends DialogFragment {
 
                     if( emailId.getEditableText().toString().length() == 0)
                            {
-                        appCMSPresenter.openTVErrorDialog(getString(R.string.blank_email_password_error_msg) ,
+                        appCMSPresenter.openTVErrorDialog(getString(R.string.blank_email_error_msg) ,
                                 getString(R.string.app_cms_forgot_password_title));
                         return;
                     }

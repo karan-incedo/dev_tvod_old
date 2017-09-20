@@ -49,6 +49,7 @@
     <string name="no_data_in_history_text">You haven\'t watched anything yet.</string>
     <string name="title_activity_app_cms_sub_nav_item">AppCmsSubNavItemActivity</string>
 
-    <string name="blank_email_password_error_msg">The EmailId/Password you have entered is blank.</string>
+     <string name="blank_email_error_msg">Please enter email to continue.</string>
+    <string name="blank_password_error_msg">Please enter password to continue.</string>
 
 </resources>

@@ -219,7 +219,6 @@ public class AppCmsNavigationFragment extends Fragment {
                                             navigationUser.getUrl(),
                                             false);
                                 } else {
-
                                     appCmsPresenter.navigateToTVPage(
                                             navigationUser.getPageId(),
                                             navigationUser.getTitle(),
