@@ -122,6 +122,9 @@ public class ViewCreator {
                                 Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                 AppCMSPresenter appCMSPresenter,
                                 List<String> modulesToIgnore) {
+        if (appCMSPageUI == null) {
+            return;
+        }
         for (ModuleList module : appCMSPageUI.getModuleList()) {
             boolean createModule = !modulesToIgnore.contains(module.getType()) && pageView != null;
 
