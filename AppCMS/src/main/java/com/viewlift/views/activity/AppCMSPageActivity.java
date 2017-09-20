@@ -448,6 +448,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
+        appCMSPresenter.sendCloseOthersAction(null, false);
+
         Log.d(TAG, "onCreate()");
     }
 
