@@ -339,6 +339,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         retryCallBinder.getPagePath(),
                         false);
                 break;
+            case RESET_PASSWORD_RETRY:
+                appCMSPresenter.showLoadingDialog(true);
+                appCMSPresenter.resetPassword(retryCallBinder.getFilmTitle().toString()); //filmtitle here means emailid.
+                break;
+
         }
     }
 

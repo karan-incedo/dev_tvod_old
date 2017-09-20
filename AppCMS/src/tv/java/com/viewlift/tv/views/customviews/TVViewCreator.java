@@ -788,9 +788,13 @@ public class TVViewCreator {
                                     String password = ((EditText) tvModuleView.findViewById(R.id.password_edit_box)).getEditableText().toString();
                                     Log.d(TAG, "emailid = " + emailId + "password = " + password);
 
-                                    if ((emailId != null && emailId.length() == 0)
-                                            || (password != null && password.length() == 0)) {
-                                        appCMSPresenter.openTVErrorDialog(context.getString(R.string.blank_email_password_error_msg),
+                                    if ((emailId != null && emailId.length() == 0)) {
+                                        appCMSPresenter.openTVErrorDialog(context.getString(R.string.blank_email_error_msg),
+                                                context.getString(R.string.app_cms_login));
+                                        return;
+                                    }
+                                    if((password != null && password.length() == 0)){
+                                        appCMSPresenter.openTVErrorDialog(context.getString(R.string.blank_password_error_msg),
                                                 context.getString(R.string.app_cms_login));
                                         return;
                                     }
