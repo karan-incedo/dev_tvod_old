@@ -20,6 +20,7 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastingUtils;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
@@ -113,11 +114,14 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     if (binder.getContentData() != null
                             && binder.getContentData().getContentDetails() != null
                             && binder.getContentData().getContentDetails().getClosedCaptions() != null
-                            && !binder.getContentData().getContentDetails().getClosedCaptions().isEmpty()
-                            && binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl() != null
-                            && !binder.getContentData().getContentDetails().getClosedCaptions()
-                            .get(0).getUrl().equalsIgnoreCase(getString(R.string.download_file_prefix))) {
-                        closedCaptionUrl = binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl();
+                            && !binder.getContentData().getContentDetails().getClosedCaptions().isEmpty()) {
+                        for (ClosedCaptions cc : binder.getContentData().getContentDetails().getClosedCaptions()) {
+                            if (cc.getUrl() != null &&
+                                    !cc.getUrl().equalsIgnoreCase(getString(R.string.download_file_prefix)) &&
+                                    cc.getFormat().equalsIgnoreCase("SRT")) {
+                                closedCaptionUrl = cc.getUrl();
+                            }
+                        }
                     }
                 } else {
                     if (binder.getContentData().getContentDetails() != null
@@ -153,11 +157,14 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                         if (binder.getContentData() != null
                                 && binder.getContentData().getContentDetails() != null
                                 && binder.getContentData().getContentDetails().getClosedCaptions() != null
-                                && !binder.getContentData().getContentDetails().getClosedCaptions().isEmpty()
-                                && binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl() != null
-                                && !binder.getContentData().getContentDetails().getClosedCaptions()
-                                .get(0).getUrl().equalsIgnoreCase(getString(R.string.download_file_prefix))) {
-                            closedCaptionUrl = binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl();
+                                && !binder.getContentData().getContentDetails().getClosedCaptions().isEmpty()) {
+                            for (ClosedCaptions cc : binder.getContentData().getContentDetails().getClosedCaptions()) {
+                                   if (cc.getUrl() != null &&
+                                           !cc.getUrl().equalsIgnoreCase(getString(R.string.download_file_prefix)) &&
+                                           cc.getFormat().equalsIgnoreCase("SRT")) {
+                                       closedCaptionUrl = cc.getUrl();
+                                }
+                            }
                         }
                     }
                 }
