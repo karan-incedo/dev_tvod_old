@@ -243,9 +243,7 @@ public class AppCMSTVTrayAdapter
                                 title,
                                 extraData,
                                 false,
-                                data
-                               /* currentPlayingIndex,
-                                relatedVideoIds*/)) {
+                                data)) {
                             Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
                                     + " action: " + action + " hlsUrl: " + hlsUrl);
                         }

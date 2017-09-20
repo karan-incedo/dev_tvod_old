@@ -7726,30 +7726,20 @@ public class AppCMSPresenter {
             if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
                     actionType == AppCMSActionType.WATCH_TRAILER) {
 
-                if(contentDatum.getGist().getWatchedTime() == 0) {
-                    getUserVideoStatus(contentDatum.getGist().getId(),
-                            userVideoStatusResponse -> {
-                                if (userVideoStatusResponse != null) {
-                                    contentDatum.getGist().setWatchedTime
-                                            (userVideoStatusResponse.getWatchedTime());
-                                }
-                                LaunchTVVideoPlayerActivity(
-                                        pagePath,
-                                        filmTitle,
-                                        extraData,
-                                        closeLauncher,
-                                        contentDatum,
-                                        actionType);
-                            });
-                } else {
-                    LaunchTVVideoPlayerActivity(
-                            pagePath,
-                            filmTitle,
-                            extraData,
-                            closeLauncher,
-                            contentDatum,
-                            actionType);
-                }
+                getUserVideoStatus(contentDatum.getGist().getId(),
+                        userVideoStatusResponse -> {
+                            if (userVideoStatusResponse != null) {
+                                contentDatum.getGist().setWatchedTime
+                                        (userVideoStatusResponse.getWatchedTime());
+                            }
+                            LaunchTVVideoPlayerActivity(
+                                    pagePath,
+                                    filmTitle,
+                                    extraData,
+                                    closeLauncher,
+                                    contentDatum,
+                                    actionType);
+                        });
                 sendStopLoadingPageAction();
 
             } else if (actionType == AppCMSActionType.SHARE) {
