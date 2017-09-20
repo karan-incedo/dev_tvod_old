@@ -1063,10 +1063,8 @@ public class TVViewCreator {
                             componentViewResult.componentView.setTag("AGE_LABEL");
 
                         case PAGE_SIGNUP_FOOTER_LABEL_KEY:
-                            SpannableString spannableString = new SpannableString(context.getString(R.string.sign_up_tos_and_pp_text));
-
-                            String text = spannableString.toString();
-
+                            String text = context.getString(R.string.sign_up_tos_and_pp_text);
+                            SpannableString spannableString = new SpannableString(text);
                             String tosText = "terms of use";
                             if (text.contains(tosText)) {
                                 int tosStartIndex = text.indexOf(tosText);
@@ -1078,7 +1076,15 @@ public class TVViewCreator {
                                         Toast.makeText(context, "Open TOS here", Toast.LENGTH_SHORT).show();
                                     }
                                 };
-                                spannableString.setSpan(clickableSpan, tosStartIndex, tosEndIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                spannableString.setSpan(clickableSpan, tosStartIndex, tosEndIndex,
+                                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                spannableString.setSpan(
+                                        new ForegroundColorSpan(Color.parseColor(appCMSPresenter
+                                                .getAppCMSMain().getBrand().getGeneral()
+                                                .getBlockTitleColor())),
+                                        tosStartIndex,
+                                        tosEndIndex,
+                                        Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                             }
                             String ppText = "privacy policy";
                             if (text.contains(ppText)) {
@@ -1090,7 +1096,15 @@ public class TVViewCreator {
                                         Toast.makeText(context, "Open Privacy Policy here", Toast.LENGTH_SHORT).show();
                                     }
                                 };
-                                spannableString.setSpan(clickableSpan1, ppStartIndex, ppEndIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                spannableString.setSpan(clickableSpan1, ppStartIndex, ppEndIndex,
+                                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                spannableString.setSpan(
+                                        new ForegroundColorSpan(Color.parseColor(appCMSPresenter
+                                                .getAppCMSMain().getBrand().getGeneral()
+                                                .getBlockTitleColor())),
+                                        ppStartIndex,
+                                        ppEndIndex,
+                                        Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                             }
 
                             TextView textView = (TextView) componentViewResult.componentView;
