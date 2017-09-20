@@ -24,10 +24,13 @@ import android.text.Html;
 import android.text.InputType;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
+import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
@@ -46,6 +49,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -241,7 +245,10 @@ public class TVViewCreator {
             }
             return null;
         } else {
-
+            if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_page_authentication_module))) {
+                module = new GsonBuilder().create().
+                        fromJson(Utils.loadJsonFromAssets(context, "signup.json"), ModuleList.class);
+            }
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
@@ -289,6 +296,8 @@ public class TVViewCreator {
                 module = new GsonBuilder().create().
                         fromJson(Utils.loadJsonFromAssets(context, "history.json"), ModuleList.class);
             }
+
+
 
 
 
@@ -1048,6 +1057,42 @@ public class TVViewCreator {
                             }
                             componentViewResult.componentView.setFocusable(false);
                             componentViewResult.componentView.setTag("AGE_LABEL");
+
+                        case PAGE_SIGNUP_FOOTER_LABEL_KEY:
+                            SpannableString spannableString = new SpannableString(context.getString(R.string.sign_up_tos_and_pp_text));
+
+                            String text = spannableString.toString();
+
+                            String tosText = "terms of use";
+                            if (text.contains(tosText)) {
+                                int tosStartIndex = text.indexOf(tosText);
+                                int tosEndIndex = tosText.length() + tosStartIndex;
+                                ClickableSpan clickableSpan = new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View textView) {
+                                        // TODO: 9/20/2017 open tos here
+                                        Toast.makeText(context, "Open TOS here", Toast.LENGTH_SHORT).show();
+                                    }
+                                };
+                                spannableString.setSpan(clickableSpan, tosStartIndex, tosEndIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            }
+                            String ppText = "privacy policy";
+                            if (text.contains(ppText)) {
+                                int ppStartIndex = text.indexOf(ppText);
+                                int ppEndIndex = ppText.length() + ppStartIndex;
+                                ClickableSpan clickableSpan1 = new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View textView) {
+                                        Toast.makeText(context, "Open Privacy Policy here", Toast.LENGTH_SHORT).show();
+                                    }
+                                };
+                                spannableString.setSpan(clickableSpan1, ppStartIndex, ppEndIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            }
+
+                            TextView textView = (TextView) componentViewResult.componentView;
+                            textView.setText(spannableString);
+                            textView.setMovementMethod(LinkMovementMethod.getInstance());
+                            break;
                         default:
                             if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText());

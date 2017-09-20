@@ -361,6 +361,7 @@
     <string name="app_cms_description_label">descriptionLabel</string>
     <string name="app_cms_delete_item_button">deleteItemButton</string>
     <string name="app_cms_history_last_added_label">historyLastAddedLabel</string>
+    <string name="app_cms_signup_footer_label_key">signupfooterview</string>
 
 
     <!-- AppCMS Payment Processor values -->

@@ -479,6 +479,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_history_last_added_label),
                 AppCMSUIKeyType.PAGE_HISTORY_LAST_ADDED_LABEL_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_signup_footer_label_key),
+                AppCMSUIKeyType.PAGE_SIGNUP_FOOTER_LABEL_KEY);
+
         jsonValueKeyMap.put("", AppCMSUIKeyType.PAGE_EMPTY_KEY);
         jsonValueKeyMap.put(null, AppCMSUIKeyType.PAGE_NULL_KEY);
     }

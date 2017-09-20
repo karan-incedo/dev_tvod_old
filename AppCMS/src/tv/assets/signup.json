@@ -1,0 +1,119 @@
+{
+  "id": "e55fdb65-5b68-4cb0-9545-3d4ae54df1e6",
+  "settings": {},
+  "view": "AC Authentication 01",
+  "type": "AC Authentication 01",
+  "layout": {
+    "ftv": {
+      "yAxis": 0,
+      "xAxis": 0,
+      "width": 1920,
+      "height": 940
+    }
+  },
+  "components": [
+    {
+      "backgroundColor": "#ffffff",
+      "letterSpacing": 0.5,
+      "type": "textfield",
+      "textColor": "#000000",
+      "cornerRadius": 5,
+      "layout": {
+        "ftv": {
+          "yAxis": 110,
+          "xAxis": 645,
+          "width": 640,
+          "fontSize": 48,
+          "height": 80
+        }
+      },
+      "hintColor": "#b8b6b5",
+      "fontFamily": "OpenSans",
+      "protected": false,
+      "textAlignment": "left",
+      "text": "Email",
+      "opacity": 46,
+      "key": "emailTextField"
+    },
+    {
+      "backgroundColor": "#ffffff",
+      "letterSpacing": 0.5,
+      "type": "textfield",
+      "textColor": "#000000",
+      "cornerRadius": 5,
+      "layout": {
+        "ftv": {
+          "yAxis": 240,
+          "xAxis": 645,
+          "width": 640,
+          "fontSize": 48,
+          "height": 80
+        }
+      },
+      "hintColor": "#b8b6b5",
+      "fontFamily": "OpenSans",
+      "protected": true,
+      "textAlignment": "left",
+      "text": "Password",
+      "opacity": 46,
+      "key": "passwordTextField"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "yAxis": 380,
+          "xAxis": 645,
+          "width": 300,
+          "fontSize": 12,
+          "height": 60
+        }
+      },
+      "borderColor": "#66ffffff",
+      "fontFamily": "OpenSans",
+      "borderWidth": 4,
+      "action": "login",
+      "letterSpacing": 0.12,
+      "text": "LOG IN",
+      "type": "button",
+      "textColor": "#ffffff",
+      "fontWeight": "Semibold",
+      "key": "login button"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "yAxis": 380,
+          "xAxis": 980,
+          "width": 300,
+          "fontSize": 12,
+          "height": 60
+        }
+      },
+      "borderColor": "#66ffffff",
+      "fontFamily": "OpenSans",
+      "borderWidth": 4,
+      "action": "forgotPassword",
+      "letterSpacing": 0.12,
+      "text": "FORGOT PASSWORD",
+      "type": "button",
+      "textColor": "#ffffff",
+      "fontWeight": "Semibold",
+      "key": "forgot password button"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "topMargin": 200,
+          "width" : 420,
+          "fontSize": 12
+        }
+      },
+      "fontFamily": "OpenSans",
+      "numberOfLines": 2,
+      "textAlignment": "center",
+      "type": "label",
+      "textColor": "#FFFFFF",
+      "key": "signupfooterview"
+    }
+  ]
+}
