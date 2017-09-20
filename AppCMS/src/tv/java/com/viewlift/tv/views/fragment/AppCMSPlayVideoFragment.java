@@ -88,6 +88,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     private String primaryCategory;
     private String parentalRating;
     private String mStreamId;
+    private long runtime;
+    private long videoPlayTime;
 
     public interface OnClosePlayerEvent {
         void closePlayer();
@@ -174,6 +176,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                                                       boolean requestAds,
                                                       int playIndex,
                                                       long watchedTime,
+                                                      long runtime,
                                                       String imageUrl,
                                                       String closedCaptionUrl,
                                                       String parentalRating) {
@@ -189,6 +192,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         args.putBoolean(context.getString(R.string.video_player_request_ads_key), requestAds);
         args.putInt(context.getString(R.string.play_index_key), playIndex);
         args.putLong(context.getString(R.string.watched_time_key), watchedTime);
+        args.putLong(context.getString(R.string.run_time_key), runtime);
         args.putString(context.getString(R.string.played_movie_image_url), imageUrl);
         args.putString(context.getString(R.string.video_player_closed_caption_key), closedCaptionUrl);
         args.putBoolean(context.getString(R.string.video_player_is_trailer_key), isTrailer);
@@ -227,6 +231,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             shouldRequestAds = args.getBoolean(getString(R.string.video_player_request_ads_key));
             playIndex = args.getInt(getString(R.string.play_index_key));
             watchedTime = args.getLong(getString(R.string.watched_time_key));
+            runtime = args.getLong(getString(R.string.run_time_key));
             imageUrl = args.getString(getString(R.string.played_movie_image_url));
             closedCaptionUrl = args.getString(getString(R.string.video_player_closed_caption_key));
             primaryCategory = args.getString(getString(R.string.video_primary_category_key));
@@ -304,7 +309,16 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         PorterDuff.Mode.MULTIPLY
                 );
 
-        videoPlayerView.setCurrentPosition(watchedTime * SECONDS_TO_MILLIS);
+        long playDifference = runtime - watchedTime;//((watchedTime*100)/runTime);
+        long playTimePercentage = ((watchedTime * 100) / runtime);
+
+        // if video watchtime is greater or equal to 98% of total run time and interval is less than 30 then play from start
+        if (playTimePercentage >= 98 && playDifference <= 30) {
+            videoPlayTime = 0;
+        } else {
+            videoPlayTime = watchedTime;
+        }
+        videoPlayerView.setCurrentPosition(videoPlayTime * SECONDS_TO_MILLIS);
 
         videoPlayerView.setOnPlayerStateChanged(new Action1<VideoPlayerView.PlayerState>() {
             @Override
