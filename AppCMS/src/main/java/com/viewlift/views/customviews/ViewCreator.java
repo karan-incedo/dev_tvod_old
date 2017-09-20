@@ -78,6 +78,7 @@ public class ViewCreator {
 
     public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
         long runtime = (data.getGist().getRuntime() / 60L);
+
         String year = data.getGist().getYear();
         String primaryCategory =
                 data.getGist().getPrimaryCategory() != null ?
@@ -90,6 +91,9 @@ public class ViewCreator {
         StringBuffer infoText = new StringBuffer();
         if (runtime > 0) {
             infoText.append(runtime + " " + context.getString(R.string.mins_abbreviation));
+        }else{
+            infoText.append("0 " + context.getString(R.string.mins_abbreviation));
+            infoText.append(context.getString(R.string.text_separator));
         }
         if (appendFirstSep) {
             infoText.append(context.getString(R.string.text_separator));

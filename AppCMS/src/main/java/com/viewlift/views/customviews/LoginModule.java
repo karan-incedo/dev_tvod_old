@@ -57,7 +57,8 @@ public class LoginModule extends ModuleView {
     private int loginBorderPadding;
     private EditText visibleEmailInputView;
     private EditText visiblePasswordInputView;
-Context con;
+    Context con;
+
     public LoginModule(Context context,
                        ModuleWithComponents module,
                        Module moduleAPI,
@@ -77,7 +78,7 @@ Context con;
         this.passwordInputViews = new EditText[NUM_CHILD_VIEWS];
         this.loginBorderPadding = context.getResources().getInteger(R.integer.app_cms_login_underline_padding);
         this.launchType = appCMSPresenter.getLaunchType();
-        this.con=context;
+        this.con = context;
         init();
 
     }
@@ -222,6 +223,7 @@ Context con;
                     childViews[1] = moduleView;
                     addChildComponents(moduleView, component, 1);
                     topLayoutContainer.addView(moduleView);
+
                 }
             }
 
@@ -336,7 +338,7 @@ Context con;
                                 case PAGE_PASSWORDTEXTFIELD_KEY:
                                 case PAGE_PASSWORDTEXTFIELD2_KEY:
                                     passwordInputViews[childIndex] = ((TextInputLayout) componentView).getEditText();
-                                    AppCMSPresenter.noSpaceInEditTextFilter(passwordInputViews[childIndex],con);
+                                    AppCMSPresenter.noSpaceInEditTextFilter(passwordInputViews[childIndex], con);
                                     if (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                                         visiblePasswordInputView = passwordInputViews[1];
                                     }
