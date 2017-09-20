@@ -20,6 +20,7 @@ import io.realm.annotations.PrimaryKey;
 
 public class DownloadVideoRealm extends RealmObject {
     @PrimaryKey
+    private String videoIdDB;
     private String videoId;
     private long videoId_DM;
     private long videoThumbId_DM;
@@ -49,6 +50,12 @@ public class DownloadVideoRealm extends RealmObject {
     private String userId;
     private long watchedTime;
     private boolean isSyncedWithServer;
+    public String getVideoIdDB() {
+        return videoIdDB;
+    }
+    public void setVideoIdDB(String videoIdDB) {
+        this.videoIdDB = videoIdDB;
+    }
 
     public String getVideoId() {
         return videoId;
@@ -312,5 +319,38 @@ public class DownloadVideoRealm extends RealmObject {
         data.setUserId(userId);
         data.setAddedDate(getDownloadDate());
         return data;
+    }
+    public DownloadVideoRealm createCopy(){
+        DownloadVideoRealm downloadVideoRealm = new DownloadVideoRealm();
+        downloadVideoRealm.setVideoId(getVideoId());
+        downloadVideoRealm.setDownloadStatus(getDownloadStatus());
+        downloadVideoRealm.setSyncedWithServer(isSyncedWithServer);
+        downloadVideoRealm.setVideoId_DM(getVideoId_DM());
+        downloadVideoRealm.setVideoDuration(getVideoDuration());
+        downloadVideoRealm.setVideo_Downloaded_so_far(getVideo_Downloaded_so_far());
+        downloadVideoRealm.setVideoFileURL(getVideoFileURL());
+        downloadVideoRealm.setVideoSize(getVideoSize());
+        downloadVideoRealm.setVideoImageUrl(getVideoImageUrl());
+        downloadVideoRealm.setVideoWebURL(getVideoWebURL());
+        downloadVideoRealm.setVideoDescription(getVideoDescription());
+        downloadVideoRealm.setVideoTitle(getVideoTitle());
+        downloadVideoRealm.setVideoNumber(getVideoNumber());
+        downloadVideoRealm.setVideoPlayedDuration(getVideoPlayedDuration());
+        downloadVideoRealm.setVideoThumbId_DM(getVideoThumbId_DM());
+        downloadVideoRealm.setShowId(getShowId());
+        downloadVideoRealm.setShowDescription(getShowDescription());
+        downloadVideoRealm.setShowTitle(getShowTitle());
+        downloadVideoRealm.setSubtitlesFileURL(getSubtitlesFileURL());
+        downloadVideoRealm.setSubtitlesId_DM(getSubtitlesId_DM());
+        downloadVideoRealm.setWatchedTime(getWatchedTime());
+        downloadVideoRealm.setBitRate(getBitRate());
+        downloadVideoRealm.setLastWatchDate(getLastWatchDate());
+        downloadVideoRealm.setDownloadDate(getDownloadDate());
+        downloadVideoRealm.setLocalURI(getLocalURI());
+        downloadVideoRealm.setUserId(getUserId());
+        downloadVideoRealm.setPermalink(getPermalink());
+        downloadVideoRealm.setPosterFileURL(getPosterFileURL());
+        downloadVideoRealm.setPosterThumbId_DM(getPosterThumbId_DM());
+        return downloadVideoRealm;
     }
 }
