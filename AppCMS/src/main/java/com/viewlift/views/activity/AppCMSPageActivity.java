@@ -539,6 +539,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
+        InputMethodManager imm =
+                (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null && appCMSParentView != null) {
+            imm.hideSoftInputFromWindow(appCMSParentView.getWindowToken(), 0);
+        }
+
         Log.d(TAG, "onDestroy()");
     }
 
