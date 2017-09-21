@@ -1867,40 +1867,38 @@ public class AppCMSPresenter {
         if (useCCAvenue()) {
             Log.d(TAG, "Initiating CCAvenue purchase");
             if (isUserSubscribed()) {
-                SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
-                subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
-                subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
-                subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
-                subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency());
-                subscriptionRequest.setPlanIdentifier(skuToPurchase);
-                subscriptionRequest.setPlanId(planToPurchase);
-                subscriptionRequest.setUserId(getLoggedInUser());
-                subscriptionRequest.setReceipt(getActiveSubscriptionReceipt());
-                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                 try {
                     appCMSSubscriptionPlanCall.call(
-                            currentActivity.getString(R.string.app_cms_register_subscription_api_url,
+                            currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
                                     appCMSMain.getApiBaseUrl(),
-                                    appCMSSite.getGist().getSiteInternalName(),
-                                    currentActivity.getString(R.string.app_cms_subscription_platform_key)),
-                            R.string.app_cms_subscription_plan_update_key,
-                            subscriptionRequest,
+                                    appCMSSite.getGist().getSiteInternalName()),
+                            R.string.app_cms_subscription_subscribed_plan_key,
+                            null,
                             apikey,
                             getAuthToken(),
-                            result -> {
-                                //
-                                Log.v("got result", "got result");
-                            }, appCMSSubscriptionPlanResults -> {
-                                sendCloseOthersAction(null, true);
-                                refreshSubscriptionData(() -> {
-                                    sendRefreshPageAction();
-                                }, true);
+                            listResult -> {
+                                Log.v("currentActivity", "currentActivity");
                             },
-                            currentUserPlan -> {
+                            singleResult -> {
+                                //
+                            },
+                            appCMSSubscriptionPlanResult -> {
+                                try {
+                                    if (appCMSSubscriptionPlanResult != null) {
+                                        String paymentUniqueId = appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentUniqueId() ;
+                                        if (paymentUniqueId.length()==0) {
 
-                            });
-                } catch (IOException e) {
-                    e.printStackTrace();
+                                        } else {
+                                            
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
+                                }
+                            }
+                    );
+                } catch (Exception ex) {
+
                 }
             } else {
                 initiateCCAvenuePurchase();
