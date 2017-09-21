@@ -74,6 +74,8 @@
     <string name="video_player_permalink_key">video_player_permalink</string>
     <string name="video_player_font_color_key">video_player_font_color</string>
     <string name="video_player_closed_caption_key">video_player_closed_caption</string>
+    <string name="video_player_watched_time_key">video_player_watched_time</string>
+    <string name="video_player_run_time_key">video_player_run_time</string>
     <string name="video_player_is_trailer_key">isTrailer</string>
     <string name="video_primary_category_key">video_primary_category</string>
     <string name="opensans_bold_ttf">fonts/OpenSans-Bold.ttf</string>
@@ -133,6 +135,7 @@
     <string name="play_ads_key">play_ads</string>
     <string name="reset_password_text">RESET PASSWORD</string>
     <string name="watched_time_key">watched_time</string>
+    <string name="run_time_key">run_time</string>
     <string name="played_movie_image_url">played_movie_image</string>
 
     <!--User Management - Change Password-->
@@ -244,6 +247,7 @@
     <string name="app_cms_cancel_subscription_title">Cancel Subscription</string>
     <string name="app_cms_confirm_alert_dialog_button_text">OK</string>
     <string name="app_cms_cancel_alert_dialog_button_text">CANCEL</string>
+    <string name="app_cms_yes_alert_dialog_button_text">YES</string>
     <string name="app_cms_cancel_subscription_confirmation_message">You have cancelled your subscription.</string>
 
     <string name="app_cms_cancel_subscription_not_subscribed_message">You are currently not subscribed to any plans.</string>
@@ -321,6 +325,7 @@
         <item quantity="one">RESULT FOR \"%1$s\"</item>
         <item quantity="other">RESULTS FOR \"%1$s\"</item>
     </plurals>
+    <string name="item_shop">{0,choice,0#Added Today|1#Added 1 Day Ago|1&lt;Added {0} Days Ago}</string>
     <string name="retryCallBinderKey">retryCallBinderKey</string>
     <string name="retryCallBundleKey">retryCallBundleKey</string>
     <string name="app_cms_default_download_quality">720p</string>
@@ -358,9 +363,15 @@
 
 
     <string name="register_internet_receiver_key">shouldRegisterInternetReciever</string>
+    <string name="is_tos_page_key">istospage</string>
     <string name="tv_dialog_msg_key">dialog_msg_key</string>
     <string name="tv_dialog_header_key">dialog_header_key</string>
     <string name="tv_dialog_width_key">dialog_width_key</string>
     <string name="tv_dialog_height_key">dialog_height_key</string>
+    <string name="clear_history_message">CLEAR HISTORY?</string>
+    <string name="clear_watchlist_message">CLEAR WATCHLIST?</string>
+    <string name="remove_from_watchlist">REMOVE FROM WATCHLIST</string>
+    <string name="add_to_watchlist">ADD TO WATCHLIST</string>
+    <string name="sign_up_tos_and_pp_text">By creating an account, you agree to our terms of use and privacy policy.</string>
 
 </resources>

@@ -4,7 +4,7 @@
     <dimen name="appcms_tv_sub_navigation_height">40dp</dimen>
     <dimen name="appcms_tv_navigation_textSize">14sp</dimen>
     <dimen name="appcms_tv_navigation_item_padding">20dp</dimen>
-    <dimen name="appcms_tv_sub_navigation_item_padding">10dp</dimen>
+    <dimen name="appcms_tv_sub_navigation_item_padding">15dp</dimen>
     <dimen name="appcms_tv_sub_navigation_top_margin">36dp</dimen>
 
     <dimen name="browse_fragment_margin_left">0dp</dimen>
@@ -41,5 +41,8 @@
     <dimen name="text_overlay_dialog_width">606dp</dimen>
     <dimen name="text_overlay_dialog_height">286dp</dimen>
     <dimen name="text_ovelay_dialog_desc_font_size">15sp</dimen>
+
+    <dimen name="text_clear_dialog_width">437.5dp</dimen>
+    <dimen name="text_clear_dialog_height">130.5dp</dimen>
 
 </resources>

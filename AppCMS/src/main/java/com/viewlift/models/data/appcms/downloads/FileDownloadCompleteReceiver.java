@@ -6,15 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.util.Log;
-import android.view.Gravity;
 import android.webkit.MimeTypeMap;
-import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import static android.content.Context.DOWNLOAD_SERVICE;

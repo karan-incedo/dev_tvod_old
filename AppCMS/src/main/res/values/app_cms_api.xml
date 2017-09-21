@@ -1,13 +1,17 @@
 <resources>
     <!-- Primary app values -->
     <!--Production Server-->
-   <!-- <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
-    <string name="app_cms_app_name">00000149-86ec-d4f3-a7e9-e6fe760d0000</string>-->
+    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
+    <string name="app_cms_app_name">00000149-86ec-d4f3-a7e9-e6fe760d0000</string>
 
-    <!--QA Server-->
+
+   <!-- &lt;!&ndash;QA Server&ndash;&gt;
     <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
-    <string name="app_cms_app_name">3f5e193b-2e51-4853-839e-618e62896deb</string> <!--Snagfilms-->
-    <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>--><!--Hoichoi QA-->
+    &lt;!&ndash;Snagfilms&ndash;&gt;
+    <string name="app_cms_app_name">3f5e193b-2e51-4853-839e-618e62896deb</string>-->
+
+    <!--Hoichoi QA-->
+  <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>-->
 
 
 
@@ -236,7 +240,7 @@
     <string name="app_cms_action_homepage_nav">Home</string>
     <string name="app_cms_action_movies_nav">Movies</string>
     <string name="app_cms_action_videopage_key">play</string>
-    <string name="app_cms_action_historypage_key">My History</string>
+     <string name="app_cms_action_historypage_key">My History</string>
     <string name="app_cms_action_watchvideo_key">watchVideo</string>
     <string name="app_cms_action_watchtrailervideo_key">watchTrailer</string>
     <string name="app_cms_action_share_key">share</string>
@@ -354,6 +358,11 @@
     <string name="app_cms_autoplay_toggle_switch_key">autoplayToggleSwitch</string>
     <string name="app_cms_closed_caption_toggle_switch_key">closedCaptionToggleSwitch</string>
     <string name="app_cms_logout_button_key">logout button</string>
+    <string name="app_cms_title_label">titleLabel</string>
+    <string name="app_cms_description_label">descriptionLabel</string>
+    <string name="app_cms_delete_item_button">deleteItemButton</string>
+    <string name="app_cms_history_last_added_label">historyLastAddedLabel</string>
+    <string name="app_cms_signup_footer_label_key">signupfooterview</string>
 
 
     <!-- AppCMS Payment Processor values -->
@@ -371,4 +380,6 @@
     <string name="app_cms_reset_password_cancel_button_key">cancelButton</string>
     <string name="app_cms_reset_password_continue_button_key">resetPasswordButton</string>
     <string name="app_cms_forgotPasswordTitle_key">forgotPasswordTitle</string>
+
+    <string name="contact_us">Contact Us</string>
 </resources>

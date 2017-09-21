@@ -4,6 +4,8 @@
 
     <string name="carousel_nodule">AC Carousel 01</string>
     <string name="appcms_detail_module">AC VideoPlayerWithInfo 01</string>
+    <string name="appcms_watchlist_module">AC Watchlist 01</string>
+    <string name="app_cms_page_history_module_key">AC History 01</string>
     <string name="sample_text">SimpleText superseded TeachText, which was included in System Software up until Mac OS 8. The need for SimpleText arose after Apple stopped bundling MacWrite, to ensure that every user could open and read Readme documents.</string>
 
     <string-array name="app_cms_tray_modules">
@@ -17,8 +19,13 @@
     </string-array>
 
     <string name="app_cms_ancillary_pages_module">AC RichText 01</string>
-
     <string name="app_cms_reset_password_module">AC ResetPassword 01</string>
+    <string name="app_cms_contact_us_module">AC ContactUs 01</string>
+    <string name="app_cms_contact_number_label">contactNumber</string>
+    <string name="app_cms_email_id_label">emailId</string>
+    <string name="app_cms_contact_us_call_icon_key">call_Icon</string>
+    <string name="app_cms_contact_us_email_icon_key">email_Icon</string>
+
     <string name="font_open_sans">OpenSans</string>
     <string name="font_open_sans_semibold">OpenSans-Semibold</string>
     <string name="retry_key">RETRY</string>
@@ -38,8 +45,11 @@
 
     <string name="item_position">nav_item_position</string>
     <string name="no_data_available">No Data Available.</string>
+    <string name="no_data_in_watchlist_text">You haven\'t added anything to your watchlist.</string>
+    <string name="no_data_in_history_text">You haven\'t watched anything yet.</string>
     <string name="title_activity_app_cms_sub_nav_item">AppCmsSubNavItemActivity</string>
 
-    <string name="blank_email_password_error_msg">The EmailId/Password you have entered is blank.</string>
+     <string name="blank_email_error_msg">Please enter email to continue.</string>
+    <string name="blank_password_error_msg">Please enter password to continue.</string>
 
 </resources>

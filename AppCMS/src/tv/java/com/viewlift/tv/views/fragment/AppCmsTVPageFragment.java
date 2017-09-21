@@ -5,35 +5,28 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v17.leanback.app.BrowseFragment;
-import android.support.v4.content.ContextCompat;
+import android.support.v17.leanback.widget.ListRow;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
-import com.bumptech.glide.Glide;
 import com.viewlift.AppCMSApplication;
-import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
-import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
-import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.tv.model.BrowseCompnentModule;
+import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.views.component.AppCMSTVViewComponent;
 import com.viewlift.tv.views.component.DaggerAppCMSTVViewComponent;
+import com.viewlift.tv.views.customviews.CustomHeaderItem;
 import com.viewlift.tv.views.customviews.TVModuleView;
 import com.viewlift.tv.views.customviews.TVPageView;
 import com.viewlift.tv.views.module.AppCMSTVPageViewModule;
 import com.viewlift.views.binders.AppCMSBinder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
 import com.viewlift.R;
+
+import java.util.List;
 
 /**
  * Created by nitin.tyagi on 6/28/2017.
@@ -46,12 +39,12 @@ public class AppCmsTVPageFragment extends Fragment {
     private AppCMSPresenter appCMSPresenter;
     private AppCMSTVViewComponent appCmsViewComponent;
     private TVPageView tvPageView;
-    public String mPageId ;
+    public String mPageId;
 
-    public static AppCmsTVPageFragment newInstance(Context context , AppCMSBinder appCMSBinder){
+    public static AppCmsTVPageFragment newInstance(Context context, AppCMSBinder appCMSBinder) {
         AppCmsTVPageFragment appCmsTVPageFragment = new AppCmsTVPageFragment();
         Bundle bundle = new Bundle();
-        bundle.putBinder("app_cms_binder" , appCMSBinder);
+        bundle.putBinder("app_cms_binder", appCMSBinder);
         appCmsTVPageFragment.mPageId = appCMSBinder.getScreenName();
         appCmsTVPageFragment.setArguments(bundle);
         return appCmsTVPageFragment;
@@ -70,16 +63,16 @@ public class AppCmsTVPageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 
         Bundle bundle = getArguments();
-        mAppCMSBinder = (AppCMSBinder)bundle.getBinder("app_cms_binder");
+        mAppCMSBinder = (AppCMSBinder) bundle.getBinder("app_cms_binder");
 
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
         //clear the Adapter.
-        if(null != appCmsViewComponent && null != appCmsViewComponent.tvviewCreator()
-                && null != appCmsViewComponent.tvviewCreator().mRowsAdapter){
-               appCmsViewComponent.tvviewCreator().mRowsAdapter.clear();
+        if (null != appCmsViewComponent && null != appCmsViewComponent.tvviewCreator()
+                && null != appCmsViewComponent.tvviewCreator().mRowsAdapter) {
+            appCmsViewComponent.tvviewCreator().mRowsAdapter.clear();
         }
 
         if (appCmsViewComponent == null && mAppCMSBinder != null) {
@@ -88,7 +81,7 @@ public class AppCmsTVPageFragment extends Fragment {
 
 
         if (appCmsViewComponent != null) {
-             tvPageView = appCmsViewComponent.appCMSTVPageView();
+            tvPageView = appCmsViewComponent.appCMSTVPageView();
         } else {
             tvPageView = null;
         }
@@ -103,11 +96,14 @@ public class AppCmsTVPageFragment extends Fragment {
             container.removeAllViews();
         }
 
-        if((tvPageView.getChildrenContainer()).findViewById(R.id.appcms_browsefragment) != null
-                && getChildFragmentManager().findFragmentByTag(mAppCMSBinder.getScreenName()) == null){
-            AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(getActivity());
-            browseFragment.setAdapter(appCmsViewComponent.tvviewCreator().mRowsAdapter);
-            getChildFragmentManager().beginTransaction().replace(R.id.appcms_browsefragment ,browseFragment ,mAppCMSBinder.getScreenName()).commitAllowingStateLoss();
+        if ((tvPageView.getChildrenContainer()).findViewById(R.id.appcms_browsefragment) != null) {
+            if (getChildFragmentManager().findFragmentByTag(mAppCMSBinder.getScreenName()) == null) {
+                AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(getActivity());
+                browseFragment.setAdapter(appCmsViewComponent.tvviewCreator().mRowsAdapter);
+                getChildFragmentManager().beginTransaction().replace(R.id.appcms_browsefragment, browseFragment, mAppCMSBinder.getScreenName()).commitAllowingStateLoss();
+            } else {
+               refreshBrowseFragment();
+            }
         }
         return tvPageView;
     }
@@ -117,8 +113,8 @@ public class AppCmsTVPageFragment extends Fragment {
     public void onResume() {
         super.onResume();
         requestFocus();
-        if(null != appCMSPresenter)
-        appCMSPresenter.sendStopLoadingPageAction();
+        if (null != appCMSPresenter)
+            appCMSPresenter.sendStopLoadingPageAction();
     }
 
     @Override
@@ -132,34 +128,33 @@ public class AppCmsTVPageFragment extends Fragment {
         //super.onSaveInstanceState(outState);
     }
 
-    public void requestFocus(){
+    public void requestFocus() {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                ViewGroup ChildContaineer = (ViewGroup)(tvPageView.getChildrenContainer());
+                ViewGroup ChildContaineer = (ViewGroup) (tvPageView.getChildrenContainer());
                 int childcount = 0;
-                if(null != ChildContaineer){
-                    childcount = ChildContaineer.getChildCount() ;
+                if (null != ChildContaineer) {
+                    childcount = ChildContaineer.getChildCount();
                 }
-                for(int i =0 ; i<childcount; i++){
-                    if(ChildContaineer.getChildAt(0) instanceof  TVModuleView){
-                        TVModuleView tvModuleView = (TVModuleView)ChildContaineer.getChildAt(0);
+                for (int i = 0; i < childcount; i++) {
+                    if (ChildContaineer.getChildAt(0) instanceof TVModuleView) {
+                        TVModuleView tvModuleView = (TVModuleView) ChildContaineer.getChildAt(0);
                         ViewGroup moduleChildContaineer = tvModuleView.getChildrenContainer();
                         int moduleChild = moduleChildContaineer.getChildCount();
 
-                        for(int j = 0; j < moduleChild; j++){
+                        for (int j = 0; j < moduleChild; j++) {
                             View view = moduleChildContaineer.getChildAt(j);
-                            if(null != view){
-                                System.out.println("View isFocusable == "+view.isFocusable() + "TAG =  = == " + (view.getTag() != null ? view.getTag().toString() : null));
+                            if (null != view) {
+                                System.out.println("View isFocusable == " + view.isFocusable() + "TAG =  = == " + (view.getTag() != null ? view.getTag().toString() : null));
                                 if (null != view.getTag() &&
-                                        view.getTag().toString().equalsIgnoreCase(getString(R.string.video_image_key))){
-                                    ((FrameLayout)view).getChildAt(0).requestFocus();
+                                        view.getTag().toString().equalsIgnoreCase(getString(R.string.video_image_key))) {
+                                    ((FrameLayout) view).getChildAt(0).requestFocus();
                                     break;
-                                }
-                                else if(view.isFocusable()){
+                                } else if (view.isFocusable()) {
                                     view.requestFocus();
                                     break;
-                                }else{
+                                } else {
                                     view.clearFocus();
                                 }
                             }
@@ -167,12 +162,44 @@ public class AppCmsTVPageFragment extends Fragment {
                     }
                 }
             }
-        } , 10);
+        }, 10);
     }
 
+
+    public void refreshBrowseFragment(){
+        try {
+            if (null != appCmsViewComponent.tvviewCreator() && null != appCmsViewComponent.tvviewCreator().mRowsAdapter) {
+                int totalNumber = 0;
+                for (int i = 0; i < appCmsViewComponent.tvviewCreator().mRowsAdapter.size(); i++) {
+                    ListRow listRow = (ListRow) appCmsViewComponent.tvviewCreator().mRowsAdapter.get(i);
+                    CustomHeaderItem customHeaderItem = (CustomHeaderItem) listRow.getHeaderItem();
+                    for (Module module : mAppCMSBinder.getAppCMSPageAPI().getModules()) {
+                        if (module.getId().equalsIgnoreCase(customHeaderItem.getmModuleId())) {
+                            List<ContentDatum> contentData = module.getContentData();
+                            for (int i1 = 0; i1 < contentData.size(); i1++) {
+                                ContentDatum contentDatum = contentData.get(i1);
+                                for (int j = 0; j < listRow.getAdapter().size(); j++) {
+                                    if (((BrowseFragmentRowData) listRow.getAdapter().get(j)).contentData.getGist().getId().equalsIgnoreCase(contentDatum.getGist().getId())) {
+                                        BrowseFragmentRowData rowData = (BrowseFragmentRowData) listRow.getAdapter().get(j);
+                                        rowData.contentData = module.getContentData().get(i1);
+                                        totalNumber++;
+                                        break;
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+                appCmsViewComponent.tvviewCreator().mRowsAdapter.notifyArrayItemRangeChanged(0, totalNumber);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     @Override
     public void onDestroyView() {
-        if(tvPageView != null)
+        if (tvPageView != null)
             tvPageView.setBackground(null);
         super.onDestroyView();
     }
@@ -189,7 +216,11 @@ public class AppCmsTVPageFragment extends Fragment {
                         mAppCMSBinder.getAppCMSPageAPI(),
                         mAppCMSBinder.getJsonValueKeyMap(),
                         appCMSPresenter
-                        ))
+                ))
                 .build();
+    }
+
+    public void updateBinder(AppCMSBinder appCmsBinder) {
+        mAppCMSBinder = appCmsBinder;
     }
 }

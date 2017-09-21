@@ -12,7 +12,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:focusable="true"
-    android:padding="@dimen/appcms_tv_sub_navigation_item_padding"
+    android:paddingTop="10dp"
+    android:paddingLeft="1dp"
+    android:paddingRight="1dp"
     >
 
     <TextView

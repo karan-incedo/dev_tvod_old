@@ -86,6 +86,18 @@ public class Component implements ModuleWithComponents {
     @Expose
     String trayClickAction;
 
+    public String getItemClickAction() {
+        return itemClickAction;
+    }
+
+    public void setItemClickAction(String itemClickAction) {
+        this.itemClickAction = itemClickAction;
+    }
+
+    @SerializedName("itemClickAction")
+    @Expose
+    String itemClickAction;
+
     @SerializedName("fontFamily")
     @Expose
     String fontFamily;

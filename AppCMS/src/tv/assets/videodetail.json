@@ -40,7 +40,6 @@
         {
           "layout": {
             "ftv": {
-              "yAxis": 35,
               "width": 590,
               "rightMargin": 100,
               "fontSize": 16,
@@ -67,7 +66,7 @@
           "xAxis": 1080,
           "width": 747,
           "height": 420,
-          "padding" : 4
+          "padding": 4
         }
       },
       "action": "watchVideo",
@@ -86,17 +85,18 @@
       "type": "button",
       "key": "playButton"
     },
-    /*{
+    {
       "layout": {
         "ftv": {
           "leftMargin": 95,
           "yAxis": 477,
+          "width": 270,
           "height": 62,
           "fontSize": 12
         }
       },
       "padding": 15,
-      "borderColor": "#ffffff",
+      "borderColor": "#66ffffff",
       "fontFamily": "OpenSans",
       "borderWidth": 4,
       "action": "addToWatchlist",
@@ -105,18 +105,18 @@
       "textColor": "ffffff",
       "fontWeight": "Semibold",
       "key": "addToWatchlist"
-    },*/
+    },
     {
       "layout": {
         "ftv": {
-          "leftMargin": 95,
+          "leftMargin": 389,
           "yAxis": 477,
           "height": 62,
-          "width":270,
+          "width": 270,
           "fontSize": 12
         }
       },
-      "letterSpacing":0.12,
+      "letterSpacing": 0.12,
       "padding": 15,
       "borderColor": "#66ffffff",
       "fontFamily": "OpenSans",
@@ -154,11 +154,11 @@
           "fontSizeValue": 15
         }
       },
-        "fontFamilyKey": "OpenSans-ExtraBold",
-        "fontFamilyValue": "OpenSans",
-        "type": "castView",
-        "textColor": "#ffffff",
-        "key": "castView"
-      }
+      "fontFamilyKey": "OpenSans-ExtraBold",
+      "fontFamilyValue": "OpenSans",
+      "type": "castView",
+      "textColor": "#ffffff",
+      "key": "castView"
+    }
   ]
 }

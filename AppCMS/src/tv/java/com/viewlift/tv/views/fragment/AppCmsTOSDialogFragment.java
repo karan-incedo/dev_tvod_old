@@ -3,7 +3,6 @@ package com.viewlift.tv.views.fragment;
 
 import android.app.DialogFragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,19 +20,19 @@ import com.viewlift.tv.views.customviews.TVPageView;
 import com.viewlift.tv.views.module.AppCMSTVPageViewModule;
 import com.viewlift.views.binders.AppCMSBinder;
 
-public class AppCmsResetPasswordFragment extends DialogFragment {
+public class AppCmsTOSDialogFragment extends DialogFragment {
 
     private AppCMSPresenter appCMSPresenter;
     private AppCMSTVViewComponent appCmsViewComponent;
     private TVPageView tvPageView;
 
 
-    public AppCmsResetPasswordFragment() {
+    public AppCmsTOSDialogFragment() {
         setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Translucent_NoTitleBar);
      }
 
-    public static AppCmsResetPasswordFragment newInstance(AppCMSBinder appCMSBinder) {
-        AppCmsResetPasswordFragment fragment = new AppCmsResetPasswordFragment();
+    public static AppCmsTOSDialogFragment newInstance(AppCMSBinder appCMSBinder) {
+        AppCmsTOSDialogFragment fragment = new AppCmsTOSDialogFragment();
         Bundle args = new Bundle();
         args.putBinder("app_cms_binder_key", appCMSBinder);
         fragment.setArguments(args);
@@ -75,38 +74,6 @@ public class AppCmsResetPasswordFragment extends DialogFragment {
         if (container != null) {
             container.removeAllViews();
         }
-
-        if(null != tvPageView && tvPageView.getChildrenContainer().getChildAt(0) instanceof TVModuleView){
-            TVModuleView tvModuleView = (TVModuleView)tvPageView.getChildrenContainer().getChildAt(0);
-            EditText emailId = ((EditText)tvModuleView.findViewById(R.id.email_edit_box)) ;
-            Button cancelButton = ((Button)tvModuleView.findViewById(R.id.reset_password_cancel_button)) ;
-            Button continueButton = ((Button)tvModuleView.findViewById(R.id.reset_password_continue_button)) ;
-
-            cancelButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dismiss();
-                }
-            });
-
-            continueButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    if( emailId.getEditableText().toString().length() == 0)
-                           {
-                        appCMSPresenter.openTVErrorDialog(getString(R.string.blank_email_error_msg) ,
-                                getString(R.string.app_cms_forgot_password_title));
-                        return;
-                    }
-
-                    ((AppCmsHomeActivity)getActivity()).pageLoading(true);
-                    appCMSPresenter.resetPassword(emailId.getEditableText().toString());
-                }
-            });
-
-        }
-
 
         tvPageView.setBackgroundResource(R.drawable.home_screen_background);
 
