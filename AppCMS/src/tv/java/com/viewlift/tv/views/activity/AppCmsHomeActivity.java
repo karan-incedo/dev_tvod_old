@@ -42,6 +42,7 @@ import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.binders.RetryCallBinder;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -313,6 +314,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     public void onRetry(Bundle bundle) {
         RetryCallBinder retryCallBinder = (RetryCallBinder)bundle.getBinder(getString(R.string.retryCallBinderKey));
         AppCMSPresenter.RETRY_TYPE retryType = retryCallBinder.getRetry_type();
+        boolean isTosPage = bundle.getBoolean(getString(R.string.is_tos_page_key));
         switch(retryType){
             case BUTTON_ACTION:
                 appCMSPresenter.launchTVButtonSelectedAction(
@@ -341,7 +343,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         retryCallBinder.isCloselauncher(),
                         Uri.EMPTY,
                         false,
-                        false
+                        isTosPage
                 );
                 break;
 
@@ -677,18 +679,22 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                         boolean updatedHistory = false;
                                         if (appCMSPresenter.isUserLoggedIn(this)) {
                                             if (appCMSPageAPI.getModules() != null) {
-                                                for (Module module : appCMSPageAPI.getModules()) {
+                                                List<Module> modules = appCMSPageAPI.getModules();
+                                                for (int i = 0; i < modules.size(); i++) {
+                                                    Module module = modules.get(i);
                                                     AppCMSUIKeyType moduleType = appCMSPresenter.getJsonValueKeyMap().get(module.getModuleType());
                                                     if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY ||
                                                             moduleType == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
                                                         if (module.getContentData() != null &&
                                                                 !module.getContentData().isEmpty()) {
+                                                            int finalI = i;
                                                             appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
                                                                 if (appCMSHistoryResult != null) {
-                                                                    AppCMSPageAPI historyAPI =
-                                                                            appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
-                                                                    historyAPI.getModules().get(0).setId(module.getId());
-                                                                    appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);
+                                                                    if (appCMSHistoryResult != null) {
+                                                                        AppCMSPageAPI historyAPI = appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
+                                                                        historyAPI.getModules().get(0).setId(module.getId());
+                                                                         modules.set(finalI, historyAPI.getModules().get(0));
+                                                                    }
                                                                     appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
                                                                 }
                                                             });
@@ -698,9 +704,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                                 }
                                             }
                                         }
-                                        if (!updatedHistory) {
-                                            appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
-                                        }
+
                                         appCMSBinderMap.put(getTag(appCMSBinder) ,appCMSBinder );
                                         int totalNoOfFragment = getFragmentManager().getBackStackEntryCount();
                                         for(int i=0;i<totalNoOfFragment;i++){

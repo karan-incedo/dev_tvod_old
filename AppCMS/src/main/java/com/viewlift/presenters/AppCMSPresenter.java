@@ -7422,6 +7422,7 @@ public class AppCMSPresenter {
                     Bundle bundle = new Bundle();
                     bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
                     bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key) ,true);
+                    bundle.putBoolean(currentActivity.getString(R.string.is_tos_page_key),isTosPage);
                     bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
                     Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
                     args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
@@ -7448,51 +7449,36 @@ public class AppCMSPresenter {
                             @Override
                             public void call(AppCMSPageAPI appCMSPageAPI) {
                                 if (appCMSPageAPI != null) {
-                                    cancelInternalEvents();
-                                    pushActionInternalEvents(this.pageId
-                                            + BaseView.isLandscape(currentActivity));
-                                    navigationPageData.put(this.pageId, appCMSPageAPI);
-                                    if (this.launchActivity) {
-                                        launchTVPageActivity(currentActivity,
-                                                this.appCMSPageUI,
-                                                appCMSPageAPI,
-                                                this.pageId,
-                                                this.pageTitle,
-                                                pageIdToPageNameMap.get(this.pageId),
-                                                loadFromFile,
-                                                this.appbarPresent,
-                                                this.fullscreenEnabled,
-                                                this.navbarPresent,
-                                                this.searchQuery,
-                                                isTosPage);
-                                        setNavItemToCurrentAction(currentActivity);
-
-                                    } else {
-                                        Bundle args = getPageActivityBundle(currentActivity,
-                                                this.appCMSPageUI,
-                                                appCMSPageAPI,
-                                                this.pageId,
-                                                this.pageTitle,
-                                                this.pagePath,
-                                                pageIdToPageNameMap.get(this.pageId),
-                                                loadFromFile,
-                                                this.appbarPresent,
-                                                this.fullscreenEnabled,
-                                                this.navbarPresent,
-                                                false,
-                                                this.searchQuery,
-                                                isTosPage ? ExtraScreenType.TERM_OF_SERVICE : ExtraScreenType.NONE);
-                                        if (args != null) {
-                                            Intent updatePageIntent =
-                                                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                            updatePageIntent.putExtra(
-                                                    currentActivity.getString(R.string.app_cms_bundle_key),
-                                                    args);
-                                            currentActivity.sendBroadcast(updatePageIntent);
-
-                                            setNavItemToCurrentAction(currentActivity);
+                                    boolean isHistoryUpdate = false;
+                                    if (isUserLoggedIn(currentActivity)) {
+                                        if (appCMSPageAPI.getModules() != null) {
+                                            List<Module> modules = appCMSPageAPI.getModules();
+                                            for (int i = 0; i < modules.size(); i++) {
+                                                Module module = modules.get(i);
+                                                AppCMSUIKeyType moduleType = getJsonValueKeyMap().get(module.getModuleType());
+                                                if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
+                                                    if (module.getContentData() != null &&
+                                                            !module.getContentData().isEmpty()) {
+                                                        int finalI = i;
+                                                        isHistoryUpdate = true;
+                                                        getHistoryData(appCMSHistoryResult -> {
+                                                            if (appCMSHistoryResult != null) {
+                                                                AppCMSPageAPI historyAPI =
+                                                                        appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
+                                                                    historyAPI.getModules().get(0).setId(module.getId());
+                                                                   /* appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);*/
+                                                                   modules.set(finalI,historyAPI.getModules().get(0));
+                                                                populateTVPage(appCMSPageAPI , appCMSPageUI ,this.pageId ,this.launchActivity ,this.pageTitle,isTosPage,this.pagePath);
+                                                                return;
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
+                                    if(!isHistoryUpdate)
+                                    populateTVPage(appCMSPageAPI , appCMSPageUI ,this.pageId ,this.launchActivity ,this.pageTitle,isTosPage,this.pagePath);
                                 } else {
                                     sendStopLoadingPageAction();
                                     setNavItemToCurrentAction(currentActivity);
@@ -7556,6 +7542,55 @@ public class AppCMSPresenter {
         return result;
     }
 
+
+    private void populateTVPage(AppCMSPageAPI appCMSPageAPI , AppCMSPageUI appCMSPageUI, String pageId , boolean launchActivity ,
+                                String pageTitle , boolean isTosPage , String pagePath) {
+        cancelInternalEvents();
+        pushActionInternalEvents(pageId
+                + BaseView.isLandscape(currentActivity));
+        navigationPageData.put(pageId, appCMSPageAPI);
+        if (launchActivity) {
+            launchTVPageActivity(currentActivity,
+                    appCMSPageUI,
+                    appCMSPageAPI,
+                    pageId,
+                    pageTitle,
+                    pageIdToPageNameMap.get(pageId),
+                    loadFromFile,
+                    false,
+                    false,
+                    false,
+                    Uri.EMPTY,
+                    isTosPage);
+            setNavItemToCurrentAction(currentActivity);
+
+        } else {
+            Bundle args = getPageActivityBundle(currentActivity,
+                    appCMSPageUI,
+                    appCMSPageAPI,
+                    pageId,
+                    pageTitle,
+                    pagePath,
+                    pageIdToPageNameMap.get(pageId),
+                    loadFromFile,
+                   false,
+                    false,
+                    false,
+                    false,
+                    Uri.EMPTY,
+                    isTosPage ? ExtraScreenType.TERM_OF_SERVICE : ExtraScreenType.NONE);
+            if (args != null) {
+                Intent updatePageIntent =
+                        new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                updatePageIntent.putExtra(
+                        currentActivity.getString(R.string.app_cms_bundle_key),
+                        args);
+                currentActivity.sendBroadcast(updatePageIntent);
+
+                setNavItemToCurrentAction(currentActivity);
+            }
+        }
+    }
 
     private void openContactUsScreen(String pageId,
                                      String pageTitle,
@@ -8150,7 +8185,7 @@ public class AppCMSPresenter {
                                                         && appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0) != null) {
                                                     extraData[3] = appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0).getUrl();
                                                 }
-                                                extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
+                                              //  extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
                                                 if (!TextUtils.isEmpty(extraData[1])) {
 
                                                     if (platformType == PlatformType.TV) {

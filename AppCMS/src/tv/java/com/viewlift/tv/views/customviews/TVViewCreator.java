@@ -247,10 +247,11 @@ public class TVViewCreator {
             }
             return null;
         } else {
-            if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_page_authentication_module))) {
+           /* if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_page_authentication_module))) {
                 module = new GsonBuilder().create().
                         fromJson(Utils.loadJsonFromAssets(context, "signup.json"), ModuleList.class);
-            }
+            }*/
+
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
@@ -288,7 +289,7 @@ public class TVViewCreator {
                 }
             }
 
-                /*if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_page_watchlist_module_key))) {
+                if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_page_watchlist_module_key))) {
                 module = new GsonBuilder().create().
                         fromJson(Utils.loadJsonFromAssets(context, "watchlist.json"), ModuleList.class);
             }
@@ -296,7 +297,7 @@ public class TVViewCreator {
             if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_page_history_module_key))) {
                 module = new GsonBuilder().create().
                         fromJson(Utils.loadJsonFromAssets(context, "history.json"), ModuleList.class);
-            }*/
+            }
 
 
 
