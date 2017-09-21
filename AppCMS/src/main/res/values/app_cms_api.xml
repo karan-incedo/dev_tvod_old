@@ -53,7 +53,7 @@
     <string name="app_cms_forgot_password_api_url">%1$s/identity/password/forgot?site=%2$s</string>
 
     <!-- AppCMS Facebook Login API -->
-    <string name="app_cms_facebook_login_api_url">%1$s/identity/signin/facebook?site=%2$s</string>
+    <string name="app_cms_facebook_login_api_url">%1$s/identity/signin/facebook?device=android_phone&amp;site=%2$s</string>
 
     <!--AppCMS Google Login API-->
     <string name="app_cms_google_login_api_url">%1$s/identity/signin/google?device=android_phone&amp;site=%2$s</string>
