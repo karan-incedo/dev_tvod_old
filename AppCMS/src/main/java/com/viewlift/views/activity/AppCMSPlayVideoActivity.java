@@ -247,22 +247,22 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             }
         };
 
-        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        networkConnectedReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-                if (activeNetwork == null ||
-                        !activeNetwork.isConnectedOrConnecting()) {
-                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
-                            appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
-                            false, () -> closePlayer());
-                }
-            }
-        };
+//        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+//        networkConnectedReceiver = new BroadcastReceiver() {
+//            @Override
+//            public void onReceive(Context context, Intent intent) {
+//                NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+//                if (activeNetwork == null ||
+//                        !activeNetwork.isConnectedOrConnecting()) {
+//                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+//                            appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
+//                            false, () -> closePlayer());
+//                }
+//            }
+//        };
 
         registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
-        registerReceiver(networkConnectedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+//        registerReceiver(networkConnectedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
@@ -290,7 +290,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     @Override
     protected void onDestroy() {
         unregisterReceiver(handoffReceiver);
-        unregisterReceiver(networkConnectedReceiver);
+//        unregisterReceiver(networkConnectedReceiver);
         super.onDestroy();
     }
 
