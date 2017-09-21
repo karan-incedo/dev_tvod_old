@@ -7928,6 +7928,7 @@ public class AppCMSPresenter {
                         .getBackgroundColor());
         playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_closed_caption_key), extraData[3]);
         playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_watched_time_key), contentDatum.getGist().getWatchedTime());
+        playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_run_time_key), contentDatum.getGist().getRuntime());
         if (closeLauncher) {
             sendCloseOthersAction(null, true);
         }

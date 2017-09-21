@@ -53,6 +53,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         String bgColor = intent.getStringExtra(getString(R.string.app_cms_bg_color_key));
         String closedCaptionUrl = intent.getStringExtra(getString(R.string.video_player_closed_caption_key));
         long watchedTime = intent.getLongExtra(getString(R.string.video_player_watched_time_key), 0);
+        long runtime = intent.getLongExtra(getString(R.string.video_player_run_time_key), 0);
         boolean playAds = intent.getBooleanExtra(getString(R.string.play_ads_key), true);
 
 
@@ -77,6 +78,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                         playAds,
                         0,
                         watchedTime,
+                        runtime,
                         null,
                         closedCaptionUrl,
                         null);

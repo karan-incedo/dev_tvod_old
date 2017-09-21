@@ -681,7 +681,7 @@ public class IabHelper {
      * @param querySkuDetails as in {@link #queryInventory}
      * @param moreItemSkus as in {@link #queryInventory}
      * @param moreSubsSkus as in {@link #queryInventory}
-     * @param listener The listener to notify when the refresh operation completes.
+     * @param listener The listener to notify when the updateAdapterData operation completes.
      */
     public void queryInventoryAsync(final boolean querySkuDetails, final List<String> moreItemSkus,
             final List<String> moreSubsSkus, final QueryInventoryFinishedListener listener)
@@ -689,10 +689,10 @@ public class IabHelper {
         final Handler handler = new Handler();
         checkNotDisposed();
         checkSetupDone("queryInventory");
-        flagStartAsync("refresh inventory");
+        flagStartAsync("updateAdapterData inventory");
         (new Thread(new Runnable() {
             public void run() {
-                IabResult result = new IabResult(BILLING_RESPONSE_RESULT_OK, "Inventory refresh successful.");
+                IabResult result = new IabResult(BILLING_RESPONSE_RESULT_OK, "Inventory updateAdapterData successful.");
                 Inventory inv = null;
                 try {
                     inv = queryInventory(querySkuDetails, moreItemSkus, moreSubsSkus);
