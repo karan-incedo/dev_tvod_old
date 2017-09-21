@@ -2003,7 +2003,7 @@ public class AppCMSPresenter {
                         Log.v("currentActivity", "currentActivity");
                     },
                     singleResult -> {
-                        String siStatus = "ACTI" ;
+                        String siStatus = singleResult.getSiStatus() ;
                         if (siStatus.equalsIgnoreCase("ACTI")) {
                             upgradePlanAPICall () ;
                         } else {
