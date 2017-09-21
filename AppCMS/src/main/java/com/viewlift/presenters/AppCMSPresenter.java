@@ -1886,10 +1886,10 @@ public class AppCMSPresenter {
                                 try {
                                     if (appCMSSubscriptionPlanResult != null) {
                                         String paymentUniqueId = appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentUniqueId() ;
-                                        if (paymentUniqueId.length()==0) {
+                                        if (paymentUniqueId.length()>0) {
 
                                         } else {
-                                            
+                                            showDialog(DialogType.SUBSCRIBE, "Cannot Upgrade", false, null);
                                         }
                                     }
                                 } catch (Exception e) {
