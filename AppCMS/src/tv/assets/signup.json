@@ -1,5 +1,5 @@
 {
-  "id": "e55fdb65-5b68-4cb0-9545-3d4ae54df1e6",
+  "id": "86455a75-df17-47cd-aa41-4c242efe347d",
   "settings": {},
   "view": "AC Authentication 01",
   "type": "AC Authentication 01",
@@ -13,11 +13,6 @@
   },
   "components": [
     {
-      "backgroundColor": "#ffffff",
-      "letterSpacing": 0.5,
-      "type": "textfield",
-      "textColor": "#000000",
-      "cornerRadius": 5,
       "layout": {
         "ftv": {
           "yAxis": 110,
@@ -27,20 +22,19 @@
           "height": 80
         }
       },
-      "hintColor": "#b8b6b5",
+      "backgroundColor": "#ffffff",
       "fontFamily": "OpenSans",
       "protected": false,
       "textAlignment": "left",
       "text": "Email",
       "opacity": 46,
-      "key": "emailTextField"
-    },
-    {
-      "backgroundColor": "#ffffff",
-      "letterSpacing": 0.5,
       "type": "textfield",
       "textColor": "#000000",
+      "key": "emailTextField",
       "cornerRadius": 5,
+      "hintColor":"#b8b6b5"
+    },
+    {
       "layout": {
         "ftv": {
           "yAxis": 240,
@@ -50,20 +44,24 @@
           "height": 80
         }
       },
-      "hintColor": "#b8b6b5",
+      "backgroundColor": "#ffffff",
       "fontFamily": "OpenSans",
       "protected": true,
       "textAlignment": "left",
       "text": "Password",
       "opacity": 46,
-      "key": "passwordTextField"
+      "type": "textfield",
+      "textColor": "#000000",
+      "key": "passwordTextField",
+      "cornerRadius": 5,
+      "hintColor":"#b8b6b5"
     },
     {
       "layout": {
         "ftv": {
           "yAxis": 380,
-          "xAxis": 645,
-          "width": 300,
+          "xAxis": 834,
+          "width": 255,
           "fontSize": 12,
           "height": 60
         }
@@ -71,34 +69,12 @@
       "borderColor": "#66ffffff",
       "fontFamily": "OpenSans",
       "borderWidth": 4,
-      "action": "login",
-      "letterSpacing": 0.12,
-      "text": "LOG IN",
+      "action": "signup",
+      "text": "SIGN UP",
       "type": "button",
       "textColor": "#ffffff",
       "fontWeight": "Semibold",
       "key": "login button"
-    },
-    {
-      "layout": {
-        "ftv": {
-          "yAxis": 380,
-          "xAxis": 980,
-          "width": 300,
-          "fontSize": 12,
-          "height": 60
-        }
-      },
-      "borderColor": "#66ffffff",
-      "fontFamily": "OpenSans",
-      "borderWidth": 4,
-      "action": "forgotPassword",
-      "letterSpacing": 0.12,
-      "text": "FORGOT PASSWORD",
-      "type": "button",
-      "textColor": "#ffffff",
-      "fontWeight": "Semibold",
-      "key": "forgot password button"
     },
     {
       "layout": {

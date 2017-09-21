@@ -34,6 +34,7 @@ import com.viewlift.tv.views.fragment.AppCmsBrowseFragment;
 import com.viewlift.tv.views.fragment.AppCmsNavigationFragment;
 import com.viewlift.tv.views.fragment.AppCmsResetPasswordFragment;
 import com.viewlift.tv.views.fragment.AppCmsSearchFragment;
+import com.viewlift.tv.views.fragment.AppCmsTOSDialogFragment;
 import com.viewlift.tv.views.fragment.AppCmsTVPageFragment;
 import com.viewlift.tv.views.fragment.AppCmsTvErrorFragment;
 import com.viewlift.tv.views.fragment.TextOverlayDialogFragment;
@@ -122,8 +123,16 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                      if (isActive) {
                             if(appCMSPresenter.isPageUser(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())
                                     || appCMSPresenter.isPageFooter(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())){
-                                openMyProfile();
-                                handleProfileFragmentAction((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)));
+
+                                //check first its a request for Terms of service or Privacy Policy dialog.
+                                if((((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getExtraScreenType() ==
+                                        AppCMSPresenter.ExtraScreenType.TERM_OF_SERVICE)){
+                                    openTOSDialog(intent);
+                                }else{
+                                    openMyProfile();
+                                    handleProfileFragmentAction((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)));
+                                }
+
                             }else {
                                 updatedAppCMSBinder = (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
                                 handleLaunchPageAction(updatedAppCMSBinder);
@@ -275,6 +284,25 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
     }
 
+
+
+    private void openTOSDialog(Intent intent){
+
+        if(null != intent){
+            Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+            if(null != bundle){
+                AppCMSBinder appCMSBinder = (AppCMSBinder)bundle.get(getString(R.string.app_cms_binder_key));
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                AppCmsTOSDialogFragment newFragment = AppCmsTOSDialogFragment.newInstance(
+                        appCMSBinder);
+                newFragment.show(ft, DIALOG_FRAGMENT_TAG);
+                pageLoading(false);
+            }
+        }
+
+
+    }
+
     @Override
     public void onErrorScreenClose() {
 
@@ -312,6 +340,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         retryCallBinder.getPagePath(),
                         retryCallBinder.isCloselauncher(),
                         Uri.EMPTY,
+                        false,
                         false
                 );
                 break;

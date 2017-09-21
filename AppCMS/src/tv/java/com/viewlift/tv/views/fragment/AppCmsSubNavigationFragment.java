@@ -233,13 +233,13 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                 navigationSubItem.url,
                                 false);
                     } else {
-
                         appCmsPresenter.navigateToTVPage(
                                 navigationSubItem.pageId,
                                 navigationSubItem.title,
                                 navigationSubItem.url,
                                 false,
                                 Uri.EMPTY,
+                                false,
                                 false
                         );
                     }

@@ -10,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -63,6 +64,7 @@ import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
+import com.viewlift.models.data.appcms.ui.android.NavigationFooter;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -253,7 +255,6 @@ public class TVViewCreator {
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())) {
-
                 if (null == moduleAPI
                         || moduleAPI.getContentData() == null) {
                     TextView textView = new TextView(context);
@@ -287,7 +288,7 @@ public class TVViewCreator {
                 }
             }
 
-                if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_page_watchlist_module_key))) {
+                /*if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_page_watchlist_module_key))) {
                 module = new GsonBuilder().create().
                         fromJson(Utils.loadJsonFromAssets(context, "watchlist.json"), ModuleList.class);
             }
@@ -295,7 +296,7 @@ public class TVViewCreator {
             if (module.getView().equalsIgnoreCase(context.getString(R.string.app_cms_page_history_module_key))) {
                 module = new GsonBuilder().create().
                         fromJson(Utils.loadJsonFromAssets(context, "history.json"), ModuleList.class);
-            }
+            }*/
 
 
 
@@ -1064,7 +1065,6 @@ public class TVViewCreator {
 
                         case PAGE_SIGNUP_FOOTER_LABEL_KEY:
                             SpannableString spannableString = new SpannableString(context.getString(R.string.sign_up_tos_and_pp_text));
-
                             String text = spannableString.toString();
 
                             String tosText = "terms of use";
@@ -1075,7 +1075,27 @@ public class TVViewCreator {
                                     @Override
                                     public void onClick(View textView) {
                                         // TODO: 9/20/2017 open tos here
-                                        Toast.makeText(context, "Open TOS here", Toast.LENGTH_SHORT).show();
+                                        NavigationFooter tosNavigation = null;
+                                        List<NavigationFooter> navigationFooter = appCMSPresenter.getNavigation().getNavigationFooter();
+                                        for(NavigationFooter navigationFooter1 : navigationFooter){
+                                            if(navigationFooter1.getTitle().equalsIgnoreCase("Terms of Service")){
+                                                tosNavigation = navigationFooter1;
+                                                break;
+                                            }
+                                        }
+
+                                        if(null != tosNavigation){
+                                            appCMSPresenter.navigateToTVPage(
+                                                    tosNavigation.getPageId(),
+                                                    tosNavigation.getTitle(),
+                                                    tosNavigation.getUrl(),
+                                                    false,
+                                                    Uri.EMPTY,
+                                                    false,
+                                                    true
+                                            );
+                                        }
+
                                     }
                                 };
                                 spannableString.setSpan(clickableSpan, tosStartIndex, tosEndIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -1087,7 +1107,25 @@ public class TVViewCreator {
                                 ClickableSpan clickableSpan1 = new ClickableSpan() {
                                     @Override
                                     public void onClick(View textView) {
-                                        Toast.makeText(context, "Open Privacy Policy here", Toast.LENGTH_SHORT).show();
+                                        NavigationFooter tosNavigation = null;
+                                        List<NavigationFooter> navigationFooter = appCMSPresenter.getNavigation().getNavigationFooter();
+                                        for(NavigationFooter navigationFooter1 : navigationFooter){
+                                            if(navigationFooter1.getTitle().equalsIgnoreCase("Privacy Policy")){
+                                                tosNavigation = navigationFooter1;
+                                                break;
+                                            }
+                                        }
+                                        if(null != tosNavigation){
+                                            appCMSPresenter.navigateToTVPage(
+                                                    tosNavigation.getPageId(),
+                                                    tosNavigation.getTitle(),
+                                                    tosNavigation.getUrl(),
+                                                    false,
+                                                    Uri.EMPTY,
+                                                    false,
+                                                    true
+                                            );
+                                        }
                                     }
                                 };
                                 spannableString.setSpan(clickableSpan1, ppStartIndex, ppEndIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

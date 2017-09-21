@@ -225,6 +225,7 @@ public class AppCmsNavigationFragment extends Fragment {
                                             navigationUser.getUrl(),
                                             false,
                                             Uri.EMPTY,
+                                            false,
                                             false
                                     );
                                 }
@@ -233,7 +234,8 @@ public class AppCmsNavigationFragment extends Fragment {
                                     primary.getUrl(),
                                     false,
                                     null,
-                                    true)) {
+                                    true,
+                                    false)) {
                             }
                         }
                     } , 500);

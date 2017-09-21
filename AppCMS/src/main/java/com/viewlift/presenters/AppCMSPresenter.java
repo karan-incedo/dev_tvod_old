@@ -4833,7 +4833,8 @@ public class AppCMSPresenter {
                             homePageNavItem.getUrl(),
                             false,
                             deeplinkSearchQuery,
-                            true
+                            true,
+                            false
                     );
                 }
         }
@@ -6498,7 +6499,8 @@ public class AppCMSPresenter {
                                                     homePageNavItem.getUrl(),
                                                     false,
                                                     deeplinkSearchQuery,
-                                                    true
+                                                    true,
+                                                    false
                                             );
                                         }
                                     }
@@ -7374,6 +7376,7 @@ public class AppCMSPresenter {
                                         homePageNav.getUrl(),
                                         true,
                                         null,
+                                        false,
                                         false);
                                 if (!launchSuccess) {
                                     Log.e(TAG, "Failed to launch page: "
@@ -7386,12 +7389,14 @@ public class AppCMSPresenter {
         }
     }
 
+
     public boolean navigateToTVPage(String pageId,
                                     String pageTitle,
                                     String url,
                                     boolean launchActivity,
                                     Uri searchQuery ,
-                                    boolean forcedDownload) {
+                                    boolean forcedDownload,
+                                    boolean isTosPage) {
         boolean result = false;
         if (currentActivity != null && !TextUtils.isEmpty(pageId)
                 && !(pageTitle.equalsIgnoreCase(currentActivity.getString(R.string.contact_us)))) {
@@ -7458,7 +7463,8 @@ public class AppCMSPresenter {
                                                 this.appbarPresent,
                                                 this.fullscreenEnabled,
                                                 this.navbarPresent,
-                                                this.searchQuery);
+                                                this.searchQuery,
+                                                isTosPage);
                                         setNavItemToCurrentAction(currentActivity);
 
                                     } else {
@@ -7475,7 +7481,7 @@ public class AppCMSPresenter {
                                                 this.navbarPresent,
                                                 false,
                                                 this.searchQuery,
-                                                ExtraScreenType.NONE);
+                                                isTosPage ? ExtraScreenType.TERM_OF_SERVICE : ExtraScreenType.NONE);
                                         if (args != null) {
                                             Intent updatePageIntent =
                                                     new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
@@ -7508,7 +7514,8 @@ public class AppCMSPresenter {
                             true,
                             false,
                             true,
-                            searchQuery);
+                            searchQuery,
+                            isTosPage);
                     setNavItemToCurrentAction(currentActivity);
                 } else {
                     Bundle args = getPageActivityBundle(currentActivity,
@@ -7524,7 +7531,7 @@ public class AppCMSPresenter {
                             true,
                             false,
                             searchQuery,
-                            ExtraScreenType.NONE);
+                            isTosPage ? ExtraScreenType.TERM_OF_SERVICE : ExtraScreenType.NONE);
                     if (args != null) {
                         Intent updatePageIntent =
                                 new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
@@ -7590,7 +7597,8 @@ public class AppCMSPresenter {
                                       boolean appbarPresent,
                                       boolean fullscreenEnabled,
                                       boolean navbarPresent,
-                                      Uri searchQuery) {
+                                      Uri searchQuery,
+                                      boolean isTosPage) {
         Bundle args = getPageActivityBundle(activity,
                 appCMSPageUI,
                 appCMSPageAPI,
@@ -7604,7 +7612,7 @@ public class AppCMSPresenter {
                 navbarPresent,
                 false,
                 searchQuery,
-                ExtraScreenType.NONE);
+                isTosPage ? ExtraScreenType.TERM_OF_SERVICE : ExtraScreenType.NONE);
 
         try {
             if (args != null) {
@@ -8272,6 +8280,7 @@ public class AppCMSPresenter {
         RESET_PASSWORD,
         CHANGE_PASSWORD,
         EDIT_PROFILE,
+        TERM_OF_SERVICE,
         NONE
     }
 
@@ -8522,6 +8531,5 @@ public class AppCMSPresenter {
         int currentlyPlayingIndex;
         List<String> relateVideoIds;
     }
-
 
 }
