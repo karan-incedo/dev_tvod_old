@@ -1,6 +1,5 @@
 package com.viewlift.models.network.background.tasks;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -23,38 +22,19 @@ public class GetAppCMSAPIAsyncTask extends AsyncTask<GetAppCMSAPIAsyncTask.Param
     private final Action1<AppCMSPageAPI> readyAction;
 
     public static class Params {
-        Context context;
-        String baseUrl;
-        String endpoint;
-        String siteId;
+        String urlWithContent;
         String authToken;
-        String userId;
-        boolean usePageIdQueryParam;
         String pageId;
-        boolean viewPlansPage;
         public static class Builder {
             private Params params;
             public Builder() {
                 params = new Params();
             }
-            public Builder context(Context context) {
-                params.context = context;
+            public Builder context() {
                 return this;
             }
-            public Builder baseUrl(String baseUrl) {
-                params.baseUrl = baseUrl;
-                return this;
-            }
-            public Builder endpoint(String endpoint) {
-                params.endpoint = endpoint;
-                return this;
-            }
-            public Builder siteId(String siteId) {
-                params.siteId = siteId;
-                return this;
-            }
-            public Builder usePageIdQueryParam(boolean usePageIdQueryParam) {
-                params.usePageIdQueryParam = usePageIdQueryParam;
+            public Builder urlWithContent(String urlWithContent) {
+                params.urlWithContent = urlWithContent;
                 return this;
             }
             public Builder pageId(String pageId) {
@@ -63,14 +43,6 @@ public class GetAppCMSAPIAsyncTask extends AsyncTask<GetAppCMSAPIAsyncTask.Param
             }
             public Builder authToken(String authToken) {
                 params.authToken = authToken;
-                return this;
-            }
-            public Builder userId(String userId) {
-                params.userId = userId;
-                return this;
-            }
-            public Builder viewPlansPage(boolean viewPlansPage) {
-                params.viewPlansPage = viewPlansPage;
                 return this;
             }
             public Params build() {
@@ -88,15 +60,9 @@ public class GetAppCMSAPIAsyncTask extends AsyncTask<GetAppCMSAPIAsyncTask.Param
     protected AppCMSPageAPI doInBackground(GetAppCMSAPIAsyncTask.Params... params) {
         if (params.length > 0) {
             try {
-                return call.call(params[0].context,
-                        params[0].baseUrl,
-                        params[0].endpoint,
-                        params[0].siteId,
+                return call.call(params[0].urlWithContent,
                         params[0].authToken,
-                        params[0].userId,
-                        params[0].usePageIdQueryParam,
                         params[0].pageId,
-                        params[0].viewPlansPage,
                         0);
             } catch (IOException e) {
                 Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());

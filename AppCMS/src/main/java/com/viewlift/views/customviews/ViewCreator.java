@@ -2299,6 +2299,10 @@ public class ViewCreator {
                         }
                         break;
 
+                    case PAGE_BADGE_IMAGE_KEY:
+                        int t = 0;
+                        break;
+
                     case PAGE_VIDEO_IMAGE_KEY:
                         if (moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&

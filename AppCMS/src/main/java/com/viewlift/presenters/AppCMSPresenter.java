@@ -658,6 +658,54 @@ public class AppCMSPresenter {
         }
     }
 
+    public String getApiUrl(boolean usePageIdQueryParam,
+                             boolean viewPlansPage,
+                             boolean showPage,
+                             String baseUrl,
+                             String endpoint,
+                             String siteId,
+                             String pageId) {
+        if (currentContext != null) {
+            String urlWithContent;
+            if (usePageIdQueryParam) {
+                if (viewPlansPage) {
+                    urlWithContent =
+                            currentContext.getString(R.string.app_cms_page_api_view_plans_url,
+                                    baseUrl,
+                                    endpoint,
+                                    siteId,
+                                    currentContext.getString(R.string.app_cms_subscription_platform_key));
+                } else {
+                    urlWithContent =
+                            currentContext.getString(R.string.app_cms_page_api_url,
+                                    baseUrl,
+                                    endpoint,
+                                    siteId,
+                                    currentContext.getString(R.string.app_cms_page_id_query_parameter),
+                                    pageId,
+                                    getLoggedInUser());
+                }
+            } else {
+                if (showPage) {
+                    urlWithContent = currentContext.getString(R.string.app_cms_shows_status_api_url,
+                            baseUrl,
+                            siteId);
+                } else {
+                    urlWithContent =
+                            currentContext.getString(R.string.app_cms_page_api_url,
+                                    baseUrl,
+                                    endpoint,
+                                    siteId,
+                                    currentContext.getString(R.string.app_cms_page_path_query_parameter),
+                                    pageId,
+                                    getLoggedInUser());
+                }
+            }
+            return urlWithContent;
+        }
+        return null;
+    }
+
     public boolean launchVideoPlayer(final ContentDatum contentDatum,
                                      final int currentlyPlayingIndex,
                                      List<String> relateVideoIds,
@@ -1195,6 +1243,13 @@ public class AppCMSPresenter {
                         }
                         loadingPage = true;
 
+                        String baseUrl = appCMSMain.getApiBaseUrl();
+                        String endPoint = actionToPageAPIUrlMap.get(action);
+                        String siteId = appCMSSite.getGist().getSiteInternalName();
+                        boolean usePageIdQueryParam = false;
+                        boolean viewPlans = isViewPlanPage(endPoint);
+                        boolean showPage = false;
+
                         switch (actionType) {
                             case AUTH_PAGE:
                                 appbarPresent = false;
@@ -1202,8 +1257,9 @@ public class AppCMSPresenter {
                                 navbarPresent = false;
                                 break;
 
-                            case VIDEO_PAGE:
                             case SHOW_PAGE:
+                                showPage = true;
+                            case VIDEO_PAGE:
                                 appbarPresent = false;
                                 fullscreenEnabled = false;
                                 navbarPresent = false;
@@ -1222,13 +1278,19 @@ public class AppCMSPresenter {
                             default:
                                 break;
                         }
+
+                        String apiUrl = getApiUrl(usePageIdQueryParam,
+                                viewPlans,
+                                showPage,
+                                baseUrl,
+                                endPoint,
+                                siteId,
+                                pagePath);
+
                         currentActivity.sendBroadcast(new Intent(
                                 AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                         AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
-                        getPageIdContent(appCMSMain.getApiBaseUrl(),
-                                actionToPageAPIUrlMap.get(action),
-                                appCMSSite.getGist().getSiteInternalName(),
-                                false,
+                        getPageIdContent(apiUrl,
                                 pagePath,
                                 new AppCMSPageAPIAction(appbarPresent,
                                         fullscreenEnabled,
@@ -4063,11 +4125,22 @@ public class AppCMSPresenter {
             Log.d(TAG, "Search query (optional): " + searchQuery);
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-            getPageIdContent(appCMSMain.getApiBaseUrl(),
-                    pageIdToPageAPIUrlMap.get(pageId),
-                    appCMSSite.getGist().getSiteInternalName(),
-                    true,
 
+            String baseUrl = appCMSMain.getApiBaseUrl();
+            String endPoint = pageIdToPageAPIUrlMap.get(pageId);
+            String siteId = appCMSSite.getGist().getSiteInternalName();
+            boolean usePageIdQueryParam = true;
+            boolean viewPlans = isViewPlanPage(endPoint);
+            boolean showPage = false;
+            String apiUrl = getApiUrl(usePageIdQueryParam,
+                    viewPlans,
+                    showPage,
+                    baseUrl,
+                    endPoint,
+                    siteId,
+                    getPageId(appCMSPageUI));
+
+            getPageIdContent(apiUrl,
                     getPageId(appCMSPageUI),
                     new AppCMSPageAPIAction(appbarPresent,
                             fullscreenEnabled,
@@ -4315,28 +4388,17 @@ public class AppCMSPresenter {
         }
     }
 
-    public void getPageIdContent(String baseUrl,
-                                 String endPoint,
-                                 String siteId,
-                                 boolean usePageIdQueryParam,
+    public void getPageIdContent(String urlWithContent,
                                  String pageId,
                                  Action1<AppCMSPageAPI> readyAction) {
         if (shouldRefreshAuthToken()) {
             refreshIdentity(getRefreshToken(),
                     () -> {
                         try {
-                            boolean viewPlans = isViewPlanPage(pageId);
-
                             GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
-                                    .context(currentActivity)
-                                    .baseUrl(baseUrl)
-                                    .endpoint(endPoint)
-                                    .siteId(siteId)
+                                    .urlWithContent(urlWithContent)
                                     .authToken(getAuthToken())
-                                    .userId(getLoggedInUser())
-                                    .usePageIdQueryParam(usePageIdQueryParam)
                                     .pageId(pageId)
-                                    .viewPlansPage(viewPlans)
                                     .build();
                             new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
                         } catch (Exception e) {
@@ -4345,18 +4407,10 @@ public class AppCMSPresenter {
                         }
                     });
         } else {
-            boolean viewPlans = isViewPlanPage(pageId);
-
             GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
-                    .context(currentActivity)
-                    .baseUrl(baseUrl)
-                    .endpoint(endPoint)
-                    .siteId(siteId)
+                    .urlWithContent(urlWithContent)
                     .authToken(getAuthToken())
-                    .userId(getLoggedInUser())
-                    .usePageIdQueryParam(usePageIdQueryParam)
                     .pageId(pageId)
-                    .viewPlansPage(viewPlans)
                     .build();
             new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
         }
@@ -4366,6 +4420,12 @@ public class AppCMSPresenter {
         String pageName = pageIdToPageNameMap.get(pageId);
         return (!TextUtils.isEmpty(pageName) &&
                 pageName.equals(currentActivity.getString(R.string.app_cms_page_subscription_page_name_key)));
+    }
+
+    public boolean isShowPage(String pageId) {
+        String pageName = pageIdToPageNameMap.get(pageId);
+        return (!TextUtils.isEmpty(pageName) &&
+                pageName.equals(currentActivity.getString(R.string.app_cms_page_show_page_name_key)));
     }
 
     public String getPageIdToPageAPIUrl(String pageId) {
@@ -6548,10 +6608,21 @@ public class AppCMSPresenter {
                     refreshIdentity(getRefreshToken(),
                             () -> {
                                 try {
-                                    getPageIdContent(appCMSMain.getApiBaseUrl(),
-                                            pageIdToPageAPIUrlMap.get(subscriptionPage.getPageId()),
-                                            appCMSSite.getGist().getSiteInternalName(),
-                                            true,
+                                    String baseUrl = appCMSMain.getApiBaseUrl();
+                                    String endPoint = pageIdToPageAPIUrlMap.get(subscriptionPage.getPageId());
+                                    String siteId = appCMSSite.getGist().getSiteInternalName();
+                                    boolean usePageIdQueryParam = true;
+                                    boolean viewPlans = isViewPlanPage(endPoint);
+                                    boolean showPage = false;
+                                    String apiUrl = getApiUrl(usePageIdQueryParam,
+                                            viewPlans,
+                                            showPage,
+                                            baseUrl,
+                                            endPoint,
+                                            siteId,
+                                            subscriptionPage.getPageId());
+
+                                    getPageIdContent(apiUrl,
                                             subscriptionPage.getPageId(),
                                             appCMSPageAPI -> {
                                                 clearSubscriptionPlans();
@@ -6681,10 +6752,20 @@ public class AppCMSPresenter {
                             });
                 } else {
                     try {
-                        getPageIdContent(appCMSMain.getApiBaseUrl(),
-                                pageIdToPageAPIUrlMap.get(subscriptionPage.getPageId()),
-                                appCMSSite.getGist().getSiteInternalName(),
-                                true,
+                        String baseUrl = appCMSMain.getApiBaseUrl();
+                        String endPoint = pageIdToPageAPIUrlMap.get(subscriptionPage.getPageId());
+                        String siteId = appCMSSite.getGist().getSiteInternalName();
+                        boolean usePageIdQueryParam = true;
+                        boolean viewPlans = isViewPlanPage(endPoint);
+                        boolean showPage = false;
+                        String apiUrl = getApiUrl(usePageIdQueryParam,
+                                viewPlans,
+                                showPage,
+                                baseUrl,
+                                endPoint,
+                                siteId,
+                                subscriptionPage.getPageId());
+                        getPageIdContent(apiUrl,
                                 subscriptionPage.getPageId(),
                                 appCMSPageAPI -> {
                                     clearSubscriptionPlans();
@@ -6825,10 +6906,20 @@ public class AppCMSPresenter {
     public void refreshPageAPIData(AppCMSPageUI appCMSPageUI,
                                    String pageId,
                                    Action1<AppCMSPageAPI> appCMSPageAPIReadyAction) {
-        getPageIdContent(appCMSMain.getApiBaseUrl(),
-                pageIdToPageAPIUrlMap.get(pageId),
-                appCMSSite.getGist().getSiteInternalName(),
-                true,
+        String baseUrl = appCMSMain.getApiBaseUrl();
+        String endPoint = pageIdToPageAPIUrlMap.get(pageId);
+        String siteId = appCMSSite.getGist().getSiteInternalName();
+        boolean usePageIdQueryParam = true;
+        boolean viewPlans = isViewPlanPage(endPoint);
+        boolean showPage = false;
+        String apiUrl = getApiUrl(usePageIdQueryParam,
+                viewPlans,
+                showPage,
+                baseUrl,
+                endPoint,
+                siteId,
+                getPageId(appCMSPageUI));
+        getPageIdContent(apiUrl,
                 getPageId(appCMSPageUI),
                 appCMSPageAPIReadyAction);
     }
@@ -8009,10 +8100,20 @@ public class AppCMSPresenter {
                     return false;
                 }
 
-                getPageIdContent(appCMSMain.getApiBaseUrl(),
-                        pageIdToPageAPIUrlMap.get(pageId),
-                        appCMSSite.getGist().getSiteInternalName(),
-                        true,
+                String baseUrl = appCMSMain.getApiBaseUrl();
+                String endPoint = pageIdToPageAPIUrlMap.get(pageId);
+                String siteId = appCMSSite.getGist().getSiteInternalName();
+                boolean usePageIdQueryParam = true;
+                boolean viewPlans = isViewPlanPage(endPoint);
+                boolean showPage = false;
+                String apiUrl = getApiUrl(usePageIdQueryParam,
+                        viewPlans,
+                        showPage,
+                        baseUrl,
+                        endPoint,
+                        siteId,
+                        pageId);
+                getPageIdContent(apiUrl,
                         getPageId(appCMSPageUI),
                         new AppCMSPageAPIAction(true,
                                 false,
@@ -8409,10 +8510,22 @@ public class AppCMSPresenter {
                 }
                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                 AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
-                getPageIdContent(appCMSMain.getApiBaseUrl(),
-                        actionToPageAPIUrlMap.get(action),
-                        appCMSSite.getGist().getSiteInternalName(),
-                        false,
+
+                String baseUrl = appCMSMain.getApiBaseUrl();
+                String endPoint = actionToPageAPIUrlMap.get(action);
+                String siteId = appCMSSite.getGist().getSiteInternalName();
+                boolean usePageIdQueryParam = false;
+                boolean viewPlans = false;
+                boolean showPage = false;
+                String apiUrl = getApiUrl(usePageIdQueryParam,
+                        viewPlans,
+                        showPage,
+                        baseUrl,
+                        endPoint,
+                        siteId,
+                        pagePath);
+
+                getPageIdContent(apiUrl,
                         pagePath,
                         new AppCMSPageAPIAction(appbarPresent,
                                 fullscreenEnabled,
