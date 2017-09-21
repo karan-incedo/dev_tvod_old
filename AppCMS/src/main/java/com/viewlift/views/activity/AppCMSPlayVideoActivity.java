@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -42,6 +44,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     private static final String TAG = "VideoPlayerActivity";
 
     private BroadcastReceiver handoffReceiver;
+    private ConnectivityManager connectivityManager;
+    private BroadcastReceiver networkConnectedReceiver;
     private AppCMSPresenter appCMSPresenter;
     private int currentlyPlayingIndex = 0;
     private AppCMSVideoPageBinder binder;
@@ -159,10 +163,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 && binder.getContentData().getContentDetails().getClosedCaptions() != null
                                 && !binder.getContentData().getContentDetails().getClosedCaptions().isEmpty()) {
                             for (ClosedCaptions cc : binder.getContentData().getContentDetails().getClosedCaptions()) {
-                                   if (cc.getUrl() != null &&
-                                           !cc.getUrl().equalsIgnoreCase(getString(R.string.download_file_prefix)) &&
-                                           cc.getFormat().equalsIgnoreCase("SRT")) {
-                                       closedCaptionUrl = cc.getUrl();
+                                if (cc.getUrl() != null &&
+                                        !cc.getUrl().equalsIgnoreCase(getString(R.string.download_file_prefix)) &&
+                                        cc.getFormat().equalsIgnoreCase("SRT")) {
+                                    closedCaptionUrl = cc.getUrl();
                                 }
                             }
                         }
@@ -219,7 +223,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 watchedTime,
                                 videoImageUrl,
                                 closedCaptionUrl,
-                                contentRating,videoRunTime,
+                                contentRating, videoRunTime,
                                 freeContent);
                 fragmentTransaction.add(R.id.app_cms_play_video_page_container,
                         appCMSPlayVideoFragment,
@@ -243,7 +247,22 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             }
         };
 
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        networkConnectedReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+                if (activeNetwork == null ||
+                        !activeNetwork.isConnectedOrConnecting()) {
+                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                            appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
+                            false, () -> closePlayer());
+                }
+            }
+        };
+
         registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
+        registerReceiver(networkConnectedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
@@ -252,7 +271,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
-        /*This is to enable offline video playback even when Internet is not available*/
+        // This is to enable offline video playback even when Internet is not available.
         if (binder != null && !binder.isOffline() && !appCMSPresenter.isNetworkConnected()) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                     null,
@@ -271,6 +290,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     @Override
     protected void onDestroy() {
         unregisterReceiver(handoffReceiver);
+        unregisterReceiver(networkConnectedReceiver);
         super.onDestroy();
     }
 
@@ -334,7 +354,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                         View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                                 | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
