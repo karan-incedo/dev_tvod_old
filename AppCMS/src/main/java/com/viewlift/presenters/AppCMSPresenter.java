@@ -2083,7 +2083,7 @@ public class AppCMSPresenter {
                             Uri.parse(currentActivity.getString(R.string.google_play_store_subscriptions_url)));
                     currentActivity.startActivity(googlePlayStoreCancelIntent);
                 } else {
-                    if (paymentProcessor.equalsIgnoreCase("CCAvenue")) {
+                    if ("CCAvenue".equalsIgnoreCase(paymentProcessor)) {
                         showDialog(DialogType.CANCEL_SUBSCRIPTION, "Are you sure you want to cancel subscription?", true, new Action0() {
                             @Override
                             public void call() {

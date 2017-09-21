@@ -1873,18 +1873,17 @@ public class ViewCreator {
                         break;
 
                     default:
-                        if (!appCMSPresenter.isUserSubscribed()) {
-                            if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
+                        if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
+                            if (!appCMSPresenter.isUserSubscribed()) {
                                 ((TextView) componentViewResult.componentView).setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
-                            }
-                        } else if (!appCMSPresenter.upgradesAvailableForUser()) {
-                            if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
+                            } else if (!appCMSPresenter.upgradesAvailableForUser()) {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                             }
                         }
 
                         if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                            if (!appCMSPresenter.isExistingGooglePlaySubscriptionSuspended() &&
+                            if (appCMSPresenter.isUserSubscribed() &&
+                                    !appCMSPresenter.isExistingGooglePlaySubscriptionSuspended() &&
                                     appCMSPresenter.isSubscriptionCompleted()) {
                                 componentViewResult.componentView.setVisibility(View.VISIBLE);
                             } else {
