@@ -729,7 +729,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     private String getDefaultAction(Context context) {
-        return context.getString(R.string.app_cms_action_videopage_key);
+        return context.getString(R.string.app_cms_action_detailvideopage_key);
     }
 
     private void showDelete(ContentDatum contentDatum) {
