@@ -38,13 +38,13 @@
     <string name="app_cms_template_page_separator">&#160;-&#160;</string>
 
     <!-- AppCMS SignIn API -->
-    <string name="app_cms_signin_api_url">%1$s/identity/signin?site=%2$s</string>
+    <string name="app_cms_signin_api_url">%1$s/identity/signin?device=android_phone&amp;site=%2$s</string>
 
    <!-- CCAvenue is plan upgradable test API -->
    <string name="app_cms_ccavenue_is_plan_upgradable_url">%1$s/ccavenue/ccavenue/sistatus?site=%2$s</string>
 
     <!-- AppCMS SignUp API -->
-    <string name="app_cms_signup_api_url">%1$s/identity/signup?site=%2$s</string>
+    <string name="app_cms_signup_api_url">%1$s/identity/signup?device=android_phone&amp;site=%2$s</string>
 
     <!-- AppCMS Refresh Identity API -->
     <string name="app_cms_refresh_identity_api_url">%1$s/identity/refresh/%2$s</string>
@@ -56,7 +56,7 @@
     <string name="app_cms_forgot_password_api_url">%1$s/identity/password/forgot?site=%2$s</string>
 
     <!-- AppCMS Facebook Login API -->
-    <string name="app_cms_facebook_login_api_url">%1$s/identity/signin/facebook?site=%2$s</string>
+    <string name="app_cms_facebook_login_api_url">%1$s/identity/signin/facebook?device=android_phone&amp;site=%2$s</string>
 
     <!--AppCMS Google Login API-->
     <string name="app_cms_google_login_api_url">%1$s/identity/signin/google?device=android_phone&amp;site=%2$s</string>
@@ -232,6 +232,7 @@
     <string name="app_cms_pagename_historyscreen_key">My History</string>
     <string name="app_cms_pagename_watchlistscreen_key">My Watchlist</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
+    <string name="app_cms_pagename_showscreen_key">Show Page</string>
 
     <!-- AppCMS Action names -->
     <string name="app_cms_action_initialize_key">Initalize</string>
@@ -241,6 +242,8 @@
     <string name="app_cms_action_homepage_nav">Home</string>
     <string name="app_cms_action_movies_nav">Movies</string>
     <string name="app_cms_action_videopage_key">play</string>
+    <string name="app_cms_action_detailvideopage_key">lectureDetailPage</string>
+    <string name="app_cms_action_showvideopage_key">showDetailPage</string>
     <string name="app_cms_action_historypage_key">My History</string>
     <string name="app_cms_action_watchlistpage_key">My Watchlist</string>
     <string name="app_cms_action_watchvideo_key">watchVideo</string>

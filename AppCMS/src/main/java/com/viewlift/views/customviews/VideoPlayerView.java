@@ -352,7 +352,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private DataSource.Factory buildDataSourceFactory(DefaultBandwidthMeter bandwidthMeter) {
         return new UpdatedUriDataSourceFactory(getContext(),
                 bandwidthMeter,
-                buildHttpDataSourceFactory(bandwidthMeter));
+                buildHttpDataSourceFactory(bandwidthMeter),
+                null);
     }
 
     private HttpDataSource.Factory buildHttpDataSourceFactory(DefaultBandwidthMeter bandwidthMeter) {
@@ -522,13 +523,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         private final Context context;
         private final TransferListener<? super DataSource> listener;
         private final DataSource.Factory baseDataSourceFactory;
+        private final String cdnCookie;
 
         /**
          * @param context A context.
          * @param userAgent The User-Agent string that should be used.
          */
-        public UpdatedUriDataSourceFactory(Context context, String userAgent) {
-            this(context, userAgent, null);
+        public UpdatedUriDataSourceFactory(Context context, String userAgent, String cdnCookie) {
+            this(context, userAgent, null, cdnCookie);
         }
 
         /**
@@ -537,8 +539,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
          * @param listener An optional listener.
          */
         public UpdatedUriDataSourceFactory(Context context, String userAgent,
-                                        TransferListener<? super DataSource> listener) {
-            this(context, listener, new DefaultHttpDataSourceFactory(userAgent, listener));
+                                        TransferListener<? super DataSource> listener,
+                                           String cdnCookie) {
+            this(context, listener, new DefaultHttpDataSourceFactory(userAgent, listener), cdnCookie);
         }
 
         /**
@@ -546,18 +549,21 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
          * @param listener An optional listener.
          * @param baseDataSourceFactory A {@link DataSource.Factory} to be used to create a base {@link DataSource}
          *     for {@link DefaultDataSource}.
+         * @param cdnCookie The cookie used for accessing CDN protected data.
          * @see DefaultDataSource#DefaultDataSource(Context, TransferListener, DataSource)
          */
         public UpdatedUriDataSourceFactory(Context context, TransferListener<? super DataSource> listener,
-                                        DataSource.Factory baseDataSourceFactory) {
+                                        DataSource.Factory baseDataSourceFactory, String cdnCookie) {
             this.context = context.getApplicationContext();
             this.listener = listener;
             this.baseDataSourceFactory = baseDataSourceFactory;
+            this.cdnCookie = cdnCookie;
         }
 
         @Override
         public UpdatedUriDataSource createDataSource() {
-            return new UpdatedUriDataSource(context, listener, baseDataSourceFactory.createDataSource());
+            return new UpdatedUriDataSource(context, listener, baseDataSourceFactory.createDataSource(),
+                    cdnCookie);
         }
 
     }
@@ -570,6 +576,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         private final DataSource fileDataSource;
         private final DataSource assetDataSource;
         private final DataSource contentDataSource;
+        private final String cdnCookie;
 
         private DataSource dataSource;
 
@@ -583,9 +590,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
          *                                    to HTTPS and vice versa) are enabled when fetching remote data.
          */
         public UpdatedUriDataSource(Context context, TransferListener<? super DataSource> listener,
-                                    String userAgent, boolean allowCrossProtocolRedirects) {
+                                    String userAgent, boolean allowCrossProtocolRedirects,
+                                    String cdnCookie) {
             this(context, listener, userAgent, DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
-                    DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS, allowCrossProtocolRedirects);
+                    DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS, allowCrossProtocolRedirects,
+                    cdnCookie);
         }
 
         /**
@@ -603,10 +612,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
          */
         public UpdatedUriDataSource(Context context, TransferListener<? super DataSource> listener,
                                     String userAgent, int connectTimeoutMillis, int readTimeoutMillis,
-                                    boolean allowCrossProtocolRedirects) {
+                                    boolean allowCrossProtocolRedirects, String cdnCookie) {
             this(context, listener,
                     new DefaultHttpDataSource(userAgent, null, listener, connectTimeoutMillis,
-                            readTimeoutMillis, allowCrossProtocolRedirects, null));
+                            readTimeoutMillis, allowCrossProtocolRedirects, null),
+                    cdnCookie);
         }
 
         /**
@@ -619,11 +629,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
          *                       content. This {@link DataSource} should normally support at least http(s).
          */
         public UpdatedUriDataSource(Context context, TransferListener<? super DataSource> listener,
-                                    DataSource baseDataSource) {
+                                    DataSource baseDataSource,
+                                    String cdnCookie) {
             this.baseDataSource = Assertions.checkNotNull(baseDataSource);
             this.fileDataSource = new FileDataSource(listener);
             this.assetDataSource = new AssetDataSource(context, listener);
             this.contentDataSource = new ContentDataSource(context, listener);
+            this.cdnCookie = cdnCookie;
         }
 
         @Override
@@ -650,6 +662,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     dataSpec.absoluteStreamPosition,
                     dataSpec.length,
                     dataSpec.key);
+
+            if (dataSource instanceof DefaultHttpDataSource) {
+                ((DefaultHttpDataSource) dataSource).setCookie(cdnCookie);
+            }
 
             // Open the source and return.
             return dataSource.open(dataSpec);

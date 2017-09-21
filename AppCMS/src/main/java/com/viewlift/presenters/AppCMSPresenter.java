@@ -1203,6 +1203,7 @@ public class AppCMSPresenter {
                                 break;
 
                             case VIDEO_PAGE:
+                            case SHOW_PAGE:
                                 appbarPresent = false;
                                 fullscreenEnabled = false;
                                 navbarPresent = false;

@@ -431,7 +431,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 if (isClickable) {
                     String permalink = data.getGist().getPermalink();
                     String title = data.getGist().getTitle();
-                    Log.d(TAG, "Launching " + permalink + ":" + defaultAction);
+                    String action = component.getTrayClickAction();
+                    Log.d(TAG, "Launching " + permalink + ":" + action);
                     List<String> relatedVideoIds = null;
                     if (data.getContentDetails() != null &&
                             data.getContentDetails().getRelatedVideoIds() != null) {
@@ -442,7 +443,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         currentPlayingIndex = 0;
                     }
                     if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                            defaultAction,
+                            action,
                             title,
                             null,
                             null,
@@ -453,7 +454,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 " permalink: " +
                                 permalink +
                                 " action: " +
-                                defaultAction);
+                                action);
                     }
                 }
             });
