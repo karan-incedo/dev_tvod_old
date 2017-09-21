@@ -38,10 +38,10 @@
     <string name="app_cms_template_page_separator">&#160;-&#160;</string>
 
     <!-- AppCMS SignIn API -->
-    <string name="app_cms_signin_api_url">%1$s/identity/signin?site=%2$s</string>
+    <string name="app_cms_signin_api_url">%1$s/identity/signin?device=android_phone&amp;site=%2$s</string>
 
     <!-- AppCMS SignUp API -->
-    <string name="app_cms_signup_api_url">%1$s/identity/signup?site=%2$s</string>
+    <string name="app_cms_signup_api_url">%1$s/identity/signup?device=android_phone&amp;site=%2$s</string>
 
     <!-- AppCMS Refresh Identity API -->
     <string name="app_cms_refresh_identity_api_url">%1$s/identity/refresh/%2$s</string>
