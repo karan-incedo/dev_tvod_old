@@ -683,8 +683,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                                 for (int i = 0; i < modules.size(); i++) {
                                                     Module module = modules.get(i);
                                                     AppCMSUIKeyType moduleType = appCMSPresenter.getJsonValueKeyMap().get(module.getModuleType());
-                                                    if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY ||
-                                                            moduleType == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
+                                                    if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
                                                         if (module.getContentData() != null &&
                                                                 !module.getContentData().isEmpty()) {
                                                             int finalI = i;
@@ -693,6 +692,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                                                     if (appCMSHistoryResult != null) {
                                                                         AppCMSPageAPI historyAPI = appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
                                                                         historyAPI.getModules().get(0).setId(module.getId());
+                                                                        historyAPI.getModules().get(0).setTitle(module.getTitle());
                                                                          modules.set(finalI, historyAPI.getModules().get(0));
                                                                     }
                                                                     appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);

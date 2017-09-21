@@ -7466,6 +7466,7 @@ public class AppCMSPresenter {
                                                                 AppCMSPageAPI historyAPI =
                                                                         appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
                                                                     historyAPI.getModules().get(0).setId(module.getId());
+                                                                    historyAPI.getModules().get(0).setTitle(module.getTitle());
                                                                    /* appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);*/
                                                                    modules.set(finalI,historyAPI.getModules().get(0));
                                                                 populateTVPage(appCMSPageAPI , appCMSPageUI ,this.pageId ,this.launchActivity ,this.pageTitle,isTosPage,this.pagePath);
