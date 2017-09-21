@@ -34,4 +34,7 @@ public interface AppCMSSubscriptionPlanRest {
 
     @PUT
     Call<AppCMSSubscriptionPlanResult> cancelPlan(@Url String url, @HeaderMap Map<String, String> authHeaders, @Body SubscriptionRequest request);
+
+    @POST
+    Call<AppCMSSubscriptionPlanResult> checkCCAvenueUpgradeStatus(@Url String url, @HeaderMap Map<String, String> authHeaders, @Body SubscriptionRequest request);
 }

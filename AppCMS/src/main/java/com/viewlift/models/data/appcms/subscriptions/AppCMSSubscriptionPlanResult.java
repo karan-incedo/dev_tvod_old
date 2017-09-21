@@ -53,6 +53,10 @@ public class AppCMSSubscriptionPlanResult {
     @Expose
     String updateDate;
 
+    @SerializedName("si_status")
+    @Expose
+    String siStatus ;
+
     public String getId() {
         return id;
     }
@@ -132,4 +136,13 @@ public class AppCMSSubscriptionPlanResult {
     public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
     }
+
+    public String getSiStatus() {
+        return siStatus;
+    }
+
+    public void setSiStatus(String siStatus) {
+        this.siStatus = siStatus;
+    }
+
 }
