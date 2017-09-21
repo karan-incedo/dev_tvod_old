@@ -40,6 +40,9 @@
     <!-- AppCMS SignIn API -->
     <string name="app_cms_signin_api_url">%1$s/identity/signin?site=%2$s</string>
 
+   <!-- CCAvenue is plan upgradable test API -->
+   <string name="app_cms_ccavenue_is_plan_upgradable_url">%1$s/ccavenue/ccavenue/sistatus?site=%2$s</string>
+
     <!-- AppCMS SignUp API -->
     <string name="app_cms_signup_api_url">%1$s/identity/signup?site=%2$s</string>
 
