@@ -2008,6 +2008,7 @@ public class AppCMSPresenter {
                             upgradePlanAPICall () ;
                         } else {
                             showDialog(DialogType.SUBSCRIBE, "Please Try Again Later!", false, null);
+                            sendCloseOthersAction(null, true);
                         }
                     },
                     appCMSSubscriptionPlanResult -> {
