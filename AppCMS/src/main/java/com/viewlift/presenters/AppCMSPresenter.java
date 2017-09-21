@@ -2003,11 +2003,14 @@ public class AppCMSPresenter {
                         Log.v("currentActivity", "currentActivity");
                     },
                     singleResult -> {
-                        //
-                        Log.v("subscriptionresult","subscriptionresult") ;
+                        String siStatus = "ACTI" ;
+                        if (siStatus.equalsIgnoreCase("ACTI")) {
+                            upgradePlanAPICall () ;
+                        } else {
+                            showDialog(DialogType.SUBSCRIBE, "Please Try Again Later!", false, null);
+                        }
                     },
                     appCMSSubscriptionPlanResult -> {
-                       Log.v("subscriptionresult","subscriptionresult") ;
                     }
             );
         } catch (Exception ex) {

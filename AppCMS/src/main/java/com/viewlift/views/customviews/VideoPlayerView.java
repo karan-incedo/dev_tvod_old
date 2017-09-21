@@ -664,7 +664,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     dataSpec.key);
 
             if (dataSource instanceof DefaultHttpDataSource) {
-                ((DefaultHttpDataSource) dataSource).setCookie(cdnCookie);
+               // ((DefaultHttpDataSource) dataSource).setCookie(cdnCookie);
             }
 
             // Open the source and return.
