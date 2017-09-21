@@ -171,6 +171,9 @@ public class AppCMSSubscriptionPlanCall {
                         });
                 break;
 
+            case R.string.app_cms_ccavenue_is_plan_upgradable_url:
+
+                break;
             default:
                 throw new RuntimeException("Invalid SubscriptionCallType: " + subscriptionCallType);
         }
