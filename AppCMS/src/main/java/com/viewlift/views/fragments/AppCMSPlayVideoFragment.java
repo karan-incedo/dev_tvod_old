@@ -566,18 +566,22 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private void setCasting() {
-        try {
-            castProvider = CastServiceProvider.getInstance(getActivity());
-            castProvider.setRemotePlaybackCallback(callBackRemotePlayback);
-            isCastConnected = castProvider.isCastingConnected();
-            castProvider.playChromeCastPlaybackIfCastConnected();
-            if (isCastConnected) {
-                getActivity().finish();
-            } else {
-                castProvider.setActivityInstance(getActivity(), mMediaRouteButton);
+        if (appCMSPresenter.isUserSubscribed()) {
+            try {
+                castProvider = CastServiceProvider.getInstance(getActivity());
+                castProvider.setRemotePlaybackCallback(callBackRemotePlayback);
+                isCastConnected = castProvider.isCastingConnected();
+                castProvider.playChromeCastPlaybackIfCastConnected();
+                if (isCastConnected) {
+                    getActivity().finish();
+                } else {
+                    castProvider.setActivityInstance(getActivity(), mMediaRouteButton);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error initializing cast provider: " + e.getMessage());
             }
-        } catch (Exception e) {
-            Log.e(TAG, "Error initializing cast provider: " + e.getMessage());
+        } else {
+            mMediaRouteButton.setVisibility(View.GONE);
         }
     }
 
