@@ -171,8 +171,30 @@ public class AppCMSSubscriptionPlanCall {
                         });
                 break;
 
-            case R.string.app_cms_ccavenue_is_plan_upgradable_url:
+            case R.string.app_cms_check_ccavenue_plan_status_key:
+                authHeaders.clear();
+                if (!TextUtils.isEmpty(apiKey) && !TextUtils.isEmpty(authToken)) {
+                    authHeaders.put("Authorization", authToken);
+                }
+                appCMSSubscriptionPlanRest.checkCCAvenueUpgradeStatus(url, authHeaders, request)
+                        .enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
+                            @Override
+                            public void onResponse(@NonNull Call<AppCMSSubscriptionPlanResult> call,
+                                                   @NonNull Response<AppCMSSubscriptionPlanResult> response) {
+                                try {
+                                    Observable.just(response.body()).subscribe(resultAction1);
+                                } catch (Exception e) {
+                                    Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
+                                }
+                            }
 
+                            @Override
+                            public void onFailure(@NonNull Call<AppCMSSubscriptionPlanResult> call,
+                                                  @NonNull Throwable t) {
+                                Log.e(TAG, "onFailure: " + t.getMessage());
+                                Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
+                            }
+                        });
                 break;
             default:
                 throw new RuntimeException("Invalid SubscriptionCallType: " + subscriptionCallType);

@@ -1887,7 +1887,7 @@ public class AppCMSPresenter {
                                     if (appCMSSubscriptionPlanResult != null) {
                                         String paymentUniqueId = appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentUniqueId() ;
                                         if (paymentUniqueId.length()>0) {
-
+                                            checkCCAvenueUpgradeStatus (paymentUniqueId) ;
                                         } else {
                                             showDialog(DialogType.SUBSCRIBE, "Cannot Upgrade", false, null);
                                         }
@@ -1982,6 +1982,73 @@ public class AppCMSPresenter {
             } else {
                 Log.e(TAG, "InAppBillingService: " + inAppBillingService);
             }
+        }
+    }
+
+    private void checkCCAvenueUpgradeStatus (String referenceNo) {
+        try {
+            SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
+            subscriptionRequest.setReferenceNo(referenceNo);
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+            appCMSSubscriptionPlanCall.call(
+                    currentActivity.getString(R.string.app_cms_ccavenue_is_plan_upgradable_url,
+                            appCMSMain.getApiBaseUrl(),
+                            appCMSSite.getGist().getSiteInternalName()),
+                    R.string.app_cms_check_ccavenue_plan_status_key,
+                    subscriptionRequest,
+                    apikey,
+                    getAuthToken(),
+                    listResult -> {
+                        Log.v("currentActivity", "currentActivity");
+                    },
+                    singleResult -> {
+                        //
+                        Log.v("subscriptionresult","subscriptionresult") ;
+                    },
+                    appCMSSubscriptionPlanResult -> {
+                       Log.v("subscriptionresult","subscriptionresult") ;
+                    }
+            );
+        } catch (Exception ex) {
+
+        }
+    }
+
+    private void upgradePlanAPICall () {
+        SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
+        subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
+        subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
+        subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
+        subscriptionRequest.setCurrencyCode(getActiveSubscriptionCurrency());
+        subscriptionRequest.setPlanIdentifier(skuToPurchase);
+        subscriptionRequest.setPlanId(planToPurchase);
+        subscriptionRequest.setUserId(getLoggedInUser());
+        subscriptionRequest.setReceipt(getActiveSubscriptionReceipt());
+        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+        try {
+            appCMSSubscriptionPlanCall.call(
+                    currentActivity.getString(R.string.app_cms_register_subscription_api_url,
+                            appCMSMain.getApiBaseUrl(),
+                            appCMSSite.getGist().getSiteInternalName(),
+                            currentActivity.getString(R.string.app_cms_subscription_platform_key)),
+                    R.string.app_cms_subscription_plan_update_key,
+                    subscriptionRequest,
+                    apikey,
+                    getAuthToken(),
+                    result -> {
+                        //
+                        Log.v("got result", "got result");
+                    }, appCMSSubscriptionPlanResults -> {
+                        sendCloseOthersAction(null, true);
+                        refreshSubscriptionData(() -> {
+                            sendRefreshPageAction();
+                        }, true);
+                    },
+                    currentUserPlan -> {
+
+                    });
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
