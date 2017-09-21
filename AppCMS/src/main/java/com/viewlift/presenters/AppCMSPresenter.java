@@ -8710,6 +8710,10 @@ public class AppCMSPresenter {
         return currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download);
     }
 
+    public String getNetworkConnectedVideoPlayerErrorMsg() {
+        return currentActivity.getString(R.string.app_cms_network_connectivity_error_message);
+    }
+
     public void openVideoPageFromSearch(String[] searchResultClick) {
         String permalink = searchResultClick[3];
         String action = currentActivity.getString(R.string.app_cms_action_videopage_key);
