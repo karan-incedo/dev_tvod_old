@@ -172,10 +172,6 @@ public class AppCMSSubscriptionPlanCall {
                 break;
 
             case R.string.app_cms_check_ccavenue_plan_status_key:
-                authHeaders.clear();
-                if (!TextUtils.isEmpty(apiKey) && !TextUtils.isEmpty(authToken)) {
-                    authHeaders.put("Authorization", authToken);
-                }
                 appCMSSubscriptionPlanRest.checkCCAvenueUpgradeStatus(url, authHeaders, request)
                         .enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
                             @Override
