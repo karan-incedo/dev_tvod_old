@@ -299,6 +299,7 @@
     <string name="app_cms_subscription_plan_list_api_url">%1$s/subscription/plans?site=%2$s</string>
     <string name="app_cms_subscription_plan_list_key">list</string>
     <string name="app_cms_subscription_subscribed_plan_key">subscribed_plan</string>
+   <string name="app_cms_check_ccavenue_plan_status_key">ccavenue_plan_status</string>
     <string name="app_cms_subscription_plan_create_key">create</string>
     <string name="app_cms_subscription_plan_update_key">update</string>
     <string name="app_cms_subscription_plan_cancel_key">cancel</string>
