@@ -122,6 +122,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                         for (ClosedCaptions cc : binder.getContentData().getContentDetails().getClosedCaptions()) {
                             if (cc.getUrl() != null &&
                                     !cc.getUrl().equalsIgnoreCase(getString(R.string.download_file_prefix)) &&
+                                    cc.getFormat() != null &&
                                     cc.getFormat().equalsIgnoreCase("SRT")) {
                                 closedCaptionUrl = cc.getUrl();
                             }
@@ -165,6 +166,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             for (ClosedCaptions cc : binder.getContentData().getContentDetails().getClosedCaptions()) {
                                 if (cc.getUrl() != null &&
                                         !cc.getUrl().equalsIgnoreCase(getString(R.string.download_file_prefix)) &&
+                                        cc.getFormat() != null &&
                                         cc.getFormat().equalsIgnoreCase("SRT")) {
                                     closedCaptionUrl = cc.getUrl();
                                 }

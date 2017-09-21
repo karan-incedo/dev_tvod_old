@@ -264,6 +264,8 @@ public class AppCMSPageFragment extends Fragment {
                     appCMSPresenter,
                     modulesToIgnore);
         }
-        pageView.requestLayout();
+        if (pageView != null) {
+            pageView.requestLayout();
+        }
     }
 }
