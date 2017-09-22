@@ -1941,9 +1941,11 @@ public class AppCMSPresenter {
                             getAuthToken(),
                             listResult -> {
                                 Log.v("currentActivity", "currentActivity");
-                            },
-                            singleResult -> {
-                                //
+                            }, appCMSSubscriptionPlanResults -> {
+                                sendCloseOthersAction(null, true);
+                                refreshSubscriptionData(() -> {
+                                    sendRefreshPageAction();
+                                }, true);
                             },
                             appCMSSubscriptionPlanResult -> {
                                 try {
@@ -5819,6 +5821,10 @@ public class AppCMSPresenter {
                     title = currentActivity.getString(R.string.app_cms_signin_error_title);
                     message = optionalMessage;
                     break;
+                case SIGN_OUT:
+                    title = currentActivity.getString(R.string.app_cms_signout_error_title);
+                    message = optionalMessage;
+                    break;
 
                 case SIGNUP_BLANK_EMAIL_PASSWORD:
                 case SIGNUP_BLANK_EMAIL:
@@ -5856,7 +5862,6 @@ public class AppCMSPresenter {
                     message = optionalMessage;
                     break;
 
-                case DELETE_ONE_WATCHLIST_ITEM:
                 case DELETE_ALL_WATCHLIST_ITEMS:
                     title = currentActivity.getString(R.string.app_cms_delete_watchlist_alert_title);
                     message = optionalMessage;
@@ -8892,6 +8897,9 @@ public class AppCMSPresenter {
     public String getNetworkConnectivityDownloadErrorMsg() {
         return currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download);
     }
+    public String getSignOutErrorMsg() {
+        return currentActivity.getString(R.string.app_cms_signout_error_msg);
+    }
 
     public String getNetworkConnectedVideoPlayerErrorMsg() {
         return currentActivity.getString(R.string.app_cms_network_connectivity_error_message);
@@ -8946,7 +8954,6 @@ public class AppCMSPresenter {
         SUBSCRIBE,
         DELETE_ONE_HISTORY_ITEM,
         DELETE_ALL_HISTORY_ITEMS,
-        DELETE_ONE_WATCHLIST_ITEM,
         DELETE_ALL_WATCHLIST_ITEMS,
         DELETE_ONE_DOWNLOAD_ITEM,
         DELETE_ALL_DOWNLOAD_ITEMS,
@@ -8965,7 +8972,8 @@ public class AppCMSPresenter {
         DOWNLOAD_FAILED,
         SD_CARD_NOT_AVAILABLE,
         UNKNOWN_SUBSCRIPTION_FOR_UPGRADE,
-        UNKNOWN_SUBSCRIPTION_FOR_CANCEL
+        UNKNOWN_SUBSCRIPTION_FOR_CANCEL,
+        SIGN_OUT
     }
 
     public enum RETRY_TYPE {

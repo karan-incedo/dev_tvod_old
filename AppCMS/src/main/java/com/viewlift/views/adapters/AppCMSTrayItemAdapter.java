@@ -764,14 +764,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
         if ((isWatchlist) && (contentDatum.getGist() != null)) {
             Log.d(TAG, "Deleting watchlist item: " + contentDatum.getGist().getTitle());
-            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_WATCHLIST_ITEM,
-                    appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_watchlist_item_message),
-                    true, () ->
-                            appCMSPresenter.editWatchlist(contentDatum.getGist().getId(),
-                                    addToWatchlistResult -> {
-                                        adapterData.remove(contentDatum);
-                                        notifyDataSetChanged();
-                                    }, false));
+            appCMSPresenter.editWatchlist(contentDatum.getGist().getId(),
+                    addToWatchlistResult -> {
+                        adapterData.remove(contentDatum);
+                        notifyDataSetChanged();
+                    }, false);
         }
     }
 
