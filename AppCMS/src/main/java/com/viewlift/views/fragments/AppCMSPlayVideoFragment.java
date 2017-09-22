@@ -1224,6 +1224,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
                         long currentTime = videoPlayerView.getCurrentPosition() / 1000;
                         if (appCMSPresenter != null && videoPlayerView != null
+                                && 30 <= (videoPlayerView.getCurrentPosition() / 1000)
                                 && playbackState == ExoPlayer.STATE_READY && currentTime % 30 == 0) { // For not to sent PIN in PAUSE mode
 
                             Log.d(TAG, "Beacon Message Request position: " + currentTime);
