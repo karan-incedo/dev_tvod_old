@@ -72,7 +72,7 @@ public class CreditBlocksView extends RelativeLayout {
         int starringListViewId = View.generateViewId();
 
         directorListTitleView = new TextView(getContext());
-        directorListTitleView.setTypeface(keyTypeFace);
+        directorListTitleView.setTypeface(Typeface.DEFAULT_BOLD);
         directorListTitleView.setTextColor(textColor);
         if (fontsizeKey != -1.0f) {
             directorListTitleView.setTextSize(fontsizeKey);
@@ -104,7 +104,7 @@ public class CreditBlocksView extends RelativeLayout {
         addView(directorListView);
 
         starringListTitleView = new TextView(getContext());
-        starringListTitleView.setTypeface(keyTypeFace);
+        starringListTitleView.setTypeface(Typeface.DEFAULT_BOLD);
         starringListTitleView.setTextColor(textColor);
         if (fontsizeKey != -1.0f) {
             starringListTitleView.setTextSize(fontsizeKey);
