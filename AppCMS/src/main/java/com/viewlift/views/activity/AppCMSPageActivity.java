@@ -1528,21 +1528,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void setMediaRouterButtonVisibility(String pageId) {
         if (!castDisabled) {
-            if (!appCMSPresenter.isUserSubscribed()) {
-                ll_media_route_button.setVisibility(View.GONE);
+            if (appCMSPresenter.findHomePageNavItem().getPageId().equalsIgnoreCase(pageId)) {
+                ll_media_route_button.setVisibility(View.VISIBLE);
+                CastServiceProvider.getInstance(this).isHomeScreen(true);
             } else {
-                if (appCMSPresenter.findHomePageNavItem().getPageId().equalsIgnoreCase(pageId)) {
-                    ll_media_route_button.setVisibility(View.VISIBLE);
-                    CastServiceProvider.getInstance(this).isHomeScreen(true);
-                } else {
-                    ll_media_route_button.setVisibility(View.GONE);
-                    CastServiceProvider.getInstance(this).isHomeScreen(false);
+                ll_media_route_button.setVisibility(View.GONE);
+                CastServiceProvider.getInstance(this).isHomeScreen(false);
 
-                }
+            }
 
-                if (CastServiceProvider.getInstance(this).isOverlayVisible()) {
-                    CastServiceProvider.getInstance(this).showIntroOverLay();
-                }
+            if (CastServiceProvider.getInstance(this).isOverlayVisible()) {
+                CastServiceProvider.getInstance(this).showIntroOverLay();
             }
         }
     }

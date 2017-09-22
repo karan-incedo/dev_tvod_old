@@ -160,7 +160,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private CastHelper mCastHelper;
     private String closedCaptionUrl;
     private boolean isCastConnected;
-    private boolean entitlementCheckCancelled;
+
     CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
         if (onClosePlayerEvent != null) {
             pauseVideo();
@@ -177,8 +177,10 @@ public class AppCMSPlayVideoFragment extends Fragment
                     });
         }
     };
+
     private Timer entitlementCheckTimer;
     private TimerTask entitlementCheckTimerTask;
+    private boolean entitlementCheckCancelled;
 
     public static AppCMSPlayVideoFragment newInstance(Context context,
                                                       String primaryCategory,
@@ -273,6 +275,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         setRetainInstance(true);
 
         if (appCMSPresenter.isAppSVOD() &&
+                !isTrailer &&
                 !freeContent &&
                 !appCMSPresenter.isUserSubscribed()) {
             int entitlementCheckMultiplier = 5;
@@ -571,7 +574,6 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private void setCasting() {
-        if (appCMSPresenter.isUserSubscribed())
         try {
             castProvider = CastServiceProvider.getInstance(getActivity());
             castProvider.setRemotePlaybackCallback(callBackRemotePlayback);
