@@ -8899,7 +8899,7 @@ public class AppCMSPresenter {
 
     public void openVideoPageFromSearch(String[] searchResultClick) {
         String permalink = searchResultClick[3];
-        String action = currentActivity.getString(R.string.app_cms_action_videopage_key);
+        String action = currentActivity.getString(R.string.app_cms_action_detailvideopage_key);
         String title = searchResultClick[0];
         String runtime = searchResultClick[1];
         Log.d(TAG, "Launching " + permalink + ":" + action);
