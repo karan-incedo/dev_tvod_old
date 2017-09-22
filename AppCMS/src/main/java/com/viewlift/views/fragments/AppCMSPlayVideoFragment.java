@@ -160,6 +160,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private CastHelper mCastHelper;
     private String closedCaptionUrl;
     private boolean isCastConnected;
+    private boolean entitlementCheckCancelled;
     CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
         if (onClosePlayerEvent != null) {
             pauseVideo();
@@ -275,6 +276,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 !freeContent &&
                 !appCMSPresenter.isUserSubscribed()) {
             int entitlementCheckMultiplier = 5;
+            entitlementCheckCancelled = false;
 
             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
             if (appCMSMain != null &&
@@ -297,28 +299,31 @@ public class AppCMSPlayVideoFragment extends Fragment
                 public void run() {
                     appCMSPresenter.getUserData(userIdentity -> {
                         Log.d(TAG, "Video player entitlement check triggered");
-                        int secsViewed = (int) videoPlayerView.getCurrentPosition() / 1000;
-                        if (maxPreviewSecs < secsViewed && (userIdentity == null || !userIdentity.isSubscribed())) {
-                            Log.d(TAG, "User is not subscribed - pausing video and showing Subscribe dialog");
-                            pauseVideo();
-                            if (videoPlayerView != null) {
-                                videoPlayerView.disableController();
-                            }
-                            videoPlayerInfoContainer.setVisibility(View.VISIBLE);
-                            if (appCMSPresenter.isUserLoggedIn()) {
-                                appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
-                                        () -> {
-                                            onClosePlayerEvent.closePlayer();
-                                        });
+                        if (!entitlementCheckCancelled) {
+                            int secsViewed = (int) videoPlayerView.getCurrentPosition() / 1000;
+                            if (maxPreviewSecs < secsViewed && (userIdentity == null || !userIdentity.isSubscribed())) {
+                                Log.d(TAG, "User is not subscribed - pausing video and showing Subscribe dialog");
+                                pauseVideo();
+                                if (videoPlayerView != null) {
+                                    videoPlayerView.disableController();
+                                }
+                                videoPlayerInfoContainer.setVisibility(View.VISIBLE);
+                                if (appCMSPresenter.isUserLoggedIn()) {
+                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                                            () -> {
+                                                onClosePlayerEvent.closePlayer();
+                                            });
+                                } else {
+                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                                            () -> {
+                                                onClosePlayerEvent.closePlayer();
+                                            });
+                                }
+                                cancel();
+                                entitlementCheckCancelled = true;
                             } else {
-                                appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
-                                        () -> {
-                                            onClosePlayerEvent.closePlayer();
-                                        });
+                                Log.d(TAG, "User is subscribed - resuming video");
                             }
-                            cancel();
-                        } else {
-                            Log.d(TAG, "User is subscribed - resuming video");
                         }
                     });
                 }
@@ -566,22 +571,19 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private void setCasting() {
-        if (appCMSPresenter.isUserSubscribed()) {
-            try {
-                castProvider = CastServiceProvider.getInstance(getActivity());
-                castProvider.setRemotePlaybackCallback(callBackRemotePlayback);
-                isCastConnected = castProvider.isCastingConnected();
-                castProvider.playChromeCastPlaybackIfCastConnected();
-                if (isCastConnected) {
-                    getActivity().finish();
-                } else {
-                    castProvider.setActivityInstance(getActivity(), mMediaRouteButton);
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error initializing cast provider: " + e.getMessage());
+        if (appCMSPresenter.isUserSubscribed())
+        try {
+            castProvider = CastServiceProvider.getInstance(getActivity());
+            castProvider.setRemotePlaybackCallback(callBackRemotePlayback);
+            isCastConnected = castProvider.isCastingConnected();
+            castProvider.playChromeCastPlaybackIfCastConnected();
+            if (isCastConnected) {
+                getActivity().finish();
+            } else {
+                castProvider.setActivityInstance(getActivity(), mMediaRouteButton);
             }
-        } else {
-            mMediaRouteButton.setVisibility(View.GONE);
+        } catch (Exception e) {
+            Log.e(TAG, "Error initializing cast provider: " + e.getMessage());
         }
     }
 
