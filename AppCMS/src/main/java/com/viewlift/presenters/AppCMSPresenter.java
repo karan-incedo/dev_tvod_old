@@ -957,6 +957,7 @@ public class AppCMSPresenter {
                                 pagePath.contains(currentActivity.getString(R.string.app_cms_action_qualifier_watchvideo_key))));
                 if ((actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
                         actionType == AppCMSActionType.WATCH_TRAILER) &&
+                        contentDatum != null &&
                         !isVideoPlayerStarted) {
 
                     isVideoPlayerStarted = true;
@@ -7859,8 +7860,7 @@ public class AppCMSPresenter {
         pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
 
         getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                metaPage.getPageUI(),
-                appCMSMain.getTimestamp()),
+                metaPage.getPageUI()),
                 appCMSPageUI -> {
                     try {
                         navigationPages.put(metaPage.getPageId(), appCMSPageUI);

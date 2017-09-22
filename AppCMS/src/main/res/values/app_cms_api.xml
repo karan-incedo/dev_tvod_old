@@ -9,7 +9,7 @@
      <string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>
 
 
-    <string name="app_cms_url_with_appended_timestamp">%1$s?x=%2$d</string>
+    <string name="app_cms_url_with_appended_timestamp">%1$s</string>
     <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
 
     <!-- x-api-key -->
