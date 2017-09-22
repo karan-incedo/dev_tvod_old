@@ -562,6 +562,10 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         showCRWWarningMessage = true;
 
+        if (appCMSPresenter.isAppSVOD()) {
+            videoPlayerView.startPlayer();
+        }
+
         return rootView;
     }
 
