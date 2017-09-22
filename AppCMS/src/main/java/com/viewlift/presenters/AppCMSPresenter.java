@@ -1840,8 +1840,8 @@ public class AppCMSPresenter {
             intent.putExtra("renewable", isRenewable);
             intent.putExtra("mobile_number", "");
             intent.putExtra("api_base_url", appCMSMain.getApiBaseUrl());
-            intent.putExtra("si_frequency","2") ;
-            intent.putExtra("si_frequency_type",renewableFrequency) ;
+            intent.putExtra("si_frequency", "2");
+            intent.putExtra("si_frequency_type", renewableFrequency);
             currentActivity.startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -1890,8 +1890,8 @@ public class AppCMSPresenter {
                             getAuthToken(),
                             result -> {
                                 //
-                                Log.v("got result","got result") ;
-                            },appCMSSubscriptionPlanResults -> {
+                                Log.v("got result", "got result");
+                            }, appCMSSubscriptionPlanResults -> {
                                 sendCloseOthersAction(null, true);
                                 refreshSubscriptionData(() -> {
                                     sendRefreshPageAction();
@@ -2964,7 +2964,16 @@ public class AppCMSPresenter {
             appCMSAddToWatchlistCall.call(url, getAuthToken(),
                     addToWatchlistResult -> {
                         try {
-                            Observable.just(addToWatchlistResult).subscribe(resultAction1);
+                            showDialog(DialogType.DELETE_ALL_WATCHLIST_ITEMS,
+                                    currentActivity.getString(R.string.app_cms_delete_all_watchlist_items_message),
+                                    true,
+                                    () -> {
+                                        try {
+                                            Observable.just(addToWatchlistResult).subscribe(resultAction1);
+                                        } catch (Exception e) {
+                                            Log.e(TAG, "Error deleting all watchlist items: " + e.getMessage());
+                                        }
+                                    });
                         } catch (Exception e) {
                             Log.e(TAG, "clearWatchlistContent: " + e.toString());
                         }
@@ -5623,6 +5632,10 @@ public class AppCMSPresenter {
                     title = currentActivity.getString(R.string.app_cms_signin_error_title);
                     message = optionalMessage;
                     break;
+                case SIGN_OUT:
+                    title = currentActivity.getString(R.string.app_cms_signout_error_title);
+                    message = optionalMessage;
+                    break;
 
                 case SIGNUP_BLANK_EMAIL_PASSWORD:
                 case SIGNUP_BLANK_EMAIL:
@@ -5657,6 +5670,11 @@ public class AppCMSPresenter {
                 case DELETE_ONE_HISTORY_ITEM:
                 case DELETE_ALL_HISTORY_ITEMS:
                     title = currentActivity.getString(R.string.app_cms_delete_history_alert_title);
+                    message = optionalMessage;
+                    break;
+
+                case DELETE_ALL_WATCHLIST_ITEMS:
+                    title = currentActivity.getString(R.string.app_cms_delete_watchlist_alert_title);
                     message = optionalMessage;
                     break;
 
@@ -8637,6 +8655,9 @@ public class AppCMSPresenter {
     public String getNetworkConnectivityDownloadErrorMsg() {
         return currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download);
     }
+    public String getSignOutErrorMsg() {
+        return currentActivity.getString(R.string.app_cms_signout_error_msg);
+    }
 
     public void openVideoPageFromSearch(String[] searchResultClick) {
         String permalink = searchResultClick[3];
@@ -8687,6 +8708,7 @@ public class AppCMSPresenter {
         SUBSCRIBE,
         DELETE_ONE_HISTORY_ITEM,
         DELETE_ALL_HISTORY_ITEMS,
+        DELETE_ALL_WATCHLIST_ITEMS,
         DELETE_ONE_DOWNLOAD_ITEM,
         DELETE_ALL_DOWNLOAD_ITEMS,
         LOGIN_REQUIRED,
@@ -8704,7 +8726,8 @@ public class AppCMSPresenter {
         DOWNLOAD_FAILED,
         SD_CARD_NOT_AVAILABLE,
         UNKNOWN_SUBSCRIPTION_FOR_UPGRADE,
-        UNKNOWN_SUBSCRIPTION_FOR_CANCEL
+        UNKNOWN_SUBSCRIPTION_FOR_CANCEL,
+        SIGN_OUT
     }
 
     public enum RETRY_TYPE {

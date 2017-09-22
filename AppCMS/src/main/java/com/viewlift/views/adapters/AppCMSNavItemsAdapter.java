@@ -269,8 +269,14 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     if (appCMSPresenter.isDownloadUnfinished()) {
                         appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD, null);
                     } else {
-                        appCMSPresenter.cancelInternalEvents();
-                        appCMSPresenter.logout();
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SIGN_OUT,
+                                appCMSPresenter.getSignOutErrorMsg(),
+                                true,
+                                () -> {
+                                    appCMSPresenter.cancelInternalEvents();
+                                    appCMSPresenter.logout();
+                                });
+
                     }
                 });
             }
