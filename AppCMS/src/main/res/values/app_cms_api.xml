@@ -1,12 +1,12 @@
 <resources>
     <!-- Primary app values -->
-   <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
-   <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
+    <!--<string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
+    <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
 
     <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
 
-    <string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>
-    <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>-->
+     <!--<string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>-->
+     <string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>
 
 
     <string name="app_cms_url_with_appended_timestamp">%1$s?x=%2$d</string>
@@ -38,10 +38,13 @@
     <string name="app_cms_template_page_separator">&#160;-&#160;</string>
 
     <!-- AppCMS SignIn API -->
-    <string name="app_cms_signin_api_url">%1$s/identity/signin?site=%2$s</string>
+    <string name="app_cms_signin_api_url">%1$s/identity/signin?device=android_phone&amp;site=%2$s</string>
+
+   <!-- CCAvenue is plan upgradable test API -->
+   <string name="app_cms_ccavenue_is_plan_upgradable_url">%1$s/ccavenue/ccavenue/sistatus?site=%2$s</string>
 
     <!-- AppCMS SignUp API -->
-    <string name="app_cms_signup_api_url">%1$s/identity/signup?site=%2$s</string>
+    <string name="app_cms_signup_api_url">%1$s/identity/signup?device=android_phone&amp;site=%2$s</string>
 
     <!-- AppCMS Refresh Identity API -->
     <string name="app_cms_refresh_identity_api_url">%1$s/identity/refresh/%2$s</string>
@@ -53,7 +56,7 @@
     <string name="app_cms_forgot_password_api_url">%1$s/identity/password/forgot?site=%2$s</string>
 
     <!-- AppCMS Facebook Login API -->
-    <string name="app_cms_facebook_login_api_url">%1$s/identity/signin/facebook?site=%2$s</string>
+    <string name="app_cms_facebook_login_api_url">%1$s/identity/signin/facebook?device=android_phone&amp;site=%2$s</string>
 
     <!--AppCMS Google Login API-->
     <string name="app_cms_google_login_api_url">%1$s/identity/signin/google?device=android_phone&amp;site=%2$s</string>
@@ -66,6 +69,9 @@
 
     <!-- AppCMS User Video Status API -->
     <string name="app_cms_video_status_api_url">%1$s/user/info/video/%2$s?site=%3$s</string>
+
+    <!-- -->
+    <string name="app_cms_shows_status_api_url">%1$s/content/pages?path=/shows/title/sujith&amp;site=%2$s&amp;includeContent=true</string>
 
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
@@ -100,6 +106,7 @@
     <string name="app_cms_page_play_image_key">playImage</string>
     <string name="app_cms_page_tray_title_key">trayTitle</string>
     <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
+    <string name="app_cms_page_badge_image_key">badgeImage</string>
     <string name="app_cms_page_thumbnail_title_key">thumbnailTitle</string>
     <string name="app_cms_page_text_alignment_center_key">center</string>
     <string name="app_cms_page_text_alignment_key">textAlignment</string>
@@ -197,6 +204,7 @@
     <string name="app_cms_page_api_video_detail_module_key">VideoDetailModule</string>
     <string name="app_cms_page_subscription_page_key">Subscription</string>
     <string name="app_cms_page_subscription_page_name_key">View Plans</string>
+    <string name="app_cms_page_show_page_name_key">Show Page</string>
 
     <!-- Subscription Keys -->
     <string name="app_cms_page_subscription_selectionplan_key">AC SelectPlan 02</string>
@@ -229,6 +237,7 @@
     <string name="app_cms_pagename_historyscreen_key">My History</string>
     <string name="app_cms_pagename_watchlistscreen_key">My Watchlist</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
+    <string name="app_cms_pagename_showscreen_key">Show Page</string>
 
     <!-- AppCMS Action names -->
     <string name="app_cms_action_initialize_key">Initalize</string>
@@ -238,6 +247,8 @@
     <string name="app_cms_action_homepage_nav">Home</string>
     <string name="app_cms_action_movies_nav">Movies</string>
     <string name="app_cms_action_videopage_key">play</string>
+    <string name="app_cms_action_detailvideopage_key">lectureDetailPage</string>
+    <string name="app_cms_action_showvideopage_key">showDetailPage</string>
     <string name="app_cms_action_historypage_key">My History</string>
     <string name="app_cms_action_watchlistpage_key">My Watchlist</string>
     <string name="app_cms_action_watchvideo_key">watchVideo</string>
@@ -296,6 +307,7 @@
     <string name="app_cms_subscription_plan_list_api_url">%1$s/subscription/plans?site=%2$s</string>
     <string name="app_cms_subscription_plan_list_key">list</string>
     <string name="app_cms_subscription_subscribed_plan_key">subscribed_plan</string>
+   <string name="app_cms_check_ccavenue_plan_status_key">ccavenue_plan_status</string>
     <string name="app_cms_subscription_plan_create_key">create</string>
     <string name="app_cms_subscription_plan_update_key">update</string>
     <string name="app_cms_subscription_plan_cancel_key">cancel</string>
@@ -349,6 +361,7 @@
     <string name="app_cms_autoplay_timer_label_key">timerLabel</string>
 
     <string name="app_cms_download_started_message">%1$s has started downloading.</string>
+    <string name="app_cms_download_available_already_message">%1$s has already been downloaded to this device by another user.  The same copy of this video will be played instead of downloading another copy.</string>
     <string name="app_cms_download_quality_cancel_button_key">cancelButton</string>
     <string name="app_cms_download_quality_continue_button_key">continueButton</string>
 

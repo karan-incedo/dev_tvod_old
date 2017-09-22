@@ -259,13 +259,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         handleCloseAction();
                         for (String appCMSBinderKey : appCMSBinderStack) {
                             AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderKey);
-                            RefreshAppCMSBinderAction appCMSBinderAction =
-                                    new RefreshAppCMSBinderAction(appCMSPresenter,
-                                            appCMSBinder,
-                                            appCMSPresenter.isUserLoggedIn());
-                            appCMSPresenter.refreshPageAPIData(appCMSBinder.getAppCMSPageUI(),
-                                    appCMSBinder.getPageId(),
-                                    appCMSBinderAction);
+                            if (appCMSBinder != null) {
+                                RefreshAppCMSBinderAction appCMSBinderAction =
+                                        new RefreshAppCMSBinderAction(appCMSPresenter,
+                                                appCMSBinder,
+                                                appCMSPresenter.isUserLoggedIn());
+                                appCMSPresenter.refreshPageAPIData(appCMSBinder.getAppCMSPageUI(),
+                                        appCMSBinder.getPageId(),
+                                        appCMSBinderAction);
+                            }
                         }
                         handlingClose = false;
                     }
@@ -448,6 +450,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
+        appCMSPresenter.sendCloseOthersAction(null, false);
+
         Log.d(TAG, "onCreate()");
     }
 
@@ -535,6 +539,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             } catch (Exception e) {
                 Log.e(TAG, "Unable to unbind Google Play Services connection: " + e.getMessage());
             }
+        }
+
+        InputMethodManager imm =
+                (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null && appCMSParentView != null) {
+            imm.hideSoftInputFromWindow(appCMSParentView.getWindowToken(), 0);
         }
 
         Log.d(TAG, "onDestroy()");
@@ -1438,10 +1448,19 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     }
 
                     if (!TextUtils.isEmpty(endPoint)) {
-                        appCMSPresenter.getPageIdContent(appCMSMain.getApiBaseUrl(),
+                        String baseUrl = appCMSMain.getApiBaseUrl();
+                        String siteId = appCMSSite.getGist().getSiteInternalName();
+                        boolean viewPlans = appCMSPresenter.isViewPlanPage(endPoint);
+                        boolean showPage = appCMSPresenter.isShowPage(appCMSBinder.getPageId());
+                        String apiUrl = appCMSPresenter.getApiUrl(usePageIdQueryParam,
+                                viewPlans,
+                                showPage,
+                                baseUrl,
                                 endPoint,
-                                appCMSSite.getGist().getSiteInternalName(),
-                                usePageIdQueryParam,
+                                siteId,
+                                appCMSBinder.getPagePath());
+
+                        appCMSPresenter.getPageIdContent(apiUrl,
                                 appCMSBinder.getPagePath(),
                                 appCMSPageAPI -> {
                                     if (appCMSPageAPI != null) {
@@ -1509,18 +1528,21 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void setMediaRouterButtonVisibility(String pageId) {
         if (!castDisabled) {
-
-            if (appCMSPresenter.findHomePageNavItem().getPageId().equalsIgnoreCase(pageId)) {
-                ll_media_route_button.setVisibility(View.VISIBLE);
-                CastServiceProvider.getInstance(this).isHomeScreen(true);
-            } else {
+            if (!appCMSPresenter.isUserSubscribed()) {
                 ll_media_route_button.setVisibility(View.GONE);
-                CastServiceProvider.getInstance(this).isHomeScreen(false);
+            } else {
+                if (appCMSPresenter.findHomePageNavItem().getPageId().equalsIgnoreCase(pageId)) {
+                    ll_media_route_button.setVisibility(View.VISIBLE);
+                    CastServiceProvider.getInstance(this).isHomeScreen(true);
+                } else {
+                    ll_media_route_button.setVisibility(View.GONE);
+                    CastServiceProvider.getInstance(this).isHomeScreen(false);
 
-            }
+                }
 
-            if (CastServiceProvider.getInstance(this).isOverlayVisible()) {
-                CastServiceProvider.getInstance(this).showIntroOverLay();
+                if (CastServiceProvider.getInstance(this).isOverlayVisible()) {
+                    CastServiceProvider.getInstance(this).showIntroOverLay();
+                }
             }
         }
     }

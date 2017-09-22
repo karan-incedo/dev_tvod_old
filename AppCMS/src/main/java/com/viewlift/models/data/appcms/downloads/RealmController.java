@@ -100,7 +100,7 @@ public class RealmController {
 
     public RealmResults<DownloadVideoRealm> getDownloadesByUserId(String userId) {
         try {
-            return realm.where(DownloadVideoRealm.class).contains("userId", userId).findAll();
+            return realm.where(DownloadVideoRealm.class).equalTo("userId", userId).findAll();
         } catch (Exception e) {
             Log.e(TAG, "Failed to get downloads by user ID: " + e.getMessage());
         }
@@ -141,6 +141,14 @@ public class RealmController {
     public DownloadVideoRealm getDownloadById(String videoId) {
         try {
             return realm.where(DownloadVideoRealm.class).equalTo("videoId", videoId).findFirst();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get download by ID " + videoId + ": " + e.getMessage());
+        }
+        return null;
+    }
+    public RealmResults<DownloadVideoRealm> getDownloadsById(String videoId) {
+        try {
+            return realm.where(DownloadVideoRealm.class).equalTo("videoId", videoId).findAll();
         } catch (Exception e) {
             Log.e(TAG, "Failed to get download by ID " + videoId + ": " + e.getMessage());
         }
@@ -345,7 +353,11 @@ public class RealmController {
     public void removeFromDB(DownloadVideoRealm downloadVideoRealm) {
         try {
             DownloadVideoRealm toEdit = realm.where(DownloadVideoRealm.class)
-                    .equalTo("videoId", downloadVideoRealm.getVideoId()).findFirst();
+                    .beginGroup()
+                    .equalTo("videoId", downloadVideoRealm.getVideoId())
+                    .equalTo("userId", downloadVideoRealm.getUserId())
+                    .endGroup()
+                    .findFirst();
 
             if (!realm.isInTransaction())
                 realm.beginTransaction();

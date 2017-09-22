@@ -262,6 +262,10 @@
     <string name="app_cms_delete_one_history_item_message">In order to add a film back to your history, You will need to rewatch it.</string>
     <string name="app_cms_delete_all_history_items_message">In order to add films back to your history, You will need to rewatch them.</string>
 
+    <string name="app_cms_delete_watchlist_alert_title">Are you Sure?</string>
+    <string name="app_cms_delete_one_watchlist_item_message">In order to add a film back to your watchlist, You will need to re-add it.</string>
+    <string name="app_cms_delete_all_watchlist_items_message">In order to add films back to your watchlist, You will need to re-add them.</string>
+
     <string name="app_cms_delete_download_alert_title">Are you Sure?</string>
     <string name="app_cms_delete_one_download_item_message">In order to add a film back to your download list, You will need to re-download it.</string>
     <string name="app_cms_delete_all_download_items_message">In order to add films back to your download list, You will need to re-download them.</string>
