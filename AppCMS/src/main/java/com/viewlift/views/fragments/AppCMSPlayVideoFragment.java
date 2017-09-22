@@ -414,6 +414,9 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
         videoPlayerView.setOnPlayerStateChanged(playerState -> {
+            if (beaconMessageThread != null) {
+                beaconMessageThread.playbackState = playerState.getPlaybackState();
+            }
             if (playerState.getPlaybackState() == ExoPlayer.STATE_READY && !isCastConnected) {
                 if (shouldRequestAds && !isAdDisplayed) {
                     requestAds(adsUrl);
@@ -472,7 +475,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     // tell the activity that the movie is finished
                     onClosePlayerEvent.onMovieFinished();
                 }
-                if (!isTrailer) {
+                if (!isTrailer && 30 <= (videoPlayerView.getCurrentPosition() / 1000)) {
                     appCMSPresenter.updateWatchedTime(filmId,
                             videoPlayerView.getCurrentPosition() / 1000);
                 }
@@ -1191,7 +1194,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         boolean runBeaconPing;
         boolean sendBeaconPing;
         boolean isTrailer;
-
+        int playbackState;
 
         public BeaconPingThread(long beaconMsgTimeoutMsec,
                                 AppCMSPresenter appCMSPresenter,
@@ -1221,7 +1224,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
                         long currentTime = videoPlayerView.getCurrentPosition() / 1000;
                         if (appCMSPresenter != null && videoPlayerView != null
-                                && videoPlayerView.getPlayer().getPlayWhenReady() && currentTime % 30 == 0) { // For not to sent PIN in PAUSE mode
+                                && playbackState == ExoPlayer.STATE_READY && currentTime % 30 == 0) { // For not to sent PIN in PAUSE mode
 
                             Log.d(TAG, "Beacon Message Request position: " + currentTime);
 
