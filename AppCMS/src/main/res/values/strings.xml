@@ -43,7 +43,9 @@
     <string name="app_cms_network_connectivity_error_title">Network Connectivity</string>
     <string name="app_cms_network_connectivity_error_message">Please connect your device to a network and try again.</string>
     <string name="app_cms_network_connectivity_error_message_download">Please connect your device to a network and try again, or click OK for go to My Downloads.</string>
+    <string name="app_cms_signout_error_msg">Are you sure you want to log out?</string>
     <string name="app_cms_signin_error_title">Sign In</string>
+    <string name="app_cms_signout_error_title">Sign Out</string>
     <string name="app_cms_signup_error_title">Sign Up</string>
     <string name="app_cms_reset_password_title">Reset Password</string>
     <string name="app_cms_reset_password_success_description">Please check %1$s for a reset password link.</string>
@@ -251,6 +253,10 @@
     <string name="app_cms_subscribtion_title">Subscription</string>
     <string name="app_cms_download_quality_title">SET YOUR DOWNLOAD QUALITY</string>
     <string name="app_cms_download_setting_listener_key">app_cms_download_setting_listener_key</string>
+
+
+    <string name="app_cms_delete_watchlist_alert_title">Are you Sure?</string>
+    <string name="app_cms_delete_all_watchlist_items_message">In order to add films back to your watchlist, You will need to re-add them.</string>
 
     <string name="app_cms_delete_history_alert_title">Are you Sure?</string>
     <string name="app_cms_delete_one_history_item_message">In order to add a film back to your history, You will need to rewatch it.</string>
