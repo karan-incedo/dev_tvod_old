@@ -957,6 +957,7 @@ public class AppCMSPresenter {
                                 pagePath.contains(currentActivity.getString(R.string.app_cms_action_qualifier_watchvideo_key))));
                 if ((actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
                         actionType == AppCMSActionType.WATCH_TRAILER) &&
+                        contentDatum != null &&
                         !isVideoPlayerStarted) {
 
                     isVideoPlayerStarted = true;
@@ -5720,6 +5721,10 @@ public class AppCMSPresenter {
                         });
             }
 
+            if (onCloseAction != null) {
+                builder.setCancelable(false);
+            }
+
             AlertDialog dialog = builder.create();
             if (dialog.getWindow() != null) {
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
@@ -7859,8 +7864,7 @@ public class AppCMSPresenter {
         pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
 
         getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                metaPage.getPageUI(),
-                appCMSMain.getTimestamp()),
+                metaPage.getPageUI()),
                 appCMSPageUI -> {
                     try {
                         navigationPages.put(metaPage.getPageId(), appCMSPageUI);
@@ -8907,7 +8911,7 @@ public class AppCMSPresenter {
 
     public void openVideoPageFromSearch(String[] searchResultClick) {
         String permalink = searchResultClick[3];
-        String action = currentActivity.getString(R.string.app_cms_action_videopage_key);
+        String action = currentActivity.getString(R.string.app_cms_action_detailvideopage_key);
         String title = searchResultClick[0];
         String runtime = searchResultClick[1];
         Log.d(TAG, "Launching " + permalink + ":" + action);
