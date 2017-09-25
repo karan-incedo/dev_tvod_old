@@ -88,8 +88,8 @@ public class AppCMSPlayVideoFragment extends Fragment
     private final String FIREBASE_PLAYER_CHROMECAST = "Chromecast";
     private final String FIREBASE_MEDIA_TYPE_VIDEO = "Video";
     private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
-    private final int totalCountdownInMillis = 10000;
-    private final int countDownIntervalInMillis = 10;
+    private final int totalCountdownInMillis = 3000;
+    private final int countDownIntervalInMillis = 30;
     Handler mProgressHandler;
     Runnable mProgressRunnable;
     long mTotalVideoDuration;
@@ -989,6 +989,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             applyBorderToComponent(contentRatingInfoContainer, 1, highlightColor);
             progressBar.getProgressDrawable()
                     .setColorFilter(highlightColor, PorterDuff.Mode.SRC_IN);
+            progressBar.setMax(100);
         }
 
         contentRatingBack.setOnClickListener(v -> getActivity().finish());
@@ -1017,8 +1018,9 @@ public class AppCMSPlayVideoFragment extends Fragment
         new CountDownTimer(totalCountdownInMillis, countDownIntervalInMillis) {
             @Override
             public void onTick(long millisUntilFinished) {
-                long time = totalCountdownInMillis - millisUntilFinished;
-                progressBar.setProgress((int) time);
+                long progress = (long) (100.0 * (1.0 - (double) millisUntilFinished / (double) totalCountdownInMillis));
+                Log.d(TAG, "CRW Progress:"  + progress);
+                progressBar.setProgress((int) progress);
             }
 
             @Override
