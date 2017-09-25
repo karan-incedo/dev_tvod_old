@@ -97,22 +97,16 @@ public class RESTUnitTest {
     @Test
     public void test_appCMSSplashPageCall() throws Exception {
         AppCMSPageUICall appCMSPageUICall = appCMSUIComponent.appCMSPageCall();
-        AppCMSPageUI splashAppCMSPageUI = appCMSPageUICall.call(APP_CMS_SPLASH_PAGE_URL, false);
+        AppCMSPageUI splashAppCMSPageUI = appCMSPageUICall.call(null, APP_CMS_SPLASH_PAGE_URL);
         assertNotNull(splashAppCMSPageUI);
     }
 
     @Test
     public void test_appCMSHomePageAPICall() throws Exception {
         AppCMSPageAPICall appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
-        AppCMSPageAPI appCMSPageAPI = appCMSPageAPICall.call(context,
-                API_BASEURL,
-                PAGE_API_PATH,
-                SITE_ID,
+        AppCMSPageAPI appCMSPageAPI = appCMSPageAPICall.call(null,
                 null,
                 null,
-                true,
-                PAGE_ID,
-                false,
                 0);
         assertNotNull(appCMSPageAPI);
     }

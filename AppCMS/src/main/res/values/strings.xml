@@ -372,4 +372,5 @@
     <string name="cost_with_fraction">%.2f</string>
     <string name="password_space_error">"Character space not allowed in password"</string>
     <string name="free_content_key">free_content</string>
+    <string name="appcmsuijson_directoryname">androidui</string>
 </resources>

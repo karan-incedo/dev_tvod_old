@@ -7,9 +7,9 @@ build/*
 .externalNativeBuild
 /AppCMS/release/*
 *.apk
-*.json
+/*.json
 /.idea/
-/AppCMS/mobile/release/AppCMS-mobile-release.apk
+/AppCMS/mobile/release/*
 /library/build
 /library/build/*
 /sample/build/*
