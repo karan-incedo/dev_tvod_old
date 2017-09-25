@@ -372,10 +372,13 @@ public class AppCmsSearchFragment extends Fragment {
                 }
                 setAdapter(appCMSSearchResults);
             }else{
-                clrbtnFlag = false;
-                noSearchTextView.setText(getString(R.string.app_cms_no_search_result , lastSearchedString).toUpperCase());
-                noSearchTextView.setVisibility(View.VISIBLE);
-
+                if(!appCMSPresenter.isNetworkConnected()){
+                    appCMSPresenter.searchRetryDialog(lastSearchedString.toString());
+                }else{
+                    clrbtnFlag = false;
+                    noSearchTextView.setText(getString(R.string.app_cms_no_search_result , lastSearchedString).toUpperCase());
+                    noSearchTextView.setVisibility(View.VISIBLE);
+                }
                 List<String> resultForTv = appCMSPresenter.getSearchResultsFromSharePreference();
                 if (resultForTv != null && resultForTv.size() > 0) {
                     llView.setVisibility(View.VISIBLE);
