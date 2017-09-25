@@ -317,14 +317,24 @@ public class CastServiceProvider {
         }
 
         mMediaRouteButton.setOnClickListener(v -> {
-            castDisconnectDialog = new CastDisconnectDialog(mActivity);
+            if (!appCMSPresenter.isUserSubscribed()) {
+                if (appCMSPresenter.isUserLoggedIn()) {
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                            null);
+                } else {
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                            null);
+                }
+            } else {
+                castDisconnectDialog = new CastDisconnectDialog(mActivity);
 
-            if (mCastHelper.mSelectedDevice == null && mActivity != null) {
-                castChooserDialog.setRoutes(mCastHelper.routes);
-                castChooserDialog.show();
-            } else if (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null && mActivity != null) {
-                castDisconnectDialog.setToBeDisconnectDevice(mCastHelper.mMediaRouter);
-                castDisconnectDialog.show();
+                if (mCastHelper.mSelectedDevice == null && mActivity != null) {
+                    castChooserDialog.setRoutes(mCastHelper.routes);
+                    castChooserDialog.show();
+                } else if (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null && mActivity != null) {
+                    castDisconnectDialog.setToBeDisconnectDevice(mCastHelper.mMediaRouter);
+                    castDisconnectDialog.show();
+                }
             }
         });
     }

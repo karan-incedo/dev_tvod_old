@@ -1,15 +1,15 @@
 <resources>
     <!-- Primary app values -->
- <!--<string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
- <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
+    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
+    <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
 
     <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
 
- <!--<string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>-->
- <string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>
+     <string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>
+     <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>-->
 
 
-    <string name="app_cms_url_with_appended_timestamp">%1$s?x=%2$d</string>
+    <string name="app_cms_url_with_appended_timestamp">%1$s</string>
     <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
 
     <!-- x-api-key -->
@@ -70,6 +70,9 @@
     <!-- AppCMS User Video Status API -->
     <string name="app_cms_video_status_api_url">%1$s/user/info/video/%2$s?site=%3$s</string>
 
+    <!-- -->
+    <string name="app_cms_shows_status_api_url">%1$s/content/pages?path=/shows/title/sujith&amp;site=%2$s&amp;includeContent=true</string>
+
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>
@@ -103,6 +106,7 @@
     <string name="app_cms_page_play_image_key">playImage</string>
     <string name="app_cms_page_tray_title_key">trayTitle</string>
     <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
+    <string name="app_cms_page_badge_image_key">badgeImage</string>
     <string name="app_cms_page_thumbnail_title_key">thumbnailTitle</string>
     <string name="app_cms_page_text_alignment_center_key">center</string>
     <string name="app_cms_page_text_alignment_key">textAlignment</string>
@@ -200,6 +204,7 @@
     <string name="app_cms_page_api_video_detail_module_key">VideoDetailModule</string>
     <string name="app_cms_page_subscription_page_key">Subscription</string>
     <string name="app_cms_page_subscription_page_name_key">View Plans</string>
+    <string name="app_cms_page_show_page_name_key">Show Page</string>
 
     <!-- Subscription Keys -->
     <string name="app_cms_page_subscription_selectionplan_key">AC SelectPlan 02</string>

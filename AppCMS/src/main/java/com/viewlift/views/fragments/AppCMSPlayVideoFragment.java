@@ -160,6 +160,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private CastHelper mCastHelper;
     private String closedCaptionUrl;
     private boolean isCastConnected;
+
     CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
         if (onClosePlayerEvent != null) {
             pauseVideo();
@@ -176,8 +177,10 @@ public class AppCMSPlayVideoFragment extends Fragment
                     });
         }
     };
+
     private Timer entitlementCheckTimer;
     private TimerTask entitlementCheckTimerTask;
+    private boolean entitlementCheckCancelled;
 
     public static AppCMSPlayVideoFragment newInstance(Context context,
                                                       String primaryCategory,
@@ -272,9 +275,11 @@ public class AppCMSPlayVideoFragment extends Fragment
         setRetainInstance(true);
 
         if (appCMSPresenter.isAppSVOD() &&
+                !isTrailer &&
                 !freeContent &&
                 !appCMSPresenter.isUserSubscribed()) {
             int entitlementCheckMultiplier = 5;
+            entitlementCheckCancelled = false;
 
             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
             if (appCMSMain != null &&
@@ -297,28 +302,31 @@ public class AppCMSPlayVideoFragment extends Fragment
                 public void run() {
                     appCMSPresenter.getUserData(userIdentity -> {
                         Log.d(TAG, "Video player entitlement check triggered");
-                        int secsViewed = (int) videoPlayerView.getCurrentPosition() / 1000;
-                        if (maxPreviewSecs < secsViewed && (userIdentity == null || !userIdentity.isSubscribed())) {
-                            Log.d(TAG, "User is not subscribed - pausing video and showing Subscribe dialog");
-                            pauseVideo();
-                            if (videoPlayerView != null) {
-                                videoPlayerView.disableController();
-                            }
-                            videoPlayerInfoContainer.setVisibility(View.VISIBLE);
-                            if (appCMSPresenter.isUserLoggedIn()) {
-                                appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
-                                        () -> {
-                                            onClosePlayerEvent.closePlayer();
-                                        });
+                        if (!entitlementCheckCancelled) {
+                            int secsViewed = (int) videoPlayerView.getCurrentPosition() / 1000;
+                            if (maxPreviewSecs < secsViewed && (userIdentity == null || !userIdentity.isSubscribed())) {
+                                Log.d(TAG, "User is not subscribed - pausing video and showing Subscribe dialog");
+                                pauseVideo();
+                                if (videoPlayerView != null) {
+                                    videoPlayerView.disableController();
+                                }
+                                videoPlayerInfoContainer.setVisibility(View.VISIBLE);
+                                if (appCMSPresenter.isUserLoggedIn()) {
+                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                                            () -> {
+                                                onClosePlayerEvent.closePlayer();
+                                            });
+                                } else {
+                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                                            () -> {
+                                                onClosePlayerEvent.closePlayer();
+                                            });
+                                }
+                                cancel();
+                                entitlementCheckCancelled = true;
                             } else {
-                                appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
-                                        () -> {
-                                            onClosePlayerEvent.closePlayer();
-                                        });
+                                Log.d(TAG, "User is subscribed - resuming video");
                             }
-                            cancel();
-                        } else {
-                            Log.d(TAG, "User is subscribed - resuming video");
                         }
                     });
                 }
@@ -406,6 +414,9 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
         videoPlayerView.setOnPlayerStateChanged(playerState -> {
+            if (beaconMessageThread != null) {
+                beaconMessageThread.playbackState = playerState.getPlaybackState();
+            }
             if (playerState.getPlaybackState() == ExoPlayer.STATE_READY && !isCastConnected) {
                 if (shouldRequestAds && !isAdDisplayed) {
                     requestAds(adsUrl);
@@ -464,7 +475,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     // tell the activity that the movie is finished
                     onClosePlayerEvent.onMovieFinished();
                 }
-                if (!isTrailer) {
+                if (!isTrailer && 30 <= (videoPlayerView.getCurrentPosition() / 1000)) {
                     appCMSPresenter.updateWatchedTime(filmId,
                             videoPlayerView.getCurrentPosition() / 1000);
                 }
@@ -550,6 +561,10 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoLoadingProgress.setVisibility(View.VISIBLE);
 
         showCRWWarningMessage = true;
+
+        if (appCMSPresenter.isAppSVOD()) {
+            videoPlayerView.startPlayer();
+        }
 
         return rootView;
     }
@@ -1183,7 +1198,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         boolean runBeaconPing;
         boolean sendBeaconPing;
         boolean isTrailer;
-
+        int playbackState;
 
         public BeaconPingThread(long beaconMsgTimeoutMsec,
                                 AppCMSPresenter appCMSPresenter,
@@ -1213,7 +1228,8 @@ public class AppCMSPlayVideoFragment extends Fragment
 
                         long currentTime = videoPlayerView.getCurrentPosition() / 1000;
                         if (appCMSPresenter != null && videoPlayerView != null
-                                && videoPlayerView.getPlayer().getPlayWhenReady() && currentTime % 30 == 0) { // For not to sent PIN in PAUSE mode
+                                && 30 <= (videoPlayerView.getCurrentPosition() / 1000)
+                                && playbackState == ExoPlayer.STATE_READY && currentTime % 30 == 0) { // For not to sent PIN in PAUSE mode
 
                             Log.d(TAG, "Beacon Message Request position: " + currentTime);
 
