@@ -310,6 +310,7 @@ public class LoginModule extends ModuleView {
                                         String[] authData = new String[2];
                                         authData[0] = visibleEmailInputView.getText().toString();
                                         authData[1] = visiblePasswordInputView.getText().toString();
+                                        v.setEnabled(false);
                                         appCMSPresenter.launchButtonSelectedAction(null,
                                                 component.getAction(),
                                                 null,
