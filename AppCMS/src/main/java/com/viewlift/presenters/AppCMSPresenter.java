@@ -1291,125 +1291,127 @@ public class AppCMSPresenter {
                         currentActivity.sendBroadcast(new Intent(
                                 AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                         AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
-                        getPageIdContent(apiUrl,
-                                pagePath,
-                                new AppCMSPageAPIAction(appbarPresent,
-                                        fullscreenEnabled,
-                                        navbarPresent,
-                                        appCMSPageUI,
-                                        action,
-                                        getPageId(appCMSPageUI),
-                                        filmTitle,
-                                        pagePath,
-                                        false,
-                                        closeLauncher,
-                                        null) {
+                        if (appCMSPageUI != null) {
+                            getPageIdContent(apiUrl,
+                                    pagePath,
+                                    new AppCMSPageAPIAction(appbarPresent,
+                                            fullscreenEnabled,
+                                            navbarPresent,
+                                            appCMSPageUI,
+                                            action,
+                                            getPageId(appCMSPageUI),
+                                            filmTitle,
+                                            pagePath,
+                                            false,
+                                            closeLauncher,
+                                            null) {
 
-                                    final AppCMSPageAPIAction appCMSPageAPIAction = this;
+                                        final AppCMSPageAPIAction appCMSPageAPIAction = this;
 
-                                    @Override
-                                    public void call(final AppCMSPageAPI appCMSPageAPI) {
-                                        if (appCMSPageAPI != null) {
+                                        @Override
+                                        public void call(final AppCMSPageAPI appCMSPageAPI) {
+                                            if (appCMSPageAPI != null) {
 
-                                            boolean loadingHistory = false;
-                                            if (isUserLoggedIn()) {
-                                                for (Module module : appCMSPageAPI.getModules()) {
-                                                    AppCMSUIKeyType moduleType = jsonValueKeyMap.get(module.getModuleType());
-                                                    if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY ||
-                                                            moduleType == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
-                                                        loadingHistory = true;
-                                                        getHistoryData(appCMSHistoryResult -> {
-                                                            if (appCMSHistoryResult != null) {
-                                                                AppCMSPageAPI historyAPI =
-                                                                        appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
-                                                                historyAPI.getModules().get(0).setId(module.getId());
-                                                                mergeData(historyAPI, appCMSPageAPI);
+                                                boolean loadingHistory = false;
+                                                if (isUserLoggedIn()) {
+                                                    for (Module module : appCMSPageAPI.getModules()) {
+                                                        AppCMSUIKeyType moduleType = jsonValueKeyMap.get(module.getModuleType());
+                                                        if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY ||
+                                                                moduleType == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
+                                                            loadingHistory = true;
+                                                            getHistoryData(appCMSHistoryResult -> {
+                                                                if (appCMSHistoryResult != null) {
+                                                                    AppCMSPageAPI historyAPI =
+                                                                            appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
+                                                                    historyAPI.getModules().get(0).setId(module.getId());
+                                                                    mergeData(historyAPI, appCMSPageAPI);
 
-                                                                cancelInternalEvents();
-                                                                pushActionInternalEvents(pageId
-                                                                        + BaseView.isLandscape(currentActivity));
-                                                                navigationPageData.put(pageId, appCMSPageAPI);
-                                                                if (launchActivity) {
-                                                                    launchPageActivity(currentActivity,
-                                                                            appCMSPageAPIAction.appCMSPageUI,
-                                                                            appCMSPageAPI,
-                                                                            appCMSPageAPIAction.pageId,
-                                                                            appCMSPageAPIAction.pageTitle,
-                                                                            appCMSPageAPIAction.pageTitle,
-                                                                            pageIdToPageNameMap.get(pageId),
-                                                                            loadFromFile,
-                                                                            appCMSPageAPIAction.appbarPresent,
-                                                                            appCMSPageAPIAction.fullscreenEnabled,
-                                                                            appCMSPageAPIAction.navbarPresent,
-                                                                            appCMSPageAPIAction.sendCloseAction,
-                                                                            appCMSPageAPIAction.searchQuery,
-                                                                            ExtraScreenType.NONE);
-                                                                } else {
-                                                                    Bundle args = getPageActivityBundle(currentActivity,
-                                                                            appCMSPageAPIAction.appCMSPageUI,
-                                                                            appCMSPageAPI,
-                                                                            appCMSPageAPIAction.pageId,
-                                                                            appCMSPageAPIAction.pageTitle,
-                                                                            appCMSPageAPIAction.pagePath,
-                                                                            pageIdToPageNameMap.get(pageId),
-                                                                            loadFromFile,
-                                                                            appCMSPageAPIAction.appbarPresent,
-                                                                            appCMSPageAPIAction.fullscreenEnabled,
-                                                                            appCMSPageAPIAction.navbarPresent,
-                                                                            appCMSPageAPIAction.sendCloseAction,
-                                                                            appCMSPageAPIAction.searchQuery,
-                                                                            ExtraScreenType.NONE);
-                                                                    if (args != null) {
-                                                                        Intent updatePageIntent =
-                                                                                new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                                                        updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                                                                args);
-                                                                        currentActivity.sendBroadcast(updatePageIntent);
-                                                                        dismissOpenDialogs(null);
-                                                                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                                                                    cancelInternalEvents();
+                                                                    pushActionInternalEvents(pageId
+                                                                            + BaseView.isLandscape(currentActivity));
+                                                                    navigationPageData.put(pageId, appCMSPageAPI);
+                                                                    if (launchActivity) {
+                                                                        launchPageActivity(currentActivity,
+                                                                                appCMSPageAPIAction.appCMSPageUI,
+                                                                                appCMSPageAPI,
+                                                                                appCMSPageAPIAction.pageId,
+                                                                                appCMSPageAPIAction.pageTitle,
+                                                                                appCMSPageAPIAction.pageTitle,
+                                                                                pageIdToPageNameMap.get(pageId),
+                                                                                loadFromFile,
+                                                                                appCMSPageAPIAction.appbarPresent,
+                                                                                appCMSPageAPIAction.fullscreenEnabled,
+                                                                                appCMSPageAPIAction.navbarPresent,
+                                                                                appCMSPageAPIAction.sendCloseAction,
+                                                                                appCMSPageAPIAction.searchQuery,
+                                                                                ExtraScreenType.NONE);
+                                                                    } else {
+                                                                        Bundle args = getPageActivityBundle(currentActivity,
+                                                                                appCMSPageAPIAction.appCMSPageUI,
+                                                                                appCMSPageAPI,
+                                                                                appCMSPageAPIAction.pageId,
+                                                                                appCMSPageAPIAction.pageTitle,
+                                                                                appCMSPageAPIAction.pagePath,
+                                                                                pageIdToPageNameMap.get(pageId),
+                                                                                loadFromFile,
+                                                                                appCMSPageAPIAction.appbarPresent,
+                                                                                appCMSPageAPIAction.fullscreenEnabled,
+                                                                                appCMSPageAPIAction.navbarPresent,
+                                                                                appCMSPageAPIAction.sendCloseAction,
+                                                                                appCMSPageAPIAction.searchQuery,
+                                                                                ExtraScreenType.NONE);
+                                                                        if (args != null) {
+                                                                            Intent updatePageIntent =
+                                                                                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                                                            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                                                                    args);
+                                                                            currentActivity.sendBroadcast(updatePageIntent);
+                                                                            dismissOpenDialogs(null);
+                                                                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                                                                        }
                                                                     }
                                                                 }
-                                                            }
-                                                        });
+                                                            });
+                                                        }
                                                     }
                                                 }
-                                            }
 
-                                            if (!loadingHistory) {
-                                                cancelInternalEvents();
-                                                pushActionInternalEvents(this.action
-                                                        + BaseView.isLandscape(currentActivity));
-                                                Bundle args = getPageActivityBundle(currentActivity,
-                                                        this.appCMSPageUI,
-                                                        appCMSPageAPI,
-                                                        this.pageId,
-                                                        appCMSPageAPI.getTitle(),
-                                                        this.pagePath,
-                                                        screenName.toString(),
-                                                        loadFromFile,
-                                                        this.appbarPresent,
-                                                        this.fullscreenEnabled,
-                                                        this.navbarPresent,
-                                                        this.sendCloseAction,
-                                                        this.searchQuery,
-                                                        ExtraScreenType.NONE);
-                                                if (args != null) {
-                                                    Intent updatePageIntent =
-                                                            new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                                    updatePageIntent.putExtra(
-                                                            currentActivity.getString(R.string.app_cms_bundle_key),
-                                                            args);
-                                                    currentActivity.sendBroadcast(updatePageIntent);
-                                                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                                                if (!loadingHistory) {
+                                                    cancelInternalEvents();
+                                                    pushActionInternalEvents(this.action
+                                                            + BaseView.isLandscape(currentActivity));
+                                                    Bundle args = getPageActivityBundle(currentActivity,
+                                                            this.appCMSPageUI,
+                                                            appCMSPageAPI,
+                                                            this.pageId,
+                                                            appCMSPageAPI.getTitle(),
+                                                            this.pagePath,
+                                                            screenName.toString(),
+                                                            loadFromFile,
+                                                            this.appbarPresent,
+                                                            this.fullscreenEnabled,
+                                                            this.navbarPresent,
+                                                            this.sendCloseAction,
+                                                            this.searchQuery,
+                                                            ExtraScreenType.NONE);
+                                                    if (args != null) {
+                                                        Intent updatePageIntent =
+                                                                new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                                        updatePageIntent.putExtra(
+                                                                currentActivity.getString(R.string.app_cms_bundle_key),
+                                                                args);
+                                                        currentActivity.sendBroadcast(updatePageIntent);
+                                                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                                                    }
                                                 }
+                                            } else {
+                                                sendStopLoadingPageAction();
+                                                setNavItemToCurrentAction(currentActivity);
                                             }
-                                        } else {
-                                            sendStopLoadingPageAction();
-                                            setNavItemToCurrentAction(currentActivity);
+                                            loadingPage = false;
                                         }
-                                        loadingPage = false;
-                                    }
-                                });
+                                    });
+                        }
                     }
                 }
             }
@@ -4127,157 +4129,160 @@ public class AppCMSPresenter {
             Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
             Log.d(TAG, "Search query (optional): " + searchQuery);
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
 
-            String baseUrl = appCMSMain.getApiBaseUrl();
-            String endPoint = pageIdToPageAPIUrlMap.get(pageId);
-            String siteId = appCMSSite.getGist().getSiteInternalName();
-            boolean usePageIdQueryParam = true;
-            boolean viewPlans = isViewPlanPage(endPoint);
-            boolean showPage = false;
-            String apiUrl = getApiUrl(usePageIdQueryParam,
-                    viewPlans,
-                    showPage,
-                    baseUrl,
-                    endPoint,
-                    siteId,
-                    getPageId(appCMSPageUI));
+            if (appCMSPageUI != null) {
+                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
 
-            getPageIdContent(apiUrl,
-                    getPageId(appCMSPageUI),
-                    new AppCMSPageAPIAction(appbarPresent,
-                            fullscreenEnabled,
-                            navbarPresent,
-                            appCMSPageUI,
-                            pageId,
-                            pageId,
-                            pageTitle,
-                            pageId,
-                            launchActivity,
-                            sendCloseAction,
-                            searchQuery) {
-                        @Override
-                        public void call(final AppCMSPageAPI appCMSPageAPI) {
-                            final AppCMSPageAPIAction appCMSPageAPIAction = this;
-                            if (appCMSPageAPI != null) {
-                                boolean loadingHistory = false;
-                                if (isUserLoggedIn()) {
-                                    for (Module module : appCMSPageAPI.getModules()) {
-                                        if (jsonValueKeyMap.get(module.getModuleType()) ==
-                                                AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
-                                            loadingHistory = true;
-                                            getHistoryData(appCMSHistoryResult -> {
-                                                try {
-                                                    if (appCMSHistoryResult != null) {
-                                                        AppCMSPageAPI historyAPI =
-                                                                appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
-                                                        historyAPI.getModules().get(0).setId(module.getId());
-                                                        mergeData(historyAPI, appCMSPageAPI);
+                String baseUrl = appCMSMain.getApiBaseUrl();
+                String endPoint = pageIdToPageAPIUrlMap.get(pageId);
+                String siteId = appCMSSite.getGist().getSiteInternalName();
+                boolean usePageIdQueryParam = true;
+                boolean viewPlans = isViewPlanPage(endPoint);
+                boolean showPage = false;
+                String apiUrl = getApiUrl(usePageIdQueryParam,
+                        viewPlans,
+                        showPage,
+                        baseUrl,
+                        endPoint,
+                        siteId,
+                        getPageId(appCMSPageUI));
 
-                                                        cancelInternalEvents();
-                                                        pushActionInternalEvents(appCMSPageAPIAction.pageId
-                                                                + BaseView.isLandscape(currentActivity));
-                                                        navigationPageData.put(appCMSPageAPIAction.pageId, appCMSPageAPI);
-                                                        if (appCMSPageAPIAction.launchActivity) {
-                                                            launchPageActivity(currentActivity,
-                                                                    appCMSPageAPIAction.appCMSPageUI,
-                                                                    appCMSPageAPI,
-                                                                    appCMSPageAPIAction.pageId,
-                                                                    appCMSPageAPIAction.pageTitle,
-                                                                    appCMSPageAPIAction.pagePath,
-                                                                    pageIdToPageNameMap.get(appCMSPageAPIAction.pageId),
-                                                                    loadFromFile,
-                                                                    appCMSPageAPIAction.appbarPresent,
-                                                                    appCMSPageAPIAction.fullscreenEnabled,
-                                                                    appCMSPageAPIAction.navbarPresent,
-                                                                    appCMSPageAPIAction.sendCloseAction,
-                                                                    appCMSPageAPIAction.searchQuery,
-                                                                    ExtraScreenType.NONE);
-                                                        } else {
-                                                            Bundle args = getPageActivityBundle(currentActivity,
-                                                                    appCMSPageAPIAction.appCMSPageUI,
-                                                                    appCMSPageAPI,
-                                                                    appCMSPageAPIAction.pageId,
-                                                                    appCMSPageAPIAction.pageTitle,
-                                                                    appCMSPageAPIAction.pagePath,
-                                                                    pageIdToPageNameMap.get(appCMSPageAPIAction.pageId),
-                                                                    loadFromFile,
-                                                                    appCMSPageAPIAction.appbarPresent,
-                                                                    appCMSPageAPIAction.fullscreenEnabled,
-                                                                    appCMSPageAPIAction.navbarPresent,
-                                                                    appCMSPageAPIAction.sendCloseAction,
-                                                                    appCMSPageAPIAction.searchQuery,
-                                                                    ExtraScreenType.NONE);
-                                                            if (args != null) {
-                                                                Intent updatePageIntent =
-                                                                        new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                                                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                                                        args);
-                                                                currentActivity.sendBroadcast(updatePageIntent);
-                                                                dismissOpenDialogs(null);
+                getPageIdContent(apiUrl,
+                        getPageId(appCMSPageUI),
+                        new AppCMSPageAPIAction(appbarPresent,
+                                fullscreenEnabled,
+                                navbarPresent,
+                                appCMSPageUI,
+                                pageId,
+                                pageId,
+                                pageTitle,
+                                pageId,
+                                launchActivity,
+                                sendCloseAction,
+                                searchQuery) {
+                            @Override
+                            public void call(final AppCMSPageAPI appCMSPageAPI) {
+                                final AppCMSPageAPIAction appCMSPageAPIAction = this;
+                                if (appCMSPageAPI != null) {
+                                    boolean loadingHistory = false;
+                                    if (isUserLoggedIn()) {
+                                        for (Module module : appCMSPageAPI.getModules()) {
+                                            if (jsonValueKeyMap.get(module.getModuleType()) ==
+                                                    AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
+                                                loadingHistory = true;
+                                                getHistoryData(appCMSHistoryResult -> {
+                                                    try {
+                                                        if (appCMSHistoryResult != null) {
+                                                            AppCMSPageAPI historyAPI =
+                                                                    appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
+                                                            historyAPI.getModules().get(0).setId(module.getId());
+                                                            mergeData(historyAPI, appCMSPageAPI);
+
+                                                            cancelInternalEvents();
+                                                            pushActionInternalEvents(appCMSPageAPIAction.pageId
+                                                                    + BaseView.isLandscape(currentActivity));
+                                                            navigationPageData.put(appCMSPageAPIAction.pageId, appCMSPageAPI);
+                                                            if (appCMSPageAPIAction.launchActivity) {
+                                                                launchPageActivity(currentActivity,
+                                                                        appCMSPageAPIAction.appCMSPageUI,
+                                                                        appCMSPageAPI,
+                                                                        appCMSPageAPIAction.pageId,
+                                                                        appCMSPageAPIAction.pageTitle,
+                                                                        appCMSPageAPIAction.pagePath,
+                                                                        pageIdToPageNameMap.get(appCMSPageAPIAction.pageId),
+                                                                        loadFromFile,
+                                                                        appCMSPageAPIAction.appbarPresent,
+                                                                        appCMSPageAPIAction.fullscreenEnabled,
+                                                                        appCMSPageAPIAction.navbarPresent,
+                                                                        appCMSPageAPIAction.sendCloseAction,
+                                                                        appCMSPageAPIAction.searchQuery,
+                                                                        ExtraScreenType.NONE);
+                                                            } else {
+                                                                Bundle args = getPageActivityBundle(currentActivity,
+                                                                        appCMSPageAPIAction.appCMSPageUI,
+                                                                        appCMSPageAPI,
+                                                                        appCMSPageAPIAction.pageId,
+                                                                        appCMSPageAPIAction.pageTitle,
+                                                                        appCMSPageAPIAction.pagePath,
+                                                                        pageIdToPageNameMap.get(appCMSPageAPIAction.pageId),
+                                                                        loadFromFile,
+                                                                        appCMSPageAPIAction.appbarPresent,
+                                                                        appCMSPageAPIAction.fullscreenEnabled,
+                                                                        appCMSPageAPIAction.navbarPresent,
+                                                                        appCMSPageAPIAction.sendCloseAction,
+                                                                        appCMSPageAPIAction.searchQuery,
+                                                                        ExtraScreenType.NONE);
+                                                                if (args != null) {
+                                                                    Intent updatePageIntent =
+                                                                            new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                                                    updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                                                            args);
+                                                                    currentActivity.sendBroadcast(updatePageIntent);
+                                                                    dismissOpenDialogs(null);
+                                                                }
                                                             }
                                                         }
+                                                    } catch (Exception e) {
+                                                        Log.e(TAG, "Error parsing history result: " + e.getMessage());
                                                     }
-                                                } catch (Exception e) {
-                                                    Log.e(TAG, "Error parsing history result: " + e.getMessage());
-                                                }
-                                            });
+                                                });
+                                            }
                                         }
                                     }
-                                }
 
-                                if (!loadingHistory) {
-                                    cancelInternalEvents();
-                                    pushActionInternalEvents(this.pageId + BaseView.isLandscape(currentActivity));
-                                    navigationPageData.put(this.pageId, appCMSPageAPI);
-                                    if (this.launchActivity) {
-                                        launchPageActivity(currentActivity,
-                                                this.appCMSPageUI,
-                                                appCMSPageAPI,
-                                                this.pageId,
-                                                this.pageTitle,
-                                                this.pagePath,
-                                                pageIdToPageNameMap.get(this.pageId),
-                                                loadFromFile,
-                                                this.appbarPresent,
-                                                this.fullscreenEnabled,
-                                                this.navbarPresent,
-                                                this.sendCloseAction,
-                                                this.searchQuery,
-                                                ExtraScreenType.NONE);
-                                    } else {
-                                        Bundle args = getPageActivityBundle(currentActivity,
-                                                this.appCMSPageUI,
-                                                appCMSPageAPI,
-                                                this.pageId,
-                                                this.pageTitle,
-                                                this.pagePath,
-                                                pageIdToPageNameMap.get(this.pageId),
-                                                loadFromFile,
-                                                this.appbarPresent,
-                                                this.fullscreenEnabled,
-                                                this.navbarPresent,
-                                                this.sendCloseAction,
-                                                this.searchQuery,
-                                                ExtraScreenType.NONE);
-                                        if (args != null) {
-                                            Intent updatePageIntent =
-                                                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                                    args);
-                                            currentActivity.sendBroadcast(updatePageIntent);
-                                            dismissOpenDialogs(null);
+                                    if (!loadingHistory) {
+                                        cancelInternalEvents();
+                                        pushActionInternalEvents(this.pageId + BaseView.isLandscape(currentActivity));
+                                        navigationPageData.put(this.pageId, appCMSPageAPI);
+                                        if (this.launchActivity) {
+                                            launchPageActivity(currentActivity,
+                                                    this.appCMSPageUI,
+                                                    appCMSPageAPI,
+                                                    this.pageId,
+                                                    this.pageTitle,
+                                                    this.pagePath,
+                                                    pageIdToPageNameMap.get(this.pageId),
+                                                    loadFromFile,
+                                                    this.appbarPresent,
+                                                    this.fullscreenEnabled,
+                                                    this.navbarPresent,
+                                                    this.sendCloseAction,
+                                                    this.searchQuery,
+                                                    ExtraScreenType.NONE);
+                                        } else {
+                                            Bundle args = getPageActivityBundle(currentActivity,
+                                                    this.appCMSPageUI,
+                                                    appCMSPageAPI,
+                                                    this.pageId,
+                                                    this.pageTitle,
+                                                    this.pagePath,
+                                                    pageIdToPageNameMap.get(this.pageId),
+                                                    loadFromFile,
+                                                    this.appbarPresent,
+                                                    this.fullscreenEnabled,
+                                                    this.navbarPresent,
+                                                    this.sendCloseAction,
+                                                    this.searchQuery,
+                                                    ExtraScreenType.NONE);
+                                            if (args != null) {
+                                                Intent updatePageIntent =
+                                                        new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                                        args);
+                                                currentActivity.sendBroadcast(updatePageIntent);
+                                                dismissOpenDialogs(null);
+                                            }
                                         }
                                     }
+                                } else {
+                                    sendStopLoadingPageAction();
+                                    setNavItemToCurrentAction(currentActivity);
                                 }
-                            } else {
-                                sendStopLoadingPageAction();
-                                setNavItemToCurrentAction(currentActivity);
+                                loadingPage = false;
                             }
-                            loadingPage = false;
-                        }
-                    });
-            result = true;
+                        });
+                result = true;
+            }
         } else if (isNetworkConnected() &&
                 currentActivity != null &&
                 !TextUtils.isEmpty(url) &&
@@ -6916,22 +6921,24 @@ public class AppCMSPresenter {
     public void refreshPageAPIData(AppCMSPageUI appCMSPageUI,
                                    String pageId,
                                    Action1<AppCMSPageAPI> appCMSPageAPIReadyAction) {
-        String baseUrl = appCMSMain.getApiBaseUrl();
-        String endPoint = pageIdToPageAPIUrlMap.get(pageId);
-        String siteId = appCMSSite.getGist().getSiteInternalName();
-        boolean usePageIdQueryParam = true;
-        boolean viewPlans = isViewPlanPage(endPoint);
-        boolean showPage = false;
-        String apiUrl = getApiUrl(usePageIdQueryParam,
-                viewPlans,
-                showPage,
-                baseUrl,
-                endPoint,
-                siteId,
-                getPageId(appCMSPageUI));
-        getPageIdContent(apiUrl,
-                getPageId(appCMSPageUI),
-                appCMSPageAPIReadyAction);
+        if (appCMSPageUI != null) {
+            String baseUrl = appCMSMain.getApiBaseUrl();
+            String endPoint = pageIdToPageAPIUrlMap.get(pageId);
+            String siteId = appCMSSite.getGist().getSiteInternalName();
+            boolean usePageIdQueryParam = true;
+            boolean viewPlans = isViewPlanPage(endPoint);
+            boolean showPage = false;
+            String apiUrl = getApiUrl(usePageIdQueryParam,
+                    viewPlans,
+                    showPage,
+                    baseUrl,
+                    endPoint,
+                    siteId,
+                    getPageId(appCMSPageUI));
+            getPageIdContent(apiUrl,
+                    getPageId(appCMSPageUI),
+                    appCMSPageAPIReadyAction);
+        }
     }
 
     public void login(String email, String password) {
@@ -7781,8 +7788,9 @@ public class AppCMSPresenter {
                                boolean loadFromFile) {
         GetAppCMSPageUIAsyncTask.Params params =
                 new GetAppCMSPageUIAsyncTask.Params.Builder()
+                        .context(currentContext)
                         .url(url)
-                        .loadFromFile(loadFromFile).build();
+                        .build();
         new GetAppCMSPageUIAsyncTask(appCMSPageUICall, onPageReady).execute(params);
     }
 

@@ -390,7 +390,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                             : View.GONE);
             videoPlayerView.setUri(Uri.parse(hlsUrl),
                     !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
-            Log.i(TAG, "Playing video: " + hlsUrl);
+            Log.i(TAG, "Playing video: " + title);
         }
         try {
             mStreamId = appCMSPresenter.getStreamingId(title);
