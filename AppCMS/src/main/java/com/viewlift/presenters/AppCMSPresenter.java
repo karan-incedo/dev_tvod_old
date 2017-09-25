@@ -464,6 +464,8 @@ public class AppCMSPresenter {
     private String planToPurchase;
     private String currencyCode;
     private String countryCode;
+    private boolean upgradesAvailable;
+    private boolean checkUpgradeFlag;
     private String currencyOfPlanToPurchase;
     private String planToPurchaseName;
     private String apikey;
@@ -609,6 +611,9 @@ public class AppCMSPresenter {
                 showEntitlementDialog(DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED, null);
             }
         });
+
+        this.checkUpgradeFlag = false;
+        this.upgradesAvailable = false;
     }
 
     /*does not let user enter space in edittext*/
@@ -1847,7 +1852,8 @@ public class AppCMSPresenter {
                                               String recurringPaymentCurrencyCode,
                                               String countryCode,
                                               boolean isRenewable,
-                                              String getRenewableFrequency) {
+                                              String getRenewableFrequency,
+                                              boolean upgradesAvailable) {
         if (currentActivity != null) {
             launchType = LaunchType.SUBSCRIBE;
             skuToPurchase = sku;
@@ -1857,6 +1863,8 @@ public class AppCMSPresenter {
             planToPurchasePrice = planPrice;
             planToPurchaseDiscountedPrice = discountedPrice;
             currencyCode = recurringPaymentCurrencyCode;
+            this.upgradesAvailable = upgradesAvailable;
+            this.checkUpgradeFlag = true;
             this.countryCode = countryCode;
             this.isRenewable = isRenewable;
             this.renewableFrequency = getRenewableFrequency;
@@ -4826,6 +4834,8 @@ public class AppCMSPresenter {
                                     .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
                                     refreshSubscriptionData) {
 
+                                checkUpgradeFlag = false;
+
                                 refreshSubscriptionData(() -> {
 
                                 }, true);
@@ -4923,6 +4933,9 @@ public class AppCMSPresenter {
                                 if (appCMSMain.getServiceType()
                                         .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
                                         refreshSubscriptionData) {
+
+                                    checkUpgradeFlag = false;
+
                                     refreshSubscriptionData(() -> {
 
                                     }, true);
@@ -5741,11 +5754,12 @@ public class AppCMSPresenter {
                         });
             }
 
+            AlertDialog dialog = builder.create();
+
             if (onCloseAction != null) {
-                builder.setCancelable(false);
+                dialog.setCanceledOnTouchOutside(false);
             }
 
-            AlertDialog dialog = builder.create();
             if (dialog.getWindow() != null) {
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
                         Color.parseColor(appCMSMain.getBrand()
@@ -6586,6 +6600,10 @@ public class AppCMSPresenter {
     }
 
     public boolean upgradesAvailableForUser() {
+        if (checkUpgradeFlag) {
+            return upgradesAvailable;
+        }
+
         List<SubscriptionPlan> availableUpgradesForUser = availablePlans();
         if (availableUpgradesForUser != null && !availableUpgradesForUser.isEmpty()) {
             return true;
@@ -7099,6 +7117,7 @@ public class AppCMSPresenter {
                                 if (appCMSMain.getServiceType()
                                         .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
                                         refreshSubscriptionData) {
+                                    checkUpgradeFlag = false;
                                     refreshSubscriptionData(() -> {
                                         if (entitlementPendingVideoData != null) {
                                             navigateToHomeToRefresh = false;

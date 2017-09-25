@@ -323,6 +323,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
                                 double discountedPrice = data.getPlanDetails().get(0).getRecurringPaymentAmount();
 
+                                boolean upgradesAvailable = adapterData.indexOf(data) == 0;
+
                                 appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
                                         data.getId(),
                                         data.getPlanDetails().get(0).getCountryCode(),
@@ -332,8 +334,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         data.getPlanDetails().get(0).getRecurringPaymentCurrencyCode(),
                                         data.getPlanDetails().get(0).getCountryCode(),
                                         data.getRenewable(),
-                                        data.getRenewalCycleType()
-                                );
+                                        data.getRenewalCycleType(),
+                                        upgradesAvailable);
                             } else {
                                 collectionGridItemView.performClick();
                             }
