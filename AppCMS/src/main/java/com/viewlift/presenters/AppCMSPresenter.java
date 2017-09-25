@@ -3829,9 +3829,10 @@ public class AppCMSPresenter {
 
                                 if (inAppPurchaseData.isAutoRenewing() || !subscriptionExpired) {
                                     if (showErrorDialogIfSubscriptionExists) {
-                                        showEntitlementDialog(DialogType.LOGIN_REQUIRED,
+                                        showEntitlementDialog(DialogType.EXISTING_SUBSCRIPTION,
                                                 () -> {
                                                     sendCloseOthersAction(null, true);
+                                                    navigateToLoginPage();
                                                 });
                                     }
                                 }
@@ -5630,6 +5631,12 @@ public class AppCMSPresenter {
                 mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
             }
 
+            if (dialogType == DialogType.EXISTING_SUBSCRIPTION) {
+                title = currentActivity.getString(R.string.app_cms_existing_subscription_title);
+                message = currentActivity.getString(R.string.app_cms_existing_subscription_error_message);
+                positiveButtonText = currentActivity.getString(R.string.app_cms_login_button_text);
+            }
+
             AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
             builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
                     Integer.toHexString(textColor).substring(2),
@@ -5709,6 +5716,14 @@ public class AppCMSPresenter {
                             } catch (Exception e) {
                                 Log.e(TAG, "Error closing subscription required dialog: " + e.getMessage());
                             }
+                        });
+            } else if (dialogType == DialogType.EXISTING_SUBSCRIPTION) {
+                builder.setPositiveButton(positiveButtonText,
+                        (dialog, which) -> {
+                            if (onCloseAction != null) {
+                                onCloseAction.call();
+                            }
+                            dialog.dismiss();
                         });
             } else {
                 builder.setPositiveButton(positiveButtonText,
