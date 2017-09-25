@@ -369,8 +369,8 @@
     <string name="tv_dialog_header_key">dialog_header_key</string>
     <string name="tv_dialog_width_key">dialog_width_key</string>
     <string name="tv_dialog_height_key">dialog_height_key</string>
-    <string name="clear_history_message">CLEAR HISTORY?</string>
-    <string name="clear_watchlist_message">CLEAR WATCHLIST?</string>
+    <string name="clear_history_message">CLEAR HISTORY ?</string>
+    <string name="clear_watchlist_message">CLEAR WATCHLIST ?</string>
     <string name="remove_from_watchlist">REMOVE FROM WATCHLIST</string>
     <string name="add_to_watchlist">ADD TO WATCHLIST</string>
     <string name="add_to_watchlist_dialog_text">You have to be signed in to add this to your watchlist.</string>
