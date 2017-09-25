@@ -191,7 +191,8 @@ public class AppCMSSearchActivity extends AppCompatActivity {
     private void handleIntent(Intent intent) {
         final AppCMSPresenter appCMSPresenter =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
-        if (appCMSSearchUrlData == null || appCMSSearchCall == null) {
+        if ((appCMSSearchUrlData == null || appCMSSearchCall == null) &&
+                appCMSPresenter.getAppCMSSearchUrlComponent() != null) {
             appCMSPresenter.getAppCMSSearchUrlComponent().inject(this);
             if (appCMSSearchUrlData == null || appCMSSearchCall == null) {
                 return;

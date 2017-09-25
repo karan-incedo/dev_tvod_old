@@ -804,7 +804,7 @@ public class AppCMSPresenter {
     }
 
     public void updateWatchedTime(String filmId, long watchedTime) {
-        if (getLoggedInUser() != null) {
+        if (getLoggedInUser() != null && appCMSSite != null && appCMSMain != null) {
             UpdateHistoryRequest updateHistoryRequest = new UpdateHistoryRequest();
             updateHistoryRequest.setUserId(getLoggedInUser());
             updateHistoryRequest.setWatchedTime(watchedTime);
@@ -3829,15 +3829,9 @@ public class AppCMSPresenter {
 
                                 if (inAppPurchaseData.isAutoRenewing() || !subscriptionExpired) {
                                     if (showErrorDialogIfSubscriptionExists) {
-                                        showDialog(DialogType.EXISTING_SUBSCRIPTION,
-                                                currentActivity.getString(R.string.app_cms_existing_subscription_error_message),
-                                                false,
+                                        showEntitlementDialog(DialogType.LOGIN_REQUIRED,
                                                 () -> {
-                                                    try {
-                                                        sendCloseOthersAction(null, true);
-                                                    } catch (Exception e) {
-                                                        Log.e(TAG, "Error retrieving Google Play Subscription data: " + e.getMessage());
-                                                    }
+                                                    sendCloseOthersAction(null, true);
                                                 });
                                     }
                                 }

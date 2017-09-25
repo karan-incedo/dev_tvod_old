@@ -291,7 +291,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(handoffReceiver);
+        try {
+            unregisterReceiver(handoffReceiver);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to unregister Handoff Receiver: " + e.getMessage());
+        }
 //        unregisterReceiver(networkConnectedReceiver);
         super.onDestroy();
     }

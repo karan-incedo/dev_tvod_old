@@ -264,9 +264,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         new RefreshAppCMSBinderAction(appCMSPresenter,
                                                 appCMSBinder,
                                                 appCMSPresenter.isUserLoggedIn());
-                                appCMSPresenter.refreshPageAPIData(appCMSBinder.getAppCMSPageUI(),
-                                        appCMSBinder.getPageId(),
-                                        appCMSBinderAction);
+                                if (appCMSBinder != null) {
+                                    appCMSPresenter.refreshPageAPIData(appCMSBinder.getAppCMSPageUI(),
+                                            appCMSBinder.getPageId(),
+                                            appCMSBinderAction);
+                                }
                             }
                         }
                         handlingClose = false;
@@ -286,13 +288,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         };
 
-        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        wifiConnectedReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                appCMSPresenter.setWifiConnected(wifiManager.isWifiEnabled());
-            }
-        };
+        if (getApplicationContext() != null) {
+            wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            wifiConnectedReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    appCMSPresenter.setWifiConnected(wifiManager.isWifiEnabled());
+                }
+            };
+        }
 
         DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         downloadReceiver = new BroadcastReceiver() {
@@ -458,8 +462,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void inflateCastMiniController() {
         if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) ==
                 ConnectionResult.SUCCESS) {
-            LayoutInflater.from(this).inflate(R.layout.fragment_castminicontroller, appCMSCastController);
-            castDisabled = false;
+            try {
+                LayoutInflater.from(this).inflate(R.layout.fragment_castminicontroller, appCMSCastController);
+                castDisabled = false;
+            } catch (Exception e) {
+                castDisabled = true;
+            }
         } else {
             castDisabled = true;
         }
@@ -1391,15 +1399,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void selectNavItem(String pageId) {
         boolean foundPage = false;
-        for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
-            if (appCMSTabNavContainer.getChildAt(i).getTag() != null &&
-                    pageId.contains(appCMSTabNavContainer.getChildAt(i).getTag().toString())) {
-                selectNavItem(((NavBarItemView) appCMSTabNavContainer.getChildAt(i)));
-                Log.d(TAG, "Nav item - Selecting tab item with page Id: " +
-                        pageId +
-                        " index: " +
-                        i);
-                foundPage = true;
+        if (!TextUtils.isEmpty(pageId)) {
+            for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
+                if (appCMSTabNavContainer.getChildAt(i).getTag() != null &&
+                        pageId.contains(appCMSTabNavContainer.getChildAt(i).getTag().toString())) {
+                    selectNavItem(((NavBarItemView) appCMSTabNavContainer.getChildAt(i)));
+                    Log.d(TAG, "Nav item - Selecting tab item with page Id: " +
+                            pageId +
+                            " index: " +
+                            i);
+                    foundPage = true;
+                }
             }
         }
 

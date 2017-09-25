@@ -80,64 +80,68 @@ public class AppCMSNavItemsFragment extends DialogFragment {
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
-        appCMSNavItemsAdapter = new AppCMSNavItemsAdapter(appCMSBinder.getNavigation(),
-                appCMSPresenter,
-                appCMSBinder.getJsonValueKeyMap(),
-                appCMSBinder.isUserLoggedIn(),
-                appCMSBinder.isUserSubscribed(),
-                textColor);
-        navItemsList.setAdapter(appCMSNavItemsAdapter);
-        if (!BaseView.isTablet(getContext())) {
-            appCMSPresenter.restrictPortraitOnly();
-        }
 
-        LinearLayout appCMSNavLoginContainer = view.findViewById(R.id.app_cms_nav_login_container);
-        if (appCMSPresenter.isUserLoggedIn()) {
-            appCMSNavLoginContainer.setVisibility(View.GONE);
-        } else {
-            appCMSNavLoginContainer.setVisibility(View.VISIBLE);
-            View appCMSNavItemsSeparatorView = view.findViewById(R.id.app_cms_nav_items_separator_view);
-            appCMSNavItemsSeparatorView.setBackgroundColor(textColor);
-            TextView appCMSNavItemsLoggedOutMessage = view.findViewById(R.id.app_cms_nav_items_logged_out_message);
-            appCMSNavItemsLoggedOutMessage.setTextColor(textColor);
-            Button appCMSNavLoginButton = view.findViewById(R.id.app_cms_nav_login_button);
-            appCMSNavLoginButton.setTextColor(textColor);
-            appCMSNavLoginButton.setOnClickListener(v -> {
-                if (appCMSPresenter != null) {
-                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
-                    appCMSPresenter.navigateToLoginPage();
-                    Bundle bundle = new Bundle();
-                    bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_LOGIN_SCREEN_VALUE);
-                    String firebaseEventKey = FirebaseAnalytics.Event.VIEW_ITEM;
-                    if (appCMSPresenter.isUserLoggedIn()){
-                        appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
-                    }else{
-                        appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
-                    }
-                    appCMSPresenter.sendFirebaseSelectedEvents(firebaseEventKey, bundle);
-                }
-            });
-            GradientDrawable loginBorder = new GradientDrawable();
-            loginBorder.setShape(GradientDrawable.RECTANGLE);
-            loginBorder.setStroke(getContext().getResources().getInteger(R.integer.app_cms_border_stroke_width), borderColor);
-            loginBorder.setColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
-            appCMSNavLoginButton.setBackground(loginBorder);
+        if (appCMSBinder != null) {
+            appCMSNavItemsAdapter = new AppCMSNavItemsAdapter(appCMSBinder.getNavigation(),
+                    appCMSPresenter,
+                    appCMSBinder.getJsonValueKeyMap(),
+                    appCMSBinder.isUserLoggedIn(),
+                    appCMSBinder.isUserSubscribed(),
+                    textColor);
 
-            Button appCMSNavFreeTrialButton = view.findViewById(R.id.app_cms_nav_free_trial_button);
-            if (appCMSPresenter.getAppCMSMain()
-                    .getServiceType()
-                    .equals(getContext().getString(R.string.app_cms_main_svod_service_type_key))) {
-                appCMSNavFreeTrialButton.setTextColor(textColor);
-                appCMSNavFreeTrialButton.setOnClickListener(v -> {
+            navItemsList.setAdapter(appCMSNavItemsAdapter);
+            if (!BaseView.isTablet(getContext())) {
+                appCMSPresenter.restrictPortraitOnly();
+            }
+
+            LinearLayout appCMSNavLoginContainer = view.findViewById(R.id.app_cms_nav_login_container);
+            if (appCMSPresenter.isUserLoggedIn()) {
+                appCMSNavLoginContainer.setVisibility(View.GONE);
+            } else {
+                appCMSNavLoginContainer.setVisibility(View.VISIBLE);
+                View appCMSNavItemsSeparatorView = view.findViewById(R.id.app_cms_nav_items_separator_view);
+                appCMSNavItemsSeparatorView.setBackgroundColor(textColor);
+                TextView appCMSNavItemsLoggedOutMessage = view.findViewById(R.id.app_cms_nav_items_logged_out_message);
+                appCMSNavItemsLoggedOutMessage.setTextColor(textColor);
+                Button appCMSNavLoginButton = view.findViewById(R.id.app_cms_nav_login_button);
+                appCMSNavLoginButton.setTextColor(textColor);
+                appCMSNavLoginButton.setOnClickListener(v -> {
                     if (appCMSPresenter != null) {
-                        appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
-                        appCMSPresenter.navigateToSubscriptionPlansPage(appCMSBinder.getPageId(),
-                                appCMSBinder.getPageName());
+                        appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
+                        appCMSPresenter.navigateToLoginPage();
+                        Bundle bundle = new Bundle();
+                        bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_LOGIN_SCREEN_VALUE);
+                        String firebaseEventKey = FirebaseAnalytics.Event.VIEW_ITEM;
+                        if (appCMSPresenter.isUserLoggedIn()) {
+                            appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
+                        } else {
+                            appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                        }
+                        appCMSPresenter.sendFirebaseSelectedEvents(firebaseEventKey, bundle);
                     }
                 });
-                appCMSNavFreeTrialButton.setBackgroundColor(buttonColor);
-            } else {
-                appCMSNavFreeTrialButton.setVisibility(View.INVISIBLE);
+                GradientDrawable loginBorder = new GradientDrawable();
+                loginBorder.setShape(GradientDrawable.RECTANGLE);
+                loginBorder.setStroke(getContext().getResources().getInteger(R.integer.app_cms_border_stroke_width), borderColor);
+                loginBorder.setColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+                appCMSNavLoginButton.setBackground(loginBorder);
+
+                Button appCMSNavFreeTrialButton = view.findViewById(R.id.app_cms_nav_free_trial_button);
+                if (appCMSPresenter.getAppCMSMain()
+                        .getServiceType()
+                        .equals(getContext().getString(R.string.app_cms_main_svod_service_type_key))) {
+                    appCMSNavFreeTrialButton.setTextColor(textColor);
+                    appCMSNavFreeTrialButton.setOnClickListener(v -> {
+                        if (appCMSPresenter != null) {
+                            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
+                            appCMSPresenter.navigateToSubscriptionPlansPage(appCMSBinder.getPageId(),
+                                    appCMSBinder.getPageName());
+                        }
+                    });
+                    appCMSNavFreeTrialButton.setBackgroundColor(buttonColor);
+                } else {
+                    appCMSNavFreeTrialButton.setVisibility(View.INVISIBLE);
+                }
             }
         }
 

@@ -521,29 +521,31 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     private void cullDataByAvailableUpgrades(List<SubscriptionPlan> availableSubscriptionPlans,
                                              double existingSubscriptionPrice) {
-        List<ContentDatum> updatedData = new ArrayList<>();
-        for (ContentDatum contentDatum : adapterData) {
-            double priceToCompare = contentDatum.getPlanDetails().get(0).getStrikeThroughPrice();
-            if (priceToCompare == 0) {
-                priceToCompare = contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount();
-            }
-            if (availableSubscriptionPlans != null) {
-                for (SubscriptionPlan subscriptionPlan : availableSubscriptionPlans) {
-                    if (!TextUtils.isEmpty(contentDatum.getIdentifier()) &&
-                            contentDatum.getIdentifier().equals(subscriptionPlan.getSku()) &&
-                            (existingSubscriptionPrice < subscriptionPlan.getSubscriptionPrice())) {
-                        updatedData.add(contentDatum);
-                    }
+        if (adapterData != null) {
+            List<ContentDatum> updatedData = new ArrayList<>();
+            for (ContentDatum contentDatum : adapterData) {
+                double priceToCompare = contentDatum.getPlanDetails().get(0).getStrikeThroughPrice();
+                if (priceToCompare == 0) {
+                    priceToCompare = contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount();
                 }
-            } else if (contentDatum.getPlanDetails() != null &&
-                    !contentDatum.getPlanDetails().isEmpty() &&
-                    contentDatum.getPlanDetails().get(0) != null &&
-                    existingSubscriptionPrice < priceToCompare) {
-                updatedData.add(contentDatum);
+                if (availableSubscriptionPlans != null) {
+                    for (SubscriptionPlan subscriptionPlan : availableSubscriptionPlans) {
+                        if (!TextUtils.isEmpty(contentDatum.getIdentifier()) &&
+                                contentDatum.getIdentifier().equals(subscriptionPlan.getSku()) &&
+                                (existingSubscriptionPrice < subscriptionPlan.getSubscriptionPrice())) {
+                            updatedData.add(contentDatum);
+                        }
+                    }
+                } else if (contentDatum.getPlanDetails() != null &&
+                        !contentDatum.getPlanDetails().isEmpty() &&
+                        contentDatum.getPlanDetails().get(0) != null &&
+                        existingSubscriptionPrice < priceToCompare) {
+                    updatedData.add(contentDatum);
+                }
             }
-        }
 
-        this.adapterData = updatedData;
+            this.adapterData = updatedData;
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

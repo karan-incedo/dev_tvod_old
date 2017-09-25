@@ -574,10 +574,12 @@ public class AppCMSPlayVideoFragment extends Fragment
             return;
         Bundle bundle = new Bundle();
         bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, PLAYER_SCREEN_NAME + "-" + screenVideoName);
-        //Logs an app event.
-        appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
-        //Sets whether analytics collection is enabled for this app on this device.
-        appCMSPresenter.getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
+        if (appCMSPresenter.getmFireBaseAnalytics() != null) {
+            //Logs an app event.
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+            //Sets whether analytics collection is enabled for this app on this device.
+            appCMSPresenter.getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
+        }
     }
 
     private void setCasting() {
