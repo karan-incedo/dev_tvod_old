@@ -91,7 +91,7 @@ public class ViewCreator {
         StringBuffer infoText = new StringBuffer();
         if (runtime > 0) {
             infoText.append(runtime + " " + context.getString(R.string.mins_abbreviation));
-        }else{
+        } else {
             infoText.append("0 " + context.getString(R.string.mins_abbreviation));
             infoText.append(context.getString(R.string.text_separator));
         }
@@ -2619,8 +2619,8 @@ public class ViewCreator {
                         switchOnColor,
                         switchOffColor
                 });
-                ((Switch) componentViewResult.componentView).setThumbTintList(colorStateList);
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    ((Switch) componentViewResult.componentView).setThumbTintList(colorStateList);
                     ((Switch) componentViewResult.componentView).setTrackTintMode(PorterDuff.Mode.MULTIPLY);
                 }
 
