@@ -1159,7 +1159,11 @@ public class AppCMSPlayVideoFragment extends Fragment
                 break;
 
             case AudioManager.AUDIOFOCUS_GAIN:
-                videoPlayerView.startPlayer();
+                if(videoPlayerView.getPlayer() != null && videoPlayerView.getPlayer().getPlayWhenReady()) {
+                    videoPlayerView.startPlayer();
+                }else{
+                    videoPlayerView.pausePlayer();
+                }
                 break;
 
             case AudioManager.AUDIOFOCUS_LOSS:

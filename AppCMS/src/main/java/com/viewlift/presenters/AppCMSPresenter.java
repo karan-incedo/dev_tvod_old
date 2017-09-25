@@ -1862,7 +1862,7 @@ public class AppCMSPresenter {
             bundle.putString(FIREBASE_PLAN_ITEM_ID, planToPurchase);
             bundle.putString(FIREBASE_PLAN_ITEM_NAME, planToPurchaseName);
             bundle.putString(FIREBASE_PLAN_ITEM_CURRENCY, currencyOfPlanToPurchase);
-            bundle.putString(FIREBASE_PLAN_ITEM_PRICE, String.valueOf(planToPurchasePrice));
+            bundle.putDouble(FIREBASE_PLAN_ITEM_PRICE, Double.valueOf(planToPurchasePrice));
 
             String firebaseSelectPlanEventKey = "add_to_cart";
             sendFirebaseSelectedEvents(firebaseSelectPlanEventKey, bundle);
@@ -6429,12 +6429,13 @@ public class AppCMSPresenter {
                                     subscriptionRequest.getPlanId(),
                                     subscriptionRequest.getCurrencyCode());
 
+                            System.out.println("Plan to purchase-"+planToPurchasePrice);
                             //Subscription Succes Firebase Log Event
                             Bundle bundle = new Bundle();
                             bundle.putString(FIREBASE_PLAN_ID, subscriptionRequest.getPlanId());
                             bundle.putString(FIREBASE_PLAN_NAME, planToPurchaseName);
                             bundle.putString(FIREBASE_CURRENCY_NAME, currencyOfPlanToPurchase);
-                            bundle.putString(FIREBASE_VALUE, String.valueOf(planToPurchasePrice));
+                            bundle.putDouble(FIREBASE_VALUE, Double.valueOf(planToPurchasePrice));
                             if (mFireBaseAnalytics != null)
                                 mFireBaseAnalytics.logEvent(FIREBASE_ECOMMERCE_PURCHASE, bundle);
 
@@ -6865,6 +6866,7 @@ public class AppCMSPresenter {
                                                                     setActiveSubscriptionId(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
                                                                     setActiveSubscriptionPlanName(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
                                                                     String countryCode = appCMSSubscriptionPlanResult.getSubscriptionInfo().getCountryCode();
+                                                                    if(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()!=null)
                                                                     for (PlanDetail planDetail : appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()) {
                                                                         if (!TextUtils.isEmpty(planDetail.getRecurringPaymentCurrencyCode()) &&
                                                                                 planDetail.getCountryCode().equalsIgnoreCase(countryCode)) {

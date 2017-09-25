@@ -60,6 +60,8 @@ public class WebViewActivity extends Activity {
 	private final String FIREBASE_PLAN_NAME = "item_name";
 	private final String FIREBASE_CURRENCY_NAME = "currency";
 	private final String FIREBASE_VALUE = "value";
+	private final String FIREBASE_TRANSACTION_ID = "transaction_id";
+
 	private final String FIREBASE_ECOMMERCE_PURCHASE = "ecommerce_purchase";
 
 	@Override
@@ -140,7 +142,9 @@ public class WebViewActivity extends Activity {
 						bundle.putString(FIREBASE_PLAN_ID, mainIntent.getStringExtra(getString(R.string.app_cms_plan_id)));
 						bundle.putString(FIREBASE_PLAN_NAME,  mainIntent.getStringExtra("plan_to_purchase_name"));
 						bundle.putString(FIREBASE_CURRENCY_NAME, mainIntent.getStringExtra(AvenuesParams.CURRENCY));
-						bundle.putString(FIREBASE_VALUE, String.valueOf(mainIntent.getStringExtra(AvenuesParams.AMOUNT)));
+						bundle.putDouble(FIREBASE_VALUE, Double.valueOf(mainIntent.getStringExtra(AvenuesParams.AMOUNT)));
+						bundle.putString(FIREBASE_TRANSACTION_ID, orderID);
+
 						if (appCMSPresenter.getmFireBaseAnalytics() != null)
 							appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_ECOMMERCE_PURCHASE, bundle);
 
