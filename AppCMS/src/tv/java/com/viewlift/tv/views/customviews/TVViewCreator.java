@@ -877,13 +877,13 @@ public class TVViewCreator {
                     switch (componentKey) {
                         case PAGE_API_TITLE:
                             if (!TextUtils.isEmpty(moduleAPI.getTitle())) {
-                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle().toUpperCase());
                                 if (component.getNumberOfLines() != 0) {
                                     ((TextView) componentViewResult.componentView).setMaxLines(component.getNumberOfLines());
                                 }
                                 ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
                             } else if (!TextUtils.isEmpty(component.getText())) {
-                                ((TextView) componentViewResult.componentView).setText(component.getText());
+                                ((TextView) componentViewResult.componentView).setText(component.getText().toUpperCase());
                             }
                             ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(Utils.getFocusColor(context, appCMSPresenter)));
                             componentViewResult.componentView.setFocusable(false);
