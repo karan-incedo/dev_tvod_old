@@ -1,0 +1,75 @@
+package com.viewlift.ccavenue.screens;
+
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.viewlift.R;
+
+public class EnterMobileNumberActivity extends AppCompatActivity {
+
+    EditText id_et_mobile_number ;
+    Button id_btn_checkout ;
+    CardView elevated_button_card ;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_enter_mobile_number);
+        id_et_mobile_number = (EditText) findViewById(R.id.id_et_mobile_number) ;
+        id_btn_checkout = (Button) findViewById(R.id.id_btn_checkout) ;
+        elevated_button_card = (CardView) findViewById(R.id.elevated_button_card) ;
+        try {
+            String colorCode = getIntent().getStringExtra("color_theme");
+            elevated_button_card.setBackgroundColor(Color.parseColor(colorCode));
+        } catch (Exception ex) {
+           ex.printStackTrace();
+        }
+        id_btn_checkout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String mobileNumber = id_et_mobile_number.getText().toString().trim() ;
+                if (mobileNumber.length()==10) {
+                    try {
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    id_btn_checkout.setEnabled(false);
+                    Intent intent = new Intent(EnterMobileNumberActivity.this, WebViewActivity.class);
+                    intent.putExtras(getIntent()) ;
+                    intent.putExtra("payment_option","") ;
+                    intent.putExtra("orderId","") ;
+                    intent.putExtra("accessCode","") ;
+                    intent.putExtra("merchantID","") ;
+                    intent.putExtra("cancelRedirectURL","") ;
+                    intent.putExtra("rsa_key","") ;
+                    intent.putExtra("billing_tel",mobileNumber) ;
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please provide valid 10 digits mobile number", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+}

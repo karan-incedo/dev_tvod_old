@@ -74,7 +74,9 @@ import com.google.gson.Gson;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
+import com.viewlift.ccavenue.screens.EnterMobileNumberActivity;
 import com.viewlift.ccavenue.screens.PaymentOptionsActivity;
+import com.viewlift.ccavenue.screens.WebViewActivity;
 import com.viewlift.ccavenue.utility.AvenuesParams;
 import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenResponse;
 import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
@@ -1887,8 +1889,9 @@ public class AppCMSPresenter {
         Log.v("apikey", apikey);
         try {
             String strAmount = Double.toString(planToPurchaseDiscountedPrice);
+            Intent  intent = new Intent(currentActivity, EnterMobileNumberActivity.class);
             //Intent intent = new Intent(currentActivity, WebViewActivity.class);
-            Intent intent = new Intent(currentActivity, PaymentOptionsActivity.class);
+            //Intent intent = new Intent(currentActivity, PaymentOptionsActivity.class);
             intent.putExtra(AvenuesParams.CURRENCY, currencyCode);
             intent.putExtra(AvenuesParams.AMOUNT, strAmount);
             intent.putExtra(currentActivity.getString(R.string.app_cms_site_name), appCMSSite.getGist().getSiteInternalName());
@@ -1905,6 +1908,7 @@ public class AppCMSPresenter {
             intent.putExtra("api_base_url", appCMSMain.getApiBaseUrl());
             intent.putExtra("si_frequency", "2");
             intent.putExtra("si_frequency_type", renewableFrequency);
+            intent.putExtra("color_theme",getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()) ;
             currentActivity.startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
