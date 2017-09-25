@@ -1,9 +1,12 @@
 package com.viewlift.views.adapters;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatRadioButton;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -80,16 +83,23 @@ public abstract class AppCMSDownloadRadioAdapter<T> extends RecyclerView.Adapter
             };
             itemView.setOnClickListener(clickListener);
             mRadio.setOnClickListener(clickListener);
-            ColorDrawable radioButtonColorDrawable = new ColorDrawable();
-            radioButtonColorDrawable.setColorFilter(tintColor, PorterDuff.Mode.MULTIPLY);
-            mRadio.setButtonDrawable(radioButtonColorDrawable);
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//                if (mRadio.getButtonDrawable() != null) {
-//                    mRadio.getButtonDrawable().setColorFilter(tintColor, PorterDuff.Mode.MULTIPLY);
-//                }
-//            } else {
-//
-//            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (mRadio.getButtonDrawable() != null) {
+                    mRadio.getButtonDrawable().setColorFilter(tintColor, PorterDuff.Mode.MULTIPLY);
+                }
+            } else {
+                int switchOnColor = tintColor;
+                ColorStateList colorStateList = new ColorStateList(
+                        new int[][]{
+                                new int[]{android.R.attr.state_checked},
+                                new int[]{}
+                        }, new int[]{
+                        switchOnColor,
+                        switchOnColor
+                });
+                mRadio.setButtonTintList(colorStateList);
+            }
         }
     }
 }
