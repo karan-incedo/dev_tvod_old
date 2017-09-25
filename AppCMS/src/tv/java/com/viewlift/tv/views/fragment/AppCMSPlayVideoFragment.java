@@ -251,44 +251,14 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         setRetainInstance(true);
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_video_player_tv, container, false);
+    private void preparePlayer(){
 
-        videoPlayerInfoContainer =
-                (LinearLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
-
-        videoPlayerTitleView = (TextView) rootView.findViewById(R.id.app_cms_video_player_title_view);
-        if (!TextUtils.isEmpty(title)) {
-            videoPlayerTitleView.setText(title);
-        }
-        if (!TextUtils.isEmpty(fontColor)) {
-            videoPlayerTitleView.setTextColor(Color.parseColor(fontColor));
-        }
-
-        videoPlayerViewDoneButton = (Button) rootView.findViewById(R.id.app_cms_video_player_done_button);
-        videoPlayerViewDoneButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (onClosePlayerEvent != null) {
-                    videoPlayerView.releasePlayer();
-                    onClosePlayerEvent.closePlayer();
-                }
-            }
-        });
-        videoPlayerViewDoneButton.setTextColor(Color.parseColor(fontColor));
-
-        videoPlayerInfoContainer.bringToFront();
-
-        videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
         if (!TextUtils.isEmpty(hlsUrl)) {
             videoPlayerView.setClosedCaptionEnabled(false);
             videoPlayerView.getPlayerView().getSubtitleView()
                     .setVisibility(appCMSPresenter.getClosedCaptionPreference(mContext)
                             ? View.VISIBLE
                             : View.GONE);
-//           videoPlayerView.getPlayerView().getSubtitleView().setVisibility(View.VISIBLE);
             videoPlayerView.setUri(Uri.parse(hlsUrl),
                     !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
             Log.i(TAG, "Playing video: " + hlsUrl);
@@ -299,25 +269,18 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             Log.e(TAG, e.getMessage());
             mStreamId = filmId + appCMSPresenter.getCurrentTimeStamp();
         }
-        playBackStateLayout = (RelativeLayout) rootView.findViewById(R.id.playback_state_layout);
-        playBackStateTextView = (TextView) rootView.findViewById(R.id.playback_state_text);
-        playBackStateTextView.setTextColor(Color.parseColor(fontColor));
-        progressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
 
-        progressBar.getIndeterminateDrawable().
-                setColorFilter(Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter)) ,
-                        PorterDuff.Mode.MULTIPLY
-                );
 
         long playDifference = runtime - watchedTime;//((watchedTime*100)/runTime);
         long playTimePercentage = ((watchedTime * 100) / runtime);
 
         // if video watchtime is greater or equal to 98% of total run time and interval is less than 30 then play from start
-        if (playTimePercentage >= 98 && playDifference <= 30) {
+        if (isTrailer || (playTimePercentage >= 98 && playDifference <= 30)) {
             videoPlayTime = 0;
         } else {
             videoPlayTime = watchedTime;
         }
+
         videoPlayerView.setCurrentPosition(videoPlayTime * SECONDS_TO_MILLIS);
 
         videoPlayerView.setOnPlayerStateChanged(new Action1<VideoPlayerView.PlayerState>() {
@@ -376,9 +339,60 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                     .setVisibility(isChecked ? View.VISIBLE : View.GONE);
             appCMSPresenter.setClosedCaptionPreference(mContext, isChecked);
         });
-        if (!shouldRequestAds) {
-            videoPlayerView.startPlayer();
+
+
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_video_player_tv, container, false);
+
+        videoPlayerInfoContainer =
+                (LinearLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
+
+        videoPlayerTitleView = (TextView) rootView.findViewById(R.id.app_cms_video_player_title_view);
+        if (!TextUtils.isEmpty(title)) {
+            videoPlayerTitleView.setText(title);
         }
+        if (!TextUtils.isEmpty(fontColor)) {
+            videoPlayerTitleView.setTextColor(Color.parseColor(fontColor));
+        }
+
+        videoPlayerViewDoneButton = (Button) rootView.findViewById(R.id.app_cms_video_player_done_button);
+        videoPlayerViewDoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onClosePlayerEvent != null) {
+                    videoPlayerView.releasePlayer();
+                    onClosePlayerEvent.closePlayer();
+                }
+            }
+        });
+
+        videoPlayerViewDoneButton.setTextColor(Color.parseColor(fontColor));
+
+        videoPlayerInfoContainer.bringToFront();
+
+        videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
+
+
+        playBackStateLayout = (RelativeLayout) rootView.findViewById(R.id.playback_state_layout);
+        playBackStateTextView = (TextView) rootView.findViewById(R.id.playback_state_text);
+        playBackStateTextView.setTextColor(Color.parseColor(fontColor));
+        progressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
+
+        progressBar.getIndeterminateDrawable().
+                setColorFilter(Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter)) ,
+                        PorterDuff.Mode.MULTIPLY
+                );
+
+
+        if (!shouldRequestAds) {
+            preparePlayer();
+        }
+
+
         beaconMessageThread = new BeaconPingThread(beaconMsgTimeoutMsec,
                 appCMSPresenter,
                 filmId,
@@ -389,6 +403,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 mStreamId);
         return rootView;
     }
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -411,12 +426,19 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     @Override
     public void onResume() {
         videoPlayerView.setListener(this);
-        if (shouldRequestAds && adsManager != null && isAdDisplayed) {
+       /* if (shouldRequestAds && adsManager != null && isAdDisplayed) {
             adsManager.resume();
         } else {
             videoPlayerView.resumePlayer();
             Log.d(TAG, "Resuming playback");
-        }
+        }*/
+
+
+       if(shouldRequestAds && !isADPlay){
+           requestAds(adsUrl);
+           isADPlay = true;
+       }
+
         getActivity().registerReceiver(networkReciever , new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
 
         super.onResume();
@@ -436,8 +458,10 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         Log.e(TAG, "Ad Error: " + adErrorEvent.getError().getMessage());
-        videoPlayerView.getPlayer().setPlayWhenReady(true);
-        videoPlayerView.resumePlayer();
+
+        preparePlayer();
+       // videoPlayerView.getPlayer().setPlayWhenReady(true);
+       // videoPlayerView.resumePlayer();
     }
 
     @Override
@@ -484,6 +508,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                     adsManager.destroy();
                     adsManager = null;
                 }
+                preparePlayer();
                 videoPlayerInfoContainer.setVisibility(View.VISIBLE); //show player controlls.
                 break;
             default:
