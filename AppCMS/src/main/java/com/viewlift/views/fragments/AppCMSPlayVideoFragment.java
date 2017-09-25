@@ -390,7 +390,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                             : View.GONE);
             videoPlayerView.setUri(Uri.parse(hlsUrl),
                     !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
-            Log.i(TAG, "Playing video: " + hlsUrl);
+            Log.i(TAG, "Playing video: " + title);
         }
         try {
             mStreamId = appCMSPresenter.getStreamingId(title);
@@ -574,10 +574,12 @@ public class AppCMSPlayVideoFragment extends Fragment
             return;
         Bundle bundle = new Bundle();
         bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, PLAYER_SCREEN_NAME + "-" + screenVideoName);
-        //Logs an app event.
-        appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
-        //Sets whether analytics collection is enabled for this app on this device.
-        appCMSPresenter.getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
+        if (appCMSPresenter.getmFireBaseAnalytics() != null) {
+            //Logs an app event.
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+            //Sets whether analytics collection is enabled for this app on this device.
+            appCMSPresenter.getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
+        }
     }
 
     private void setCasting() {
@@ -1159,7 +1161,11 @@ public class AppCMSPlayVideoFragment extends Fragment
                 break;
 
             case AudioManager.AUDIOFOCUS_GAIN:
-                videoPlayerView.startPlayer();
+                if(videoPlayerView.getPlayer() != null && videoPlayerView.getPlayer().getPlayWhenReady()) {
+                    videoPlayerView.startPlayer();
+                }else{
+                    videoPlayerView.pausePlayer();
+                }
                 break;
 
             case AudioManager.AUDIOFOCUS_LOSS:

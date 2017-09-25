@@ -91,7 +91,7 @@ public class ViewCreator {
         StringBuffer infoText = new StringBuffer();
         if (runtime > 0) {
             infoText.append(runtime + " " + context.getString(R.string.mins_abbreviation));
-        }else{
+        } else {
             infoText.append("0 " + context.getString(R.string.mins_abbreviation));
             infoText.append(context.getString(R.string.text_separator));
         }
@@ -616,7 +616,7 @@ public class ViewCreator {
                                                                 ((TextView) settingsView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
                                                             }
                                                         } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY) {
-                                                            if (paymentProcessor != null) {
+                                                            if (paymentProcessor != null && appCMSPresenter.isUserSubscribed()) {
                                                                 if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor)) ||
                                                                         paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor_friendly))) {
                                                                     ((TextView) settingsView).setText(context.getString(R.string.subscription_ios_payment_processor_friendly));
@@ -1348,7 +1348,9 @@ public class ViewCreator {
                                             numCols,
                                             LinearLayoutManager.VERTICAL,
                                             false));
-                            componentViewResult.componentView.setForegroundGravity(Gravity.CENTER_HORIZONTAL);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                componentViewResult.componentView.setForegroundGravity(Gravity.CENTER_HORIZONTAL);
+                            }
                         } else {
                             ((RecyclerView) componentViewResult.componentView)
                                     .setLayoutManager(new LinearLayoutManager(context,
@@ -2195,7 +2197,7 @@ public class ViewCreator {
                             break;
 
                         case PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY:
-                            if (paymentProcessor != null) {
+                            if (paymentProcessor != null && appCMSPresenter.isUserSubscribed()) {
                                 if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor)) ||
                                         paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor_friendly))) {
                                     ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_ios_payment_processor_friendly));
@@ -2619,9 +2621,11 @@ public class ViewCreator {
                         switchOnColor,
                         switchOffColor
                 });
-                ((Switch) componentViewResult.componentView).setThumbTintList(colorStateList);
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     ((Switch) componentViewResult.componentView).setTrackTintMode(PorterDuff.Mode.MULTIPLY);
+                    ((Switch) componentViewResult.componentView).setThumbTintList(colorStateList);
+                } else {
+                    ((Switch) componentViewResult.componentView).setButtonTintList(colorStateList);
                 }
 
                 if (componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY) {
