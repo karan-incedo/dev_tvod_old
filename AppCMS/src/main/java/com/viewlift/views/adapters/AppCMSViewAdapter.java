@@ -57,6 +57,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     protected int unselectedColor;
     protected int selectedColor;
     protected boolean isClickable;
+    private String videoAction;
+    private String showAction;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -112,6 +114,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.defaultHeight = defaultHeight;
         this.useMarginsAsPercentages = true;
         this.defaultAction = getDefaultAction(context);
+        this.videoAction = getVideoAction(context);
+        this.showAction = getShowAction(context);
 
         this.isSelected = false;
         this.unselectedColor = ContextCompat.getColor(context, android.R.color.white);
@@ -431,7 +435,21 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 if (isClickable) {
                     String permalink = data.getGist().getPermalink();
                     String title = data.getGist().getTitle();
-                    String action = component.getTrayClickAction();
+                    String action = defaultAction;
+
+                    switch (data.getGist().getContentType()) {
+                        case "SHOW":
+                            action = showAction;
+                            break;
+
+                        case "VIDEO":
+                            action = videoAction;
+                            break;
+
+                        default:
+                            break;
+                    }
+
                     Log.d(TAG, "Launching " + permalink + ":" + action);
                     List<String> relatedVideoIds = null;
                     if (data.getContentDetails() != null &&
@@ -481,6 +499,14 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     private String getDefaultAction(Context context) {
         return context.getString(R.string.app_cms_action_videopage_key);
+    }
+
+    private String getShowAction(Context context) {
+        return context.getString(R.string.app_cms_action_showvideopage_key);
+    }
+
+    private String getVideoAction(Context context) {
+        return context.getString(R.string.app_cms_action_detailvideopage_key);
     }
 
     private String getHlsUrl(ContentDatum data) {

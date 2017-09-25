@@ -6438,7 +6438,7 @@ public class AppCMSPresenter {
                                     subscriptionRequest.getPlanId(),
                                     subscriptionRequest.getCurrencyCode());
 
-                            System.out.println("Plan to purchase-"+planToPurchasePrice);
+                            System.out.println("Plan to purchase-" + planToPurchasePrice);
                             //Subscription Succes Firebase Log Event
                             Bundle bundle = new Bundle();
                             bundle.putString(FIREBASE_PLAN_ID, subscriptionRequest.getPlanId());
@@ -6875,13 +6875,13 @@ public class AppCMSPresenter {
                                                                     setActiveSubscriptionId(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
                                                                     setActiveSubscriptionPlanName(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
                                                                     String countryCode = appCMSSubscriptionPlanResult.getSubscriptionInfo().getCountryCode();
-                                                                    if(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()!=null)
-                                                                    for (PlanDetail planDetail : appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()) {
-                                                                        if (!TextUtils.isEmpty(planDetail.getRecurringPaymentCurrencyCode()) &&
-                                                                                planDetail.getCountryCode().equalsIgnoreCase(countryCode)) {
-                                                                            setActiveSubscriptionPrice(String.valueOf(planDetail.getRecurringPaymentAmount()));
+                                                                    if (appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails() != null)
+                                                                        for (PlanDetail planDetail : appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()) {
+                                                                            if (!TextUtils.isEmpty(planDetail.getRecurringPaymentCurrencyCode()) &&
+                                                                                    planDetail.getCountryCode().equalsIgnoreCase(countryCode)) {
+                                                                                setActiveSubscriptionPrice(String.valueOf(planDetail.getRecurringPaymentAmount()));
+                                                                            }
                                                                         }
-                                                                    }
                                                                     setActiveSubscriptionStatus(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus());
                                                                     if (useCCAvenue() && !isSubscriptionCompleted()) {
                                                                         setActiveSubscriptionPlanName("Scheduled to be cancelled by " +
@@ -8652,7 +8652,7 @@ public class AppCMSPresenter {
                 for (File file : externalDirs) {
                     String path = null;
                     try {
-                       // path = file.getPath().split("/Android")[0];
+                        // path = file.getPath().split("/Android")[0];
                         path = file.getAbsolutePath();
                     } catch (Exception e) {
                         Log.e(TAG, "Error getting storage directories for downloads: " + e.getMessage());
