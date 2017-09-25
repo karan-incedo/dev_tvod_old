@@ -8,6 +8,59 @@
     android:background="@android:color/black"
     tools:context="com.viewlift.ccavenue.screens.EnterMobileNumberActivity">
 
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_cms_appbarlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimaryDark"
+        android:elevation="@dimen/appbar_elevation"
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/app_cms_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAlignment="center">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center">
+
+                <ImageView
+                    android:id="@+id/app_cms_toolbar_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/logo_icon"
+                    android:scaleType="centerInside" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/app_cms_close_button"
+                        android:layout_width="@dimen/close_button_size"
+                        android:layout_height="@dimen/close_button_size"
+                        android:layout_margin="@dimen/close_button_margin"
+                        android:background="@android:color/transparent"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/cancel" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
     <TextView
         android:id="@+id/id_tv_biling_information"
         android:layout_width="match_parent"
@@ -17,7 +70,7 @@
         android:gravity="left"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:layout_marginTop="90dp"
+        android:layout_marginTop="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         />

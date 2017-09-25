@@ -5,13 +5,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
+import android.os.SystemClock;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -19,7 +17,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.Module;
@@ -58,6 +55,8 @@ public class LoginModule extends ModuleView {
     private EditText visibleEmailInputView;
     private EditText visiblePasswordInputView;
     Context con;
+    // variable to track event time
+    private long mLastClickTime = 0;
 
     public LoginModule(Context context,
                        ModuleWithComponents module,
@@ -306,7 +305,14 @@ public class LoginModule extends ModuleView {
                                 @Override
                                 public void onClick(View v) {
                                     Log.d(TAG, "Button clicked: " + component.getAction());
+
+                                    // Preventing multiple clicks, using threshold of 2 second
+                                    if (SystemClock.elapsedRealtime() - mLastClickTime < 2000) {
+                                        return;
+                                    }
+                                    mLastClickTime = SystemClock.elapsedRealtime();
                                     if (visibleEmailInputView != null && visiblePasswordInputView != null) {
+
                                         String[] authData = new String[2];
                                         authData[0] = visibleEmailInputView.getText().toString();
                                         authData[1] = visiblePasswordInputView.getText().toString();
