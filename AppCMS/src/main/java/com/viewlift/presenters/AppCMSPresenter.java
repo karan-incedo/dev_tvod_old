@@ -659,12 +659,12 @@ public class AppCMSPresenter {
     }
 
     public String getApiUrl(boolean usePageIdQueryParam,
-                             boolean viewPlansPage,
-                             boolean showPage,
-                             String baseUrl,
-                             String endpoint,
-                             String siteId,
-                             String pageId) {
+                            boolean viewPlansPage,
+                            boolean showPage,
+                            String baseUrl,
+                            String endpoint,
+                            String siteId,
+                            String pageId) {
         if (currentContext != null) {
             String urlWithContent;
             if (usePageIdQueryParam) {
@@ -1953,9 +1953,9 @@ public class AppCMSPresenter {
                             appCMSSubscriptionPlanResult -> {
                                 try {
                                     if (appCMSSubscriptionPlanResult != null) {
-                                        String paymentUniqueId = appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentUniqueId() ;
-                                        if (paymentUniqueId.length()>0) {
-                                            checkCCAvenueUpgradeStatus (paymentUniqueId) ;
+                                        String paymentUniqueId = appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentUniqueId();
+                                        if (paymentUniqueId.length() > 0) {
+                                            checkCCAvenueUpgradeStatus(paymentUniqueId);
                                         } else {
                                             showDialog(DialogType.SUBSCRIBE, "Cannot Upgrade", false, null);
                                         }
@@ -2053,7 +2053,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private void checkCCAvenueUpgradeStatus (String referenceNo) {
+    private void checkCCAvenueUpgradeStatus(String referenceNo) {
         try {
             SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
             subscriptionRequest.setReferenceNo(referenceNo);
@@ -2070,9 +2070,9 @@ public class AppCMSPresenter {
                         Log.v("currentActivity", "currentActivity");
                     },
                     singleResult -> {
-                        String siStatus = singleResult.getSiStatus() ;
+                        String siStatus = singleResult.getSiStatus();
                         if (siStatus.equalsIgnoreCase("ACTI")) {
-                            upgradePlanAPICall () ;
+                            upgradePlanAPICall();
                         } else {
                             showDialog(DialogType.SUBSCRIBE, "Please Try Again Later!", false, null);
                             sendCloseOthersAction(null, true);
@@ -2086,7 +2086,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private void upgradePlanAPICall () {
+    private void upgradePlanAPICall() {
         SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
         subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
         subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
@@ -3082,7 +3082,7 @@ public class AppCMSPresenter {
 
 
             iv2.setImageBitmap(b);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 iv2.setForegroundGravity(View.TEXT_ALIGNMENT_CENTER);
             }
         }
@@ -8911,6 +8911,7 @@ public class AppCMSPresenter {
     public String getNetworkConnectivityDownloadErrorMsg() {
         return currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download);
     }
+
     public String getSignOutErrorMsg() {
         return currentActivity.getString(R.string.app_cms_signout_error_msg);
     }
