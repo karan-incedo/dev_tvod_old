@@ -50,13 +50,11 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -65,6 +63,7 @@ import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.NavigationFooter;
+import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -602,7 +601,7 @@ public class TVViewCreator {
 
                         componentViewResult.componentView.setOnClickListener(v -> {
                                     Log.d(TAG, "appCMSAddToWatchlistResult: clicked");
-                                    if(appCMSPresenter.isUserLoggedIn(context)) {
+                                    if (appCMSPresenter.isUserLoggedIn(context)) {
                                         appCMSPresenter.editWatchlist(
                                                 moduleAPI.getContentData().get(0).getGist().getId(),
                                                 appCMSAddToWatchlistResult -> {
@@ -614,9 +613,33 @@ public class TVViewCreator {
                                                         btn.setText(context.getString(R.string.add_to_watchlist));
                                                     }
                                                 }, !queued[0]);
-                                    }else{
-                                        //TODO : open Login , Signup dialog from here.
+                                    } else /*User is not logged in*/{
 
+                                        ClearDialogFragment newFragment = getClearDialogFragment(
+                                                context,
+                                                appCMSPresenter,
+                                                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                                context.getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
+                                                context.getString(R.string.add_to_watchlist),
+                                                context.getString(R.string.add_to_watchlist_dialog_text),
+                                                context.getString(R.string.sign_in_text),
+                                                context.getString(android.R.string.cancel),
+                                                14
+
+                                        );
+                                        newFragment.setOnPositiveButtonClicked(s ->{
+
+                                            NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
+                                            appCMSPresenter.navigateToTVPage(
+                                                    navigationUser.getPageId(),
+                                                    navigationUser.getTitle(),
+                                                    navigationUser.getUrl(),
+                                                    false,
+                                                    Uri.EMPTY,
+                                                    false,
+                                                    true
+                                            );
+                                        });
                                     }
                                 }
                         );
@@ -828,7 +851,14 @@ public class TVViewCreator {
                                         ClearDialogFragment newFragment = getClearDialogFragment(
                                                 context,
                                                 appCMSPresenter,
-                                                context.getString(R.string.clear_history_message)
+                                                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
+                                                null,
+                                                context.getString(R.string.clear_history_message),
+                                                context.getString(R.string.yes),
+                                                context.getString(android.R.string.cancel),
+                                                22.5f
+
                                         );
                                         newFragment.setOnPositiveButtonClicked(s ->
                                                 appCMSPresenter.clearHistory(appCMSDeleteHistoryResult ->
@@ -841,7 +871,14 @@ public class TVViewCreator {
                                         ClearDialogFragment newFragment1 = getClearDialogFragment(
                                                 context,
                                                 appCMSPresenter,
-                                                context.getString(R.string.clear_watchlist_message));
+                                                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
+                                                null,
+                                                context.getString(R.string.clear_watchlist_message),
+                                                context.getString(R.string.yes),
+                                                context.getString(android.R.string.cancel),
+                                                22.5f
+                                        );
                                         newFragment1.setOnPositiveButtonClicked(s ->
                                                 appCMSPresenter.clearWatchlist(
                                                         appCMSAddToWatchlistResult ->
@@ -1065,7 +1102,6 @@ public class TVViewCreator {
                                 ClickableSpan clickableSpan = new ClickableSpan() {
                                     @Override
                                     public void onClick(View textView) {
-                                        // TODO: 9/20/2017 open tos here
                                         NavigationFooter tosNavigation = null;
                                         List<NavigationFooter> navigationFooter = appCMSPresenter.getNavigation().getNavigationFooter();
                                         for(NavigationFooter navigationFooter1 : navigationFooter){
@@ -1578,16 +1614,27 @@ public class TVViewCreator {
     }
 
     @NonNull
-    private ClearDialogFragment getClearDialogFragment(Context context, AppCMSPresenter appCMSPresenter, String dialogMessage) {
+    private ClearDialogFragment getClearDialogFragment(Context context,
+                                                       AppCMSPresenter appCMSPresenter,
+                                                       int dialogWidth,
+                                                       int dialogHeight,
+                                                       String dialogTitle,
+                                                       String dialogMessage,
+                                                       String positiveButtonText,
+                                                       String negativeButtonText,
+                                                       float messageSize) {
         Bundle bundle = new Bundle();
-        bundle.putInt(ClearDialogFragment.DIALOG_WIDTH_KEY,
-                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width));
-        bundle.putInt(ClearDialogFragment.DIALOG_HEIGHT_KEY,
-                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height));
+        bundle.putInt(ClearDialogFragment.DIALOG_WIDTH_KEY, dialogWidth);
+        bundle.putInt(ClearDialogFragment.DIALOG_HEIGHT_KEY,dialogHeight);
+        bundle.putFloat(ClearDialogFragment.DIALOG_MESSAGE__SIZE_KEY, messageSize);
         bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_TEXT_COLOR_KEY,
                 Utils.getTextColor(context, appCMSPresenter));
-        bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_KEY,
-                dialogMessage);
+        bundle.putString(ClearDialogFragment.DIALOG_TITLE_KEY, dialogTitle);
+        bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_KEY, dialogMessage);
+        bundle.putString(ClearDialogFragment.DIALOG_POSITIVE_BUTTON_TEXT_KEY,
+                positiveButtonText);
+        bundle.putString(ClearDialogFragment.DIALOG_NEGATIVE_BUTTON_TEXT_KEY,
+                negativeButtonText);
         Intent args = new Intent(AppCMSPresenter.PRESENTER_DIALOG_ACTION);
         args.putExtra(context.getString(R.string.dialog_item_key), bundle);
         android.app.FragmentTransaction ft = appCMSPresenter

@@ -8569,4 +8569,13 @@ public class AppCMSPresenter {
         List<String> relateVideoIds;
     }
 
+    public NavigationUser getLoginNavigation(){
+        for(NavigationUser navigationUser : getNavigation().getNavigationUser()){
+            if(!isUserLoggedIn(currentActivity) && navigationUser.getUrl().contains("login")){
+                return navigationUser;
+            }
+        }
+        return null;
+    }
+
 }

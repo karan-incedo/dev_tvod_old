@@ -31,10 +31,10 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.views.component.AppCmsTvSearchComponent;
 import com.viewlift.tv.views.component.DaggerAppCmsTvSearchComponent;
 import com.viewlift.tv.views.fragment.AppCmsBrowseFragment;
+import com.viewlift.tv.views.fragment.AppCmsGenericDialogFragment;
 import com.viewlift.tv.views.fragment.AppCmsNavigationFragment;
 import com.viewlift.tv.views.fragment.AppCmsResetPasswordFragment;
 import com.viewlift.tv.views.fragment.AppCmsSearchFragment;
-import com.viewlift.tv.views.fragment.AppCmsGenericDialogFragment;
 import com.viewlift.tv.views.fragment.AppCmsTVPageFragment;
 import com.viewlift.tv.views.fragment.AppCmsTvErrorFragment;
 import com.viewlift.tv.views.fragment.TextOverlayDialogFragment;
@@ -124,7 +124,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                      if (isActive) {
                             if(appCMSPresenter.isPageUser(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())
                                     || appCMSPresenter.isPageFooter(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())){
-
                                 //check first its a request for Terms of service or Privacy Policy dialog.
                                 if((((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getExtraScreenType() ==
                                         AppCMSPresenter.ExtraScreenType.TERM_OF_SERVICE)){
@@ -135,8 +134,13 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                 }
 
                             }else {
-                                updatedAppCMSBinder = (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
-                                handleLaunchPageAction(updatedAppCMSBinder);
+                                if((((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getExtraScreenType() ==
+                                        AppCMSPresenter.ExtraScreenType.TERM_OF_SERVICE)){
+                                    openGenericDialog(intent);
+                                }else {
+                                    updatedAppCMSBinder = (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
+                                    handleLaunchPageAction(updatedAppCMSBinder);
+                                }
                             }
                             //appCMSPresenter.sendStopLoadingPageAction(); //stop the progress bar..
                         }

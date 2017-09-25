@@ -9,6 +9,14 @@
     android:focusable="true"
     android:focusableInTouchMode="true">
 
+    <TextView
+        android:id="@+id/text_overlay_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:visibility="gone"/>
+
     <ScrollView
         android:id="@+id/scrollview"
         android:layout_width="match_parent"
@@ -22,7 +30,6 @@
             android:id="@+id/text_overlay_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:layout_gravity="center"
             android:layout_marginLeft="42dp"
             android:layout_marginRight="42dp"
@@ -31,7 +38,6 @@
             android:nextFocusLeft="@null"
             android:nextFocusRight="@null"
             android:nextFocusUp="@null"
-            android:text="CLEAR HISTORY"
             android:textColor="#ffffff"
             android:textSize="22.5sp" />
     </ScrollView>
@@ -55,7 +61,7 @@
             android:nextFocusLeft="@null"
             android:nextFocusRight="@null"
             android:nextFocusUp="@+id/text_overlay_description"
-            android:text="@string/app_cms_cancel_alert_dialog_button_text"
+            android:textAllCaps="true"
             android:textColor="@color/btn_color_with_opacity"
             android:textSize="9sp" />
 
@@ -68,7 +74,7 @@
             android:nextFocusLeft="@null"
             android:nextFocusRight="@null"
             android:nextFocusUp="@+id/text_overlay_description"
-            android:text="@string/app_cms_yes_alert_dialog_button_text"
+            android:textAllCaps="true"
             android:textColor="@color/btn_color_with_opacity"
             android:textSize="9sp" />
     </LinearLayout>

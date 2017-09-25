@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
+import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +34,8 @@ public class ClearDialogFragment extends AbsDialogFragment {
     public static final String DIALOG_WIDTH_KEY = "dialog_width_key";
     public static final String DIALOG_TITLE_KEY = "dialog_title_key";
     public static final String DIALOG_MESSAGE_KEY = "dialog_message_key";
+    public static final String DIALOG_TITLE_SIZE_KEY = "dialog_title_size_key";
+    public static final String DIALOG_MESSAGE__SIZE_KEY = "dialog_message_size_key";
     public static final String DIALOG_TITLE_TEXT_COLOR_KEY = "dialog_title_text_color_key";
     public static final String DIALOG_MESSAGE_TEXT_COLOR_KEY = "dialog_message_text_color_key";
     public static final String DIALOG_POSITIVE_BUTTON_TEXT_KEY = "dialog_positive_button_text_key";
@@ -75,7 +79,7 @@ public class ClearDialogFragment extends AbsDialogFragment {
         /*Bind Views*/
         Button negativeButton = (Button) mView.findViewById(R.id.btn_cancel);
         Button positiveButton = (Button) mView.findViewById(R.id.btn_yes);
-//        TextView tvTitle = (TextView) mView.findViewById(R.id.text_overlay_title);
+        TextView tvTitle = (TextView) mView.findViewById(R.id.text_overlay_title);
         TextView tvDescription = (TextView) mView.findViewById(R.id.text_overlay_description);
         ScrollView scrollView = (ScrollView) mView.findViewById(R.id.scrollview);
 
@@ -85,9 +89,21 @@ public class ClearDialogFragment extends AbsDialogFragment {
         String title = arguments.getString(DIALOG_TITLE_KEY, null);
         String description = arguments.getString(DIALOG_MESSAGE_KEY, null);
         String textColor = arguments.getString(DIALOG_MESSAGE_TEXT_COLOR_KEY, null);
+        String positiveBtnText = arguments.getString(DIALOG_POSITIVE_BUTTON_TEXT_KEY, getString(R.string.ok));
+        String negativeBtnText = arguments.getString(DIALOG_NEGATIVE_BUTTON_TEXT_KEY, getString(R.string.close));
+        float messageSize = arguments.getFloat(DIALOG_MESSAGE__SIZE_KEY);
+
+        positiveButton.setText(positiveBtnText);
+        negativeButton.setText(negativeBtnText);
+        tvDescription.setTextSize(TypedValue.COMPLEX_UNIT_SP, messageSize);
 
         if (description == null) {
             throw new RuntimeException("Description is null");
+        }
+
+        if (!TextUtils.isEmpty(title)) {
+            tvTitle.setVisibility(View.VISIBLE);
+            tvTitle.setText(title);
         }
 
         String desc_text = getString(R.string.text_with_color,
