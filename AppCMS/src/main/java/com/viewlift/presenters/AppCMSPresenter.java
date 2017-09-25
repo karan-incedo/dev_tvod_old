@@ -7943,6 +7943,7 @@ public class AppCMSPresenter {
             playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), requestAds);
         } else {
             playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), false);
+            playVideoIntent.putExtra(currentActivity.getString(R.string.is_trailer_key), true);
         }
 
         playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_font_color_key),

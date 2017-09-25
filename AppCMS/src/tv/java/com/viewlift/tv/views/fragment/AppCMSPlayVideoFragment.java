@@ -300,8 +300,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         if (shouldRequestAds && !isADPlay) {
                             requestAds(adsUrl);
                             isADPlay = true;
-                        } else {
-                            //videoPlayerView.resumePlayer();
+                        } else if(isTrailer){
+                            videoPlayerView.startPlayer();
                         }
                         break;
                     case ExoPlayer.STATE_ENDED:
