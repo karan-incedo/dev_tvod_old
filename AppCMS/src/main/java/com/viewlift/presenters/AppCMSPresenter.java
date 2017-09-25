@@ -6858,10 +6858,12 @@ public class AppCMSPresenter {
                                                                     setActiveSubscriptionId(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
                                                                     setActiveSubscriptionPlanName(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
                                                                     String countryCode = appCMSSubscriptionPlanResult.getSubscriptionInfo().getCountryCode();
-                                                                    for (PlanDetail planDetail : appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()) {
-                                                                        if (!TextUtils.isEmpty(planDetail.getRecurringPaymentCurrencyCode()) &&
-                                                                                planDetail.getCountryCode().equalsIgnoreCase(countryCode)) {
-                                                                            setActiveSubscriptionPrice(String.valueOf(planDetail.getRecurringPaymentAmount()));
+                                                                    if(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()!=null) {
+                                                                        for (PlanDetail planDetail : appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()) {
+                                                                            if (!TextUtils.isEmpty(planDetail.getRecurringPaymentCurrencyCode()) &&
+                                                                                    planDetail.getCountryCode().equalsIgnoreCase(countryCode)) {
+                                                                                setActiveSubscriptionPrice(String.valueOf(planDetail.getRecurringPaymentAmount()));
+                                                                            }
                                                                         }
                                                                     }
                                                                     setActiveSubscriptionStatus(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus());
