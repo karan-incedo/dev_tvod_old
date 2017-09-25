@@ -583,36 +583,45 @@ public class TVViewCreator {
                         Button btn = (Button) componentViewResult.componentView;
                         final boolean[] queued = new boolean[1];
 
-                        appCMSPresenter.getUserVideoStatus(
-                                moduleAPI.getContentData().get(0).getGist().getId(),
-                                userVideoStatusResponse -> {
-                                    if(null != userVideoStatusResponse) {
-                                        queued[0] = userVideoStatusResponse.getQueued();
-                                        Log.d(TAG, "appCMSAddToWatchlistResult: qued: " + queued[0]);
-                                        if (queued[0]) {
-                                            btn.setText(context.getString(R.string.remove_from_watchlist));
-                                        } else {
-                                            btn.setText(context.getString(R.string.add_to_watchlist));
+
+                        if(appCMSPresenter.isUserLoggedIn(context)) {
+                            appCMSPresenter.getUserVideoStatus(
+                                    moduleAPI.getContentData().get(0).getGist().getId(),
+                                    userVideoStatusResponse -> {
+                                        if (null != userVideoStatusResponse) {
+                                            queued[0] = userVideoStatusResponse.getQueued();
+                                            Log.d(TAG, "appCMSAddToWatchlistResult: qued: " + queued[0]);
+                                            if (queued[0]) {
+                                                btn.setText(context.getString(R.string.remove_from_watchlist));
+                                            } else {
+                                                btn.setText(context.getString(R.string.add_to_watchlist));
+                                            }
                                         }
-                                    }
-                                });
+                                    });
+                        }
 
                         componentViewResult.componentView.setOnClickListener(v -> {
                                     Log.d(TAG, "appCMSAddToWatchlistResult: clicked");
-                                    appCMSPresenter.editWatchlist(
-                                            moduleAPI.getContentData().get(0).getGist().getId(),
-                                            appCMSAddToWatchlistResult -> {
-                                                Log.d(TAG, "appCMSAddToWatchlistResult");
-                                                queued[0] = !queued[0];
-                                                if (queued[0]) {
-                                                    btn.setText(context.getString(R.string.remove_from_watchlist));
-                                                } else {
-                                                    btn.setText(context.getString(R.string.add_to_watchlist));
-                                                }
-                                            }, !queued[0]);
+                                    if(appCMSPresenter.isUserLoggedIn(context)) {
+                                        appCMSPresenter.editWatchlist(
+                                                moduleAPI.getContentData().get(0).getGist().getId(),
+                                                appCMSAddToWatchlistResult -> {
+                                                    Log.d(TAG, "appCMSAddToWatchlistResult");
+                                                    queued[0] = !queued[0];
+                                                    if (queued[0]) {
+                                                        btn.setText(context.getString(R.string.remove_from_watchlist));
+                                                    } else {
+                                                        btn.setText(context.getString(R.string.add_to_watchlist));
+                                                    }
+                                                }, !queued[0]);
+                                    }else{
+                                        //TODO : open Login , Signup dialog from here.
+
+                                    }
                                 }
                         );
                         break;
+
 
                     case PAGE_ADD_TO_WATCHLIST_KEY:
                         componentViewResult.componentView.setFocusable(true);

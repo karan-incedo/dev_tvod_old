@@ -6,33 +6,29 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.tv.views.component.AppCMSTVViewComponent;
 import com.viewlift.tv.views.component.DaggerAppCMSTVViewComponent;
-import com.viewlift.tv.views.customviews.TVModuleView;
 import com.viewlift.tv.views.customviews.TVPageView;
 import com.viewlift.tv.views.module.AppCMSTVPageViewModule;
 import com.viewlift.views.binders.AppCMSBinder;
 
-public class AppCmsTOSDialogFragment extends DialogFragment {
+public class AppCmsGenericDialogFragment extends DialogFragment {
 
     private AppCMSPresenter appCMSPresenter;
     private AppCMSTVViewComponent appCmsViewComponent;
     private TVPageView tvPageView;
 
 
-    public AppCmsTOSDialogFragment() {
+    public AppCmsGenericDialogFragment() {
         setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Translucent_NoTitleBar);
      }
 
-    public static AppCmsTOSDialogFragment newInstance(AppCMSBinder appCMSBinder) {
-        AppCmsTOSDialogFragment fragment = new AppCmsTOSDialogFragment();
+    public static AppCmsGenericDialogFragment newInstance(AppCMSBinder appCMSBinder) {
+        AppCmsGenericDialogFragment fragment = new AppCmsGenericDialogFragment();
         Bundle args = new Bundle();
         args.putBinder("app_cms_binder_key", appCMSBinder);
         fragment.setArguments(args);
