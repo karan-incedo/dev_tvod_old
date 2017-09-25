@@ -8625,7 +8625,7 @@ public class AppCMSPresenter {
     public String getSDCardPath(Context context) {
         File baseSDCardDir;
         String[] dirs = getStorageDirectories(context);
-        baseSDCardDir = new File(dirs[0] + File.separator + appCMSMain.getDomainName());
+        baseSDCardDir = new File(dirs[0]);
 
         return baseSDCardDir.getAbsolutePath();
     }
@@ -8643,7 +8643,8 @@ public class AppCMSPresenter {
                 for (File file : externalDirs) {
                     String path = null;
                     try {
-                        path = file.getPath().split("/Android")[0];
+                       // path = file.getPath().split("/Android")[0];
+                        path = file.getAbsolutePath();
                     } catch (Exception e) {
                         Log.e(TAG, "Error getting storage directories for downloads: " + e.getMessage());
                         path = null;
