@@ -3082,7 +3082,9 @@ public class AppCMSPresenter {
 
 
             iv2.setImageBitmap(b);
-            iv2.setForegroundGravity(View.TEXT_ALIGNMENT_CENTER);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                iv2.setForegroundGravity(View.TEXT_ALIGNMENT_CENTER);
+            }
         }
     }
 

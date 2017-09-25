@@ -1348,7 +1348,9 @@ public class ViewCreator {
                                             numCols,
                                             LinearLayoutManager.VERTICAL,
                                             false));
-                            componentViewResult.componentView.setForegroundGravity(Gravity.CENTER_HORIZONTAL);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                componentViewResult.componentView.setForegroundGravity(Gravity.CENTER_HORIZONTAL);
+                            }
                         } else {
                             ((RecyclerView) componentViewResult.componentView)
                                     .setLayoutManager(new LinearLayoutManager(context,
@@ -2619,9 +2621,11 @@ public class ViewCreator {
                         switchOnColor,
                         switchOffColor
                 });
-                ((Switch) componentViewResult.componentView).setThumbTintList(colorStateList);
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     ((Switch) componentViewResult.componentView).setTrackTintMode(PorterDuff.Mode.MULTIPLY);
+                    ((Switch) componentViewResult.componentView).setThumbTintList(colorStateList);
+                } else {
+                    ((Switch) componentViewResult.componentView).setButtonTintList(colorStateList);
                 }
 
                 if (componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY) {

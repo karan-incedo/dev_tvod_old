@@ -33,7 +33,7 @@ android {
     buildToolsVersion "26.0.1"
     defaultConfig {
         applicationId packageName
-        minSdkVersion 23
+        minSdkVersion 21
         targetSdkVersion 26
         versionCode 61
         versionName appVersionName
@@ -46,7 +46,7 @@ android {
     productFlavors {
         mobile {
             dimension = "green"
-            minSdkVersion 23
+            minSdkVersion 21
             compileSdkVersion 23
             targetSdkVersion 25
         }
