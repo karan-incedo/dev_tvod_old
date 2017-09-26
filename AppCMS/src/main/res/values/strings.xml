@@ -133,6 +133,7 @@
     <string name="app_cms_edit_profile_username_key">app_cms_edit_profile_username_key</string>
     <string name="app_cms_password_reset_email_key">app_cms_password_reset_email</string>
     <string name="play_ads_key">play_ads</string>
+    <string name="is_trailer_key">is_trailer</string>
     <string name="reset_password_text">RESET PASSWORD</string>
     <string name="watched_time_key">watched_time</string>
     <string name="run_time_key">run_time</string>
@@ -369,8 +370,8 @@
     <string name="tv_dialog_header_key">dialog_header_key</string>
     <string name="tv_dialog_width_key">dialog_width_key</string>
     <string name="tv_dialog_height_key">dialog_height_key</string>
-    <string name="clear_history_message">CLEAR HISTORY?</string>
-    <string name="clear_watchlist_message">CLEAR WATCHLIST?</string>
+    <string name="clear_history_message">CLEAR HISTORY ?</string>
+    <string name="clear_watchlist_message">CLEAR WATCHLIST ?</string>
     <string name="remove_from_watchlist">REMOVE FROM WATCHLIST</string>
     <string name="add_to_watchlist">ADD TO WATCHLIST</string>
     <string name="add_to_watchlist_dialog_text">You have to be signed in to add this to your watchlist.</string>
