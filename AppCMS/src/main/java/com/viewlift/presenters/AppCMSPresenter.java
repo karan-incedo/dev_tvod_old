@@ -8902,8 +8902,10 @@ public class AppCMSPresenter {
         String downloadQualityRendition = getUserDownloadQualityPref();
         Map<String, String> urlRenditionMap = new HashMap<>();
         for (Mpeg mpeg : contentDatum.getStreamingInfo().getVideoAssets().getMpeg()) {
-            urlRenditionMap.put(mpeg.getRenditionValue().replace("_", "").trim(),
-                    mpeg.getUrl());
+            if(mpeg.getRenditionValue() != null) {
+                urlRenditionMap.put(mpeg.getRenditionValue().replace("_", "").trim(),
+                        mpeg.getUrl());
+            }
         }
         downloadURL = urlRenditionMap.get(downloadQualityRendition);
 
