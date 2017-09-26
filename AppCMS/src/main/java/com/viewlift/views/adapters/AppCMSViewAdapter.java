@@ -384,16 +384,30 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (relatedVideoIds == null) {
                                     currentPlayingIndex = 0;
                                 }
-                                if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                        action,
-                                        title,
-                                        extraData,
-                                        data,
-                                        false,
-                                        currentPlayingIndex,
-                                        relatedVideoIds)) {
-                                    Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
-                                            + " action: " + action + " hlsUrl: " + hlsUrl);
+
+                                if (data.getContentDetails() == null) {
+                                    if (!appCMSPresenter.launchVideoPlayer(data,
+                                            currentPlayingIndex,
+                                            relatedVideoIds,
+                                            -1)) {
+                                        Log.e(TAG, "Could not launch action: " +
+                                                " permalink: " +
+                                                permalink +
+                                                " action: " +
+                                                action);
+                                    }
+                                } else {
+                                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                            action,
+                                            title,
+                                            extraData,
+                                            data,
+                                            false,
+                                            currentPlayingIndex,
+                                            relatedVideoIds)) {
+                                        Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
+                                                + " action: " + action + " hlsUrl: " + hlsUrl);
+                                    }
                                 }
                             }
                         }
@@ -478,19 +492,33 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     if (relatedVideoIds == null) {
                         currentPlayingIndex = 0;
                     }
-                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                            action,
-                            title,
-                            null,
-                            null,
-                            false,
-                            currentPlayingIndex,
-                            relatedVideoIds)) {
-                        Log.e(TAG, "Could not launch action: " +
-                                " permalink: " +
-                                permalink +
-                                " action: " +
-                                action);
+
+                    if (data.getContentDetails() == null) {
+                        if (!appCMSPresenter.launchVideoPlayer(data,
+                                currentPlayingIndex,
+                                relatedVideoIds,
+                                -1)) {
+                            Log.e(TAG, "Could not launch action: " +
+                                    " permalink: " +
+                                    permalink +
+                                    " action: " +
+                                    action);
+                        }
+                    } else {
+                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                action,
+                                title,
+                                null,
+                                null,
+                                false,
+                                currentPlayingIndex,
+                                relatedVideoIds)) {
+                            Log.e(TAG, "Could not launch action: " +
+                                    " permalink: " +
+                                    permalink +
+                                    " action: " +
+                                    action);
+                        }
                     }
                 }
             });
