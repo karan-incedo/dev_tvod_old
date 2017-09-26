@@ -20,7 +20,7 @@
         tools:node="merge">
         <meta-data
             android:name="com.urbanairship.autopilot"
-            android:value="com.viewlift.pushnotif.AppCMSAutoPilot" />
+            android:value="com.urbanairship.Autopilot" />
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
