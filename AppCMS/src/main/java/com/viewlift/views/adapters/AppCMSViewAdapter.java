@@ -364,9 +364,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                             if (data.getGist() != null) {
                                 Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                                 String permalink = data.getGist().getPermalink();
-                                String action = defaultAction;
-                                if (permalink.contains(watchTrailerQuailifier)) {
-                                    action = watchTrailerAction;
+                                String action = videoAction;
+                                if (childComponent != null && !TextUtils.isEmpty(childComponent.getAction())) {
+                                    action = childComponent.getAction();
                                 }
                                 String title = data.getGist().getTitle();
                                 String hlsUrl = getHlsUrl(data);
@@ -385,11 +385,32 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     currentPlayingIndex = 0;
                                 }
 
-                                if (data.getContentDetails() == null) {
+                                String contentType = "";
+
+                                if (data.getGist() != null && data.getGist().getContentType() != null) {
+                                    contentType = data.getGist().getContentType();
+                                }
+
+                                switch (contentType) {
+                                    case "SHOW":
+                                        action = showAction;
+                                        break;
+
+                                    case "VIDEO":
+                                        action = videoAction;
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+
+                                if (data.getGist() == null ||
+                                        data.getGist().getContentType() == null) {
                                     if (!appCMSPresenter.launchVideoPlayer(data,
                                             currentPlayingIndex,
                                             relatedVideoIds,
-                                            -1)) {
+                                            -1,
+                                            action)) {
                                         Log.e(TAG, "Could not launch action: " +
                                                 " permalink: " +
                                                 permalink +
@@ -400,13 +421,16 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                                             action,
                                             title,
-                                            extraData,
-                                            data,
+                                            null,
+                                            null,
                                             false,
                                             currentPlayingIndex,
                                             relatedVideoIds)) {
-                                        Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
-                                                + " action: " + action + " hlsUrl: " + hlsUrl);
+                                        Log.e(TAG, "Could not launch action: " +
+                                                " permalink: " +
+                                                permalink +
+                                                " action: " +
+                                                action);
                                     }
                                 }
                             }
@@ -433,7 +457,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (!appCMSPresenter.launchVideoPlayer(data,
                                         currentPlayingIndex,
                                         relatedVideoIds,
-                                        -1)) {
+                                        -1,
+                                        null)) {
                                     Log.e(TAG, "Could not launch play action: " +
                                             " filmId: " +
                                             filmId +
@@ -461,7 +486,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 if (isClickable) {
                     String permalink = data.getGist().getPermalink();
                     String title = data.getGist().getTitle();
-                    String action = defaultAction;
+                    String action = videoAction;
 
                     String contentType = "";
 
@@ -493,11 +518,13 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         currentPlayingIndex = 0;
                     }
 
-                    if (action.equals(defaultAction)) {
+                    if (data.getGist() == null ||
+                            data.getGist().getContentType() == null) {
                         if (!appCMSPresenter.launchVideoPlayer(data,
                                 currentPlayingIndex,
                                 relatedVideoIds,
-                                -1)) {
+                                -1,
+                                action)) {
                             Log.e(TAG, "Could not launch action: " +
                                     " permalink: " +
                                     permalink +

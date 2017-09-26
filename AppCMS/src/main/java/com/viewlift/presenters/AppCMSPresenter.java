@@ -665,6 +665,10 @@ public class AppCMSPresenter {
         }
     }
 
+    public void setIsLoading(boolean isLoading) {
+        loadingPage = isLoading;
+    }
+
     public String getApiUrl(boolean usePageIdQueryParam,
                             boolean viewPlansPage,
                             boolean showPage,
@@ -716,7 +720,8 @@ public class AppCMSPresenter {
     public boolean launchVideoPlayer(final ContentDatum contentDatum,
                                      final int currentlyPlayingIndex,
                                      List<String> relateVideoIds,
-                                     long watchedTime) {
+                                     long watchedTime,
+                                     String expectedAction) {
         boolean result = false;
         if (currentActivity != null &&
                 !loadingPage && appCMSMain != null &&
@@ -748,8 +753,39 @@ public class AppCMSPresenter {
                                     if (watchedTime >= 0) {
                                         appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(watchedTime);
                                     }
+
+                                    String updatedAction = expectedAction;
+
+                                    if (!TextUtils.isEmpty(expectedAction) &&
+                                            !expectedAction.equals(currentContext.getString(R.string.app_cms_action_videopage_key)) &&
+                                            !expectedAction.equals(currentContext.getString(R.string.app_cms_action_watchvideo_key))) {
+                                        String contentType = "";
+
+                                        if (appCMSVideoDetail.getRecords().get(0).getGist() != null &&
+                                                appCMSVideoDetail.getRecords().get(0).getGist().getContentType() != null) {
+                                            contentType = appCMSVideoDetail.getRecords().get(0).getGist().getContentType();
+                                        }
+
+                                        switch (contentType) {
+                                            case "SHOW":
+                                                updatedAction = currentContext.getString(R.string.app_cms_action_showvideopage_key);
+                                                break;
+
+                                            case "VIDEO":
+                                                updatedAction = currentContext.getString(R.string.app_cms_action_detailvideopage_key);
+                                                break;
+
+                                            default:
+                                                break;
+                                        }
+                                    }
+
+                                    if (updatedAction == null) {
+                                        updatedAction = currentContext.getString(R.string.app_cms_action_videopage_key);
+                                    }
+
                                     launchButtonSelectedAction(appCMSVideoDetail.getRecords().get(0).getGist().getPermalink(),
-                                            action,
+                                            updatedAction,
                                             appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
                                             null,
                                             appCMSVideoDetail.getRecords().get(0),
@@ -8344,7 +8380,8 @@ public class AppCMSPresenter {
             launchVideoPlayer(binder.getContentData(),
                     currentlyPlayingIndex,
                     binder.getRelateVideoIds(),
-                    watchedTime / 1000L);
+                    watchedTime / 1000L,
+                    null);
         } else {
             String permalink = binder.getContentData().getGist().getPermalink();
             String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);

@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.viewlift.models.data.appcms.api.Module;
@@ -18,6 +19,7 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
@@ -151,6 +153,12 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                             if (collectionGridLocation[1] <= eventY && eventY <= collectionGridLocation[1] + collectionGridItemHeight) {
                                 childIndex = i;
                             }
+                        }
+                        if (BaseView.isLandscape(context) &&
+                                childContainer instanceof LinearLayout &&
+                                childContainer.getChildCount() > 1 &&
+                                childContainer.getChildAt(1) instanceof ViewGroup) {
+                            childContainer = (ViewGroup) childContainer.getChildAt(1);
                         }
                         for (int j = 0; j < childContainer.getChildCount(); j++) {
                             View gridItemChildView = childContainer.getChildAt(j);

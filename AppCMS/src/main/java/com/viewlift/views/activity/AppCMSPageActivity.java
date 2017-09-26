@@ -481,6 +481,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             handlingClose = false;
         } else if (isPageLoading()) {
             pageLoading(false);
+            appCMSPresenter.setIsLoading(false);
             appCMSPresenter.setNavItemToCurrentAction(this);
         }
     }
