@@ -225,6 +225,7 @@ public class AppCmsNavigationFragment extends Fragment {
                                             false,
                                             Uri.EMPTY,
                                             false,
+                                            false,
                                             false
                                     );
                                 }
@@ -234,6 +235,7 @@ public class AppCmsNavigationFragment extends Fragment {
                                     false,
                                     null,
                                     true,
+                                    false,
                                     false)) {
                             }
                         }

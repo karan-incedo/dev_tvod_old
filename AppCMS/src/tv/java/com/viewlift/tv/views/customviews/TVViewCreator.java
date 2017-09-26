@@ -129,7 +129,8 @@ public class TVViewCreator {
                                    AppCMSPageAPI appCMSPageAPI,
                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                    AppCMSPresenter appCMSPresenter,
-                                   List<String> modulesToIgnore) {
+                                   List<String> modulesToIgnore,
+                                   boolean isFromLoginPage) {
         if (appCMSPageUI == null || appCMSPageAPI == null) {
             return null;
         }
@@ -152,7 +153,8 @@ public class TVViewCreator {
                     pageView,
                     jsonValueKeyMap,
                     appCMSPresenter,
-                    modulesToIgnore);
+                    modulesToIgnore,
+                    isFromLoginPage);
             getPageViewLruCache().put(appCMSPageAPI.getId(), pageView);
         } /*else {
             pageView.
@@ -170,7 +172,8 @@ public class TVViewCreator {
                                   TVPageView pageView,
                                   Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                   AppCMSPresenter appCMSPresenter,
-                                  List<String> modulesToIgnore) {
+                                  List<String> modulesToIgnore,
+                                  boolean isFromLoginDialog) {
         appCMSPresenter.clearOnInternalEvents();
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
@@ -184,7 +187,8 @@ public class TVViewCreator {
                         pageView,
                         jsonValueKeyMap,
                         appCMSPresenter,
-                        appCMSPageAPI);
+                        appCMSPageAPI,
+                        isFromLoginDialog);
                 if (childView != null) {
                     childrenContainer.addView(childView);
                 }
@@ -220,7 +224,8 @@ public class TVViewCreator {
                                  final Module moduleAPI,
                                  TVPageView pageView,
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                                 AppCMSPresenter appCMSPresenter, AppCMSPageAPI appCMSPageAPI) {
+                                 AppCMSPresenter appCMSPresenter, AppCMSPageAPI appCMSPageAPI,
+                                 boolean isFromLoginDialog) {
         TVModuleView moduleView = null;
         if (Arrays.asList(context.getResources().getStringArray(R.array.app_cms_tray_modules)).contains(module.getView())) {
             if (module.getView().equalsIgnoreCase(context.getResources().getString(R.string.carousel_nodule))) {
@@ -296,7 +301,8 @@ public class TVViewCreator {
                             jsonValueKeyMap,
                             appCMSPresenter,
                             false,
-                            module.getView());
+                            module.getView(),
+                            isFromLoginDialog);
                     if (componentViewResult.onInternalEvent != null) {
                         appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
                     }
@@ -444,7 +450,8 @@ public class TVViewCreator {
                                     Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                     final AppCMSPresenter appCMSPresenter,
                                     boolean gridElement,
-                                    String viewType) {
+                                    String viewType,
+                                    boolean isFromLoginDialog) {
         componentViewResult.componentView = null;
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
@@ -637,6 +644,7 @@ public class TVViewCreator {
                                                     false,
                                                     Uri.EMPTY,
                                                     false,
+                                                    false,
                                                     true
                                             );
                                         });
@@ -803,7 +811,6 @@ public class TVViewCreator {
                         break;
 
                     case PAGE_LOGIN_BUTTON_KEY:
-
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -826,6 +833,7 @@ public class TVViewCreator {
                                     String[] authData = new String[2];
                                     authData[0] = emailId;
                                     authData[1] = password;
+                                    appCMSPresenter.setLaunchType(isFromLoginDialog ? AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP : AppCMSPresenter.LaunchType.HOME);
                                     appCMSPresenter.launchTVButtonSelectedAction(null,
                                             component.getAction(),
                                             null,
@@ -1119,7 +1127,8 @@ public class TVViewCreator {
                                                     false,
                                                     Uri.EMPTY,
                                                     false,
-                                                    true
+                                                    true,
+                                                    false
                                             );
                                         }
 
@@ -1158,7 +1167,8 @@ public class TVViewCreator {
                                                     false,
                                                     Uri.EMPTY,
                                                     false,
-                                                    true
+                                                    true,
+                                                    false
                                             );
                                         }
                                     }
