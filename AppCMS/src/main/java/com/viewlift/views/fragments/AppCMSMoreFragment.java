@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.text.Html;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ import com.viewlift.R;
  */
 
 public class AppCMSMoreFragment extends DialogFragment {
+    private static final String TAG = "MoreFragment";
 
     public static AppCMSMoreFragment newInstance(Context context, String title, String moreText) {
         AppCMSMoreFragment fragment = new AppCMSMoreFragment();
@@ -60,7 +62,12 @@ public class AppCMSMoreFragment extends DialogFragment {
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
-        String textColor = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor();
+        String textColor = "#ffffffff";
+        try {
+            textColor = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor();
+        } catch (Exception e) {
+            Log.e(TAG, "Could not retrieve text color from AppCMS Brand: " + e.getMessage());
+        }
 
         appCMSCloseButton.setOnClickListener(new View.OnClickListener() {
             @Override

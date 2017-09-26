@@ -88,8 +88,8 @@ public class AppCMSPlayVideoFragment extends Fragment
     private final String FIREBASE_PLAYER_CHROMECAST = "Chromecast";
     private final String FIREBASE_MEDIA_TYPE_VIDEO = "Video";
     private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
-    private final int totalCountdownInMillis = 10000;
-    private final int countDownIntervalInMillis = 10;
+    private final int totalCountdownInMillis = 3000;
+    private final int countDownIntervalInMillis = 30;
     Handler mProgressHandler;
     Runnable mProgressRunnable;
     long mTotalVideoDuration;
@@ -574,10 +574,12 @@ public class AppCMSPlayVideoFragment extends Fragment
             return;
         Bundle bundle = new Bundle();
         bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, PLAYER_SCREEN_NAME + "-" + screenVideoName);
-        //Logs an app event.
-        appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
-        //Sets whether analytics collection is enabled for this app on this device.
-        appCMSPresenter.getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
+        if (appCMSPresenter.getmFireBaseAnalytics() != null) {
+            //Logs an app event.
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+            //Sets whether analytics collection is enabled for this app on this device.
+            appCMSPresenter.getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
+        }
     }
 
     private void setCasting() {
@@ -987,6 +989,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             applyBorderToComponent(contentRatingInfoContainer, 1, highlightColor);
             progressBar.getProgressDrawable()
                     .setColorFilter(highlightColor, PorterDuff.Mode.SRC_IN);
+            progressBar.setMax(100);
         }
 
         contentRatingBack.setOnClickListener(v -> getActivity().finish());
@@ -1015,8 +1018,9 @@ public class AppCMSPlayVideoFragment extends Fragment
         new CountDownTimer(totalCountdownInMillis, countDownIntervalInMillis) {
             @Override
             public void onTick(long millisUntilFinished) {
-                long time = totalCountdownInMillis - millisUntilFinished;
-                progressBar.setProgress((int) time);
+                long progress = (long) (100.0 * (1.0 - (double) millisUntilFinished / (double) totalCountdownInMillis));
+                Log.d(TAG, "CRW Progress:"  + progress);
+                progressBar.setProgress((int) progress);
             }
 
             @Override
@@ -1159,7 +1163,11 @@ public class AppCMSPlayVideoFragment extends Fragment
                 break;
 
             case AudioManager.AUDIOFOCUS_GAIN:
-                videoPlayerView.startPlayer();
+                if(videoPlayerView.getPlayer() != null && videoPlayerView.getPlayer().getPlayWhenReady()) {
+                    videoPlayerView.startPlayer();
+                }else{
+                    videoPlayerView.pausePlayer();
+                }
                 break;
 
             case AudioManager.AUDIOFOCUS_LOSS:

@@ -494,7 +494,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         } else {
             fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT;
         }
-        playerView.setResizeMode(fullscreenResizeMode);
+        if (BaseView.isLandscape(getContext())) {
+            playerView.setResizeMode(fullscreenResizeMode);
+        } else {
+            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+        }
     }
 
     @Override

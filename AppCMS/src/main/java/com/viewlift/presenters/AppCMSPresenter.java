@@ -74,7 +74,9 @@ import com.google.gson.Gson;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
+import com.viewlift.ccavenue.screens.EnterMobileNumberActivity;
 import com.viewlift.ccavenue.screens.PaymentOptionsActivity;
+import com.viewlift.ccavenue.screens.WebViewActivity;
 import com.viewlift.ccavenue.utility.AvenuesParams;
 import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenResponse;
 import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
@@ -462,6 +464,8 @@ public class AppCMSPresenter {
     private String planToPurchase;
     private String currencyCode;
     private String countryCode;
+    private boolean upgradesAvailable;
+    private boolean checkUpgradeFlag;
     private String currencyOfPlanToPurchase;
     private String planToPurchaseName;
     private String apikey;
@@ -607,6 +611,9 @@ public class AppCMSPresenter {
                 showEntitlementDialog(DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED, null);
             }
         });
+
+        this.checkUpgradeFlag = false;
+        this.upgradesAvailable = false;
     }
 
     /*does not let user enter space in edittext*/
@@ -804,7 +811,7 @@ public class AppCMSPresenter {
     }
 
     public void updateWatchedTime(String filmId, long watchedTime) {
-        if (getLoggedInUser() != null) {
+        if (getLoggedInUser() != null && appCMSSite != null && appCMSMain != null) {
             UpdateHistoryRequest updateHistoryRequest = new UpdateHistoryRequest();
             updateHistoryRequest.setUserId(getLoggedInUser());
             updateHistoryRequest.setWatchedTime(watchedTime);
@@ -1845,7 +1852,8 @@ public class AppCMSPresenter {
                                               String recurringPaymentCurrencyCode,
                                               String countryCode,
                                               boolean isRenewable,
-                                              String getRenewableFrequency) {
+                                              String getRenewableFrequency,
+                                              boolean upgradesAvailable) {
         if (currentActivity != null) {
             launchType = LaunchType.SUBSCRIBE;
             skuToPurchase = sku;
@@ -1855,6 +1863,8 @@ public class AppCMSPresenter {
             planToPurchasePrice = planPrice;
             planToPurchaseDiscountedPrice = discountedPrice;
             currencyCode = recurringPaymentCurrencyCode;
+            this.upgradesAvailable = upgradesAvailable;
+            this.checkUpgradeFlag = true;
             this.countryCode = countryCode;
             this.isRenewable = isRenewable;
             this.renewableFrequency = getRenewableFrequency;
@@ -1862,7 +1872,7 @@ public class AppCMSPresenter {
             bundle.putString(FIREBASE_PLAN_ITEM_ID, planToPurchase);
             bundle.putString(FIREBASE_PLAN_ITEM_NAME, planToPurchaseName);
             bundle.putString(FIREBASE_PLAN_ITEM_CURRENCY, currencyOfPlanToPurchase);
-            bundle.putString(FIREBASE_PLAN_ITEM_PRICE, String.valueOf(planToPurchasePrice));
+            bundle.putDouble(FIREBASE_PLAN_ITEM_PRICE, Double.valueOf(planToPurchasePrice));
 
             String firebaseSelectPlanEventKey = "add_to_cart";
             sendFirebaseSelectedEvents(firebaseSelectPlanEventKey, bundle);
@@ -1889,8 +1899,9 @@ public class AppCMSPresenter {
         Log.v("apikey", apikey);
         try {
             String strAmount = Double.toString(planToPurchaseDiscountedPrice);
+            Intent  intent = new Intent(currentActivity, EnterMobileNumberActivity.class);
             //Intent intent = new Intent(currentActivity, WebViewActivity.class);
-            Intent intent = new Intent(currentActivity, PaymentOptionsActivity.class);
+            //Intent intent = new Intent(currentActivity, PaymentOptionsActivity.class);
             intent.putExtra(AvenuesParams.CURRENCY, currencyCode);
             intent.putExtra(AvenuesParams.AMOUNT, strAmount);
             intent.putExtra(currentActivity.getString(R.string.app_cms_site_name), appCMSSite.getGist().getSiteInternalName());
@@ -1907,6 +1918,7 @@ public class AppCMSPresenter {
             intent.putExtra("api_base_url", appCMSMain.getApiBaseUrl());
             intent.putExtra("si_frequency", "2");
             intent.putExtra("si_frequency_type", renewableFrequency);
+            intent.putExtra("color_theme",getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()) ;
             currentActivity.startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -3829,15 +3841,10 @@ public class AppCMSPresenter {
 
                                 if (inAppPurchaseData.isAutoRenewing() || !subscriptionExpired) {
                                     if (showErrorDialogIfSubscriptionExists) {
-                                        showDialog(DialogType.EXISTING_SUBSCRIPTION,
-                                                currentActivity.getString(R.string.app_cms_existing_subscription_error_message),
-                                                false,
+                                        showEntitlementDialog(DialogType.EXISTING_SUBSCRIPTION,
                                                 () -> {
-                                                    try {
-                                                        sendCloseOthersAction(null, true);
-                                                    } catch (Exception e) {
-                                                        Log.e(TAG, "Error retrieving Google Play Subscription data: " + e.getMessage());
-                                                    }
+                                                    sendCloseOthersAction(null, true);
+                                                    navigateToLoginPage();
                                                 });
                                     }
                                 }
@@ -4827,6 +4834,8 @@ public class AppCMSPresenter {
                                     .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
                                     refreshSubscriptionData) {
 
+                                checkUpgradeFlag = false;
+
                                 refreshSubscriptionData(() -> {
 
                                 }, true);
@@ -4924,6 +4933,9 @@ public class AppCMSPresenter {
                                 if (appCMSMain.getServiceType()
                                         .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
                                         refreshSubscriptionData) {
+
+                                    checkUpgradeFlag = false;
+
                                     refreshSubscriptionData(() -> {
 
                                     }, true);
@@ -5636,6 +5648,12 @@ public class AppCMSPresenter {
                 mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
             }
 
+            if (dialogType == DialogType.EXISTING_SUBSCRIPTION) {
+                title = currentActivity.getString(R.string.app_cms_existing_subscription_title);
+                message = currentActivity.getString(R.string.app_cms_existing_subscription_error_message);
+                positiveButtonText = currentActivity.getString(R.string.app_cms_login_button_text);
+            }
+
             AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
             builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
                     Integer.toHexString(textColor).substring(2),
@@ -5716,6 +5734,14 @@ public class AppCMSPresenter {
                                 Log.e(TAG, "Error closing subscription required dialog: " + e.getMessage());
                             }
                         });
+            } else if (dialogType == DialogType.EXISTING_SUBSCRIPTION) {
+                builder.setPositiveButton(positiveButtonText,
+                        (dialog, which) -> {
+                            if (onCloseAction != null) {
+                                onCloseAction.call();
+                            }
+                            dialog.dismiss();
+                        });
             } else {
                 builder.setPositiveButton(positiveButtonText,
                         (dialog, which) -> {
@@ -5728,11 +5754,12 @@ public class AppCMSPresenter {
                         });
             }
 
+            AlertDialog dialog = builder.create();
+
             if (onCloseAction != null) {
-                builder.setCancelable(false);
+                dialog.setCanceledOnTouchOutside(false);
             }
 
-            AlertDialog dialog = builder.create();
             if (dialog.getWindow() != null) {
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
                         Color.parseColor(appCMSMain.getBrand()
@@ -6429,12 +6456,13 @@ public class AppCMSPresenter {
                                     subscriptionRequest.getPlanId(),
                                     subscriptionRequest.getCurrencyCode());
 
+                            System.out.println("Plan to purchase-" + planToPurchasePrice);
                             //Subscription Succes Firebase Log Event
                             Bundle bundle = new Bundle();
                             bundle.putString(FIREBASE_PLAN_ID, subscriptionRequest.getPlanId());
                             bundle.putString(FIREBASE_PLAN_NAME, planToPurchaseName);
                             bundle.putString(FIREBASE_CURRENCY_NAME, currencyOfPlanToPurchase);
-                            bundle.putString(FIREBASE_VALUE, String.valueOf(planToPurchasePrice));
+                            bundle.putDouble(FIREBASE_VALUE, Double.valueOf(planToPurchasePrice));
                             if (mFireBaseAnalytics != null)
                                 mFireBaseAnalytics.logEvent(FIREBASE_ECOMMERCE_PURCHASE, bundle);
 
@@ -6572,6 +6600,10 @@ public class AppCMSPresenter {
     }
 
     public boolean upgradesAvailableForUser() {
+        if (checkUpgradeFlag) {
+            return upgradesAvailable;
+        }
+
         List<SubscriptionPlan> availableUpgradesForUser = availablePlans();
         if (availableUpgradesForUser != null && !availableUpgradesForUser.isEmpty()) {
             return true;
@@ -6865,12 +6897,13 @@ public class AppCMSPresenter {
                                                                     setActiveSubscriptionId(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getId());
                                                                     setActiveSubscriptionPlanName(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
                                                                     String countryCode = appCMSSubscriptionPlanResult.getSubscriptionInfo().getCountryCode();
-                                                                    for (PlanDetail planDetail : appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()) {
-                                                                        if (!TextUtils.isEmpty(planDetail.getRecurringPaymentCurrencyCode()) &&
-                                                                                planDetail.getCountryCode().equalsIgnoreCase(countryCode)) {
-                                                                            setActiveSubscriptionPrice(String.valueOf(planDetail.getRecurringPaymentAmount()));
+                                                                    if (appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails() != null)
+                                                                        for (PlanDetail planDetail : appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getPlanDetails()) {
+                                                                            if (!TextUtils.isEmpty(planDetail.getRecurringPaymentCurrencyCode()) &&
+                                                                                    planDetail.getCountryCode().equalsIgnoreCase(countryCode)) {
+                                                                                setActiveSubscriptionPrice(String.valueOf(planDetail.getRecurringPaymentAmount()));
+                                                                            }
                                                                         }
-                                                                    }
                                                                     setActiveSubscriptionStatus(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus());
                                                                     if (useCCAvenue() && !isSubscriptionCompleted()) {
                                                                         setActiveSubscriptionPlanName("Scheduled to be cancelled by " +
@@ -7084,6 +7117,7 @@ public class AppCMSPresenter {
                                 if (appCMSMain.getServiceType()
                                         .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
                                         refreshSubscriptionData) {
+                                    checkUpgradeFlag = false;
                                     refreshSubscriptionData(() -> {
                                         if (entitlementPendingVideoData != null) {
                                             navigateToHomeToRefresh = false;
@@ -8623,7 +8657,7 @@ public class AppCMSPresenter {
     public String getSDCardPath(Context context) {
         File baseSDCardDir;
         String[] dirs = getStorageDirectories(context);
-        baseSDCardDir = new File(dirs[0] + File.separator + appCMSMain.getDomainName());
+        baseSDCardDir = new File(dirs[0]);
 
         return baseSDCardDir.getAbsolutePath();
     }
@@ -8641,7 +8675,8 @@ public class AppCMSPresenter {
                 for (File file : externalDirs) {
                     String path = null;
                     try {
-                        path = file.getPath().split("/Android")[0];
+                        // path = file.getPath().split("/Android")[0];
+                        path = file.getAbsolutePath();
                     } catch (Exception e) {
                         Log.e(TAG, "Error getting storage directories for downloads: " + e.getMessage());
                         path = null;

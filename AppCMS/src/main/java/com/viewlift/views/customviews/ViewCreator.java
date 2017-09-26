@@ -616,7 +616,7 @@ public class ViewCreator {
                                                                 ((TextView) settingsView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
                                                             }
                                                         } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY) {
-                                                            if (paymentProcessor != null) {
+                                                            if (paymentProcessor != null && appCMSPresenter.isUserSubscribed()) {
                                                                 if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor)) ||
                                                                         paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor_friendly))) {
                                                                     ((TextView) settingsView).setText(context.getString(R.string.subscription_ios_payment_processor_friendly));
@@ -2197,7 +2197,7 @@ public class ViewCreator {
                             break;
 
                         case PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY:
-                            if (paymentProcessor != null) {
+                            if (paymentProcessor != null && appCMSPresenter.isUserSubscribed()) {
                                 if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor)) ||
                                         paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor_friendly))) {
                                     ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_ios_payment_processor_friendly));

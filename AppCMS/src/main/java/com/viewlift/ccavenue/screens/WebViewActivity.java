@@ -60,6 +60,8 @@ public class WebViewActivity extends Activity {
 	private final String FIREBASE_PLAN_NAME = "item_name";
 	private final String FIREBASE_CURRENCY_NAME = "currency";
 	private final String FIREBASE_VALUE = "value";
+	private final String FIREBASE_TRANSACTION_ID = "transaction_id";
+
 	private final String FIREBASE_ECOMMERCE_PURCHASE = "ecommerce_purchase";
 
 	@Override
@@ -140,7 +142,9 @@ public class WebViewActivity extends Activity {
 						bundle.putString(FIREBASE_PLAN_ID, mainIntent.getStringExtra(getString(R.string.app_cms_plan_id)));
 						bundle.putString(FIREBASE_PLAN_NAME,  mainIntent.getStringExtra("plan_to_purchase_name"));
 						bundle.putString(FIREBASE_CURRENCY_NAME, mainIntent.getStringExtra(AvenuesParams.CURRENCY));
-						bundle.putString(FIREBASE_VALUE, String.valueOf(mainIntent.getStringExtra(AvenuesParams.AMOUNT)));
+						bundle.putDouble(FIREBASE_VALUE, Double.valueOf(mainIntent.getStringExtra(AvenuesParams.AMOUNT)));
+						bundle.putString(FIREBASE_TRANSACTION_ID, orderID);
+
 						if (appCMSPresenter.getmFireBaseAnalytics() != null)
 							appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_ECOMMERCE_PURCHASE, bundle);
 
@@ -229,14 +233,14 @@ public class WebViewActivity extends Activity {
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.REDIRECT_URL,cancelRedirectURL));
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.CANCEL_URL,cancelRedirectURL));
 			//params.append(ServiceUtility.addToPostParams("billing_name",getIntent().getStringExtra("authorizedUserName")));
-			params.append(ServiceUtility.addToPostParams("billing_email",getIntent().getStringExtra("email")));
+			//params.append(ServiceUtility.addToPostParams("billing_email",getIntent().getStringExtra("email")));
 			params.append(ServiceUtility.addToPostParams("billing_country","India"));
-			params.append(ServiceUtility.addToPostParams("billing_tel",getIntent().getStringExtra("mobile_number")));
+			params.append(ServiceUtility.addToPostParams("billing_tel",getIntent().getStringExtra("billing_tel")));
 
 			Log.v("payment_option",mainIntent.getStringExtra("payment_option")) ;
 			params.append(ServiceUtility.addToPostParams("payment_option",mainIntent.getStringExtra("payment_option"))) ;
 			//if (getIntent().getBooleanExtra("renewable",false)) {
-			if (getIntent().getStringExtra("payment_option").equalsIgnoreCase("OPTCRDC")) {
+			//if (getIntent().getStringExtra("payment_option").equalsIgnoreCase("OPTCRDC")) {
 				//params.append(ServiceUtility.addToPostParams("payment_option","OPTCRDC")) ;
 				params.append(ServiceUtility.addToPostParams("si_type","ONDEMAND")) ;
 				params.append(ServiceUtility.addToPostParams("si_mer_ref_no",merchantID)) ;
@@ -246,7 +250,7 @@ public class WebViewActivity extends Activity {
 				params.append(ServiceUtility.addToPostParams("si_frequency",mainIntent.getStringExtra("si_frequency"))) ;
 				params.append(ServiceUtility.addToPostParams("si_bill_cycle",mainIntent.getStringExtra("si_frequency"))) ;
 				params.append(ServiceUtility.addToPostParams("si_frequency_type",mainIntent.getStringExtra("si_frequency_type"))) ;
-			}
+			//}
 
 			params.append(ServiceUtility.addToPostParams("merchant_param1",getIntent().getStringExtra(getString(R.string.app_cms_site_name))));
 			params.append(ServiceUtility.addToPostParams("merchant_param2",getIntent().getStringExtra(getString(R.string.app_cms_user_id))));

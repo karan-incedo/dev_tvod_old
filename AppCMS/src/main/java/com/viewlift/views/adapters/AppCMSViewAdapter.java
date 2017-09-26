@@ -57,6 +57,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     protected int unselectedColor;
     protected int selectedColor;
     protected boolean isClickable;
+    private String videoAction;
+    private String showAction;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -112,6 +114,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.defaultHeight = defaultHeight;
         this.useMarginsAsPercentages = true;
         this.defaultAction = getDefaultAction(context);
+        this.videoAction = getVideoAction(context);
+        this.showAction = getShowAction(context);
 
         this.isSelected = false;
         this.unselectedColor = ContextCompat.getColor(context, android.R.color.white);
@@ -319,6 +323,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
                                 double discountedPrice = data.getPlanDetails().get(0).getRecurringPaymentAmount();
 
+                                boolean upgradesAvailable = adapterData.indexOf(data) == 0;
+
                                 appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
                                         data.getId(),
                                         data.getPlanDetails().get(0).getCountryCode(),
@@ -328,8 +334,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         data.getPlanDetails().get(0).getRecurringPaymentCurrencyCode(),
                                         data.getPlanDetails().get(0).getCountryCode(),
                                         data.getRenewable(),
-                                        data.getRenewalCycleType()
-                                );
+                                        data.getRenewalCycleType(),
+                                        upgradesAvailable);
                             } else {
                                 collectionGridItemView.performClick();
                             }
@@ -431,7 +437,21 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 if (isClickable) {
                     String permalink = data.getGist().getPermalink();
                     String title = data.getGist().getTitle();
-                    String action = component.getTrayClickAction();
+                    String action = defaultAction;
+
+                    switch (data.getGist().getContentType()) {
+                        case "SHOW":
+                            action = showAction;
+                            break;
+
+                        case "VIDEO":
+                            action = videoAction;
+                            break;
+
+                        default:
+                            break;
+                    }
+
                     Log.d(TAG, "Launching " + permalink + ":" + action);
                     List<String> relatedVideoIds = null;
                     if (data.getContentDetails() != null &&
@@ -483,6 +503,14 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         return context.getString(R.string.app_cms_action_videopage_key);
     }
 
+    private String getShowAction(Context context) {
+        return context.getString(R.string.app_cms_action_showvideopage_key);
+    }
+
+    private String getVideoAction(Context context) {
+        return context.getString(R.string.app_cms_action_detailvideopage_key);
+    }
+
     private String getHlsUrl(ContentDatum data) {
         if (data.getStreamingInfo() != null &&
                 data.getStreamingInfo().getVideoAssets() != null &&
@@ -521,29 +549,31 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     private void cullDataByAvailableUpgrades(List<SubscriptionPlan> availableSubscriptionPlans,
                                              double existingSubscriptionPrice) {
-        List<ContentDatum> updatedData = new ArrayList<>();
-        for (ContentDatum contentDatum : adapterData) {
-            double priceToCompare = contentDatum.getPlanDetails().get(0).getStrikeThroughPrice();
-            if (priceToCompare == 0) {
-                priceToCompare = contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount();
-            }
-            if (availableSubscriptionPlans != null) {
-                for (SubscriptionPlan subscriptionPlan : availableSubscriptionPlans) {
-                    if (!TextUtils.isEmpty(contentDatum.getIdentifier()) &&
-                            contentDatum.getIdentifier().equals(subscriptionPlan.getSku()) &&
-                            (existingSubscriptionPrice < subscriptionPlan.getSubscriptionPrice())) {
-                        updatedData.add(contentDatum);
-                    }
+        if (adapterData != null) {
+            List<ContentDatum> updatedData = new ArrayList<>();
+            for (ContentDatum contentDatum : adapterData) {
+                double priceToCompare = contentDatum.getPlanDetails().get(0).getStrikeThroughPrice();
+                if (priceToCompare == 0) {
+                    priceToCompare = contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount();
                 }
-            } else if (contentDatum.getPlanDetails() != null &&
-                    !contentDatum.getPlanDetails().isEmpty() &&
-                    contentDatum.getPlanDetails().get(0) != null &&
-                    existingSubscriptionPrice < priceToCompare) {
-                updatedData.add(contentDatum);
+                if (availableSubscriptionPlans != null) {
+                    for (SubscriptionPlan subscriptionPlan : availableSubscriptionPlans) {
+                        if (!TextUtils.isEmpty(contentDatum.getIdentifier()) &&
+                                contentDatum.getIdentifier().equals(subscriptionPlan.getSku()) &&
+                                (existingSubscriptionPrice < subscriptionPlan.getSubscriptionPrice())) {
+                            updatedData.add(contentDatum);
+                        }
+                    }
+                } else if (contentDatum.getPlanDetails() != null &&
+                        !contentDatum.getPlanDetails().isEmpty() &&
+                        contentDatum.getPlanDetails().get(0) != null &&
+                        existingSubscriptionPrice < priceToCompare) {
+                    updatedData.add(contentDatum);
+                }
             }
-        }
 
-        this.adapterData = updatedData;
+            this.adapterData = updatedData;
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
