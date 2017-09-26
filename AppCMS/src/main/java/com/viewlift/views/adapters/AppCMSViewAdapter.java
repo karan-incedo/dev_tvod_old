@@ -493,7 +493,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         currentPlayingIndex = 0;
                     }
 
-                    if (data.getContentDetails() == null) {
+                    if (action.equals(defaultAction)) {
                         if (!appCMSPresenter.launchVideoPlayer(data,
                                 currentPlayingIndex,
                                 relatedVideoIds,
