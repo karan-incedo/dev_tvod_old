@@ -7753,8 +7753,7 @@ public class AppCMSPresenter {
                 GetAppCMSAndroidUIAsyncTask.Params params =
                         new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                                 .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                        appCMSMain.getAndroid(),
-                                        appCMSMain.getTimestamp()))
+                                        appCMSMain.getAndroid()))
                                 .loadFromFile(loadFromFile)
                                 .build();
                 Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
@@ -7864,7 +7863,7 @@ public class AppCMSPresenter {
         }
         GetAppCMSPageUIAsyncTask.Params params =
                 new GetAppCMSPageUIAsyncTask.Params.Builder()
-                        .url(url)
+                        .url(url)                                                   
                         .timeStamp(timeStamp)
                         .build();
         new GetAppCMSPageUIAsyncTask(appCMSPageUICall, onPageReady).execute(params);
