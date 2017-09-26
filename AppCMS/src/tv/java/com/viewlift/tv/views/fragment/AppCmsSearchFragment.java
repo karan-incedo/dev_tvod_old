@@ -9,7 +9,6 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.ListRow;
@@ -28,9 +27,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.analytics.HitBuilders;
 import com.google.gson.GsonBuilder;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -48,17 +45,12 @@ import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.tv.views.customviews.CustomHeaderItem;
 import com.viewlift.tv.views.presenter.AppCmsListRowPresenter;
 import com.viewlift.tv.views.presenter.CardPresenter;
-import com.viewlift.views.binders.RetryCallBinder;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.RunnableFuture;
 
 import javax.inject.Inject;
 
@@ -365,7 +357,7 @@ public class AppCmsSearchFragment extends Fragment {
                 if (resultForTv != null && resultForTv.size() > 0) {
                     if(resultForTv.size() > 1){
                         llView.setVisibility(View.VISIBLE);
-                        setSearchValueOnView(resultForTv, resultForTv.size() - 1);
+                        setSearchValueOnView(resultForTv, resultForTv.size());
                     } else {
                         llView.setVisibility(View.INVISIBLE);
                     }
