@@ -439,17 +439,19 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     String title = data.getGist().getTitle();
                     String action = defaultAction;
 
-                    switch (data.getGist().getContentType()) {
-                        case "SHOW":
-                            action = showAction;
-                            break;
+                    if (data.getGist().getContentType() != null) {
+                        switch (data.getGist().getContentType()) {
+                            case "SHOW":
+                                action = showAction;
+                                break;
 
-                        case "VIDEO":
-                            action = videoAction;
-                            break;
+                            case "VIDEO":
+                                action = videoAction;
+                                break;
 
-                        default:
-                            break;
+                            default:
+                                break;
+                        }
                     }
 
                     Log.d(TAG, "Launching " + permalink + ":" + action);
