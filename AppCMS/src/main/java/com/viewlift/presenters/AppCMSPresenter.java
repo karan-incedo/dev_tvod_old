@@ -7858,10 +7858,14 @@ public class AppCMSPresenter {
     private void getAppCMSPage(String url,
                                final Action1<AppCMSPageUI> onPageReady,
                                boolean loadFromFile) {
+        long timeStamp = 0L;
+        if (appCMSMain != null) {
+            timeStamp = appCMSMain.getTimestamp();
+        }
         GetAppCMSPageUIAsyncTask.Params params =
                 new GetAppCMSPageUIAsyncTask.Params.Builder()
-                        .context(currentContext)
                         .url(url)
+                        .timeStamp(timeStamp)
                         .build();
         new GetAppCMSPageUIAsyncTask(appCMSPageUICall, onPageReady).execute(params);
     }

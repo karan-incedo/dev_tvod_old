@@ -23,19 +23,19 @@ public class GetAppCMSPageUIAsyncTask extends AsyncTask<GetAppCMSPageUIAsyncTask
     private final Action1<AppCMSPageUI> readyAction;
 
     public static class Params {
-        Context context;
         String url;
+        long timeStamp;
         public static class Builder {
             private Params params;
             public Builder() {
                 params = new Params();
             }
-            public Builder context(Context context) {
-                params.context = context;
-                return this;
-            }
             public Builder url(String url) {
                 params.url = url;
+                return this;
+            }
+            public Builder timeStamp(long timeStamp) {
+                params.timeStamp = timeStamp;
                 return this;
             }
             public Params build() {
@@ -53,7 +53,7 @@ public class GetAppCMSPageUIAsyncTask extends AsyncTask<GetAppCMSPageUIAsyncTask
     protected AppCMSPageUI doInBackground(Params... params) {
         if (params.length > 0) {
             try {
-                return call.call(params[0].context, params[0].url);
+                return call.call(params[0].url, params[0].timeStamp);
             } catch (IOException e) {
                 Log.e(TAG, "Could not retrieve Page UI data - " + params[0] + ": " + e.toString());
             }

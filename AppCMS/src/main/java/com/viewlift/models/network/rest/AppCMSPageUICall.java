@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.Scanner;
 
 import javax.inject.Inject;
@@ -46,7 +47,7 @@ public class AppCMSPageUICall {
     }
 
     @WorkerThread
-    public AppCMSPageUI call(Context context, String url) throws IOException {
+    public AppCMSPageUI call(String url, long timeStamp) throws IOException {
         String filename = getResourceFilename(url);
         AppCMSPageUI appCMSPageUI = null;
         try {
@@ -55,7 +56,10 @@ public class AppCMSPageUICall {
             Log.e(TAG, "Error reading file AppCMS UI JSON file: " +
                     e.getMessage());
             try {
-                appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(url).execute().body());
+                StringBuilder urlWithTimestamp = new StringBuilder(url);
+                urlWithTimestamp.append("?x=");
+                urlWithTimestamp.append(timeStamp);
+                appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(urlWithTimestamp.toString()).execute().body());
             } catch (Exception e2) {
                 Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
                         e2.getMessage());
