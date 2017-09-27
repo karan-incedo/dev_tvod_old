@@ -69,6 +69,7 @@ public class AppCMSErrorActivity extends AppCompatActivity {
                 if (isConnected) {
                     Intent relaunchApp = new Intent(AppCMSErrorActivity.this, AppCMSLaunchActivity.class);
                     startActivity(relaunchApp);
+                    unregisterReceiver(networkConnectedReceiver);
                 }
             }
         };
