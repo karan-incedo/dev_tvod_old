@@ -5554,15 +5554,18 @@ public class AppCMSPresenter {
                         openDownloadScreenForNetworkError(true);
                     } else {
                         launchErrorActivity(platformType);
+                        return;
                     }
                 } else if (TextUtils.isEmpty(main
                         .getAndroid())) {
                     Log.e(TAG, "AppCMS key for main not found");
                     launchErrorActivity(platformType);
+                    return;
                 } else if (TextUtils.isEmpty(main
                         .getApiBaseUrl())) {
                     Log.e(TAG, "AppCMS key for API Base URL not found");
                     launchErrorActivity(platformType);
+                    return;
                 } else {
                     appCMSMain = main;
                     new SoftReference<Object>(appCMSMain, referenceQueue);
@@ -5577,6 +5580,7 @@ public class AppCMSPresenter {
             } catch (Exception e) {
                 Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
                 launchErrorActivity(platformType);
+                return;
             }
         }).execute(params);
     }
@@ -6816,6 +6820,7 @@ public class AppCMSPresenter {
                                                         Log.e(TAG, "Error retrieving subscription information: " + e.getMessage());
                                                         if (!reloadUserSubscriptionData && !launched) {
                                                             launchErrorActivity(PlatformType.ANDROID);
+                                                            return;
                                                         }
                                                     }
 
@@ -6913,6 +6918,7 @@ public class AppCMSPresenter {
                                                         onRefreshReadyAction.call();
                                                     } else {
                                                         launchErrorActivity(PlatformType.ANDROID);
+                                                        return;
                                                     }
                                                 }
                                             });
@@ -6965,6 +6971,7 @@ public class AppCMSPresenter {
                                         Log.e(TAG, "Error retrieving subscription information: " + e.getMessage());
                                         if (!reloadUserSubscriptionData && !launched) {
                                             launchErrorActivity(PlatformType.ANDROID);
+                                            return;
                                         }
                                     }
 
@@ -7061,6 +7068,7 @@ public class AppCMSPresenter {
                                                                 onRefreshReadyAction.call();
                                                             } else {
                                                                 launchErrorActivity(PlatformType.ANDROID);
+                                                                return;
                                                             }
                                                         }
                                                     }
@@ -7071,6 +7079,7 @@ public class AppCMSPresenter {
                                                 onRefreshReadyAction.call();
                                             } else {
                                                 launchErrorActivity(PlatformType.ANDROID);
+                                                return;
                                             }
                                         }
                                     }
@@ -7081,6 +7090,7 @@ public class AppCMSPresenter {
                             onRefreshReadyAction.call();
                         } else {
                             launchErrorActivity(PlatformType.ANDROID);
+                            return;
                         }
                     }
                 }
