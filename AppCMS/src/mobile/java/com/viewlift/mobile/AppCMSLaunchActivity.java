@@ -16,9 +16,6 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.presenters.AppCMSPresenter;
 
-import com.viewlift.views.activity.AppCMSErrorActivity;
-import com.viewlift.views.activity.AppCMSPageActivity;
-import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.components.AppCMSPresenterComponent;
 
 import com.viewlift.R;
