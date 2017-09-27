@@ -1,6 +1,5 @@
 package com.viewlift.models.network.background.tasks;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.IOException;
@@ -8,13 +7,15 @@ import java.io.IOException;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by viewlift on 5/4/17.
  */
 
-public class GetAppCMSAndroidUIAsyncTask extends AsyncTask<GetAppCMSAndroidUIAsyncTask.Params, Integer, AppCMSAndroidUI> {
+public class GetAppCMSAndroidUIAsyncTask {
     private static final String TAG = "AndroidAsyncTask";
 
     private final AppCMSAndroidUICall call;
@@ -53,22 +54,22 @@ public class GetAppCMSAndroidUIAsyncTask extends AsyncTask<GetAppCMSAndroidUIAsy
         this.readyAction = readyAction;
     }
 
-    @Override
-    protected AppCMSAndroidUI doInBackground(Params... params) {
-        if (params.length > 0) {
-            try {
-                return call.call(params[0].url, params[0].loadFromFile, 0);
-            } catch (IOException e) {
-                Log.e(TAG, "Error retrieving AppCMS Android file with params " +
-                        params.toString() + ": " +
-                        e.getMessage());
-            }
-        }
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(AppCMSAndroidUI result) {
-        Observable.just(result).subscribe(readyAction);
+    public void execute(Params params) {
+        Observable
+                .fromCallable(() -> {
+                    if (params != null) {
+                        try {
+                            return call.call(params.url, params.loadFromFile, 0);
+                        } catch (IOException e) {
+                            Log.e(TAG, "Error retrieving AppCMS Android file with params " +
+                                    params.toString() + ": " +
+                                    e.getMessage());
+                        }
+                    }
+                    return null;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((result) -> Observable.just(result).subscribe(readyAction));
     }
 }

@@ -202,6 +202,7 @@
     <string name="app_cms_page_api_thumbnail_url_key">thumbnail</string>
     <string name="app_cms_page_api_title_key">title</string>
     <string name="app_cms_page_api_show_title_key">showTitle</string>
+    <string name="app_cms_page_api_episode_title_key">episodeTitle</string>
     <string name="app_cms_page_api_description_key">description</string>
     <string name="app_cms_page_navigation_contact_us_key">mailto</string>
     <string name="app_cms_page_video_player_with_info_key">AC VideoPlayerWithInfo 01</string>

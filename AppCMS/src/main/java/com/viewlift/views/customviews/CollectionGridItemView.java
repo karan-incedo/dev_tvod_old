@@ -19,7 +19,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -98,7 +97,6 @@ public class CollectionGridItemView extends BaseView {
         if (component.getStyles() != null) {
             paddingRight = (int) convertHorizontalValue(getContext(), component.getStyles().getPadding());
             setPadding(0, 0, paddingRight, 0);
-            GridView grid = new GridView(getContext());
         } else if (getTrayPadding(getContext(), component.getLayout()) != -1.0f) {
             int trayPadding = (int) getTrayPadding(getContext(), component.getLayout());
             paddingRight = (int) convertHorizontalValue(getContext(), trayPadding);

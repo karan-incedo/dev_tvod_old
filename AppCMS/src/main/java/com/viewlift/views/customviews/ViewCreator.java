@@ -65,6 +65,7 @@ import net.nightwhistler.htmlspanner.HtmlSpanner;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import rx.functions.Action1;
 
@@ -903,6 +904,9 @@ public class ViewCreator {
                 if (childView != null) {
                     childrenContainer.addView(childView);
                 }
+                if (moduleAPI == null) {
+                    childView.setVisibility(View.GONE);
+                }
             }
         }
 
@@ -1348,6 +1352,18 @@ public class ViewCreator {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                 componentViewResult.componentView.setForegroundGravity(Gravity.CENTER_HORIZONTAL);
                             }
+//                        } else if (Objects.equals("AC SeasonTray 01", viewType)) {
+//                            int numCols;
+//                                if (BaseView.isTablet(context)) {
+//                                    numCols = 2;
+//                                } else {
+//                                    numCols = 1;
+//                                }
+//                            ((RecyclerView) componentViewResult.componentView)
+//                                    .setLayoutManager(new GridLayoutManager(context,
+//                                            numCols,
+//                                            LinearLayoutManager.VERTICAL,
+//                                            false));
                         } else {
                             ((RecyclerView) componentViewResult.componentView)
                                     .setLayoutManager(new LinearLayoutManager(context,
