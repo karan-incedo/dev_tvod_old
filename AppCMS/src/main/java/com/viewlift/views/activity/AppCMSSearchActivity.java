@@ -68,7 +68,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        RecyclerView appCMSSearchResultsView = findViewById(R.id.app_cms_search_results);
+        RecyclerView appCMSSearchResultsView = (RecyclerView) findViewById(R.id.app_cms_search_results);
         appCMSSearchItemAdapter =
                 new AppCMSSearchItemAdapter(this,
                         ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent()
@@ -111,7 +111,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         registerReceiver(handoffReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
 
-        appCMSSearchView = findViewById(R.id.app_cms_searchbar);
+        appCMSSearchView = (SearchView) findViewById(R.id.app_cms_searchbar);
         appCMSSearchView.setQueryHint(getString(R.string.search_films));
         //noinspection ConstantConditions
         appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -133,7 +133,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
             }
         });
         LinearLayout appCMSSearchResultsContainer =
-                findViewById(R.id.app_cms_search_results_container);
+                (LinearLayout) findViewById(R.id.app_cms_search_results_container);
         if (appCMSMain != null &&
                 appCMSMain.getBrand() != null &&
                 appCMSMain.getBrand().getGeneral() != null &&
@@ -143,9 +143,9 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                     .getBackgroundColor()));
         }
 
-        noResultsTextview = findViewById(R.id.no_results_textview);
+        noResultsTextview = (TextView) findViewById(R.id.no_results_textview);
 
-        ImageButton appCMSCloseButton = findViewById(R.id.app_cms_close_button);
+        ImageButton appCMSCloseButton = (ImageButton) findViewById(R.id.app_cms_close_button);
         appCMSCloseButton.setOnClickListener(v -> finish());
 
         handleIntent(getIntent());

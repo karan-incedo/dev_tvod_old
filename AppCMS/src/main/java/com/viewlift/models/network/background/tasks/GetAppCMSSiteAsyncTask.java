@@ -1,21 +1,20 @@
 package com.viewlift.models.network.background.tasks;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 
-import java.io.IOException;
-
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by viewlift on 6/15/17.
  */
 
-public class GetAppCMSSiteAsyncTask extends AsyncTask<String, Integer, AppCMSSite> {
+public class GetAppCMSSiteAsyncTask {
     private static final String TAG = "GetAppCMSSiteAsyncTask";
 
     private final AppCMSSiteCall call;
@@ -27,21 +26,20 @@ public class GetAppCMSSiteAsyncTask extends AsyncTask<String, Integer, AppCMSSit
         this.readyAction = readyAction;
     }
 
-    @Override
-    protected AppCMSSite doInBackground(String... params) {
-        if (params.length >= 1) {
-            try {
-                return call.call(params[0], 0);
-            } catch (IOException e) {
-                Log.e(TAG, "Could not retrieve Site data - " + params[0] + ": " + e.toString());
-            }
-        }
-
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(AppCMSSite result) {
-        Observable.just(result).subscribe(readyAction);
+    public void execute(String params) {
+        Observable
+                .fromCallable(() -> {
+                    if (params != null) {
+                        try {
+                            return call.call(params, 0);
+                        } catch (Exception e) {
+                            Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
+                        }
+                    }
+                    return null;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((result) -> Observable.just(result).subscribe(readyAction));
     }
 }

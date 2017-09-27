@@ -1,21 +1,20 @@
 package com.viewlift.models.network.background.tasks;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.viewlift.models.data.appcms.api.AppCMSStreamingInfo;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
 
-import java.io.IOException;
-
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by viewlift on 6/26/17.
  */
 
-public class GetAppCMSStreamingInfoAsyncTask extends AsyncTask<GetAppCMSStreamingInfoAsyncTask.Params, Integer, AppCMSStreamingInfo> {
+public class GetAppCMSStreamingInfoAsyncTask {
     private static final String TAG = "StreamingInfoTask";
 
     private final AppCMSStreamingInfoCall call;
@@ -49,20 +48,20 @@ public class GetAppCMSStreamingInfoAsyncTask extends AsyncTask<GetAppCMSStreamin
         this.readyAction = readyAction;
     }
 
-    @Override
-    protected AppCMSStreamingInfo doInBackground(Params... params) {
-        if (params.length > 0) {
-            try {
-                return call.call(params[0].url);
-            } catch (IOException e) {
-                Log.e(TAG, "Could not retrieve Streaming Info data - " + params[0] + ": " + e.toString());
-            }
-        }
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(AppCMSStreamingInfo streamingInfo) {
-        Observable.just(streamingInfo).subscribe(readyAction);
+    public void execute(Params params) {
+        Observable
+                .fromCallable(() -> {
+                    if (params != null) {
+                        try {
+                            return call.call(params.url);
+                        } catch (Exception e) {
+                            Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
+                        }
+                    }
+                    return null;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((result) -> Observable.just(result).subscribe(readyAction));
     }
 }
