@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 
 
@@ -55,7 +56,7 @@ public class CastDisconnectDialog extends MediaRouteControllerDialog implements 
         mDisconnectButton.setOnClickListener(this);
 
         mStopCastingButton = (Button) findViewById(BUTTON_STOP_RES_ID);
-        mStopCastingButton.setText(android.support.v7.mediarouter.R.string.mr_controller_stop_casting);
+        mStopCastingButton.setText(getContext().getString(R.string.mr_controller_stop_casting));
         mStopCastingButton.setOnClickListener(this);
 
         if (toBeDisconnectDevice != null) {
