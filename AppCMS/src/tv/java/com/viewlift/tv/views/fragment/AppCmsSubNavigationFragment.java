@@ -52,6 +52,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
     private  Navigation mNavigation;
     private boolean isUserLogin;
     private AppCMSBinder mAppCMSBinder;
+    private boolean isLoginDialogPage;
 
     public static AppCmsSubNavigationFragment newInstance(Context context,
                                                           OnNavigationVisibilityListener listener
@@ -74,6 +75,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
 
         Bundle bundle = getArguments();
         mAppCMSBinder = (AppCMSBinder)bundle.getBinder("app_cms_binder");
+        isLoginDialogPage = bundle.getBoolean(getString(R.string.is_login_dialog_page_key));
 /*
         AppCMSBinder appCMSBinder = ((AppCMSBinder) args.getBinder(getResources().getString(R.string.fragment_page_bundle_key)));
         this.appCmsBinder = appCMSBinder;
@@ -240,7 +242,8 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                 false,
                                 Uri.EMPTY,
                                 false,
-                                false
+                                false,
+                                isLoginDialogPage
                         );
                     }
                 }

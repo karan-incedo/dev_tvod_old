@@ -129,7 +129,8 @@ public class AppCMSTVTrayAdapter
                         jsonValueKeyMap,
                         appCMSPresenter,
                         false,
-                        this.viewType);
+                        this.viewType,
+                        false);
 
                 if (componentViewResult.onInternalEvent != null) {
                     onInternalEvents.add(componentViewResult.onInternalEvent);

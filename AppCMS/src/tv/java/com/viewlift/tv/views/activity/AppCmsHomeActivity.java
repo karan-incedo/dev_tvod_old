@@ -32,9 +32,11 @@ import com.viewlift.tv.views.component.AppCmsTvSearchComponent;
 import com.viewlift.tv.views.component.DaggerAppCmsTvSearchComponent;
 import com.viewlift.tv.views.fragment.AppCmsBrowseFragment;
 import com.viewlift.tv.views.fragment.AppCmsGenericDialogFragment;
+import com.viewlift.tv.views.fragment.AppCmsLoginDialogFragment;
 import com.viewlift.tv.views.fragment.AppCmsNavigationFragment;
 import com.viewlift.tv.views.fragment.AppCmsResetPasswordFragment;
 import com.viewlift.tv.views.fragment.AppCmsSearchFragment;
+import com.viewlift.tv.views.fragment.AppCmsSignUpDialogFragment;
 import com.viewlift.tv.views.fragment.AppCmsTVPageFragment;
 import com.viewlift.tv.views.fragment.AppCmsTvErrorFragment;
 import com.viewlift.tv.views.fragment.TextOverlayDialogFragment;
@@ -127,22 +129,25 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                 //check first its a request for Terms of service or Privacy Policy dialog.
                                 if((((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getExtraScreenType() ==
                                         AppCMSPresenter.ExtraScreenType.TERM_OF_SERVICE)){
-                                    openGenericDialog(intent);
+                                    openGenericDialog(intent , false);
+                                }else  if((((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getExtraScreenType() ==
+                                        AppCMSPresenter.ExtraScreenType.EDIT_PROFILE)){
+                                    AppCMSBinder binder = (AppCMSBinder)args.getBinder(getString(R.string.app_cms_binder_key));
+                                    if(binder.getPageName().equalsIgnoreCase(getString(R.string.app_cms_sign_up_pager_title))){
+                                        openSignUpDialog(intent,true);
+                                    }else{
+                                        openLoginDialog(intent,true);
+                                    }
+
                                 }else{
                                     openMyProfile();
                                     handleProfileFragmentAction((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)));
                                 }
 
                             }else {
-                                if((((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getExtraScreenType() ==
-                                        AppCMSPresenter.ExtraScreenType.TERM_OF_SERVICE)){
-                                    openGenericDialog(intent);
-                                }else {
                                     updatedAppCMSBinder = (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
                                     handleLaunchPageAction(updatedAppCMSBinder);
-                                }
                             }
-                            //appCMSPresenter.sendStopLoadingPageAction(); //stop the progress bar..
                         }
                     } catch (ClassCastException e) {
                         Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
@@ -169,8 +174,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     newFragment.show(ft, DIALOG_FRAGMENT_TAG);
                 }else if (intent.getAction().equals(AppCMSPresenter.SEARCH_ACTION)) {
                    openSearchFragment();
-                }else if(intent.getAction().equals(AppCMSPresenter.MY_PROFILE_ACTION)){
-                    openMyProfile();
+                }else if(intent.getAction().equals(AppCMSPresenter.CLOSE_DIALOG_ACTION)){
+                    pageLoading(false);
+                    closeSignInDialog();
+                    closeSignUpDialog();
                 }else if(intent.getAction().equals(AppCMSPresenter.ERROR_DIALOG_ACTION)){
                     openErrorDialog(intent);
                 }else if(intent.getAction().equals(AppCMSPresenter.ACTION_RESET_PASSWORD)){
@@ -190,7 +197,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_DIALOG_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_CLEAR_DIALOG_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.SEARCH_ACTION));
-        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.MY_PROFILE_ACTION));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.CLOSE_DIALOG_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.ERROR_DIALOG_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.ACTION_RESET_PASSWORD));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION));
@@ -289,16 +296,47 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     }
 
 
-
-    private void openGenericDialog(Intent intent){
-
+    AppCmsLoginDialogFragment loginDialog;
+    AppCmsSignUpDialogFragment signUpDialog;
+    private void openLoginDialog(Intent intent , boolean isLoginPage){
         if(null != intent){
             Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
             if(null != bundle){
                 AppCMSBinder appCMSBinder = (AppCMSBinder)bundle.get(getString(R.string.app_cms_binder_key));
+                bundle.putBoolean("isLoginPage",isLoginPage);
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                loginDialog = AppCmsLoginDialogFragment.newInstance(
+                        appCMSBinder);
+                loginDialog.show(ft, DIALOG_FRAGMENT_TAG);
+                pageLoading(false);
+            }
+        }
+    }
+    private void openSignUpDialog(Intent intent , boolean isLoginPage){
+        if(null != intent){
+            Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+            if(null != bundle){
+                AppCMSBinder appCMSBinder = (AppCMSBinder)bundle.get(getString(R.string.app_cms_binder_key));
+                bundle.putBoolean("isLoginPage",isLoginPage);
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                signUpDialog = AppCmsSignUpDialogFragment.newInstance(
+                        appCMSBinder);
+                signUpDialog.show(ft, DIALOG_FRAGMENT_TAG);
+                pageLoading(false);
+            }
+        }
+    }
+
+
+    private void openGenericDialog(Intent intent , boolean isLoginPage){
+        if(null != intent){
+            Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+            if(null != bundle){
+                AppCMSBinder appCMSBinder = (AppCMSBinder)bundle.get(getString(R.string.app_cms_binder_key));
+                bundle.putBoolean("isLoginPage",isLoginPage);
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 AppCmsGenericDialogFragment newFragment = AppCmsGenericDialogFragment.newInstance(
-                        appCMSBinder);
+                        appCMSBinder );
                 newFragment.show(ft, DIALOG_FRAGMENT_TAG);
                 pageLoading(false);
             }
@@ -317,7 +355,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     public void onRetry(Bundle bundle) {
         RetryCallBinder retryCallBinder = (RetryCallBinder)bundle.getBinder(getString(R.string.retryCallBinderKey));
         AppCMSPresenter.RETRY_TYPE retryType = retryCallBinder.getRetry_type();
-        boolean isTosPage = bundle.getBoolean(getString(R.string.is_tos_page_key));
+        boolean isTosPage = bundle.getBoolean(getString(R.string.is_tos_dialog_page_key));
+        boolean isLoginPage = bundle.getBoolean(getString(R.string.is_login_dialog_page_key));
         switch(retryType){
             case BUTTON_ACTION:
                 appCMSPresenter.launchTVButtonSelectedAction(
@@ -346,7 +385,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         retryCallBinder.isCloselauncher(),
                         Uri.EMPTY,
                         false,
-                        isTosPage
+                        isTosPage,
+                        isLoginPage
                 );
                 break;
 
@@ -739,4 +779,29 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         }
     }
 
+    public void closeSignUpDialog() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(signUpDialog != null){
+                    signUpDialog.dismiss();
+                    signUpDialog = null;
+                }
+            }
+        },50);
+
+    }
+
+    public void closeSignInDialog() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(loginDialog != null){
+                    loginDialog.dismiss();
+                    loginDialog = null;
+                }
+            }
+        },50);
+
+    }
 }
