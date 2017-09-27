@@ -7020,16 +7020,14 @@ public class AppCMSPresenter {
                     }
                 }
             } else {
-                if (launched) {
-                    onRefreshReadyAction.call();
-                } else {
-                    launchErrorActivity(PlatformType.ANDROID);
-                }
+                onRefreshReadyAction.call();
             }
         } catch (Exception e) {
             Log.e(TAG, "Caught exception when attempting to refresh subscription data: " + e.getMessage());
             if (launched) {
-                onRefreshReadyAction.call();
+                if (onRefreshReadyAction != null) {
+                    onRefreshReadyAction.call();
+                }
             } else {
                 launchErrorActivity(PlatformType.ANDROID);
             }
