@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.viewlift.AppCMSApplication;
 import com.viewlift.mobile.AppCMSLaunchActivity;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.fragments.AppCMSErrorFragment;
@@ -46,11 +47,14 @@ public class AppCMSErrorActivity extends AppCompatActivity {
         presenterCloseActionReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
+                if (intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION) &&
+                        !intent.getStringExtra(getString(R.string.app_cms_closing_page_name)).equals("Error Screen")) {
                     finish();
                 }
             }
         };
+
+        ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction("Error Screen", false);
 
         registerReceiver(presenterCloseActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));

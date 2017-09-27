@@ -1448,6 +1448,7 @@ public class AppCMSPresenter {
                                                         currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                                     }
                                                 }
+                                                launched = true;
                                             } else {
                                                 if (launched) {
                                                     sendStopLoadingPageAction();
@@ -4324,6 +4325,7 @@ public class AppCMSPresenter {
                                             }
                                         }
                                     }
+                                    launched = true;
                                 } else {
                                     if (launched) {
                                         sendStopLoadingPageAction();
@@ -4431,7 +4433,6 @@ public class AppCMSPresenter {
     public void launchErrorActivity(PlatformType platformType) {
         if (platformType == PlatformType.ANDROID) {
             try {
-                sendCloseOthersAction(null, false);
                 Intent errorIntent = new Intent(currentActivity, AppCMSErrorActivity.class);
                 currentActivity.startActivity(errorIntent);
             } catch (Exception e) {
@@ -6748,6 +6749,9 @@ public class AppCMSPresenter {
                                                         }
                                                     } catch (Exception e) {
                                                         Log.e(TAG, "Error retrieving subscription information: " + e.getMessage());
+                                                        if (!reloadUserSubscriptionData && !launched) {
+                                                            launchErrorActivity(PlatformType.ANDROID);
+                                                        }
                                                     }
 
                                                     if (reloadUserSubscriptionData) {
@@ -6839,6 +6843,12 @@ public class AppCMSPresenter {
                                                             Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
                                                         }
                                                     }
+                                                } else {
+                                                    if (launched) {
+                                                        onRefreshReadyAction.call();
+                                                    } else {
+                                                        launchErrorActivity(PlatformType.ANDROID);
+                                                    }
                                                 }
                                             });
                                 } catch (Exception e) {
@@ -6888,6 +6898,9 @@ public class AppCMSPresenter {
                                         }
                                     } catch (Exception e) {
                                         Log.e(TAG, "Error retrieving subscription information: " + e.getMessage());
+                                        if (!reloadUserSubscriptionData && !launched) {
+                                            launchErrorActivity(PlatformType.ANDROID);
+                                        }
                                     }
 
                                     if (reloadUserSubscriptionData) {
@@ -6979,23 +6992,47 @@ public class AppCMSPresenter {
                                                             }
                                                         } catch (Exception e) {
                                                             Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
+                                                            if (launched) {
+                                                                onRefreshReadyAction.call();
+                                                            } else {
+                                                                launchErrorActivity(PlatformType.ANDROID);
+                                                            }
                                                         }
                                                     }
                                             );
                                         } catch (Exception e) {
                                             Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
+                                            if (launched) {
+                                                onRefreshReadyAction.call();
+                                            } else {
+                                                launchErrorActivity(PlatformType.ANDROID);
+                                            }
                                         }
                                     }
                                 });
                     } catch (Exception e) {
                         Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
+                        if (launched) {
+                            onRefreshReadyAction.call();
+                        } else {
+                            launchErrorActivity(PlatformType.ANDROID);
+                        }
                     }
                 }
             } else {
-                onRefreshReadyAction.call();
+                if (launched) {
+                    onRefreshReadyAction.call();
+                } else {
+                    launchErrorActivity(PlatformType.ANDROID);
+                }
             }
         } catch (Exception e) {
             Log.e(TAG, "Caught exception when attempting to refresh subscription data: " + e.getMessage());
+            if (launched) {
+                onRefreshReadyAction.call();
+            } else {
+                launchErrorActivity(PlatformType.ANDROID);
+            }
         }
     }
 
@@ -7799,8 +7836,6 @@ public class AppCMSPresenter {
                                                         Log.e(TAG, "Failed to launch page: "
                                                                 + loginPage.getPageName());
                                                         launchErrorActivity(platformType);
-                                                    } else {
-                                                        launched = true;
                                                     }
                                                 } else {
                                                     boolean launchSuccess = navigateToPage(homePage.getPageId(),
@@ -7816,8 +7851,6 @@ public class AppCMSPresenter {
                                                         Log.e(TAG, "Failed to launch page: "
                                                                 + loginPage.getPageName());
                                                         launchErrorActivity(platformType);
-                                                    } else {
-                                                        launched = true;
                                                     }
                                                 }
                                             }, true);
@@ -7836,8 +7869,6 @@ public class AppCMSPresenter {
                                                     Log.e(TAG, "Failed to launch page: "
                                                             + loginPage.getPageName());
                                                     launchErrorActivity(platformType);
-                                                } else {
-                                                    launched = true;
                                                 }
                                             } else {
                                                 boolean launchSuccess = navigateToPage(homePage.getPageId(),
@@ -7853,8 +7884,6 @@ public class AppCMSPresenter {
                                                     Log.e(TAG, "Failed to launch page: "
                                                             + loginPage.getPageName());
                                                     launchErrorActivity(platformType);
-                                                } else {
-                                                    launched = true;
                                                 }
                                             }
                                         }
