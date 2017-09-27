@@ -68,6 +68,7 @@ public class AppCMSErrorActivity extends AppCompatActivity {
                         activeNetwork.isConnectedOrConnecting();
                 if (isConnected) {
                     Intent relaunchApp = new Intent(AppCMSErrorActivity.this, AppCMSLaunchActivity.class);
+                    relaunchApp.putExtra(getString(R.string.force_reload_from_network_key), true);
                     startActivity(relaunchApp);
                     unregisterReceiver(networkConnectedReceiver);
                 }

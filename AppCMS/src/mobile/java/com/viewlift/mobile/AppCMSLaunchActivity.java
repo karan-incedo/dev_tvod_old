@@ -31,6 +31,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     private ConnectivityManager connectivityManager;
     private BroadcastReceiver networkConnectedReceiver;
     private boolean appStartWithNetworkConnected;
+    private boolean forceReloadFromNetwork;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +48,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                 getString(R.string.app_cms_app_name),
                 searchQuery,
                 AppCMSPresenter.PlatformType.ANDROID,
-                false);
+                forceReloadFromNetwork);
         if (!BaseView.isTablet(this)) {
             appCMSPresenterComponent.appCMSPresenter().restrictPortraitOnly();
         }
@@ -124,6 +125,8 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                         ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
                 appCMSPresenterComponent.appCMSPresenter().sendDeepLinkAction(searchQuery);
             }
+
+            forceReloadFromNetwork = intent.getBooleanExtra(getString(R.string.force_reload_from_network_key), false);
         }
     }
 
