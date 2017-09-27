@@ -438,6 +438,7 @@ public class AppCMSPresenter {
     private String tvErrorScreenPackage = "com.viewlift.tv.views.activity.AppCmsTvErrorActivity";
     private String tvVideoPlayerPackage = "com.viewlift.tv.views.activity.AppCMSTVPlayVideoActivity";
     private Uri deeplinkSearchQuery;
+    private boolean launched;
     private MetaPage splashPage;
     private MetaPage loginPage;
     private MetaPage downloadQualityPage;
@@ -1448,8 +1449,12 @@ public class AppCMSPresenter {
                                                     }
                                                 }
                                             } else {
-                                                sendStopLoadingPageAction();
-                                                setNavItemToCurrentAction(currentActivity);
+                                                if (launched) {
+                                                    sendStopLoadingPageAction();
+                                                    setNavItemToCurrentAction(currentActivity);
+                                                } else {
+                                                    launchErrorActivity(PlatformType.ANDROID);
+                                                }
                                             }
                                             loadingPage = false;
                                         }
@@ -4320,8 +4325,12 @@ public class AppCMSPresenter {
                                         }
                                     }
                                 } else {
-                                    sendStopLoadingPageAction();
-                                    setNavItemToCurrentAction(currentActivity);
+                                    if (launched) {
+                                        sendStopLoadingPageAction();
+                                        setNavItemToCurrentAction(currentActivity);
+                                    } else {
+                                        launchErrorActivity(PlatformType.ANDROID);
+                                    }
                                 }
                                 loadingPage = false;
                             }
@@ -5466,6 +5475,7 @@ public class AppCMSPresenter {
                               final PlatformType platformType) {
         this.deeplinkSearchQuery = searchQuery;
         this.platformType = platformType;
+        this.launched = false;
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
@@ -7789,6 +7799,8 @@ public class AppCMSPresenter {
                                                         Log.e(TAG, "Failed to launch page: "
                                                                 + loginPage.getPageName());
                                                         launchErrorActivity(platformType);
+                                                    } else {
+                                                        launched = true;
                                                     }
                                                 } else {
                                                     boolean launchSuccess = navigateToPage(homePage.getPageId(),
@@ -7804,6 +7816,8 @@ public class AppCMSPresenter {
                                                         Log.e(TAG, "Failed to launch page: "
                                                                 + loginPage.getPageName());
                                                         launchErrorActivity(platformType);
+                                                    } else {
+                                                        launched = true;
                                                     }
                                                 }
                                             }, true);
@@ -7822,6 +7836,8 @@ public class AppCMSPresenter {
                                                     Log.e(TAG, "Failed to launch page: "
                                                             + loginPage.getPageName());
                                                     launchErrorActivity(platformType);
+                                                } else {
+                                                    launched = true;
                                                 }
                                             } else {
                                                 boolean launchSuccess = navigateToPage(homePage.getPageId(),
@@ -7837,6 +7853,8 @@ public class AppCMSPresenter {
                                                     Log.e(TAG, "Failed to launch page: "
                                                             + loginPage.getPageName());
                                                     launchErrorActivity(platformType);
+                                                } else {
+                                                    launched = true;
                                                 }
                                             }
                                         }

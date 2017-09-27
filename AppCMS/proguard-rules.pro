@@ -25,7 +25,6 @@
 #-renamesourcefileattribute SourceFile
 
 -dontskipnonpubliclibraryclasses
--dontobfuscate
 -forceprocessing
 -optimizationpasses 5
 
