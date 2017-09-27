@@ -453,7 +453,6 @@ public class ViewCreator {
                                                 !moduleAPI.getContentData().isEmpty()) {
                                             int viewWidth = view.getWidth();
                                             int viewHeight = view.getHeight();
-
                                             if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
                                                 String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                                         moduleAPI.getContentData().get(0).getGist().getPosterImageUrl(),
@@ -462,7 +461,6 @@ public class ViewCreator {
                                                 Glide.with(context)
                                                         .load(imageUrl)
                                                         .override(viewWidth, viewHeight)
-                                                        .centerCrop()
                                                         .into((ImageView) view);
                                             } else if (viewWidth > 0 && viewHeight > 0) {
                                                 String videoImageUrl = context.getString(R.string.app_cms_image_with_resize_query,
@@ -472,7 +470,6 @@ public class ViewCreator {
                                                 Glide.with(context)
                                                         .load(videoImageUrl)
                                                         .override(viewWidth, viewHeight)
-                                                        .centerCrop()
                                                         .into((ImageView) view);
                                             } else if (viewHeight > 0) {
                                                 Glide.with(context)
@@ -2284,7 +2281,6 @@ public class ViewCreator {
                                 Glide.with(context)
                                         .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
                                         .override(viewWidth, viewHeight)
-                                        .centerCrop()
                                         .into((ImageView) componentViewResult.componentView);
                             } else if (viewWidth > 0) {
                                 Glide.with(context)
@@ -2310,11 +2306,11 @@ public class ViewCreator {
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getGist() != null &&
-                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()) &&
+                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()) ||
                                 !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
-                            int viewWidth = BaseView.isLandscape(context) ?
-                                    ViewGroup.LayoutParams.WRAP_CONTENT :
-                                    context.getResources().getDisplayMetrics().widthPixels;
+                            int viewWidth = (int) BaseView.getViewWidth(context,
+                                    component.getLayout(),
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
                             int viewHeight = (int) BaseView.getViewHeight(context,
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -2326,7 +2322,6 @@ public class ViewCreator {
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .override(viewWidth, viewHeight)
-                                        .centerCrop()
                                         .into((ImageView) componentViewResult.componentView);
                             } else if (viewWidth > 0) {
                                 String videoImageUrl = context.getString(R.string.app_cms_image_with_resize_query,
@@ -2336,7 +2331,6 @@ public class ViewCreator {
                                 Glide.with(context)
                                         .load(videoImageUrl)
                                         .override(viewWidth, viewHeight)
-                                        .centerCrop()
                                         .into((ImageView) componentViewResult.componentView);
                             } else {
                                 Glide.with(context)

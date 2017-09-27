@@ -97,7 +97,7 @@ public class RESTUnitTest {
     @Test
     public void test_appCMSSplashPageCall() throws Exception {
         AppCMSPageUICall appCMSPageUICall = appCMSUIComponent.appCMSPageCall();
-        AppCMSPageUI splashAppCMSPageUI = appCMSPageUICall.call(null, APP_CMS_SPLASH_PAGE_URL);
+        AppCMSPageUI splashAppCMSPageUI = appCMSPageUICall.call(APP_CMS_SPLASH_PAGE_URL, 0L);
         assertNotNull(splashAppCMSPageUI);
     }
 

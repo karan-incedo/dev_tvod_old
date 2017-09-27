@@ -81,7 +81,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
-        if (appCMSBinder != null) {
+        if (appCMSBinder != null && appCMSBinder.getNavigation() != null) {
             appCMSNavItemsAdapter = new AppCMSNavItemsAdapter(appCMSBinder.getNavigation(),
                     appCMSPresenter,
                     appCMSBinder.getJsonValueKeyMap(),

@@ -721,7 +721,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         if (!appCMSPresenter.launchVideoPlayer(data,
                 -1,
                 null,
-                data.getGist().getWatchedTime())) {
+                data.getGist().getWatchedTime(),
+                null)) {
             Log.e(TAG, "Could not launch action: " +
                     " action: " +
                     action);

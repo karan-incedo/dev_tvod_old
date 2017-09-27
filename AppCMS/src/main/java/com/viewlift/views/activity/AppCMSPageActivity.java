@@ -434,15 +434,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.setmFireBaseAnalytics(mFireBaseAnalytics);
         }
 
-        closeButton.setOnClickListener(v ->{
+        closeButton.setOnClickListener(v -> {
                     View view = this.getCurrentFocus();
                     if (view != null) {
-                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                     }
                     appCMSPresenter.sendCloseOthersAction(null, true);
                 }
-                );
+        );
 
         inflateCastMiniController();
 
@@ -481,6 +481,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             handlingClose = false;
         } else if (isPageLoading()) {
             pageLoading(false);
+            appCMSPresenter.setIsLoading(false);
             appCMSPresenter.setNavItemToCurrentAction(this);
         }
     }
@@ -695,7 +696,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @SuppressWarnings("ConstantConditions")
     @Override
     public void onError(AppCMSBinder appCMSBinder) {
-        if (appCMSBinder != null) {
+        if (appCMSBinder != null && appCMSBinder.getPageId() != null) {
             Log.e(TAG, "Nav item - DialogType attempting to launch page: "
                     + appCMSBinder.getPageName() + " - " + appCMSBinder.getPageId());
             if (!appCMSBinderStack.isEmpty() &&
@@ -874,9 +875,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         return (newPageId == null ||
                 !appCMSBinderStack.isEmpty() &&
                         ((appCMSPresenter.isPageUser(appCMSBinderStack.peek()) &&
-                        !appCMSPresenter.isPageUser(newPageId)) ||
-                (!appCMSPresenter.isPageUser(appCMSBinderStack.peek())) &&
-                        appCMSPresenter.isPageUser(newPageId)));
+                                !appCMSPresenter.isPageUser(newPageId)) ||
+                                (!appCMSPresenter.isPageUser(appCMSBinderStack.peek())) &&
+                                        appCMSPresenter.isPageUser(newPageId)));
     }
 
     private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder) {
@@ -1151,11 +1152,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             int i = 0;
             while (((i < distanceFromStackTop && !configurationChanged) ||
                     ((i < distanceFromStackTop &&
-                    (!isBinderStackEmpty() &&
-                            !isBinderStackTopNull() &&
-                            !atMostOneUserPageOnTopStack(appCMSBinder.getPageId()) &&
-                            !leavingExtraPage)) &&
-                    ((!leavingExtraPage && shouldPopStack(appCMSBinder.getPageId())) || configurationChanged)) ||
+                            (!isBinderStackEmpty() &&
+                                    !isBinderStackTopNull() &&
+                                    !atMostOneUserPageOnTopStack(appCMSBinder.getPageId()) &&
+                                    !leavingExtraPage)) &&
+                            ((!leavingExtraPage && shouldPopStack(appCMSBinder.getPageId())) || configurationChanged)) ||
                     (appCMSBinder.shouldSendCloseAction() &&
                             appCMSBinderStack.size() > 1 &&
                             i < appCMSBinderStack.size()))) {
