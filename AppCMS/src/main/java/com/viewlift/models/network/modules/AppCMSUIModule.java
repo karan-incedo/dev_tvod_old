@@ -37,6 +37,8 @@ import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityRest;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordRest;
+import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
+import com.viewlift.models.network.rest.AppCMSRestorePurchaseRest;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignInRest;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
@@ -743,6 +745,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSRestorePurchaseRest providesAppCMSRestorePurchaseRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSRestorePurchaseRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -866,8 +874,16 @@ public class AppCMSUIModule {
     }
 
     @Provides
+    @Singleton
     public AppCMSCCAvenueCall providesAppCMSCCAvenueCall(AppCMSCCAvenueRest appCMSCCAvenueRest) {
         return new AppCMSCCAvenueCall(appCMSCCAvenueRest);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSRestorePurchaseCall providesAppCMSRestorePurchaseCall(Gson gson,
+                                                                       AppCMSRestorePurchaseRest appCMSRestorePurchaseRest) {
+        return new AppCMSRestorePurchaseCall(gson, appCMSRestorePurchaseRest);
     }
 
     @Provides

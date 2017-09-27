@@ -151,6 +151,7 @@ import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
+import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
@@ -374,6 +375,7 @@ public class AppCMSPresenter {
     private final AppCMSHistoryCall appCMSHistoryCall;
     private final AppCMSUserDownloadVideoStatusCall appCMSUserDownloadVideoStatusCall;
     private final AppCMSBeaconCall appCMSBeaconCall;
+    private final AppCMSRestorePurchaseCall appCMSRestorePurchaseCall;
 
     private final AppCMSUserVideoStatusCall appCMSUserVideoStatusCall;
     private final AppCMSAddToWatchlistCall appCMSAddToWatchlistCall;
@@ -436,6 +438,7 @@ public class AppCMSPresenter {
     private String tvErrorScreenPackage = "com.viewlift.tv.views.activity.AppCmsTvErrorActivity";
     private String tvVideoPlayerPackage = "com.viewlift.tv.views.activity.AppCMSTVPlayVideoActivity";
     private Uri deeplinkSearchQuery;
+    private boolean launched;
     private MetaPage splashPage;
     private MetaPage loginPage;
     private MetaPage downloadQualityPage;
@@ -523,6 +526,8 @@ public class AppCMSPresenter {
                            AppCMSUserVideoStatusCall appCMSUserVideoStatusCall,
                            AppCMSUserDownloadVideoStatusCall appCMSUserDownloadVideoStatusCall,
                            AppCMSBeaconCall appCMSBeaconCall,
+                           AppCMSRestorePurchaseCall appCMSRestorePurchaseCall,
+
                            AppCMSAddToWatchlistCall appCMSAddToWatchlistCall,
 
                            AppCMSCCAvenueCall appCMSCCAvenueCall,
@@ -561,6 +566,8 @@ public class AppCMSPresenter {
         this.appCMSUserVideoStatusCall = appCMSUserVideoStatusCall;
         this.appCMSUserDownloadVideoStatusCall = appCMSUserDownloadVideoStatusCall;
         this.appCMSBeaconCall = appCMSBeaconCall;
+        this.appCMSRestorePurchaseCall = appCMSRestorePurchaseCall;
+
         this.appCMSAddToWatchlistCall = appCMSAddToWatchlistCall;
 
         this.appCMSCCAvenueCall = appCMSCCAvenueCall;
@@ -1445,9 +1452,14 @@ public class AppCMSPresenter {
                                                         currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                                     }
                                                 }
+                                                launched = true;
                                             } else {
-                                                sendStopLoadingPageAction();
-                                                setNavItemToCurrentAction(currentActivity);
+                                                if (launched) {
+                                                    sendStopLoadingPageAction();
+                                                    setNavItemToCurrentAction(currentActivity);
+                                                } else {
+                                                    launchErrorActivity(PlatformType.ANDROID);
+                                                }
                                             }
                                             loadingPage = false;
                                         }
@@ -2019,7 +2031,8 @@ public class AppCMSPresenter {
             }
         } else {
             if (currentActivity != null &&
-                    inAppBillingService != null) {
+                    inAppBillingService != null &&
+                    TextUtils.isEmpty(getActiveSubscriptionReceipt())) {
                 Log.d(TAG, "Initiating Google Play Services purchase");
                 try {
                     Bundle activeSubs = null;
@@ -2093,6 +2106,8 @@ public class AppCMSPresenter {
                             + skuToPurchase
                             + e.getMessage());
                 }
+            } else if (!TextUtils.isEmpty(getActiveSubscriptionReceipt())) {
+                finalizeSignupAfterSubscription(getActiveSubscriptionReceipt());
             } else {
                 Log.e(TAG, "InAppBillingService: " + inAppBillingService);
             }
@@ -3826,10 +3841,12 @@ public class AppCMSPresenter {
             bundle.putString(FIREBASE_SCREEN_BEGIN_CHECKOUT, FIREBASE_SCREEN_BEGIN_CHECKOUT);
             String firebaseBeginCheckotPlanEventKey = FIREBASE_SCREEN_BEGIN_CHECKOUT;
             sendFirebaseSelectedEvents(firebaseBeginCheckotPlanEventKey, bundle);
+
             if (!launchSuccess) {
                 Log.e(TAG, "Failed to launch page: " + subscriptionPage.getPageName());
                 launchErrorActivity(platformType);
             }
+
         }
     }
 
@@ -3874,12 +3891,58 @@ public class AppCMSPresenter {
                                 setExistingGooglePlaySubscriptionId(inAppPurchaseData.getProductId());
 
                                 if (inAppPurchaseData.isAutoRenewing() || !subscriptionExpired) {
-                                    if (showErrorDialogIfSubscriptionExists) {
-                                        showEntitlementDialog(DialogType.EXISTING_SUBSCRIPTION,
-                                                () -> {
-                                                    sendCloseOthersAction(null, true);
-                                                    navigateToLoginPage();
+                                    setActiveSubscriptionReceipt(subscribedItemList.get(i));
+                                    if (!isUserLoggedIn()) {
+                                        String restorePurchaseUrl = currentContext.getString(R.string.app_cms_restore_purchase_api_url,
+                                                appCMSMain.getApiBaseUrl(),
+                                                "");
+                                        appCMSRestorePurchaseCall.call(apikey,
+                                                restorePurchaseUrl,
+                                                inAppPurchaseData.getPurchaseToken(),
+                                                appCMSSite.getGist().getSiteInternalName(),
+                                                (signInResponse) -> {
+                                                    if (!TextUtils.isEmpty(signInResponse.getError())) {
+                                                        if (showErrorDialogIfSubscriptionExists) {
+                                                            showEntitlementDialog(DialogType.EXISTING_SUBSCRIPTION,
+                                                                    () -> {
+                                                                        sendCloseOthersAction(null, true);
+                                                                        navigateToLoginPage();
+                                                                    });
+                                                        }
+                                                    } else {
+                                                        setRefreshToken(signInResponse.getRefreshToken());
+                                                        setAuthToken(signInResponse.getAuthorizationToken());
+                                                        setLoggedInUser(signInResponse.getUserId());
+                                                        sendSignInEmailFirebase();
+                                                        setLoggedInUserName(signInResponse.getName());
+                                                        setLoggedInUserEmail(signInResponse.getEmail());
+                                                        setIsUserSubscribed(true);
+                                                    }
                                                 });
+                                    } else if (isUserLoggedIn()) {
+                                        SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
+                                        subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
+                                        subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
+                                        subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
+                                        subscriptionRequest.setUserId(getLoggedInUser());
+                                        subscriptionRequest.setReceipt(getActiveSubscriptionReceipt());
+
+                                        Log.d(TAG, "Subscription request: " + gson.toJson(subscriptionRequest, SubscriptionRequest.class));
+
+                                        int subscriptionCallType = R.string.app_cms_subscription_plan_update_key;
+
+                                        appCMSSubscriptionPlanCall.call(
+                                                currentActivity.getString(R.string.app_cms_register_subscription_api_url,
+                                                        appCMSMain.getApiBaseUrl(),
+                                                        appCMSSite.getGist().getSiteInternalName(),
+                                                        currentActivity.getString(R.string.app_cms_subscription_platform_key)),
+                                                subscriptionCallType,
+                                                subscriptionRequest,
+                                                apikey,
+                                                getAuthToken(),
+                                                (result1) -> {},
+                                                (result2) -> {},
+                                                (result3) -> {});
                                     }
                                 }
 
@@ -4317,9 +4380,14 @@ public class AppCMSPresenter {
                                             }
                                         }
                                     }
+                                    launched = true;
                                 } else {
-                                    sendStopLoadingPageAction();
-                                    setNavItemToCurrentAction(currentActivity);
+                                    if (launched) {
+                                        sendStopLoadingPageAction();
+                                        setNavItemToCurrentAction(currentActivity);
+                                    } else {
+                                        launchErrorActivity(PlatformType.ANDROID);
+                                    }
                                 }
                                 loadingPage = false;
                             }
@@ -4420,7 +4488,6 @@ public class AppCMSPresenter {
     public void launchErrorActivity(PlatformType platformType) {
         if (platformType == PlatformType.ANDROID) {
             try {
-                sendCloseOthersAction(null, false);
                 Intent errorIntent = new Intent(currentActivity, AppCMSErrorActivity.class);
                 currentActivity.startActivity(errorIntent);
             } catch (Exception e) {
@@ -5464,6 +5531,7 @@ public class AppCMSPresenter {
                               final PlatformType platformType) {
         this.deeplinkSearchQuery = searchQuery;
         this.platformType = platformType;
+        this.launched = false;
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
@@ -6736,6 +6804,9 @@ public class AppCMSPresenter {
                                                         }
                                                     } catch (Exception e) {
                                                         Log.e(TAG, "Error retrieving subscription information: " + e.getMessage());
+                                                        if (!reloadUserSubscriptionData && !launched) {
+                                                            launchErrorActivity(PlatformType.ANDROID);
+                                                        }
                                                     }
 
                                                     if (reloadUserSubscriptionData) {
@@ -6827,6 +6898,12 @@ public class AppCMSPresenter {
                                                             Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
                                                         }
                                                     }
+                                                } else {
+                                                    if (launched) {
+                                                        onRefreshReadyAction.call();
+                                                    } else {
+                                                        launchErrorActivity(PlatformType.ANDROID);
+                                                    }
                                                 }
                                             });
                                 } catch (Exception e) {
@@ -6876,6 +6953,9 @@ public class AppCMSPresenter {
                                         }
                                     } catch (Exception e) {
                                         Log.e(TAG, "Error retrieving subscription information: " + e.getMessage());
+                                        if (!reloadUserSubscriptionData && !launched) {
+                                            launchErrorActivity(PlatformType.ANDROID);
+                                        }
                                     }
 
                                     if (reloadUserSubscriptionData) {
@@ -6967,16 +7047,31 @@ public class AppCMSPresenter {
                                                             }
                                                         } catch (Exception e) {
                                                             Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
+                                                            if (launched) {
+                                                                onRefreshReadyAction.call();
+                                                            } else {
+                                                                launchErrorActivity(PlatformType.ANDROID);
+                                                            }
                                                         }
                                                     }
                                             );
                                         } catch (Exception e) {
                                             Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
+                                            if (launched) {
+                                                onRefreshReadyAction.call();
+                                            } else {
+                                                launchErrorActivity(PlatformType.ANDROID);
+                                            }
                                         }
                                     }
                                 });
                     } catch (Exception e) {
                         Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
+                        if (launched) {
+                            onRefreshReadyAction.call();
+                        } else {
+                            launchErrorActivity(PlatformType.ANDROID);
+                        }
                     }
                 }
             } else {
@@ -6984,6 +7079,13 @@ public class AppCMSPresenter {
             }
         } catch (Exception e) {
             Log.e(TAG, "Caught exception when attempting to refresh subscription data: " + e.getMessage());
+            if (launched) {
+                if (onRefreshReadyAction != null) {
+                    onRefreshReadyAction.call();
+                }
+            } else {
+                launchErrorActivity(PlatformType.ANDROID);
+            }
         }
     }
 

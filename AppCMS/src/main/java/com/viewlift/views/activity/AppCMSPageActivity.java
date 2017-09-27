@@ -500,6 +500,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         resume();
         appCMSPresenter.setCurrentActivity(this);
         Log.d(TAG, "onResume()");
+        appCMSPresenter.checkForExistingSubscription(false);
     }
 
     @Override

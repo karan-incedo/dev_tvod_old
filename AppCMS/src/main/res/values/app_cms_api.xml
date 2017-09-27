@@ -73,6 +73,9 @@
     <!-- -->
     <string name="app_cms_shows_status_api_url">%1$s/content/pages?path=/shows/title/sujith&amp;site=%2$s&amp;includeContent=true</string>
 
+    <!-- Restore Purchase API -->
+    <string name="app_cms_restore_purchase_api_url">%1$s/identity/signin/ios?site=%2$s</string>
+
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>

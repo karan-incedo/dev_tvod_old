@@ -4,8 +4,7 @@ apply plugin: 'realm-android'
 def final packageName = 'com.viewlift.hoichoi'
 def final customApplicationId = 'Hoichoi'
 def final hostName = "www.hoichoi.tv"
-
-def final appVersionName = "2.0.39"
+def final appVersionName = "2.0.41"
 
 buildscript {
     repositories {
@@ -34,8 +33,8 @@ android {
     defaultConfig {
         applicationId packageName
         minSdkVersion 21
-        targetSdkVersion 26
-        versionCode 71
+        targetSdkVersion 23
+        versionCode 73
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 26
@@ -97,7 +96,7 @@ android {
         release {
             multiDexEnabled true
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue "string", "package_name", "${packageName}"
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
