@@ -48,7 +48,7 @@ public class AppCMSErrorActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION) &&
-                        !intent.getStringExtra(getString(R.string.app_cms_closing_page_name)).equals("Error Screen")) {
+                        !"Error Screen".equals(intent.getStringExtra(getString(R.string.app_cms_closing_page_name)))) {
                     finish();
                 }
             }
