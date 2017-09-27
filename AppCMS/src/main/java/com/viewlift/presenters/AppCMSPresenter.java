@@ -5536,13 +5536,15 @@ public class AppCMSPresenter {
     public void getAppCMSMain(final Activity activity,
                               final String siteId,
                               final Uri searchQuery,
-                              final PlatformType platformType) {
+                              final PlatformType platformType,
+                              boolean forceReloadFromNetwork) {
         this.deeplinkSearchQuery = searchQuery;
         this.platformType = platformType;
         this.launched = false;
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
+                .forceReloadFromNetwork(forceReloadFromNetwork)
                 .build();
         new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
             try {

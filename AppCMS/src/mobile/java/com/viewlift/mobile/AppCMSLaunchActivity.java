@@ -46,7 +46,8 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
                 getString(R.string.app_cms_app_name),
                 searchQuery,
-                AppCMSPresenter.PlatformType.ANDROID);
+                AppCMSPresenter.PlatformType.ANDROID,
+                false);
         if (!BaseView.isTablet(this)) {
             appCMSPresenterComponent.appCMSPresenter().restrictPortraitOnly();
         }
@@ -78,7 +79,8 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                     appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(AppCMSLaunchActivity.this,
                             getString(R.string.app_cms_app_name),
                             searchQuery,
-                            AppCMSPresenter.PlatformType.ANDROID);
+                            AppCMSPresenter.PlatformType.ANDROID,
+                            true);
                 } else if (!isConnected) {
                     appStartWithNetworkConnected = false;
                 }
