@@ -1988,6 +1988,7 @@ public class AppCMSPresenter {
     }
 
     public void initiateItemPurchase() {
+        Log.d(TAG, "Initiating item purchase");
         checkForExistingSubscription(false);
 
         if (useCCAvenue()) {
@@ -2109,6 +2110,8 @@ public class AppCMSPresenter {
                             + e.getMessage());
                 }
             } else if (!TextUtils.isEmpty(getActiveSubscriptionReceipt())) {
+                Log.d(TAG, "Finalizing subscription after signup - existing subscription: " +
+                    getActiveSubscriptionReceipt());
                 finalizeSignupAfterSubscription(getActiveSubscriptionReceipt());
             } else {
                 Log.e(TAG, "InAppBillingService: " + inAppBillingService);
@@ -3861,7 +3864,7 @@ public class AppCMSPresenter {
                             currentActivity.getPackageName(),
                             "subs",
                             null);
-                    ArrayList<String> subscribedItemList = activeSubs.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
+                    ArrayList<String> subscribedItemList = activeSubs.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
 
                     if (subscribedItemList != null && !subscribedItemList.isEmpty()) {
                         boolean subscriptionExpired = true;
@@ -3894,6 +3897,7 @@ public class AppCMSPresenter {
 
                                 if (inAppPurchaseData.isAutoRenewing() || !subscriptionExpired) {
                                     setActiveSubscriptionReceipt(subscribedItemList.get(i));
+                                    Log.d(TAG, "Set active subscription: " + inAppPurchaseData.getProductId());
                                     if (!isUserLoggedIn()) {
                                         String restorePurchaseUrl = currentContext.getString(R.string.app_cms_restore_purchase_api_url,
                                                 appCMSMain.getApiBaseUrl(),
@@ -3946,6 +3950,8 @@ public class AppCMSPresenter {
                                                 (result2) -> {},
                                                 (result3) -> {});
                                     }
+                                } else {
+                                    setActiveSubscriptionReceipt(null);
                                 }
 
                                 if (subscriptionExpired) {
@@ -7232,6 +7238,8 @@ public class AppCMSPresenter {
 
                             checkForExistingSubscription(false);
 
+                            Log.d(TAG, "Initiating user login - user subscribed: " + getIsUserSubscribed());
+
                             if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
                                 setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
                             }
@@ -7244,6 +7252,7 @@ public class AppCMSPresenter {
                             }
 
                             if (followWithSubscription) {
+                                Log.d(TAG, "Initiating subscription purchase");
                                 isSignupFromFacebook = false;
                                 isSignupFromGoogle = false;
                                 subscriptionUserEmail = email;
@@ -7252,6 +7261,7 @@ public class AppCMSPresenter {
                                 initiateItemPurchase();
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                             } else {
+                                Log.d(TAG, "Logging in");
                                 if (appCMSMain.getServiceType()
                                         .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
                                         refreshSubscriptionData) {
