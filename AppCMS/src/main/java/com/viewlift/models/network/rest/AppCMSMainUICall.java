@@ -107,7 +107,7 @@ public class AppCMSMainUICall {
             boolean useExistingOldVersion = true;
 
             if (mainInStorage != null) {
-                if (main != null) {
+                if (main != null && main.getOldVersion() != null) {
                     useExistingOldVersion = main.getOldVersion().equals(main.getVersion());
                     main.setLoadFromFile(useExistingOldVersion);
                     main.setOldVersion(main.getVersion());

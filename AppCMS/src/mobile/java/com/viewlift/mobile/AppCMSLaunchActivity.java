@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.presenters.AppCMSPresenter;
 
+import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.components.AppCMSPresenterComponent;
@@ -27,6 +30,10 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     private Uri searchQuery;
     private CastHelper mCastHelper;
     private BroadcastReceiver presenterCloseActionReceiver;
+
+    private ConnectivityManager connectivityManager;
+    private BroadcastReceiver networkConnectedReceiver;
+    private boolean appStartWithNetworkConnected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +69,22 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate()");
         setCasting();
         setFullScreenFocus();
+
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        networkConnectedReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+                boolean isConnected = activeNetwork != null &&
+                        activeNetwork.isConnectedOrConnecting();
+                if (isConnected) {
+                    appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(AppCMSLaunchActivity.this,
+                            getString(R.string.app_cms_app_name),
+                            searchQuery,
+                            AppCMSPresenter.PlatformType.ANDROID);
+                }
+            }
+        };
     }
 
     @Override
@@ -103,6 +126,26 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         setFullScreenFocus();
         super.onWindowFocusChanged(hasFocus);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        appStartWithNetworkConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        if (appStartWithNetworkConnected) {
+            registerReceiver(networkConnectedReceiver,
+                    new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(networkConnectedReceiver);
     }
 
     private void setFullScreenFocus() {
