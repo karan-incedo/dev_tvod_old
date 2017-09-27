@@ -56,10 +56,7 @@ public class AppCMSPageUICall {
             Log.e(TAG, "Error reading file AppCMS UI JSON file: " +
                     e.getMessage());
             try {
-                StringBuilder urlWithTimestamp = new StringBuilder(url);
-                urlWithTimestamp.append("?x=");
-                urlWithTimestamp.append(timeStamp);
-                appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(urlWithTimestamp.toString()).execute().body());
+                appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(url).execute().body());
             } catch (Exception e2) {
                 Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
                         e2.getMessage());
