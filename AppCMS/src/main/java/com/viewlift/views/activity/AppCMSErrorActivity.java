@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.viewlift.mobile.AppCMSLaunchActivity;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -24,6 +25,8 @@ import com.viewlift.R;
 
 public class AppCMSErrorActivity extends AppCompatActivity {
     private static final String ERROR_TAG = "error_fragment";
+
+    private static final String TAG = "ErrorActivity";
 
     private BroadcastReceiver presenterCloseActionReceiver;
 
@@ -70,7 +73,11 @@ public class AppCMSErrorActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(presenterCloseActionReceiver);
+        try {
+            unregisterReceiver(presenterCloseActionReceiver);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to unregister Close Action Receiver");
+        }
     }
 
     @Override
@@ -83,6 +90,10 @@ public class AppCMSErrorActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(networkConnectedReceiver);
+        try {
+            unregisterReceiver(networkConnectedReceiver);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to unregister Network Connectivity Receiver");
+        }
     }
 }

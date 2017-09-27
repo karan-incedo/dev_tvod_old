@@ -77,11 +77,13 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
                 boolean isConnected = activeNetwork != null &&
                         activeNetwork.isConnectedOrConnecting();
-                if (isConnected) {
+                if (!appStartWithNetworkConnected && isConnected) {
                     appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(AppCMSLaunchActivity.this,
                             getString(R.string.app_cms_app_name),
                             searchQuery,
                             AppCMSPresenter.PlatformType.ANDROID);
+                } else if (!isConnected) {
+                    appStartWithNetworkConnected = false;
                 }
             }
         };
@@ -95,7 +97,11 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(presenterCloseActionReceiver);
+        try {
+            unregisterReceiver(presenterCloseActionReceiver);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to unregister Close Action Receiver");
+        }
     }
 
     private void setCasting() {
@@ -145,7 +151,11 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(networkConnectedReceiver);
+        try {
+            unregisterReceiver(networkConnectedReceiver);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to unregister network receiver");
+        }
     }
 
     private void setFullScreenFocus() {
