@@ -2,12 +2,12 @@ package com.viewlift.models.network.rest;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 
 import java.io.File;
@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.util.Date;
 import java.util.Scanner;
 
 import javax.inject.Inject;
@@ -53,10 +52,14 @@ public class AppCMSPageUICall {
         try {
             appCMSPageUI = readPageFromFile(filename);
         } catch (Exception e) {
-            Log.e(TAG, "Error reading file AppCMS UI JSON file: " +
-                    e.getMessage());
+            Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
             try {
-                appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(url).execute().body());
+                // TODO: 9/26/17 Passing timestamps with urls - this may change in the future.
+                StringBuilder urlWithTimestamp = new StringBuilder(url);
+                urlWithTimestamp.append("?x=");
+                urlWithTimestamp.append(timeStamp);
+                appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(urlWithTimestamp.toString())
+                        .execute().body());
             } catch (Exception e2) {
                 Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
                         e2.getMessage());
@@ -65,7 +68,8 @@ public class AppCMSPageUICall {
         try {
             appCMSPageUIRest.get(url).enqueue(new Callback<AppCMSPageUI>() {
                 @Override
-                public void onResponse(Call<AppCMSPageUI> call, Response<AppCMSPageUI> response) {
+                public void onResponse(@NonNull Call<AppCMSPageUI> call,
+                                       @NonNull Response<AppCMSPageUI> response) {
                     try {
                         if (response.body() != null) {
                             writePageToFile(filename, response.body());
@@ -76,9 +80,9 @@ public class AppCMSPageUICall {
                 }
 
                 @Override
-                public void onFailure(Call<AppCMSPageUI> call, Throwable t) {
+                public void onFailure(@NonNull Call<AppCMSPageUI> call, @NonNull Throwable t) {
                     Log.e(TAG, "Could not read AppCMS UI JSON file from network: " +
-                        t.getMessage());
+                            t.getMessage());
                 }
             });
         } catch (JsonSyntaxException e) {
@@ -159,7 +163,7 @@ public class AppCMSPageUICall {
         int startIndex = url.lastIndexOf(File.separatorChar);
         int endIndex = url.indexOf(JSON_EXT) + JSON_EXT.length();
         if (0 <= startIndex && startIndex < endIndex) {
-            return url.substring(startIndex+1, endIndex);
+            return url.substring(startIndex + 1, endIndex);
         }
         return url;
     }

@@ -924,7 +924,7 @@ public class ViewCreator {
                                                                   PageView pageView,
                                                                   Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                                   AppCMSPresenter appCMSPresenter) {
-        ModuleView moduleView = null;
+        ModuleView moduleView;
         if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY) {
             moduleView = new LoginModule(context,
                     module,
@@ -1957,6 +1957,12 @@ public class ViewCreator {
                                     ((TextView) componentViewResult.componentView).setMaxLines(component.getNumberOfLines());
                                 }
                                 ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                            } else if (moduleAPI != null &&
+                                    moduleAPI.getContentData() != null &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                    moduleAPI.getContentData().get(0).getGist().getTitle() != null) {
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
                             } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
                             } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
@@ -2653,6 +2659,15 @@ public class ViewCreator {
                 break;
 
             default:
+                if (component.getComponents() != null &&
+                        !component.getComponents().isEmpty()) {
+                    componentViewResult.componentView = createModuleView(context,
+                            component,
+                            moduleAPI,
+                            pageView,
+                            jsonValueKeyMap,
+                            appCMSPresenter);
+                }
                 break;
         }
 

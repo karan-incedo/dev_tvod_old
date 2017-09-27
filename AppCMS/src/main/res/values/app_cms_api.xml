@@ -1,12 +1,12 @@
 <resources>
     <!-- Primary app values -->
-    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
-    <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
+    <!--<string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
+    <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
 
     <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
 
-    <string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>
-    <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>-->
+    <!--<string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>-->
+    <string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>
 
 
     <string name="app_cms_url_with_appended_timestamp">%1$s</string>
@@ -177,11 +177,14 @@
 
     <string name="app_cms_page_video_download_button_key">downloadButton</string>
     <string name="app_cms_page_video_image_key">videoImage</string>
+    <string name="app_cms_page_show_image_video_key">showImage</string>
     <string name="app_cms_page_video_play_button_key">playButton</string>
     <string name="app_cms_page_video_description_key">videoDescriptionText</string>
+    <string name="app_cms_page_show_video_description_key">showDescriptionText</string>
     <string name="app_cms_page_video_title_key">videoTitle</string>
     <string name="app_cms_page_download_setting_title_key">DownloadQualityTitle</string>
     <string name="app_cms_page_video_subtitle_key">videoSubTitle</string>
+    <string name="app_cms_page_show_video_subtitle_key">showSubTitle</string>
     <string name="app_cms_page_video_ageLabel_key">ageLabel</string>
     <string name="app_cms_page_video_share_key">shareButton</string>
     <string name="app_cms_page_video_close_key">closeButton</string>
@@ -198,6 +201,7 @@
     <string name="app_cms_page_download_setting_module_key">AC DownloadSettings 01</string>
     <string name="app_cms_page_api_thumbnail_url_key">thumbnail</string>
     <string name="app_cms_page_api_title_key">title</string>
+    <string name="app_cms_page_api_show_title_key">showTitle</string>
     <string name="app_cms_page_api_description_key">description</string>
     <string name="app_cms_page_navigation_contact_us_key">mailto</string>
     <string name="app_cms_page_video_player_with_info_key">AC VideoPlayerWithInfo 01</string>

@@ -42,6 +42,7 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.AssetDataSource;
 import com.google.android.exoplayer2.upstream.ContentDataSource;
 import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DataSource.Factory;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSource;
@@ -53,7 +54,6 @@ import com.google.android.exoplayer2.upstream.TransferListener;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
-import com.google.android.exoplayer2.upstream.DataSource.Factory;
 import com.viewlift.R;
 
 import java.io.IOException;
@@ -94,6 +94,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private Map<String, Integer> failedMediaSourceLoads;
 
     private int fullscreenResizeMode;
+    private Uri closedCaptionUri;
 
     public VideoPlayerView(Context context) {
         super(context);
@@ -136,8 +137,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             Log.e(TAG, "Unsupported video format for URI: " + uri.toString());
         }
     }
-
-    private Uri closedCaptionUri;
 
     public void setUri(Uri videoUri, Uri closedCaptionUri) {
         this.uri = videoUri;
@@ -208,14 +207,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         return -1L;
     }
 
-    public long getBitrate() {
-        return bitrate;
-    }
-
     public void setCurrentPosition(long currentPosition) {
         if (player != null) {
             player.seekTo(currentPosition);
         }
+    }
+
+    public long getBitrate() {
+        return bitrate;
     }
 
     public void setClosedCaptionEnabled(boolean closedCaptionEnabled) {
@@ -279,7 +278,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 onPlayerControlsStateChanged.call(visibility);
             }
         });
-        player.addVideoListener(this);
+//        player.addVideoListener(this);
 
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         audioManager.requestAudioFocus(focusChange -> Log.i(TAG, "Audio focus has changed: " + focusChange),
@@ -418,7 +417,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void onLoadStarted(DataSpec dataSpec, int dataType, int trackType, Format trackFormat,
                               int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                               long mediaEndTimeMs, long elapsedRealtimeMs) {
-        bitrate=(trackFormat.bitrate/1000);
+        bitrate = (trackFormat.bitrate / 1000);
     }
 
     @Override
@@ -446,8 +445,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         /**
          * We can enhance logic here depending on the error code list that we will use for closing the video page.
          */
-        if ( (error.getMessage().contains("404") ||
-                error.getMessage().contains("400") )
+        if ((error.getMessage().contains("404") ||
+                error.getMessage().contains("400"))
                 && !isLoadedNext) {
             String failedMediaSourceLoadKey = dataSpec.uri.toString();
             if (failedMediaSourceLoads.containsKey(failedMediaSourceLoadKey)) {
@@ -530,7 +529,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         private final String cdnCookie;
 
         /**
-         * @param context A context.
+         * @param context   A context.
          * @param userAgent The User-Agent string that should be used.
          */
         public UpdatedUriDataSourceFactory(Context context, String userAgent, String cdnCookie) {
@@ -538,26 +537,26 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
 
         /**
-         * @param context A context.
+         * @param context   A context.
          * @param userAgent The User-Agent string that should be used.
-         * @param listener An optional listener.
+         * @param listener  An optional listener.
          */
         public UpdatedUriDataSourceFactory(Context context, String userAgent,
-                                        TransferListener<? super DataSource> listener,
+                                           TransferListener<? super DataSource> listener,
                                            String cdnCookie) {
             this(context, listener, new DefaultHttpDataSourceFactory(userAgent, listener), cdnCookie);
         }
 
         /**
-         * @param context A context.
-         * @param listener An optional listener.
+         * @param context               A context.
+         * @param listener              An optional listener.
          * @param baseDataSourceFactory A {@link DataSource.Factory} to be used to create a base {@link DataSource}
-         *     for {@link DefaultDataSource}.
-         * @param cdnCookie The cookie used for accessing CDN protected data.
+         *                              for {@link DefaultDataSource}.
+         * @param cdnCookie             The cookie used for accessing CDN protected data.
          * @see DefaultDataSource#DefaultDataSource(Context, TransferListener, DataSource)
          */
         public UpdatedUriDataSourceFactory(Context context, TransferListener<? super DataSource> listener,
-                                        DataSource.Factory baseDataSourceFactory, String cdnCookie) {
+                                           DataSource.Factory baseDataSourceFactory, String cdnCookie) {
             this.context = context.getApplicationContext();
             this.listener = listener;
             this.baseDataSourceFactory = baseDataSourceFactory;
