@@ -2,10 +2,12 @@ package com.viewlift.presenters;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.DownloadManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
@@ -45,6 +47,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -5628,7 +5631,7 @@ public class AppCMSPresenter {
                 title = currentActivity.getString(R.string.app_cms_logout_with_running_download_title);
                 message = currentActivity.getString(R.string.app_cms_logout_with_running_download_message);
             }
-            if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED) {
+            if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER) {
                 title = currentActivity.getString(R.string.app_cms_login_and_subscription_required_title);
                 message = currentActivity.getString(R.string.app_cms_login_and_subscription_required_message);
                 //Set Firebase User Property when user is not logged in and unsubscribed
@@ -5679,7 +5682,7 @@ public class AppCMSPresenter {
                 mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
             }
 
-            if (dialogType == DialogType.SUBSCRIPTION_REQUIRED) {
+            if (dialogType == DialogType.SUBSCRIPTION_REQUIRED || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER) {
                 mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
                 mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
             }
@@ -5716,7 +5719,7 @@ public class AppCMSPresenter {
                                 Log.e(TAG, "Error cancelling dialog while logging out with running download: " + e.getMessage());
                             }
                         });
-            } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED) {
+            } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER)  {
                 builder.setPositiveButton(R.string.app_cms_login_button_text,
                         (dialog, which) -> {
                             try {
@@ -5742,6 +5745,7 @@ public class AppCMSPresenter {
                                 Log.e(TAG, "Error closing subscribe dialog: " + e.getMessage());
                             }
                         });
+
             } else if (dialogType == DialogType.CANNOT_UPGRADE_SUBSCRIPTION ||
                     dialogType == DialogType.UPGRADE_UNAVAILABLE) {
                 builder.setPositiveButton("OK", null);
@@ -5790,6 +5794,16 @@ public class AppCMSPresenter {
                         });
             }
 
+            if(dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER){
+                builder.setOnKeyListener((arg0, keyCode, event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        if (onCloseAction != null) {
+                            onCloseAction.call();
+                        }
+                    }
+                    return true;
+                });
+            }
             AlertDialog dialog = builder.create();
 
             if (onCloseAction != null) {
@@ -9051,7 +9065,9 @@ public class AppCMSPresenter {
         DELETE_ALL_DOWNLOAD_ITEMS,
         LOGIN_REQUIRED,
         SUBSCRIPTION_REQUIRED,
+        SUBSCRIPTION_REQUIRED_PLAYER,
         LOGIN_AND_SUBSCRIPTION_REQUIRED,
+        LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER,
         LOGOUT_WITH_RUNNING_DOWNLOAD,
         EXISTING_SUBSCRIPTION,
         DOWNLOAD_INCOMPLETE,

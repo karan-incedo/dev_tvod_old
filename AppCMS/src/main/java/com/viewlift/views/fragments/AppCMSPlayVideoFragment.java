@@ -78,6 +78,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private final String FIREBASE_STREAM_25 = "stream_25_pct";
     private final String FIREBASE_STREAM_50 = "stream_50_pct";
     private final String FIREBASE_STREAM_75 = "stream_75_pct";
+
     private final String FIREBASE_VIDEO_ID_KEY = "video_id";
     private final String FIREBASE_VIDEO_NAME_KEY = "video_name";
     private final String FIREBASE_SERIES_ID_KEY = "series_id";
@@ -312,12 +313,12 @@ public class AppCMSPlayVideoFragment extends Fragment
                                 }
                                 videoPlayerInfoContainer.setVisibility(View.VISIBLE);
                                 if (appCMSPresenter.isUserLoggedIn()) {
-                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_PLAYER,
                                             () -> {
                                                 onClosePlayerEvent.closePlayer();
                                             });
                                 } else {
-                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER,
                                             () -> {
                                                 onClosePlayerEvent.closePlayer();
                                             });

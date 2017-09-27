@@ -267,6 +267,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 //        registerReceiver(networkConnectedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
     }
 
     @Override
