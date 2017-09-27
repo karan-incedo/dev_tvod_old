@@ -1,20 +1,24 @@
 package com.viewlift.models.network.background.tasks;
 
-import android.os.AsyncTask;
+import android.util.Log;
 
 import com.viewlift.models.data.appcms.ui.authentication.RefreshIdentityResponse;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by viewlift on 7/5/17.
  */
 
-public class GetAppCMSRefreshIdentityAsyncTask extends AsyncTask<GetAppCMSRefreshIdentityAsyncTask.Params, Integer, RefreshIdentityResponse> {
+public class GetAppCMSRefreshIdentityAsyncTask {
     private final AppCMSRefreshIdentityCall call;
     private final Action1<RefreshIdentityResponse> readyAction;
+
+    private static final String TAG = "RefreshIdentityTask";
 
     public static class Params {
         String url;
@@ -39,16 +43,20 @@ public class GetAppCMSRefreshIdentityAsyncTask extends AsyncTask<GetAppCMSRefres
         this.readyAction = readyAction;
     }
 
-    @Override
-    protected RefreshIdentityResponse doInBackground(Params... params) {
-        if (params.length > 0) {
-            return call.call(params[0].url);
-        }
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(RefreshIdentityResponse refreshIdentityResponse) {
-        Observable.just(refreshIdentityResponse).subscribe(readyAction);
+    public void execute(Params params) {
+        Observable
+                .fromCallable(() -> {
+                    if (params != null) {
+                        try {
+                            return call.call(params.url);
+                        } catch (Exception e) {
+                            Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
+                        }
+                    }
+                    return null;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((result) -> Observable.just(result).subscribe(readyAction));
     }
 }
