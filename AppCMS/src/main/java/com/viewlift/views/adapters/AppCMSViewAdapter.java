@@ -59,6 +59,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     protected boolean isClickable;
     private String videoAction;
     private String showAction;
+    private String watchVideoAction;
+    private String watchTrailerAction;
+    private String watchTrailerQuailifier;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -124,6 +127,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.isClickable = true;
 
         this.setHasStableIds(false);
+
+        this.watchVideoAction = context.getString(R.string.app_cms_action_watchvideo_key);
+        this.watchTrailerAction = context.getString(R.string.app_cms_action_watchtrailervideo_key);
+        this.watchTrailerQuailifier = context.getString(R.string.app_cms_action_qualifier_watchvideo_key);
 
         sortPlanPricesInDescendingOrder();
     }
@@ -357,7 +364,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                             if (data.getGist() != null) {
                                 Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                                 String permalink = data.getGist().getPermalink();
-                                String action = defaultAction;
+                                String action = videoAction;
+                                if (childComponent != null && !TextUtils.isEmpty(childComponent.getAction())) {
+                                    action = childComponent.getAction();
+                                }
                                 String title = data.getGist().getTitle();
                                 String hlsUrl = getHlsUrl(data);
                                 String[] extraData = new String[3];
@@ -374,16 +384,54 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (relatedVideoIds == null) {
                                     currentPlayingIndex = 0;
                                 }
-                                if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                        action,
-                                        title,
-                                        extraData,
-                                        data,
-                                        false,
-                                        currentPlayingIndex,
-                                        relatedVideoIds)) {
-                                    Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
-                                            + " action: " + action + " hlsUrl: " + hlsUrl);
+
+                                String contentType = "";
+
+                                if (data.getGist() != null && data.getGist().getContentType() != null) {
+                                    contentType = data.getGist().getContentType();
+                                }
+
+                                switch (contentType) {
+                                    case "SHOW":
+                                        action = showAction;
+                                        break;
+
+                                    case "VIDEO":
+                                        action = videoAction;
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+
+                                if (data.getGist() == null ||
+                                        data.getGist().getContentType() == null) {
+                                    if (!appCMSPresenter.launchVideoPlayer(data,
+                                            currentPlayingIndex,
+                                            relatedVideoIds,
+                                            -1,
+                                            action)) {
+                                        Log.e(TAG, "Could not launch action: " +
+                                                " permalink: " +
+                                                permalink +
+                                                " action: " +
+                                                action);
+                                    }
+                                } else {
+                                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                            action,
+                                            title,
+                                            null,
+                                            null,
+                                            false,
+                                            currentPlayingIndex,
+                                            relatedVideoIds)) {
+                                        Log.e(TAG, "Could not launch action: " +
+                                                " permalink: " +
+                                                permalink +
+                                                " action: " +
+                                                action);
+                                    }
                                 }
                             }
                         }
@@ -409,7 +457,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (!appCMSPresenter.launchVideoPlayer(data,
                                         currentPlayingIndex,
                                         relatedVideoIds,
-                                        -1)) {
+                                        -1,
+                                        null)) {
                                     Log.e(TAG, "Could not launch play action: " +
                                             " filmId: " +
                                             filmId +
@@ -437,9 +486,15 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 if (isClickable) {
                     String permalink = data.getGist().getPermalink();
                     String title = data.getGist().getTitle();
-                    String action = defaultAction;
+                    String action = videoAction;
 
-                    switch (data.getGist().getContentType()) {
+                    String contentType = "";
+
+                    if (data.getGist() != null && data.getGist().getContentType() != null) {
+                        contentType = data.getGist().getContentType();
+                    }
+
+                    switch (contentType) {
                         case "SHOW":
                             action = showAction;
                             break;
@@ -462,19 +517,35 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     if (relatedVideoIds == null) {
                         currentPlayingIndex = 0;
                     }
-                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                            action,
-                            title,
-                            null,
-                            null,
-                            false,
-                            currentPlayingIndex,
-                            relatedVideoIds)) {
-                        Log.e(TAG, "Could not launch action: " +
-                                " permalink: " +
-                                permalink +
-                                " action: " +
-                                action);
+
+                    if (data.getGist() == null ||
+                            data.getGist().getContentType() == null) {
+                        if (!appCMSPresenter.launchVideoPlayer(data,
+                                currentPlayingIndex,
+                                relatedVideoIds,
+                                -1,
+                                action)) {
+                            Log.e(TAG, "Could not launch action: " +
+                                    " permalink: " +
+                                    permalink +
+                                    " action: " +
+                                    action);
+                        }
+                    } else {
+                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                action,
+                                title,
+                                null,
+                                null,
+                                false,
+                                currentPlayingIndex,
+                                relatedVideoIds)) {
+                            Log.e(TAG, "Could not launch action: " +
+                                    " permalink: " +
+                                    permalink +
+                                    " action: " +
+                                    action);
+                        }
                     }
                 }
             });
