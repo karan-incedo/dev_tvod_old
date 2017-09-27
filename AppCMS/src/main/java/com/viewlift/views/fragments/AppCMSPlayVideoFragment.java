@@ -78,6 +78,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private final String FIREBASE_STREAM_25 = "stream_25_pct";
     private final String FIREBASE_STREAM_50 = "stream_50_pct";
     private final String FIREBASE_STREAM_75 = "stream_75_pct";
+    private final String FIREBASE_STREAM_100 = "stream_100_pct";
 
     private final String FIREBASE_VIDEO_ID_KEY = "video_id";
     private final String FIREBASE_VIDEO_NAME_KEY = "video_name";
@@ -95,7 +96,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     Runnable mProgressRunnable;
     long mTotalVideoDuration;
     Animation animSequential, animFadeIn, animFadeOut, animTranslate;
-    boolean isStreamStart, isStream25, isStream50, isStream75;
+    boolean isStreamStart, isStream25, isStream50, isStream75,isStream100;
     private AppCMSPresenter appCMSPresenter;
     private String fontColor;
     private String title;
@@ -868,6 +869,25 @@ public class AppCMSPlayVideoFragment extends Fragment
             }
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_75, bundle);
             isStream75 = true;
+        }
+
+        if (progressPercent >= 98 && progressPercent <= 100 && !isStream100) {
+            if (!isStream25) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
+                isStream25 = true;
+            }
+
+            if (!isStream50) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_50, bundle);
+                isStream50 = true;
+            }
+
+            if (!isStream75) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_75, bundle);
+                isStream75 = true;
+            }
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_100, bundle);
+            isStream100 = true;
         }
     }
 

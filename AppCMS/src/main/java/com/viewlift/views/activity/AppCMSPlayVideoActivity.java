@@ -28,6 +28,7 @@ import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
+import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 
 import java.util.List;
@@ -282,6 +283,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     null);
             finish();
         }
+
+        appCMSPresenter.restrictLandscapeOnly();
     }
 
     @Override
@@ -298,8 +301,14 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             Log.e(TAG, "Failed to unregister Handoff Receiver: " + e.getMessage());
         }
 //        unregisterReceiver(networkConnectedReceiver);
+        if (BaseView.isTablet(this)) {
+            appCMSPresenter.unrestrictPortraitOnly();
+        }else{
+            appCMSPresenter.restrictPortraitOnly();
+        }
         super.onDestroy();
     }
+
 
     @Override
     public void closePlayer() {
