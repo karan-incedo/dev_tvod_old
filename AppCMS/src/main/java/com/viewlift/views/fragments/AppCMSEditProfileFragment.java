@@ -18,12 +18,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.AsteriskPasswordTransformation;
 import com.viewlift.views.customviews.ViewCreator;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,6 +52,8 @@ public class AppCMSEditProfileFragment extends DialogFragment {
 
     @BindView(R.id.app_cms_edit_profile_main_layout)
     RelativeLayout appCMSEditProfileMainLayout;
+
+    private String regex = "[a-zA-Z]+";
 
     public static AppCMSEditProfileFragment newInstance(Context context,
                                                         String username,
@@ -96,6 +102,15 @@ public class AppCMSEditProfileFragment extends DialogFragment {
 
 
         editProfileConfirmChangeButton.setOnClickListener((View v) -> {
+
+            String userName = appCMSEditProfileNameInput.getText().toString();
+            if (!TextUtils.isEmpty(userName)) {
+                if (!doesValidNameExist(userName)) {
+                    Toast.makeText(getContext(), getResources().getString(R.string.edit_profile_name_message), Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
+
             TextInputLayout textInputLayout = new TextInputLayout(view.getContext());
             TextInputEditText password = new TextInputEditText(view.getContext());
 
@@ -111,7 +126,7 @@ public class AppCMSEditProfileFragment extends DialogFragment {
                     "Proceed",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            appCMSPresenter.updateUserProfile(appCMSEditProfileNameInput.getText().toString(),
+                            appCMSPresenter.updateUserProfile(userName,
                                     appCMSEditProfileEmailInput.getText().toString(),
                                     password.getText().toString(),
                                     userIdentity -> {
@@ -143,5 +158,9 @@ public class AppCMSEditProfileFragment extends DialogFragment {
 
     private void setBgColor(int bgColor) {
         appCMSEditProfileMainLayout.setBackgroundColor(bgColor);
+    }
+
+    private boolean doesValidNameExist(String input) {
+        return Pattern.matches(regex, input) ? true : false;
     }
 }

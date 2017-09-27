@@ -599,7 +599,7 @@ public class ViewCreator {
                                                     } else {
                                                         if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY) {
                                                             if (appCMSPresenter.isUserSubscribed() &&
-                                                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName())) {
+                                                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionProcessor())) {
                                                                 settingsView.setVisibility(View.VISIBLE);
                                                             } else {
                                                                 settingsView.setVisibility(View.GONE);
@@ -609,7 +609,7 @@ public class ViewCreator {
                                                             if (appCMSPresenter.isUserSubscribed() &&
                                                                     !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName())) {
                                                                 ((TextView) settingsView).setText(appCMSPresenter.getActiveSubscriptionPlanName());
-                                                            } else {
+                                                            } else if (!appCMSPresenter.isUserSubscribed()) {
                                                                 ((TextView) settingsView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
                                                             }
                                                         } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY) {
@@ -2180,7 +2180,7 @@ public class ViewCreator {
 
                         case PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY:
                             if (appCMSPresenter.isUserSubscribed() &&
-                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName())) {
+                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionProcessor())) {
                                 componentViewResult.componentView.setVisibility(View.VISIBLE);
                             } else {
                                 componentViewResult.componentView.setVisibility(View.GONE);

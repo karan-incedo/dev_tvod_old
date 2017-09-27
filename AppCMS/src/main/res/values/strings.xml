@@ -373,4 +373,5 @@
     <string name="password_space_error">"Character space not allowed in password"</string>
     <string name="free_content_key">free_content</string>
     <string name="appcmsuijson_directoryname">androidui</string>
+    <string name="edit_profile_name_message">Use Alphabets for Name</string>
 </resources>
