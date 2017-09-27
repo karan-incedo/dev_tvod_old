@@ -59,6 +59,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     protected boolean isClickable;
     private String videoAction;
     private String showAction;
+    private String watchVideoAction;
+    private String watchTrailerAction;
+    private String watchTrailerQuailifier;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -124,6 +127,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.isClickable = true;
 
         this.setHasStableIds(false);
+
+        this.watchVideoAction = context.getString(R.string.app_cms_action_watchvideo_key);
+        this.watchTrailerAction = context.getString(R.string.app_cms_action_watchtrailervideo_key);
+        this.watchTrailerQuailifier = context.getString(R.string.app_cms_action_qualifier_watchvideo_key);
 
         sortPlanPricesInDescendingOrder();
     }
@@ -358,6 +365,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                                 String permalink = data.getGist().getPermalink();
                                 String action = defaultAction;
+                                if (permalink.contains(watchTrailerQuailifier)) {
+                                    action = watchTrailerAction;
+                                }
                                 String title = data.getGist().getTitle();
                                 String hlsUrl = getHlsUrl(data);
                                 String[] extraData = new String[3];
@@ -439,19 +449,23 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     String title = data.getGist().getTitle();
                     String action = defaultAction;
 
-                    if (data.getGist().getContentType() != null) {
-                        switch (data.getGist().getContentType()) {
-                            case "SHOW":
-                                action = showAction;
-                                break;
+                    String contentType = "";
 
-                            case "VIDEO":
-                                action = videoAction;
-                                break;
+                    if (data.getGist() != null && data.getGist().getContentType() != null) {
+                        contentType = data.getGist().getContentType();
+                    }
 
-                            default:
-                                break;
-                        }
+                    switch (contentType) {
+                        case "SHOW":
+                            action = showAction;
+                            break;
+
+                        case "VIDEO":
+                            action = videoAction;
+                            break;
+
+                        default:
+                            break;
                     }
 
                     Log.d(TAG, "Launching " + permalink + ":" + action);

@@ -494,7 +494,7 @@ public class AppCMSUIModule {
                 AppCMSActionType.WATCHLIST_PAGE);
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_videopage_key),
-                AppCMSActionType.VIDEO_PAGE);
+                AppCMSActionType.PLAY_VIDEO_PAGE);
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_detailvideopage_key),
                 AppCMSActionType.VIDEO_PAGE);

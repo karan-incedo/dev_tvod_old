@@ -306,17 +306,12 @@ public class LoginModule extends ModuleView {
                                 public void onClick(View v) {
                                     Log.d(TAG, "Button clicked: " + component.getAction());
 
-                                    // Preventing multiple clicks, using threshold of 2 second
-                                    if (SystemClock.elapsedRealtime() - mLastClickTime < 2000) {
-                                        return;
-                                    }
                                     mLastClickTime = SystemClock.elapsedRealtime();
                                     if (visibleEmailInputView != null && visiblePasswordInputView != null) {
 
                                         String[] authData = new String[2];
                                         authData[0] = visibleEmailInputView.getText().toString();
                                         authData[1] = visiblePasswordInputView.getText().toString();
-                                        v.setEnabled(false);
                                         appCMSPresenter.launchButtonSelectedAction(null,
                                                 component.getAction(),
                                                 null,
