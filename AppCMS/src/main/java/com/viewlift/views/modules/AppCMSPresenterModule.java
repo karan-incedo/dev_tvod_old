@@ -19,6 +19,7 @@ import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
+import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
@@ -94,6 +95,8 @@ public class AppCMSPresenterModule {
                                                    AppCMSUserDownloadVideoStatusCall appCMSUserDownloadVideoStatusCall,
                                                    AppCMSBeaconCall appCMSBeaconCall,
 
+                                                   AppCMSRestorePurchaseCall appCMSRestorePurchaseCall,
+
                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                    Map<String, String> pageNameToActionMap,
                                                    Map<String, AppCMSPageUI> actionToPageMap,
@@ -133,6 +136,8 @@ public class AppCMSPresenterModule {
                 appCMSUserVideoStatusCall,
                 appCMSUserDownloadVideoStatusCall,
                 appCMSBeaconCall,
+                appCMSRestorePurchaseCall,
+
                 appCMSAddToWatchlistCall,
 
                 appCMSCCAvenueCall,

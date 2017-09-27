@@ -43,6 +43,10 @@ public class SignInResponse {
     @Expose
     boolean isSubscribed;
 
+    @SerializedName("message")
+    @Expose
+    String message;
+
     public String getAuthorizationToken() {
         return authorizationToken;
     }
@@ -107,4 +111,11 @@ public class SignInResponse {
         isSubscribed = subscribed;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }
