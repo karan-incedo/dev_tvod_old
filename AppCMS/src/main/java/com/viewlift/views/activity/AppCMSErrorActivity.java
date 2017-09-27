@@ -78,7 +78,11 @@ public class AppCMSErrorActivity extends AppCompatActivity {
                                                  Intent relaunchApp = new Intent(AppCMSErrorActivity.this, AppCMSLaunchActivity.class);
                                                  relaunchApp.putExtra(getString(R.string.force_reload_from_network_key), true);
                                                  startActivity(relaunchApp);
-                                                 unregisterReceiver(networkConnectedReceiver);
+                                                 try {
+                                                     unregisterReceiver(networkConnectedReceiver);
+                                                 } catch (Exception e) {
+                                                     Log.e(TAG, "Failed to unregister network receiver: " + e.getMessage());
+                                                 }
                                                  timerScheduled = false;
                                              }
                                          }, 500);

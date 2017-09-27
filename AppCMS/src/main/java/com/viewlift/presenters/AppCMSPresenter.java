@@ -7860,16 +7860,19 @@ public class AppCMSPresenter {
             } else if (isUserLoggedIn() && tryCount == 0) {
                 getUserData(userIdentity -> {
                     try {
-                        setLoggedInUser(userIdentity.getUserId());
-                        setLoggedInUserEmail(userIdentity.getEmail());
-                        setLoggedInUserName(userIdentity.getName());
-                        setIsUserSubscribed(userIdentity.isSubscribed());
-                        if (!userIdentity.isSubscribed()) {
-                            setActiveSubscriptionProcessor(null);
+                        if (userIdentity != null) {
+                            setLoggedInUser(userIdentity.getUserId());
+                            setLoggedInUserEmail(userIdentity.getEmail());
+                            setLoggedInUserName(userIdentity.getName());
+                            setIsUserSubscribed(userIdentity.isSubscribed());
+                            if (!userIdentity.isSubscribed()) {
+                                setActiveSubscriptionProcessor(null);
+                            }
+                            getAppCMSAndroid(tryCount + 1);
                         }
-                        getAppCMSAndroid(tryCount + 1);
                     } catch (Exception e) {
-                        Log.e(TAG, "Error refreshing identity while attempting to retrieving AppCMS Android data: ");
+                        Log.e(TAG, "Error refreshing identity while attempting to retrieving AppCMS Android data: " +
+                            e.getMessage());
                         launchErrorActivity(platformType);
                     }
                 });
