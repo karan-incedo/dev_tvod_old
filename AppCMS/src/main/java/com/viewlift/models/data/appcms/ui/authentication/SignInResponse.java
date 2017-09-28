@@ -29,7 +29,7 @@ public class SignInResponse {
 
     @SerializedName("error")
     @Expose
-    String error;
+    SigninError error;
 
     @SerializedName("userId")
     @Expose
@@ -79,11 +79,11 @@ public class SignInResponse {
         this.name = name;
     }
 
-    public String getError() {
+    public SigninError getError() {
         return error;
     }
 
-    public void setError(String error) {
+    public void setError(SigninError error) {
         this.error = error;
     }
 
