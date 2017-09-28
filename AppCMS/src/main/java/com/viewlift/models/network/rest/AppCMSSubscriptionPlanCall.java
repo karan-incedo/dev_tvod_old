@@ -190,7 +190,7 @@ public class AppCMSSubscriptionPlanCall {
                                                    @NonNull Response<AppCMSSubscriptionPlanResult> response) {
                                 try {
                                     String request = gson.toJson(response.raw().request().body(), SubscriptionRequest.class);
-                                    Log.d(TAG, "Request: " + response.raw().request().body().toString());
+                                    Log.d(TAG, "Request: " + request);
                                     Log.d(TAG, "Response code: " + response.code());
                                     String responseValue = gson.toJson(response.body(), AppCMSSubscriptionPlanResult.class);
                                     Log.d(TAG, "Response: " + responseValue);
