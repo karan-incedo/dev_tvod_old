@@ -1329,41 +1329,52 @@ public class TVViewCreator {
                                 }
 
                             }, 300);
-                        });
+                            imageView.setClickable(false);
 
+                            new Handler().postDelayed(() -> {
+                                imageView.setClickable(true);
+                            }, 3000);
+
+                        });
+                        final boolean[] clickable = {true};
                         imageView.setOnKeyListener((view, i, keyEvent) -> {
                             switch (keyEvent.getAction()) {
                                 case KeyEvent.ACTION_DOWN:
                                     switch (keyEvent.getKeyCode()) {
                                         case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                                            appCMSPresenter.showLoadingDialog(true);
 
-                                            if (moduleAPI.getContentData() != null &&
-                                                    moduleAPI.getContentData().size() > 0 &&
-                                                    moduleAPI.getContentData().get(0) != null &&
-                                                    moduleAPI.getContentData().get(0).getGist() != null &&
-                                                    moduleAPI.getContentData().get(0).getGist().getId() != null &&
-                                                    moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
+                                            if (clickable[0]) {
+                                                appCMSPresenter.showLoadingDialog(true);
 
-                                                String filmId = moduleAPI.getContentData().get(0).getGist().getId();
-                                                String permaLink = moduleAPI.getContentData().get(0).getGist().getPermalink();
-                                                String title = moduleAPI.getContentData().get(0).getGist().getTitle();
+                                                if (moduleAPI.getContentData() != null &&
+                                                        moduleAPI.getContentData().size() > 0 &&
+                                                        moduleAPI.getContentData().get(0) != null &&
+                                                        moduleAPI.getContentData().get(0).getGist() != null &&
+                                                        moduleAPI.getContentData().get(0).getGist().getId() != null &&
+                                                        moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
 
-                                                if (!appCMSPresenter.launchTVVideoPlayer(filmId, permaLink, title, moduleAPI.getContentData().get(0))) {
-                                                    appCMSPresenter.showLoadingDialog(false);
-                                                    Log.e(TAG, "Could not launch play action: " +
-                                                            " filmId: " +
-                                                            filmId +
-                                                            " permaLink: " +
-                                                            permaLink +
-                                                            " title: " +
-                                                            title);
+                                                    String filmId = moduleAPI.getContentData().get(0).getGist().getId();
+                                                    String permaLink = moduleAPI.getContentData().get(0).getGist().getPermalink();
+                                                    String title = moduleAPI.getContentData().get(0).getGist().getTitle();
+
+                                                    if (!appCMSPresenter.launchTVVideoPlayer(filmId, permaLink, title, moduleAPI.getContentData().get(0))) {
+                                                        appCMSPresenter.showLoadingDialog(false);
+                                                        Log.e(TAG, "Could not launch play action: " +
+                                                                " filmId: " +
+                                                                filmId +
+                                                                " permaLink: " +
+                                                                permaLink +
+                                                                " title: " +
+                                                                title);
+                                                    }
+                                                    break;
                                                 }
-                                                break;
                                             }
                                     }
                                     break;
                             }
+                            clickable[0] = false;
+                            new android.os.Handler().postDelayed(() -> clickable[0] = true, 3000);
                             return false;
                         });
 
