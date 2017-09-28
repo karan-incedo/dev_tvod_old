@@ -5,7 +5,7 @@ def final packageName = 'com.viewlift.hoichoi'
 def final customApplicationId = 'Hoichoi'
 def final hostName = "www.hoichoi.tv"
 
-def final appVersionName = "2.0.43"
+def final appVersionName = "2.0.46"
 
 buildscript {
     repositories {
@@ -35,7 +35,7 @@ android {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 23
-        versionCode 75
+        versionCode 78
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 23

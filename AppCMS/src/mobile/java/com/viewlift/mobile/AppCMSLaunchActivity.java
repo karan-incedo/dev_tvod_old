@@ -33,6 +33,8 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     private boolean appStartWithNetworkConnected;
     private boolean forceReloadFromNetwork;
 
+    private AppCMSPresenterComponent appCMSPresenterComponent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,13 +44,9 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
 
         Log.d(TAG, "Launching application from main.json");
         Log.d(TAG, "Search query (optional): " + searchQuery);
-        AppCMSPresenterComponent appCMSPresenterComponent =
+        appCMSPresenterComponent =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
-        appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
-                getString(R.string.app_cms_app_name),
-                searchQuery,
-                AppCMSPresenter.PlatformType.ANDROID,
-                forceReloadFromNetwork);
+
         if (!BaseView.isTablet(this)) {
             appCMSPresenterComponent.appCMSPresenter().restrictPortraitOnly();
         }
@@ -147,6 +145,14 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         if (appStartWithNetworkConnected) {
             registerReceiver(networkConnectedReceiver,
                     new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        }
+
+        if (appCMSPresenterComponent != null) {
+            appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
+                    getString(R.string.app_cms_app_name),
+                    searchQuery,
+                    AppCMSPresenter.PlatformType.ANDROID,
+                    forceReloadFromNetwork);
         }
     }
 
