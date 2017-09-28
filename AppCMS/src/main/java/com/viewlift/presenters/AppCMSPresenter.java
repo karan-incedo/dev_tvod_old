@@ -5889,6 +5889,9 @@ public class AppCMSPresenter {
                             try {
                                 dialog.dismiss();
                                 navigateToSubscriptionPlansPage(null, null);
+                                if (onCloseAction != null) {
+                                    onCloseAction.call();
+                                }
                             } catch (Exception e) {
                                 Log.e(TAG, "Error closing navigate to subscription dialog: " + e.getMessage());
                             }
