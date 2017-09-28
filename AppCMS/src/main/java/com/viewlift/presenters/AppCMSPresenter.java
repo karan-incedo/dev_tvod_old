@@ -7972,7 +7972,7 @@ public class AppCMSPresenter {
                 currentActivity.getString(R.string.app_cms_ads_api_url,
                         getPermalinkCompletePath(pagePath),
                         now.getTime(),
-                        appCMSMain.getSite()));
+                        appCMSSite.getGist().getSiteInternalName()));
         playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_bg_color_key),
                 appCMSMain.getBrand()
                         .getGeneral()
@@ -8162,7 +8162,7 @@ public class AppCMSPresenter {
             String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
                     contentDatum.getGist().getId(),
-                    appCMSMain.getSite());
+                    appCMSSite.getGist().getSiteInternalName());
             GetAppCMSVideoDetailAsyncTask.Params params =
                     new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
                             .authToken(getAuthToken(currentActivity)).build();

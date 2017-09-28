@@ -25,6 +25,10 @@ public class AppCMSMain {
     @Expose
     String pageEndpoint;
 
+    public String getInternalName() {
+        return internalName;
+    }
+
     @SerializedName("internalName")
     @Expose
     String internalName;
