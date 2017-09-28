@@ -93,6 +93,7 @@ public class AppCMSApplication extends Application {
         AppsFlyerLib.getInstance().startTracking(this, getString(R.string.app_cms_appsflyer_dev_key));
         trackInstallationEvent(this);
         UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
+        Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
     }
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {
