@@ -3910,7 +3910,9 @@ public class AppCMSPresenter {
 
                                 if (inAppPurchaseData.isAutoRenewing() && !subscriptionExpired) {
 
-                                    setActiveSubscriptionReceipt(subscribedItemList.get(i));
+                                    if (TextUtils.isEmpty(skuToPurchase) || skuToPurchase.equals(inAppPurchaseData.getProductId())) {
+                                        setActiveSubscriptionReceipt(subscribedItemList.get(i));
+                                    }
                                     Log.d(TAG, "Set active subscription: " + inAppPurchaseData.getProductId());
                                     if (!isUserLoggedIn()) {
                                         Log.d(TAG, "Making restore purchase call with token: " + inAppPurchaseData.getPurchaseToken());
