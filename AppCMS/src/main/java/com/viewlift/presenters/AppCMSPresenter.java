@@ -3961,7 +3961,7 @@ public class AppCMSPresenter {
                                                             sendSignInEmailFirebase();
                                                             setLoggedInUserName(signInResponse.getName());
                                                             setLoggedInUserEmail(signInResponse.getEmail());
-                                                            setIsUserSubscribed(true);
+                                                            setIsUserSubscribed(signInResponse.isSubscribed());
 
                                                             refreshSubscriptionData(() -> {
 
