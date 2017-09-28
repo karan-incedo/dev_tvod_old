@@ -4481,8 +4481,12 @@ public class AppCMSPresenter {
         } else if (!isNetworkConnected()) {
             showDialog(DialogType.NETWORK, null, false, null);
         } else {
-            Log.d(TAG, "Resetting page navigation to previous tab");
-            setNavItemToCurrentAction(currentActivity);
+            if (launched) {
+                Log.d(TAG, "Resetting page navigation to previous tab");
+                setNavItemToCurrentAction(currentActivity);
+            } else {
+                launchErrorActivity(PlatformType.ANDROID);
+            }
         }
         return result;
     }
