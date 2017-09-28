@@ -47,6 +47,10 @@ public class AppCMSMoreFragment extends DialogFragment {
     @BindView(R.id.app_cms_more_text)
     TextView appCMSMoreText;
 
+
+    @BindView(R.id.app_cms_more_title_text)
+    TextView appCMSMoreTitleText;
+
     private AppCMSPresenter appCMSPresenter;
 
     @Nullable
@@ -87,6 +91,13 @@ public class AppCMSMoreFragment extends DialogFragment {
                 Integer.toHexString(Color.parseColor(textColor)).substring(2),
                 args.getString(getContext().getString(R.string.app_cms_more_text_key)))));
 
+
+
+        appCMSMoreText.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                .getBrand().getGeneral().getTextColor()));
+        appCMSMoreTitleText.setText(Html.fromHtml(getContext().getString(R.string.text_with_color,
+                Integer.toHexString(Color.parseColor(textColor)).substring(2),
+                args.getString(getContext().getString(R.string.app_cms_more_title_key)))));
         appCMSPresenter.dismissOpenDialogs(null);
 
         setBgColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
