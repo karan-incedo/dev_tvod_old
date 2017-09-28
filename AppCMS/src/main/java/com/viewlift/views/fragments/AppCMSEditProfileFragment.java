@@ -161,6 +161,6 @@ public class AppCMSEditProfileFragment extends DialogFragment {
     }
 
     private boolean doesValidNameExist(String input) {
-        return Pattern.matches(regex, input) ? true : false;
+        return Pattern.matches(regex, input);
     }
 }

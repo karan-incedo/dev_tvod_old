@@ -979,7 +979,7 @@ public class AppCMSPresenter {
         boolean result = false;
         boolean isVideoOffline = false;
         try {
-            isVideoOffline = Boolean.parseBoolean(extraData[3]);
+            isVideoOffline = Boolean.parseBoolean(extraData != null && extraData.length >2 ? extraData[3]: "false");
         } catch (Exception e) {
             Log.e(TAG, e.getLocalizedMessage());
         }
