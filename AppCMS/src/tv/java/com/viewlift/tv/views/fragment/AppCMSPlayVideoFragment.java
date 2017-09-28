@@ -252,7 +252,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     }
 
     private void preparePlayer(){
-
         if (!TextUtils.isEmpty(hlsUrl)) {
             videoPlayerView.setClosedCaptionEnabled(false);
             videoPlayerView.getPlayerView().getSubtitleView()
@@ -458,7 +457,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         Log.e(TAG, "Ad Error: " + adErrorEvent.getError().getMessage());
-
+        videoPlayerView.getPlayer().setPlayWhenReady(true);
         preparePlayer();
        // videoPlayerView.getPlayer().setPlayWhenReady(true);
        // videoPlayerView.resumePlayer();

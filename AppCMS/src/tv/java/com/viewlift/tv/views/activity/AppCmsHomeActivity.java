@@ -646,10 +646,13 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         appCMSBinderStack.push(tag);
         appCMSPresenter.sendGaScreen(tag);
 
-        AppCmsSearchFragment searchFragment = new AppCmsSearchFragment();
-        getFragmentManager().beginTransaction().replace(R.id.home_placeholder , searchFragment ,
+        Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
+        if(null != fragment && fragment instanceof AppCmsSearchFragment){
+            getFragmentManager().popBackStack();
+        }
+            AppCmsSearchFragment searchFragment = new AppCmsSearchFragment();
+            getFragmentManager().beginTransaction().replace(R.id.home_placeholder , searchFragment ,
                     tag).addToBackStack(tag).commit();
-
         selectNavItem(tag);
     }
 

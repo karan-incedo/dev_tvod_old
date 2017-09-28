@@ -64,14 +64,12 @@ import rx.functions.Action1;
 public class AppCmsSearchFragment extends Fragment {
 
     private static final String TAG = AppCmsSearchFragment.class.getName();
+    private static final long DELAY = 5000;
     @Inject
     AppCMSSearchUrlData appCMSSearchUrlData;
     @Inject
     AppCMSSearchCall appCMSSearchCall;
     private String lastSearchedString = "";
-    private final int SEARCH_THRESHOLD = 3000;
-    private long mLastClickTime;
-    private boolean isCallToBeMade;
     private SearchAsyncTask searchTask;
     private  ModuleList moduleList;
     private int trayIndex = -1;
@@ -154,7 +152,7 @@ public class AppCmsSearchFragment extends Fragment {
                 if (editable.toString().trim().length() >= 3){
                     if(appCMSPresenter.isNetworkConnected()){
                         handler.removeCallbacks(searcRunnable);
-                        handler.postDelayed(searcRunnable,3000);
+                        handler.postDelayed(searcRunnable,DELAY);
                         progressBar.setVisibility(View.VISIBLE);
                     }else{
                         appCMSPresenter.searchRetryDialog(editable.toString());
