@@ -37,7 +37,7 @@
         <activity
             android:name="com.viewlift.mobile.AppCMSLaunchActivity"
             android:theme="@style/AppThemeTransparent"
-            android:launchMode="singleTask">
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
