@@ -229,8 +229,10 @@ public class AppCmsSearchFragment extends Fragment {
                 case R.id.btn_clear_history:
                     llView.setVisibility(View.INVISIBLE);
                     appCMSPresenter.clearSearchResultsSharePreference();
+                    currentString = "";
+                    previousString = "";
 
-                    if(clrbtnFlag) {
+                  /*  if(clrbtnFlag) {
                         List<String> result = null;
                         result = appCMSPresenter.getSearchResultsFromSharePreference();
                         if(result == null)
@@ -238,7 +240,7 @@ public class AppCmsSearchFragment extends Fragment {
 
                         result.add(lastSearchedString);
                         appCMSPresenter.setSearchResultsOnSharePreference(result);
-                    }
+                    }*/
 
 
                     break;
@@ -342,6 +344,7 @@ public class AppCmsSearchFragment extends Fragment {
     }
 
 
+   String previousString = "" , currentString = "";
     Action1<List<AppCMSSearchResult>> searchDataObserver = new Action1<List<AppCMSSearchResult>>() {
         @Override
         public void call(List<AppCMSSearchResult> appCMSSearchResults) {
@@ -352,10 +355,18 @@ public class AppCmsSearchFragment extends Fragment {
             if(null != appCMSSearchResults && appCMSSearchResults.size() > 0){
                 clrbtnFlag = true;
                 noSearchTextView.setVisibility(View.GONE);
-                addSearchValueInSharePref();
+
+                if(currentString.length() > 0){
+                    previousString = currentString;
+                }
+                currentString = lastSearchedString;
+
+                if(previousString.length() > 0){
+                    addSearchValueInSharePref(previousString);
+                }
                 List<String> resultForTv = appCMSPresenter.getSearchResultsFromSharePreference();
                 if (resultForTv != null && resultForTv.size() > 0) {
-                    if(resultForTv.size() > 1){
+                    if(resultForTv.size() > 0){
                         llView.setVisibility(View.VISIBLE);
                         setSearchValueOnView(resultForTv, resultForTv.size());
                     } else {
@@ -387,6 +398,15 @@ public class AppCmsSearchFragment extends Fragment {
 
     };
 
+    @Override
+    public void onPause() {
+        if(currentString.length() > 0){
+            addSearchValueInSharePref(currentString);
+        }
+        currentString = "";
+        previousString = "";
+        super.onPause();
+    }
 
     public void hideSoftKeyboard() {
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -410,23 +430,23 @@ public class AppCmsSearchFragment extends Fragment {
         }
     }
 
-    private void addSearchValueInSharePref(){
+    private void addSearchValueInSharePref(String valueToBeSaved){
         List<String> result = appCMSPresenter.getSearchResultsFromSharePreference();
         if(result == null) {
             List<String> list = new ArrayList<String>();
-            list.add(lastSearchedString);
+            list.add(valueToBeSaved);
             appCMSPresenter.setSearchResultsOnSharePreference(list);
         } else {
             if (!result.isEmpty() && result.size() == 4) {
                 result.remove(result.iterator().next());
             }
             for(int i = 0; i < result.size(); i++) {
-                if(lastSearchedString.trim().equalsIgnoreCase(result.get(i).trim())){
+                if(valueToBeSaved.trim().equalsIgnoreCase(result.get(i).trim())){
                     result.remove(result.get(i));
                     break;
                 }
             }
-            result.add(lastSearchedString);
+            result.add(valueToBeSaved);
             appCMSPresenter.setSearchResultsOnSharePreference(result);
         }
 
