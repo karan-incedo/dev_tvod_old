@@ -55,6 +55,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         long watchedTime = intent.getLongExtra(getString(R.string.video_player_watched_time_key), 0);
         long runtime = intent.getLongExtra(getString(R.string.video_player_run_time_key), 0);
         boolean playAds = intent.getBooleanExtra(getString(R.string.play_ads_key), true);
+        boolean isTrailer = intent.getBooleanExtra(getString(R.string.is_trailer_key), false);
 
 
         System.out.println("Ads Url = "+adsUrl);
@@ -71,7 +72,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                         fontColor,
                         title,
                         permaLink,
-                        false,
+                        isTrailer,
                         hlsUrl,
                         filmId,
                         adsUrl,
@@ -152,16 +153,19 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                     if(null != appCMSPlayVideoPageContainer){
                         appCMSPlayVideoPageContainer.findViewById(R.id.exo_pause).requestFocus();
                         appCMSPlayVideoPageContainer.findViewById(R.id.exo_play).requestFocus();
+                        return false;
                     }
                     break;
                 case KeyEvent.KEYCODE_MEDIA_REWIND:
                     if(null != appCMSPlayVideoPageContainer){
                         appCMSPlayVideoPageContainer.findViewById(R.id.exo_rew).requestFocus();
+                        return true;
                     }
                     break;
                 case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                     if(null != appCMSPlayVideoPageContainer){
                         appCMSPlayVideoPageContainer.findViewById(R.id.exo_ffwd).requestFocus();
+                        return true;
                     }
                     break;
             }

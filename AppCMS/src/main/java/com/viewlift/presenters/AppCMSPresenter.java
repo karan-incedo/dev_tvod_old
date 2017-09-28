@@ -256,7 +256,7 @@ public class AppCMSPresenter {
     public static final String PRESENTER_DIALOG_ACTION = "appcms_presenter_dialog_action";
     public static final String PRESENTER_CLEAR_DIALOG_ACTION = "appcms_presenter_clear_dialog_action";
     public static final String SEARCH_ACTION = "SEARCH_ACTION";
-    public static final String MY_PROFILE_ACTION = "MY_PROFILE_ACTION";
+    public static final String CLOSE_DIALOG_ACTION = "CLOSE_DIALOG_ACTION";
     public static final String ERROR_DIALOG_ACTION = "appcms_error_dialog_action";
     public static final String ACTION_LOGO_ANIMATION = "appcms_logo_animation";
     public static final String ACTION_RESET_PASSWORD = "appcms_reset_password_action";
@@ -4834,6 +4834,7 @@ public class AppCMSPresenter {
                             false,
                             deeplinkSearchQuery,
                             true,
+                            false,
                             false
                     );
                 }
@@ -6493,15 +6494,21 @@ public class AppCMSPresenter {
                                                     true,
                                                     deeplinkSearchQuery);
                                         }else if(platformType == PlatformType.TV){
-                                            navigateToTVPage(
-                                                    homePageNavItem.getPageId(),
-                                                    homePageNavItem.getTitle(),
-                                                    homePageNavItem.getUrl(),
-                                                    false,
-                                                    deeplinkSearchQuery,
-                                                    true,
-                                                    false
-                                            );
+                                            if(getLaunchType() == LaunchType.LOGIN_AND_SIGNUP){
+                                                Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
+                                                currentActivity.sendBroadcast(myProfileIntent);
+                                            }else if(getLaunchType() == LaunchType.HOME) {
+                                                navigateToTVPage(
+                                                        homePageNavItem.getPageId(),
+                                                        homePageNavItem.getTitle(),
+                                                        homePageNavItem.getUrl(),
+                                                        false,
+                                                        deeplinkSearchQuery,
+                                                        true,
+                                                        false,
+                                                        false
+                                                );
+                                            }
                                         }
                                     }
                                 }
@@ -7377,6 +7384,7 @@ public class AppCMSPresenter {
                                         true,
                                         null,
                                         false,
+                                        false,
                                         false);
                                 if (!launchSuccess) {
                                     Log.e(TAG, "Failed to launch page: "
@@ -7396,7 +7404,8 @@ public class AppCMSPresenter {
                                     boolean launchActivity,
                                     Uri searchQuery ,
                                     boolean forcedDownload,
-                                    boolean isTosPage) {
+                                    boolean isTOSDialogPage,
+                                    boolean isLoginDialogPage) {
         boolean result = false;
         if (currentActivity != null && !TextUtils.isEmpty(pageId)
                 && !(pageTitle.equalsIgnoreCase(currentActivity.getString(R.string.contact_us)))) {
@@ -7422,7 +7431,8 @@ public class AppCMSPresenter {
                     Bundle bundle = new Bundle();
                     bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
                     bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key) ,true);
-                    bundle.putBoolean(currentActivity.getString(R.string.is_tos_page_key),isTosPage);
+                    bundle.putBoolean(currentActivity.getString(R.string.is_tos_dialog_page_key),isTOSDialogPage);
+                    bundle.putBoolean(currentActivity.getString(R.string.is_login_dialog_page_key),isLoginDialogPage);
                     bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
                     Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
                     args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
@@ -7469,7 +7479,7 @@ public class AppCMSPresenter {
                                                                     historyAPI.getModules().get(0).setTitle(module.getTitle());
                                                                    /* appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);*/
                                                                    modules.set(finalI,historyAPI.getModules().get(0));
-                                                                populateTVPage(appCMSPageAPI , appCMSPageUI ,this.pageId ,this.launchActivity ,this.pageTitle,isTosPage,this.pagePath);
+                                                                populateTVPage(appCMSPageAPI , appCMSPageUI ,this.pageId ,this.launchActivity ,this.pageTitle,isTOSDialogPage,isLoginDialogPage,this.pagePath);
                                                                 return;
                                                             }
                                                         });
@@ -7479,7 +7489,7 @@ public class AppCMSPresenter {
                                         }
                                     }
                                     if(!isHistoryUpdate)
-                                    populateTVPage(appCMSPageAPI , appCMSPageUI ,this.pageId ,this.launchActivity ,this.pageTitle,isTosPage,this.pagePath);
+                                    populateTVPage(appCMSPageAPI , appCMSPageUI ,this.pageId ,this.launchActivity ,this.pageTitle,isTOSDialogPage,isLoginDialogPage,this.pagePath);
                                 } else {
                                     sendStopLoadingPageAction();
                                     setNavItemToCurrentAction(currentActivity);
@@ -7502,7 +7512,8 @@ public class AppCMSPresenter {
                             false,
                             true,
                             searchQuery,
-                            isTosPage);
+                            isTOSDialogPage,
+                            isLoginDialogPage);
                     setNavItemToCurrentAction(currentActivity);
                 } else {
                     Bundle args = getPageActivityBundle(currentActivity,
@@ -7518,7 +7529,7 @@ public class AppCMSPresenter {
                             true,
                             false,
                             searchQuery,
-                            isTosPage ? ExtraScreenType.TERM_OF_SERVICE : ExtraScreenType.NONE);
+                            isTOSDialogPage ? ExtraScreenType.TERM_OF_SERVICE : (isLoginDialogPage ? ExtraScreenType.EDIT_PROFILE : ExtraScreenType.NONE));
                     if (args != null) {
                         Intent updatePageIntent =
                                 new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
@@ -7545,7 +7556,7 @@ public class AppCMSPresenter {
 
 
     private void populateTVPage(AppCMSPageAPI appCMSPageAPI , AppCMSPageUI appCMSPageUI, String pageId , boolean launchActivity ,
-                                String pageTitle , boolean isTosPage , String pagePath) {
+                                String pageTitle , boolean isTosPage , boolean isLoginPage, String pagePath) {
         cancelInternalEvents();
         pushActionInternalEvents(pageId
                 + BaseView.isLandscape(currentActivity));
@@ -7562,7 +7573,8 @@ public class AppCMSPresenter {
                     false,
                     false,
                     Uri.EMPTY,
-                    isTosPage);
+                    isTosPage,
+                    isLoginPage);
             setNavItemToCurrentAction(currentActivity);
 
         } else {
@@ -7579,7 +7591,7 @@ public class AppCMSPresenter {
                     false,
                     false,
                     Uri.EMPTY,
-                    isTosPage ? ExtraScreenType.TERM_OF_SERVICE : ExtraScreenType.NONE);
+                    isTosPage ? ExtraScreenType.TERM_OF_SERVICE : (isLoginPage ? ExtraScreenType.EDIT_PROFILE : ExtraScreenType.NONE));
             if (args != null) {
                 Intent updatePageIntent =
                         new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
@@ -7634,7 +7646,8 @@ public class AppCMSPresenter {
                                       boolean fullscreenEnabled,
                                       boolean navbarPresent,
                                       Uri searchQuery,
-                                      boolean isTosPage) {
+                                      boolean isTosPage,
+                                      boolean isLoginPage) {
         Bundle args = getPageActivityBundle(activity,
                 appCMSPageUI,
                 appCMSPageAPI,
@@ -7648,7 +7661,7 @@ public class AppCMSPresenter {
                 navbarPresent,
                 false,
                 searchQuery,
-                isTosPage ? ExtraScreenType.TERM_OF_SERVICE : ExtraScreenType.NONE);
+                isTosPage ? ExtraScreenType.TERM_OF_SERVICE : (isLoginPage ? ExtraScreenType.EDIT_PROFILE : ExtraScreenType.NONE));
 
         try {
             if (args != null) {
@@ -7943,6 +7956,7 @@ public class AppCMSPresenter {
             playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), requestAds);
         } else {
             playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), false);
+            playVideoIntent.putExtra(currentActivity.getString(R.string.is_trailer_key), true);
         }
 
         playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_font_color_key),
@@ -7957,7 +7971,7 @@ public class AppCMSPresenter {
                 currentActivity.getString(R.string.app_cms_ads_api_url,
                         getPermalinkCompletePath(pagePath),
                         now.getTime(),
-                        appCMSMain.getSite()));
+                        appCMSSite.getGist().getSiteInternalName()));
         playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_bg_color_key),
                 appCMSMain.getBrand()
                         .getGeneral()
@@ -8116,11 +8130,6 @@ public class AppCMSPresenter {
         currentActivity.sendBroadcast(searchIntent);
     }
 
-    public void openMyProfile() {
-        Intent myProfileIntent = new Intent(MY_PROFILE_ACTION);
-        currentActivity.sendBroadcast(myProfileIntent);
-    }
-
     public boolean launchTVVideoPlayer(final String filmId,
                                        final String pagePath,
                                        final String filmTitle,
@@ -8152,7 +8161,7 @@ public class AppCMSPresenter {
             String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
                     contentDatum.getGist().getId(),
-                    appCMSMain.getSite());
+                    appCMSSite.getGist().getSiteInternalName());
             GetAppCMSVideoDetailAsyncTask.Params params =
                     new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
                             .authToken(getAuthToken(currentActivity)).build();
@@ -8188,20 +8197,20 @@ public class AppCMSPresenter {
                                                 }
                                               //  extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
                                                 if (!TextUtils.isEmpty(extraData[1])) {
-
-                                                    if (platformType == PlatformType.TV) {
-                                                        launchTVButtonSelectedAction(pagePath,
-                                                                action,
-                                                                filmTitle,
-                                                                extraData,
-                                                                false,
-                                                                appCMSVideoDetail.getRecords().get(0));
-                                                    }
-
+                                                    launchTVButtonSelectedAction(pagePath,
+                                                            action,
+                                                            filmTitle,
+                                                            extraData,
+                                                            false,
+                                                            appCMSVideoDetail.getRecords().get(0));
                                                 }
                                             }
                                         }
                                     });
+                        } else {
+                            openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
+                                    currentActivity.getString(R.string.app_name)),
+                                    currentActivity.getString(R.string.app_connectivity_dialog_title));
                         }
 
                     }).execute(params);
@@ -8264,7 +8273,7 @@ public class AppCMSPresenter {
     }
 
     public enum LaunchType {
-        SUBSCRIBE, LOGIN_AND_SIGNUP
+        SUBSCRIBE, LOGIN_AND_SIGNUP,HOME
     }
 
     public enum PlatformType {
@@ -8567,6 +8576,24 @@ public class AppCMSPresenter {
         boolean closeLauncher;
         int currentlyPlayingIndex;
         List<String> relateVideoIds;
+    }
+
+    public NavigationUser getLoginNavigation(){
+        for(NavigationUser navigationUser : getNavigation().getNavigationUser()){
+            if(!isUserLoggedIn(currentActivity) && navigationUser.getUrl().contains(currentActivity.getString(R.string.app_cms_action_login_key))){
+                return navigationUser;
+            }
+        }
+        return null;
+    }
+
+    public NavigationUser getSignUpNavigation(){
+        for(NavigationUser navigationUser : getNavigation().getNavigationUser()){
+            if(!isUserLoggedIn(currentActivity) && navigationUser.getTitle().equalsIgnoreCase(currentActivity.getString(R.string.app_cms_signup))){
+                return navigationUser;
+            }
+        }
+        return null;
     }
 
 }

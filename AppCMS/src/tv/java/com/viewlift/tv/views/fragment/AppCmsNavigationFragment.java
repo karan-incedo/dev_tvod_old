@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
@@ -27,8 +28,6 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.views.binders.AppCMSBinder;
-
-import com.viewlift.R;
 
 import java.util.List;
 
@@ -226,6 +225,7 @@ public class AppCmsNavigationFragment extends Fragment {
                                             false,
                                             Uri.EMPTY,
                                             false,
+                                            false,
                                             false
                                     );
                                 }
@@ -235,6 +235,7 @@ public class AppCmsNavigationFragment extends Fragment {
                                     false,
                                     null,
                                     true,
+                                    false,
                                     false)) {
                             }
                         }
@@ -246,12 +247,12 @@ public class AppCmsNavigationFragment extends Fragment {
         private NavigationUser getNavigationUser(){
              List<NavigationUser> navigationUserList = navigation.getNavigationUser();
                 for(NavigationUser navigationUser : navigationUserList){
-                    if(appCmsPresenter.isUserLoggedIn(mContext) && navigationUser.getAccessLevels().getLoggedIn()){
-                        return navigationUser;
-                    }else if(!appCmsPresenter.isUserLoggedIn(mContext) && navigationUser.getAccessLevels().getLoggedOut()){
-                        return navigationUser;
-                    }
+                if(appCmsPresenter.isUserLoggedIn(mContext) && navigationUser.getAccessLevels().getLoggedIn()){
+                    return navigationUser;
+                }else if(!appCmsPresenter.isUserLoggedIn(mContext) && navigationUser.getAccessLevels().getLoggedOut()){
+                    return navigationUser;
                 }
+            }
              return null;
         }
         @Override
