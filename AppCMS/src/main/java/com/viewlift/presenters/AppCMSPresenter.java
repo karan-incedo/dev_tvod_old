@@ -2119,7 +2119,6 @@ public class AppCMSPresenter {
                 try {
                     InAppPurchaseData inAppPurchaseData = gson.fromJson(getRestoreSubscriptionReceipt(),
                             InAppPurchaseData.class);
-                    setActiveSubscriptionSku(inAppPurchaseData.getProductId());
                     skuToPurchase = inAppPurchaseData.getProductId();
                     finalizeSignupAfterSubscription(getRestoreSubscriptionReceipt());
                 } catch (Exception e) {
@@ -4016,7 +4015,7 @@ public class AppCMSPresenter {
 
                                         Log.d(TAG, "Subscription request: " + gson.toJson(subscriptionRequest, SubscriptionRequest.class));
 
-                                        int subscriptionCallType = R.string.app_cms_subscription_plan_update_key;
+                                        int subscriptionCallType = R.string.app_cms_subscription_plan_create_key;
 
                                         appCMSSubscriptionPlanCall.call(
                                                 currentActivity.getString(R.string.app_cms_register_subscription_api_url,
