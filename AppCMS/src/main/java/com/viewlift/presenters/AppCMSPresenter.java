@@ -3945,6 +3945,11 @@ public class AppCMSPresenter {
                                                             setLoggedInUserName(signInResponse.getName());
                                                             setLoggedInUserEmail(signInResponse.getEmail());
                                                             setIsUserSubscribed(true);
+
+                                                            refreshSubscriptionData(() -> {
+
+                                                            }, true);
+
                                                             if (showErrorDialogIfSubscriptionExists) {
                                                                 Log.d(TAG, "Launching home page");
                                                                 sendCloseOthersAction(null, true);
