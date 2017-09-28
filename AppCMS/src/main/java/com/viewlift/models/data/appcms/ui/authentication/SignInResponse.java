@@ -47,6 +47,9 @@ public class SignInResponse {
     @Expose
     String message;
 
+    boolean errorResponseSet = false;
+    ErrorResponse errorResponse;
+
     public String getAuthorizationToken() {
         return authorizationToken;
     }
@@ -117,5 +120,22 @@ public class SignInResponse {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public ErrorResponse getErrorResponse() {
+        return errorResponse;
+    }
+
+    public void setErrorResponse(ErrorResponse errorResponse) {
+        this.errorResponseSet = true;
+        this.errorResponse = errorResponse;
+    }
+
+    public void setErrorResponseSet(boolean errorResponseSet) {
+        this.errorResponseSet = errorResponseSet;
+    }
+
+    public boolean isErrorResponseSet() {
+        return errorResponseSet;
     }
 }

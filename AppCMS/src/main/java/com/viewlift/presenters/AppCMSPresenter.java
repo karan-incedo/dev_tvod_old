@@ -119,6 +119,7 @@ import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
+import com.viewlift.models.data.appcms.ui.authentication.SignInResponse;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentityPassword;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
@@ -1993,6 +1994,8 @@ public class AppCMSPresenter {
 
     public void initiateItemPurchase() {
         Log.d(TAG, "Initiating item purchase");
+
+        Log.d(TAG, "checkForExistingSubscription() - 1997");
         checkForExistingSubscription(false);
 
         if (useCCAvenue()) {
@@ -3927,7 +3930,7 @@ public class AppCMSPresenter {
                                         }
                                     }
                                     Log.d(TAG, "Set active subscription: " + inAppPurchaseData.getProductId());
-                                    if (!isUserLoggedIn()) {
+
                                         Log.d(TAG, "Making restore purchase call with token: " + inAppPurchaseData.getPurchaseToken());
                                         String restorePurchaseUrl = currentContext.getString(R.string.app_cms_restore_purchase_api_url,
                                                 appCMSMain.getApiBaseUrl(),
@@ -3935,13 +3938,14 @@ public class AppCMSPresenter {
                                         try {
                                             final String restoreSubscriptionReceipt = subscribedItemList.get(i);
                                             appCMSRestorePurchaseCall.call(apikey,
-                                                    restorePurchaseUrl,
-                                                    inAppPurchaseData.getPurchaseToken(),
-                                                    appCMSSite.getGist().getSiteInternalName(),
-                                                    (signInResponse) -> {
-                                                        Log.d(TAG, "Retrieved restore purchase call");
-                                                        if (signInResponse == null || !TextUtils.isEmpty(signInResponse.getMessage())) {
-                                                            Log.d(TAG, "SignIn response is null or error response is non empty");
+                                                restorePurchaseUrl,
+                                                inAppPurchaseData.getPurchaseToken(),
+                                                appCMSSite.getGist().getSiteInternalName(),
+                                                (signInResponse) -> {
+                                                    Log.d(TAG, "Retrieved restore purchase call");
+                                                    if (signInResponse == null || !TextUtils.isEmpty(signInResponse.getMessage())) {
+                                                        Log.d(TAG, "SignIn response is null or error response is non empty");
+                                                        if (!isUserLoggedIn()) {
                                                             if (signInResponse != null) {
                                                                 Log.e(TAG, "Received restore purchase call error: " + signInResponse.getMessage());
                                                             }
@@ -3953,8 +3957,35 @@ public class AppCMSPresenter {
                                                                             navigateToLoginPage();
                                                                         });
                                                             }
+                                                        }
+                                                    } else {
+                                                        Log.d(TAG, "Received a valid signin response");
+                                                        if (isUserLoggedIn()) {
+                                                            Log.d(TAG, "User is logged in");
+                                                            if (!TextUtils.isEmpty(getLoggedInUser()) &&
+                                                                    !TextUtils.isEmpty(signInResponse.getUserId()) &&
+                                                                    signInResponse.getUserId().equals(getLoggedInUser())) {
+                                                                Log.d(TAG, "User ID: " + signInResponse.getUserId());
+                                                                setRefreshToken(signInResponse.getRefreshToken());
+                                                                setAuthToken(signInResponse.getAuthorizationToken());
+                                                                setLoggedInUser(signInResponse.getUserId());
+                                                                setLoggedInUserName(signInResponse.getName());
+                                                                setLoggedInUserEmail(signInResponse.getEmail());
+                                                                setIsUserSubscribed(signInResponse.isSubscribed());
+
+                                                                refreshSubscriptionData(() -> {
+
+                                                                }, true);
+                                                            } else if (showErrorDialogIfSubscriptionExists) {
+                                                                showEntitlementDialog(DialogType.EXISTING_SUBSCRIPTION,
+                                                                        () -> {
+                                                                            setRestoreSubscriptionReceipt(restoreSubscriptionReceipt);
+                                                                            sendCloseOthersAction(null, true);
+                                                                            navigateToLoginPage();
+                                                                        });
+                                                            }
                                                         } else {
-                                                            Log.d(TAG, "Received a valid signin response");
+                                                            Log.d(TAG, "User is logged out");
                                                             setRefreshToken(signInResponse.getRefreshToken());
                                                             setAuthToken(signInResponse.getAuthorizationToken());
                                                             setLoggedInUser(signInResponse.getUserId());
@@ -3992,47 +4023,17 @@ public class AppCMSPresenter {
                                                                 }
                                                             }
                                                         }
+                                                    }
+                                                });
+                                    } catch (Exception e) {
+                                        Log.d(TAG, "Error making restore purchase request: " + e.getMessage());
+                                        if (showErrorDialogIfSubscriptionExists) {
+                                            showEntitlementDialog(DialogType.EXISTING_SUBSCRIPTION,
+                                                    () -> {
+                                                        sendCloseOthersAction(null, true);
+                                                        navigateToLoginPage();
                                                     });
-                                        } catch (Exception e) {
-                                            Log.d(TAG, "Error making restore purchase request: " + e.getMessage());
-                                            if (showErrorDialogIfSubscriptionExists) {
-                                                showEntitlementDialog(DialogType.EXISTING_SUBSCRIPTION,
-                                                        () -> {
-                                                            sendCloseOthersAction(null, true);
-                                                            navigateToLoginPage();
-                                                        });
-                                            }
                                         }
-                                    } else {
-                                        Log.d(TAG, "Updating subscription data");
-                                        SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
-                                        subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
-                                        subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
-                                        subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
-                                        subscriptionRequest.setUserId(getLoggedInUser());
-                                        subscriptionRequest.setPlanIdentifier(inAppPurchaseData.getProductId());
-                                        subscriptionRequest.setReceipt(getActiveSubscriptionReceipt());
-
-                                        Log.d(TAG, "Subscription request: " + gson.toJson(subscriptionRequest, SubscriptionRequest.class));
-
-                                        int subscriptionCallType = R.string.app_cms_subscription_plan_create_key;
-
-                                        appCMSSubscriptionPlanCall.call(
-                                                currentActivity.getString(R.string.app_cms_register_subscription_api_url,
-                                                        appCMSMain.getApiBaseUrl(),
-                                                        appCMSSite.getGist().getSiteInternalName(),
-                                                        currentActivity.getString(R.string.app_cms_subscription_platform_key)),
-                                                subscriptionCallType,
-                                                subscriptionRequest,
-                                                apikey,
-                                                getAuthToken(),
-                                                (result1) -> {},
-                                                (result2) -> {
-                                                    refreshSubscriptionData(() -> {
-
-                                                    }, true);
-                                                },
-                                                (result3) -> {});
                                     }
                                 } else {
                                     setActiveSubscriptionReceipt(null);
@@ -5020,6 +5021,7 @@ public class AppCMSPresenter {
                             setIsUserSubscribed(facebookLoginResponse.isSubscribed());
                         }
 
+                        Log.d(TAG, "checkForExistingSubscription() - 5016");
                         checkForExistingSubscription(false);
 
                         if (launchType == LaunchType.SUBSCRIBE) {
@@ -5120,6 +5122,7 @@ public class AppCMSPresenter {
                                 setIsUserSubscribed(googleLoginResponse.isSubscribed());
                             }
 
+                            Log.d(TAG, "checkForExistingSubscription() - 5117");
                             checkForExistingSubscription(false);
 
                             if (launchType == LaunchType.SUBSCRIBE) {
@@ -7351,13 +7354,16 @@ public class AppCMSPresenter {
 
                             }
                             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
-                        } else if (!TextUtils.isEmpty(signInResponse.getMessage())) {
-                            showDialog(DialogType.SIGNIN, signInResponse.getMessage(), false, null);
+                        } else if (!TextUtils.isEmpty(signInResponse.getMessage()) || signInResponse.isErrorResponseSet()) {
+                            showDialog(DialogType.SIGNIN, signInResponse.getErrorResponse().getError(), false, null);
                             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                         } else {
+                            String signResponseValue = gson.toJson(signInResponse, SignInResponse.class);
+                            Log.d(TAG, "Sign in response value: " + signResponseValue);
                             setRefreshToken(signInResponse.getRefreshToken());
                             setAuthToken(signInResponse.getAuthorizationToken());
                             setLoggedInUser(signInResponse.getUserId());
+                            Log.d(TAG, "Sign in user ID response: " + signInResponse.getUserId());
                             sendSignInEmailFirebase();
                             setLoggedInUserName(signInResponse.getName());
                             setLoggedInUserEmail(signInResponse.getEmail());
@@ -7368,6 +7374,7 @@ public class AppCMSPresenter {
                                 setIsUserSubscribed(signInResponse.isSubscribed());
                             }
 
+                            Log.d(TAG, "checkForExistingSubscription() - 7366");
                             checkForExistingSubscription(false);
 
                             Log.d(TAG, "Initiating user login - user subscribed: " + getIsUserSubscribed());
