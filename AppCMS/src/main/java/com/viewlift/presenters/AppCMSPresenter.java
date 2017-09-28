@@ -294,6 +294,7 @@ public class AppCMSPresenter {
     private static final String ACTIVE_SUBSCRIPTION_STATUS = "active_subscription_status_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PRICE_NAME = "active_subscription_plan_price_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PROCESSOR_NAME = "active_subscription_payment_processor_key";
+    private static final String RESTORE_SUBSCRIPTION_RECEIPT = "restore_subscription_payment_process_key";
     private static final String ACTIVE_SUBSCRIPTION_COUNTRY_CODE = "active_subscription_country_code_key";
     private static final String IS_USER_SUBSCRIBED = "is_user_subscribed_pref_key";
     private static final String AUTO_PLAY_ENABLED_PREF_NAME = "autoplay_enabled_pref_key";
@@ -2038,7 +2039,7 @@ public class AppCMSPresenter {
         } else {
             if (currentActivity != null &&
                     inAppBillingService != null &&
-                    TextUtils.isEmpty(getActiveSubscriptionReceipt())) {
+                    TextUtils.isEmpty(getRestoreSubscriptionReceipt())) {
                 Log.d(TAG, "Initiating Google Play Services purchase");
                 try {
                     Bundle activeSubs = null;
@@ -2112,10 +2113,10 @@ public class AppCMSPresenter {
                             + skuToPurchase
                             + e.getMessage());
                 }
-            } else if (!TextUtils.isEmpty(getActiveSubscriptionReceipt())) {
+            } else if (!TextUtils.isEmpty(getRestoreSubscriptionReceipt())) {
                 Log.d(TAG, "Finalizing subscription after signup - existing subscription: " +
-                    getActiveSubscriptionReceipt());
-                finalizeSignupAfterSubscription(getActiveSubscriptionReceipt());
+                        getRestoreSubscriptionReceipt());
+                finalizeSignupAfterSubscription(getRestoreSubscriptionReceipt());
             } else {
                 Log.e(TAG, "InAppBillingService: " + inAppBillingService);
             }
@@ -3909,9 +3910,14 @@ public class AppCMSPresenter {
                                 setExistingGooglePlaySubscriptionId(inAppPurchaseData.getProductId());
 
                                 if (inAppPurchaseData.isAutoRenewing() && !subscriptionExpired) {
-
                                     if (TextUtils.isEmpty(skuToPurchase) || skuToPurchase.equals(inAppPurchaseData.getProductId())) {
                                         setActiveSubscriptionReceipt(subscribedItemList.get(i));
+                                        Log.d(TAG, "Restoring purchase for SKU: " + skuToPurchase);
+                                    } else {
+                                        setActiveSubscriptionReceipt(null);
+                                        if (!TextUtils.isEmpty(skuToPurchase)) {
+                                            Log.d(TAG, "Making purchase for another subscription: " + skuToPurchase);
+                                        }
                                     }
                                     Log.d(TAG, "Set active subscription: " + inAppPurchaseData.getProductId());
                                     if (!isUserLoggedIn()) {
@@ -3920,6 +3926,7 @@ public class AppCMSPresenter {
                                                 appCMSMain.getApiBaseUrl(),
                                                 appCMSSite.getGist().getSiteInternalName());
                                         try {
+                                            final String restoreSubscriptionReceipt = subscribedItemList.get(i);
                                             appCMSRestorePurchaseCall.call(apikey,
                                                     restorePurchaseUrl,
                                                     inAppPurchaseData.getPurchaseToken(),
@@ -3934,6 +3941,7 @@ public class AppCMSPresenter {
                                                             if (showErrorDialogIfSubscriptionExists) {
                                                                 showEntitlementDialog(DialogType.EXISTING_SUBSCRIPTION,
                                                                         () -> {
+                                                                            setRestoreSubscriptionReceipt(restoreSubscriptionReceipt);
                                                                             sendCloseOthersAction(null, true);
                                                                             navigateToLoginPage();
                                                                         });
@@ -4011,7 +4019,11 @@ public class AppCMSPresenter {
                                                 apikey,
                                                 getAuthToken(),
                                                 (result1) -> {},
-                                                (result2) -> {},
+                                                (result2) -> {
+                                                    refreshSubscriptionData(() -> {
+
+                                                    }, true);
+                                                },
                                                 (result3) -> {});
                                     }
                                 } else {
@@ -5421,14 +5433,6 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public String getActiveSubscriptionReceipt() {
-        if (currentContext != null) {
-            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_SUBSCRIPTION_RECEIPT, 0);
-            return sharedPrefs.getString(ACTIVE_SUBSCRIPTION_RECEIPT, null);
-        }
-        return null;
-    }
-
     public boolean setActiveSubscriptionProcessor(String paymentProcessor) {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_SUBSCRIPTION_PROCESSOR_NAME, 0);
@@ -5437,10 +5441,36 @@ public class AppCMSPresenter {
         return false;
     }
 
+
+
     public String getActiveSubscriptionProcessor() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_SUBSCRIPTION_PROCESSOR_NAME, 0);
             return sharedPrefs.getString(ACTIVE_SUBSCRIPTION_PROCESSOR_NAME, null);
+        }
+        return null;
+    }
+
+    public String getRestoreSubscriptionReceipt() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(RESTORE_SUBSCRIPTION_RECEIPT, 0);
+            return sharedPrefs.getString(RESTORE_SUBSCRIPTION_RECEIPT, null);
+        }
+        return null;
+    }
+
+    public boolean setRestoreSubscriptionReceipt(String subscriptionToken) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(RESTORE_SUBSCRIPTION_RECEIPT, 0);
+            return sharedPrefs.edit().putString(RESTORE_SUBSCRIPTION_RECEIPT, subscriptionToken).commit();
+        }
+        return false;
+    }
+
+    public String getActiveSubscriptionReceipt() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_SUBSCRIPTION_RECEIPT, 0);
+            return sharedPrefs.getString(ACTIVE_SUBSCRIPTION_RECEIPT, null);
         }
         return null;
     }
@@ -6611,6 +6641,7 @@ public class AppCMSPresenter {
 
     public void finalizeSignupAfterSubscription(String receiptData) {
         setActiveSubscriptionReceipt(receiptData);
+        setRestoreSubscriptionReceipt(null);
 
         SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
         subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
