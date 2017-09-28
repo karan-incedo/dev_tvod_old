@@ -3,11 +3,8 @@ package com.viewlift.models.network.rest;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
-import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.beacon.AppCMSBeaconRequest;
-import com.viewlift.models.data.appcms.beacon.BeaconRequest;
 import com.viewlift.models.data.appcms.beacon.BeaconResponse;
-import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 
 import java.util.HashMap;
 import java.util.Map;

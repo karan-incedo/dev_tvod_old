@@ -500,6 +500,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         resume();
         appCMSPresenter.setCurrentActivity(this);
         Log.d(TAG, "onResume()");
+        appCMSPresenter.checkForExistingSubscription(false);
     }
 
     @Override
@@ -1084,7 +1085,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!appbarPresent) {
             appBarLayout.setVisibility(View.GONE);
         } else {
-            Toolbar toolbar = findViewById(R.id.app_cms_toolbar);
+            Toolbar toolbar = (Toolbar) findViewById(R.id.app_cms_toolbar);
             try {
                 toolbar.setTitleTextColor(Color.parseColor(appCMSMain
                         .getBrand()

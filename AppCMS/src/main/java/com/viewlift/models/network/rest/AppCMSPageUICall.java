@@ -50,41 +50,47 @@ public class AppCMSPageUICall {
     public AppCMSPageUI call(String url, long timeStamp) throws IOException {
         String filename = getResourceFilename(url);
         AppCMSPageUI appCMSPageUI = null;
+
+        boolean loadedFromFile = false;
         try {
             appCMSPageUI = readPageFromFile(filename);
+
+            if (appCMSPageUI == null) {
+                appCMSPageUI = retrieveDataFromNetwork(filename, url);
+            } else {
+                loadedFromFile = true;
+            }
         } catch (Exception e) {
             Log.e(TAG, "Error reading file AppCMS UI JSON file: " +
                     e.getMessage());
-            try {
-                appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(url).execute().body());
-            } catch (Exception e2) {
-                Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
-                        e2.getMessage());
-            }
+            appCMSPageUI = retrieveDataFromNetwork(filename, url);
         }
-        try {
-            appCMSPageUIRest.get(url).enqueue(new Callback<AppCMSPageUI>() {
-                @Override
-                public void onResponse(Call<AppCMSPageUI> call, Response<AppCMSPageUI> response) {
-                    try {
-                        if (response.body() != null) {
-                            writePageToFile(filename, response.body());
-                        }
-                    } catch (IOException e) {
-                        Log.e(TAG, "Could not write AppCMS UI JSON file: " + e.getMessage());
-                    }
-                }
 
-                @Override
-                public void onFailure(Call<AppCMSPageUI> call, Throwable t) {
-                    Log.e(TAG, "Could not read AppCMS UI JSON file from network: " +
-                        t.getMessage());
-                }
-            });
-        } catch (JsonSyntaxException e) {
-            Log.w(TAG, "DialogType trying to parse input JSON " + url + ": " + e.toString());
-        } catch (Exception e) {
-            Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
+        if (loadedFromFile) {
+            try {
+                appCMSPageUIRest.get(url).enqueue(new Callback<AppCMSPageUI>() {
+                    @Override
+                    public void onResponse(Call<AppCMSPageUI> call, Response<AppCMSPageUI> response) {
+                        try {
+                            if (response.body() != null) {
+                                writePageToFile(filename, response.body());
+                            }
+                        } catch (IOException e) {
+                            Log.e(TAG, "Could not write AppCMS UI JSON file: " + e.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<AppCMSPageUI> call, Throwable t) {
+                        Log.e(TAG, "Could not read AppCMS UI JSON file from network: " +
+                                t.getMessage());
+                    }
+                });
+            } catch (JsonSyntaxException e) {
+                Log.w(TAG, "DialogType trying to parse input JSON " + url + ": " + e.toString());
+            } catch (Exception e) {
+                Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
+            }
         }
         return appCMSPageUI;
     }
@@ -162,5 +168,15 @@ public class AppCMSPageUICall {
             return url.substring(startIndex+1, endIndex);
         }
         return url;
+    }
+
+    private AppCMSPageUI retrieveDataFromNetwork(String filename, String url) {
+        try {
+            return writePageToFile(filename, appCMSPageUIRest.get(url).execute().body());
+        } catch (Exception e) {
+            Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
+                    e.getMessage());
+        }
+        return null;
     }
 }
