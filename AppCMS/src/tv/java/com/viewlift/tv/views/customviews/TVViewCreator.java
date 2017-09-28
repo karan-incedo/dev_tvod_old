@@ -544,6 +544,7 @@ public class TVViewCreator {
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink() != null &&
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId() != null &&
                                 moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
+                            View btnWatchTrailer = componentViewResult.componentView;
                             componentViewResult.componentView.setFocusable(true);
                             componentViewResult.componentView.setTag("WATCH_TRAILER");
                             componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
@@ -551,30 +552,32 @@ public class TVViewCreator {
                                 public void onClick(View v) {
 
                                     appCMSPresenter.showLoadingDialog(true);
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            String[] extraData = new String[4];
-                                            extraData[0] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink();
-                                            extraData[1] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls();
-                                            extraData[2] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId();
-                                            if (!appCMSPresenter.launchTVButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
-                                                    component.getAction(),
-                                                    moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                                    extraData,
-                                                    false,
-                                                    moduleAPI.getContentData().get(0))) {
-                                                appCMSPresenter.showLoadingDialog(false);
-                                                Log.e(TAG, "Could not launch action: " +
-                                                        " permalink: " +
-                                                        moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                                        " action: " +
-                                                        component.getAction() +
-                                                        " hls URL: " +
-                                                        moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
-                                            }
-                                        }
-                                    }, 300);
+                                    String[] extraData = new String[4];
+                                    extraData[0] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink();
+                                    extraData[1] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls();
+                                    extraData[2] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId();
+                                    if (!appCMSPresenter.launchTVButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
+                                            component.getAction(),
+                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                            extraData,
+                                            false,
+                                            moduleAPI.getContentData().get(0))) {
+                                        appCMSPresenter.showLoadingDialog(false);
+                                        Log.e(TAG, "Could not launch action: " +
+                                                " permalink: " +
+                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
+                                                " action: " +
+                                                component.getAction() +
+                                                " hls URL: " +
+                                                moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
+                                    }
+
+                                    // Disable the button for 1 second and enable it back in handler
+                                    btnWatchTrailer.setClickable(false);
+
+                                    // enable the button after 1 second
+                                    new Handler().postDelayed(() ->
+                                            btnWatchTrailer.setClickable(true), 1000);
                                 }
                             });
                         } else {
@@ -1356,19 +1359,6 @@ public class TVViewCreator {
                                                             " title: " +
                                                             title);
                                                 }
-
-                                                /*if (!appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0) , -1 , null , 0)) {
-                                                    appCMSPresenter.showLoadingDialog(false);
-                                                    Log.e(TAG, "Could not launch play action: " +
-                                                            " filmId: " +
-                                                            filmId +
-                                                            " permaLink: " +
-                                                            permaLink +
-                                                            " title: " +
-                                                            title);
-                                                }*/
-
-
                                                 break;
                                             }
                                     }
