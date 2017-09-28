@@ -852,7 +852,8 @@ public class TVViewCreator {
                     case PAGE_REMOVEALL_KEY:
                         if (moduleAPI.getContentData() != null
                                 && moduleAPI.getContentData().size() > 0) {
-                            componentViewResult.componentView.setOnClickListener(v -> {
+                            Button buttonRemoveAll = (Button) componentViewResult.componentView;
+                            buttonRemoveAll.setOnClickListener(v -> {
                                 OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
                                 switch (jsonValueKeyMap.get(viewType)) {
                                     case PAGE_HISTORY_MODULE_KEY:
@@ -869,8 +870,12 @@ public class TVViewCreator {
 
                                         );
                                         newFragment.setOnPositiveButtonClicked(s ->
-                                                appCMSPresenter.clearHistory(appCMSDeleteHistoryResult ->
-                                                        onInternalEvent.sendEvent(null)
+                                                appCMSPresenter.clearHistory(
+                                                        appCMSDeleteHistoryResult -> {
+                                                            onInternalEvent.sendEvent(null);
+                                                            buttonRemoveAll.setFocusable(false);
+
+                                                        }
                                                 )
                                         );
                                         break;
@@ -889,8 +894,12 @@ public class TVViewCreator {
                                         );
                                         newFragment1.setOnPositiveButtonClicked(s ->
                                                 appCMSPresenter.clearWatchlist(
-                                                        appCMSAddToWatchlistResult ->
-                                                                onInternalEvent.sendEvent(null)));
+                                                        appCMSAddToWatchlistResult -> {
+                                                            onInternalEvent.sendEvent(null);
+                                                            buttonRemoveAll.setFocusable(false);
+                                                        }
+                                                )
+                                        );
                                         break;
 
                                     default:
