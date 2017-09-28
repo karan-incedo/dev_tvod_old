@@ -3977,11 +3977,9 @@ public class AppCMSPresenter {
 
                                                                 }, true);
                                                             } else if (showErrorDialogIfSubscriptionExists) {
-                                                                showEntitlementDialog(DialogType.EXISTING_SUBSCRIPTION,
+                                                                showEntitlementDialog(DialogType.EXISTING_SUBSCRIPTION_LOGOUT,
                                                                         () -> {
-                                                                            setRestoreSubscriptionReceipt(restoreSubscriptionReceipt);
-                                                                            sendCloseOthersAction(null, true);
-                                                                            navigateToLoginPage();
+                                                                            logout();
                                                                         });
                                                             }
                                                         } else {
@@ -5884,6 +5882,12 @@ public class AppCMSPresenter {
                 positiveButtonText = currentActivity.getString(R.string.app_cms_login_button_text);
             }
 
+            if (dialogType == DialogType.EXISTING_SUBSCRIPTION_LOGOUT) {
+                title = currentActivity.getString(R.string.app_cms_existing_subscription_title);
+                message = currentActivity.getString(R.string.app_cms_existing_subscription_logout_error_message);
+                positiveButtonText = currentActivity.getString(R.string.app_cms_signout_button_text);
+            }
+
             AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
             builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
                     Integer.toHexString(textColor).substring(2),
@@ -5966,6 +5970,14 @@ public class AppCMSPresenter {
                             }
                         });
             } else if (dialogType == DialogType.EXISTING_SUBSCRIPTION) {
+                builder.setPositiveButton(positiveButtonText,
+                        (dialog, which) -> {
+                            if (onCloseAction != null) {
+                                onCloseAction.call();
+                            }
+                            dialog.dismiss();
+                        });
+            } else if (dialogType == DialogType.EXISTING_SUBSCRIPTION_LOGOUT) {
                 builder.setPositiveButton(positiveButtonText,
                         (dialog, which) -> {
                             if (onCloseAction != null) {
@@ -9320,6 +9332,7 @@ public class AppCMSPresenter {
         LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER,
         LOGOUT_WITH_RUNNING_DOWNLOAD,
         EXISTING_SUBSCRIPTION,
+        EXISTING_SUBSCRIPTION_LOGOUT,
         DOWNLOAD_INCOMPLETE,
         CANNOT_UPGRADE_SUBSCRIPTION,
         UPGRADE_UNAVAILABLE,
