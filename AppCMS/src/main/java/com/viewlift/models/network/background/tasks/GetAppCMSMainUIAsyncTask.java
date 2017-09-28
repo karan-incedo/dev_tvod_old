@@ -34,7 +34,8 @@ public class GetAppCMSMainUIAsyncTask {
                         try {
                             return call.call(params.context,
                                     params.siteId,
-                                    0);
+                                    0,
+                                    params.forceReloadFromNetwork);
                         } catch (Exception e) {
                             Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }
@@ -49,6 +50,7 @@ public class GetAppCMSMainUIAsyncTask {
     public static class Params {
         Context context;
         String siteId;
+        boolean forceReloadFromNetwork;
 
         public static class Builder {
             Params params;
@@ -64,6 +66,11 @@ public class GetAppCMSMainUIAsyncTask {
 
             public Builder siteId(String siteId) {
                 params.siteId = siteId;
+                return this;
+            }
+
+            public Builder forceReloadFromNetwork(boolean forceReloadFromNetwork) {
+                params.forceReloadFromNetwork = forceReloadFromNetwork;
                 return this;
             }
 

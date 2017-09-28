@@ -57,7 +57,7 @@ public class AppCMSMainUICall {
     }
 
     @WorkerThread
-    public AppCMSMain call(Context context, String siteId, int tryCount) {
+    public AppCMSMain call(Context context, String siteId, int tryCount, boolean forceReloadFromNetwork) {
         Date now = new Date();
         final String appCMSMainUrl = context.getString(R.string.app_cms_main_url,
                 context.getString(R.string.app_cms_baseurl),
@@ -77,19 +77,19 @@ public class AppCMSMainUICall {
             } catch (TimeoutException e) {
                 Log.e(TAG, "Connection timed out: " + e.toString());
                 if (tryCount == 0) {
-                    return call(context, siteId, tryCount + 1);
+                    return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
                 }
                 return null;
             } catch (InterruptedException e) {
                 Log.e(TAG, "Connection interrupted: " + e.toString());
                 if (tryCount == 0) {
-                    return call(context, siteId, tryCount + 1);
+                    return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
                 }
                 return null;
             } catch (ExecutionException e) {
                 Log.e(TAG, "Execution error: " + e.toString());
                 if (tryCount == 0) {
-                    return call(context, siteId, tryCount + 1);
+                    return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
                 }
                 return null;
             } finally {
@@ -109,7 +109,9 @@ public class AppCMSMainUICall {
             if (mainInStorage != null) {
                 if (main != null && main.getOldVersion() != null) {
                     useExistingOldVersion = main.getOldVersion().equals(main.getVersion());
-                    main.setLoadFromFile(useExistingOldVersion);
+                    if (!forceReloadFromNetwork) {
+                        main.setLoadFromFile(useExistingOldVersion);
+                    }
                     main.setOldVersion(main.getVersion());
                 } else if (main == null) {
                     main = mainInStorage;
@@ -127,7 +129,7 @@ public class AppCMSMainUICall {
         }
 
         if (main == null && tryCount == 0) {
-            return call(context, siteId, tryCount + 1);
+            return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
         }
 
         return main;

@@ -20,6 +20,9 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.fragments.AppCMSErrorFragment;
 import com.viewlift.R;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Created by viewlift on 5/5/17.
  */
@@ -33,6 +36,7 @@ public class AppCMSErrorActivity extends AppCompatActivity {
 
     private ConnectivityManager connectivityManager;
     private BroadcastReceiver networkConnectedReceiver;
+    private boolean timerScheduled;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,9 +70,22 @@ public class AppCMSErrorActivity extends AppCompatActivity {
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
                 boolean isConnected = activeNetwork != null &&
                         activeNetwork.isConnectedOrConnecting();
-                if (isConnected) {
-                    Intent relaunchApp = new Intent(AppCMSErrorActivity.this, AppCMSLaunchActivity.class);
-                    startActivity(relaunchApp);
+                if (isConnected && !timerScheduled) {
+                    timerScheduled = true;
+                    new Timer().schedule(new TimerTask() {
+                                             @Override
+                                             public void run() {
+                                                 Intent relaunchApp = new Intent(AppCMSErrorActivity.this, AppCMSLaunchActivity.class);
+                                                 relaunchApp.putExtra(getString(R.string.force_reload_from_network_key), true);
+                                                 startActivity(relaunchApp);
+                                                 try {
+                                                     unregisterReceiver(networkConnectedReceiver);
+                                                 } catch (Exception e) {
+                                                     Log.e(TAG, "Failed to unregister network receiver: " + e.getMessage());
+                                                 }
+                                                 timerScheduled = false;
+                                             }
+                                         }, 500);
                 }
             }
         };

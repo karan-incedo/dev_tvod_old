@@ -12,6 +12,5 @@ import retrofit2.http.Url;
 
 public interface AppCMSPageUIRest {
     @GET
-    @Headers("Cache-Control: no-cache, no-store")
     Call<AppCMSPageUI> get(@Url String url);
 }

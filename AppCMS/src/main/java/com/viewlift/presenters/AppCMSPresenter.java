@@ -1986,6 +1986,7 @@ public class AppCMSPresenter {
     }
 
     public void initiateItemPurchase() {
+        Log.d(TAG, "Initiating item purchase");
         checkForExistingSubscription(false);
 
         if (useCCAvenue()) {
@@ -2107,6 +2108,8 @@ public class AppCMSPresenter {
                             + e.getMessage());
                 }
             } else if (!TextUtils.isEmpty(getActiveSubscriptionReceipt())) {
+                Log.d(TAG, "Finalizing subscription after signup - existing subscription: " +
+                    getActiveSubscriptionReceipt());
                 finalizeSignupAfterSubscription(getActiveSubscriptionReceipt());
             } else {
                 Log.e(TAG, "InAppBillingService: " + inAppBillingService);
@@ -3859,7 +3862,7 @@ public class AppCMSPresenter {
                             currentActivity.getPackageName(),
                             "subs",
                             null);
-                    ArrayList<String> subscribedItemList = activeSubs.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
+                    ArrayList<String> subscribedItemList = activeSubs.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
 
                     if (subscribedItemList != null && !subscribedItemList.isEmpty()) {
                         boolean subscriptionExpired = true;
@@ -3892,16 +3895,17 @@ public class AppCMSPresenter {
 
                                 if (inAppPurchaseData.isAutoRenewing() || !subscriptionExpired) {
                                     setActiveSubscriptionReceipt(subscribedItemList.get(i));
+                                    Log.d(TAG, "Set active subscription: " + inAppPurchaseData.getProductId());
                                     if (!isUserLoggedIn()) {
                                         String restorePurchaseUrl = currentContext.getString(R.string.app_cms_restore_purchase_api_url,
                                                 appCMSMain.getApiBaseUrl(),
-                                                "");
+                                                appCMSSite.getGist().getSiteInternalName());
                                         appCMSRestorePurchaseCall.call(apikey,
                                                 restorePurchaseUrl,
                                                 inAppPurchaseData.getPurchaseToken(),
                                                 appCMSSite.getGist().getSiteInternalName(),
                                                 (signInResponse) -> {
-                                                    if (!TextUtils.isEmpty(signInResponse.getError())) {
+                                                    if (!TextUtils.isEmpty(signInResponse.getError()) || signInResponse == null) {
                                                         if (showErrorDialogIfSubscriptionExists) {
                                                             showEntitlementDialog(DialogType.EXISTING_SUBSCRIPTION,
                                                                     () -> {
@@ -3917,6 +3921,29 @@ public class AppCMSPresenter {
                                                         setLoggedInUserName(signInResponse.getName());
                                                         setLoggedInUserEmail(signInResponse.getEmail());
                                                         setIsUserSubscribed(true);
+                                                        if (showErrorDialogIfSubscriptionExists) {
+                                                            sendCloseOthersAction(null, true);
+                                                            cancelInternalEvents();
+                                                            restartInternalEvents();
+
+                                                            if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
+                                                                setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
+                                                            }
+
+                                                            NavigationPrimary homePageNavItem = findHomePageNavItem();
+                                                            if (homePageNavItem != null) {
+                                                                cancelInternalEvents();
+                                                                navigateToPage(homePageNavItem.getPageId(),
+                                                                        homePageNavItem.getTitle(),
+                                                                        homePageNavItem.getUrl(),
+                                                                        false,
+                                                                        true,
+                                                                        false,
+                                                                        true,
+                                                                        true,
+                                                                        deeplinkSearchQuery);
+                                                            }
+                                                        }
                                                     }
                                                 });
                                     } else if (isUserLoggedIn()) {
@@ -3944,6 +3971,8 @@ public class AppCMSPresenter {
                                                 (result2) -> {},
                                                 (result3) -> {});
                                     }
+                                } else {
+                                    setActiveSubscriptionReceipt(null);
                                 }
 
                                 if (subscriptionExpired) {
@@ -4087,6 +4116,8 @@ public class AppCMSPresenter {
                     Log.e(TAG, "Error refreshing identity: " + e.getMessage());
                 }
             });
+        } else {
+            Observable.just((UserIdentity) null).subscribe(userIdentityAction);
         }
     }
 
@@ -5528,13 +5559,15 @@ public class AppCMSPresenter {
     public void getAppCMSMain(final Activity activity,
                               final String siteId,
                               final Uri searchQuery,
-                              final PlatformType platformType) {
+                              final PlatformType platformType,
+                              boolean forceReloadFromNetwork) {
         this.deeplinkSearchQuery = searchQuery;
         this.platformType = platformType;
         this.launched = false;
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
+                .forceReloadFromNetwork(forceReloadFromNetwork)
                 .build();
         new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
             try {
@@ -5544,15 +5577,18 @@ public class AppCMSPresenter {
                         openDownloadScreenForNetworkError(true);
                     } else {
                         launchErrorActivity(platformType);
+                        return;
                     }
                 } else if (TextUtils.isEmpty(main
                         .getAndroid())) {
                     Log.e(TAG, "AppCMS key for main not found");
                     launchErrorActivity(platformType);
+                    return;
                 } else if (TextUtils.isEmpty(main
                         .getApiBaseUrl())) {
                     Log.e(TAG, "AppCMS key for API Base URL not found");
                     launchErrorActivity(platformType);
+                    return;
                 } else {
                     appCMSMain = main;
                     new SoftReference<Object>(appCMSMain, referenceQueue);
@@ -5567,6 +5603,7 @@ public class AppCMSPresenter {
             } catch (Exception e) {
                 Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
                 launchErrorActivity(platformType);
+                return;
             }
         }).execute(params);
     }
@@ -5850,6 +5887,9 @@ public class AppCMSPresenter {
                             try {
                                 dialog.dismiss();
                                 navigateToSubscriptionPlansPage(null, null);
+                                if (onCloseAction != null) {
+                                    onCloseAction.call();
+                                }
                             } catch (Exception e) {
                                 Log.e(TAG, "Error closing navigate to subscription dialog: " + e.getMessage());
                             }
@@ -6804,8 +6844,10 @@ public class AppCMSPresenter {
                                                         }
                                                     } catch (Exception e) {
                                                         Log.e(TAG, "Error retrieving subscription information: " + e.getMessage());
-                                                        if (!reloadUserSubscriptionData && !launched) {
-                                                            launchErrorActivity(PlatformType.ANDROID);
+                                                        if (!reloadUserSubscriptionData) {
+                                                            if (onRefreshReadyAction != null) {
+                                                                onRefreshReadyAction.call();
+                                                            }
                                                         }
                                                     }
 
@@ -6891,23 +6933,29 @@ public class AppCMSPresenter {
                                                                             }
                                                                         } catch (Exception e) {
                                                                             Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
+                                                                            if (onRefreshReadyAction != null) {
+                                                                                onRefreshReadyAction.call();
+                                                                            }
                                                                         }
                                                                     }
                                                             );
                                                         } catch (Exception e) {
-                                                            Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
+                                                            Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());if (onRefreshReadyAction != null) {
+                                                                onRefreshReadyAction.call();
+                                                            }
                                                         }
                                                     }
                                                 } else {
-                                                    if (launched) {
+                                                    if (onRefreshReadyAction != null) {
                                                         onRefreshReadyAction.call();
-                                                    } else {
-                                                        launchErrorActivity(PlatformType.ANDROID);
                                                     }
                                                 }
                                             });
                                 } catch (Exception e) {
                                     Log.e(TAG, "getSubscriptionPageContent: " + e.toString());
+                                    if (onRefreshReadyAction != null) {
+                                        onRefreshReadyAction.call();
+                                    }
                                 }
                             });
                 } else {
@@ -6953,8 +7001,8 @@ public class AppCMSPresenter {
                                         }
                                     } catch (Exception e) {
                                         Log.e(TAG, "Error retrieving subscription information: " + e.getMessage());
-                                        if (!reloadUserSubscriptionData && !launched) {
-                                            launchErrorActivity(PlatformType.ANDROID);
+                                        if (onRefreshReadyAction != null) {
+                                            onRefreshReadyAction.call();
                                         }
                                     }
 
@@ -7047,44 +7095,36 @@ public class AppCMSPresenter {
                                                             }
                                                         } catch (Exception e) {
                                                             Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
-                                                            if (launched) {
+                                                            if (onRefreshReadyAction != null) {
                                                                 onRefreshReadyAction.call();
-                                                            } else {
-                                                                launchErrorActivity(PlatformType.ANDROID);
                                                             }
                                                         }
                                                     }
                                             );
                                         } catch (Exception e) {
                                             Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
-                                            if (launched) {
+                                            if (onRefreshReadyAction != null) {
                                                 onRefreshReadyAction.call();
-                                            } else {
-                                                launchErrorActivity(PlatformType.ANDROID);
                                             }
                                         }
                                     }
                                 });
                     } catch (Exception e) {
                         Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
-                        if (launched) {
+                        if (onRefreshReadyAction != null) {
                             onRefreshReadyAction.call();
-                        } else {
-                            launchErrorActivity(PlatformType.ANDROID);
                         }
                     }
                 }
             } else {
-                onRefreshReadyAction.call();
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Caught exception when attempting to refresh subscription data: " + e.getMessage());
-            if (launched) {
                 if (onRefreshReadyAction != null) {
                     onRefreshReadyAction.call();
                 }
-            } else {
-                launchErrorActivity(PlatformType.ANDROID);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Caught exception when attempting to refresh subscription data: " + e.getMessage());
+            if (onRefreshReadyAction != null) {
+                onRefreshReadyAction.call();
             }
         }
     }
@@ -7230,6 +7270,8 @@ public class AppCMSPresenter {
 
                             checkForExistingSubscription(false);
 
+                            Log.d(TAG, "Initiating user login - user subscribed: " + getIsUserSubscribed());
+
                             if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
                                 setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
                             }
@@ -7242,6 +7284,7 @@ public class AppCMSPresenter {
                             }
 
                             if (followWithSubscription) {
+                                Log.d(TAG, "Initiating subscription purchase");
                                 isSignupFromFacebook = false;
                                 isSignupFromGoogle = false;
                                 subscriptionUserEmail = email;
@@ -7250,6 +7293,7 @@ public class AppCMSPresenter {
                                 initiateItemPurchase();
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                             } else {
+                                Log.d(TAG, "Logging in");
                                 if (appCMSMain.getServiceType()
                                         .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
                                         refreshSubscriptionData) {
@@ -7826,6 +7870,8 @@ public class AppCMSPresenter {
                             launchErrorActivity(platformType);
                         }
                     }).execute(url);
+        } else {
+            launchErrorActivity(platformType);
         }
     }
 
@@ -7836,16 +7882,19 @@ public class AppCMSPresenter {
             } else if (isUserLoggedIn() && tryCount == 0) {
                 getUserData(userIdentity -> {
                     try {
-                        setLoggedInUser(userIdentity.getUserId());
-                        setLoggedInUserEmail(userIdentity.getEmail());
-                        setLoggedInUserName(userIdentity.getName());
-                        setIsUserSubscribed(userIdentity.isSubscribed());
-                        if (!userIdentity.isSubscribed()) {
-                            setActiveSubscriptionProcessor(null);
+                        if (userIdentity != null) {
+                            setLoggedInUser(userIdentity.getUserId());
+                            setLoggedInUserEmail(userIdentity.getEmail());
+                            setLoggedInUserName(userIdentity.getName());
+                            setIsUserSubscribed(userIdentity.isSubscribed());
+                            if (!userIdentity.isSubscribed()) {
+                                setActiveSubscriptionProcessor(null);
+                            }
                         }
                         getAppCMSAndroid(tryCount + 1);
                     } catch (Exception e) {
-                        Log.e(TAG, "Error refreshing identity while attempting to retrieving AppCMS Android data: ");
+                        Log.e(TAG, "Error refreshing identity while attempting to retrieving AppCMS Android data: " +
+                            e.getMessage());
                         launchErrorActivity(platformType);
                     }
                 });
@@ -8069,6 +8118,7 @@ public class AppCMSPresenter {
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "Error retrieving AppCMS Page UI: " + e.getMessage());
+                        launchErrorActivity(PlatformType.ANDROID);
                     }
                 },
                 loadFromFile);
