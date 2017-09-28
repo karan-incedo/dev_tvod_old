@@ -2116,7 +2116,15 @@ public class AppCMSPresenter {
             } else if (!TextUtils.isEmpty(getRestoreSubscriptionReceipt())) {
                 Log.d(TAG, "Finalizing subscription after signup - existing subscription: " +
                         getRestoreSubscriptionReceipt());
-                finalizeSignupAfterSubscription(getRestoreSubscriptionReceipt());
+                try {
+                    InAppPurchaseData inAppPurchaseData = gson.fromJson(getRestoreSubscriptionReceipt(),
+                            InAppPurchaseData.class);
+                    setActiveSubscriptionSku(inAppPurchaseData.getProductId());
+                    skuToPurchase = inAppPurchaseData.getProductId();
+                    finalizeSignupAfterSubscription(getRestoreSubscriptionReceipt());
+                } catch (Exception e) {
+                    Log.e(TAG, "Could not parse InApp Purchase Data: " + getRestoreSubscriptionReceipt());
+                }
             } else {
                 Log.e(TAG, "InAppBillingService: " + inAppBillingService);
             }
@@ -4003,6 +4011,7 @@ public class AppCMSPresenter {
                                         subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
                                         subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
                                         subscriptionRequest.setUserId(getLoggedInUser());
+                                        subscriptionRequest.setPlanIdentifier(inAppPurchaseData.getProductId());
                                         subscriptionRequest.setReceipt(getActiveSubscriptionReceipt());
 
                                         Log.d(TAG, "Subscription request: " + gson.toJson(subscriptionRequest, SubscriptionRequest.class));
