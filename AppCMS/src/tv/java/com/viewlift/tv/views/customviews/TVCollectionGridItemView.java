@@ -2,6 +2,7 @@ package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
 import android.support.v7.widget.CardView;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -158,6 +159,9 @@ public class TVCollectionGridItemView extends TVBaseView {
                           Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                           final TVCollectionGridItemView.OnClickHandler onClickHandler,
                           final AppCMSUIKeyType viewTypeKey) {
+        AppCMSPresenter appCMSPresenter =
+                ((AppCMSApplication) context.getApplicationContext())
+                        .getAppCMSPresenterComponent().appCMSPresenter();
         final Component childComponent = matchComponentToView(view);
         if (childComponent != null) {
             boolean bringToFront = true;
@@ -199,17 +203,27 @@ public class TVCollectionGridItemView extends TVBaseView {
                     }
                     bringToFront = false;
                     view.setFocusable(true);
-                    view.setOnClickListener(v -> onClickHandler.click(
-                            TVCollectionGridItemView.this,
-                            childComponent,
-                            data));
+                    view.setOnClickListener(v -> {
+                        appCMSPresenter.showLoadingDialog(true);
+                        onClickHandler.click(
+                                TVCollectionGridItemView.this,
+                                childComponent,
+                                data);
+                        view.setClickable(false);
+                        new android.os.Handler().postDelayed(() -> view.setClickable(true), 3000);
+                    });
 
+                    final boolean[] clickable = {true};
                     view.setOnKeyListener((v, keyCode, event) -> {
                         if(event.getAction() == KeyEvent.ACTION_DOWN
-                                && keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
+                                && keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE
+                                && clickable[0]) {
+                            appCMSPresenter.showLoadingDialog(true);
                             onClickHandler.play(
                                     childComponent,
                                     data);
+                            clickable[0] = false;
+                            new android.os.Handler().postDelayed(() -> clickable[0] = true, 3000);
                             return true;
                         }
                         return false;
@@ -243,7 +257,7 @@ public class TVCollectionGridItemView extends TVBaseView {
 
                 } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_LABEL) {
                     if (!TextUtils.isEmpty(data.getGist().getDescription())) {
-                        ((TextView) view).setText(data.getGist().getDescription());
+                        ((TextView) view).setText(Html.fromHtml(data.getGist().getDescription()));
                         if (childComponent.getNumberOfLines() != 0) {
                             ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
                         }
@@ -265,9 +279,6 @@ public class TVCollectionGridItemView extends TVBaseView {
                     }
                 }
             } else if (componentKey == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
-                AppCMSPresenter appCMSPresenter =
-                        ((AppCMSApplication) context.getApplicationContext())
-                                .getAppCMSPresenterComponent().appCMSPresenter();
                 int gridImagePadding = Integer.valueOf(
                         childComponent.getLayout().getTv().getPadding() != null
                         ? childComponent.getLayout().getTv().getPadding()
