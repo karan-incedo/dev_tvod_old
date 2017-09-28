@@ -27,6 +27,7 @@ import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
+import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 
 import java.util.List;
@@ -128,7 +129,23 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                         }
                     }
                 } else {
-                    if (binder.getContentData().getContentDetails() != null
+
+                    if (binder.isOffline()
+                            && extra != null
+                            && extra.length >= 2
+                            && extra[1] != null
+                            && gist.getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
+                        videoUrl = !TextUtils.isEmpty(extra[1]) ? extra[1] : "";
+                    }
+                    /*If the video is already downloaded, play if from there, even if Internet is
+                    * available*/
+                    else if (gist.getId() != null
+                            && appCMSPresenter.getRealmController() != null
+                            && appCMSPresenter.getRealmController().getDownloadById(gist.getId()) != null
+                            && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus() != null
+                            && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
+                        videoUrl = appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getLocalURI();
+                    }else if (binder.getContentData().getContentDetails() != null
                             && binder.getContentData().getContentDetails().getTrailers() != null
                             && !binder.getContentData().getContentDetails().getTrailers().isEmpty()
                             && binder.getContentData().getContentDetails().getTrailers().get(0) != null
@@ -266,6 +283,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 //        registerReceiver(networkConnectedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
     }
 
     @Override
@@ -280,6 +298,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     null);
             finish();
         }
+
+        appCMSPresenter.restrictLandscapeOnly();
     }
 
     @Override
@@ -296,8 +316,14 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             Log.e(TAG, "Failed to unregister Handoff Receiver: " + e.getMessage());
         }
 //        unregisterReceiver(networkConnectedReceiver);
+        if (BaseView.isTablet(this)) {
+            appCMSPresenter.unrestrictPortraitOnly();
+        }else{
+            appCMSPresenter.restrictPortraitOnly();
+        }
         super.onDestroy();
     }
+
 
     @Override
     public void closePlayer() {

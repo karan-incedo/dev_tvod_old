@@ -43,7 +43,7 @@
             android:textColor="@android:color/white"
             android:gravity="top"
             android:textSize="18sp"
-            android:visibility="invisible" />
+            android:visibility="visible" />
 
 
         <LinearLayout
@@ -53,14 +53,14 @@
             android:layout_below="@+id/app_cms_content_rating_header_view"
             android:background="@drawable/border_rectangular"
             android:orientation="horizontal"
-            android:visibility="invisible">
+            android:visibility="visible">
 
             <TextView
                 android:id="@+id/app_cms_content_rating_title_header"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight=".6"
-                android:visibility="invisible"
+                android:visibility="visible"
                 android:text="@string/content_rating_description"
                 android:gravity="end|center_vertical"
                 android:textSize="@dimen/app_cms_content_rating_title_header_text_size"
@@ -71,7 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight=".4"
-                android:visibility="invisible"
+                android:visibility="visible"
                 android:gravity="left|center_vertical"
                 android:layout_marginLeft="10dp"
                 android:textSize="@dimen/app_cms_content_rating_title_text_size"
@@ -92,7 +92,7 @@
             android:text="@string/content_rating_viewer_discretion"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:visibility="invisible"
+            android:visibility="visible"
             android:textColor="@android:color/white"
             />
 

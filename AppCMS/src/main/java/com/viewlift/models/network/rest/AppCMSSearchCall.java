@@ -35,6 +35,9 @@ public class AppCMSSearchCall {
         try {
             authHeaders.clear();
             authHeaders.put("x-api-key", apiKey);
+            Log.e(TAG, "search url -" + url  );
+            Log.e(TAG, "search url api key -" + apiKey  );
+
             return appCMSSearchRest.get(authHeaders, url).execute().body();
         } catch (Exception e) {
             Log.e(TAG, "Failed to execute search query " + url + ": " + e.toString());
