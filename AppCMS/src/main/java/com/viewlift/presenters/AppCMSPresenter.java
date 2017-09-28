@@ -8213,7 +8213,9 @@ public class AppCMSPresenter {
                                         }
                                     });
                         } else {
-                            openTVErrorDialog("Unable to fetch data from the server", "");
+                            openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
+                                    currentActivity.getString(R.string.app_name)),
+                                    currentActivity.getString(R.string.app_connectivity_dialog_title));
                         }
 
                     }).execute(params);

@@ -33,6 +33,8 @@
     <string name="error_dialog_fragment_tag">ErrorDialog</string>
 
     <string name="no_inernet_error">There is an error loading %1$s. Please check your Internet Connection and try again later</string>
+    <string name="api_error_message">We are having trouble connecting to %1$s, please try again later.</string>
+    <string name="app_connectivity_dialog_title">App Connectivity</string>
     <string name="internet_connection_header">Internet Connection</string>
 
     <string name="video_image_key">video_image_key</string>
