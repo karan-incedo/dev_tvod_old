@@ -85,7 +85,7 @@ public class PaymentOptionsActivity extends AppCompatActivity {
         SimpleDateFormat df = new SimpleDateFormat("dd/MM");
         String formattedDate = df.format(c.getTime());
 
-        id_tv_text_payment = findViewById(R.id.id_tv_text_payment);
+        id_tv_text_payment = (TextView) findViewById(R.id.id_tv_text_payment);
         id_tv_text_payment.setText("First Payment Rs. " + initialScreen.getStringExtra(AvenuesParams.AMOUNT).toString().trim() +
                 " on " + formattedDate);
         getDataAsyncTask = new GetData() ;

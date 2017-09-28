@@ -1,6 +1,5 @@
 package com.viewlift.models.network.background.tasks;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -9,13 +8,15 @@ import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import java.io.IOException;
 
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by viewlift on 5/9/17.
  */
 
-public class GetAppCMSAPIAsyncTask extends AsyncTask<GetAppCMSAPIAsyncTask.Params, Integer, AppCMSPageAPI> {
+public class GetAppCMSAPIAsyncTask {
     private static final String TAG = "GetAppCMSAPIAsyncTask";
 
     private final AppCMSPageAPICall call;
@@ -56,23 +57,23 @@ public class GetAppCMSAPIAsyncTask extends AsyncTask<GetAppCMSAPIAsyncTask.Param
         this.readyAction = readyAction;
     }
 
-    @Override
-    protected AppCMSPageAPI doInBackground(GetAppCMSAPIAsyncTask.Params... params) {
-        if (params.length > 0) {
-            try {
-                return call.call(params[0].urlWithContent,
-                        params[0].authToken,
-                        params[0].pageId,
-                        0);
-            } catch (IOException e) {
-                Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
-            }
-        }
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(AppCMSPageAPI result) {
-        Observable.just(result).subscribe(readyAction);
+    public void execute(Params params) {
+        Observable
+                .fromCallable(() -> {
+                    if (params != null) {
+                        try {
+                            return call.call(params.urlWithContent,
+                                    params.authToken,
+                                    params.pageId,
+                                    0);
+                        } catch (IOException e) {
+                            Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
+                        }
+                    }
+                    return null;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((result) -> Observable.just(result).subscribe(readyAction));
     }
 }
