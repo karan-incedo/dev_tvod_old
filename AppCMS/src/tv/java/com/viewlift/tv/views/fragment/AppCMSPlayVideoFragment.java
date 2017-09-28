@@ -374,8 +374,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         videoPlayerInfoContainer.bringToFront();
 
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
-
-
+        videoPlayerView.getPlayerView().hideController();
+        videoPlayerInfoContainer.setVisibility(View.INVISIBLE);
         playBackStateLayout = (RelativeLayout) rootView.findViewById(R.id.playback_state_layout);
         playBackStateTextView = (TextView) rootView.findViewById(R.id.playback_state_text);
         playBackStateTextView.setTextColor(Color.parseColor(fontColor));
@@ -469,6 +469,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
         switch (adEvent.getType()) {
             case LOADED:
+                playBackStateLayout.setVisibility(View.GONE);
                 videoPlayerInfoContainer.setVisibility(View.GONE); //to hide the player controls.
                 adsManager.start();
                 break;
