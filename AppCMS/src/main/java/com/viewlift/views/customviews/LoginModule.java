@@ -8,6 +8,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.SystemClock;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -179,10 +180,12 @@ public class LoginModule extends ModuleView {
                                 selectChild(1);
                                 unselectChild(0);
                                 if (appCMSPresenter.isAppSVOD()) {
-                                    appCMSPresenter.sendCloseOthersAction(null,
-                                            true);
-                                    appCMSPresenter.navigateToSubscriptionPlansPage(null,
-                                            null);
+                                    if (TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionReceipt())) {
+                                        appCMSPresenter.navigateToSubscriptionPlansPage(null,
+                                                null);
+                                        appCMSPresenter.sendCloseOthersAction(null,
+                                                true);
+                                    }
                                 }
                             }
                         });

@@ -903,6 +903,9 @@ public class ViewCreator {
                 if (childView != null) {
                     childrenContainer.addView(childView);
                 }
+                if (moduleAPI == null) {
+                    childView.setVisibility(View.GONE);
+                }
             }
         }
 

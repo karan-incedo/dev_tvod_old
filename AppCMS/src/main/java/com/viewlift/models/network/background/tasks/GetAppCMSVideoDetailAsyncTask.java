@@ -1,22 +1,20 @@
 package com.viewlift.models.network.background.tasks;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 
-import java.io.IOException;
-
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by anas.azeem on 7/12/2017.
  * Owned by ViewLift, NYC
  */
-public class GetAppCMSVideoDetailAsyncTask extends AsyncTask<GetAppCMSVideoDetailAsyncTask.Params,
-        Integer, AppCMSVideoDetail> {
+public class GetAppCMSVideoDetailAsyncTask {
     private static final String TAG = "VideoDetailAsyncTask";
 
     private final AppCMSVideoDetailCall call;
@@ -28,21 +26,21 @@ public class GetAppCMSVideoDetailAsyncTask extends AsyncTask<GetAppCMSVideoDetai
         this.readyAction = readyAction;
     }
 
-    @Override
-    protected AppCMSVideoDetail doInBackground(Params... params) {
-        if (params.length > 0) {
-            try {
-                return call.call(params[0].url, params[0].authToken);
-            } catch (IOException e) {
-                Log.e(TAG, "Could not retrieve Video Detail data - " + params[0] + ": " + e.toString());
-            }
-        }
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(AppCMSVideoDetail appCMSVideoDetail) {
-        Observable.just(appCMSVideoDetail).subscribe(readyAction);
+    public void execute(Params params) {
+        Observable
+                .fromCallable(() -> {
+                    if (params != null) {
+                        try {
+                            return call.call(params.url, params.authToken);
+                        } catch (Exception e) {
+                            Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
+                        }
+                    }
+                    return null;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((result) -> Observable.just(result).subscribe(readyAction));
     }
 
     public static class Params {

@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,8 +16,6 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.presenters.AppCMSPresenter;
 
-import com.viewlift.views.activity.AppCMSPageActivity;
-import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.components.AppCMSPresenterComponent;
 
 import com.viewlift.R;
@@ -28,6 +28,13 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     private CastHelper mCastHelper;
     private BroadcastReceiver presenterCloseActionReceiver;
 
+    private ConnectivityManager connectivityManager;
+    private BroadcastReceiver networkConnectedReceiver;
+    private boolean appStartWithNetworkConnected;
+    private boolean forceReloadFromNetwork;
+
+    private AppCMSPresenterComponent appCMSPresenterComponent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,12 +44,9 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
 
         Log.d(TAG, "Launching application from main.json");
         Log.d(TAG, "Search query (optional): " + searchQuery);
-        AppCMSPresenterComponent appCMSPresenterComponent =
+        appCMSPresenterComponent =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
-        appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
-                getString(R.string.app_cms_app_name),
-                searchQuery,
-                AppCMSPresenter.PlatformType.ANDROID);
+
         if (!BaseView.isTablet(this)) {
             appCMSPresenterComponent.appCMSPresenter().restrictPortraitOnly();
         }
@@ -62,6 +66,25 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate()");
         setCasting();
         setFullScreenFocus();
+
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        networkConnectedReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+                boolean isConnected = activeNetwork != null &&
+                        activeNetwork.isConnectedOrConnecting();
+                if (!appStartWithNetworkConnected && isConnected) {
+                    appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(AppCMSLaunchActivity.this,
+                            getString(R.string.app_cms_app_name),
+                            searchQuery,
+                            AppCMSPresenter.PlatformType.ANDROID,
+                            true);
+                } else if (!isConnected) {
+                    appStartWithNetworkConnected = false;
+                }
+            }
+        };
     }
 
     @Override
@@ -72,7 +95,11 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(presenterCloseActionReceiver);
+        try {
+            unregisterReceiver(presenterCloseActionReceiver);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to unregister Close Action Receiver");
+        }
     }
 
     private void setCasting() {
@@ -96,6 +123,8 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                         ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
                 appCMSPresenterComponent.appCMSPresenter().sendDeepLinkAction(searchQuery);
             }
+
+            forceReloadFromNetwork = intent.getBooleanExtra(getString(R.string.force_reload_from_network_key), false);
         }
     }
 
@@ -103,6 +132,38 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         setFullScreenFocus();
         super.onWindowFocusChanged(hasFocus);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        appStartWithNetworkConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        if (appStartWithNetworkConnected) {
+            registerReceiver(networkConnectedReceiver,
+                    new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        }
+
+        if (appCMSPresenterComponent != null) {
+            appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
+                    getString(R.string.app_cms_app_name),
+                    searchQuery,
+                    AppCMSPresenter.PlatformType.ANDROID,
+                    forceReloadFromNetwork);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            unregisterReceiver(networkConnectedReceiver);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to unregister network receiver");
+        }
     }
 
     private void setFullScreenFocus() {

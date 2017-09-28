@@ -5,7 +5,7 @@ def final packageName = 'com.viewlift.hoichoi'
 def final customApplicationId = 'Hoichoi'
 def final hostName = "www.hoichoi.tv"
 
-def final appVersionName = "2.0.39"
+def final appVersionName = "2.0.47"
 
 buildscript {
     repositories {
@@ -29,16 +29,16 @@ repositories {
 }
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    compileSdkVersion 23
+    buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId packageName
         minSdkVersion 21
-        targetSdkVersion 26
-        versionCode 71
+        targetSdkVersion 23
+        versionCode 79
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        renderscriptTargetApi 26
+        renderscriptTargetApi 23
         renderscriptSupportModeEnabled true
         useLibrary 'org.apache.http.legacy'
     }
@@ -97,7 +97,7 @@ android {
         release {
             multiDexEnabled true
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue "string", "package_name", "${packageName}"
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"

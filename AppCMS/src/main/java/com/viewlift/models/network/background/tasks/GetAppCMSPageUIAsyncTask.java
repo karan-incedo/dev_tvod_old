@@ -1,7 +1,5 @@
 package com.viewlift.models.network.background.tasks;
 
-import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -10,13 +8,15 @@ import java.io.IOException;
 
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by viewlift on 5/9/17.
  */
 
-public class GetAppCMSPageUIAsyncTask extends AsyncTask<GetAppCMSPageUIAsyncTask.Params, Integer, AppCMSPageUI> {
+public class GetAppCMSPageUIAsyncTask {
     private static final String TAG = "";
 
     private final AppCMSPageUICall call;
@@ -49,20 +49,20 @@ public class GetAppCMSPageUIAsyncTask extends AsyncTask<GetAppCMSPageUIAsyncTask
         this.readyAction = readyAction;
     }
 
-    @Override
-    protected AppCMSPageUI doInBackground(Params... params) {
-        if (params.length > 0) {
-            try {
-                return call.call(params[0].url, params[0].timeStamp);
-            } catch (IOException e) {
-                Log.e(TAG, "Could not retrieve Page UI data - " + params[0] + ": " + e.toString());
-            }
+    public void execute(Params params) {
+        if (params != null) {
+            Observable
+                    .fromCallable(() -> {
+                        try {
+                            return call.call(params.url, params.timeStamp);
+                        } catch (IOException e) {
+                            Log.e(TAG, "Could not retrieve Page UI data - " + params.url + ": " + e.toString());
+                        }
+                        return null;
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe((result) -> Observable.just(result).subscribe(readyAction));
         }
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(AppCMSPageUI result) {
-        Observable.just(result).subscribe(readyAction);
     }
 }
