@@ -374,6 +374,19 @@
     <string name="free_content_key">free_content</string>
     <string name="appcmsuijson_directoryname">androidui</string>
 
+    <string name="edit_profile_name_message">Use Alphabets for Name</string>
     <string name="mr_controller_stop_casting">Stop casting</string>
+
     <string name="force_reload_from_network_key">force_reload_from_network</string>
+
 </resources>
+
+
+
+
+
+
+
+
+
+

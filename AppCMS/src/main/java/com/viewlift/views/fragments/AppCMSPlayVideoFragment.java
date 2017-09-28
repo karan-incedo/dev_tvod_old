@@ -88,8 +88,8 @@ public class AppCMSPlayVideoFragment extends Fragment
     private final String FIREBASE_PLAYER_CHROMECAST = "Chromecast";
     private final String FIREBASE_MEDIA_TYPE_VIDEO = "Video";
     private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
-    private final int totalCountdownInMillis = 3000;
-    private final int countDownIntervalInMillis = 30;
+    private final int totalCountdownInMillis = 2000;
+    private final int countDownIntervalInMillis = 20;
     Handler mProgressHandler;
     Runnable mProgressRunnable;
     long mTotalVideoDuration;
@@ -562,9 +562,9 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         showCRWWarningMessage = true;
 
-        if (isVideoDownloaded) {
+        /*if (isVideoDownloaded) {
             videoPlayerView.startPlayer();
-        }
+        }*/
 
         return rootView;
     }
@@ -996,9 +996,10 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private void createContentRatingView() throws Exception {
-        if (!isTrailer && !getParentalRating().equalsIgnoreCase(getString(R.string.age_rating_converted_default))) {
+        if (!isTrailer && getParentalRating().equalsIgnoreCase(getString(R.string.age_rating_converted_eighteen)) && watchedTime == 0) {
             videoPlayerMainContainer.setVisibility(View.GONE);
-            animateView();
+            contentRatingMainContainer.setVisibility(View.VISIBLE);
+            //animateView();
             startCountdown();
         } else {
             contentRatingMainContainer.setVisibility(View.GONE);
@@ -1008,10 +1009,10 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private String getParentalRating() {
-        if (!TextUtils.isEmpty(parentalRating) && !parentalRating.contentEquals(getString(R.string.age_rating_converted_default))) {
+        if (!TextUtils.isEmpty(parentalRating) && !parentalRating.contentEquals(getString(R.string.age_rating_converted_eighteen))) {
             contentRatingTitleView.setText(parentalRating);
         }
-        return parentalRating;
+        return parentalRating != null ? parentalRating : getString(R.string.age_rating_converted_default);
     }
 
     private void startCountdown() {
