@@ -75,6 +75,7 @@ public class AppCMSRestorePurchaseCall {
                 } else if (response.errorBody() != null) {
                     try {
                         String errorResponse = response.errorBody().string();
+                        Log.d(TAG, "Received raw error response: " + errorResponse);
                         if (readyAction != null) {
                             parsedSigninResponse = gson.fromJson(errorResponse, SignInResponse.class);
                             Observable.just(parsedSigninResponse).subscribe(readyAction);
