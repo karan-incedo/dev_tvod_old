@@ -5021,126 +5021,30 @@ public class AppCMSPresenter {
                 facebookUserId,
                 facebookLoginResponse -> {
                     if (facebookLoginResponse != null) {
-                        setAuthToken(facebookLoginResponse.getAuthorizationToken());
-                        setRefreshToken(facebookLoginResponse.getRefreshToken());
-                        setLoggedInUser(facebookLoginResponse.getUserId());
-                        setLoggedInUserName(username);
-                        setLoggedInUserEmail(email);
-                        if (forceSubscribed) {
-                            setIsUserSubscribed(true);
-                        } else {
-                            setIsUserSubscribed(facebookLoginResponse.isSubscribed());
-                        }
 
-                        Log.d(TAG, "checkForExistingSubscription() - 5016");
-                        checkForExistingSubscription(false);
-
-                        if (launchType == LaunchType.SUBSCRIBE) {
-                            this.facebookAccessToken = facebookAccessToken;
-                            this.facebookUserId = facebookUserId;
-                            this.facebookUsername = username;
-                            this.facebookEmail = email;
-                            initiateItemPurchase();
+                        if (!TextUtils.isEmpty(facebookLoginResponse.getError())) {
+                            showDialog(DialogType.SIGNIN, facebookLoginResponse.getError(), false, null);
                             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
-                        } else {
-
-                            if (appCMSMain.getServiceType()
-                                    .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
-                                    refreshSubscriptionData) {
-
-                                checkUpgradeFlag = false;
-
-                                refreshSubscriptionData(() -> {
-
-                                }, true);
-                            }
-                            if (entitlementPendingVideoData != null) {
-                                navigateToHomeToRefresh = false;
-                                sendRefreshPageAction();
-                                sendCloseOthersAction(null, true);
-                                launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
-                                        entitlementPendingVideoData.action,
-                                        entitlementPendingVideoData.filmTitle,
-                                        entitlementPendingVideoData.extraData,
-                                        entitlementPendingVideoData.contentDatum,
-                                        entitlementPendingVideoData.closeLauncher,
-                                        entitlementPendingVideoData.currentlyPlayingIndex,
-                                        entitlementPendingVideoData.relateVideoIds);
-                                entitlementPendingVideoData.pagePath = null;
-                                entitlementPendingVideoData.action = null;
-                                entitlementPendingVideoData.filmTitle = null;
-                                entitlementPendingVideoData.extraData = null;
-                                entitlementPendingVideoData.contentDatum = null;
-                                entitlementPendingVideoData.closeLauncher = false;
-                                entitlementPendingVideoData.currentlyPlayingIndex = -1;
-                                entitlementPendingVideoData.relateVideoIds = null;
-                                entitlementPendingVideoData = null;
-                            } else {
-                                sendCloseOthersAction(null, true);
-                                cancelInternalEvents();
-                                restartInternalEvents();
-
-                                if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
-                                    setUserDownloadQualityPref(
-                                            currentActivity.getString(R.string.app_cms_default_download_quality));
-                                }
-
-                                NavigationPrimary homePageNavItem = findHomePageNavItem();
-                                if (homePageNavItem != null) {
-                                    cancelInternalEvents();
-                                    navigateToPage(homePageNavItem.getPageId(),
-                                            homePageNavItem.getTitle(),
-                                            homePageNavItem.getUrl(),
-                                            false,
-                                            true,
-                                            false,
-                                            true,
-                                            true,
-                                            deeplinkSearchQuery);
-                                }
-                            }
-                        }
-                    }
-                });
-
-        SharedPreferences sharedPreferences =
-                currentContext.getSharedPreferences(FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME, 0);
-        return sharedPreferences.edit().putString(FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME,
-                facebookAccessToken).commit();
-    }
-
-    public boolean setGoogleAccessToken(final String googleAccessToken,
-                                        final String googleUserId,
-                                        final String googleUsername,
-                                        final String googleEmail,
-                                        boolean forceSubscribed,
-                                        boolean refreshSubscriptionData) {
-        String url = currentActivity.getString(R.string.app_cms_google_login_api_url,
-                appCMSMain.getApiBaseUrl(), appCMSSite.getGist().getSiteInternalName());
-
-        appCMSGoogleLoginCall.call(url, googleAccessToken,
-                googleLoginResponse -> {
-                    try {
-                        if (googleLoginResponse != null) {
-                            setAuthToken(googleLoginResponse.getAuthorizationToken());
-                            setRefreshToken(googleLoginResponse.getRefreshToken());
-                            setLoggedInUser(googleLoginResponse.getUserId());
-                            setLoggedInUserName(googleUsername);
-                            setLoggedInUserEmail(googleEmail);
+                        } else{
+                            setAuthToken(facebookLoginResponse.getAuthorizationToken());
+                            setRefreshToken(facebookLoginResponse.getRefreshToken());
+                            setLoggedInUser(facebookLoginResponse.getUserId());
+                            setLoggedInUserName(username);
+                            setLoggedInUserEmail(email);
                             if (forceSubscribed) {
                                 setIsUserSubscribed(true);
                             } else {
-                                setIsUserSubscribed(googleLoginResponse.isSubscribed());
+                                setIsUserSubscribed(facebookLoginResponse.isSubscribed());
                             }
 
-                            Log.d(TAG, "checkForExistingSubscription() - 5117");
+                            Log.d(TAG, "checkForExistingSubscription() - 5016");
                             checkForExistingSubscription(false);
 
                             if (launchType == LaunchType.SUBSCRIBE) {
-                                this.googleAccessToken = googleAccessToken;
-                                this.googleUserId = googleUserId;
-                                this.googleUsername = googleUsername;
-                                this.googleEmail = googleEmail;
+                                this.facebookAccessToken = facebookAccessToken;
+                                this.facebookUserId = facebookUserId;
+                                this.facebookUsername = username;
+                                this.facebookEmail = email;
                                 initiateItemPurchase();
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                             } else {
@@ -5182,7 +5086,8 @@ public class AppCMSPresenter {
                                     restartInternalEvents();
 
                                     if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
-                                        setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
+                                        setUserDownloadQualityPref(
+                                                currentActivity.getString(R.string.app_cms_default_download_quality));
                                     }
 
                                     NavigationPrimary homePageNavItem = findHomePageNavItem();
@@ -5197,6 +5102,112 @@ public class AppCMSPresenter {
                                                 true,
                                                 true,
                                                 deeplinkSearchQuery);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+        SharedPreferences sharedPreferences =
+                currentContext.getSharedPreferences(FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME, 0);
+        return sharedPreferences.edit().putString(FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME,
+                facebookAccessToken).commit();
+    }
+
+    public boolean setGoogleAccessToken(final String googleAccessToken,
+                                        final String googleUserId,
+                                        final String googleUsername,
+                                        final String googleEmail,
+                                        boolean forceSubscribed,
+                                        boolean refreshSubscriptionData) {
+        String url = currentActivity.getString(R.string.app_cms_google_login_api_url,
+                appCMSMain.getApiBaseUrl(), appCMSSite.getGist().getSiteInternalName());
+
+        appCMSGoogleLoginCall.call(url, googleAccessToken,
+                googleLoginResponse -> {
+                    try {
+                        if (googleLoginResponse != null) {
+                            if (!TextUtils.isEmpty(googleLoginResponse.getMessage())) {
+                                showDialog(DialogType.SIGNIN, googleLoginResponse.getError(), false, null);
+                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                            } else {
+                                setAuthToken(googleLoginResponse.getAuthorizationToken());
+                                setRefreshToken(googleLoginResponse.getRefreshToken());
+                                setLoggedInUser(googleLoginResponse.getUserId());
+                                setLoggedInUserName(googleUsername);
+                                setLoggedInUserEmail(googleEmail);
+                                if (forceSubscribed) {
+                                    setIsUserSubscribed(true);
+                                } else {
+                                    setIsUserSubscribed(googleLoginResponse.isSubscribed());
+                                }
+
+                                Log.d(TAG, "checkForExistingSubscription() - 5117");
+                                checkForExistingSubscription(false);
+
+                                if (launchType == LaunchType.SUBSCRIBE) {
+                                    this.googleAccessToken = googleAccessToken;
+                                    this.googleUserId = googleUserId;
+                                    this.googleUsername = googleUsername;
+                                    this.googleEmail = googleEmail;
+                                    initiateItemPurchase();
+                                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                                } else {
+
+                                    if (appCMSMain.getServiceType()
+                                            .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
+                                            refreshSubscriptionData) {
+
+                                        checkUpgradeFlag = false;
+
+                                        refreshSubscriptionData(() -> {
+
+                                        }, true);
+                                    }
+                                    if (entitlementPendingVideoData != null) {
+                                        navigateToHomeToRefresh = false;
+                                        sendRefreshPageAction();
+                                        sendCloseOthersAction(null, true);
+                                        launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
+                                                entitlementPendingVideoData.action,
+                                                entitlementPendingVideoData.filmTitle,
+                                                entitlementPendingVideoData.extraData,
+                                                entitlementPendingVideoData.contentDatum,
+                                                entitlementPendingVideoData.closeLauncher,
+                                                entitlementPendingVideoData.currentlyPlayingIndex,
+                                                entitlementPendingVideoData.relateVideoIds);
+                                        entitlementPendingVideoData.pagePath = null;
+                                        entitlementPendingVideoData.action = null;
+                                        entitlementPendingVideoData.filmTitle = null;
+                                        entitlementPendingVideoData.extraData = null;
+                                        entitlementPendingVideoData.contentDatum = null;
+                                        entitlementPendingVideoData.closeLauncher = false;
+                                        entitlementPendingVideoData.currentlyPlayingIndex = -1;
+                                        entitlementPendingVideoData.relateVideoIds = null;
+                                        entitlementPendingVideoData = null;
+                                    } else {
+                                        sendCloseOthersAction(null, true);
+                                        cancelInternalEvents();
+                                        restartInternalEvents();
+
+                                        if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
+                                            setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
+                                        }
+
+                                        NavigationPrimary homePageNavItem = findHomePageNavItem();
+                                        if (homePageNavItem != null) {
+                                            cancelInternalEvents();
+                                            navigateToPage(homePageNavItem.getPageId(),
+                                                    homePageNavItem.getTitle(),
+                                                    homePageNavItem.getUrl(),
+                                                    false,
+                                                    true,
+                                                    false,
+                                                    true,
+                                                    true,
+                                                    deeplinkSearchQuery);
+                                        }
                                     }
                                 }
                             }
