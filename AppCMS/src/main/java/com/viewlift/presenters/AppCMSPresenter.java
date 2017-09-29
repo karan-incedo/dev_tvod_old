@@ -2,12 +2,10 @@ package com.viewlift.presenters;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.DownloadManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
@@ -51,7 +49,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -498,6 +495,8 @@ public class AppCMSPresenter {
     private boolean isVideoPlayerStarted;
     private ReferenceQueue<Object> referenceQueue;
     private EntitlementCheckActive entitlementCheckActive;
+
+    private Toast watchlistToast;
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -2399,11 +2398,17 @@ public class AppCMSPresenter {
         TextView watchlistToastMessage = layout.findViewById(R.id.custom_toast_message);
         watchlistToastMessage.setText(toastMessage);
 
-        Toast toast = new Toast(currentActivity.getApplicationContext());
-        toast.setDuration(Toast.LENGTH_SHORT);
-        toast.setView(layout);
-        toast.setGravity(Gravity.FILL | Gravity.CENTER_VERTICAL, 0, 0);
-        toast.show();
+        watchlistToast = new Toast(currentActivity.getApplicationContext());
+        watchlistToast.setDuration(Toast.LENGTH_SHORT);
+        watchlistToast.setView(layout);
+        watchlistToast.setGravity(Gravity.FILL | Gravity.CENTER_VERTICAL, 0, 0);
+        watchlistToast.show();
+    }
+
+    public void cancelWatchlistToast() {
+        if (watchlistToast != null) {
+            watchlistToast.cancel();
+        }
     }
 
     public void removeDownloadedFile(String filmId, final Action1<UserVideoDownloadStatus> resultAction1) {
