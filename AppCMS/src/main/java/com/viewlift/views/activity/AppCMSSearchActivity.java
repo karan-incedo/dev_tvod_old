@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -69,13 +70,14 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         RecyclerView appCMSSearchResultsView = (RecyclerView) findViewById(R.id.app_cms_search_results);
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.search_page_loading_progressbar);
+
         appCMSSearchItemAdapter =
                 new AppCMSSearchItemAdapter(this,
                         ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent()
                                 .appCMSPresenter(),
                         null);
         appCMSSearchResultsView.setAdapter(appCMSSearchItemAdapter);
-
         sendFirebaseAnalyticsEvents();
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
@@ -149,7 +151,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         appCMSCloseButton.setOnClickListener(v -> finish());
 
         handleIntent(getIntent());
-
+        appCMSSearchItemAdapter.handleProgress((object) -> progressBar.setVisibility(View.VISIBLE));
 
 
     }

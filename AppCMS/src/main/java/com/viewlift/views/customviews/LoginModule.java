@@ -131,12 +131,9 @@ public class LoginModule extends ModuleView {
                     buttonSelectors[0].setBackgroundColor(bgColor);
                     buttonSelectors[0].setLayoutParams(loginSelectorLayoutParams);
 
-                    buttonSelectors[0].setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            selectChild(0);
-                            unselectChild(1);
-                        }
+                    buttonSelectors[0].setOnClickListener((v) -> {
+                        selectChild(0);
+                        unselectChild(1);
                     });
 
                     underlineViews[0] = new GradientDrawable();
@@ -174,18 +171,17 @@ public class LoginModule extends ModuleView {
                         buttonSelectors[1].setBackgroundColor(bgColor);
                         signupSelectorLayoutParams.gravity = Gravity.END;
                         buttonSelectors[1].setLayoutParams(signupSelectorLayoutParams);
-                        buttonSelectors[1].setOnClickListener(new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                selectChild(1);
-                                unselectChild(0);
-                                if (appCMSPresenter.isAppSVOD()) {
-                                    if (TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionReceipt())) {
-                                        appCMSPresenter.navigateToSubscriptionPlansPage(null,
-                                                null);
-                                        appCMSPresenter.sendCloseOthersAction(null,
-                                                true);
-                                    }
+                        buttonSelectors[1].setOnClickListener((v) -> {
+                            selectChild(1);
+                            unselectChild(0);
+                            if (appCMSPresenter.isAppSVOD()) {
+                                if (TextUtils.isEmpty(appCMSPresenter.getRestoreSubscriptionReceipt())) {
+                                    appCMSPresenter.navigateToSubscriptionPlansPage(null,
+                                            null);
+                                    appCMSPresenter.sendCloseOthersAction(null,
+                                            true);
+                                } else {
+                                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
                                 }
                             }
                         });

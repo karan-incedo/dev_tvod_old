@@ -274,11 +274,13 @@
     <string name="app_cms_logout_with_running_download_title">Downloading video in progress</string>
     <string name="app_cms_logout_with_running_download_message">Logout will remove your current downloading videos, You can still access your already downloaded video after re-login. Do you want to continue.</string>
     <string name="app_cms_login_button_text">LOGIN</string>
+    <string name="app_cms_signout_button_text">SIGN OUT</string>
     <string name="app_cms_login_required_title">Login Required</string>
     <string name="app_cms_login_required_message">Please login to continue.</string>
     <string name="app_cms_subscription_button_text">SUBSCRIBE</string>
     <string name="app_cast_overlay_text">Touch To Cast Videos On TV</string>
     <string name="app_cms_existing_subscription_error_message">The Play Store Google ID already has a subscription. Please sign into the app with an email and password that was used when the account was created.  Please login to start watching.</string>
+    <string name="app_cms_existing_subscription_logout_error_message">The Play Store Google ID already has a subscription. Please sign out of this account and then select SUBSCRIBE NOW to restore this purchase and start watching.</string>
     <string name="app_cms_existing_subscription_title">Existing Subscription</string>
     <string name="sent_beacon_play_key">sent_beacon_play</string>
     <string name="play_index_key">play_index</string>
@@ -374,6 +376,19 @@
     <string name="free_content_key">free_content</string>
     <string name="appcmsuijson_directoryname">androidui</string>
 
+    <string name="edit_profile_name_message">Use Alphabets for Name</string>
     <string name="mr_controller_stop_casting">Stop casting</string>
+
     <string name="force_reload_from_network_key">force_reload_from_network</string>
+
 </resources>
+
+
+
+
+
+
+
+
+
+

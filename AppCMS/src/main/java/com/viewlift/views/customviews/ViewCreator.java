@@ -571,6 +571,7 @@ public class ViewCreator {
                                             view.forceLayout();
                                         }
                                     } else if (componentType == AppCMSUIKeyType.PAGE_SETTINGS_KEY) {
+                                        Log.d(TAG, "checkForExistingSubscription() - 574");
                                         appCMSPresenter.checkForExistingSubscription(false);
                                         if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
                                             shouldHideComponent = true;
@@ -599,7 +600,7 @@ public class ViewCreator {
                                                     } else {
                                                         if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY) {
                                                             if (appCMSPresenter.isUserSubscribed() &&
-                                                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName())) {
+                                                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionProcessor())) {
                                                                 settingsView.setVisibility(View.VISIBLE);
                                                             } else {
                                                                 settingsView.setVisibility(View.GONE);
@@ -609,7 +610,7 @@ public class ViewCreator {
                                                             if (appCMSPresenter.isUserSubscribed() &&
                                                                     !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName())) {
                                                                 ((TextView) settingsView).setText(appCMSPresenter.getActiveSubscriptionPlanName());
-                                                            } else {
+                                                            } else if (!appCMSPresenter.isUserSubscribed()) {
                                                                 ((TextView) settingsView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
                                                             }
                                                         } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY) {
@@ -643,6 +644,7 @@ public class ViewCreator {
                                                             }
                                                         } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
                                                             if (appCMSPresenter.isUserSubscribed()) {
+                                                                Log.d(TAG, "checkForExistingSubscription() - 647");
                                                                 appCMSPresenter.checkForExistingSubscription(false);
 
                                                                 if (!appCMSPresenter.isExistingGooglePlaySubscriptionSuspended() &&
@@ -2183,7 +2185,7 @@ public class ViewCreator {
 
                         case PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY:
                             if (appCMSPresenter.isUserSubscribed() &&
-                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName())) {
+                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionProcessor())) {
                                 componentViewResult.componentView.setVisibility(View.VISIBLE);
                             } else {
                                 componentViewResult.componentView.setVisibility(View.GONE);

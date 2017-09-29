@@ -78,6 +78,8 @@ public class AppCMSPlayVideoFragment extends Fragment
     private final String FIREBASE_STREAM_25 = "stream_25_pct";
     private final String FIREBASE_STREAM_50 = "stream_50_pct";
     private final String FIREBASE_STREAM_75 = "stream_75_pct";
+    private final String FIREBASE_STREAM_100 = "stream_100_pct";
+
     private final String FIREBASE_VIDEO_ID_KEY = "video_id";
     private final String FIREBASE_VIDEO_NAME_KEY = "video_name";
     private final String FIREBASE_SERIES_ID_KEY = "series_id";
@@ -88,13 +90,13 @@ public class AppCMSPlayVideoFragment extends Fragment
     private final String FIREBASE_PLAYER_CHROMECAST = "Chromecast";
     private final String FIREBASE_MEDIA_TYPE_VIDEO = "Video";
     private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
-    private final int totalCountdownInMillis = 3000;
-    private final int countDownIntervalInMillis = 30;
+    private final int totalCountdownInMillis = 2000;
+    private final int countDownIntervalInMillis = 20;
     Handler mProgressHandler;
     Runnable mProgressRunnable;
     long mTotalVideoDuration;
     Animation animSequential, animFadeIn, animFadeOut, animTranslate;
-    boolean isStreamStart, isStream25, isStream50, isStream75;
+    boolean isStreamStart, isStream25, isStream50, isStream75,isStream100;
     private AppCMSPresenter appCMSPresenter;
     private String fontColor;
     private String title;
@@ -312,12 +314,12 @@ public class AppCMSPlayVideoFragment extends Fragment
                                 }
                                 videoPlayerInfoContainer.setVisibility(View.VISIBLE);
                                 if (appCMSPresenter.isUserLoggedIn()) {
-                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_PLAYER,
                                             () -> {
                                                 onClosePlayerEvent.closePlayer();
                                             });
                                 } else {
-                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER,
                                             () -> {
                                                 onClosePlayerEvent.closePlayer();
                                             });
@@ -562,9 +564,9 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         showCRWWarningMessage = true;
 
-        if (isVideoDownloaded) {
+        /*if (isVideoDownloaded) {
             videoPlayerView.startPlayer();
-        }
+        }*/
 
         return rootView;
     }
@@ -868,6 +870,25 @@ public class AppCMSPlayVideoFragment extends Fragment
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_75, bundle);
             isStream75 = true;
         }
+
+        if (progressPercent >= 98 && progressPercent <= 100 && !isStream100) {
+            if (!isStream25) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
+                isStream25 = true;
+            }
+
+            if (!isStream50) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_50, bundle);
+                isStream50 = true;
+            }
+
+            if (!isStream75) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_75, bundle);
+                isStream75 = true;
+            }
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_100, bundle);
+            isStream100 = true;
+        }
     }
 
 
@@ -996,9 +1017,10 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private void createContentRatingView() throws Exception {
-        if (!isTrailer && !getParentalRating().equalsIgnoreCase(getString(R.string.age_rating_converted_default))) {
+        if (!isTrailer && getParentalRating().equalsIgnoreCase(getString(R.string.age_rating_converted_eighteen)) && watchedTime == 0) {
             videoPlayerMainContainer.setVisibility(View.GONE);
-            animateView();
+            contentRatingMainContainer.setVisibility(View.VISIBLE);
+            //animateView();
             startCountdown();
         } else {
             contentRatingMainContainer.setVisibility(View.GONE);
@@ -1008,10 +1030,10 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private String getParentalRating() {
-        if (!TextUtils.isEmpty(parentalRating) && !parentalRating.contentEquals(getString(R.string.age_rating_converted_default))) {
+        if (!TextUtils.isEmpty(parentalRating) && !parentalRating.contentEquals(getString(R.string.age_rating_converted_eighteen))) {
             contentRatingTitleView.setText(parentalRating);
         }
-        return parentalRating;
+        return parentalRating != null ? parentalRating : getString(R.string.age_rating_converted_default);
     }
 
     private void startCountdown() {
