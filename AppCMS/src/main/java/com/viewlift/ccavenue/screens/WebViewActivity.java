@@ -255,7 +255,7 @@ public class WebViewActivity extends Activity {
 			params.append(ServiceUtility.addToPostParams("merchant_param1",getIntent().getStringExtra(getString(R.string.app_cms_site_name))));
 			params.append(ServiceUtility.addToPostParams("merchant_param2",getIntent().getStringExtra(getString(R.string.app_cms_user_id))));
 			params.append(ServiceUtility.addToPostParams("merchant_param3",getIntent().getStringExtra(getString(R.string.app_cms_plan_id))));
-			params.append(ServiceUtility.addToPostParams("merchant_param4","android"));
+			params.append(ServiceUtility.addToPostParams("merchant_param4",getString(R.string.app_cms_subscription_platform_key)));
 			params.append(ServiceUtility.addToPostParams("merchant_param5",""));
 			//params.append(ServiceUtility.addToPostParams(AvenuesParams.BILLING_EMAIL,"email")) ;
 			try {
@@ -287,7 +287,8 @@ public class WebViewActivity extends Activity {
 		try {
 			post_dict.put(getString(R.string.app_cms_site_name), getIntent().getStringExtra(getString(R.string.app_cms_site_name)));
 			post_dict.put(getString(R.string.app_cms_user_id), getIntent().getStringExtra(getString(R.string.app_cms_user_id)));
-			post_dict.put(getString(R.string.app_cms_device), getString(R.string.app_cms_subscription_key));
+			post_dict.put(getString(R.string.app_cms_device), getString(R.string.app_cms_subscription_platform_key));
+			post_dict.put("planId", getIntent().getStringExtra(getString(R.string.app_cms_plan_id)));
 			JsonDATA = String.valueOf(post_dict);
 		} catch (JSONException e) {
 			Log.e(TAG, e.getMessage());
