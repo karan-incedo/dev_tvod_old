@@ -2157,6 +2157,9 @@ public class AppCMSPresenter {
                                 showDialog(DialogType.SUBSCRIBE, "Please Try Again Later!", false, null);
                                 sendCloseOthersAction(null, true);
                             }
+                        } else {
+                            showDialog(DialogType.SUBSCRIBE, "Please Try Again Later!", false, null);
+                            sendCloseOthersAction(null, true);
                         }
                     },
                     appCMSSubscriptionPlanResult -> {
