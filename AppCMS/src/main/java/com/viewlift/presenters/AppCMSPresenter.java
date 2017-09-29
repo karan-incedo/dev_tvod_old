@@ -6766,12 +6766,7 @@ public class AppCMSPresenter {
 
                             refreshSubscriptionData(null, false);
 
-                            if (!TextUtils.isEmpty(countryCode) &&
-                                    appCMSMain != null &&
-                                    appCMSMain.getPaymentProviders() != null &&
-                                    appCMSMain.getPaymentProviders().getCcav() != null &&
-                                    !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
-                                    appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode)) {
+                            if (useCCAvenue()) {
                                 Log.d(TAG, "Initiating CCAvenue purchase");
                                 initiateCCAvenuePurchase();
                             } else {
@@ -6789,7 +6784,6 @@ public class AppCMSPresenter {
                                     launchType == LaunchType.INIT_SIGNUP) &&
                                         !isSignupFromFacebook &&
                                         !isSignupFromGoogle) {
-                                    launchType = LaunchType.LOGIN_AND_SIGNUP;
                                     String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                                             appCMSMain.getApiBaseUrl(),
                                             appCMSSite.getGist().getSiteInternalName());
@@ -6797,10 +6791,11 @@ public class AppCMSPresenter {
                                             subscriptionUserEmail,
                                             subscriptionUserPassword,
                                             false,
-                                            false,
+                                            launchType == LaunchType.INIT_SIGNUP,
                                             true,
                                             true,
                                             false);
+                                    launchType = LaunchType.LOGIN_AND_SIGNUP;
                                 }
                                 if (isSignupFromFacebook) {
                                     launchType = LaunchType.LOGIN_AND_SIGNUP;
