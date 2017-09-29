@@ -302,6 +302,7 @@ public class AppCMSPresenter {
     private static final String USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME = "user_download_quality_pref";
     private static final String USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME = "user_download_quality_screen_pref";
     private static final String USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME = "user_download_sd_card_pref";
+    private static final String USER_AUTH_PROVIDER_SHARED_PREF_NAME = "user_auth_provider_shared_pref_name";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String ANONYMOUS_AUTH_TOKEN_PREF_NAME = "anonymous_auth_token_pref_key";
@@ -3974,6 +3975,7 @@ public class AppCMSPresenter {
                                                                 setLoggedInUserName(signInResponse.getName());
                                                                 setLoggedInUserEmail(signInResponse.getEmail());
                                                                 setIsUserSubscribed(signInResponse.isSubscribed());
+                                                                setUserAuthProviderName(signInResponse.getProvider());
 
                                                                 refreshSubscriptionData(() -> {
 
@@ -3994,6 +3996,7 @@ public class AppCMSPresenter {
                                                                 setLoggedInUserName(signInResponse.getName());
                                                                 setLoggedInUserEmail(signInResponse.getEmail());
                                                                 setIsUserSubscribed(signInResponse.isSubscribed());
+                                                                setUserAuthProviderName(signInResponse.getProvider());
 
                                                                 refreshSubscriptionData(() -> {
 
@@ -4863,6 +4866,22 @@ public class AppCMSPresenter {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(USER_NAME_SHARED_PREF_NAME, 0);
             return sharedPrefs.edit().putString(USER_NAME_SHARED_PREF_NAME, userName).commit();
+        }
+        return false;
+    }
+
+    public String getUserAuthProviderName() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(USER_AUTH_PROVIDER_SHARED_PREF_NAME, 0);
+            return sharedPrefs.getString(USER_AUTH_PROVIDER_SHARED_PREF_NAME, null);
+        }
+        return null;
+    }
+
+    public boolean setUserAuthProviderName(String userAuthProviderName) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(USER_AUTH_PROVIDER_SHARED_PREF_NAME, 0);
+            return sharedPrefs.edit().putString(USER_AUTH_PROVIDER_SHARED_PREF_NAME, userAuthProviderName).commit();
         }
         return false;
     }

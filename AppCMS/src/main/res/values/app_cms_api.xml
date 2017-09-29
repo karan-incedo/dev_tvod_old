@@ -380,4 +380,6 @@
     <string name="subscription_unsubscribed_plan_value">Unsubscribed</string>
     <string name="subscription_unknown_payment_processor_friendly">Unknown</string>
     <string name="app_cms_view_plan_module_key">ViewPlanModule</string>
+    <string name="facebook_auth_provider_name_key">facebook</string>
+    <string name="google_auth_provider_name_key">google</string>
 </resources>

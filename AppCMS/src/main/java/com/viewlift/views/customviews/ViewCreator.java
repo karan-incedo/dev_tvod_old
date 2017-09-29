@@ -486,22 +486,31 @@ public class ViewCreator {
                                         }
                                     }
                                 } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_EDIT_PROFILE_KEY) {
-                                    if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken())) {
+
+                                    if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken()) ||
+                                            (!TextUtils.isEmpty(appCMSPresenter.getUserAuthProviderName()) &&
+                                                    appCMSPresenter.getUserAuthProviderName().equalsIgnoreCase(context.getString(R.string.facebook_auth_provider_name_key)))) {
                                         componentViewResult.componentView.setVisibility(View.GONE);
                                         componentViewResult.shouldHideComponent = true;
                                     }
 
-                                    if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken())) {
+                                    if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken()) ||
+                                            (!TextUtils.isEmpty(appCMSPresenter.getUserAuthProviderName()) &&
+                                                    appCMSPresenter.getUserAuthProviderName().equalsIgnoreCase(context.getString(R.string.google_auth_provider_name_key)))) {
                                         componentViewResult.componentView.setVisibility(View.GONE);
                                         componentViewResult.shouldHideComponent = true;
                                     }
                                 } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CHANGE_PASSWORD_KEY) {
-                                    if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken())) {
+                                    if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken()) ||
+                                            (!TextUtils.isEmpty(appCMSPresenter.getUserAuthProviderName()) &&
+                                                    appCMSPresenter.getUserAuthProviderName().equalsIgnoreCase(context.getString(R.string.facebook_auth_provider_name_key)))) {
                                         componentViewResult.componentView.setVisibility(View.GONE);
                                         componentViewResult.shouldHideComponent = true;
                                     }
 
-                                    if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken())) {
+                                    if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken()) ||
+                                            (!TextUtils.isEmpty(appCMSPresenter.getUserAuthProviderName()) &&
+                                                    appCMSPresenter.getUserAuthProviderName().equalsIgnoreCase(context.getString(R.string.google_auth_provider_name_key)))) {
                                         componentViewResult.componentView.setVisibility(View.GONE);
                                         componentViewResult.shouldHideComponent = true;
                                     }
@@ -1536,12 +1545,16 @@ public class ViewCreator {
 
                     case PAGE_SETTINGS_EDIT_PROFILE_KEY:
                     case PAGE_SETTINGS_CHANGE_PASSWORD_KEY:
-                        if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken())) {
+                        if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken()) ||
+                                (!TextUtils.isEmpty(appCMSPresenter.getUserAuthProviderName()) && 
+                                appCMSPresenter.getUserAuthProviderName().equalsIgnoreCase(context.getString(R.string.facebook_auth_provider_name_key)))) {
                             componentViewResult.componentView.setVisibility(View.GONE);
                             componentViewResult.shouldHideComponent = true;
                         }
 
-                        if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken())) {
+                        if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken()) ||
+                                (!TextUtils.isEmpty(appCMSPresenter.getUserAuthProviderName()) &&
+                                appCMSPresenter.getUserAuthProviderName().equalsIgnoreCase(context.getString(R.string.google_auth_provider_name_key)))) {
                             componentViewResult.componentView.setVisibility(View.GONE);
                             componentViewResult.shouldHideComponent = true;
                         }

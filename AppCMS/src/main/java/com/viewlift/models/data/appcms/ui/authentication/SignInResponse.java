@@ -47,6 +47,10 @@ public class SignInResponse {
     @Expose
     String message;
 
+    @SerializedName("provider")
+    @Expose
+    String provider;
+
     boolean errorResponseSet = false;
     ErrorResponse errorResponse;
 
@@ -137,5 +141,13 @@ public class SignInResponse {
 
     public boolean isErrorResponseSet() {
         return errorResponseSet;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
     }
 }
