@@ -759,10 +759,6 @@ public class AppCMSPresenter {
                                         appCMSVideoDetail.getRecords() != null &&
                                         appCMSVideoDetail.getRecords().get(0) != null &&
                                         appCMSVideoDetail.getRecords().get(0).getContentDetails() != null) {
-                                    if (watchedTime >= 0) {
-                                        appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(watchedTime);
-                                    }
-
                                     String updatedAction = expectedAction;
 
                                     if (!TextUtils.isEmpty(expectedAction) &&
@@ -792,6 +788,9 @@ public class AppCMSPresenter {
                                     if (updatedAction == null) {
                                         updatedAction = currentContext.getString(R.string.app_cms_action_videopage_key);
                                     }
+
+                                    appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(contentDatum.getGist().getWatchedTime());
+                                    appCMSVideoDetail.getRecords().get(0).getGist().setWatchedPercentage(contentDatum.getGist().getWatchedPercentage());
 
                                     launchButtonSelectedAction(appCMSVideoDetail.getRecords().get(0).getGist().getPermalink(),
                                             updatedAction,
