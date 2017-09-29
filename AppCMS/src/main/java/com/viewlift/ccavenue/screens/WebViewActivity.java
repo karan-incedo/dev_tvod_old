@@ -192,7 +192,7 @@ public class WebViewActivity extends Activity {
 				@Override
 				public void onPageStarted(WebView view, String url, Bitmap favicon) {
 					super.onPageStarted(view, url, favicon);
-                    backPressFlag = !url.equalsIgnoreCase(TRANS_URL);
+                    backPressFlag = url.equalsIgnoreCase(TRANS_URL);
 				}
 
 				@Override
@@ -544,7 +544,7 @@ public class WebViewActivity extends Activity {
 		if (backPressFlag) {
 			if (keyCode == KeyEvent.KEYCODE_BACK) {
 				//Do something here
-				return backPressFlag;
+				return false;
 			}
 		}
 		return super.onKeyDown(keyCode, event);

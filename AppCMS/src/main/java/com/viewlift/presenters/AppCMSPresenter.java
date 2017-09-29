@@ -2,12 +2,10 @@ package com.viewlift.presenters;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.DownloadManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
@@ -78,8 +76,6 @@ import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.ccavenue.screens.EnterMobileNumberActivity;
-import com.viewlift.ccavenue.screens.PaymentOptionsActivity;
-import com.viewlift.ccavenue.screens.WebViewActivity;
 import com.viewlift.ccavenue.utility.AvenuesParams;
 import com.viewlift.models.billing.appcms.authentication.GoogleRefreshTokenResponse;
 import com.viewlift.models.billing.appcms.subscriptions.InAppPurchaseData;
@@ -3959,6 +3955,7 @@ public class AppCMSPresenter {
                                                                         () -> {
                                                                             setRestoreSubscriptionReceipt(restoreSubscriptionReceipt);
                                                                             sendCloseOthersAction(null, true);
+                                                                            launchType = LaunchType.INIT_SIGNUP;
                                                                             navigateToLoginPage();
                                                                         });
                                                             }
@@ -3989,40 +3986,42 @@ public class AppCMSPresenter {
                                                             }
                                                         } else {
                                                             Log.d(TAG, "User is logged out");
-                                                            setRefreshToken(signInResponse.getRefreshToken());
-                                                            setAuthToken(signInResponse.getAuthorizationToken());
-                                                            setLoggedInUser(signInResponse.getUserId());
-                                                            sendSignInEmailFirebase();
-                                                            setLoggedInUserName(signInResponse.getName());
-                                                            setLoggedInUserEmail(signInResponse.getEmail());
-                                                            setIsUserSubscribed(signInResponse.isSubscribed());
-
-                                                            refreshSubscriptionData(() -> {
-
-                                                            }, true);
-
                                                             if (showErrorDialogIfSubscriptionExists) {
-                                                                Log.d(TAG, "Launching home page");
-                                                                sendCloseOthersAction(null, true);
-                                                                cancelInternalEvents();
-                                                                restartInternalEvents();
+                                                                setRefreshToken(signInResponse.getRefreshToken());
+                                                                setAuthToken(signInResponse.getAuthorizationToken());
+                                                                setLoggedInUser(signInResponse.getUserId());
+                                                                sendSignInEmailFirebase();
+                                                                setLoggedInUserName(signInResponse.getName());
+                                                                setLoggedInUserEmail(signInResponse.getEmail());
+                                                                setIsUserSubscribed(signInResponse.isSubscribed());
 
-                                                                if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
-                                                                    setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
-                                                                }
+                                                                refreshSubscriptionData(() -> {
 
-                                                                NavigationPrimary homePageNavItem = findHomePageNavItem();
-                                                                if (homePageNavItem != null) {
+                                                                }, true);
+
+                                                                if (showErrorDialogIfSubscriptionExists) {
+                                                                    Log.d(TAG, "Launching home page");
+                                                                    sendCloseOthersAction(null, true);
                                                                     cancelInternalEvents();
-                                                                    navigateToPage(homePageNavItem.getPageId(),
-                                                                            homePageNavItem.getTitle(),
-                                                                            homePageNavItem.getUrl(),
-                                                                            false,
-                                                                            true,
-                                                                            false,
-                                                                            true,
-                                                                            true,
-                                                                            deeplinkSearchQuery);
+                                                                    restartInternalEvents();
+
+                                                                    if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
+                                                                        setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
+                                                                    }
+
+                                                                    NavigationPrimary homePageNavItem = findHomePageNavItem();
+                                                                    if (homePageNavItem != null) {
+                                                                        cancelInternalEvents();
+                                                                        navigateToPage(homePageNavItem.getPageId(),
+                                                                                homePageNavItem.getTitle(),
+                                                                                homePageNavItem.getUrl(),
+                                                                                false,
+                                                                                true,
+                                                                                false,
+                                                                                true,
+                                                                                true,
+                                                                                deeplinkSearchQuery);
+                                                                    }
                                                                 }
                                                             }
                                                         }
@@ -5029,7 +5028,8 @@ public class AppCMSPresenter {
                         Log.d(TAG, "checkForExistingSubscription() - 5016");
                         checkForExistingSubscription(false);
 
-                        if (launchType == LaunchType.SUBSCRIBE) {
+                        if (launchType == LaunchType.SUBSCRIBE ||
+                                launchType == LaunchType.INIT_SIGNUP) {
                             this.facebookAccessToken = facebookAccessToken;
                             this.facebookUserId = facebookUserId;
                             this.facebookUsername = username;
@@ -5132,7 +5132,8 @@ public class AppCMSPresenter {
                             Log.d(TAG, "checkForExistingSubscription() - 5117");
                             checkForExistingSubscription(false);
 
-                            if (launchType == LaunchType.SUBSCRIBE) {
+                            if (launchType == LaunchType.SUBSCRIBE ||
+                                    launchType == LaunchType.INIT_SIGNUP) {
                                 this.googleAccessToken = googleAccessToken;
                                 this.googleUserId = googleUserId;
                                 this.googleUsername = googleUsername;
@@ -6765,7 +6766,8 @@ public class AppCMSPresenter {
                             planToPurchasePrice = 0.0f;
                             countryCode = "";
                             if (!isUserLoggedIn()) {
-                                if (launchType == LaunchType.SUBSCRIBE &&
+                                if ((launchType == LaunchType.SUBSCRIBE ||
+                                    launchType == LaunchType.INIT_SIGNUP) &&
                                         !isSignupFromFacebook &&
                                         !isSignupFromGoogle) {
                                     launchType = LaunchType.LOGIN_AND_SIGNUP;
@@ -6800,6 +6802,7 @@ public class AppCMSPresenter {
                                 }
                             } else {
                                 setIsUserSubscribed(true);
+                                launchType = LaunchType.LOGIN_AND_SIGNUP;
                                 if (entitlementPendingVideoData != null) {
                                     navigateToHomeToRefresh = false;
                                     sendRefreshPageAction();
@@ -6908,17 +6911,21 @@ public class AppCMSPresenter {
 
     public void signup(String email, String password) {
         if (currentActivity != null) {
-            String url = currentActivity.getString(R.string.app_cms_signup_api_url,
-                    appCMSMain.getApiBaseUrl(),
-                    appCMSSite.getGist().getSiteInternalName());
-            startLoginAsyncTask(url,
-                    email,
-                    password,
-                    true,
-                    launchType == LaunchType.SUBSCRIBE,
-                    false,
-                    false,
-                    false);
+            if (launchType != LaunchType.INIT_SIGNUP) {
+                String url = currentActivity.getString(R.string.app_cms_signup_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        appCMSSite.getGist().getSiteInternalName());
+                startLoginAsyncTask(url,
+                        email,
+                        password,
+                        true,
+                        launchType == LaunchType.SUBSCRIBE,
+                        false,
+                        false,
+                        false);
+            } else {
+                initiateItemPurchase();
+            }
         }
     }
 
@@ -7286,17 +7293,21 @@ public class AppCMSPresenter {
     public void login(String email, String password) {
         if (currentActivity != null) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-            String url = currentActivity.getString(R.string.app_cms_signin_api_url,
-                    appCMSMain.getApiBaseUrl(),
-                    appCMSSite.getGist().getSiteInternalName());
-            startLoginAsyncTask(url,
-                    email,
-                    password,
-                    false,
-                    false,
-                    false,
-                    false,
-                    true);
+            if (launchType != LaunchType.INIT_SIGNUP) {
+                String url = currentActivity.getString(R.string.app_cms_signin_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        appCMSSite.getGist().getSiteInternalName());
+                startLoginAsyncTask(url,
+                        email,
+                        password,
+                        false,
+                        false,
+                        false,
+                        false,
+                        true);
+            } else {
+                initiateItemPurchase();
+            }
         }
     }
 
@@ -9313,7 +9324,7 @@ public class AppCMSPresenter {
     }
 
     public enum LaunchType {
-        SUBSCRIBE, LOGIN_AND_SIGNUP
+        SUBSCRIBE, LOGIN_AND_SIGNUP, INIT_SIGNUP
     }
 
     public enum PlatformType {

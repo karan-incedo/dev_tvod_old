@@ -63,7 +63,7 @@ public class AppCMSRestorePurchaseCall {
                         JsonElement signInResponse = response.body();
                         if (readyAction != null) {
                             parsedSigninResponse = gson.fromJson(signInResponse, SignInResponse.class);
-                            Observable.just(parsedSigninResponse).subscribe(readyAction);
+                            Observable.just(1).subscribe(readyAction);
                         }
                     } catch (JsonSyntaxException e) {
                         Log.e(TAG, "Failed to retrieve sign-in response: " +
