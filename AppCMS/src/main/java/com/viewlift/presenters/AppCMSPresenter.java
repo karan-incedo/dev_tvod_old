@@ -6014,6 +6014,13 @@ public class AppCMSPresenter {
 
             if (onCloseAction != null) {
                 dialog.setCanceledOnTouchOutside(false);
+
+                dialog.setOnCancelListener(dialogInterface -> {
+                    if (dialogType == DialogType.EXISTING_SUBSCRIPTION ||
+                            dialogType == DialogType.EXISTING_SUBSCRIPTION_LOGOUT) {
+                        sendCloseOthersAction(null, true);
+                    }
+                });
             }
 
             if (dialog.getWindow() != null) {
