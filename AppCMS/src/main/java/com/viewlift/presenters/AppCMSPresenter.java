@@ -2152,12 +2152,14 @@ public class AppCMSPresenter {
                         Log.v("currentActivity", "currentActivity");
                     },
                     singleResult -> {
-                        String siStatus = singleResult.getSiStatus();
-                        if (siStatus.equalsIgnoreCase("ACTI")) {
-                            upgradePlanAPICall();
-                        } else {
-                            showDialog(DialogType.SUBSCRIBE, "Please Try Again Later!", false, null);
-                            sendCloseOthersAction(null, true);
+                        if (singleResult != null) {
+                            String siStatus = singleResult.getSiStatus();
+                            if (siStatus.equalsIgnoreCase("ACTI")) {
+                                upgradePlanAPICall();
+                            } else {
+                                showDialog(DialogType.SUBSCRIBE, "Please Try Again Later!", false, null);
+                                sendCloseOthersAction(null, true);
+                            }
                         }
                     },
                     appCMSSubscriptionPlanResult -> {
@@ -5010,6 +5012,8 @@ public class AppCMSPresenter {
                                           final String email,
                                           boolean forceSubscribed,
                                           boolean refreshSubscriptionData) {
+        checkForExistingSubscription(false);
+
         String url = currentActivity.getString(R.string.app_cms_facebook_login_api_url,
                 appCMSMain.getApiBaseUrl(),
                 appCMSSite.getGist().getSiteInternalName());
@@ -5118,6 +5122,8 @@ public class AppCMSPresenter {
                                         final String googleEmail,
                                         boolean forceSubscribed,
                                         boolean refreshSubscriptionData) {
+        checkForExistingSubscription(false);
+
         String url = currentActivity.getString(R.string.app_cms_google_login_api_url,
                 appCMSMain.getApiBaseUrl(), appCMSSite.getGist().getSiteInternalName());
 
@@ -5899,7 +5905,7 @@ public class AppCMSPresenter {
             if (dialogType == DialogType.EXISTING_SUBSCRIPTION) {
                 title = currentActivity.getString(R.string.app_cms_existing_subscription_title);
                 message = currentActivity.getString(R.string.app_cms_existing_subscription_error_message);
-                positiveButtonText = currentActivity.getString(R.string.app_cms_login_button_text);
+                positiveButtonText = currentActivity.getString(R.string.app_cms_login_and_signup_button_text);
             }
 
             if (dialogType == DialogType.EXISTING_SUBSCRIPTION_LOGOUT) {
