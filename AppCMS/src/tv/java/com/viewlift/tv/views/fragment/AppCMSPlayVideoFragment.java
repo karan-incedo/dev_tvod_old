@@ -299,9 +299,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         if (shouldRequestAds && !isADPlay) {
                             requestAds(adsUrl);
                             isADPlay = true;
-                        } else if(isTrailer){
+                        } /*else if(isTrailer){
                             videoPlayerView.startPlayer();
-                        }
+                        }*/
                         break;
                     case ExoPlayer.STATE_ENDED:
                         Log.d(TAG, "Video STATE_ENDED");
@@ -386,6 +386,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         PorterDuff.Mode.MULTIPLY
                 );
 
+
+         videoPlayerView.getPlayer().setPlayWhenReady(true);
 
         if (!shouldRequestAds) {
             preparePlayer();

@@ -162,7 +162,6 @@ import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
-import com.viewlift.tv.views.activity.AppCMSTVPlayVideoActivity;
 import com.viewlift.views.activity.AppCMSDownloadQualityActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
@@ -8198,22 +8197,20 @@ public class AppCMSPresenter {
                                                 }
                                               //  extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
                                                 if (!TextUtils.isEmpty(extraData[1])) {
-
-                                                    if (!(currentActivity instanceof AppCMSTVPlayVideoActivity)) {
-                                                        launchTVButtonSelectedAction(pagePath,
-                                                                action,
-                                                                filmTitle,
-                                                                extraData,
-                                                                false,
-                                                                appCMSVideoDetail.getRecords().get(0));
-                                                    }
-
+                                                    launchTVButtonSelectedAction(pagePath,
+                                                            action,
+                                                            filmTitle,
+                                                            extraData,
+                                                            false,
+                                                            appCMSVideoDetail.getRecords().get(0));
                                                 }
                                             }
                                         }
                                     });
                         } else {
-                            openTVErrorDialog("Unable to fetch data from the server", "");
+                            openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
+                                    currentActivity.getString(R.string.app_name)),
+                                    currentActivity.getString(R.string.app_connectivity_dialog_title));
                         }
 
                     }).execute(params);

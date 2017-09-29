@@ -22,6 +22,7 @@ import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,8 @@ public class AppCMSTVTrayAdapter
     private static final String TAG = AppCMSTVTrayAdapter.class.getCanonicalName();
     private static final int ITEM_TYPE_DATA = 10001;
     private static final int ITEM_TYPE_NO_DATA = 10002;
+    private boolean isWatchlist;
+    private boolean isHistory;
     private List<ContentDatum> adapterData;
     private final AppCMSPresenter appCMSPresenter;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
@@ -81,6 +84,19 @@ public class AppCMSTVTrayAdapter
         if (this.adapterData == null) {
             this.adapterData = new ArrayList<>();
         }
+        switch (jsonValueKeyMap.get(viewType)) {
+            case PAGE_HISTORY_MODULE_KEY:
+                this.isHistory = true;
+                break;
+
+            case PAGE_WATCHLIST_MODULE_KEY:
+                this.isWatchlist = true;
+                break;
+
+            default:
+                break;
+        }
+        sortData();
     }
 
 
@@ -325,6 +341,18 @@ public class AppCMSTVTrayAdapter
             super(itemView);
             if (itemView instanceof TVCollectionGridItemView)
                 this.componentView = (TVCollectionGridItemView) itemView;
+        }
+    }
+    private void sortData() {
+        if (adapterData != null) {
+            if (isWatchlist) {
+                Collections.sort(adapterData, (o1, o2)
+                        -> Long.compare(o1.getAddedDate(), o2.getAddedDate()));
+            } else if (isHistory) {
+                Collections.sort(adapterData, (o1, o2)
+                        -> Long.compare(o1.getUpdateDate(), o2.getUpdateDate()));
+                Collections.reverse(adapterData);
+            }
         }
     }
 }

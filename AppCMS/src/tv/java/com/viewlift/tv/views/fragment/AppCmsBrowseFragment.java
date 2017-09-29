@@ -2,6 +2,7 @@ package com.viewlift.tv.views.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.OnItemViewClickedListener;
@@ -83,6 +84,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
 
     ContentDatum data = null;
     BrowseFragmentRowData rowData = null;
+    long clickedTime;
     public void pushedPlayKey() {
         if (null != rowData) {
             ((AppCmsHomeActivity)getActivity()).pageLoading(true);
@@ -90,15 +92,21 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
             String permaLink = rowData.contentData.getGist().getPermalink();
             String title = rowData.contentData.getGist().getTitle();
 
-            if (!appCMSPresenter.launchTVVideoPlayer(filmId, permaLink, title , rowData.contentData)) {
-                ((AppCmsHomeActivity)getActivity()).pageLoading(false);
-                Log.e(TAG, "Could not launch play action: " +
-                        " filmId: " +
-                        filmId +
-                        " permaLink: " +
-                        permaLink +
-                        " title: " +
-                        title);
+            long diff = System.currentTimeMillis() - clickedTime;
+            if (diff > 2000) {
+                clickedTime = System.currentTimeMillis();
+                if (!appCMSPresenter.launchTVVideoPlayer(filmId, permaLink, title , rowData.contentData)) {
+                    ((AppCmsHomeActivity)getActivity()).pageLoading(false);
+                    Log.e(TAG, "Could not launch play action: " +
+                            " filmId: " +
+                            filmId +
+                            " permaLink: " +
+                            permaLink +
+                            " title: " +
+                            title);
+                }
+            } else {
+                appCMSPresenter.showLoadingDialog(false);
             }
         }
     }
@@ -150,6 +158,9 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                             hlsUrl);
                 }
             }
+
+            itemViewHolder.view.setClickable(false);
+            new Handler().postDelayed(() -> itemViewHolder.view.setClickable(true), 3000);
         }
     }
 
