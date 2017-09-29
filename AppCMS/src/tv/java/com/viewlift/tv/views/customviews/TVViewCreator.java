@@ -471,6 +471,7 @@ public class TVViewCreator {
         switch (componentType) {
             case PAGE_TABLE_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
+                componentViewResult.componentView.setFocusable(false);
                 ((RecyclerView) componentViewResult.componentView)
                         .setLayoutManager(new LinearLayoutManager(context,
                                 LinearLayoutManager.VERTICAL,
