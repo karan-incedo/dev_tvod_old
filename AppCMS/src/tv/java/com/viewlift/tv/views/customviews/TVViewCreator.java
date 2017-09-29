@@ -1326,6 +1326,10 @@ public class TVViewCreator {
                                                         videoUrl);
                                             }
                                         }
+                                    } else {
+                                        appCMSPresenter.openTVErrorDialog(context.getString(R.string.api_error_message,
+                                                context.getString(R.string.app_name)),
+                                                context.getString(R.string.app_connectivity_dialog_title));
                                     }
                                 }
 
