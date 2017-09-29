@@ -85,6 +85,7 @@ import com.viewlift.views.customviews.ViewCreatorMultiLineLayoutListener;
 import com.viewlift.views.customviews.ViewCreatorTitleLayoutListener;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -342,6 +343,15 @@ public class TVViewCreator {
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                  final AppCMSPresenter appCMSPresenter,
                                  boolean isCarousel) {
+
+        // Sort the data in case of continue watching tray
+        if (jsonValueKeyMap.get(moduleUI.getType()) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY) {
+            if (moduleData != null && moduleData.getContentData() != null) {
+                Collections.sort(moduleData.getContentData(), (o1, o2)
+                        -> Long.compare(o1.getUpdateDate(), o2.getUpdateDate()));
+                Collections.reverse(moduleData.getContentData());
+            }
+        }
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
         if (componentType == null) {
             componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
