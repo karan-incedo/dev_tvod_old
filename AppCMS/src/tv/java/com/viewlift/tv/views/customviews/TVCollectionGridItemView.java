@@ -240,6 +240,7 @@ public class TVCollectionGridItemView extends TVBaseView {
                             data));
                     view.setFocusable(false);
                 } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DELETE_ITEM_BUTTON) {
+                    view.setNextFocusUpId(R.id.appcms_removeall);
                     view.setOnClickListener(v -> onClickHandler.delete(childComponent, data));
                 }
 

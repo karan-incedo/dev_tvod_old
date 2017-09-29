@@ -856,6 +856,7 @@ public class TVViewCreator {
                         if (moduleAPI.getContentData() != null
                                 && moduleAPI.getContentData().size() > 0) {
                             Button buttonRemoveAll = (Button) componentViewResult.componentView;
+                            buttonRemoveAll.setId(R.id.appcms_removeall);
                             buttonRemoveAll.setOnClickListener(v -> {
                                 OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
                                 switch (jsonValueKeyMap.get(viewType)) {
