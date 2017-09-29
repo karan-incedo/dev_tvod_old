@@ -51,6 +51,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -984,7 +985,7 @@ public class AppCMSPresenter {
         boolean result = false;
         boolean isVideoOffline = false;
         try {
-            isVideoOffline = Boolean.parseBoolean(extraData != null && extraData.length >2 ? extraData[3]: "false");
+            isVideoOffline = Boolean.parseBoolean(extraData != null && extraData.length > 2 ? extraData[3] : "false");
         } catch (Exception e) {
             Log.e(TAG, e.getLocalizedMessage());
         }
@@ -1755,6 +1756,7 @@ public class AppCMSPresenter {
 
     public void launchSearchResultsPage(String searchQuery) {
         if (currentActivity != null) {
+
             Intent searchIntent = new Intent(currentActivity, AppCMSSearchActivity.class);
             searchIntent.setAction(Intent.ACTION_SEARCH);
             searchIntent.putExtra(SearchManager.QUERY, searchQuery);
@@ -1952,7 +1954,7 @@ public class AppCMSPresenter {
         Log.v("apikey", apikey);
         try {
             String strAmount = Double.toString(planToPurchaseDiscountedPrice);
-            Intent  intent = new Intent(currentActivity, EnterMobileNumberActivity.class);
+            Intent intent = new Intent(currentActivity, EnterMobileNumberActivity.class);
             //Intent intent = new Intent(currentActivity, WebViewActivity.class);
             //Intent intent = new Intent(currentActivity, PaymentOptionsActivity.class);
             intent.putExtra(AvenuesParams.CURRENCY, currencyCode);
@@ -1971,7 +1973,7 @@ public class AppCMSPresenter {
             intent.putExtra("api_base_url", appCMSMain.getApiBaseUrl());
             intent.putExtra("si_frequency", "2");
             intent.putExtra("si_frequency_type", renewableFrequency);
-            intent.putExtra("color_theme",getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()) ;
+            intent.putExtra("color_theme", getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
             currentActivity.startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -2324,6 +2326,7 @@ public class AppCMSPresenter {
             currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
     }
+
     public void restrictLandscapeOnly() {
         if (currentActivity != null) {
             currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -3931,13 +3934,13 @@ public class AppCMSPresenter {
                                     }
                                     Log.d(TAG, "Set active subscription: " + inAppPurchaseData.getProductId());
 
-                                        Log.d(TAG, "Making restore purchase call with token: " + inAppPurchaseData.getPurchaseToken());
-                                        String restorePurchaseUrl = currentContext.getString(R.string.app_cms_restore_purchase_api_url,
-                                                appCMSMain.getApiBaseUrl(),
-                                                appCMSSite.getGist().getSiteInternalName());
-                                        try {
-                                            final String restoreSubscriptionReceipt = subscribedItemList.get(i);
-                                            appCMSRestorePurchaseCall.call(apikey,
+                                    Log.d(TAG, "Making restore purchase call with token: " + inAppPurchaseData.getPurchaseToken());
+                                    String restorePurchaseUrl = currentContext.getString(R.string.app_cms_restore_purchase_api_url,
+                                            appCMSMain.getApiBaseUrl(),
+                                            appCMSSite.getGist().getSiteInternalName());
+                                    try {
+                                        final String restoreSubscriptionReceipt = subscribedItemList.get(i);
+                                        appCMSRestorePurchaseCall.call(apikey,
                                                 restorePurchaseUrl,
                                                 inAppPurchaseData.getPurchaseToken(),
                                                 appCMSSite.getGist().getSiteInternalName(),
@@ -4313,6 +4316,14 @@ public class AppCMSPresenter {
                 }
             }
         }
+
+    }
+
+    public void closeSoftKeyboardNoView() {
+        if (currentActivity != null) {
+            InputMethodManager imm = (InputMethodManager) currentActivity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+        }
     }
 
     public boolean navigateToPage(String pageId,
@@ -4554,7 +4565,6 @@ public class AppCMSPresenter {
             closeOthersIntent.putExtra(currentActivity.getString(R.string.app_cms_closing_page_name),
                     pageName);
             currentActivity.sendBroadcast(closeOthersIntent);
-
             result = true;
         }
         return result;
@@ -5451,7 +5461,6 @@ public class AppCMSPresenter {
     }
 
 
-
     public String getActiveSubscriptionProcessor() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_SUBSCRIPTION_PROCESSOR_NAME, 0);
@@ -5914,7 +5923,7 @@ public class AppCMSPresenter {
                                 Log.e(TAG, "Error cancelling dialog while logging out with running download: " + e.getMessage());
                             }
                         });
-            } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER)  {
+            } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER) {
                 builder.setPositiveButton(R.string.app_cms_login_button_text,
                         (dialog, which) -> {
                             try {
@@ -6000,7 +6009,7 @@ public class AppCMSPresenter {
                         });
             }
 
-            if(dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER){
+            if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER) {
                 builder.setOnKeyListener((arg0, keyCode, event) -> {
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
                         if (onCloseAction != null) {
@@ -7062,7 +7071,8 @@ public class AppCMSPresenter {
                                                                     }
                                                             );
                                                         } catch (Exception e) {
-                                                            Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());if (onRefreshReadyAction != null) {
+                                                            Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
+                                                            if (onRefreshReadyAction != null) {
                                                                 onRefreshReadyAction.call();
                                                             }
                                                         }
@@ -8026,7 +8036,7 @@ public class AppCMSPresenter {
                         getAppCMSAndroid(tryCount + 1);
                     } catch (Exception e) {
                         Log.e(TAG, "Error refreshing identity while attempting to retrieving AppCMS Android data: " +
-                            e.getMessage());
+                                e.getMessage());
                         launchErrorActivity(platformType);
                     }
                 });
@@ -8145,7 +8155,7 @@ public class AppCMSPresenter {
         }
         GetAppCMSPageUIAsyncTask.Params params =
                 new GetAppCMSPageUIAsyncTask.Params.Builder()
-                        .url(url)                                                   
+                        .url(url)
                         .timeStamp(timeStamp)
                         .build();
         new GetAppCMSPageUIAsyncTask(appCMSPageUICall, onPageReady).execute(params);
@@ -9225,7 +9235,7 @@ public class AppCMSPresenter {
         String downloadQualityRendition = getUserDownloadQualityPref();
         Map<String, String> urlRenditionMap = new HashMap<>();
         for (Mpeg mpeg : contentDatum.getStreamingInfo().getVideoAssets().getMpeg()) {
-            if(mpeg.getRenditionValue() != null) {
+            if (mpeg.getRenditionValue() != null) {
                 urlRenditionMap.put(mpeg.getRenditionValue().replace("_", "").trim(),
                         mpeg.getUrl());
             }

@@ -33,7 +33,7 @@
 
         <activity
             android:name=".views.activity.AppCMSPageActivity"
-            android:configChanges="orientation|screenSize"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustPan|stateHidden">
             <meta-data
