@@ -512,6 +512,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         unregisterReceiver(presenterCloseActionReceiver);
         isActive = false;
+
+        appCMSPresenter.cancelWatchlistToast();
     }
 
     @Override
