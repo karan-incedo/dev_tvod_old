@@ -797,14 +797,16 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSFacebookLoginCall providesAppCMSFacebookLoginCall(AppCMSFacebookLoginRest appCMSFacebookLoginRest) {
-        return new AppCMSFacebookLoginCall(appCMSFacebookLoginRest);
+    public AppCMSFacebookLoginCall providesAppCMSFacebookLoginCall(AppCMSFacebookLoginRest appCMSFacebookLoginRest,
+                                                                   Gson gson) {
+        return new AppCMSFacebookLoginCall(appCMSFacebookLoginRest, gson);
     }
 
     @Provides
     @Singleton
-    public AppCMSGoogleLoginCall providesAppCMSGoogleLoginCall(AppCMSGoogleLoginRest appCMSGoogleLoginRest) {
-        return new AppCMSGoogleLoginCall(appCMSGoogleLoginRest);
+    public AppCMSGoogleLoginCall providesAppCMSGoogleLoginCall(AppCMSGoogleLoginRest appCMSGoogleLoginRest,
+                                                               Gson gson) {
+        return new AppCMSGoogleLoginCall(appCMSGoogleLoginRest, gson);
     }
 
     @Provides
