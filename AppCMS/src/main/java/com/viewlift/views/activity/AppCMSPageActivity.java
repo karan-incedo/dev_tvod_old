@@ -539,6 +539,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         unregisterReceiver(presenterCloseActionReceiver);
         isActive = false;
 
+        appCMSPresenter.closeSoftKeyboard();
         appCMSPresenter.cancelWatchlistToast();
     }
 
