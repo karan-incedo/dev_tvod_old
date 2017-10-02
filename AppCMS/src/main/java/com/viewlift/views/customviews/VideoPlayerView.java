@@ -269,6 +269,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
         DefaultTrackSelector trackSelector =
                 new DefaultTrackSelector(videoTrackSelectionFactory);
+        
+        trackSelector.setTunnelingAudioSessionId(C.generateAudioSessionIdV21(getContext()));
 
         player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
         player.addListener(this);
