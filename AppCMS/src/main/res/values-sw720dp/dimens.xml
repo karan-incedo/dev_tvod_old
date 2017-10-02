@@ -6,5 +6,6 @@
     <fraction name="mainContainerWidthPercent">89%</fraction>
     <fraction name="mainContainerHeightPercent">21%</fraction>
     <dimen name="app_cms_continue_watching_tray_marginLeft">15dp</dimen>
+    <dimen name="a_new_version_of_the_app_is_available_textsize">24sp</dimen>
 
 </resources>

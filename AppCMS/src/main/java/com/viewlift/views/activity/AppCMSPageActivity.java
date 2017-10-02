@@ -23,6 +23,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -37,6 +38,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.facebook.AccessToken;
@@ -138,6 +140,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @BindView(R.id.new_version_available_parent)
     FrameLayout newVersionUpgradeAvailable;
+
+    @BindView(R.id.new_version_available_textview)
+    TextView newVersionAvailableTextView;
 
     @BindView(R.id.new_version_available_close_button)
     ImageButton newVersionAvailableCloseButton;
@@ -458,6 +463,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             } catch (Exception e) {
                 Log.e(TAG, "Failed to set color for loader: " + e.getMessage());
             }
+        }
+
+        if (appCMSPresenter != null) {
+            newVersionAvailableTextView.setTextColor(Color.parseColor(
+                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
         }
 
         newVersionAvailableCloseButton.setOnClickListener((v) -> {

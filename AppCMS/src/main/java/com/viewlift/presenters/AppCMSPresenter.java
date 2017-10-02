@@ -3457,7 +3457,7 @@ public class AppCMSPresenter {
     public boolean isAppUpgradeAvailable() {
 
 
-        return false;
+        return true;
     }
 
     public boolean isAppBelowMinVersion() {
