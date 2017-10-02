@@ -62,6 +62,7 @@ public class AppCMSRestorePurchaseCall {
                     try {
                         JsonElement signInResponse = response.body();
                         if (readyAction != null) {
+                            Log.d(TAG, "Received response: " + signInResponse);
                             parsedSigninResponse = gson.fromJson(signInResponse, SignInResponse.class);
                             Observable.just(parsedSigninResponse).subscribe(readyAction);
                         }

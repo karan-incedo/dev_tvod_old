@@ -73,7 +73,7 @@ public class SubscriptionRequest {
 
     @SerializedName("referenceNo")
     @Expose
-    private String referenceNo;
+    String referenceNo;
 
     public String getSiteInternalName() {
         return siteInternalName;

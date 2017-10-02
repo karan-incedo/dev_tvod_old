@@ -1581,7 +1581,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
 
             if (appCMSPresenter.isViewPlanPage(appCMSBinderStack.peek())) {
-                appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
+                if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
+                }
             }
 
             boolean leavingExtraPage = appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() !=
