@@ -5756,9 +5756,6 @@ public class AppCMSPresenter {
                     Log.e(TAG, "AppCMS key for API Base URL not found");
                     launchErrorActivity(platformType);
                     return;
-                } else if (isAppBelowMinVersion()) {
-                    Log.e(TAG, "AppCMS current application version is below the minimum version supported");
-                    launchUpgradeAppActivity();
                 } else {
                     appCMSMain = main;
                     new SoftReference<Object>(appCMSMain, referenceQueue);
@@ -8133,6 +8130,9 @@ public class AppCMSPresenter {
                                 appCMSAndroidUI.getMetaPages().isEmpty()) {
                             Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
                             launchErrorActivity(platformType);
+                        } else if (isAppBelowMinVersion()) {
+                            Log.e(TAG, "AppCMS current application version is below the minimum version supported");
+                            launchUpgradeAppActivity();
                         } else {
                             initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
                             navigation = appCMSAndroidUI.getNavigation();
