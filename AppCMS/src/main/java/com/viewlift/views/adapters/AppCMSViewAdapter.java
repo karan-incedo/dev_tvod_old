@@ -331,9 +331,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (price == 0) {
                                     price = data.getPlanDetails().get(0).getRecurringPaymentAmount();
                                 }
-
-                                double discountedPrice = data.getPlanDetails().get(0).getRecurringPaymentAmount();
-
+                                
                                 boolean upgradesAvailable = adapterData.indexOf(data) == 0;
 
                                 appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
@@ -341,7 +339,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         data.getPlanDetails().get(0).getCountryCode(),
                                         data.getName(),
                                         price,
-                                        discountedPrice,
                                         data.getPlanDetails().get(0).getRecurringPaymentCurrencyCode(),
                                         data.getPlanDetails().get(0).getCountryCode(),
                                         data.getRenewable(),
