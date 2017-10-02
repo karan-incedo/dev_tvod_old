@@ -1994,7 +1994,7 @@ public class AppCMSPresenter {
     public void initiateItemPurchase() {
         Log.d(TAG, "Initiating item purchase");
 
-        Log.d(TAG, "checkForExistingSubscription() - 1997");
+        Log.d(TAG, "checkForExistingSubscription()");
         checkForExistingSubscription(false);
 
         if (useCCAvenue()) {
@@ -5060,7 +5060,7 @@ public class AppCMSPresenter {
                             setIsUserSubscribed(facebookLoginResponse.isSubscribed());
                         }
 
-                        Log.d(TAG, "checkForExistingSubscription() - 5016");
+                        Log.d(TAG, "checkForExistingSubscription()");
                         checkForExistingSubscription(false);
 
                         if (launchType == LaunchType.SUBSCRIBE ||
@@ -5168,7 +5168,7 @@ public class AppCMSPresenter {
                                     setIsUserSubscribed(googleLoginResponse.isSubscribed());
                                 }
 
-                                Log.d(TAG, "checkForExistingSubscription() - 5117");
+                                Log.d(TAG, "checkForExistingSubscription()");
                                 checkForExistingSubscription(false);
 
                                 if (launchType == LaunchType.SUBSCRIBE) {
@@ -7447,7 +7447,7 @@ public class AppCMSPresenter {
                                 setIsUserSubscribed(signInResponse.isSubscribed());
                             }
 
-                            Log.d(TAG, "checkForExistingSubscription() - 7366");
+                            Log.d(TAG, "checkForExistingSubscription()");
                             checkForExistingSubscription(false);
 
                             Log.d(TAG, "Initiating user login - user subscribed: " + getIsUserSubscribed());
