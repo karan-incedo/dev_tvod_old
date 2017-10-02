@@ -2,12 +2,10 @@ package com.viewlift.models.network.rest;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 
 import java.io.File;
@@ -20,10 +18,6 @@ import java.nio.charset.Charset;
 import java.util.Scanner;
 
 import javax.inject.Inject;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by viewlift on 5/9/17.
