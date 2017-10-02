@@ -54,11 +54,8 @@ public class AppCMSPageUICall {
         } catch (Exception e) {
             Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
             try {
-                // TODO: 9/26/17 Passing timestamps with urls - this may change in the future.
-                StringBuilder urlWithTimestamp = new StringBuilder(url);
-                urlWithTimestamp.append("?x=");
-                urlWithTimestamp.append(timeStamp);
-                appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(urlWithTimestamp.toString())
+                deletePreviousFiles(url);
+                appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(url.toString())
                         .execute().body());
             } catch (Exception e2) {
                 Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
@@ -72,6 +69,7 @@ public class AppCMSPageUICall {
                                        @NonNull Response<AppCMSPageUI> response) {
                     try {
                         if (response.body() != null) {
+                            deletePreviousFiles(url);
                             writePageToFile(filename, response.body());
                         }
                     } catch (IOException e) {
@@ -102,6 +100,24 @@ public class AppCMSPageUICall {
         outputStream.write(output.getBytes());
         outputStream.close();
         return appCMSPageUI;
+    }
+
+    private void deletePreviousFiles(String url) {
+        String fileToDeleteFilenamePatter = getResourceFilenameWithJsonOnly(url);
+        File savedFileDirectory = new File(storageDirectory.toString());
+        if (savedFileDirectory.isDirectory()) {
+            String[] listExistingFiles = savedFileDirectory.list();
+            for (String existingFilename : listExistingFiles) {
+                if (existingFilename.contains(fileToDeleteFilenamePatter)) {
+                    File fileToDelete = new File(existingFilename);
+                    if (fileToDelete.delete()) {
+                        Log.i(TAG, "Successfully deleted pre-existing file: " + fileToDelete);
+                    } else {
+                        Log.e(TAG, "Failed to delete pre-existing file: " + fileToDelete);
+                    }
+                }
+            }
+        }
     }
 
     private AppCMSPageUI readPageFromFile(String inputFilename) throws IOException {
@@ -156,6 +172,17 @@ public class AppCMSPageUICall {
         outputStream.close();
 
         return appCMSPageUI;
+    }
+
+
+    private String getResourceFilenameWithJsonOnly(String url) {
+        final String JSON_EXT = ".json";
+        int startIndex = url.lastIndexOf(File.separatorChar);
+        int endIndex = url.length();
+        if (0 <= startIndex && startIndex < endIndex) {
+            return url.substring(startIndex + 1, endIndex);
+        }
+        return url;
     }
 
     private String getResourceFilename(String url) {

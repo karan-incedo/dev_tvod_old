@@ -173,6 +173,7 @@ import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.activity.AppCMSSearchActivity;
+import com.viewlift.views.activity.AppCMSUpgradeActivity;
 import com.viewlift.views.activity.AutoplayActivity;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
@@ -184,6 +185,7 @@ import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
+import com.viewlift.views.fragments.AppCMSUpgradeFragment;
 
 import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
@@ -3435,6 +3437,34 @@ public class AppCMSPresenter {
         }
     }
 
+    public void launchUpgradeAppActivity() {
+        if (platformType == PlatformType.ANDROID) {
+            try {
+                Intent errorIntent = new Intent(currentActivity, AppCMSUpgradeActivity.class);
+                currentActivity.startActivity(errorIntent);
+            } catch (Exception e) {
+                Log.e(TAG, "DialogType launching Mobile DialogType Activity");
+            }
+        } else if (platformType == PlatformType.TV) {
+            try {
+
+            } catch (Exception e) {
+                Log.e(TAG, "DialogType launching TV DialogType Activity");
+            }
+        }
+    }
+
+    public boolean isAppUpgradeAvailable() {
+
+
+        return false;
+    }
+
+    public boolean isAppBelowMinVersion() {
+
+        return false;
+    }
+
     public void clearHistory(final Action1<AppCMSDeleteHistoryResult> resultAction1) {
         final String url = currentActivity.getString(R.string.app_cms_clear_history_api_url,
                 appCMSMain.getApiBaseUrl(),
@@ -5726,6 +5756,9 @@ public class AppCMSPresenter {
                     Log.e(TAG, "AppCMS key for API Base URL not found");
                     launchErrorActivity(platformType);
                     return;
+                } else if (isAppBelowMinVersion()) {
+                    Log.e(TAG, "AppCMS current application version is below the minimum version supported");
+                    launchUpgradeAppActivity();
                 } else {
                     appCMSMain = main;
                     new SoftReference<Object>(appCMSMain, referenceQueue);

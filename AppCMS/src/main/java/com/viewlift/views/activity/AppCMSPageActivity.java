@@ -136,6 +136,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @BindView(R.id.app_cms_cast_conroller)
     FrameLayout appCMSCastController;
 
+    @BindView(R.id.new_version_available_parent)
+    FrameLayout newVersionUpgradeAvailable;
+
+    @BindView(R.id.new_version_available_close_button)
+    ImageButton newVersionAvailableCloseButton;
+
     private int navMenuPageIndex;
     private int homePageIndex;
     private int categoriesPageIndex;
@@ -454,6 +460,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
+        newVersionAvailableCloseButton.setOnClickListener((v) -> {
+            newVersionUpgradeAvailable.setVisibility(View.GONE);
+        });
+
         appCMSPresenter.sendCloseOthersAction(null, false);
 
         Log.d(TAG, "onCreate()");
@@ -502,6 +512,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         Log.d(TAG, "onResume()");
         Log.d(TAG, "checkForExistingSubscription() - 503");
         appCMSPresenter.checkForExistingSubscription(false);
+
+        if (appCMSPresenter.isAppUpgradeAvailable()) {
+            newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
+        } else if (appCMSPresenter.isAppBelowMinVersion()) {
+            appCMSPresenter.launchUpgradeAppActivity();
+        }
     }
 
     @Override
