@@ -178,7 +178,7 @@ public class AppCMSPageUICall {
     private String getResourceFilenameWithJsonOnly(String url) {
         final String JSON_EXT = ".json";
         int startIndex = url.lastIndexOf(File.separatorChar);
-        int endIndex = url.length();
+        int endIndex = url.indexOf(JSON_EXT) + JSON_EXT.length();
         if (0 <= startIndex && startIndex < endIndex) {
             return url.substring(startIndex + 1, endIndex);
         }
@@ -186,9 +186,8 @@ public class AppCMSPageUICall {
     }
 
     private String getResourceFilename(String url) {
-        final String JSON_EXT = ".json";
         int startIndex = url.lastIndexOf(File.separatorChar);
-        int endIndex = url.indexOf(JSON_EXT) + JSON_EXT.length();
+        int endIndex = url.length();
         if (0 <= startIndex && startIndex < endIndex) {
             return url.substring(startIndex + 1, endIndex);
         }
