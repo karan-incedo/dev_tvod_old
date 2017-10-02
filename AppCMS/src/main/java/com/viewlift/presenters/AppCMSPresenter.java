@@ -3440,8 +3440,8 @@ public class AppCMSPresenter {
     public void launchUpgradeAppActivity() {
         if (platformType == PlatformType.ANDROID) {
             try {
-                Intent errorIntent = new Intent(currentActivity, AppCMSUpgradeActivity.class);
-                currentActivity.startActivity(errorIntent);
+                Intent upgradeIntent = new Intent(currentActivity, AppCMSUpgradeActivity.class);
+                currentActivity.startActivity(upgradeIntent);
             } catch (Exception e) {
                 Log.e(TAG, "DialogType launching Mobile DialogType Activity");
             }
@@ -3457,7 +3457,7 @@ public class AppCMSPresenter {
     public boolean isAppUpgradeAvailable() {
 
 
-        return true;
+        return false;
     }
 
     public boolean isAppBelowMinVersion() {

@@ -25,9 +25,13 @@ public class AppCMSUpgradeActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         AppCMSUpgradeFragment appCMSUpgradeActivity = AppCMSUpgradeFragment.newInstance();
-        fragmentTransaction.add(R.id.error_fragment, appCMSUpgradeActivity, UPGRADE_TAG);
+        fragmentTransaction.add(R.id.upgrade_fragment, appCMSUpgradeActivity, UPGRADE_TAG);
         fragmentTransaction.commit();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         if (getApplication() instanceof AppCMSApplication) {
             ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction(null, false);
         }
