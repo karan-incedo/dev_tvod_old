@@ -62,32 +62,6 @@ public class AppCMSPageUICall {
                         e2.getMessage());
             }
         }
-        try {
-            appCMSPageUIRest.get(url).enqueue(new Callback<AppCMSPageUI>() {
-                @Override
-                public void onResponse(@NonNull Call<AppCMSPageUI> call,
-                                       @NonNull Response<AppCMSPageUI> response) {
-                    try {
-                        if (response.body() != null) {
-                            deletePreviousFiles(url);
-                            writePageToFile(filename, response.body());
-                        }
-                    } catch (IOException e) {
-                        Log.e(TAG, "Could not write AppCMS UI JSON file: " + e.getMessage());
-                    }
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<AppCMSPageUI> call, @NonNull Throwable t) {
-                    Log.e(TAG, "Could not read AppCMS UI JSON file from network: " +
-                            t.getMessage());
-                }
-            });
-        } catch (JsonSyntaxException e) {
-            Log.w(TAG, "DialogType trying to parse input JSON " + url + ": " + e.toString());
-        } catch (Exception e) {
-            Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
-        }
         return appCMSPageUI;
     }
 

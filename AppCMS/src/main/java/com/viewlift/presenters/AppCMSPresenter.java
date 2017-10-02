@@ -8120,7 +8120,7 @@ public class AppCMSPresenter {
                         new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                                 .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
                                         appCMSMain.getAndroid()))
-                                .loadFromFile(loadFromFile)
+                                .loadFromFile(false)
                                 .build();
                 Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
                 new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
