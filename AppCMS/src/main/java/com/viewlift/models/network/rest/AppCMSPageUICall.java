@@ -6,8 +6,6 @@ import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 
 import java.io.File;
@@ -17,14 +15,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.util.Date;
 import java.util.Scanner;
 
 import javax.inject.Inject;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by viewlift on 5/9/17.
@@ -50,46 +43,17 @@ public class AppCMSPageUICall {
     public AppCMSPageUI call(String url, long timeStamp) throws IOException {
         String filename = getResourceFilename(url);
         AppCMSPageUI appCMSPageUI = null;
-
-        boolean loadedFromFile = false;
         try {
             appCMSPageUI = readPageFromFile(filename);
-
-            if (appCMSPageUI == null) {
-                appCMSPageUI = retrieveDataFromNetwork(filename, url);
-            } else {
-                loadedFromFile = true;
-            }
         } catch (Exception e) {
-            Log.e(TAG, "Error reading file AppCMS UI JSON file: " +
-                    e.getMessage());
-            appCMSPageUI = retrieveDataFromNetwork(filename, url);
-        }
-
-        if (loadedFromFile) {
+            Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
             try {
-                appCMSPageUIRest.get(url).enqueue(new Callback<AppCMSPageUI>() {
-                    @Override
-                    public void onResponse(Call<AppCMSPageUI> call, Response<AppCMSPageUI> response) {
-                        try {
-                            if (response.body() != null) {
-                                writePageToFile(filename, response.body());
-                            }
-                        } catch (IOException e) {
-                            Log.e(TAG, "Could not write AppCMS UI JSON file: " + e.getMessage());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<AppCMSPageUI> call, Throwable t) {
-                        Log.e(TAG, "Could not read AppCMS UI JSON file from network: " +
-                                t.getMessage());
-                    }
-                });
-            } catch (JsonSyntaxException e) {
-                Log.w(TAG, "DialogType trying to parse input JSON " + url + ": " + e.toString());
-            } catch (Exception e) {
-                Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
+                deletePreviousFiles(url);
+                appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(url.toString())
+                        .execute().body());
+            } catch (Exception e2) {
+                Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
+                        e2.getMessage());
             }
         }
         return appCMSPageUI;
@@ -104,6 +68,24 @@ public class AppCMSPageUICall {
         outputStream.write(output.getBytes());
         outputStream.close();
         return appCMSPageUI;
+    }
+
+    private void deletePreviousFiles(String url) {
+        String fileToDeleteFilenamePatter = getResourceFilenameWithJsonOnly(url);
+        File savedFileDirectory = new File(storageDirectory.toString());
+        if (savedFileDirectory.isDirectory()) {
+            String[] listExistingFiles = savedFileDirectory.list();
+            for (String existingFilename : listExistingFiles) {
+                if (existingFilename.contains(fileToDeleteFilenamePatter)) {
+                    File fileToDelete = new File(existingFilename);
+                    if (fileToDelete.delete()) {
+                        Log.i(TAG, "Successfully deleted pre-existing file: " + fileToDelete);
+                    } else {
+                        Log.e(TAG, "Failed to delete pre-existing file: " + fileToDelete);
+                    }
+                }
+            }
+        }
     }
 
     private AppCMSPageUI readPageFromFile(String inputFilename) throws IOException {
@@ -160,23 +142,23 @@ public class AppCMSPageUICall {
         return appCMSPageUI;
     }
 
-    private String getResourceFilename(String url) {
+
+    private String getResourceFilenameWithJsonOnly(String url) {
         final String JSON_EXT = ".json";
         int startIndex = url.lastIndexOf(File.separatorChar);
         int endIndex = url.indexOf(JSON_EXT) + JSON_EXT.length();
         if (0 <= startIndex && startIndex < endIndex) {
-            return url.substring(startIndex+1, endIndex);
+            return url.substring(startIndex + 1, endIndex);
         }
         return url;
     }
 
-    private AppCMSPageUI retrieveDataFromNetwork(String filename, String url) {
-        try {
-            return writePageToFile(filename, appCMSPageUIRest.get(url).execute().body());
-        } catch (Exception e) {
-            Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
-                    e.getMessage());
+    private String getResourceFilename(String url) {
+        int startIndex = url.lastIndexOf(File.separatorChar);
+        int endIndex = url.length();
+        if (0 <= startIndex && startIndex < endIndex) {
+            return url.substring(startIndex + 1, endIndex);
         }
-        return null;
+        return url;
     }
 }

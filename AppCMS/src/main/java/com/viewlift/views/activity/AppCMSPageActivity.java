@@ -23,6 +23,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -37,6 +38,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.facebook.AccessToken;
@@ -135,6 +137,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @BindView(R.id.app_cms_cast_conroller)
     FrameLayout appCMSCastController;
+
+    @BindView(R.id.new_version_available_parent)
+    FrameLayout newVersionUpgradeAvailable;
+
+    @BindView(R.id.new_version_available_textview)
+    TextView newVersionAvailableTextView;
+
+    @BindView(R.id.new_version_available_close_button)
+    ImageButton newVersionAvailableCloseButton;
 
     private int navMenuPageIndex;
     private int homePageIndex;
@@ -454,6 +465,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
+        if (appCMSPresenter != null) {
+            newVersionAvailableTextView.setTextColor(Color.parseColor(
+                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+        }
+
+        newVersionAvailableCloseButton.setOnClickListener((v) -> {
+            newVersionUpgradeAvailable.setVisibility(View.GONE);
+        });
+
         appCMSPresenter.sendCloseOthersAction(null, false);
 
         Log.d(TAG, "onCreate()");
@@ -502,6 +522,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         Log.d(TAG, "onResume()");
         Log.d(TAG, "checkForExistingSubscription() - 503");
         appCMSPresenter.checkForExistingSubscription(false);
+
+        if (appCMSPresenter.isAppUpgradeAvailable()) {
+            newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
+        } else if (appCMSPresenter.isAppBelowMinVersion()) {
+            appCMSPresenter.launchUpgradeAppActivity();
+        }
     }
 
     @Override
@@ -512,6 +538,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         unregisterReceiver(presenterCloseActionReceiver);
         isActive = false;
+
+        appCMSPresenter.closeSoftKeyboard();
+        appCMSPresenter.cancelWatchlistToast();
     }
 
     @Override
@@ -1579,7 +1608,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
 
             if (appCMSPresenter.isViewPlanPage(appCMSBinderStack.peek())) {
-                appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
+                if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
+                }
             }
 
             boolean leavingExtraPage = appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() !=

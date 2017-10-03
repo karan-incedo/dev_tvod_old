@@ -74,7 +74,7 @@
     <string name="app_cms_shows_status_api_url">%1$s/content/pages?path=/shows/title/sujith&amp;site=%2$s&amp;includeContent=true</string>
 
     <!-- Restore Purchase API -->
-    <string name="app_cms_restore_purchase_api_url">%1$s/identity/signin/ios?site=%2$s</string>
+    <string name="app_cms_restore_purchase_api_url">%1$s/identity/signin/android?site=%2$s</string>
 
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
@@ -180,11 +180,14 @@
 
     <string name="app_cms_page_video_download_button_key">downloadButton</string>
     <string name="app_cms_page_video_image_key">videoImage</string>
+    <string name="app_cms_page_show_image_video_key">showImage</string>
     <string name="app_cms_page_video_play_button_key">playButton</string>
     <string name="app_cms_page_video_description_key">videoDescriptionText</string>
+    <string name="app_cms_page_show_video_description_key">showDescriptionText</string>
     <string name="app_cms_page_video_title_key">videoTitle</string>
     <string name="app_cms_page_download_setting_title_key">DownloadQualityTitle</string>
     <string name="app_cms_page_video_subtitle_key">videoSubTitle</string>
+    <string name="app_cms_page_show_video_subtitle_key">showSubTitle</string>
     <string name="app_cms_page_video_ageLabel_key">ageLabel</string>
     <string name="app_cms_page_video_share_key">shareButton</string>
     <string name="app_cms_page_video_close_key">closeButton</string>
@@ -201,6 +204,8 @@
     <string name="app_cms_page_download_setting_module_key">AC DownloadSettings 01</string>
     <string name="app_cms_page_api_thumbnail_url_key">thumbnail</string>
     <string name="app_cms_page_api_title_key">title</string>
+    <string name="app_cms_page_api_show_title_key">showTitle</string>
+    <string name="app_cms_page_api_episode_title_key">episodeTitle</string>
     <string name="app_cms_page_api_description_key">description</string>
     <string name="app_cms_page_navigation_contact_us_key">mailto</string>
     <string name="app_cms_page_video_player_with_info_key">AC VideoPlayerWithInfo 01</string>
@@ -380,4 +385,6 @@
     <string name="subscription_unsubscribed_plan_value">Unsubscribed</string>
     <string name="subscription_unknown_payment_processor_friendly">Unknown</string>
     <string name="app_cms_view_plan_module_key">ViewPlanModule</string>
+    <string name="facebook_auth_provider_name_key">facebook</string>
+    <string name="google_auth_provider_name_key">google</string>
 </resources>

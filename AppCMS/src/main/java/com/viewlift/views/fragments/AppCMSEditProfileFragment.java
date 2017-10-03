@@ -126,6 +126,8 @@ public class AppCMSEditProfileFragment extends DialogFragment {
                     "Proceed",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
+                            appCMSPresenter.closeSoftKeyboardNoView();
+
                             appCMSPresenter.updateUserProfile(userName,
                                     appCMSEditProfileEmailInput.getText().toString(),
                                     password.getText().toString(),
@@ -140,6 +142,7 @@ public class AppCMSEditProfileFragment extends DialogFragment {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.cancel();
                             appCMSPresenter.sendCloseOthersAction(null, true);
+                            appCMSPresenter.closeSoftKeyboardNoView();
                         }
                     });
 

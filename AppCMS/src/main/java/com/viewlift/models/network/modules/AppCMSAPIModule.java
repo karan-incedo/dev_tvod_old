@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.viewlift.R;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageAPIRest;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
@@ -22,7 +23,6 @@ import dagger.Provides;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/9/17.
@@ -106,7 +106,7 @@ public class AppCMSAPIModule {
 
     @Provides
     @Singleton
-    public AppCMSVideoDetailCall providesAppCMSVideoDetailCall(AppCMSVideoDetailRest appCMSVideoDetailRest){
+    public AppCMSVideoDetailCall providesAppCMSVideoDetailCall(AppCMSVideoDetailRest appCMSVideoDetailRest) {
         return new AppCMSVideoDetailCall(appCMSVideoDetailRest);
     }
 }

@@ -119,7 +119,6 @@ public class AppCMSSubscriptionPlanCall {
                 break;
 
             case R.string.app_cms_subscription_plan_create_key:
-                authHeaders.put("Content-Type", "application/json");
                 Log.d(TAG, "Headers: " + authHeaders.toString());
                 appCMSSubscriptionPlanRest.createPlan(url, authHeaders, request)
                         .enqueue(new Callback<AppCMSSubscriptionPlanResult>() {

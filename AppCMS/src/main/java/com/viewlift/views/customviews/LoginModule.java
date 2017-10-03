@@ -121,7 +121,8 @@ public class LoginModule extends ModuleView {
 
             for (Component component : module.getComponents()) {
                 if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_LOGIN_COMPONENT_KEY &&
-                        launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP) {
+                        (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
+                        launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP)) {
                     buttonSelectors[0] = new Button(getContext());
                     LinearLayout.LayoutParams loginSelectorLayoutParams =
                             new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -160,8 +161,10 @@ public class LoginModule extends ModuleView {
                     topLayoutContainer.addView(moduleView);
                 } else if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_SIGNUP_COMPONENT_KEY &&
                         (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE ||
-                                launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP)) {
-                    if (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP) {
+                            launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
+                            launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP)) {
+                    if (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
+                            launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP) {
                         buttonSelectors[1] = new Button(getContext());
                         LinearLayout.LayoutParams signupSelectorLayoutParams =
                                 new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -230,6 +233,9 @@ public class LoginModule extends ModuleView {
             if (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP) {
                 selectChild(0);
                 unselectChild(1);
+            } else if (launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP) {
+                selectChild(1);
+                unselectChild(0);
             }
         }
     }
