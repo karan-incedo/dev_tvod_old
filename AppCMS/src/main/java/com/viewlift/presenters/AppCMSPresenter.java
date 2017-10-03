@@ -2333,7 +2333,7 @@ public class AppCMSPresenter {
 
     public void restrictLandscapeOnly() {
         if (currentActivity != null) {
-            currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         }
     }
 
