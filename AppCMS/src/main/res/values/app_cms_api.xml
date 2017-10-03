@@ -8,7 +8,6 @@
     <string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>
     <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>-->
 
-
     <string name="app_cms_url_with_appended_timestamp">%1$s</string>
     <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
 
@@ -40,8 +39,8 @@
     <!-- AppCMS SignIn API -->
     <string name="app_cms_signin_api_url">%1$s/identity/signin?device=android_phone&amp;site=%2$s</string>
 
-   <!-- CCAvenue is plan upgradable test API -->
-   <string name="app_cms_ccavenue_is_plan_upgradable_url">%1$s/ccavenue/ccavenue/sistatus?site=%2$s</string>
+    <!-- CCAvenue is plan upgradable test API -->
+    <string name="app_cms_ccavenue_is_plan_upgradable_url">%1$s/ccavenue/ccavenue/sistatus?site=%2$s</string>
 
     <!-- AppCMS SignUp API -->
     <string name="app_cms_signup_api_url">%1$s/identity/signup?device=android_phone&amp;site=%2$s</string>
@@ -139,6 +138,7 @@
     <string name="app_cms_page_settings_component_key">AC Settings Account 01</string>
     <string name="app_cms_page_carousel_module_key">AC Carousel 01</string>
     <string name="app_cms_page_tray_module_key">AC Tray 01</string>
+    <string name="app_cms_page_season_tray_module_key">AC SeasonTray 01</string>
     <string name="app_cms_page_grid_module_key">AC Grid 01</string>
     <string name="app_cms_page_removeall_key">removeAll</string>
     <string name="app_cms_page_planmetadatatitle_key">planMetaDataTitle</string>
@@ -315,7 +315,7 @@
     <string name="app_cms_subscription_plan_list_api_url">%1$s/subscription/plans?site=%2$s</string>
     <string name="app_cms_subscription_plan_list_key">list</string>
     <string name="app_cms_subscription_subscribed_plan_key">subscribed_plan</string>
-   <string name="app_cms_check_ccavenue_plan_status_key">ccavenue_plan_status</string>
+    <string name="app_cms_check_ccavenue_plan_status_key">ccavenue_plan_status</string>
     <string name="app_cms_subscription_plan_create_key">create</string>
     <string name="app_cms_subscription_plan_update_key">update</string>
     <string name="app_cms_subscription_plan_cancel_key">cancel</string>
