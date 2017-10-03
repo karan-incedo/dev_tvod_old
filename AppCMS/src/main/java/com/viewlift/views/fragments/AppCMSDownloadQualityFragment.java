@@ -200,6 +200,7 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
                     .appCMSPageViewModule(new AppCMSPageViewModule(getContext(),
                             binder.getAppCMSPageUI(),
                             binder.getAppCMSPageAPI(),
+                            appCMSPresenter.getAppCMSAndroidModules(),
                             binder.getScreenName(),
                             binder.getJsonValueKeyMap(),
                             appCMSPresenter))

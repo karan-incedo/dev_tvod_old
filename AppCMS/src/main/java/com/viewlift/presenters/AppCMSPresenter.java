@@ -502,6 +502,8 @@ public class AppCMSPresenter {
     private ReferenceQueue<Object> referenceQueue;
     private EntitlementCheckActive entitlementCheckActive;
 
+    private AppCMSAndroidModules appCMSAndroidModules;
+
     private Toast watchlistToast;
 
     @Inject
@@ -735,6 +737,10 @@ public class AppCMSPresenter {
             return urlWithContent;
         }
         return null;
+    }
+
+    public AppCMSAndroidModules getAppCMSAndroidModules() {
+        return appCMSAndroidModules;
     }
 
     public boolean launchVideoPlayer(final ContentDatum contentDatum,
@@ -8153,6 +8159,7 @@ public class AppCMSPresenter {
                         } else {
                             getAppCMSModules((appCMSAndroidModules) -> {
                                 Log.d(TAG, "Received module list");
+                                this.appCMSAndroidModules = appCMSAndroidModules;
                             });
                             initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
                             navigation = appCMSAndroidUI.getNavigation();
