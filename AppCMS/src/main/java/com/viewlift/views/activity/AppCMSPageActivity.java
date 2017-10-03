@@ -106,6 +106,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private static final int DEFAULT_CATEGORIES_PAGE_INDEX = 2;
     private static final int DEFAULT_SEARCH_INDEX = 3;
     private static final int DEFAULT_NAV_LIVE_PAGE_INDEX = 4;
+    private static final int NO_NAV_MENU_PAGE_INDEX = -1;
+
     private static final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
 
     @BindView(R.id.app_cms_parent_layout)
@@ -152,6 +154,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private int categoriesPageIndex;
     private int searchPageIndex;
     private int navLivePageIndex;
+    private int currentMenuTabIndex = NO_NAV_MENU_PAGE_INDEX;
+    private int defa;
 
     private AppCMSPresenter appCMSPresenter;
     private Stack<String> appCMSBinderStack;
@@ -1312,6 +1316,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 homeNavBarItemView.setHighlightColor(highlightColor);
                 homeNavBarItemView.setLabel(homePageNav.getTitle());
                 homeNavBarItemView.setOnClickListener(v -> {
+                    if (currentMenuTabIndex == homePageIndex)
+                        return;
+                    currentMenuTabIndex = homePageIndex;
                     appCMSPresenter.showMainFragmentView(true);
                     selectNavItemAndLaunchPage(homeNavBarItemView,
                             homePageNav.getPageId(),
@@ -1326,7 +1333,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSTabNavContainer.getChildCount() <= navLivePageIndex) {
             navLivePageIndex = DEFAULT_NAV_LIVE_PAGE_INDEX;
         }
-
         if (navLivePageIndex < appCMSTabNavContainer.getChildCount()) {
             NavBarItemView navLiveItemView =
                     (NavBarItemView) appCMSTabNavContainer.getChildAt(navLivePageIndex);
@@ -1335,6 +1341,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             navLiveItemView.setHighlightColor(highlightColor);
             navLiveItemView.setLabel(livePageNav.getTitle());
             navLiveItemView.setOnClickListener(v -> {
+                if (currentMenuTabIndex == navLivePageIndex)
+                    return;
+                currentMenuTabIndex = navLivePageIndex;
+
                 appCMSPresenter.showMainFragmentView(true);
                 selectNavItemAndLaunchPage(navLiveItemView,
                         livePageNav.getPageId(),
@@ -1358,6 +1368,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 moviesNavBarItemView.setHighlightColor(highlightColor);
                 moviesNavBarItemView.setLabel(moviePageNav.getTitle());
                 moviesNavBarItemView.setOnClickListener(v -> {
+                    if (currentMenuTabIndex == categoriesPageIndex)
+                        return;
+                    currentMenuTabIndex = categoriesPageIndex;
+
                     appCMSPresenter.showMainFragmentView(true);
                     selectNavItemAndLaunchPage(moviesNavBarItemView,
                             moviePageNav.getPageId(),
@@ -1382,6 +1396,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 searchNavBarItemView.setHighlightColor(highlightColor);
                 searchNavBarItemView.setLabel(getString(R.string.app_cms_search_label));
                 searchNavBarItemView.setOnClickListener(v -> {
+                    if (currentMenuTabIndex == searchPageIndex)
+                        return;
+                    currentMenuTabIndex = searchPageIndex;
                     if (!appCMSPresenter.isNetworkConnected()) {
                         if (!appCMSPresenter.isUserLoggedIn()) {
                             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
@@ -1418,6 +1435,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         menuNavBarItemView.setLabel(getString(R.string.app_cms_menu_label));
         menuNavBarItemView.setHighlightColor(highlightColor);
         menuNavBarItemView.setOnClickListener(v -> {
+            Log.e(TAG, "on navigation page");
+
+            if (currentMenuTabIndex == navMenuPageIndex)
+                return;
+            currentMenuTabIndex = navMenuPageIndex;
             if (!appCMSBinderStack.isEmpty()) {
                 if (!appCMSPresenter.launchNavigationPage()) {
                     Log.e(TAG, "Could not launch navigation page!");
