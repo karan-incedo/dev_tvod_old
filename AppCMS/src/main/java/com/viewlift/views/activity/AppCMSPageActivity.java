@@ -23,7 +23,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -74,6 +73,7 @@ import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSCCAvenueFragment;
 import com.viewlift.views.fragments.AppCMSChangePasswordFragment;
 import com.viewlift.views.fragments.AppCMSEditProfileFragment;
+import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSPageFragment;
 import com.viewlift.views.fragments.AppCMSResetPasswordFragment;
@@ -496,6 +496,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     public void onBackPressed() {
         if (!handlingClose && !isPageLoading()) {
+            if (appCMSPresenter.isAddOnFragmentVisible()) {
+                for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                    if (fragment instanceof AppCMSMoreFragment) {
+                        ((AppCMSMoreFragment) fragment).sendDismissAction();
+                    }
+                }
+                return;
+            }
+
             handlingClose = true;
             handleCloseAction();
             handlingClose = false;
