@@ -168,7 +168,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_page_control_key),
                 AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY);
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_seperator_key),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_separator_key),
                 AppCMSUIKeyType.PAGE_SEPARATOR_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_segmented_view),
                 AppCMSUIKeyType.PAGE_SEGMENTED_VIEW_KEY);
@@ -332,6 +332,9 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_module_key),
                 AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_season_tray_module_key),
+                AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_grid_module_key),
                 AppCMSUIKeyType.PAGE_GRID_MODULE_KEY);

@@ -70,7 +70,7 @@
     <string name="age_rating_converted_fourteen">14+</string>
     <string name="age_rating_converted_eighteen">18+</string>
     <string name="age_rating_converted_default">NR</string>
-    <string name="no_results">No results</string>
+    <string name="no_results">No Results</string>
     <string name="video_player_title_key">video_player_title</string>
     <string name="video_player_permalink_key">video_player_permalink</string>
     <string name="video_player_font_color_key">video_player_font_color</string>

@@ -280,7 +280,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 onPlayerControlsStateChanged.call(visibility);
             }
         });
-        player.addVideoListener(this);
+//        player.addVideoListener(this);
 
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         audioManager.requestAudioFocus(focusChange -> Log.i(TAG, "Audio focus has changed: " + focusChange),
