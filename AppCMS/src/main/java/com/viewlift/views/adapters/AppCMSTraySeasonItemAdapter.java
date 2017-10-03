@@ -2,9 +2,14 @@ package com.viewlift.views.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,11 +70,14 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         this.appCMSPresenter = appCMSPresenter;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.defaultAction = getDefaultAction(context);
+
+        this.tintColor = Color.parseColor(getColor(context,
+                appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
     }
 
     private void sortData() {
         if (adapterData != null) {
-            //
+            // TODO: 10/3/17 Positioning of elements in adapter will be sorted at a later date.
         }
     }
 
@@ -125,17 +133,17 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
             holder.appCMSEpisodeTitle.setOnClickListener(v -> click(contentDatum));
 
             if (contentDatum.getGist() != null) {
-                holder.appCMSEpisodeDuration.setText(String.valueOf(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
-                        + " " + String.valueOf(holder.itemView.getContext().getString(R.string.mins_abbreviation)));
+                holder.appCMSEpisodeDuration
+                        .setText(String.valueOf(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
+                                + " " + String.valueOf(holder.itemView.getContext().getString(R.string.mins_abbreviation)));
             }
             if (contentDatum.getGist().getWatchedPercentage() > 0) {
                 holder.appCMSEpisodeProgress.setVisibility(View.VISIBLE);
                 holder.appCMSEpisodeProgress.setProgress(contentDatum.getGist().getWatchedPercentage());
             } else {
-                long watchedTime =
-                        contentDatum.getGist().getWatchedTime();
-                long runTime =
-                        contentDatum.getGist().getRuntime();
+                long watchedTime = contentDatum.getGist().getWatchedTime();
+                long runTime = contentDatum.getGist().getRuntime();
+
                 if (watchedTime > 0 && runTime > 0) {
                     long percentageWatched = watchedTime * 100 / runTime;
                     holder.appCMSEpisodeProgress.setProgress((int) percentageWatched);
@@ -192,7 +200,148 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     }
 
     private void applyStyles(AppCMSTraySeasonItemAdapter.ViewHolder viewHolder) {
-        //
+        for (Component component : components) {
+            AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
+            if (componentType == null) {
+                componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+            }
+
+            AppCMSUIKeyType componentKey = jsonValueKeyMap.get(component.getKey());
+            if (componentKey == null) {
+                componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+            }
+
+            switch (componentType) {
+                case PAGE_BUTTON_KEY:
+                    switch (componentKey) {
+                        case PAGE_PLAY_KEY:
+                        case PAGE_PLAY_IMAGE_KEY:
+                            viewHolder.appCMSEpisodePlayButton
+                                    .setBackground(ContextCompat.getDrawable(viewHolder.itemView.getContext(),
+                                            R.drawable.play_icon));
+                            viewHolder.appCMSEpisodePlayButton.getBackground().setTint(tintColor);
+                            viewHolder.appCMSEpisodePlayButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+
+                            break;
+
+                        default:
+                            break;
+                    }
+                    break;
+
+                case PAGE_LABEL_KEY:
+                case PAGE_TEXTVIEW_KEY:
+                    int textColor = ContextCompat.getColor(viewHolder.itemView.getContext(),
+                            R.color.colorAccent);
+                    if (!TextUtils.isEmpty(component.getTextColor())) {
+                        textColor = Color.parseColor(getColor(viewHolder.itemView.getContext(),
+                                component.getTextColor()));
+                    } else if (component.getStyles() != null) {
+                        if (!TextUtils.isEmpty(component.getStyles().getColor())) {
+                            textColor = Color.parseColor(getColor(viewHolder.itemView.getContext(),
+                                    component.getStyles().getColor()));
+                        } else if (!TextUtils.isEmpty(component.getStyles().getTextColor())) {
+                            textColor =
+                                    Color.parseColor(getColor(viewHolder.itemView.getContext(),
+                                            component.getStyles().getTextColor()));
+                        }
+                    }
+
+                    switch (componentKey) {
+                        case PAGE_WATCHLIST_DURATION_KEY:
+                            viewHolder.appCMSEpisodeDuration.setTextColor(textColor);
+                            viewHolder.appCMSEpisodeSize.setTextColor(textColor);
+
+                            if (!TextUtils.isEmpty(component.getBackgroundColor())) {
+                                viewHolder.appCMSEpisodeDuration
+                                        .setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(),
+                                                component.getBackgroundColor())));
+                                viewHolder.appCMSEpisodeSize
+                                        .setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(),
+                                                component.getBackgroundColor())));
+                            }
+
+                            if (!TextUtils.isEmpty(component.getFontFamily())) {
+                                setTypeFace(viewHolder.itemView.getContext(),
+                                        jsonValueKeyMap,
+                                        component,
+                                        viewHolder.appCMSEpisodeDuration);
+                                setTypeFace(viewHolder.itemView.getContext(),
+                                        jsonValueKeyMap,
+                                        component,
+                                        viewHolder.appCMSEpisodeSize);
+                            }
+
+                            if (component.getFontSize() != 0) {
+                                viewHolder.appCMSEpisodeDuration.setTextSize(component.getFontSize());
+                                viewHolder.appCMSEpisodeSize.setTextSize(component.getFontSize());
+                            }
+                            break;
+
+                        case PAGE_API_TITLE:
+                            viewHolder.appCMSEpisodeTitle.setTextColor(textColor);
+
+                            if (!TextUtils.isEmpty(component.getBackgroundColor())) {
+                                viewHolder.appCMSEpisodeTitle
+                                        .setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(),
+                                                component.getBackgroundColor())));
+                            }
+
+                            if (!TextUtils.isEmpty(component.getFontFamily())) {
+                                setTypeFace(viewHolder.itemView.getContext(),
+                                        jsonValueKeyMap,
+                                        component,
+                                        viewHolder.appCMSEpisodeTitle);
+                            }
+
+                            if (component.getFontSize() != 0) {
+                                viewHolder.appCMSEpisodeTitle.setTextSize(component.getFontSize());
+                            }
+                            break;
+
+                        case PAGE_API_DESCRIPTION:
+                            viewHolder.appCMSEpisodeDescription.setTextColor(textColor);
+                            if (!TextUtils.isEmpty(component.getBackgroundColor())) {
+                                viewHolder.appCMSEpisodeDescription
+                                        .setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(),
+                                                component.getBackgroundColor())));
+                            }
+
+                            if (!TextUtils.isEmpty(component.getFontFamily())) {
+                                setTypeFace(viewHolder.itemView.getContext(),
+                                        jsonValueKeyMap,
+                                        component,
+                                        viewHolder.appCMSEpisodeDescription);
+                            }
+
+                            if (component.getFontSize() != 0) {
+                                viewHolder.appCMSEpisodeTitle.setTextSize(component.getFontSize());
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+                    break;
+
+                case PAGE_SEPARATOR_VIEW_KEY:
+                case PAGE_SEGMENTED_VIEW_KEY:
+                    if (!TextUtils.isEmpty(component.getBackgroundColor())) {
+                        viewHolder.appCMSEpisodeSeparatorView
+                                .setBackgroundColor(Color.parseColor(getColor(
+                                        viewHolder.itemView.getContext(),
+                                        component.getBackgroundColor())));
+                    }
+                    break;
+
+                case PAGE_PROGRESS_VIEW_KEY:
+                    viewHolder.appCMSEpisodeProgress.setMax(100);
+                    break;
+
+                default:
+                    break;
+            }
+        }
     }
 
     @Override
@@ -207,14 +356,17 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
 
     private void click(ContentDatum data) {
         Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
+
         String permalink = data.getGist().getPermalink();
         String action = defaultAction;
         String title = data.getGist().getTitle();
         String hlsUrl = getHlsUrl(data);
+
         String[] extraData = new String[3];
         extraData[0] = permalink;
         extraData[1] = hlsUrl;
         extraData[2] = data.getGist().getId();
+
         List<String> relatedVideos = null;
         if (data.getContentDetails() != null &&
                 data.getContentDetails().getRelatedVideoIds() != null) {
@@ -253,6 +405,49 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
 
     private String getDefaultAction(Context context) {
         return context.getString(R.string.app_cms_action_detailvideopage_key);
+    }
+
+    private String getColor(Context context, String color) {
+        if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
+            return context.getString(R.string.color_hash_prefix) + color;
+        }
+        return color;
+    }
+
+    private void setTypeFace(Context context,
+                             Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                             Component component,
+                             TextView textView) {
+        if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
+            AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
+            if (fontWeight == null) {
+                fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+            }
+            Typeface face;
+
+            switch (fontWeight) {
+                case PAGE_TEXT_BOLD_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(),
+                            context.getString(R.string.opensans_bold_ttf));
+                    break;
+
+                case PAGE_TEXT_SEMIBOLD_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(),
+                            context.getString(R.string.opensans_semibold_ttf));
+                    break;
+
+                case PAGE_TEXT_EXTRABOLD_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(),
+                            context.getString(R.string.opensans_extrabold_ttf));
+                    break;
+
+                default:
+                    face = Typeface.createFromAsset(context.getAssets(),
+                            context.getString(R.string.opensans_regular_ttf));
+                    break;
+            }
+            textView.setTypeface(face);
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
