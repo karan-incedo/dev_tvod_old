@@ -8252,7 +8252,8 @@ public class AppCMSPresenter {
 
     private void getAppCMSModules(Action1<AppCMSAndroidModules> readyAction) {
         if (currentActivity != null) {
-            appCMSAndroidModuleCall.call(currentActivity.getString(R.string.app_cms_get_modules_api),
+            appCMSAndroidModuleCall.call(currentActivity.getString(R.string.app_cms_get_modules_api,
+                    appCMSMain.getApiBaseUrl()),
                     readyAction);
         }
     }
