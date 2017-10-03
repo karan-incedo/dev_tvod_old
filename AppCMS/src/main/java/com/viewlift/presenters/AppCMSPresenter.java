@@ -3244,35 +3244,35 @@ public class AppCMSPresenter {
     }
 
     public void clearWatchlist(final Action1<AppCMSAddToWatchlistResult> resultAction1) {
-        final String url = currentActivity.getString(R.string.app_cms_clear_watchlist_api_url,
-                appCMSMain.getApiBaseUrl(),
-                appCMSSite.getGist().getSiteInternalName(),
-                getLoggedInUser());
-
         try {
-            AddToWatchlistRequest request = new AddToWatchlistRequest();
-            request.setUserId(getLoggedInUser());
-            request.setContentType(currentActivity.getString(R.string.add_to_watchlist_content_type_video));
-            request.setPosition(1L);
-            appCMSAddToWatchlistCall.call(url, getAuthToken(),
-                    addToWatchlistResult -> {
+            showDialog(DialogType.DELETE_ALL_WATCHLIST_ITEMS,
+                    currentActivity.getString(R.string.app_cms_delete_all_watchlist_items_message),
+                    true,
+                    () -> {
+                        final String url = currentActivity.getString(R.string.app_cms_clear_watchlist_api_url,
+                                appCMSMain.getApiBaseUrl(),
+                                appCMSSite.getGist().getSiteInternalName(),
+                                getLoggedInUser());
+
                         try {
-                            showDialog(DialogType.DELETE_ALL_WATCHLIST_ITEMS,
-                                    currentActivity.getString(R.string.app_cms_delete_all_watchlist_items_message),
-                                    true,
-                                    () -> {
+                            AddToWatchlistRequest request = new AddToWatchlistRequest();
+                            request.setUserId(getLoggedInUser());
+                            request.setContentType(currentActivity.getString(R.string.add_to_watchlist_content_type_video));
+                            request.setPosition(1L);
+                            appCMSAddToWatchlistCall.call(url, getAuthToken(),
+                                    addToWatchlistResult -> {
                                         try {
                                             Observable.just(addToWatchlistResult).subscribe(resultAction1);
                                         } catch (Exception e) {
                                             Log.e(TAG, "Error deleting all watchlist items: " + e.getMessage());
                                         }
-                                    });
+                                    }, request, false);
                         } catch (Exception e) {
-                            Log.e(TAG, "clearWatchlistContent: " + e.toString());
+                            Log.e(TAG, "Error clearing watchlist: " + e.getMessage());
                         }
-                    }, request, false);
+                    });
         } catch (Exception e) {
-            Log.e(TAG, "Error clearing watchlist: " + e.getMessage());
+            Log.e(TAG, "clearWatchlistContent: " + e.toString());
         }
     }
 
@@ -3466,37 +3466,38 @@ public class AppCMSPresenter {
     }
 
     public void clearHistory(final Action1<AppCMSDeleteHistoryResult> resultAction1) {
-        final String url = currentActivity.getString(R.string.app_cms_clear_history_api_url,
-                appCMSMain.getApiBaseUrl(),
-                getLoggedInUser(),
-                appCMSSite.getGist().getSiteInternalName());
-
         try {
-            DeleteHistoryRequest request = new DeleteHistoryRequest();
-            request.setUserId(getLoggedInUser());
-            request.setContentType(currentActivity.getString(R.string.delete_history_content_type_video));
-            request.setPosition(1L);
-            appCMSDeleteHistoryCall.call(url, getAuthToken(),
-                    appCMSDeleteHistoryResult -> {
+            showDialog(DialogType.DELETE_ALL_HISTORY_ITEMS,
+                    currentActivity.getString(R.string.app_cms_delete_all_history_items_message),
+                    true,
+                    () -> {
+                        final String url = currentActivity.getString(R.string.app_cms_clear_history_api_url,
+                                appCMSMain.getApiBaseUrl(),
+                                getLoggedInUser(),
+                                appCMSSite.getGist().getSiteInternalName());
                         try {
-                            showDialog(DialogType.DELETE_ALL_HISTORY_ITEMS,
-                                    currentActivity.getString(R.string.app_cms_delete_all_history_items_message),
-                                    true,
-                                    () -> {
+                            DeleteHistoryRequest request = new DeleteHistoryRequest();
+                            request.setUserId(getLoggedInUser());
+                            request.setContentType(currentActivity.getString(R.string.delete_history_content_type_video));
+                            request.setPosition(1L);
+                            appCMSDeleteHistoryCall.call(url, getAuthToken(),
+                                    appCMSDeleteHistoryResult -> {
                                         try {
                                             sendUpdateHistoryAction();
                                             Observable.just(appCMSDeleteHistoryResult).subscribe(resultAction1);
                                         } catch (Exception e) {
                                             Log.e(TAG, "Error deleting all history items: " + e.getMessage());
                                         }
-                                    });
+                                    }, request, false);
                         } catch (Exception e) {
-                            Log.e(TAG, "clearHistoryContent: " + e.toString());
+                            Log.e(TAG, "Error clearing history: " + e.getMessage());
                         }
-                    }, request, false);
+
+                    });
         } catch (Exception e) {
-            Log.e(TAG, "Error clearing history: " + e.getMessage());
+            Log.e(TAG, "clearHistoryContent: " + e.toString());
         }
+
     }
 
     public void getWatchlistData(final Action1<AppCMSWatchlistResult> appCMSWatchlistResultAction) {
@@ -6340,7 +6341,8 @@ public class AppCMSPresenter {
                                 .getBackgroundColor())));
                 if (currentActivity.getWindow().isActive()) {
                     try {
-                        dialog.show();
+                        if (!dialog.isShowing())
+                            dialog.show();
                     } catch (Exception e) {
                         Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
                                 + e.toString());
@@ -6830,7 +6832,7 @@ public class AppCMSPresenter {
                             countryCode = "";
                             if (!isUserLoggedIn()) {
                                 if ((launchType == LaunchType.SUBSCRIBE ||
-                                    launchType == LaunchType.INIT_SIGNUP) &&
+                                        launchType == LaunchType.INIT_SIGNUP) &&
                                         !isSignupFromFacebook &&
                                         !isSignupFromGoogle) {
                                     String url = currentActivity.getString(R.string.app_cms_signin_api_url,
