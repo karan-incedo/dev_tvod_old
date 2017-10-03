@@ -112,6 +112,7 @@ import com.viewlift.models.data.appcms.subscriptions.Receipt;
 import com.viewlift.models.data.appcms.subscriptions.UserSubscriptionPlan;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
+import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
@@ -8107,6 +8108,73 @@ public class AppCMSPresenter {
         } else {
             launchErrorActivity(platformType);
         }
+    }
+
+    public void refreshPages() {
+        Log.d(TAG, "Refreshing pages");
+        if (currentActivity != null) {
+            Log.d(TAG, "Refreshing main.json");
+            refreshAppCMSMain((appCMSMain) -> {
+                if (appCMSMain != null) {
+                    Log.d(TAG, "Refreshed main.json");
+                    this.appCMSMain = appCMSMain;
+                    refreshAppCMSAndroid((appCMSAndroid) -> {
+                        queueMetaPages(appCMSAndroid.getMetaPages());
+                        for (MetaPage metaPage : appCMSAndroid.getMetaPages()) {
+                            Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
+                                    " " +
+                                    metaPage.getPageId() +
+                                    " " +
+                                    metaPage.getPageUI());
+                            getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
+                                    metaPage.getPageUI()),
+                                    appCMSPageUI -> {},
+                                    false);
+                        }
+
+                        getAppCMSModules((appCMSAndroidModules) -> {
+                            Log.d(TAG, "Received and refreshed module list");
+                            this.appCMSAndroidModules = appCMSAndroidModules;
+                        });
+                    });
+                } else {
+                    Log.w(TAG, "Resulting main.json from refresh is null");
+                }
+            });
+        } else {
+            Log.w(TAG, "Current activity is null, can not refresh page data");
+        }
+    }
+
+    private void refreshAppCMSMain(Action1<AppCMSMain> readyAction) {
+        GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
+                .context(currentActivity)
+                .siteId(currentActivity.getString(R.string.app_cms_app_name))
+                .forceReloadFromNetwork(true)
+                .build();
+        new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
+            Log.d(TAG, "Refreshed main.json");
+            if (readyAction != null) {
+                Log.d(TAG, "Notifying listeners that main.json has been updated");
+                Observable.just(main).subscribe(readyAction);
+            }
+        });
+    }
+
+    private void refreshAppCMSAndroid(Action1<AppCMSAndroidUI> readyAction) {
+        GetAppCMSAndroidUIAsyncTask.Params params =
+                new GetAppCMSAndroidUIAsyncTask.Params.Builder()
+                        .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
+                                appCMSMain.getAndroid()))
+                        .loadFromFile(false)
+                        .build();
+        new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
+            Log.d(TAG, "Refreshed android.json");
+            if (readyAction != null) {
+                Log.d(TAG, "Notifying listeners that android.json has been updated");
+                Observable.just(appCMSAndroidUI).subscribe(readyAction);
+            }
+        }).execute(params);
     }
 
     private void getAppCMSAndroid(int tryCount) {

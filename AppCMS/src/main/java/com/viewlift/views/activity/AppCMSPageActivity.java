@@ -529,7 +529,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         resume();
         appCMSPresenter.setCurrentActivity(this);
         Log.d(TAG, "onResume()");
-        Log.d(TAG, "checkForExistingSubscription() - 503");
+        Log.d(TAG, "checkForExistingSubscription()");
         appCMSPresenter.checkForExistingSubscription(false);
 
         if (appCMSPresenter.isAppUpgradeAvailable()) {
@@ -537,6 +537,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } else if (appCMSPresenter.isAppBelowMinVersion()) {
             appCMSPresenter.launchUpgradeAppActivity();
         }
+
+        appCMSPresenter.refreshPages();
     }
 
     @Override
