@@ -1391,18 +1391,6 @@ public class ViewCreator {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                 componentViewResult.componentView.setForegroundGravity(Gravity.CENTER_HORIZONTAL);
                             }
-//                        } else if (Objects.equals("AC SeasonTray 01", viewType)) {
-//                            int numCols;
-//                                if (BaseView.isTablet(context)) {
-//                                    numCols = 2;
-//                                } else {
-//                                    numCols = 1;
-//                                }
-//                            ((RecyclerView) componentViewResult.componentView)
-//                                    .setLayoutManager(new GridLayoutManager(context,
-//                                            numCols,
-//                                            LinearLayoutManager.VERTICAL,
-//                                            false));
                         } else if (parentViewType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
                             if (BaseView.isTablet(context)) {
                                 ((RecyclerView) componentViewResult.componentView)
@@ -1463,7 +1451,6 @@ public class ViewCreator {
                             }
                         }
                     }
-
 
                     if (moduleAPI.getContentData() == null ||
                             moduleAPI.getContentData().isEmpty()) {
@@ -2970,7 +2957,7 @@ public class ViewCreator {
                 }
                 if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
                         !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
-                    if (appCMSPresenter.isDownloadQualityScreenShowBefore()) { // Fix for SVFA-1724
+                    if (appCMSPresenter.isDownloadQualityScreenShowBefore()) {
                         appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
                     } else {
                         appCMSPresenter.showDownloadQualityScreen(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this);
@@ -2986,7 +2973,7 @@ public class ViewCreator {
                         appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED, null);
                     }
                 }
-                imageButton.setOnClickListener(null); //fix for SVFA-1988
+                imageButton.setOnClickListener(null);
             };
         }
 
@@ -3016,7 +3003,7 @@ public class ViewCreator {
                         break;
 
                     case STATUS_SUCCESSFUL:
-                        appCMSPresenter.cancelDownloadIconTimerTask(); //Fix of SVFA-1621
+                        appCMSPresenter.cancelDownloadIconTimerTask();
                         imageButton.setImageResource(R.drawable.ic_downloaded);
                         imageButton.setOnClickListener(null);
                         appCMSPresenter.startNextDownload();
