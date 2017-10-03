@@ -3480,12 +3480,12 @@ public class AppCMSPresenter {
     public boolean isAppUpgradeAvailable() {
 
 
-        return false;
+        return true;
     }
 
     public boolean isAppBelowMinVersion() {
 
-        return true;
+        return false;
     }
 
     public void clearHistory(final Action1<AppCMSDeleteHistoryResult> resultAction1) {
