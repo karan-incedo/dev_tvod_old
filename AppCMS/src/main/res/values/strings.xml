@@ -381,7 +381,7 @@
     <string name="mr_controller_stop_casting">Stop casting</string>
 
     <string name="force_reload_from_network_key">force_reload_from_network</string>
-    <string name="a_new_version_of_the_app_is_available_text">A new version of the app is available</string>
+    <string name="a_new_version_of_the_app_is_available_text">A new version of the app is available - Click here to Upgrade now</string>
     <string name="app_cms_upgrade_button_text">UPGRADE</string>
     <string name="app_cms_upgrade_textview_text">The installed version of the application is below the the minimum supported version.  Please upgrade to continue using this application.</string>
     <string name="google_play_store_upgrade_app_url">http://play.google.com/store/apps/details?id=%1$s</string>

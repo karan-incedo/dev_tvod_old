@@ -471,6 +471,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         if (appCMSPresenter != null) {
+            newVersionUpgradeAvailable.setBackgroundColor(Color.parseColor(
+                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
             newVersionAvailableTextView.setTextColor(Color.parseColor(
                     appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
         }

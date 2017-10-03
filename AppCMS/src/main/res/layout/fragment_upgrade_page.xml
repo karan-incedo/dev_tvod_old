@@ -28,7 +28,6 @@
             android:textStyle="bold"
             android:textSize="@dimen/upgrade_textsize"
             android:textAlignment="center"
-            android:background="@color/transparentColor"
             android:text="@string/app_cms_upgrade_button_text"
             android:textColor="@color/colorAccent" />
     </LinearLayout>
