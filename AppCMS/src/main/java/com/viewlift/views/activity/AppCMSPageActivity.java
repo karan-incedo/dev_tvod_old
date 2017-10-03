@@ -1,5 +1,7 @@
 package com.viewlift.views.activity;
 
+import android.animation.AnimatorSet;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -31,6 +33,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -470,8 +475,29 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
         }
 
+        newVersionAvailableTextView.setOnClickListener((v) -> {
+            Intent googlePlayStoreUpgradeAppIntent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse(getString(R.string.google_play_store_upgrade_app_url,
+                            getString(R.string.package_name))));
+            startActivity(googlePlayStoreUpgradeAppIntent);
+        });
+
         newVersionAvailableCloseButton.setOnClickListener((v) -> {
-            newVersionUpgradeAvailable.setVisibility(View.GONE);
+            ValueAnimator heightAnimator = ValueAnimator.ofInt(newVersionUpgradeAvailable.getHeight(),
+                    0);
+            heightAnimator.addUpdateListener((animation) -> {
+                Integer value = (Integer) animation.getAnimatedValue();
+                newVersionUpgradeAvailable.getLayoutParams().height = value;
+                if (value == 0) {
+                    newVersionUpgradeAvailable.setVisibility(View.GONE);
+                }
+                newVersionUpgradeAvailable.requestLayout();
+            });
+
+            AnimatorSet set = new AnimatorSet();
+            set.play(heightAnimator);
+            set.setInterpolator(new AccelerateDecelerateInterpolator());
+            set.start();
         });
 
         appCMSPresenter.sendCloseOthersAction(null, false);
