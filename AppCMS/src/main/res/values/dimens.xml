@@ -74,6 +74,8 @@
     <dimen name="app_cms_content_rating_title_margin_left">45dp</dimen>
     <dimen name="a_new_version_of_the_app_is_available_textsize">16sp</dimen>
     <dimen name="new_version_available_elevation">8dp</dimen>
+    <dimen name="app_cms_force_upgrade_element_margin">8dp</dimen>
+    <dimen name="app_cms_force_upgrade_button_padding">8dp</dimen>
     <fraction name="app_cms_content_rating_progress_bar_margin_bottom_percent">3.4%</fraction>
     <fraction name="mainContainerHeightPercent">22%</fraction>
     <fraction name="mainContainerWidthPercent">90%</fraction>
