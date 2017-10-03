@@ -111,6 +111,7 @@ import com.viewlift.models.data.appcms.subscriptions.PlanDetail;
 import com.viewlift.models.data.appcms.subscriptions.Receipt;
 import com.viewlift.models.data.appcms.subscriptions.UserSubscriptionPlan;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
+import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
@@ -139,6 +140,7 @@ import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
 import com.viewlift.models.network.modules.AppCMSAPIModule;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
+import com.viewlift.models.network.rest.AppCMSAndroidModuleCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSBeaconCall;
@@ -382,6 +384,7 @@ public class AppCMSPresenter {
     private final AppCMSUserDownloadVideoStatusCall appCMSUserDownloadVideoStatusCall;
     private final AppCMSBeaconCall appCMSBeaconCall;
     private final AppCMSRestorePurchaseCall appCMSRestorePurchaseCall;
+    private final AppCMSAndroidModuleCall appCMSAndroidModuleCall;
 
     private final AppCMSUserVideoStatusCall appCMSUserVideoStatusCall;
     private final AppCMSAddToWatchlistCall appCMSAddToWatchlistCall;
@@ -536,6 +539,8 @@ public class AppCMSPresenter {
                            AppCMSBeaconCall appCMSBeaconCall,
                            AppCMSRestorePurchaseCall appCMSRestorePurchaseCall,
 
+                           AppCMSAndroidModuleCall appCMSAndroidModuleCall,
+
                            AppCMSAddToWatchlistCall appCMSAddToWatchlistCall,
 
                            AppCMSCCAvenueCall appCMSCCAvenueCall,
@@ -575,6 +580,8 @@ public class AppCMSPresenter {
         this.appCMSUserDownloadVideoStatusCall = appCMSUserDownloadVideoStatusCall;
         this.appCMSBeaconCall = appCMSBeaconCall;
         this.appCMSRestorePurchaseCall = appCMSRestorePurchaseCall;
+
+        this.appCMSAndroidModuleCall = appCMSAndroidModuleCall;
 
         this.appCMSAddToWatchlistCall = appCMSAddToWatchlistCall;
 
@@ -8125,6 +8132,7 @@ public class AppCMSPresenter {
                 });
             } else {
                 Log.d(TAG, "Retrieving android.json");
+
                 GetAppCMSAndroidUIAsyncTask.Params params =
                         new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                                 .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
@@ -8143,6 +8151,9 @@ public class AppCMSPresenter {
                             Log.e(TAG, "AppCMS current application version is below the minimum version supported");
                             launchUpgradeAppActivity();
                         } else {
+                            getAppCMSModules((appCMSAndroidModules) -> {
+                                Log.d(TAG, "Received module list");
+                            });
                             initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
                             navigation = appCMSAndroidUI.getNavigation();
                             new SoftReference<>(navigation, referenceQueue);
@@ -8229,6 +8240,13 @@ public class AppCMSPresenter {
         } catch (Exception e) {
             Log.e(TAG, "Failed to load Android json file: " + e.getMessage());
             launchErrorActivity(PlatformType.ANDROID);
+        }
+    }
+
+    private void getAppCMSModules(Action1<AppCMSAndroidModules> readyAction) {
+        if (currentActivity != null) {
+            appCMSAndroidModuleCall.call(currentActivity.getString(R.string.app_cms_get_modules_api),
+                    readyAction);
         }
     }
 

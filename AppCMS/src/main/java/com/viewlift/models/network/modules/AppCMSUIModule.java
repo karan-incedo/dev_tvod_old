@@ -13,6 +13,8 @@ import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.rest.AppCMSAddToWatchlistRest;
+import com.viewlift.models.network.rest.AppCMSAndroidModuleCall;
+import com.viewlift.models.network.rest.AppCMSAndroidModuleRest;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
@@ -754,6 +756,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSAndroidModuleRest providesAppCMSAndroidModuleRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSAndroidModuleRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -889,6 +897,13 @@ public class AppCMSUIModule {
     public AppCMSRestorePurchaseCall providesAppCMSRestorePurchaseCall(Gson gson,
                                                                        AppCMSRestorePurchaseRest appCMSRestorePurchaseRest) {
         return new AppCMSRestorePurchaseCall(gson, appCMSRestorePurchaseRest);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSAndroidModuleCall providesAppCMSAndroidModuleCall(Gson gson,
+                                                                   AppCMSAndroidModuleRest appCMSAndroidModuleRest) {
+        return new AppCMSAndroidModuleCall(gson, appCMSAndroidModuleRest);
     }
 
     @Provides
