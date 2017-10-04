@@ -3498,12 +3498,37 @@ public class AppCMSPresenter {
     }
 
     public boolean isAppUpgradeAvailable() {
+        try {
+            SemVer installAppSemVer = getInstalledAppSemVer();
+            SemVer latestAppSemVer = new SemVer();
+            latestAppSemVer.parse(appCMSMain.getAppVersions().getAndroidAppVersion().getLatest());
 
+            if (installAppSemVer.major < latestAppSemVer.major ||
+                    installAppSemVer.minor < latestAppSemVer.minor ||
+                    installAppSemVer.patch < latestAppSemVer.patch) {
+                return true;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error attempting to retrieve app version");
+        }
 
-        return true;
+        return false;
     }
 
     public boolean isAppBelowMinVersion() {
+        try {
+            SemVer installAppSemVer = getInstalledAppSemVer();
+            SemVer latestAppSemVer = new SemVer();
+            latestAppSemVer.parse(appCMSMain.getAppVersions().getAndroidAppVersion().getMinimum());
+
+            if (installAppSemVer.major < latestAppSemVer.major ||
+                    installAppSemVer.minor < latestAppSemVer.minor ||
+                    installAppSemVer.patch < latestAppSemVer.patch) {
+                return true;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error attempting to retrieve app version");
+        }
 
         return false;
     }
