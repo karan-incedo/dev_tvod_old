@@ -252,7 +252,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     }
 
     private void preparePlayer(){
-
         if (!TextUtils.isEmpty(hlsUrl)) {
             videoPlayerView.setClosedCaptionEnabled(false);
             videoPlayerView.getPlayerView().getSubtitleView()
@@ -300,9 +299,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         if (shouldRequestAds && !isADPlay) {
                             requestAds(adsUrl);
                             isADPlay = true;
-                        } else if(isTrailer){
+                        } /*else if(isTrailer){
                             videoPlayerView.startPlayer();
-                        }
+                        }*/
                         break;
                     case ExoPlayer.STATE_ENDED:
                         Log.d(TAG, "Video STATE_ENDED");
@@ -339,9 +338,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                     .setVisibility(isChecked ? View.VISIBLE : View.GONE);
             appCMSPresenter.setClosedCaptionPreference(mContext, isChecked);
         });
-
-
     }
+
 
     @Nullable
     @Override
@@ -388,7 +386,10 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 );
 
 
+
+
         if (!shouldRequestAds) {
+            videoPlayerView.getPlayer().setPlayWhenReady(true);
             preparePlayer();
         }
 
@@ -458,7 +459,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         Log.e(TAG, "Ad Error: " + adErrorEvent.getError().getMessage());
-
+        videoPlayerView.getPlayer().setPlayWhenReady(true);
         preparePlayer();
        // videoPlayerView.getPlayer().setPlayWhenReady(true);
        // videoPlayerView.resumePlayer();
@@ -561,8 +562,11 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
     public boolean showController(KeyEvent event){
         SimpleExoPlayerView playerView = videoPlayerView.getPlayerView();
-        playerView.showController();
-        return playerView.dispatchMediaKeyEvent(event);
+        if(playerView.getPlayer().getPlayWhenReady()){
+            playerView.showController();
+            return playerView.dispatchMediaKeyEvent(event);
+        }
+     return true;
     }
 
     BroadcastReceiver networkReciever = new BroadcastReceiver() {

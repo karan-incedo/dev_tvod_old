@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -238,6 +237,8 @@ public abstract class TVBaseView extends FrameLayout {
                     view.setPadding(padding,padding,padding,padding);
                     break;
                 case PAGE_VIDEO_TITLE_KEY:
+                    viewWidth = DEVICE_WIDTH/2 - Utils.getViewXAxisAsPerScreen(getContext() , 150);
+                    break;
                 case PAGE_VIDEO_SUBTITLE_KEY:
                     viewWidth = DEVICE_WIDTH/2;
                     break;
@@ -250,6 +251,8 @@ public abstract class TVBaseView extends FrameLayout {
             }
         } else if (componentType == AppCMSUIKeyType.PAGE_TEXTFIELD_KEY) {
             viewHeight *= 1.2;
+        } else if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
+            viewHeight = (int) (viewHeight / 1.05);
         }
 
         if (useWidthOfScreen) {

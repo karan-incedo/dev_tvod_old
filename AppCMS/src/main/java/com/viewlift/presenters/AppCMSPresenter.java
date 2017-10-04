@@ -8203,6 +8203,10 @@ public class AppCMSPresenter {
                                                             extraData,
                                                             false,
                                                             appCMSVideoDetail.getRecords().get(0));
+                                                } else {
+                                                    openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
+                                                            currentActivity.getString(R.string.app_name)),
+                                                            currentActivity.getString(R.string.app_connectivity_dialog_title));
                                                 }
                                             }
                                         }

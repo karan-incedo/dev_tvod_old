@@ -69,6 +69,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     public static final String DIALOG_FRAGMENT_TAG = "text_overlay";
     private AppCmsTvSearchComponent appCMSSearchUrlComponent;
     private boolean isActive;
+    private AppCmsResetPasswordFragment appCmsResetPasswordFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -285,9 +286,9 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             if(null != bundle){
                 AppCMSBinder appCMSBinder = (AppCMSBinder)bundle.get(getString(R.string.app_cms_binder_key));
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
-                AppCmsResetPasswordFragment newFragment = AppCmsResetPasswordFragment.newInstance(
+                appCmsResetPasswordFragment = AppCmsResetPasswordFragment.newInstance(
                         appCMSBinder);
-                newFragment.show(ft, DIALOG_FRAGMENT_TAG);
+                appCmsResetPasswordFragment.show(ft, DIALOG_FRAGMENT_TAG);
                 pageLoading(false);
             }
         }
@@ -347,7 +348,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
     @Override
     public void onErrorScreenClose() {
-
+        if (appCmsResetPasswordFragment != null
+                && appCmsResetPasswordFragment.isAdded()
+                && appCmsResetPasswordFragment.isVisible()){
+            appCmsResetPasswordFragment.dismiss();
+        }
     }
 
 
@@ -416,7 +421,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 break;
             case RESET_PASSWORD_RETRY:
                 appCMSPresenter.showLoadingDialog(true);
-                appCMSPresenter.resetPassword(retryCallBinder.getFilmTitle().toString()); //filmtitle here means emailid.
+                appCMSPresenter.resetPassword(retryCallBinder.getFilmTitle()); //filmtitle here means emailid.
                 break;
 
         }
@@ -646,10 +651,13 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         appCMSBinderStack.push(tag);
         appCMSPresenter.sendGaScreen(tag);
 
-        AppCmsSearchFragment searchFragment = new AppCmsSearchFragment();
-        getFragmentManager().beginTransaction().replace(R.id.home_placeholder , searchFragment ,
+        Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
+        if(null != fragment && fragment instanceof AppCmsSearchFragment){
+            getFragmentManager().popBackStack();
+        }
+            AppCmsSearchFragment searchFragment = new AppCmsSearchFragment();
+            getFragmentManager().beginTransaction().replace(R.id.home_placeholder , searchFragment ,
                     tag).addToBackStack(tag).commit();
-
         selectNavItem(tag);
     }
 
