@@ -51,6 +51,10 @@ public class AppCMSUpgradeFragment extends Fragment {
             upgradeTextView.setTextColor(textColor);
             upgradeButton.setTextColor(textColor);
             upgradeButton.setBackgroundColor(bgColor);
+
+            upgradeTextView.setText(getString(R.string.app_cms_upgrade_textview_text,
+                    getString(R.string.app_cms_app_version),
+                    appCMSPresenter.getGooglePlayAppStoreVersion()));
         }
 
         upgradeButton.setOnClickListener((v) -> {

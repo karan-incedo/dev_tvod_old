@@ -18,7 +18,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:text="@string/a_new_version_of_the_app_is_available_text"
             android:singleLine="false"
             android:layout_marginStart="@dimen/app_cms_upgrade_now_text_margin"
             android:layout_marginEnd="@dimen/app_cms_upgrade_now_text_margin"
