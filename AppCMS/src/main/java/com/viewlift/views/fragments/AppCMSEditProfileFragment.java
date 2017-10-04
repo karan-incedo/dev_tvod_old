@@ -53,7 +53,7 @@ public class AppCMSEditProfileFragment extends DialogFragment {
     @BindView(R.id.app_cms_edit_profile_main_layout)
     RelativeLayout appCMSEditProfileMainLayout;
 
-    private String regex = "[a-zA-Z]+";
+    private String regex = "[a-zA-Z\\s]+";
 
     public static AppCMSEditProfileFragment newInstance(Context context,
                                                         String username,
@@ -103,13 +103,11 @@ public class AppCMSEditProfileFragment extends DialogFragment {
 
         editProfileConfirmChangeButton.setOnClickListener((View v) -> {
 
-            String userName = appCMSEditProfileNameInput.getText().toString();
-            if (!TextUtils.isEmpty(userName)) {
+            String userName = appCMSEditProfileNameInput.getText().toString().trim();
                 if (!doesValidNameExist(userName)) {
                     Toast.makeText(getContext(), getResources().getString(R.string.edit_profile_name_message), Toast.LENGTH_LONG).show();
                     return;
                 }
-            }
 
             TextInputLayout textInputLayout = new TextInputLayout(view.getContext());
             TextInputEditText password = new TextInputEditText(view.getContext());
@@ -164,6 +162,5 @@ public class AppCMSEditProfileFragment extends DialogFragment {
     }
 
     private boolean doesValidNameExist(String input) {
-        return Pattern.matches(regex, input);
-    }
-}
+        return !TextUtils.isEmpty(input) && Pattern.matches(regex, input);
+    }}
