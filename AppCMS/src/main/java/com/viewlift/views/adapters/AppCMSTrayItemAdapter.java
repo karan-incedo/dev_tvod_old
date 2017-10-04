@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -255,6 +256,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     imageUrl = new StringBuffer();
                 }
             }
+
             loadImage(holder.itemView.getContext(), imageUrl.toString(), holder.appCMSContinueWatchingVideoImage);
 
             holder.itemView.setOnClickListener(v -> {
@@ -266,6 +268,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     click(adapterData.get(position));
                 }
             });
+
             holder.appCMSContinueWatchingButton.setOnClickListener(null);
 
             holder.appCMSContinueWatchingVideoImage.setOnClickListener(v -> {
@@ -294,12 +297,21 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 holder.appCMSContinueWatchingTitle.setText(contentDatum.getGist().getTitle());
             }
 
-            if (contentDatum != null && contentDatum.getGist() != null && contentDatum.getGist().getDescription() != null) {
+            if (contentDatum.getGist() != null && contentDatum.getGist().getDescription() != null) {
                 Spannable rawHtmlSpannable = new HtmlSpanner().fromHtml(contentDatum.getGist().getDescription());
                 holder.appCMSContinueWatchingDescription.setText(rawHtmlSpannable);
             }
 
             holder.appCMSContinueWatchingDeleteButton.setOnClickListener(v -> delete(contentDatum, position));
+
+            if (isHistory) {
+                holder.appCMSContinueWatchingLastViewed.setVisibility(View.VISIBLE);
+                holder.appCMSContinueWatchingLastViewed.setText(getLastWatchedTime(contentDatum));
+                holder.appCMSContinueWatchingLastViewed.setTextColor(Color.parseColor(
+                        (appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())));
+            } else {
+                holder.appCMSContinueWatchingLastViewed.setVisibility(View.GONE);
+            }
 
             holder.appCMSContinueWatchingTitle.setOnClickListener(v -> {
                 if (isDownload) {
@@ -312,22 +324,20 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             });
 
             if (contentDatum.getGist() != null) {
-                holder.appCMSContinueWatchingDuration.setText(String.valueOf(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
-                        + " " + String.valueOf(holder.itemView.getContext().getString(R.string.mins_abbreviation)));
+                holder.appCMSContinueWatchingDuration.setText(String.valueOf(contentDatum.getGist()
+                        .getRuntime() / SECONDS_PER_MINS) + " " + String.valueOf(holder.itemView.getContext().getString(R.string.mins_abbreviation)));
             }
+
             if (contentDatum.getGist().getWatchedPercentage() > 0) {
                 holder.appCMSContinueWatchingProgress.setVisibility(View.VISIBLE);
-                holder.appCMSContinueWatchingProgress
-                        .setProgress(contentDatum.getGist().getWatchedPercentage());
+                holder.appCMSContinueWatchingProgress.setProgress(contentDatum.getGist()
+                        .getWatchedPercentage());
             } else {
-                long watchedTime =
-                        contentDatum.getGist().getWatchedTime();
-                long runTime =
-                        contentDatum.getGist().getRuntime();
+                long watchedTime = contentDatum.getGist().getWatchedTime();
+                long runTime = contentDatum.getGist().getRuntime();
                 if (watchedTime > 0 && runTime > 0) {
                     long percentageWatched = watchedTime * 100 / runTime;
-                    holder.appCMSContinueWatchingProgress
-                            .setProgress((int) percentageWatched);
+                    holder.appCMSContinueWatchingProgress.setProgress((int) percentageWatched);
                     holder.appCMSContinueWatchingProgress.setVisibility(View.VISIBLE);
                 } else {
                     holder.appCMSContinueWatchingProgress.setVisibility(View.INVISIBLE);
@@ -346,11 +356,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             } else {
                 holder.appCMSNotItemLabel.setText(holder.itemView.getContext().getString(R.string.empty_watchlist_message));
             }
+
             holder.appCMSContinueWatchingVideoImage.setVisibility(View.GONE);
             holder.appCMSContinueWatchingPlayButton.setVisibility(View.GONE);
             holder.appCMSContinueWatchingTitle.setVisibility(View.GONE);
             holder.appCMSContinueWatchingDescription.setVisibility(View.GONE);
             holder.appCMSContinueWatchingDeleteButton.setVisibility(View.GONE);
+            holder.appCMSContinueWatchingLastViewed.setVisibility(View.GONE);
             holder.appCMSContinueWatchingDuration.setVisibility(View.GONE);
             holder.appCMSContinueWatchingSize.setVisibility(View.GONE);
             holder.appCMSContinueWatchingSeparatorView.setVisibility(View.GONE);
@@ -359,10 +371,44 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         }
     }
 
+    private String getLastWatchedTime(ContentDatum contentDatum) {
+        long currentTime = System.currentTimeMillis();
+        long lastWatched = contentDatum.getUpdateDate();
+
+        long days = TimeUnit.MILLISECONDS.toDays(currentTime - lastWatched);
+        long hours = TimeUnit.MILLISECONDS.toHours(currentTime - lastWatched);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(currentTime - lastWatched);
+
+        String lastWatchedMessage = "";
+
+        if (days > 0) {
+            if (days > 1) {
+                lastWatchedMessage = days + " days ago";
+            } else {
+                lastWatchedMessage = days + " day ago";
+            }
+        } else if (hours > 0 && hours < 24) {
+            if (hours > 1) {
+                lastWatchedMessage = hours + " hours ago";
+            } else {
+                lastWatchedMessage = hours + " hour ago";
+            }
+        } else if (minutes > 0 && minutes < 60) {
+            if (minutes > 1) {
+                lastWatchedMessage = minutes + " mins ago";
+            } else {
+                lastWatchedMessage = minutes + " min ago";
+            }
+        }
+
+        return lastWatchedMessage;
+    }
+
     private ContentDatum getNextContentDatum(int position) {
         if (position + 1 == adapterData.size()) {
             return null;
         }
+
         ContentDatum contentDatum = adapterData.get(++position);
         if (contentDatum.getGist() != null) {
             if (!contentDatum.getGist().getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
@@ -405,11 +451,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     null);
             return;
         }
+
         boolean networkAvailable = appCMSPresenter.isNetworkConnected();
         String permalink = data.getGist().getPermalink();
         String action = context.getString(R.string.app_cms_action_watchvideo_key);
         String title = data.getGist() != null ? data.getGist().getTitle() : null;
         String hlsUrl = data.getGist().getLocalFileUrl();
+
         String[] extraData = new String[4];
         extraData[0] = permalink;
         extraData[1] = hlsUrl;
@@ -689,16 +737,20 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         String action = defaultAction;
         String title = data.getGist().getTitle();
         String hlsUrl = getHlsUrl(data);
+
         String[] extraData = new String[3];
         extraData[0] = permalink;
         extraData[1] = hlsUrl;
         extraData[2] = data.getGist().getId();
         List<String> relatedVideos = null;
+
         if (data.getContentDetails() != null &&
                 data.getContentDetails().getRelatedVideoIds() != null) {
             relatedVideos = data.getContentDetails().getRelatedVideoIds();
         }
+
         Log.d(TAG, "Launching " + permalink + ": " + action);
+
         if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                 action,
                 title,
@@ -799,6 +851,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                              TextView textView) {
         if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
             AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
+
             if (fontWeight == null) {
                 fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }
@@ -842,6 +895,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
         @BindView(R.id.app_cms_continue_watching_description)
         TextView appCMSContinueWatchingDescription;
+
+        @BindView(R.id.app_cms_continue_watching_last_viewed)
+        TextView appCMSContinueWatchingLastViewed;
 
         @BindView(R.id.app_cms_continue_watching_delete_button)
         ImageButton appCMSContinueWatchingDeleteButton;

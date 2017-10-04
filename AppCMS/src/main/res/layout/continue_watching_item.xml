@@ -84,8 +84,8 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/app_cms_continue_watching_tray_height"
             android:layout_centerInParent="false"
+            android:layout_marginStart="@dimen/app_cms_continue_watching_tray_marginLeft"
             android:layout_marginTop="12dp"
-            android:layout_marginLeft="@dimen/app_cms_continue_watching_tray_marginLeft"
             android:layout_toEndOf="@id/app_cms_continue_watching_image_view"
             android:layout_toStartOf="@id/app_cms_continue_watching_button_view"
             android:orientation="vertical">
@@ -108,6 +108,7 @@
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:padding="2dp" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -117,7 +118,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginTop="10dp"
             android:orientation="vertical"
-            android:padding="8dp">
+            android:padding="4dp">
 
             <ImageButton
                 android:id="@+id/app_cms_watchlist_download_status_button"
@@ -127,12 +128,22 @@
                 android:scaleType="fitCenter"
                 android:visibility="gone" />
 
+            <TextView
+                android:id="@+id/app_cms_continue_watching_last_viewed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="2dp"
+                android:maxLines="1"
+                android:padding="2dp" />
+
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="top|center_horizontal">
-                <!-- SVFA-2053 app_cms_continue_watching_delete_button
-                need transparent bg for drawing bitmap  at runtime progress -->
+                android:layout_gravity="top|center_horizontal"
+                android:layout_marginBottom="2dp"
+                android:layout_marginTop="8dp">
+
                 <ImageButton
                     android:id="@+id/app_cms_continue_watching_delete_button"
                     android:layout_width="24dp"
@@ -147,10 +158,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="4dp"
                 android:maxLines="1"
                 android:padding="2dp" />
-
 
         </LinearLayout>
 
