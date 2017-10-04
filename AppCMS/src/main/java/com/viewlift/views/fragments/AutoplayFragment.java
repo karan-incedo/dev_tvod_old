@@ -252,6 +252,7 @@ public class AutoplayFragment extends Fragment {
                 .appCMSPageViewModule(new AppCMSPageViewModule(getContext(),
                         binder.getAppCMSPageUI(),
                         binder.getAppCMSPageAPI(),
+                        appCMSPresenter.getAppCMSAndroidModules(),
                         binder.getScreenName(),
                         binder.getJsonValueKeyMap(),
                         appCMSPresenter))
