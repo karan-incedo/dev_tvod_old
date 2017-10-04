@@ -12,6 +12,12 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:orientation="vertical">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/app_cms_force_upgrade_element_margin"
+            android:src="@drawable/logo_icon"/>
         <TextView
             android:id="@+id/app_cms_upgrade_textview"
             android:layout_width="wrap_content"
@@ -19,18 +25,19 @@
             android:textStyle="bold"
             android:textSize="@dimen/upgrade_textsize"
             android:textAlignment="center"
-            android:text="@string/app_cms_upgrade_textview_text"
-            android:textColor="@color/colorAccent" />
+            android:layout_margin="@dimen/app_cms_force_upgrade_element_margin"
+            android:text="@string/app_cms_upgrade_textview_text" />
         <Button
             android:id="@+id/app_cms_upgrade_button"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:textSize="@dimen/upgrade_textsize"
+            android:layout_gravity="center"
             android:textAlignment="center"
-            android:background="@color/transparentColor"
+            android:padding="@dimen/app_cms_force_upgrade_button_padding"
             android:text="@string/app_cms_upgrade_button_text"
-            android:textColor="@color/colorAccent" />
+            android:layout_margin="@dimen/app_cms_force_upgrade_element_margin" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

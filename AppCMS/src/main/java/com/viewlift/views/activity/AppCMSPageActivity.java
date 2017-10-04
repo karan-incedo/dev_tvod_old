@@ -1,5 +1,7 @@
 package com.viewlift.views.activity;
 
+import android.animation.AnimatorSet;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -23,7 +25,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -32,6 +33,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -74,6 +78,7 @@ import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSCCAvenueFragment;
 import com.viewlift.views.fragments.AppCMSChangePasswordFragment;
 import com.viewlift.views.fragments.AppCMSEditProfileFragment;
+import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSPageFragment;
 import com.viewlift.views.fragments.AppCMSResetPasswordFragment;
@@ -470,12 +475,35 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         if (appCMSPresenter != null) {
+            newVersionUpgradeAvailable.setBackgroundColor(Color.parseColor(
+                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
             newVersionAvailableTextView.setTextColor(Color.parseColor(
                     appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
         }
 
+        newVersionAvailableTextView.setOnClickListener((v) -> {
+            Intent googlePlayStoreUpgradeAppIntent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse(getString(R.string.google_play_store_upgrade_app_url,
+                            getString(R.string.package_name))));
+            startActivity(googlePlayStoreUpgradeAppIntent);
+        });
+
         newVersionAvailableCloseButton.setOnClickListener((v) -> {
-            newVersionUpgradeAvailable.setVisibility(View.GONE);
+            ValueAnimator heightAnimator = ValueAnimator.ofInt(newVersionUpgradeAvailable.getHeight(),
+                    0);
+            heightAnimator.addUpdateListener((animation) -> {
+                Integer value = (Integer) animation.getAnimatedValue();
+                newVersionUpgradeAvailable.getLayoutParams().height = value;
+                if (value == 0) {
+                    newVersionUpgradeAvailable.setVisibility(View.GONE);
+                }
+                newVersionUpgradeAvailable.requestLayout();
+            });
+
+            AnimatorSet set = new AnimatorSet();
+            set.play(heightAnimator);
+            set.setInterpolator(new AccelerateDecelerateInterpolator());
+            set.start();
         });
 
         appCMSPresenter.sendCloseOthersAction(null, false);
@@ -500,6 +528,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     public void onBackPressed() {
         if (!handlingClose && !isPageLoading()) {
+            if (appCMSPresenter.isAddOnFragmentVisible()) {
+                for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                    if (fragment instanceof AppCMSMoreFragment) {
+                        ((AppCMSMoreFragment) fragment).sendDismissAction();
+                    }
+                }
+                return;
+            }
+
             handlingClose = true;
             handleCloseAction();
             handlingClose = false;
@@ -524,7 +561,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         resume();
         appCMSPresenter.setCurrentActivity(this);
         Log.d(TAG, "onResume()");
-        Log.d(TAG, "checkForExistingSubscription() - 503");
+        Log.d(TAG, "checkForExistingSubscription()");
         appCMSPresenter.checkForExistingSubscription(false);
 
         if (appCMSPresenter.isAppUpgradeAvailable()) {
@@ -532,6 +569,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } else if (appCMSPresenter.isAppBelowMinVersion()) {
             appCMSPresenter.launchUpgradeAppActivity();
         }
+
+        appCMSPresenter.refreshPages();
     }
 
     @Override

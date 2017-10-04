@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.Arrays;
@@ -29,6 +30,7 @@ public class AppCMSPageViewModule {
     private final Context context;
     private final AppCMSPageUI appCMSPageUI;
     private final AppCMSPageAPI appCMSPageAPI;
+    private final AppCMSAndroidModules appCMSAndroidModules;
     private final String screenName;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final AppCMSPresenter appCMSPresenter;
@@ -38,12 +40,14 @@ public class AppCMSPageViewModule {
     public AppCMSPageViewModule(Context context,
                                 AppCMSPageUI appCMSPageUI,
                                 AppCMSPageAPI appCMSPageAPI,
+                                AppCMSAndroidModules appCMSAndroidModules,
                                 String screeeName,
                                 Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                 AppCMSPresenter appCMSPresenter) {
         this.context = context;
         this.appCMSPageUI = appCMSPageUI;
         this.appCMSPageAPI = appCMSPageAPI;
+        this.appCMSAndroidModules = appCMSAndroidModules;
         this.screenName = screeeName;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.appCMSPresenter = appCMSPresenter;
@@ -73,6 +77,7 @@ public class AppCMSPageViewModule {
         return viewCreator.generatePage(context,
                 appCMSPageUI,
                 appCMSPageAPI,
+                appCMSAndroidModules,
                 screenName,
                 jsonValueKeyMap,
                 appCMSPresenter,

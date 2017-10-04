@@ -230,6 +230,7 @@ public class AppCMSPageFragment extends Fragment {
                 .appCMSPageViewModule(new AppCMSPageViewModule(getContext(),
                         appCMSBinder.getAppCMSPageUI(),
                         appCMSBinder.getAppCMSPageAPI(),
+                        appCMSPresenter.getAppCMSAndroidModules(),
                         appCMSBinder.getScreenName(),
                         appCMSBinder.getJsonValueKeyMap(),
                         appCMSPresenter))

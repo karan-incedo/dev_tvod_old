@@ -111,6 +111,8 @@ import com.viewlift.models.data.appcms.subscriptions.PlanDetail;
 import com.viewlift.models.data.appcms.subscriptions.Receipt;
 import com.viewlift.models.data.appcms.subscriptions.UserSubscriptionPlan;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
+import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
+import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
 import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
@@ -139,6 +141,7 @@ import com.viewlift.models.network.components.DaggerAppCMSSearchUrlComponent;
 import com.viewlift.models.network.modules.AppCMSAPIModule;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
+import com.viewlift.models.network.rest.AppCMSAndroidModuleCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSBeaconCall;
@@ -382,6 +385,7 @@ public class AppCMSPresenter {
     private final AppCMSUserDownloadVideoStatusCall appCMSUserDownloadVideoStatusCall;
     private final AppCMSBeaconCall appCMSBeaconCall;
     private final AppCMSRestorePurchaseCall appCMSRestorePurchaseCall;
+    private final AppCMSAndroidModuleCall appCMSAndroidModuleCall;
 
     private final AppCMSUserVideoStatusCall appCMSUserVideoStatusCall;
     private final AppCMSAddToWatchlistCall appCMSAddToWatchlistCall;
@@ -499,6 +503,8 @@ public class AppCMSPresenter {
     private ReferenceQueue<Object> referenceQueue;
     private EntitlementCheckActive entitlementCheckActive;
 
+    private AppCMSAndroidModules appCMSAndroidModules;
+
     private Toast watchlistToast;
 
     @Inject
@@ -535,6 +541,8 @@ public class AppCMSPresenter {
                            AppCMSUserDownloadVideoStatusCall appCMSUserDownloadVideoStatusCall,
                            AppCMSBeaconCall appCMSBeaconCall,
                            AppCMSRestorePurchaseCall appCMSRestorePurchaseCall,
+
+                           AppCMSAndroidModuleCall appCMSAndroidModuleCall,
 
                            AppCMSAddToWatchlistCall appCMSAddToWatchlistCall,
 
@@ -575,6 +583,8 @@ public class AppCMSPresenter {
         this.appCMSUserDownloadVideoStatusCall = appCMSUserDownloadVideoStatusCall;
         this.appCMSBeaconCall = appCMSBeaconCall;
         this.appCMSRestorePurchaseCall = appCMSRestorePurchaseCall;
+
+        this.appCMSAndroidModuleCall = appCMSAndroidModuleCall;
 
         this.appCMSAddToWatchlistCall = appCMSAddToWatchlistCall;
 
@@ -728,6 +738,10 @@ public class AppCMSPresenter {
             return urlWithContent;
         }
         return null;
+    }
+
+    public AppCMSAndroidModules getAppCMSAndroidModules() {
+        return appCMSAndroidModules;
     }
 
     public boolean launchVideoPlayer(final ContentDatum contentDatum,
@@ -1691,6 +1705,15 @@ public class AppCMSPresenter {
                 mainFragmentView.setAlpha(transparency);
             }
         }
+    }
+
+    public boolean isAddOnFragmentVisible() {
+        FrameLayout addOnFragment =
+                currentActivity.findViewById(R.id.app_cms_addon_fragment);
+        if (addOnFragment != null) {
+            return addOnFragment.getVisibility() == View.VISIBLE;
+        }
+        return false;
     }
 
     public void showAddOnFragment(boolean showMainFragment, float mainFragmentTransparency) {
@@ -3457,7 +3480,7 @@ public class AppCMSPresenter {
     public boolean isAppUpgradeAvailable() {
 
 
-        return false;
+        return true;
     }
 
     public boolean isAppBelowMinVersion() {
@@ -8087,6 +8110,73 @@ public class AppCMSPresenter {
         }
     }
 
+    public void refreshPages() {
+        Log.d(TAG, "Refreshing pages");
+        if (currentActivity != null) {
+            Log.d(TAG, "Refreshing main.json");
+            refreshAppCMSMain((appCMSMain) -> {
+                if (appCMSMain != null) {
+                    Log.d(TAG, "Refreshed main.json");
+                    this.appCMSMain = appCMSMain;
+                    refreshAppCMSAndroid((appCMSAndroid) -> {
+                        queueMetaPages(appCMSAndroid.getMetaPages());
+                        for (MetaPage metaPage : appCMSAndroid.getMetaPages()) {
+                            Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
+                                    " " +
+                                    metaPage.getPageId() +
+                                    " " +
+                                    metaPage.getPageUI());
+                            getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
+                                    metaPage.getPageUI()),
+                                    appCMSPageUI -> {},
+                                    false);
+                        }
+
+                        getAppCMSModules((appCMSAndroidModules) -> {
+                            Log.d(TAG, "Received and refreshed module list");
+                            this.appCMSAndroidModules = appCMSAndroidModules;
+                        });
+                    });
+                } else {
+                    Log.w(TAG, "Resulting main.json from refresh is null");
+                }
+            });
+        } else {
+            Log.w(TAG, "Current activity is null, can not refresh page data");
+        }
+    }
+
+    private void refreshAppCMSMain(Action1<AppCMSMain> readyAction) {
+        GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
+                .context(currentActivity)
+                .siteId(currentActivity.getString(R.string.app_cms_app_name))
+                .forceReloadFromNetwork(true)
+                .build();
+        new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
+            Log.d(TAG, "Refreshed main.json");
+            if (readyAction != null) {
+                Log.d(TAG, "Notifying listeners that main.json has been updated");
+                Observable.just(main).subscribe(readyAction);
+            }
+        });
+    }
+
+    private void refreshAppCMSAndroid(Action1<AppCMSAndroidUI> readyAction) {
+        GetAppCMSAndroidUIAsyncTask.Params params =
+                new GetAppCMSAndroidUIAsyncTask.Params.Builder()
+                        .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
+                                appCMSMain.getAndroid()))
+                        .loadFromFile(false)
+                        .build();
+        new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
+            Log.d(TAG, "Refreshed android.json");
+            if (readyAction != null) {
+                Log.d(TAG, "Notifying listeners that android.json has been updated");
+                Observable.just(appCMSAndroidUI).subscribe(readyAction);
+            }
+        }).execute(params);
+    }
+
     private void getAppCMSAndroid(int tryCount) {
         Log.d(TAG, "Attempting to retrieve android.json");
         try {
@@ -8116,6 +8206,7 @@ public class AppCMSPresenter {
                 });
             } else {
                 Log.d(TAG, "Retrieving android.json");
+
                 GetAppCMSAndroidUIAsyncTask.Params params =
                         new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                                 .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
@@ -8134,6 +8225,10 @@ public class AppCMSPresenter {
                             Log.e(TAG, "AppCMS current application version is below the minimum version supported");
                             launchUpgradeAppActivity();
                         } else {
+                            getAppCMSModules((appCMSAndroidModules) -> {
+                                Log.d(TAG, "Received module list");
+                                this.appCMSAndroidModules = appCMSAndroidModules;
+                            });
                             initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
                             navigation = appCMSAndroidUI.getNavigation();
                             new SoftReference<>(navigation, referenceQueue);
@@ -8220,6 +8315,14 @@ public class AppCMSPresenter {
         } catch (Exception e) {
             Log.e(TAG, "Failed to load Android json file: " + e.getMessage());
             launchErrorActivity(PlatformType.ANDROID);
+        }
+    }
+
+    private void getAppCMSModules(Action1<AppCMSAndroidModules> readyAction) {
+        if (currentActivity != null) {
+            appCMSAndroidModuleCall.call(currentActivity.getString(R.string.app_cms_get_modules_api,
+                    appCMSMain.getApiBaseUrl()),
+                    readyAction);
         }
     }
 
