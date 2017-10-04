@@ -55,11 +55,13 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.models.data.appcms.api.Trailer;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.NavigationFooter;
@@ -257,6 +259,8 @@ public class TVViewCreator {
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())) {
+               // module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
+
                 if (null == moduleAPI
                         || moduleAPI.getContentData() == null) {
                     TextView textView = new TextView(context);
@@ -564,8 +568,11 @@ public class TVViewCreator {
 
                                     appCMSPresenter.showLoadingDialog(true);
                                     String[] extraData = new String[4];
-                                    extraData[0] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink();
-                                    extraData[1] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls();
+                                    Trailer trailerInfo = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0);
+                                    extraData[0] = trailerInfo.getPermalink();
+                                    extraData[1] = trailerInfo.getVideoAssets().getHls() != null ? trailerInfo.getVideoAssets().getHls() :
+                                            (trailerInfo.getVideoAssets().getMpeg().size() > 0) ? trailerInfo.getVideoAssets().getMpeg().get(0).getUrl() : null;
+
                                     extraData[2] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId();
                                     if (!appCMSPresenter.launchTVButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                             component.getAction(),
@@ -604,7 +611,7 @@ public class TVViewCreator {
                         final boolean[] queued = new boolean[1];
 
 
-                        if(appCMSPresenter.isUserLoggedIn(context)) {
+                        if (appCMSPresenter.isUserLoggedIn(context)) {
                             appCMSPresenter.getUserVideoStatus(
                                     moduleAPI.getContentData().get(0).getGist().getId(),
                                     userVideoStatusResponse -> {
@@ -634,7 +641,7 @@ public class TVViewCreator {
                                                         btn.setText(context.getString(R.string.add_to_watchlist));
                                                     }
                                                 }, !queued[0]);
-                                    } else /*User is not logged in*/{
+                                    } else /*User is not logged in*/ {
 
                                         ClearDialogFragment newFragment = getClearDialogFragment(
                                                 context,
@@ -648,7 +655,7 @@ public class TVViewCreator {
                                                 14
 
                                         );
-                                        newFragment.setOnPositiveButtonClicked(s ->{
+                                        newFragment.setOnPositiveButtonClicked(s -> {
 
                                             NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
                                             appCMSPresenter.navigateToTVPage(
@@ -839,7 +846,7 @@ public class TVViewCreator {
                                                 context.getString(R.string.app_cms_login));
                                         return;
                                     }
-                                    if((password != null && password.length() == 0)){
+                                    if ((password != null && password.length() == 0)) {
                                         appCMSPresenter.openTVErrorDialog(context.getString(R.string.blank_password_error_msg),
                                                 context.getString(R.string.app_cms_login));
                                         return;
@@ -1136,14 +1143,14 @@ public class TVViewCreator {
                                     public void onClick(View textView) {
                                         NavigationFooter tosNavigation = null;
                                         List<NavigationFooter> navigationFooter = appCMSPresenter.getNavigation().getNavigationFooter();
-                                        for(NavigationFooter navigationFooter1 : navigationFooter){
-                                            if(navigationFooter1.getTitle().equalsIgnoreCase("Terms of Service")){
+                                        for (NavigationFooter navigationFooter1 : navigationFooter) {
+                                            if (navigationFooter1.getTitle().equalsIgnoreCase("Terms of Service")) {
                                                 tosNavigation = navigationFooter1;
                                                 break;
                                             }
                                         }
 
-                                        if(null != tosNavigation){
+                                        if (null != tosNavigation) {
                                             appCMSPresenter.navigateToTVPage(
                                                     tosNavigation.getPageId(),
                                                     tosNavigation.getTitle(),
@@ -1177,13 +1184,13 @@ public class TVViewCreator {
                                     public void onClick(View textView) {
                                         NavigationFooter tosNavigation = null;
                                         List<NavigationFooter> navigationFooter = appCMSPresenter.getNavigation().getNavigationFooter();
-                                        for(NavigationFooter navigationFooter1 : navigationFooter){
-                                            if(navigationFooter1.getTitle().equalsIgnoreCase("Privacy Policy")){
+                                        for (NavigationFooter navigationFooter1 : navigationFooter) {
+                                            if (navigationFooter1.getTitle().equalsIgnoreCase("Privacy Policy")) {
                                                 tosNavigation = navigationFooter1;
                                                 break;
                                             }
                                         }
-                                        if(null != tosNavigation){
+                                        if (null != tosNavigation) {
                                             appCMSPresenter.navigateToTVPage(
                                                     tosNavigation.getPageId(),
                                                     tosNavigation.getTitle(),
@@ -1661,7 +1668,7 @@ public class TVViewCreator {
                                                        float messageSize) {
         Bundle bundle = new Bundle();
         bundle.putInt(ClearDialogFragment.DIALOG_WIDTH_KEY, dialogWidth);
-        bundle.putInt(ClearDialogFragment.DIALOG_HEIGHT_KEY,dialogHeight);
+        bundle.putInt(ClearDialogFragment.DIALOG_HEIGHT_KEY, dialogHeight);
         bundle.putFloat(ClearDialogFragment.DIALOG_MESSAGE__SIZE_KEY, messageSize);
         bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_TEXT_COLOR_KEY,
                 Utils.getTextColor(context, appCMSPresenter));

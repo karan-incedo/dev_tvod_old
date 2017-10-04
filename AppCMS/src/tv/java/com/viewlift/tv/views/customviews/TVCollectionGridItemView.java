@@ -242,6 +242,7 @@ public class TVCollectionGridItemView extends TVBaseView {
                 } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DELETE_ITEM_BUTTON) {
                     view.setNextFocusUpId(R.id.appcms_removeall);
                     view.setOnClickListener(v -> onClickHandler.delete(childComponent, data));
+                    view.setFocusable(true);
                 }
 
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
