@@ -108,57 +108,59 @@ public class AppCMSAndroidModuleCall {
                                         Action1<Map<String, ModuleList>> readyAction) {
         Observable.fromCallable(() -> {
             Map<String, ModuleList> appCMSAndroidModule = new HashMap<>();
-            for (Blocks blocks : blocksList) {
-                Log.d(TAG, "Retrieving block: " + blocks.getBlock());
-                try {
-                    if (!appCMSAndroidModule.containsKey(blocks.getBlock())) {
-                        Log.d(TAG, "Attempting to read block from file");
-                        InputStream inputStream = new FileInputStream(
-                                new File(storageDirectory.toString() +
-                                        File.separatorChar +
-                                        getResourceFilename(blocks.getBlock(), blocks.getVersion())));
-                        Scanner scanner = new Scanner(inputStream);
-                        StringBuffer sb = new StringBuffer();
-                        while (scanner.hasNextLine()) {
-                            sb.append(scanner.nextLine());
-                        }
-
-                        scanner.close();
-                        inputStream.close();
-                        ModuleList moduleList = gson.fromJson(sb.toString(),
-                                ModuleList.class);
-                        deletePreviousFiles(getResourceFilenameWithJsonOnly(blocks.getBlock()));
-                        writeModuleToFile(getResourceFilename(blocks.getBlock(), blocks.getVersion()), moduleList);
-                        appCMSAndroidModule.put(blocks.getBlock(), moduleList);
-                    }
-                } catch (Exception e) {
-                    Log.w(TAG, "Cached file could not be retrieved");
-
-                    StringBuilder bundleUrl = new StringBuilder(blocksBaseUrl);
-                    bundleUrl.append("/");
-                    bundleUrl.append(blocks.getBlock());
-                    bundleUrl.append("/android.json");
-                    bundleUrl.append("?version=");
-                    bundleUrl.append(blocks.getVersion());
-
-                    Log.d(TAG, "Attempting to retrieve updated module from URL: "  +
-                        bundleUrl.toString());
-
-                    Response<JsonElement> moduleListResponse =
-                            appCMSAndroidModuleRest.get(bundleUrl.toString()).execute();
+            if (blocksList != null) {
+                for (Blocks blocks : blocksList) {
+                    Log.d(TAG, "Retrieving block: " + blocks.getBlock());
                     try {
-                        if (moduleListResponse.body() != null) {
-                            ModuleList moduleList = gson.fromJson(moduleListResponse.body(),
+                        if (!appCMSAndroidModule.containsKey(blocks.getBlock())) {
+                            Log.d(TAG, "Attempting to read block from file");
+                            InputStream inputStream = new FileInputStream(
+                                    new File(storageDirectory.toString() +
+                                            File.separatorChar +
+                                            getResourceFilename(blocks.getBlock(), blocks.getVersion())));
+                            Scanner scanner = new Scanner(inputStream);
+                            StringBuffer sb = new StringBuffer();
+                            while (scanner.hasNextLine()) {
+                                sb.append(scanner.nextLine());
+                            }
+
+                            scanner.close();
+                            inputStream.close();
+                            ModuleList moduleList = gson.fromJson(sb.toString(),
                                     ModuleList.class);
                             deletePreviousFiles(getResourceFilenameWithJsonOnly(blocks.getBlock()));
                             writeModuleToFile(getResourceFilename(blocks.getBlock(), blocks.getVersion()), moduleList);
                             appCMSAndroidModule.put(blocks.getBlock(), moduleList);
                         }
-                    } catch (Exception e1) {
-                        Log.e(TAG, "Failed to retrieve module from URL: " +
-                            bundleUrl.toString() +
-                            " " +
-                            e1.getMessage());
+                    } catch (Exception e) {
+                        Log.w(TAG, "Cached file could not be retrieved");
+
+                        StringBuilder bundleUrl = new StringBuilder(blocksBaseUrl);
+                        bundleUrl.append("/");
+                        bundleUrl.append(blocks.getBlock());
+                        bundleUrl.append("/android.json");
+                        bundleUrl.append("?version=");
+                        bundleUrl.append(blocks.getVersion());
+
+                        Log.d(TAG, "Attempting to retrieve updated module from URL: " +
+                                bundleUrl.toString());
+
+                        Response<JsonElement> moduleListResponse =
+                                appCMSAndroidModuleRest.get(bundleUrl.toString()).execute();
+                        try {
+                            if (moduleListResponse.body() != null) {
+                                ModuleList moduleList = gson.fromJson(moduleListResponse.body(),
+                                        ModuleList.class);
+                                deletePreviousFiles(getResourceFilenameWithJsonOnly(blocks.getBlock()));
+                                writeModuleToFile(getResourceFilename(blocks.getBlock(), blocks.getVersion()), moduleList);
+                                appCMSAndroidModule.put(blocks.getBlock(), moduleList);
+                            }
+                        } catch (Exception e1) {
+                            Log.e(TAG, "Failed to retrieve module from URL: " +
+                                    bundleUrl.toString() +
+                                    " " +
+                                    e1.getMessage());
+                        }
                     }
                 }
             }
