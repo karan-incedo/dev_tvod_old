@@ -338,9 +338,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                     .setVisibility(isChecked ? View.VISIBLE : View.GONE);
             appCMSPresenter.setClosedCaptionPreference(mContext, isChecked);
         });
-
-
     }
+
 
     @Nullable
     @Override
@@ -563,8 +562,11 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
     public boolean showController(KeyEvent event){
         SimpleExoPlayerView playerView = videoPlayerView.getPlayerView();
-        playerView.showController();
-        return playerView.dispatchMediaKeyEvent(event);
+        if(playerView.getPlayer().getPlayWhenReady()){
+            playerView.showController();
+            return playerView.dispatchMediaKeyEvent(event);
+        }
+     return true;
     }
 
     BroadcastReceiver networkReciever = new BroadcastReceiver() {
