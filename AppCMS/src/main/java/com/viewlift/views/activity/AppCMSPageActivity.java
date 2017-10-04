@@ -1474,10 +1474,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         menuNavBarItemView.setLabel(getString(R.string.app_cms_menu_label));
         menuNavBarItemView.setHighlightColor(highlightColor);
         menuNavBarItemView.setOnClickListener(v -> {
-            Log.e(TAG, "on navigation page");
 
-            if (currentMenuTabIndex == navMenuPageIndex)
-                return;
             currentMenuTabIndex = navMenuPageIndex;
             if (!appCMSBinderStack.isEmpty()) {
                 if (!appCMSPresenter.launchNavigationPage()) {
@@ -1501,6 +1498,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             pageId +
                             " index: " +
                             i);
+                    currentMenuTabIndex = i;
                     foundPage = true;
                 }
             }
