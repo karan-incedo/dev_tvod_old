@@ -54,6 +54,7 @@ allprojects {
         appsFlyerVersion = "4.7.4@aar"
         glideTransformationVersion = "2.0.2"
         threetenBpVersion = "1.0.5"
+        jsoupVersion = "1.10.3"
     }
 }
 

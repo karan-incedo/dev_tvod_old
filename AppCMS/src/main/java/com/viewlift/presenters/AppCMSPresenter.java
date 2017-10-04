@@ -190,6 +190,7 @@ import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSUpgradeFragment;
 
+import org.jsoup.Jsoup;
 import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
 import org.threeten.bp.temporal.ChronoUnit;
@@ -238,8 +239,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.PAGE_ACTION;
@@ -3478,6 +3481,21 @@ public class AppCMSPresenter {
         }
     }
 
+    public SemVer getInstalledApplicationVersion() {
+        SemVer semVer = null;
+        if (currentActivity != null) {
+            String currentApplicationVersion = currentActivity.getString(R.string.app_cms_app_version);
+            semVer = getSemVer(currentApplicationVersion);
+        }
+        return semVer;
+    }
+
+    public SemVer getSemVer(String applicationVersion) {
+        SemVer semVer = new SemVer();
+        semVer.parse(applicationVersion);
+        return semVer;
+    }
+
     public boolean isAppUpgradeAvailable() {
 
 
@@ -3487,6 +3505,33 @@ public class AppCMSPresenter {
     public boolean isAppBelowMinVersion() {
 
         return false;
+    }
+
+    public void retrieveCurrentAppVersion() {
+        Observable
+                .fromCallable(() -> {
+                    String currentAppVersion = "";
+                    try {
+                        currentAppVersion = Jsoup.connect("https://play.google.com/store/apps/details?id=" +
+                                currentActivity.getPackageName() +
+                                "&hl=en")
+                            .timeout(30000)
+                            .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
+                            .referrer("http://www.google.com")
+                            .get()
+                            .select("div[itemprop=softwareVersion]")
+                            .first()
+                            .ownText();
+                    } catch (Exception e) {
+                        Log.e(TAG, "Failed to receive ");
+                    }
+                    return currentAppVersion;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((result) -> Observable.just(result).subscribe(currentAppVersion -> {
+                    // TODO: Save as user preference for ease of retrieval later
+                }));
     }
 
     public void clearHistory(final Action1<AppCMSDeleteHistoryResult> resultAction1) {
@@ -4137,21 +4182,23 @@ public class AppCMSPresenter {
             final String SUBS_PERIOD_REGEX = "P(([0-9]+)[yY])?(([0-9]+)[mM])?(([0-9]+)[wW])?(([0-9]+)[dD])?";
             if (subscriptionPeriod.matches(SUBS_PERIOD_REGEX)) {
                 Matcher subscriptionPeriodMatcher = Pattern.compile(SUBS_PERIOD_REGEX).matcher(subscriptionPeriod);
-                if (subscriptionPeriodMatcher.group(2) != null) {
-                    subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(2)),
-                            ChronoUnit.YEARS);
-                }
-                if (subscriptionPeriodMatcher.group(4) != null) {
-                    subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(4)),
-                            ChronoUnit.MONTHS);
-                }
-                if (subscriptionPeriodMatcher.group(6) != null) {
-                    subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(6)),
-                            ChronoUnit.WEEKS);
-                }
-                if (subscriptionPeriodMatcher.group(8) != null) {
-                    subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(8)),
-                            ChronoUnit.DAYS);
+                if (subscriptionPeriodMatcher.find()) {
+                    if (subscriptionPeriodMatcher.group(2) != null) {
+                        subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(2)),
+                                ChronoUnit.YEARS);
+                    }
+                    if (subscriptionPeriodMatcher.group(4) != null) {
+                        subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(4)),
+                                ChronoUnit.MONTHS);
+                    }
+                    if (subscriptionPeriodMatcher.group(6) != null) {
+                        subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(6)),
+                                ChronoUnit.WEEKS);
+                    }
+                    if (subscriptionPeriodMatcher.group(8) != null) {
+                        subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(8)),
+                                ChronoUnit.DAYS);
+                    }
                 }
 
                 Duration betweenSubscribedTimeAndNowTime =
@@ -5756,6 +5803,9 @@ public class AppCMSPresenter {
         this.deeplinkSearchQuery = searchQuery;
         this.platformType = platformType;
         this.launched = false;
+
+        retrieveCurrentAppVersion();
+
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
@@ -9943,4 +9993,31 @@ public class AppCMSPresenter {
         List<String> relateVideoIds;
     }
 
+    public static class SemVer {
+        int major;
+        int minor;
+        int patch;
+        String original;
+
+        private static final String SEMVER_REGEX = "(\\d+)\\.(\\d+)\\.(\\d+)";
+
+        public void parse(String original) {
+            this.original = original;
+
+            Matcher semverMatcher = Pattern.compile(SEMVER_REGEX).matcher(original);
+            if (semverMatcher.find()) {
+                if (semverMatcher.group(1) != null) {
+                    major = Integer.parseInt(semverMatcher.group(1));
+                }
+
+                if (semverMatcher.group(2) != null) {
+                    minor = Integer.parseInt(semverMatcher.group(2));
+                }
+
+                if (semverMatcher.group(3) != null) {
+                    patch = Integer.parseInt(semverMatcher.group(3));
+                }
+            }
+        }
+    }
 }
