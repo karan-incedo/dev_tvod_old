@@ -261,6 +261,7 @@ public class AppCMSPageFragment extends Fragment {
                     getContext(),
                     appCMSBinder.getAppCMSPageUI(),
                     appCMSBinder.getAppCMSPageAPI(),
+                    appCMSPresenter.getAppCMSAndroidModules(),
                     appCMSBinder.getJsonValueKeyMap(),
                     appCMSPresenter,
                     modulesToIgnore);

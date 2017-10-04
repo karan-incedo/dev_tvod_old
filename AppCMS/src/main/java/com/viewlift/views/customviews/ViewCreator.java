@@ -125,13 +125,19 @@ public class ViewCreator {
                                 Context context,
                                 AppCMSPageUI appCMSPageUI,
                                 AppCMSPageAPI appCMSPageAPI,
+                                AppCMSAndroidModules appCMSAndroidModules,
                                 Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                 AppCMSPresenter appCMSPresenter,
                                 List<String> modulesToIgnore) {
         if (appCMSPageUI == null) {
             return;
         }
-        for (ModuleList module : appCMSPageUI.getModuleList()) {
+        for (ModuleList moduleInfo : appCMSPageUI.getModuleList()) {
+            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getView());
+            if (module == null) {
+                module = moduleInfo;
+            }
+
             boolean createModule = !modulesToIgnore.contains(module.getType()) && pageView != null;
 
             if (createModule && appCMSPresenter.isViewPlanPage(module.getId()) &&
@@ -864,6 +870,7 @@ public class ViewCreator {
             createPageView(context,
                     appCMSPageUI,
                     appCMSPageAPI,
+                    appCMSAndroidModules,
                     pageView,
                     jsonValueKeyMap,
                     appCMSPresenter,
@@ -873,6 +880,7 @@ public class ViewCreator {
                     context,
                     appCMSPageUI,
                     appCMSPageAPI,
+                    appCMSAndroidModules,
                     jsonValueKeyMap,
                     appCMSPresenter,
                     modulesToIgnore);
@@ -888,6 +896,7 @@ public class ViewCreator {
     protected void createPageView(Context context,
                                   AppCMSPageUI appCMSPageUI,
                                   AppCMSPageAPI appCMSPageAPI,
+                                  AppCMSAndroidModules appCMSAndroidModules,
                                   PageView pageView,
                                   Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                   AppCMSPresenter appCMSPresenter,
@@ -896,7 +905,12 @@ public class ViewCreator {
         pageView.clearExistingViewLists();
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
-        for (ModuleList module : modulesList) {
+        for (ModuleList moduleInfo : modulesList) {
+            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getView());
+            if (module == null) {
+                module = moduleInfo;
+            }
+
             boolean createModule = !modulesToIgnore.contains(module.getType());
 
             if (createModule && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&

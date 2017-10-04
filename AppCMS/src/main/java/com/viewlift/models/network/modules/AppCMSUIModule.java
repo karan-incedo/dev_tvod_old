@@ -903,7 +903,7 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSAndroidModuleCall providesAppCMSAndroidModuleCall(Gson gson,
                                                                    AppCMSAndroidModuleRest appCMSAndroidModuleRest) {
-        return new AppCMSAndroidModuleCall(gson, appCMSAndroidModuleRest);
+        return new AppCMSAndroidModuleCall(gson, appCMSAndroidModuleRest, storageDirectory);
     }
 
     @Provides

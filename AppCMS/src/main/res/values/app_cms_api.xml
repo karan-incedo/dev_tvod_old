@@ -75,12 +75,6 @@
     <!-- Restore Purchase API -->
     <string name="app_cms_restore_purchase_api_url">%1$s/identity/signin/android?site=%2$s</string>
 
-    <!-- AppCMS Get Modules API -->
-    <string name="app_cms_get_modules_api">%1$s/template-builder/blocksBundle/android.json</string>
-
-    <!-- AppCMS Get Modules Manifest API -->
-    <string name="app_cms_get_modules_manifest_api">%1$s/template-builder/blocks/%2$s/android.json</string>
-
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>

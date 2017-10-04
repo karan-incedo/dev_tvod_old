@@ -3499,7 +3499,7 @@ public class AppCMSPresenter {
     public boolean isAppUpgradeAvailable() {
 
 
-        return true;
+        return false;
     }
 
     public boolean isAppBelowMinVersion() {
@@ -8194,7 +8194,7 @@ public class AppCMSPresenter {
                                     false);
                         }
 
-                        getAppCMSModules((appCMSAndroidModules) -> {
+                        getAppCMSModules(appCMSAndroid, (appCMSAndroidModules) -> {
                             Log.d(TAG, "Received and refreshed module list");
                             this.appCMSAndroidModules = appCMSAndroidModules;
                         });
@@ -8287,7 +8287,7 @@ public class AppCMSPresenter {
                             Log.e(TAG, "AppCMS current application version is below the minimum version supported");
                             launchUpgradeAppActivity();
                         } else {
-                            getAppCMSModules((appCMSAndroidModules) -> {
+                            getAppCMSModules(appCMSAndroidUI, (appCMSAndroidModules) -> {
                                 Log.d(TAG, "Received module list");
                                 this.appCMSAndroidModules = appCMSAndroidModules;
                             });
@@ -8380,10 +8380,11 @@ public class AppCMSPresenter {
         }
     }
 
-    private void getAppCMSModules(Action1<AppCMSAndroidModules> readyAction) {
+    private void getAppCMSModules(AppCMSAndroidUI appCMSAndroidUI, Action1<AppCMSAndroidModules> readyAction) {
         if (currentActivity != null) {
-            appCMSAndroidModuleCall.call(currentActivity.getString(R.string.app_cms_get_modules_api,
-                    appCMSMain.getApiBaseUrl()),
+            appCMSAndroidModuleCall.call(appCMSAndroidUI.getBlocksBundleUrl(),
+                    appCMSAndroidUI.getBlocksBaseUrl(),
+                    appCMSAndroidUI.getBlocks(),
                     readyAction);
         }
     }
@@ -8634,8 +8635,7 @@ public class AppCMSPresenter {
             GetAppCMSAndroidUIAsyncTask.Params params =
                     new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                             .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                    appCMSMain.getFireTv(),
-                                    appCMSMain.getTimestamp()))
+                                    appCMSMain.getFireTv()))
                             .loadFromFile(loadFromFile)
                             .build();
             Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
