@@ -313,7 +313,8 @@ public class AppCMSPresenter {
     private static final String ANONYMOUS_AUTH_TOKEN_PREF_NAME = "anonymous_auth_token_pref_key";
     private static final long MILLISECONDS_PER_SECOND = 1000L;
     private static final long SECONDS_PER_MINUTE = 60L;
-    private static final long MAX_SESSION_DURATION_IN_MINUTES = 30L;
+    private static final long MAX_SESSION_DURATION_IN_MINUTES = 15L;
+    private static final long MAX_ANONYMOUS_SESSIONS_DURATION_IN_MINUTES = 30L;
     private static final String MEDIA_SURFIX_MP4 = ".mp4";
     private static final String MEDIA_SURFIX_PNG = ".png";
     private static final String MEDIA_SURFIX_JPG = ".jpg";
@@ -5897,7 +5898,16 @@ public class AppCMSPresenter {
                 long now = new Date().getTime();
                 long timeDiff = now - lastLoginTime;
                 long minutesSinceLogin = timeDiff / (MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE);
-                if (minutesSinceLogin >= MAX_SESSION_DURATION_IN_MINUTES) {
+
+                long maxDuration = MAX_SESSION_DURATION_IN_MINUTES;
+
+                if (!TextUtils.isEmpty(getLoggedInUser()) &&
+                        !TextUtils.isEmpty(getAnonymousUserToken()) &&
+                        getLoggedInUser().equals(getAnonymousUserToken())) {
+                    maxDuration = MAX_ANONYMOUS_SESSIONS_DURATION_IN_MINUTES;
+                }
+
+                if (minutesSinceLogin >= maxDuration) {
                     return true;
                 }
             }
