@@ -87,7 +87,7 @@ public class AppCMSAndroidModuleCall {
             String[] listExistingFiles = savedFileDirectory.list();
             for (String existingFilename : listExistingFiles) {
                 if (existingFilename.contains(fileToDeleteFilenamePattern)) {
-                    File fileToDelete = new File(existingFilename);
+                    File fileToDelete = new File(storageDirectory, existingFilename);
                     try {
                         if (fileToDelete.delete()) {
                             Log.i(TAG, "Successfully deleted pre-existing file: " + fileToDelete);
