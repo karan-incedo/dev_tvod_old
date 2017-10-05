@@ -136,6 +136,13 @@ public class ViewCreator {
             ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
             if (module == null) {
                 module = moduleInfo;
+            } else if (moduleInfo != null) {
+                module.setId(moduleInfo.getId());
+                module.setSettings(moduleInfo.getSettings());
+                module.setSvod(moduleInfo.isSvod());
+                module.setType(moduleInfo.getType());
+                module.setView(moduleInfo.getView());
+                module.setBlockName(moduleInfo.getBlockName());
             }
 
             boolean createModule = !modulesToIgnore.contains(module.getType()) && pageView != null;
@@ -909,6 +916,13 @@ public class ViewCreator {
             ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
             if (module == null) {
                 module = moduleInfo;
+            } else if (moduleInfo != null) {
+                module.setId(moduleInfo.getId());
+                module.setSettings(moduleInfo.getSettings());
+                module.setSvod(moduleInfo.isSvod());
+                module.setType(moduleInfo.getType());
+                module.setView(moduleInfo.getView());
+                module.setBlockName(moduleInfo.getBlockName());
             }
 
             boolean createModule = !modulesToIgnore.contains(module.getType());

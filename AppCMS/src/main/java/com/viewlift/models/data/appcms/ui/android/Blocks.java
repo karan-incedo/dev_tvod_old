@@ -10,20 +10,20 @@ import com.vimeo.stag.UseStag;
 
 @UseStag
 public class Blocks {
-    @SerializedName("block")
+    @SerializedName("name")
     @Expose
-    String block;
+    String name;
 
     @SerializedName("version")
     @Expose
     String version;
 
-    public String getBlock() {
-        return block;
+    public String getName() {
+        return name;
     }
 
-    public void setBlock(String block) {
-        this.block = block;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getVersion() {
