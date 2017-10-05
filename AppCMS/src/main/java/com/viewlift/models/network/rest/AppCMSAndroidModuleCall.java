@@ -88,10 +88,17 @@ public class AppCMSAndroidModuleCall {
             for (String existingFilename : listExistingFiles) {
                 if (existingFilename.contains(fileToDeleteFilenamePattern)) {
                     File fileToDelete = new File(existingFilename);
-                    if (fileToDelete.delete()) {
-                        Log.i(TAG, "Successfully deleted pre-existing file: " + fileToDelete);
-                    } else {
-                        Log.e(TAG, "Failed to delete pre-existing file: " + fileToDelete);
+                    try {
+                        if (fileToDelete.delete()) {
+                            Log.i(TAG, "Successfully deleted pre-existing file: " + fileToDelete);
+                        } else {
+                            Log.e(TAG, "Failed to delete pre-existing file: " + fileToDelete);
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Could not delete file: " +
+                                fileToDelete +
+                                " - " +
+                                e.getMessage());
                     }
                 }
             }
@@ -168,11 +175,9 @@ public class AppCMSAndroidModuleCall {
     }
 
     private String getResourceFilenameWithJsonOnly(String url) {
-        final String JSON_EXT = ".json";
         int startIndex = url.lastIndexOf(File.separatorChar);
-        int endIndex = url.indexOf(JSON_EXT) + JSON_EXT.length();
-        if (0 <= startIndex && startIndex < endIndex) {
-            return url.substring(startIndex + 1, endIndex);
+        if (0 <= startIndex && startIndex < url.length()) {
+            return url.substring(startIndex + 1);
         }
         return url;
     }
