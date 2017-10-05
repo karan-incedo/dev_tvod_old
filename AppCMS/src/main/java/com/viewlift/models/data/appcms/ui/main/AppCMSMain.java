@@ -116,6 +116,10 @@ public class AppCMSMain {
     @Expose
     PaymentProviders paymentProviders;
 
+    @SerializedName("appVersions")
+    @Expose
+    AppVersions appVersions;
+
     public String getId() {
         return id;
     }
@@ -318,5 +322,13 @@ public class AppCMSMain {
 
     public void setDownloadable(boolean downloadable) {
         isDownloadable = downloadable;
+    }
+
+    public AppVersions getAppVersions() {
+        return appVersions;
+    }
+
+    public void setAppVersions(AppVersions appVersions) {
+        this.appVersions = appVersions;
     }
 }
