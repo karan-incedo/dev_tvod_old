@@ -182,7 +182,7 @@ public class AppCMSAndroidModuleCall {
         return url;
     }
 
-    private String getResourceFilename(String url, int version) {
+    private String getResourceFilename(String url, String version) {
         int startIndex = url.lastIndexOf(File.separatorChar);
         int endIndex = url.length();
         StringBuilder resourceFilename = new StringBuilder();

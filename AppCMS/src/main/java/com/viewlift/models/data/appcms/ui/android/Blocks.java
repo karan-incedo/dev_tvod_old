@@ -16,7 +16,7 @@ public class Blocks {
 
     @SerializedName("version")
     @Expose
-    int version;
+    String version;
 
     public String getBlock() {
         return block;
@@ -26,11 +26,11 @@ public class Blocks {
         this.block = block;
     }
 
-    public int getVersion() {
+    public String getVersion() {
         return version;
     }
 
-    public void setVersion(int version) {
+    public void setVersion(String version) {
         this.version = version;
     }
 }
