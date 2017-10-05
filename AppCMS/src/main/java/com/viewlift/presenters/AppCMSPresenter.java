@@ -6099,6 +6099,8 @@ public class AppCMSPresenter {
     public boolean isPagePrimary(String pageId) {
         for (NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()) {
             if (pageId != null &&
+                    navigationPrimary != null &&
+                    !TextUtils.isEmpty(navigationPrimary.getPageId()) &&
                     !TextUtils.isEmpty(pageId) &&
                     pageId.contains(navigationPrimary.getPageId()) &&
                     !isViewPlanPage(pageId)) {
@@ -6117,7 +6119,11 @@ public class AppCMSPresenter {
 
     public boolean isPageUser(String pageId) {
         for (NavigationUser navigationUser : navigation.getNavigationUser()) {
-            if (pageId != null && !TextUtils.isEmpty(pageId) && pageId.contains(navigationUser.getPageId())) {
+            if (pageId != null &&
+                    !TextUtils.isEmpty(pageId) &&
+                    navigationUser != null &&
+                    !TextUtils.isEmpty(navigationUser.getPageId()) &&
+                    pageId.contains(navigationUser.getPageId())) {
                 return true;
             }
         }
