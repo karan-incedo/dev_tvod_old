@@ -480,6 +480,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             newVersionAvailableTextView.setTextColor(Color.parseColor(
                     appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
         }
+        newVersionAvailableTextView.setText(getString(R.string.a_new_version_of_the_app_is_available_text,
+                getString(R.string.app_cms_app_version),
+                appCMSPresenter.getGooglePlayAppStoreVersion()));
 
         newVersionAvailableTextView.setOnClickListener((v) -> {
             Intent googlePlayStoreUpgradeAppIntent = new Intent(Intent.ACTION_VIEW,
