@@ -18,4 +18,7 @@
 
     <!-- apps flyer keys -->
     <string name="app_cms_appsflyer_dev_key"></string>
+
+    <!-- cast receiver -->
+    <string name="chromecast_receiver_app_id">772C797E</string>
 </resources>
