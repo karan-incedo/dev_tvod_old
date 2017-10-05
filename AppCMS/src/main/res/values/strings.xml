@@ -179,12 +179,7 @@
     <string name="app_cms_more_title_key">app_cms_more_title</string>
     <string name="more_page_action">MorePage</string>
 
-    <!-- AppCMS Facebook Login values -->
-    <string name="facebook_app_id">1324523080924996</string>
-    <string name="fb_login_protocol_scheme">fb1324523080924996</string>
-
     <!-- AppCMS Apptentive API -->
-    <string name="app_cms_apptentive_api_key">dfde9505539f2dc1d24700c09fb096b5280ed4cbed0828084540ada79a2b00f7</string>
     <string name="app_cms_button_color_key">app_cms_button_color</string>
 
     <!-- Google Authentication API -->
@@ -199,7 +194,6 @@
     <string name="minutes_for_runtime">MINS</string>
 
     <!-- apps flyer keys -->
-    <string name="app_cms_appsflyer_dev_key">5qcxTGtWfXSo746pkCDawf</string>
     <string name="app_cms_appsflyer_login_status">af_login_status</string>
     <string name="app_cms_appsflyer_film_id">af_film_id</string>
     <string name="app_cms_appsflyer_course_id">af_course_id</string>
