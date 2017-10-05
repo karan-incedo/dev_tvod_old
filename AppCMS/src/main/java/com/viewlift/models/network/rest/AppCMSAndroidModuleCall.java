@@ -81,12 +81,12 @@ public class AppCMSAndroidModuleCall {
     }
 
     private void deletePreviousFiles(String url) {
-        String fileToDeleteFilenamePatter = getResourceFilenameWithJsonOnly(url);
+        String fileToDeleteFilenamePattern = getResourceFilenameWithJsonOnly(url);
         File savedFileDirectory = new File(storageDirectory.toString());
         if (savedFileDirectory.isDirectory()) {
             String[] listExistingFiles = savedFileDirectory.list();
             for (String existingFilename : listExistingFiles) {
-                if (existingFilename.contains(fileToDeleteFilenamePatter)) {
+                if (existingFilename.contains(fileToDeleteFilenamePattern)) {
                     File fileToDelete = new File(existingFilename);
                     if (fileToDelete.delete()) {
                         Log.i(TAG, "Successfully deleted pre-existing file: " + fileToDelete);
