@@ -301,8 +301,8 @@
     <string name="app_cms_subscription_key">android</string>
 
     <!--AppCMS Subscription Plan API-->
-    <string name="app_cms_subscription_plan_api_url">%1$s/subscription/plan?site=%2$s</string>
-    <string name="app_cms_subscription_plan_list_api_url">%1$s/subscription/plans?site=%2$s</string>
+    <string name="app_cms_subscription_plan_api_url">%1$s/subscription/plan?site=%2$s&amp;device=android_phone</string>
+    <string name="app_cms_subscription_plan_list_api_url">%1$s/subscription/plans?site=%2$s&amp;device=android_phone</string>
     <string name="app_cms_subscription_plan_list_key">list</string>
     <string name="app_cms_subscription_subscribed_plan_key">subscribed_plan</string>
     <string name="app_cms_check_ccavenue_plan_status_key">ccavenue_plan_status</string>
