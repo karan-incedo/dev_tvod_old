@@ -8543,23 +8543,55 @@ public class AppCMSPresenter {
                             getAppCMSModules(appCMSAndroidUI, (appCMSAndroidModules) -> {
                                 Log.d(TAG, "Received module list");
                                 this.appCMSAndroidModules = appCMSAndroidModules;
-                            });
-                            initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
-                            navigation = appCMSAndroidUI.getNavigation();
-                            new SoftReference<>(navigation, referenceQueue);
-                            queueMetaPages(appCMSAndroidUI.getMetaPages());
-                            Log.d(TAG, "Processing meta pages queue");
-                            processMetaPagesQueue(loadFromFile,
-                                    () -> {
-                                        if (appCMSMain.getServiceType()
-                                                .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
-                                            refreshSubscriptionData(() -> {
+                                initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
+                                navigation = appCMSAndroidUI.getNavigation();
+                                new SoftReference<>(navigation, referenceQueue);
+                                queueMetaPages(appCMSAndroidUI.getMetaPages());
+                                Log.d(TAG, "Processing meta pages queue");
+                                processMetaPagesQueue(loadFromFile,
+                                        () -> {
+                                            if (appCMSMain.getServiceType()
+                                                    .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
+                                                refreshSubscriptionData(() -> {
+                                                    if (appCMSMain.isForceLogin()) {
+                                                        boolean launchSuccess = navigateToPage(loginPage.getPageId(),
+                                                                loginPage.getPageName(),
+                                                                loginPage.getPageUI(),
+                                                                true,
+                                                                false,
+                                                                false,
+                                                                false,
+                                                                false,
+                                                                deeplinkSearchQuery);
+                                                        if (!launchSuccess) {
+                                                            Log.e(TAG, "Failed to launch page: "
+                                                                    + loginPage.getPageName());
+                                                            launchErrorActivity(platformType);
+                                                        }
+                                                    } else {
+                                                        boolean launchSuccess = navigateToPage(homePage.getPageId(),
+                                                                homePage.getPageName(),
+                                                                homePage.getPageUI(),
+                                                                true,
+                                                                true,
+                                                                false,
+                                                                true,
+                                                                false,
+                                                                deeplinkSearchQuery);
+                                                        if (!launchSuccess) {
+                                                            Log.e(TAG, "Failed to launch page: "
+                                                                    + loginPage.getPageName());
+                                                            launchErrorActivity(platformType);
+                                                        }
+                                                    }
+                                                }, true);
+                                            } else {
                                                 if (appCMSMain.isForceLogin()) {
                                                     boolean launchSuccess = navigateToPage(loginPage.getPageId(),
                                                             loginPage.getPageName(),
                                                             loginPage.getPageUI(),
                                                             true,
-                                                            false,
+                                                            true,
                                                             false,
                                                             false,
                                                             false,
@@ -8585,41 +8617,9 @@ public class AppCMSPresenter {
                                                         launchErrorActivity(platformType);
                                                     }
                                                 }
-                                            }, true);
-                                        } else {
-                                            if (appCMSMain.isForceLogin()) {
-                                                boolean launchSuccess = navigateToPage(loginPage.getPageId(),
-                                                        loginPage.getPageName(),
-                                                        loginPage.getPageUI(),
-                                                        true,
-                                                        true,
-                                                        false,
-                                                        false,
-                                                        false,
-                                                        deeplinkSearchQuery);
-                                                if (!launchSuccess) {
-                                                    Log.e(TAG, "Failed to launch page: "
-                                                            + loginPage.getPageName());
-                                                    launchErrorActivity(platformType);
-                                                }
-                                            } else {
-                                                boolean launchSuccess = navigateToPage(homePage.getPageId(),
-                                                        homePage.getPageName(),
-                                                        homePage.getPageUI(),
-                                                        true,
-                                                        true,
-                                                        false,
-                                                        true,
-                                                        false,
-                                                        deeplinkSearchQuery);
-                                                if (!launchSuccess) {
-                                                    Log.e(TAG, "Failed to launch page: "
-                                                            + loginPage.getPageName());
-                                                    launchErrorActivity(platformType);
-                                                }
                                             }
-                                        }
-                                    });
+                                        });
+                            });
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "Error processing meta pages queue: " + e.getMessage());
