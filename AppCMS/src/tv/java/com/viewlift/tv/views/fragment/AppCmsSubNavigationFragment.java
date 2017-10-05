@@ -90,7 +90,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
         bgColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor());//Color.parseColor("#660066");
 
         mNavigation = appCMSPresenter.getNavigation();
-        isUserLogin = appCMSPresenter.isUserLoggedIn(getActivity());
+        isUserLogin = appCMSPresenter.isUserLoggedIn();
 
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.navRecylerView);
@@ -152,6 +152,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
         }
         return 0;
     }
+
     public void notifiDataSetInvlidate() {
         if(null != mRecyclerView && null != mRecyclerView.getAdapter()){
             mRecyclerView.getAdapter().notifyDataSetChanged();
@@ -318,6 +319,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
 
 
     private int selectedPosition = 0;
+
   private boolean isEndPosition(){
         return selectedPosition == navigationSubItemList.size()-1;
     }

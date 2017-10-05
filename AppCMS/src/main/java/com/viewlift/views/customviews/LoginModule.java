@@ -5,8 +5,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
+import android.os.SystemClock;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -14,21 +16,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.Component;
-import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.Map;
-
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 6/28/17.
@@ -56,6 +55,9 @@ public class LoginModule extends ModuleView {
     private int loginBorderPadding;
     private EditText visibleEmailInputView;
     private EditText visiblePasswordInputView;
+    Context con;
+    // variable to track event time
+    private long mLastClickTime = 0;
 
     public LoginModule(Context context,
                        ModuleWithComponents module,
@@ -76,7 +78,9 @@ public class LoginModule extends ModuleView {
         this.passwordInputViews = new EditText[NUM_CHILD_VIEWS];
         this.loginBorderPadding = context.getResources().getInteger(R.integer.app_cms_login_underline_padding);
         this.launchType = appCMSPresenter.getLaunchType();
+        this.con = context;
         init();
+
     }
 
     public void init() {
@@ -101,10 +105,14 @@ public class LoginModule extends ModuleView {
             topLayoutContainer.setPadding(0, 0, 0, 0);
             topLayoutContainer.setOrientation(LinearLayout.VERTICAL);
 
-            FrameLayout loginModuleSwitcherContainer = new FrameLayout(getContext());
+            LinearLayout loginModuleSwitcherContainer = new LinearLayout(getContext());
+            loginModuleSwitcherContainer.setOrientation(LinearLayout.HORIZONTAL);
             MarginLayoutParams loginModuleContainerLayoutParams =
                     new MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            loginModuleContainerLayoutParams.setMargins(0, 0, 0, 0);
+            loginModuleContainerLayoutParams.setMargins((int) convertDpToPixel(getContext().getResources().getInteger(R.integer.app_cms_login_selector_margin), getContext()),
+                    0,
+                    (int) convertDpToPixel(getContext().getResources().getInteger(R.integer.app_cms_login_selector_margin), getContext()),
+                    0);
             loginModuleSwitcherContainer.setLayoutParams(loginModuleContainerLayoutParams);
             loginModuleSwitcherContainer.setBackgroundColor(bgColor);
             loginModuleSwitcherContainer.setPadding(0, 0, 0, 0);
@@ -113,25 +121,20 @@ public class LoginModule extends ModuleView {
 
             for (Component component : module.getComponents()) {
                 if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_LOGIN_COMPONENT_KEY &&
-                        launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP) {
+                        (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
+                        launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP)) {
                     buttonSelectors[0] = new Button(getContext());
-                    FrameLayout.LayoutParams loginSelectorLayoutParams =
-                            new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    loginSelectorLayoutParams.setMargins((int) convertDpToPixel(getContext().getResources().getInteger(R.integer.app_cms_login_selector_margin), getContext()),
-                            0,
-                            0,
-                            0);
+                    LinearLayout.LayoutParams loginSelectorLayoutParams =
+                            new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    loginSelectorLayoutParams.weight = 1;
                     buttonSelectors[0].setText(R.string.app_cms_log_in_pager_title);
                     buttonSelectors[0].setTextColor(textColor);
                     buttonSelectors[0].setBackgroundColor(bgColor);
                     buttonSelectors[0].setLayoutParams(loginSelectorLayoutParams);
 
-                    buttonSelectors[0].setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            selectChild(0);
-                            unselectChild(1);
-                        }
+                    buttonSelectors[0].setOnClickListener((v) -> {
+                        selectChild(0);
+                        unselectChild(1);
                     });
 
                     underlineViews[0] = new GradientDrawable();
@@ -158,30 +161,30 @@ public class LoginModule extends ModuleView {
                     topLayoutContainer.addView(moduleView);
                 } else if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_SIGNUP_COMPONENT_KEY &&
                         (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE ||
-                        launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP)) {
-                    if (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP) {
+                            launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
+                            launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP)) {
+                    if (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
+                            launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP) {
                         buttonSelectors[1] = new Button(getContext());
-                        FrameLayout.LayoutParams signupSelectorLayoutParams =
-                                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        signupSelectorLayoutParams.setMargins(0,
-                                0,
-                                (int) convertDpToPixel(getContext().getResources().getInteger(R.integer.app_cms_login_selector_margin), getContext()),
-                                0);
+                        LinearLayout.LayoutParams signupSelectorLayoutParams =
+                                new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        signupSelectorLayoutParams.weight = 1;
                         buttonSelectors[1].setText(R.string.app_cms_sign_up_pager_title);
                         buttonSelectors[1].setTextColor(textColor);
                         buttonSelectors[1].setBackgroundColor(bgColor);
                         signupSelectorLayoutParams.gravity = Gravity.END;
                         buttonSelectors[1].setLayoutParams(signupSelectorLayoutParams);
-                        buttonSelectors[1].setOnClickListener(new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                selectChild(1);
-                                unselectChild(0);
-                                if (appCMSPresenter.isAppSVOD()) {
-                                    appCMSPresenter.sendCloseOthersAction(null,
-                                            true);
+                        buttonSelectors[1].setOnClickListener((v) -> {
+                            selectChild(1);
+                            unselectChild(0);
+                            if (appCMSPresenter.isAppSVOD()) {
+                                if (TextUtils.isEmpty(appCMSPresenter.getRestoreSubscriptionReceipt())) {
                                     appCMSPresenter.navigateToSubscriptionPlansPage(null,
                                             null);
+                                    appCMSPresenter.sendCloseOthersAction(null,
+                                            true);
+                                } else {
+                                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
                                 }
                             }
                         });
@@ -202,6 +205,18 @@ public class LoginModule extends ModuleView {
                         underlineViews[1].setBounds(bounds);
                         buttonSelectors[1].setCompoundDrawables(null, null, null, underlineViews[1]);
                         loginModuleSwitcherContainer.addView(buttonSelectors[1]);
+                    } else {
+                        TextView signUpTitle = new TextView(getContext());
+                        LinearLayout.LayoutParams signUpSelectorLayoutParams =
+                                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                        signUpSelectorLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                        signUpTitle.setLayoutParams(signUpSelectorLayoutParams);
+                        signUpTitle.setText(R.string.app_cms_sign_up_pager_title);
+                        signUpTitle.setTextColor(textColor);
+                        signUpTitle.setBackgroundColor(bgColor);
+                        signUpTitle.setGravity(Gravity.CENTER_HORIZONTAL);
+                        loginModuleSwitcherContainer.addView(signUpTitle);
                     }
 
                     ModuleView moduleView = new ModuleView<>(getContext(), component, false);
@@ -209,6 +224,7 @@ public class LoginModule extends ModuleView {
                     childViews[1] = moduleView;
                     addChildComponents(moduleView, component, 1);
                     topLayoutContainer.addView(moduleView);
+
                 }
             }
 
@@ -217,6 +233,9 @@ public class LoginModule extends ModuleView {
             if (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP) {
                 selectChild(0);
                 unselectChild(1);
+            } else if (launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP) {
+                selectChild(1);
+                unselectChild(0);
             }
         }
     }
@@ -227,6 +246,7 @@ public class LoginModule extends ModuleView {
         applyUnderlineToComponent(underlineViews[childIndex], underlineColor);
         visibleEmailInputView = emailInputViews[childIndex];
         visiblePasswordInputView = passwordInputViews[childIndex];
+
         if (childIndex == 1) {
             visibleEmailInputView.setText("");
             visiblePasswordInputView.setText("");
@@ -290,7 +310,10 @@ public class LoginModule extends ModuleView {
                                 @Override
                                 public void onClick(View v) {
                                     Log.d(TAG, "Button clicked: " + component.getAction());
+
+                                    mLastClickTime = SystemClock.elapsedRealtime();
                                     if (visibleEmailInputView != null && visiblePasswordInputView != null) {
+
                                         String[] authData = new String[2];
                                         authData[0] = visibleEmailInputView.getText().toString();
                                         authData[1] = visiblePasswordInputView.getText().toString();
@@ -322,6 +345,7 @@ public class LoginModule extends ModuleView {
                                 case PAGE_PASSWORDTEXTFIELD_KEY:
                                 case PAGE_PASSWORDTEXTFIELD2_KEY:
                                     passwordInputViews[childIndex] = ((TextInputLayout) componentView).getEditText();
+                                    AppCMSPresenter.noSpaceInEditTextFilter(passwordInputViews[childIndex], con);
                                     if (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                                         visiblePasswordInputView = passwordInputViews[1];
                                     }
@@ -345,4 +369,5 @@ public class LoginModule extends ModuleView {
         underline.setStroke((int) convertDpToPixel(2, getContext()), color);
         underline.setColor(transparentColor);
     }
+
 }

@@ -13,6 +13,7 @@ public class SubscriptionPlan extends RealmObject {
     private String planId;
     private double subscriptionPrice;
     private String planName;
+    private String countryCode;
 
     public String getSku() {
         return sku;
@@ -44,5 +45,13 @@ public class SubscriptionPlan extends RealmObject {
 
     public void setPlanName(String planName) {
         this.planName = planName;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 }

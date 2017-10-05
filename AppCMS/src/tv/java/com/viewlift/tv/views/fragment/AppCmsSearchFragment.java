@@ -28,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
 import com.google.gson.GsonBuilder;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -47,6 +48,7 @@ import com.viewlift.tv.views.presenter.AppCmsListRowPresenter;
 import com.viewlift.tv.views.presenter.CardPresenter;
 
 import java.io.IOException;
+
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -152,7 +154,9 @@ public class AppCmsSearchFragment extends Fragment {
                 if (editable.toString().trim().length() >= 3){
                     if(appCMSPresenter.isNetworkConnected()){
                         handler.removeCallbacks(searcRunnable);
+
                         handler.postDelayed(searcRunnable,DELAY);
+
                         progressBar.setVisibility(View.VISIBLE);
                     }else{
                         appCMSPresenter.searchRetryDialog(editable.toString());
@@ -367,6 +371,7 @@ public class AppCmsSearchFragment extends Fragment {
                     if(resultForTv.size() > 0){
                         llView.setVisibility(View.VISIBLE);
                         setSearchValueOnView(resultForTv, resultForTv.size());
+
                     } else {
                         llView.setVisibility(View.INVISIBLE);
                     }
@@ -380,6 +385,7 @@ public class AppCmsSearchFragment extends Fragment {
                     noSearchTextView.setText(getString(R.string.app_cms_no_search_result , lastSearchedString).toUpperCase());
                     noSearchTextView.setVisibility(View.VISIBLE);
                 }
+
                 List<String> resultForTv = appCMSPresenter.getSearchResultsFromSharePreference();
                 if (resultForTv != null && resultForTv.size() > 0) {
                     llView.setVisibility(View.VISIBLE);
@@ -440,6 +446,7 @@ public class AppCmsSearchFragment extends Fragment {
             }
             for(int i = 0; i < result.size(); i++) {
                 if(valueToBeSaved.trim().equalsIgnoreCase(result.get(i).trim())){
+
                     result.remove(result.get(i));
                     break;
                 }
@@ -475,8 +482,6 @@ public class AppCmsSearchFragment extends Fragment {
             }
         }
     };
-
-
 
     private class SearchAsyncTask extends AsyncTask<String, Void, List<AppCMSSearchResult>> {
         final Action1<List<AppCMSSearchResult>> dataReadySubscriber;

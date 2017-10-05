@@ -43,7 +43,9 @@
     <string name="app_cms_network_connectivity_error_title">Network Connectivity</string>
     <string name="app_cms_network_connectivity_error_message">Please connect your device to a network and try again.</string>
     <string name="app_cms_network_connectivity_error_message_download">Please connect your device to a network and try again, or click OK for go to My Downloads.</string>
+    <string name="app_cms_signout_error_msg">Are you sure you want to log out?</string>
     <string name="app_cms_signin_error_title">Sign In</string>
+    <string name="app_cms_signout_error_title">Sign Out</string>
     <string name="app_cms_signup_error_title">Sign Up</string>
     <string name="app_cms_reset_password_title">Reset Password</string>
     <string name="app_cms_forgot_password_title">Forgot Password</string>
@@ -69,7 +71,7 @@
     <string name="age_rating_converted_fourteen">14+</string>
     <string name="age_rating_converted_eighteen">18+</string>
     <string name="age_rating_converted_default">NR</string>
-    <string name="no_results">No results</string>
+    <string name="no_results">No Results</string>
     <string name="video_player_title_key">video_player_title</string>
     <string name="video_player_permalink_key">video_player_permalink</string>
     <string name="video_player_font_color_key">video_player_font_color</string>
@@ -106,7 +108,8 @@
     <string name="edit_profile_confirm_change_button_text">OK</string>
     <string name="empty_history_list_message">Your history is currently empty.</string>
     <string name="empty_watchlist_message">Your watchlist is currently empty.</string>
-    <string name="empty_download_message">Your download is currently empty.</string>
+    <!--<string name="empty_download_message">Your download is currently empty.</string>-->
+    <string name="empty_download_message">You haven’t downloaded any movies yet.</string>
     <string name="app_cms_currently_logged_out_message">CURRENTLY LOGGED OUT</string>
     <string name="app_cms_sign_out_label">SIGN OUT</string>
 
@@ -136,8 +139,8 @@
     <string name="is_trailer_key">is_trailer</string>
     <string name="reset_password_text">RESET PASSWORD</string>
     <string name="watched_time_key">watched_time</string>
-    <string name="run_time_key">run_time</string>
     <string name="played_movie_image_url">played_movie_image</string>
+    <string name="run_time_key">run_time</string>
 
     <!--User Management - Change Password-->
     <string name="app_cms_action_change_password_key">changePassword</string>
@@ -166,7 +169,7 @@
 
     <!-- AppCMS Login values -->
     <string name="app_cms_log_in_pager_title">LOG IN</string>
-    <string name="app_cms_start_free_trial_title">START YOUR FREE TRIAL</string>
+    <string name="app_cms_subscribe_now">SUBSCRIBE NOW</string>
     <string name="app_cms_sign_up_pager_title">SIGN UP</string>
     <string name="app_cms_video_page_page_name">Video Page</string>
     <string name="app_cms_watchlist_navigation_title">Watchlist</string>
@@ -181,7 +184,7 @@
     <string name="fb_login_protocol_scheme">fb1324523080924996</string>
 
     <!-- AppCMS Apptentive API -->
-    <string name="app_cms_apptentive_api_key">b662ac9b5b55b2d40c803ba80cc2e3e5a239c4270b872a9b04d6eb7b8157ccc4</string>
+    <string name="app_cms_apptentive_api_key">dfde9505539f2dc1d24700c09fb096b5280ed4cbed0828084540ada79a2b00f7</string>
     <string name="app_cms_button_color_key">app_cms_button_color</string>
 
     <!-- Google Authentication API -->
@@ -204,7 +207,7 @@
     <string name="app_cms_appsflyer_video_view">film viewing</string>
     <string name="app_cms_appsflyer_signup_success">SignUp Success</string>
     <string name="app_cms_appsflyer_login_success">Login Success</string>
-    <string name="app_cms_login">Log in</string>
+    <string name="app_cms_login">Login</string>
     <string name="app_cms_signup">Sign Up</string>
 
     <string name="app_cms_appsflyer_app_open_key">App Open</string>
@@ -248,7 +251,6 @@
     <string name="app_cms_cancel_subscription_title">Cancel Subscription</string>
     <string name="app_cms_confirm_alert_dialog_button_text">OK</string>
     <string name="app_cms_cancel_alert_dialog_button_text">CANCEL</string>
-    <string name="app_cms_yes_alert_dialog_button_text">YES</string>
     <string name="app_cms_cancel_subscription_confirmation_message">You have cancelled your subscription.</string>
 
     <string name="app_cms_cancel_subscription_not_subscribed_message">You are currently not subscribed to any plans.</string>
@@ -258,8 +260,16 @@
     <string name="app_cms_download_setting_listener_key">app_cms_download_setting_listener_key</string>
 
     <string name="app_cms_delete_history_alert_title">Are you Sure?</string>
-    <string name="app_cms_delete_one_history_item_message">In order to add this film back in your history, You will need to rewatch it.</string>
-    <string name="app_cms_delete_all_history_items_message">In order to add these films back in your history, You will need to rewatch them.</string>
+    <string name="app_cms_delete_one_history_item_message">In order to add a film back to your history, You will need to rewatch it.</string>
+    <string name="app_cms_delete_all_history_items_message">In order to add films back to your history, You will need to rewatch them.</string>
+
+    <string name="app_cms_delete_watchlist_alert_title">Are you Sure?</string>
+    <string name="app_cms_delete_one_watchlist_item_message">In order to add a film back to your watchlist, You will need to re-add it.</string>
+    <string name="app_cms_delete_all_watchlist_items_message">In order to add films back to your watchlist, You will need to re-add them.</string>
+
+    <string name="app_cms_delete_download_alert_title">Are you Sure?</string>
+    <string name="app_cms_delete_one_download_item_message">In order to add a film back to your download list, You will need to re-download it.</string>
+    <string name="app_cms_delete_all_download_items_message">In order to add films back to your download list, You will need to re-download them.</string>
 
     <string name="app_cms_subscription_title">Subscription</string>
     <string name="app_cms_subscription_required_title">Subscription Required</string>
@@ -269,11 +279,14 @@
     <string name="app_cms_logout_with_running_download_title">Downloading video in progress</string>
     <string name="app_cms_logout_with_running_download_message">Logout will remove your current downloading videos, You can still access your already downloaded video after re-login. Do you want to continue.</string>
     <string name="app_cms_login_button_text">LOGIN</string>
+    <string name="app_cms_login_and_signup_button_text">SIGNUP</string>
+    <string name="app_cms_signout_button_text">SIGN OUT</string>
     <string name="app_cms_login_required_title">Login Required</string>
     <string name="app_cms_login_required_message">Please login to continue.</string>
     <string name="app_cms_subscription_button_text">SUBSCRIBE</string>
     <string name="app_cast_overlay_text">Touch To Cast Videos On TV</string>
-    <string name="app_cms_existing_subscription_error_message">The Play Store Google ID already has a subscription. Please sign into the app with an email and password that was used when the account was created.</string>
+    <string name="app_cms_existing_subscription_error_message">The Play Store Google ID already has a subscription. Please sign into the app with an email and password that was used when the account was created.  Please login to start watching.</string>
+    <string name="app_cms_existing_subscription_logout_error_message">The Play Store Google ID already has a subscription. Please sign out of this account and then select SUBSCRIBE NOW to restore this purchase and start watching.</string>
     <string name="app_cms_existing_subscription_title">Existing Subscription</string>
     <string name="sent_beacon_play_key">sent_beacon_play</string>
     <string name="play_index_key">play_index</string>
@@ -298,7 +311,7 @@
     <string name="download_file_prefix">file:///</string>
 
     <!-- cast receiver -->
-    <string name="chromecast_receiver_app_id">9B761D16</string>
+    <string name="chromecast_receiver_app_id">0974224E</string>
     <string name="app_cms_signup_invalid_email_and_password_message">Please enter a non-blank email and password.</string>
     <string name="app_cms_signup_invalid_email_message">Please enter a non-blank email.</string>
     <string name="app_cms_signup_blank_password_message">Please enter a non-blank password.</string>
@@ -310,12 +323,14 @@
     <string name="app_cms_download_external_storage_write_permission_info_error_title">Download to External Storage</string>
     <string name="app_cms_download_limit_message">Download is only available for 30 days after it has been downloaded.</string>
     <string name="app_cms_download_unavailable_error_title">Download Unavailable</string>
-    <string name="app_cms_download_failed_error_title">Download Failed</string>
-   <!-- <string name="app_cms_download_failed_error_message">Cannot be downloaded due to low device storage, Please manage space in your storage area and try again.</string>-->
+    <string name="app_cms_download_failed_error_title">Not Enough Storage</string>
+    <!-- <string name="app_cms_download_failed_error_message">Cannot be downloaded due to low device storage, Please manage space in your storage area and try again.</string>-->
+    <string name="app_cms_download_failed_storage_error_title">Download Failed</string>
+
     <string name="app_cms_download_failed_error_message">Your device does not have enough space to download the content! In order to free some memory : &lt;br&#47;&gt; 1. Go to Settings. &lt;br&#47;&gt; 2. Tap on Storage  </string>
 
     <string name="app_cms_sdCard_unavailable_error_title">SDCard Unavailable</string>
-    <string name="app_cms_sdCard_unavailable_error_message">Please insert SDCard in device if it supports for removeable media.  </string>
+    <string name="app_cms_sdCard_unavailable_error_message">Please insert SDCard in device if it supports removeable media.</string>
 
     <!-- search result values -->
     <string name="app_cms_search_sharepref_key">app_cms_sharepref_result</string>
@@ -362,6 +377,20 @@
     <string name="content_rating_description">The following content is rated: &#160;</string>
     <string name="server_client_id">525148171038-1dgfbunn8l27oilqldve5qg7cref8ua1.apps.googleusercontent.com</string>
 
+    <string name="cost_without_fraction">%.0f</string>
+    <string name="cost_with_fraction">%.2f</string>
+    <string name="password_space_error">"For password only letters, numbers and special characters can be used."</string>
+    <string name="free_content_key">free_content</string>
+    <string name="appcmsuijson_directoryname">androidui</string>
+
+    <string name="edit_profile_name_message">Use Alphabets for Name</string>
+    <string name="mr_controller_stop_casting">Stop casting</string>
+
+    <string name="force_reload_from_network_key">force_reload_from_network</string>
+    <string name="a_new_version_of_the_app_is_available_text">Your app\'s version %1$s is out of date. The current version %2$s is available in the Play Store for upgrade.</string>
+    <string name="app_cms_upgrade_button_text">UPGRADE</string>
+    <string name="app_cms_upgrade_textview_text">Your app\'s version %1$s is out of date and no longer supported. The current version %2$s is available in the Play Store for upgrade.</string>
+    <string name="google_play_store_upgrade_app_url">http://play.google.com/store/apps/details?id=%1$s</string>
 
     <string name="register_internet_receiver_key">shouldRegisterInternetReciever</string>
     <string name="is_tos_dialog_page_key">istospage</string>
@@ -380,4 +409,18 @@
     <string name="yes">YES</string>
     <string name="sign_in_text">SIGN IN</string>
 
+    <string name="no_inernet_error">There is an error loading %1$s. Please check your Internet Connection and try again later</string>
+    <string name="api_error_message">We are having trouble connecting to %1$s, please try again later.</string>
+
+    <string name="app_connectivity_dialog_title">App Connectivity</string>
 </resources>
+
+
+
+
+
+
+
+
+
+

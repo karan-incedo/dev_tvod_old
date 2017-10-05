@@ -10,7 +10,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.media.MediaRouter;
+import android.text.TextPaint;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -242,16 +244,25 @@ public class CastServiceProvider {
 
         if (mMediaRouteButton != null && mActivity != null && isHomeScreen) {
             new Handler().postDelayed(() -> {
+                int textSize = 16;
+                float scaledSizeInPixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+                        textSize, mContext.getResources().getDisplayMetrics());
+
                 Target target = new ViewTarget(mMediaRouteButton.getId(), mActivity);
+                TextPaint textPaint = new TextPaint();
+                textPaint.setColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+                textPaint.setTextSize(scaledSizeInPixels);
+
                 mShowCaseView = new ShowcaseView.Builder(mActivity)
                         .setTarget(target) //Here is where you supply the id of the action bar item you want to display
                         .setContentText(R.string.app_cast_overlay_text)
+                        .setContentTextPaint(textPaint)
                         .build();
 
                 mShowCaseView.forceTextPosition(ShowcaseView.ABOVE_SHOWCASE);
-                mShowCaseView.setStyle(R.style.CustomShowcaseTheme);
-                mShowCaseView.setEndButtonTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+                mShowCaseView.setShowcaseColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
                 mShowCaseView.setEndButtonBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+                mShowCaseView.setEndButtonTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
 
                 mShowCaseView.show();
                 mShowCaseView.invalidate();
@@ -283,8 +294,8 @@ public class CastServiceProvider {
 
         //Setting the Casting Overlay for Casting
         if (mCastHelper.isCastDeviceAvailable)
-            if (!appCMSPresenter.isCastOverLayShown(mActivity)) {
-                appCMSPresenter.setCastOverLay(mActivity);
+            if (!appCMSPresenter.isCastOverLayShown()) {
+                appCMSPresenter.setCastOverLay();
                 showIntroOverLay();
             }
 
@@ -306,14 +317,24 @@ public class CastServiceProvider {
         }
 
         mMediaRouteButton.setOnClickListener(v -> {
-            castDisconnectDialog = new CastDisconnectDialog(mActivity);
+            if (!appCMSPresenter.isUserSubscribed()) {
+                if (appCMSPresenter.isUserLoggedIn()) {
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                            null);
+                } else {
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                            null);
+                }
+            } else {
+                castDisconnectDialog = new CastDisconnectDialog(mActivity);
 
-            if (mCastHelper.mSelectedDevice == null && mActivity != null) {
-                castChooserDialog.setRoutes(mCastHelper.routes);
-                castChooserDialog.show();
-            } else if (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null && mActivity != null) {
-                castDisconnectDialog.setToBeDisconnectDevice(mCastHelper.mMediaRouter);
-                castDisconnectDialog.show();
+                if (mCastHelper.mSelectedDevice == null && mActivity != null) {
+                    castChooserDialog.setRoutes(mCastHelper.routes);
+                    castChooserDialog.show();
+                } else if (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null && mActivity != null) {
+                    castDisconnectDialog.setToBeDisconnectDevice(mCastHelper.mMediaRouter);
+                    castDisconnectDialog.show();
+                }
             }
         });
     }

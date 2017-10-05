@@ -77,62 +77,86 @@ public class FileDownloadCompleteReceiver extends BroadcastReceiver {
                     case DownloadManager.ERROR_CANNOT_RESUME:
                         reasonText = "ERROR_CANNOT_RESUME";
                         break;
+
                     case DownloadManager.ERROR_DEVICE_NOT_FOUND:
                         reasonText = "ERROR_DEVICE_NOT_FOUND";
                         break;
+
                     case DownloadManager.ERROR_FILE_ALREADY_EXISTS:
                         reasonText = "ERROR_FILE_ALREADY_EXISTS";
                         break;
+
                     case DownloadManager.ERROR_FILE_ERROR:
                         reasonText = "ERROR_FILE_ERROR";
                         break;
+
                     case DownloadManager.ERROR_HTTP_DATA_ERROR:
                         reasonText = "ERROR_HTTP_DATA_ERROR";
                         break;
+
                     case DownloadManager.ERROR_INSUFFICIENT_SPACE:
                         reasonText = "ERROR_INSUFFICIENT_SPACE";
                         break;
+
                     case DownloadManager.ERROR_TOO_MANY_REDIRECTS:
                         reasonText = "ERROR_TOO_MANY_REDIRECTS";
                         break;
+
                     case DownloadManager.ERROR_UNHANDLED_HTTP_CODE:
                         reasonText = "ERROR_UNHANDLED_HTTP_CODE";
                         break;
+
                     case DownloadManager.ERROR_UNKNOWN:
                         reasonText = "ERROR_UNKNOWN";
                         break;
+
+                    default:
+                        break;
                 }
                 break;
+
             case DownloadManager.STATUS_PAUSED:
                 statusText = "STATUS_PAUSED";
                 switch (reason) {
                     case DownloadManager.PAUSED_QUEUED_FOR_WIFI:
                         reasonText = "PAUSED_QUEUED_FOR_WIFI";
                         break;
+
                     case DownloadManager.PAUSED_UNKNOWN:
                         reasonText = "PAUSED_UNKNOWN";
                         break;
+
                     case DownloadManager.PAUSED_WAITING_FOR_NETWORK:
                         reasonText = "PAUSED_WAITING_FOR_NETWORK";
                         break;
+
                     case DownloadManager.PAUSED_WAITING_TO_RETRY:
                         reasonText = "PAUSED_WAITING_TO_RETRY";
                         break;
+
+                    default:
+                        break;
                 }
                 break;
+
             case DownloadManager.STATUS_PENDING:
                 statusText = "STATUS_PENDING";
                 break;
+
             case DownloadManager.STATUS_RUNNING:
                 statusText = "STATUS_RUNNING";
                 break;
+
             case DownloadManager.STATUS_SUCCESSFUL:
                 statusText = "STATUS_SUCCESSFUL";
                 reasonText = "Filename:\n" + filename;
                 String extension = MimeTypeMap.getFileExtensionFromUrl(filename.toString());
-                if (extension.equals("mp4")) {
-                    encryptTheFile(filename);
-                }
+//                if (extension.equals("mp4")) {
+//                    encryptTheFile(filename);
+//                }
+                break;
+
+            default:
                 break;
         }
     }
@@ -141,14 +165,18 @@ public class FileDownloadCompleteReceiver extends BroadcastReceiver {
         try {
             byte[] exoBitsData = new byte[10];
             RandomAccessFile file = new RandomAccessFile(filePath, "rw");
+
             //We are reading the first few bits and applying on bits
             file.read(exoBitsData, 0, 10);
+
             //Now we need to seek to 0th bit
             file.seek(0);
+
             for (int i = 0; i < exoBitsData.length; i++) {
                 if (~exoBitsData[i] >= -128 && ~exoBitsData[i] <= 127)
                     exoBitsData[i] = (byte) ~exoBitsData[i];
             }
+
             file.write(exoBitsData);
         } catch (Exception e1) {
             e1.printStackTrace();

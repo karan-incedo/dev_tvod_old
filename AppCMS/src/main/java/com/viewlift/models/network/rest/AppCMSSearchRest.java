@@ -16,5 +16,5 @@ import retrofit2.http.Url;
 
 public interface AppCMSSearchRest {
     @GET
-    Call<List<AppCMSSearchResult>> get(@HeaderMap Map<String, String> headers, @Url String url);
+    Call<List<AppCMSSearchResult>> get(@HeaderMap Map<String, String> authHeaders, @Url String url);
 }

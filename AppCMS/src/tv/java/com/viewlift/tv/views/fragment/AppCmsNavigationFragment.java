@@ -229,6 +229,7 @@ public class AppCmsNavigationFragment extends Fragment {
                                             false
                                     );
                                 }
+
                             }else if (!appCmsPresenter.navigateToTVPage(primary.getPageId(),
                                     primary.getTitle(),
                                     primary.getUrl(),
@@ -237,6 +238,7 @@ public class AppCmsNavigationFragment extends Fragment {
                                     true,
                                     false,
                                     false)) {
+
                             }
                         }
                     } , 500);
@@ -247,9 +249,9 @@ public class AppCmsNavigationFragment extends Fragment {
         private NavigationUser getNavigationUser(){
              List<NavigationUser> navigationUserList = navigation.getNavigationUser();
                 for(NavigationUser navigationUser : navigationUserList){
-                if(appCmsPresenter.isUserLoggedIn(mContext) && navigationUser.getAccessLevels().getLoggedIn()){
+                if(appCmsPresenter.isUserLoggedIn() && navigationUser.getAccessLevels().getLoggedIn()){
                     return navigationUser;
-                }else if(!appCmsPresenter.isUserLoggedIn(mContext) && navigationUser.getAccessLevels().getLoggedOut()){
+                }else if(!appCmsPresenter.isUserLoggedIn() && navigationUser.getAccessLevels().getLoggedOut()){
                     return navigationUser;
                 }
             }

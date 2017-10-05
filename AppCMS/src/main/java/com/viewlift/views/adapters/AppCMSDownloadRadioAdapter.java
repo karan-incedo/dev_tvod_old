@@ -1,13 +1,17 @@
 package com.viewlift.views.adapters;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatRadioButton;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.viewlift.R;
@@ -64,7 +68,7 @@ public abstract class AppCMSDownloadRadioAdapter<T> extends RecyclerView.Adapter
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.download_quality_radio_selection)
-        RadioButton mRadio;
+        AppCompatRadioButton mRadio;
 
         @BindView(R.id.download_quality_text)
         TextView mText;
@@ -80,8 +84,22 @@ public abstract class AppCMSDownloadRadioAdapter<T> extends RecyclerView.Adapter
             };
             itemView.setOnClickListener(clickListener);
             mRadio.setOnClickListener(clickListener);
-            if (mRadio.getButtonDrawable() != null) {
-                mRadio.getButtonDrawable().setColorFilter(tintColor, PorterDuff.Mode.MULTIPLY);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (mRadio.getButtonDrawable() != null) {
+                    mRadio.getButtonDrawable().setColorFilter(tintColor, PorterDuff.Mode.MULTIPLY);
+                }
+            } else {
+                int switchOnColor = tintColor;
+                ColorStateList colorStateList = new ColorStateList(
+                        new int[][]{
+                                new int[]{android.R.attr.state_checked},
+                                new int[]{}
+                        }, new int[]{
+                        switchOnColor,
+                        switchOnColor
+                });
+                mRadio.setButtonTintList(colorStateList);
             }
         }
     }

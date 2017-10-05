@@ -5,6 +5,8 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.util.List;
+
 /**
  * Created by viewlift on 8/3/17.
  */
@@ -29,6 +31,9 @@ public class AppCMSUserSubscriptionPlanResult {
     @SerializedName("name")
     @Expose
     private String name;
+    @SerializedName("plans")
+    @Expose
+    List<AppCMSSubscriptionPlanResult> plans;
 
     public AppCMSUserSubscriptionPlanResult() {
         subscriptionPlanInfo = new AppCMSSubscriptionPlanResult();
@@ -81,5 +86,13 @@ public class AppCMSUserSubscriptionPlanResult {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<AppCMSSubscriptionPlanResult> getPlans() {
+        return plans;
+    }
+
+    public void setPlans(List<AppCMSSubscriptionPlanResult> plans) {
+        this.plans = plans;
     }
 }

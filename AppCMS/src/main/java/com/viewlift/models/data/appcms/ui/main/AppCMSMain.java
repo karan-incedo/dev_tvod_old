@@ -1,7 +1,5 @@
 package com.viewlift.models.data.appcms.ui.main;
 
-import android.text.TextUtils;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
@@ -85,19 +83,15 @@ public class AppCMSMain {
     @Expose
     String android;
 
-    boolean loadFromFile;
-
-    public CustomerService getCustomerService() {
-        return customerService;
-    }
-
-    public void setCustomerService(CustomerService customerService) {
-        this.customerService = customerService;
-    }
-
-    @SerializedName("customerService")
+    @SerializedName("features")
     @Expose
-    CustomerService customerService;
+    Features features;
+
+    @SerializedName("appVersions")
+    @Expose
+    AppVersions appVersions;
+
+    boolean loadFromFile;
 
     public String getFireTv() {
         return fireTv;
@@ -121,6 +115,26 @@ public class AppCMSMain {
     @SerializedName("forceLogin")
     @Expose
     boolean forceLogin;
+
+    @SerializedName("isDownloadable")
+    @Expose
+    boolean isDownloadable;
+
+    @SerializedName("paymentProviders")
+    @Expose
+    PaymentProviders paymentProviders;
+
+    public CustomerService getCustomerService() {
+        return customerService;
+    }
+
+    public void setCustomerService(CustomerService customerService) {
+        this.customerService = customerService;
+    }
+
+    @SerializedName("customerService")
+    @Expose
+    CustomerService customerService;
 
     public String getId() {
         return id;
@@ -300,5 +314,37 @@ public class AppCMSMain {
 
     public void setLoadFromFile(boolean loadFromFile) {
         this.loadFromFile = loadFromFile;
+    }
+
+    public Features getFeatures() {
+        return features;
+    }
+
+    public void setFeatures(Features features) {
+        this.features = features;
+    }
+
+    public PaymentProviders getPaymentProviders() {
+        return paymentProviders;
+    }
+
+    public void setPaymentProviders(PaymentProviders paymentProviders) {
+        this.paymentProviders = paymentProviders;
+    }
+
+    public boolean isDownloadable() {
+        return isDownloadable;
+    }
+
+    public void setDownloadable(boolean downloadable) {
+        isDownloadable = downloadable;
+    }
+
+    public AppVersions getAppVersions() {
+        return appVersions;
+    }
+
+    public void setAppVersions(AppVersions appVersions) {
+        this.appVersions = appVersions;
     }
 }

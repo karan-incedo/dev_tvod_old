@@ -1,6 +1,7 @@
 package com.viewlift.views.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -19,6 +20,10 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
 
 import java.util.List;
+
+import rx.Observable;
+import rx.functions.Action;
+import rx.functions.Action1;
 
 /**
  * Created by viewlift on 6/12/17.
@@ -50,6 +55,8 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
     private static float DEVICE_WIDTH;
     private static int DEVICE_HEIGHT;
     private final AppCMSPresenter appCMSPresenter;
+    private final Context context;
+    private  Action1 action;
     private int imageWidth = 0;
     private int imageHeight = 0;
     private int textSize = 0;
@@ -59,6 +66,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
 
     public AppCMSSearchItemAdapter(Context context, AppCMSPresenter appCMSPresenter,
                                    List<AppCMSSearchResult> appCMSSearchResults) {
+        this.context = context;
         this.appCMSPresenter = appCMSPresenter;
         this.appCMSSearchResults = appCMSSearchResults;
         DEVICE_WIDTH = context.getResources().getDisplayMetrics().widthPixels;
@@ -84,9 +92,12 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         viewHolder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String permalink = appCMSSearchResults.get(adapterPosition).getPermalink();
-                String action = viewHolder.view.getContext().getString(R.string.app_cms_action_videopage_key);
-                String title = appCMSSearchResults.get(adapterPosition).getTitle();
+                if(action != null) {
+                    Observable.just("progress").subscribe(action);
+                }
+                String permalink = appCMSSearchResults.get(adapterPosition).getGist().getPermalink();
+                String action = viewHolder.view.getContext().getString(R.string.app_cms_action_detailvideopage_key);
+                String title = appCMSSearchResults.get(adapterPosition).getGist().getTitle();
                 Log.d(TAG, "Launching " + permalink + ":" + action);
                 if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                         action,
@@ -102,17 +113,22 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                             " action: " +
                             action);
                 }
+                //context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
             }
         });
 
-        if (!TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getTitle())) {
-            viewHolder.filmTitle.setText(appCMSSearchResults.get(adapterPosition).getTitle());
+        if (appCMSSearchResults.get(adapterPosition).getGist() != null &&
+                !TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getGist().getTitle())) {
+            viewHolder.filmTitle.setText(appCMSSearchResults.get(adapterPosition).getGist().getTitle());
         }
 
-        if (!TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getPosterImage().getUrl())) {
+        if (appCMSSearchResults.get(adapterPosition).getContentDetails() != null &&
+                appCMSSearchResults.get(adapterPosition).getContentDetails().getPosterImage() != null &&
+
+                !TextUtils.isEmpty(appCMSSearchResults.get(adapterPosition).getContentDetails().getPosterImage().getUrl())) {
 
             final String imageUrl = viewHolder.view.getContext().getString(R.string.app_cms_image_with_resize_query,
-                    appCMSSearchResults.get(adapterPosition).getPosterImage().getUrl(),
+                    appCMSSearchResults.get(adapterPosition).getContentDetails().getPosterImage().getUrl(),
                     imageWidth,
                     imageHeight);
 
@@ -223,5 +239,9 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             this.filmTitle.setEllipsize(TextUtils.TruncateAt.END);
             this.parentLayout.addView(this.filmTitle);
         }
+    }
+
+    public void handleProgress(Action1 action){
+        action = action;
     }
 }

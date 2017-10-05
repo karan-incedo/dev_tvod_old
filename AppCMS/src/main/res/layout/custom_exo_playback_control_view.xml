@@ -40,8 +40,7 @@
             android:background="@drawable/cc_toggle_selector"
             android:checked="false"
             android:textOff=""
-            android:textOn=""
-            android:visibility="gone"/>
+            android:textOn="" />
     </LinearLayout>
 
     <LinearLayout

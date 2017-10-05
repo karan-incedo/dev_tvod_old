@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
-import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,6 +77,10 @@ public class AppCMSChangePasswordFragment extends android.support.v4.app.Fragmen
 //        oldPasswordInputLayout.addView(view);
 //        newPasswordInputLayout.addView(view);
 //        confirmPasswordInputLayout.addView(view);
+
+        AppCMSPresenter.noSpaceInEditTextFilter(oldPasswordInput, getActivity());
+        AppCMSPresenter.noSpaceInEditTextFilter(newPasswordInput, getActivity());
+        AppCMSPresenter.noSpaceInEditTextFilter(confirmPasswordInput, getActivity());
 
         oldPasswordInputLayout.setPasswordVisibilityToggleEnabled(true);
         newPasswordInputLayout.setPasswordVisibilityToggleEnabled(true);

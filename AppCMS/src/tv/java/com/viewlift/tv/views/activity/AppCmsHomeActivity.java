@@ -114,6 +114,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             appCMSSearchUrlComponent = DaggerAppCmsTvSearchComponent.builder()
                     .appCMSSearchUrlModule(new AppCMSSearchUrlModule(appCMSMain.getApiBaseUrl(),
                             appCMSSite.getGist().getSiteInternalName(),
+                            appCMSPresenter.getApiKey(),
                             appCMSBinder.getAppCMSSearchCall()))
                     .build();
         }
@@ -277,7 +278,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         newFragment.setErrorListener(this);
         newFragment.show(ft, DIALOG_FRAGMENT_TAG);
     }
-
 
     private void openResetPasswordScreen(Intent intent){
 
@@ -720,15 +720,21 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                             (getString(R.string.app_cms_watchlist_navigation_title))
                             && !appCMSBinder.getPageName().equalsIgnoreCase
                             (getString(R.string.app_cms_history_navigation_title))) {
-                        appCMSPresenter.getPageIdContent(appCMSMain.getApiBaseUrl(),
+
+                        String apiUrl = appCMSPresenter.getApiUrl(usePageIdQueryParam,
+                                false,
+                                false,
+                                appCMSMain.getApiBaseUrl(),
                                 endPoint,
                                 appCMSSite.getGist().getSiteInternalName(),
-                                usePageIdQueryParam,
+                                appCMSBinder.getPagePath());
+
+                        appCMSPresenter.getPageIdContent(apiUrl,
                                 appCMSBinder.getPagePath(),
                                 appCMSPageAPI -> {
                                     if (appCMSPageAPI != null) {
                                         boolean updatedHistory = false;
-                                        if (appCMSPresenter.isUserLoggedIn(this)) {
+                                        if (appCMSPresenter.isUserLoggedIn()) {
                                             if (appCMSPageAPI.getModules() != null) {
                                                 List<Module> modules = appCMSPageAPI.getModules();
                                                 for (int i = 0; i < modules.size(); i++) {

@@ -6,6 +6,7 @@ import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.modules.AppCMSSearchModule;
 import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
+import com.viewlift.models.network.rest.AppCMSAndroidModuleCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSBeaconCall;
@@ -19,6 +20,7 @@ import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
+import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
@@ -94,6 +96,10 @@ public class AppCMSPresenterModule {
                                                    AppCMSUserDownloadVideoStatusCall appCMSUserDownloadVideoStatusCall,
                                                    AppCMSBeaconCall appCMSBeaconCall,
 
+                                                   AppCMSRestorePurchaseCall appCMSRestorePurchaseCall,
+
+                                                   AppCMSAndroidModuleCall appCMSAndroidModuleCall,
+
                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                    Map<String, String> pageNameToActionMap,
                                                    Map<String, AppCMSPageUI> actionToPageMap,
@@ -133,6 +139,10 @@ public class AppCMSPresenterModule {
                 appCMSUserVideoStatusCall,
                 appCMSUserDownloadVideoStatusCall,
                 appCMSBeaconCall,
+                appCMSRestorePurchaseCall,
+
+                appCMSAndroidModuleCall,
+
                 appCMSAddToWatchlistCall,
 
                 appCMSCCAvenueCall,

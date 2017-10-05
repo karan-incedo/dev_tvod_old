@@ -4,11 +4,13 @@ import android.content.Context;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.viewlift.models.data.appcms.api.Module;
@@ -17,6 +19,7 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
@@ -39,7 +42,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
     private final Runnable carouselUpdater;
     private final boolean loop;
     private List<OnInternalEvent> internalEventReceivers;
-    private volatile int updatedIndex;
+    private volatile Integer updatedIndex;
     private volatile boolean cancelled;
     private volatile boolean started;
     private boolean scrolled;
@@ -67,9 +70,12 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 "");
+
         this.listView = listView;
         this.loop = loop;
+
         this.updatedIndex = getDefaultIndex();
+
         this.internalEventReceivers = new ArrayList<>();
         this.cancelled = false;
         this.started = false;
@@ -107,7 +113,11 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                                 nextVisibleViewIndex = firstVisibleIndex;
                             }
 
-                            listView.smoothScrollToPosition(nextVisibleViewIndex);
+                            try {
+                                listView.smoothScrollToPosition(nextVisibleViewIndex);
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error scrolling to position: " + nextVisibleViewIndex);
+                            }
                             sendEvent(new InternalEvent<Object>(nextVisibleViewIndex));
                             setUpdatedIndex(nextVisibleViewIndex);
                         }
@@ -143,6 +153,12 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                             if (collectionGridLocation[1] <= eventY && eventY <= collectionGridLocation[1] + collectionGridItemHeight) {
                                 childIndex = i;
                             }
+                        }
+                        if (BaseView.isLandscape(context) &&
+                                childContainer instanceof LinearLayout &&
+                                childContainer.getChildCount() > 1 &&
+                                childContainer.getChildAt(1) instanceof ViewGroup) {
+                            childContainer = (ViewGroup) childContainer.getChildAt(1);
                         }
                         for (int j = 0; j < childContainer.getChildCount(); j++) {
                             View gridItemChildView = childContainer.getChildAt(j);
@@ -214,7 +230,9 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                 defaultHeight,
                 useMarginsAsPercentages,
                 false,
-                this.viewType);
+                this.componentViewType,
+                true,
+                false);
         return new ViewHolder(view);
     }
 
@@ -296,7 +314,11 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
         synchronized (listView) {
             index = calculateUpdateIndex(index);
             setUpdatedIndex(index);
-            listView.smoothScrollToPosition(updatedIndex);
+            try {
+                listView.smoothScrollToPosition(updatedIndex);
+            } catch (Exception e) {
+                Log.e(TAG, "Error scrolling to position: " + updatedIndex);
+            }
             if (!fromEvent) {
                 sendEvent(new InternalEvent<Object>(index));
             }
@@ -307,6 +329,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
     public void resetData(RecyclerView listView) {
         super.resetData(listView);
         updatedIndex = getDefaultIndex();
+        sendCancelEventToReceivers(cancelled);
         sendEvent(new InternalEvent<Object>(updatedIndex));
         listView.scrollToPosition(updatedIndex);
         cancel(false);
@@ -324,10 +347,36 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
     }
 
     private int calculateUpdateIndex(int index) {
-        if (adapterData.size() != 0 && Math.abs(updatedIndex - index) > adapterData.size()) {
-            int visibleIndexInItems = updatedIndex % adapterData.size();
-            return updatedIndex + (index - visibleIndexInItems);
+        int firstVisibleIndex =
+                ((LinearLayoutManager) listView.getLayoutManager()).findFirstVisibleItemPosition();
+        int lastVisibleIndex =
+                ((LinearLayoutManager) listView.getLayoutManager()).findLastVisibleItemPosition();
+
+        if (index < firstVisibleIndex && adapterData.size() < (firstVisibleIndex - index)) {
+            if ((firstVisibleIndex % adapterData.size()) < (index % adapterData.size())) {
+                index = (firstVisibleIndex + (index % adapterData.size()));
+            } else {
+                index = (firstVisibleIndex - (index % adapterData.size()));
+            }
+        } else if (lastVisibleIndex < index && adapterData.size() < (index - lastVisibleIndex)) {
+            if ((lastVisibleIndex % adapterData.size()) < (index % adapterData.size())) {
+                index = ((index % adapterData.size()) + lastVisibleIndex);
+            } else {
+                index = ((index % adapterData.size()) - lastVisibleIndex);
+            }
         }
+
+        if (adapterData.size() < Math.abs(index - firstVisibleIndex) ||
+                adapterData.size() < Math.abs(index - lastVisibleIndex)) {
+            index = firstVisibleIndex;
+        }
+
         return index;
+    }
+
+    private void sendCancelEventToReceivers(boolean cancel) {
+        for (OnInternalEvent receiver : internalEventReceivers) {
+            receiver.cancel(cancel);
+        }
     }
 }

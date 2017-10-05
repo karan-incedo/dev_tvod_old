@@ -1,21 +1,18 @@
 package com.viewlift.views.fragments;
 
-import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.res.Configuration;
-import android.graphics.drawable.ColorDrawable;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.SearchView;
-import android.view.Gravity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.viewlift.AppCMSApplication;
@@ -33,6 +30,8 @@ public class AppCMSSearchFragment extends DialogFragment {
     private SearchView appCMSSearchView;
     private Button appCMSGoButton;
     private AppCMSPresenter appCMSPresenter;
+    private static final String TAG = "SearchFragment";
+    LinearLayout searchLayout;
 
     public static AppCMSSearchFragment newInstance(Context context,
                                                    long bgColor,
@@ -46,6 +45,7 @@ public class AppCMSSearchFragment extends DialogFragment {
         appCMSSearchFragment.setArguments(args);
         return appCMSSearchFragment;
     }
+
 
     @Nullable
     @Override
@@ -61,7 +61,6 @@ public class AppCMSSearchFragment extends DialogFragment {
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
-
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
         SearchSuggestionsAdapter searchSuggestionsAdapter = new SearchSuggestionsAdapter(getActivity(),
                 null,
@@ -75,6 +74,21 @@ public class AppCMSSearchFragment extends DialogFragment {
         appCMSSearchView.setIconifiedByDefault(false);
         appCMSSearchView.requestFocus();
         appCMSPresenter.showSoftKeyboard(appCMSSearchView);
+        appCMSSearchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+
+            @Override
+            public boolean onSuggestionSelect(int position) {
+                return true;
+            }
+
+            @Override
+            public boolean onSuggestionClick(int position) {
+                Cursor cursor = (Cursor) appCMSSearchView.getSuggestionsAdapter().getItem(position);
+                String[] searchHintResult=cursor.getString(cursor.getColumnIndex("suggest_intent_data")).split(",");
+                appCMSPresenter.openVideoPageFromSearch(searchHintResult);
+                return true;
+            }
+        });
 
         appCMSGoButton = (Button) view.findViewById(R.id.app_cms_search_button);
         appCMSGoButton.setBackgroundColor(0xff000000 + (int) buttonColor);
@@ -92,6 +106,7 @@ public class AppCMSSearchFragment extends DialogFragment {
         return view;
     }
 
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -99,6 +114,7 @@ public class AppCMSSearchFragment extends DialogFragment {
             appCMSPresenter.unrestrictPortraitOnly();
         }
         appCMSPresenter.closeSoftKeyboard();
+        appCMSSearchView.clearFocus();
     }
 
     @SuppressWarnings("ConstantConditions")

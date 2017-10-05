@@ -22,19 +22,23 @@ public class AppCMSSearchCall {
 
     private final AppCMSSearchRest appCMSSearchRest;
 
-    private Map<String, String> headersMap;
+    private Map<String, String> authHeaders;
 
     @Inject
     public AppCMSSearchCall(AppCMSSearchRest appCMSSearchRest) {
         this.appCMSSearchRest = appCMSSearchRest;
-        this.headersMap = new HashMap<>();
+        this.authHeaders = new HashMap<>();
     }
 
     @WorkerThread
     public List<AppCMSSearchResult> call(String apiKey, String url) throws IOException {
         try {
-            headersMap.put("x-api-key", apiKey);
-            return appCMSSearchRest.get(headersMap, url).execute().body();
+            authHeaders.clear();
+            authHeaders.put("x-api-key", apiKey);
+            Log.e(TAG, "search url -" + url  );
+            Log.e(TAG, "search url api key -" + apiKey  );
+
+            return appCMSSearchRest.get(authHeaders, url).execute().body();
         } catch (Exception e) {
             Log.e(TAG, "Failed to execute search query " + url + ": " + e.toString());
         }

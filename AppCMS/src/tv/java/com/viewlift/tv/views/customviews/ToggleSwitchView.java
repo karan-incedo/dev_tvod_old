@@ -92,7 +92,7 @@ public class ToggleSwitchView extends TVBaseView {
         } else if (mJsonValueKeyMap.get(mComponent.getKey()) == AppCMSUIKeyType.PAGE_SETTING_CLOSED_CAPTION_TOGGLE_SWITCH_KEY) {
             isEnabled = ((AppCMSApplication) mContext.getApplicationContext()).
                     getAppCMSPresenterComponent().appCMSPresenter()
-                    .getClosedCaptionPreference(mContext);
+                    .getClosedCaptionPreference();
             setOnClickListener(v -> {
                 if (isEnabled) {
                     isEnabled = false;
@@ -102,7 +102,7 @@ public class ToggleSwitchView extends TVBaseView {
                     componentView.setImageResource(R.drawable.focused_on);
                 }
                 ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent()
-                        .appCMSPresenter().setClosedCaptionPreference(mContext, isEnabled);
+                        .appCMSPresenter().setClosedCaptionPreference(isEnabled);
             });
         }
         if (isEnabled) {

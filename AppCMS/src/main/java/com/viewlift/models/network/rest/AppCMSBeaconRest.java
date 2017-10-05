@@ -1,6 +1,7 @@
 package com.viewlift.models.network.rest;
 
 import com.viewlift.models.data.appcms.beacon.BeaconRequest;
+import com.viewlift.models.data.appcms.beacon.BeaconResponse;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -20,5 +21,5 @@ public interface AppCMSBeaconRest {
     Call<Void> sendBeaconMessage(@Url String url);
 
     @POST
-    Call<Boolean> sendBeaconMessage(@Url String url, @HeaderMap Map<String, String> headers, @Body ArrayList<BeaconRequest> appCMSBeaconRequest);
+    Call<BeaconResponse> sendBeaconMessage(@Url String url, @HeaderMap Map<String, String> headers, @Body ArrayList<BeaconRequest> appCMSBeaconRequest);
 }

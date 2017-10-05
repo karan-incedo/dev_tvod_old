@@ -15,10 +15,10 @@ import android.widget.ToggleButton;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
@@ -37,21 +37,28 @@ import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
-import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.upstream.AssetDataSource;
+import com.google.android.exoplayer2.upstream.ContentDataSource;
 import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DataSource.Factory;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultDataSource;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.upstream.FileDataSource;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
+import com.google.android.exoplayer2.upstream.TransferListener;
+import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
-import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
-import com.viewlift.presenters.AppCMSPresenter;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import rx.Observable;
 import rx.functions.Action1;
@@ -60,11 +67,10 @@ import rx.functions.Action1;
  * Created by viewlift on 5/31/17.
  */
 
-public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListener,
-        AdaptiveMediaSourceEventListener {
+public class VideoPlayerView extends FrameLayout implements Player.EventListener,
+        AdaptiveMediaSourceEventListener, SimpleExoPlayer.VideoListener {
     private static final String TAG = "VideoPlayerFragment";
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
-    private final Context context;
     protected DataSource.Factory mediaDataSourceFactory;
     protected String userAgent;
     boolean isLoadedNext;
@@ -85,21 +91,23 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     private long mCurrentPlayerPosition;
     private FinishListener mFinishListener;
 
+    private Map<String, Integer> failedMediaSourceLoads;
+
+    private int fullscreenResizeMode;
+    private Uri closedCaptionUri;
+
     public VideoPlayerView(Context context) {
         super(context);
-        this.context = context;
         init(context, null, 0);
     }
 
     public VideoPlayerView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        this.context = context;
         init(context, attrs, 0);
     }
 
     public VideoPlayerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        this.context = context;
         init(context, attrs, defStyleAttr);
     }
 
@@ -131,21 +139,19 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
 
     public void setUri(Uri videoUri, Uri closedCaptionUri) {
         this.uri = videoUri;
+        this.closedCaptionUri = closedCaptionUri;
         try {
             player.prepare(buildMediaSource(videoUri, closedCaptionUri));
         } catch (IllegalStateException e) {
             Log.e(TAG, "Unsupported video format for URI: " + videoUri.toString());
         }
-        if (((AppCMSApplication) context.getApplicationContext()).getAppCMSPresenterComponent()
-                .appCMSPresenter().getPlatformType() == AppCMSPresenter.PlatformType.ANDROID) {
-            if (closedCaptionUri == null) {
-                if (ccToggleButton != null) {
-                    ccToggleButton.setVisibility(GONE);
-                }
-            } else {
-                if (ccToggleButton != null) {
-                    ccToggleButton.setChecked(isClosedCaptionEnabled);
-                }
+        if (closedCaptionUri == null) {
+            if (ccToggleButton != null) {
+                ccToggleButton.setVisibility(GONE);
+            }
+        } else {
+            if (ccToggleButton != null) {
+                ccToggleButton.setChecked(isClosedCaptionEnabled);
             }
         }
     }
@@ -200,14 +206,14 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         return -1L;
     }
 
-    public long getBitrate() {
-        return bitrate;
-    }
-
     public void setCurrentPosition(long currentPosition) {
         if (player != null) {
             player.seekTo(currentPosition);
         }
+    }
+
+    public long getBitrate() {
+        return bitrate;
     }
 
     public void setClosedCaptionEnabled(boolean closedCaptionEnabled) {
@@ -218,9 +224,26 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         return playerView;
     }
 
+    public void setFillBasedOnOrientation() {
+        if (BaseView.isLandscape(getContext())) {
+            playerView.setResizeMode(fullscreenResizeMode);
+        } else {
+            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+        }
+    }
+
+    public void enableController() {
+        playerView.setUseController(true);
+    }
+
+    public void disableController() {
+        playerView.setUseController(false);
+    }
+
     private void init(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         initializePlayer(context, attrs, defStyleAttr);
         playerState = new PlayerState();
+        failedMediaSourceLoads = new HashMap<>();
     }
 
     private void initializePlayer(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
@@ -243,8 +266,10 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
 
         TrackSelection.Factory videoTrackSelectionFactory =
                 new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
-        TrackSelector trackSelector =
+        DefaultTrackSelector trackSelector =
                 new DefaultTrackSelector(videoTrackSelectionFactory);
+
+        trackSelector.setTunnelingAudioSessionId(C.generateAudioSessionIdV21(getContext()));
 
         player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
         player.addListener(this);
@@ -254,11 +279,16 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
                 onPlayerControlsStateChanged.call(visibility);
             }
         });
+//        player.addVideoListener(this);
 
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         audioManager.requestAudioFocus(focusChange -> Log.i(TAG, "Audio focus has changed: " + focusChange),
                 AudioManager.STREAM_MUSIC,
                 AudioManager.AUDIOFOCUS_GAIN);
+
+        setFillBasedOnOrientation();
+
+        fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
     }
 
     private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {
@@ -320,9 +350,10 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     }
 
     private DataSource.Factory buildDataSourceFactory(DefaultBandwidthMeter bandwidthMeter) {
-        return new DefaultDataSourceFactory(getContext(),
+        return new UpdatedUriDataSourceFactory(getContext(),
                 bandwidthMeter,
-                buildHttpDataSourceFactory(bandwidthMeter));
+                buildHttpDataSourceFactory(bandwidthMeter),
+                null);
     }
 
     private HttpDataSource.Factory buildHttpDataSourceFactory(DefaultBandwidthMeter bandwidthMeter) {
@@ -386,7 +417,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
     public void onLoadStarted(DataSpec dataSpec, int dataType, int trackType, Format trackFormat,
                               int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                               long mediaEndTimeMs, long elapsedRealtimeMs) {
-        bitrate=(trackFormat.bitrate/1000);
+        bitrate = (trackFormat.bitrate / 1000);
     }
 
     @Override
@@ -394,6 +425,7 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
                                 int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                                 long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs,
                                 long bytesLoaded) {
+        failedMediaSourceLoads.clear();
     }
 
     @Override
@@ -411,14 +443,22 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
                             long bytesLoaded, IOException error, boolean wasCanceled) {
         Log.d(TAG, "onLoadError : " + error.getMessage());
         /**
-         * We can enhance logic here depending on the error code list that we will use for cloasing the video page.
+         * We can enhance logic here depending on the error code list that we will use for closing the video page.
          */
-        if ( (error.getMessage().contains("404") ||
-                error.getMessage().contains("400") )
+        if ((error.getMessage().contains("404") ||
+                error.getMessage().contains("400"))
                 && !isLoadedNext) {
-            if ((player.getCurrentPosition() + 5000) >= player.getDuration()) {
-                isLoadedNext = true;
-                mFinishListener.onFinishCallback(error.getMessage());
+            String failedMediaSourceLoadKey = dataSpec.uri.toString();
+            if (failedMediaSourceLoads.containsKey(failedMediaSourceLoadKey)) {
+                int tryCount = failedMediaSourceLoads.get(failedMediaSourceLoadKey);
+                if (tryCount == 3) {
+                    isLoadedNext = true;
+                    mFinishListener.onFinishCallback(error.getMessage());
+                } else {
+                    failedMediaSourceLoads.put(failedMediaSourceLoadKey, tryCount + 1);
+                }
+            } else {
+                failedMediaSourceLoads.put(failedMediaSourceLoadKey, 1);
             }
         }
     }
@@ -438,6 +478,33 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
         mFinishListener = finishListener;
     }
 
+    @Override
+    public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
+        Log.i(TAG, "Video size changed: width = " +
+                width +
+                " height = " +
+                height +
+                " rotation degrees = " +
+                unappliedRotationDegrees +
+                " width/height ratio = " +
+                pixelWidthHeightRatio);
+        if (width > height) {
+            fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
+        } else {
+            fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT;
+        }
+        if (BaseView.isLandscape(getContext())) {
+            playerView.setResizeMode(fullscreenResizeMode);
+        } else {
+            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+        }
+    }
+
+    @Override
+    public void onRenderedFirstFrame() {
+        Log.d(TAG, "Rendered first frame");
+    }
+
     public interface FinishListener {
         void onFinishCallback(String message);
     }
@@ -452,6 +519,176 @@ public class VideoPlayerView extends FrameLayout implements ExoPlayer.EventListe
 
         public int getPlaybackState() {
             return playbackState;
+        }
+    }
+
+    private static class UpdatedUriDataSourceFactory implements Factory {
+        private final Context context;
+        private final TransferListener<? super DataSource> listener;
+        private final DataSource.Factory baseDataSourceFactory;
+        private final String cdnCookie;
+
+        /**
+         * @param context   A context.
+         * @param userAgent The User-Agent string that should be used.
+         */
+        public UpdatedUriDataSourceFactory(Context context, String userAgent, String cdnCookie) {
+            this(context, userAgent, null, cdnCookie);
+        }
+
+        /**
+         * @param context   A context.
+         * @param userAgent The User-Agent string that should be used.
+         * @param listener  An optional listener.
+         */
+        public UpdatedUriDataSourceFactory(Context context, String userAgent,
+                                           TransferListener<? super DataSource> listener,
+                                           String cdnCookie) {
+            this(context, listener, new DefaultHttpDataSourceFactory(userAgent, listener), cdnCookie);
+        }
+
+        /**
+         * @param context               A context.
+         * @param listener              An optional listener.
+         * @param baseDataSourceFactory A {@link DataSource.Factory} to be used to create a base {@link DataSource}
+         *                              for {@link DefaultDataSource}.
+         * @param cdnCookie             The cookie used for accessing CDN protected data.
+         * @see DefaultDataSource#DefaultDataSource(Context, TransferListener, DataSource)
+         */
+        public UpdatedUriDataSourceFactory(Context context, TransferListener<? super DataSource> listener,
+                                           DataSource.Factory baseDataSourceFactory, String cdnCookie) {
+            this.context = context.getApplicationContext();
+            this.listener = listener;
+            this.baseDataSourceFactory = baseDataSourceFactory;
+            this.cdnCookie = cdnCookie;
+        }
+
+        @Override
+        public UpdatedUriDataSource createDataSource() {
+            return new UpdatedUriDataSource(context, listener, baseDataSourceFactory.createDataSource(),
+                    cdnCookie);
+        }
+
+    }
+
+    private static class UpdatedUriDataSource implements DataSource {
+        private static final String SCHEME_ASSET = "asset";
+        private static final String SCHEME_CONTENT = "content";
+
+        private final DataSource baseDataSource;
+        private final DataSource fileDataSource;
+        private final DataSource assetDataSource;
+        private final DataSource contentDataSource;
+        private final String cdnCookie;
+
+        private DataSource dataSource;
+
+        /**
+         * Constructs a new instance, optionally configured to follow cross-protocol redirects.
+         *
+         * @param context                     A context.
+         * @param listener                    An optional listener.
+         * @param userAgent                   The User-Agent string that should be used when requesting remote data.
+         * @param allowCrossProtocolRedirects Whether cross-protocol redirects (i.e. redirects from HTTP
+         *                                    to HTTPS and vice versa) are enabled when fetching remote data.
+         */
+        public UpdatedUriDataSource(Context context, TransferListener<? super DataSource> listener,
+                                    String userAgent, boolean allowCrossProtocolRedirects,
+                                    String cdnCookie) {
+            this(context, listener, userAgent, DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
+                    DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS, allowCrossProtocolRedirects,
+                    cdnCookie);
+        }
+
+        /**
+         * Constructs a new instance, optionally configured to follow cross-protocol redirects.
+         *
+         * @param context                     A context.
+         * @param listener                    An optional listener.
+         * @param userAgent                   The User-Agent string that should be used when requesting remote data.
+         * @param connectTimeoutMillis        The connection timeout that should be used when requesting remote
+         *                                    data, in milliseconds. A timeout of zero is interpreted as an infinite timeout.
+         * @param readTimeoutMillis           The read timeout that should be used when requesting remote data,
+         *                                    in milliseconds. A timeout of zero is interpreted as an infinite timeout.
+         * @param allowCrossProtocolRedirects Whether cross-protocol redirects (i.e. redirects from HTTP
+         *                                    to HTTPS and vice versa) are enabled when fetching remote data.
+         */
+        public UpdatedUriDataSource(Context context, TransferListener<? super DataSource> listener,
+                                    String userAgent, int connectTimeoutMillis, int readTimeoutMillis,
+                                    boolean allowCrossProtocolRedirects, String cdnCookie) {
+            this(context, listener,
+                    new DefaultHttpDataSource(userAgent, null, listener, connectTimeoutMillis,
+                            readTimeoutMillis, allowCrossProtocolRedirects, null),
+                    cdnCookie);
+        }
+
+        /**
+         * Constructs a new instance that delegates to a provided {@link DataSource} for URI schemes other
+         * than file, asset and content.
+         *
+         * @param context        A context.
+         * @param listener       An optional listener.
+         * @param baseDataSource A {@link DataSource} to use for URI schemes other than file, asset and
+         *                       content. This {@link DataSource} should normally support at least http(s).
+         */
+        public UpdatedUriDataSource(Context context, TransferListener<? super DataSource> listener,
+                                    DataSource baseDataSource,
+                                    String cdnCookie) {
+            this.baseDataSource = Assertions.checkNotNull(baseDataSource);
+            this.fileDataSource = new FileDataSource(listener);
+            this.assetDataSource = new AssetDataSource(context, listener);
+            this.contentDataSource = new ContentDataSource(context, listener);
+            this.cdnCookie = cdnCookie;
+        }
+
+        @Override
+        public long open(DataSpec dataSpec) throws IOException {
+            Assertions.checkState(dataSource == null);
+            // Choose the correct source for the scheme.
+            String scheme = dataSpec.uri.getScheme();
+            if (Util.isLocalFileUri(dataSpec.uri)) {
+                if (dataSpec.uri.getPath().startsWith("/android_asset/")) {
+                    dataSource = assetDataSource;
+                } else {
+                    dataSource = fileDataSource;
+                }
+            } else if (SCHEME_ASSET.equals(scheme)) {
+                dataSource = assetDataSource;
+            } else if (SCHEME_CONTENT.equals(scheme)) {
+                dataSource = contentDataSource;
+            } else {
+                dataSource = baseDataSource;
+            }
+
+            Uri updatedUri = Uri.parse(dataSpec.uri.toString().replaceAll(" ", "%20"));
+            dataSpec = new DataSpec(updatedUri,
+                    dataSpec.absoluteStreamPosition,
+                    dataSpec.length,
+                    dataSpec.key);
+
+            // Open the source and return.
+            return dataSource.open(dataSpec);
+        }
+
+        @Override
+        public int read(byte[] buffer, int offset, int readLength) throws IOException {
+            return dataSource.read(buffer, offset, readLength);
+        }
+
+        @Override
+        public Uri getUri() {
+            return dataSource == null ? null : dataSource.getUri();
+        }
+
+        @Override
+        public void close() throws IOException {
+            if (dataSource != null) {
+                try {
+                    dataSource.close();
+                } finally {
+                    dataSource = null;
+                }
+            }
         }
     }
 }

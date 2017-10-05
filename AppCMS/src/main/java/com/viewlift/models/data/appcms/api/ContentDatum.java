@@ -82,6 +82,10 @@ public class ContentDatum {
     @Expose
     List<Tag> tags = null;
 
+    @SerializedName("seasons")
+    @Expose
+    List<Season_> season = null;
+
     @SerializedName("external")
     @Expose
     External external;
@@ -180,6 +184,14 @@ public class ContentDatum {
 
     public void setTags(List<Tag> tags) {
         this.tags = tags;
+    }
+
+    public List<Season_> getSeason() {
+        return season;
+    }
+
+    public void setSeason(List<Season_> season) {
+        this.season = season;
     }
 
     public External getExternal() {
@@ -286,9 +298,10 @@ public class ContentDatum {
         this.planDetails = planDetails;
     }
 
-    public AppCMSPageAPI convertToAppCMSPageAPI() {
+    public AppCMSPageAPI convertToAppCMSPageAPI(String moduleType) {
         AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
         Module module = new Module();
+        module.setModuleType(moduleType);
         List<ContentDatum> data = new ArrayList<>();
         data.add(this);
         module.setContentData(data);

@@ -1,6 +1,8 @@
 package com.viewlift.views.fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,12 +18,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.AsteriskPasswordTransformation;
 import com.viewlift.views.customviews.ViewCreator;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,6 +52,8 @@ public class AppCMSEditProfileFragment extends DialogFragment {
 
     @BindView(R.id.app_cms_edit_profile_main_layout)
     RelativeLayout appCMSEditProfileMainLayout;
+
+    private String regex = "[a-zA-Z\\s]+";
 
     public static AppCMSEditProfileFragment newInstance(Context context,
                                                         String username,
@@ -92,31 +100,53 @@ public class AppCMSEditProfileFragment extends DialogFragment {
             appCMSEditProfileEmailInput.setText(email);
         }
 
-        TextInputLayout textInputLayout = new TextInputLayout(view.getContext());
-        TextInputEditText password = new TextInputEditText(view.getContext());
 
-        textInputLayout.addView(password);
-        textInputLayout.setPasswordVisibilityToggleEnabled(true);
-        password.setTransformationMethod(new AsteriskPasswordTransformation());
+        editProfileConfirmChangeButton.setOnClickListener((View v) -> {
 
-        editProfileConfirmChangeButton.setOnClickListener(v -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+            String userName = appCMSEditProfileNameInput.getText().toString().trim();
+                if (!doesValidNameExist(userName)) {
+                    Toast.makeText(getContext(), getResources().getString(R.string.edit_profile_name_message), Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+            TextInputLayout textInputLayout = new TextInputLayout(view.getContext());
+            TextInputEditText password = new TextInputEditText(view.getContext());
+
+            textInputLayout.addView(password);
+            textInputLayout.setPasswordVisibilityToggleEnabled(true);
+            password.setTransformationMethod(new AsteriskPasswordTransformation());
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setView(textInputLayout);
             builder.setCancelable(false);
-            builder.setView(textInputLayout)
-                    .setTitle("Verify your password to Continue")
-                    .setPositiveButton("Proceed", (dialog, position) -> {
-                        appCMSPresenter.updateUserProfile(appCMSEditProfileNameInput.getText().toString(),
-                                appCMSEditProfileEmailInput.getText().toString(),
-                                password.getText().toString(),
-                                userIdentity -> {
-                                    //
-                                }
-                        );
-                        appCMSPresenter.sendCloseOthersAction(null, true);
-                    })
-                    .setNegativeButton("Cancel", (dialog, position) ->
-                            appCMSPresenter.sendCloseOthersAction(null, true))
-                    .create().show();
+            builder.setTitle("Verify your password to Continue");
+            builder.setPositiveButton(
+                    "Proceed",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            appCMSPresenter.closeSoftKeyboardNoView();
+
+                            appCMSPresenter.updateUserProfile(userName,
+                                    appCMSEditProfileEmailInput.getText().toString(),
+                                    password.getText().toString(),
+                                    userIdentity -> {
+                                    });
+                        }
+                    });
+
+            builder.setNegativeButton(
+                    "Cancel",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                            appCMSPresenter.sendCloseOthersAction(null, true);
+                            appCMSPresenter.closeSoftKeyboardNoView();
+                        }
+                    });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
         });
 
         editProfileConfirmChangeButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor,
@@ -130,4 +160,7 @@ public class AppCMSEditProfileFragment extends DialogFragment {
     private void setBgColor(int bgColor) {
         appCMSEditProfileMainLayout.setBackgroundColor(bgColor);
     }
-}
+
+    private boolean doesValidNameExist(String input) {
+        return !TextUtils.isEmpty(input) && Pattern.matches(regex, input);
+    }}

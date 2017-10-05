@@ -5,6 +5,7 @@ import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 
 import java.io.File;
@@ -18,7 +19,6 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,7 +29,6 @@ import java.util.concurrent.TimeoutException;
 import javax.inject.Inject;
 
 import okhttp3.OkHttpClient;
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/4/17.
@@ -58,7 +57,7 @@ public class AppCMSMainUICall {
     }
 
     @WorkerThread
-    public AppCMSMain call(Context context, String siteId, int tryCount) throws IOException {
+    public AppCMSMain call(Context context, String siteId, int tryCount, boolean forceReloadFromNetwork) {
         Date now = new Date();
         final String appCMSMainUrl = context.getString(R.string.app_cms_main_url,
                 context.getString(R.string.app_cms_baseurl),
@@ -71,31 +70,26 @@ public class AppCMSMainUICall {
 
             final String hostName = new URL(appCMSMainUrl).getHost();
             ExecutorService executor = Executors.newCachedThreadPool();
-            Future<List<InetAddress>> future = executor.submit(new Callable<List<InetAddress>>() {
-                @Override
-                public List<InetAddress> call() throws Exception {
-                    return okHttpClient.dns().lookup(hostName);
-                }
-            });
-
+            Future<List<InetAddress>> future = executor.submit(()
+                    -> okHttpClient.dns().lookup(hostName));
             try {
                 future.get(connectionTimeout, TimeUnit.MILLISECONDS);
             } catch (TimeoutException e) {
                 Log.e(TAG, "Connection timed out: " + e.toString());
                 if (tryCount == 0) {
-                    return call(context, siteId, tryCount + 1);
+                    return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
                 }
                 return null;
             } catch (InterruptedException e) {
                 Log.e(TAG, "Connection interrupted: " + e.toString());
                 if (tryCount == 0) {
-                    return call(context, siteId, tryCount + 1);
+                    return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
                 }
                 return null;
             } catch (ExecutionException e) {
                 Log.e(TAG, "Execution error: " + e.toString());
                 if (tryCount == 0) {
-                    return call(context, siteId, tryCount + 1);
+                    return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
                 }
                 return null;
             } finally {
@@ -113,13 +107,19 @@ public class AppCMSMainUICall {
             boolean useExistingOldVersion = true;
 
             if (mainInStorage != null) {
-                main.setOldVersion(mainInStorage.getOldVersion());
-                useExistingOldVersion = main.getOldVersion().equals(main.getVersion());
-                main.setLoadFromFile(useExistingOldVersion);
-                main.setOldVersion(main.getVersion());
+                if (main != null && main.getOldVersion() != null) {
+                    useExistingOldVersion = main.getOldVersion().equals(main.getVersion());
+                    if (!forceReloadFromNetwork) {
+                        main.setLoadFromFile(useExistingOldVersion);
+                    }
+                    main.setOldVersion(main.getVersion());
+                } else if (main == null) {
+                    main = mainInStorage;
+                    main.setOldVersion(mainInStorage.getOldVersion());
+                }
             }
 
-            if (useExistingOldVersion) {
+            if (main != null && useExistingOldVersion) {
                 main.setOldVersion(main.getVersion());
             }
 
@@ -129,7 +129,7 @@ public class AppCMSMainUICall {
         }
 
         if (main == null && tryCount == 0) {
-            return call(context, siteId, tryCount + 1);
+            return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
         }
 
         return main;

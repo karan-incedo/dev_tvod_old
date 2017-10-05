@@ -1,7 +1,10 @@
 package com.viewlift.views.customviews;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -9,11 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.FeatureDetail;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -29,10 +32,9 @@ import java.util.Map;
  * Created by viewlift on 7/21/17.
  */
 
+@SuppressLint("ViewConstructor")
 public class SubscriptionMetaDataView extends LinearLayout {
     private static final String TAG = "SubsMetaDataView";
-
-    private static int viewCreationPlanDetailsIndex = 0;
 
     private final Component component;
     private final Layout layout;
@@ -40,10 +42,12 @@ public class SubscriptionMetaDataView extends LinearLayout {
     private final Module moduleAPI;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final AppCMSPresenter appCMSPresenter;
-    private final int planDetailsIndex;
     private final Settings moduleSettings;
+    Context context;
     private int devicesSupportedComponentIndex;
     private int devicesSupportedFeatureIndex;
+    private ContentDatum planData;
+
 
     public SubscriptionMetaDataView(Context context,
                                     Component component,
@@ -54,6 +58,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
                                     AppCMSPresenter appCMSPresenter,
                                     Settings moduleSettings) {
         super(context);
+        this.context = context;
         this.component = component;
         this.layout = layout;
         this.viewCreator = viewCreator;
@@ -61,14 +66,8 @@ public class SubscriptionMetaDataView extends LinearLayout {
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.appCMSPresenter = appCMSPresenter;
         this.moduleSettings = moduleSettings;
-        if (moduleAPI.getContentData() != null) {
-            planDetailsIndex = viewCreationPlanDetailsIndex % moduleAPI.getContentData().size();
-        } else {
-            planDetailsIndex = -1;
-        }
         this.devicesSupportedComponentIndex = -1;
         this.devicesSupportedFeatureIndex = -1;
-        viewCreationPlanDetailsIndex++;
         init();
     }
 
@@ -78,17 +77,21 @@ public class SubscriptionMetaDataView extends LinearLayout {
                 new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
         setLayoutParams(layoutParams);
-        if (planDetailsIndex >= 0 &&
-                moduleAPI.getContentData() != null &&
-                moduleAPI.getContentData().get(planDetailsIndex) != null &&
-                moduleAPI.getContentData().get(planDetailsIndex).getPlanDetails() != null &&
-                moduleAPI.getContentData().get(planDetailsIndex).getPlanDetails().size() > 0 &&
-                moduleAPI.getContentData().get(planDetailsIndex).getPlanDetails().get(0) != null &&
-                moduleAPI.getContentData().get(planDetailsIndex).getPlanDetails().get(0).getFeatureDetails() != null) {
+    }
+
+    public void setData(ContentDatum planData) {
+        this.planData = planData;
+        initViews();
+    }
+
+    public void initViews() {
+        if (planData != null &&
+                planData.getPlanDetails() != null &&
+                planData.getPlanDetails().size() > 0 &&
+                planData.getPlanDetails().get(0) != null &&
+                planData.getPlanDetails().get(0).getFeatureDetails() != null) {
             List<FeatureDetail> featureDetails =
-                    moduleAPI.getContentData()
-                            .get(planDetailsIndex)
-                            .getPlanDetails()
+                    planData.getPlanDetails()
                             .get(0)
                             .getFeatureDetails();
 
@@ -115,16 +118,12 @@ public class SubscriptionMetaDataView extends LinearLayout {
                     devicesSupportedComponentIndex > 0 &&
                     devicesSupportedFeatureIndex > 0) {
                 int numDevicesSupported = -1;
-                if (!TextUtils.isEmpty(moduleAPI.getContentData()
-                        .get(planDetailsIndex)
-                        .getPlanDetails()
+                if (!TextUtils.isEmpty(planData.getPlanDetails()
                         .get(0)
                         .getFeatureDetails()
                         .get(devicesSupportedFeatureIndex)
                         .getValue())) {
-                    numDevicesSupported = Integer.valueOf(moduleAPI.getContentData()
-                            .get(planDetailsIndex)
-                            .getPlanDetails()
+                    numDevicesSupported = Integer.valueOf(planData.getPlanDetails()
                             .get(0)
                             .getFeatureDetails()
                             .get(devicesSupportedFeatureIndex)
@@ -144,7 +143,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
         planLayout.setOrientation(GridLayout.HORIZONTAL);
         planLayout.setColumnCount(2);
         int componentIndex = 0;
-        if (component.getComponents() != null)  {
+        if (component.getComponents() != null) {
             for (componentIndex = 0;
                  componentIndex < component.getComponents().size();
                  componentIndex++) {
@@ -237,37 +236,52 @@ public class SubscriptionMetaDataView extends LinearLayout {
             }
 
             GridLayout.LayoutParams gridLayoutParams = new GridLayout.LayoutParams();
-            gridLayoutParams.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+//            gridLayoutParams.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
 
             switch (componentKeyType) {
-                case PAGE_PLANMETADATATILE_KEY:
-                    if (componentView instanceof  TextView) {
+                case PAGE_PLANMETADATATITLE_KEY:
+                    if (componentView instanceof TextView) {
+                        componentView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                         ((TextView) componentView).setText(featureDetail.getTextToDisplay());
-                        ((TextView) componentView).setEllipsize(TextUtils.TruncateAt.END);
-                        componentView.setLayoutParams(gridLayoutParams);
-                    }
-                    break;
 
-                case PAGE_PLANMETADDATAIMAGE_KEY:
-                    if (componentView instanceof ImageView) {
                         if (!TextUtils.isEmpty(featureDetail.getValue()) &&
                                 featureDetail.getValue().equalsIgnoreCase("true")) {
-                            ((ImageView) componentView).setImageResource(R.drawable.tickicon);
+                            Drawable rightImage = ContextCompat.getDrawable(context, R.drawable.tickicon);
+                            rightImage.setBounds(0, 0, rightImage.getIntrinsicWidth(), rightImage.getIntrinsicHeight());
+                            ((TextView) componentView).setCompoundDrawables(null, null, rightImage, null);
                         } else {
-                            ((ImageView) componentView).setImageResource(R.drawable.crossicon);
+                            Drawable rightImage = ContextCompat.getDrawable(context, R.drawable.crossicon);
+                            rightImage.setBounds(0, 0, rightImage.getIntrinsicWidth(), rightImage.getIntrinsicHeight());
+                            ((TextView) componentView).setCompoundDrawables(null, null, rightImage, null);
                         }
-                        gridLayoutParams.setMargins(0, 0, 16, 0);
-                        gridLayoutParams.setGravity(Gravity.END);
-                        componentView.setLayoutParams(gridLayoutParams);
+
+//                        ((TextView) componentView).setEllipsize(TextUtils.TruncateAt.END);
+//                        componentView.setLayoutParams(gridLayoutParams);
                     }
                     break;
 
+
+//                case PAGE_PLANMETADDATAIMAGE_KEY:
+//                    if (componentView instanceof ImageView) {
+//                        if (!TextUtils.isEmpty(featureDetail.getValue()) &&
+//                                featureDetail.getValue().equalsIgnoreCase("true")) {
+//                            ((ImageView) componentView).setImageResource(R.drawable.tickicon);
+//                        } else {
+//                            ((ImageView) componentView).setImageResource(R.drawable.crossicon);
+//                        }
+////                        gridLayoutParams.rowSpec=GridLayout.spec(2);
+//                        gridLayoutParams.columnSpec=GridLayout.spec(0);
+//                        gridLayoutParams.setMargins(0, 0, 16, 0);
+//                        gridLayoutParams.setGravity(Gravity.END);
+//                        componentView.setLayoutParams(gridLayoutParams);
+//                    }
+//                    break;
+
                 default:
+                    break;
             }
 
             Log.d(TAG, "Created child component: " +
-                    planDetailsIndex +
-                    " - " +
                     featureDetail.getTextToDisplay() +
                     " - " +
                     subComponent.getKey() +

@@ -20,6 +20,10 @@ import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 
 import com.viewlift.R;
 
+import net.nightwhistler.htmlspanner.TextUtil;
+
+import retrofit2.Response;
+
 /**
  * Created by viewlift on 5/9/17.
  */
@@ -32,6 +36,7 @@ public class AppCMSPageAPICall {
     private final Gson gson;
     private final File storageDirectory;
     private Map<String, String> headersMap;
+    private String url;
 
     @Inject
     public AppCMSPageAPICall(AppCMSPageAPIRest appCMSPageAPIRest,
@@ -46,58 +51,29 @@ public class AppCMSPageAPICall {
     }
 
     @WorkerThread
-    public AppCMSPageAPI call(Context context,
-                              String baseUrl,
-                              String endpoint,
-                              String siteId,
+    public AppCMSPageAPI call(String urlWithContent,
                               String authToken,
-                              String userId,
-                              boolean usePageIdQueryParam,
                               String pageId,
-                              boolean viewPlansPage,
                               int tryCount) throws IOException {
-        String urlWithContent;
-        if (usePageIdQueryParam) {
-            if (viewPlansPage) {
-                urlWithContent =
-                        context.getString(R.string.app_cms_page_api_view_plans_url,
-                                baseUrl,
-                                endpoint,
-                                siteId,
-                                context.getString(R.string.app_cms_subscription_platform_key));
-            } else {
-                urlWithContent =
-                        context.getString(R.string.app_cms_page_api_url,
-                                baseUrl,
-                                endpoint,
-                                siteId,
-                                context.getString(R.string.app_cms_page_id_query_parameter),
-                                pageId,
-                                userId);
-            }
-        } else {
-            urlWithContent =
-                    context.getString(R.string.app_cms_page_api_url,
-                            baseUrl,
-                            endpoint,
-                            siteId,
-                            context.getString(R.string.app_cms_page_path_query_parameter),
-                            pageId,
-                            userId);
-        }
         Log.d(TAG, "URL: " + urlWithContent);
         String filename = getResourceFilename(pageId);
         AppCMSPageAPI appCMSPageAPI = null;
         try {
             headersMap.clear();
-            if (!TextUtils.isEmpty(userId)) {
+            if (!TextUtils.isEmpty(apiKey)) {
                 headersMap.put("x-api-key", apiKey);
             }
             if (!TextUtils.isEmpty(authToken)) {
                 headersMap.put("Authorization", authToken);
             }
             Log.d(TAG, "AppCMSPageAPICall Authorization val "+headersMap.toString());
-            appCMSPageAPI = appCMSPageAPIRest.get(urlWithContent, headersMap).execute().body();
+            Response<AppCMSPageAPI> response = appCMSPageAPIRest.get(urlWithContent, headersMap).execute();
+            appCMSPageAPI = response.body();
+
+            if (!response.isSuccessful()) {
+                Log.e(TAG, "Response error: " + response.errorBody().string());
+            }
+
             if (filename != null) {
                 appCMSPageAPI = writePageToFile(filename, appCMSPageAPI);
             }
@@ -108,15 +84,9 @@ public class AppCMSPageAPICall {
         }
 
         if (appCMSPageAPI == null && tryCount == 0) {
-            return call(context,
-                    baseUrl,
-                    endpoint,
-                    siteId,
+            return call(urlWithContent,
                     authToken,
-                    userId,
-                    usePageIdQueryParam,
                     pageId,
-                    viewPlansPage,
                     tryCount + 1);
         }
 

@@ -74,7 +74,7 @@ public class RESTUnitTest {
     @Test
     public void test_appCMSMainCall() throws Exception {
         AppCMSMainUICall appCMSMainUICall = appCMSUIComponent.appCMSMainCall();
-        AppCMSMain main = appCMSMainUICall.call(context, APP_CMS_APP_NAME, 0);
+        AppCMSMain main = appCMSMainUICall.call(context, APP_CMS_APP_NAME, 0, false);
         assertNotNull(main);
         assertTrue(!TextUtils.isEmpty(main.getAndroid()));
     }
@@ -82,7 +82,9 @@ public class RESTUnitTest {
     @Test
     public void test_appCMSAndroidCall() throws Exception {
         AppCMSAndroidUICall appCMSAndroidUICall = appCMSUIComponent.appCMSAndroidCall();
-        AppCMSAndroidUI appCMSAndroidUI = appCMSAndroidUICall.call(APP_CMS_ANDROID_URL, false);
+        AppCMSAndroidUI appCMSAndroidUI = appCMSAndroidUICall.call(APP_CMS_ANDROID_URL,
+                false,
+                0);
         assertNotNull(appCMSAndroidUI);
         assertNotNull(appCMSAndroidUI.getMetaPages());
         assertTrue(appCMSAndroidUI.getMetaPages().size() > 0);
@@ -95,22 +97,16 @@ public class RESTUnitTest {
     @Test
     public void test_appCMSSplashPageCall() throws Exception {
         AppCMSPageUICall appCMSPageUICall = appCMSUIComponent.appCMSPageCall();
-        AppCMSPageUI splashAppCMSPageUI = appCMSPageUICall.call(APP_CMS_SPLASH_PAGE_URL, false);
+        AppCMSPageUI splashAppCMSPageUI = appCMSPageUICall.call(APP_CMS_SPLASH_PAGE_URL, 0L);
         assertNotNull(splashAppCMSPageUI);
     }
 
     @Test
     public void test_appCMSHomePageAPICall() throws Exception {
         AppCMSPageAPICall appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
-        AppCMSPageAPI appCMSPageAPI = appCMSPageAPICall.call(context,
-                API_BASEURL,
-                PAGE_API_PATH,
-                SITE_ID,
+        AppCMSPageAPI appCMSPageAPI = appCMSPageAPICall.call(null,
                 null,
                 null,
-                true,
-                PAGE_ID,
-                false,
                 0);
         assertNotNull(appCMSPageAPI);
     }

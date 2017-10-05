@@ -49,6 +49,9 @@ public class PlanDetail {
     @SerializedName("numberOfAllowedDevices")
     @Expose
     private int numberOfAllowedDevices;
+    @SerializedName("strikeThroughPrice")
+    @Expose
+    private double strikeThroughPrice;
 
     public double getRecurringPaymentAmount() {
         return recurringPaymentAmount;
@@ -154,4 +157,11 @@ public class PlanDetail {
         this.numberOfAllowedDevices = numberOfAllowedDevices;
     }
 
+    public double getStrikeThroughPrice() {
+        return strikeThroughPrice;
+    }
+
+    public void setStrikeThroughPrice(double strikeThroughPrice) {
+        this.strikeThroughPrice = strikeThroughPrice;
+    }
 }

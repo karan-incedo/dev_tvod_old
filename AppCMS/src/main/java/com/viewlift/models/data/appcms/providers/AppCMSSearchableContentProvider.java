@@ -73,7 +73,6 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
                         @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         MatrixCursor cursor = null;
-        String apiKey = null;
 
         if (getContext() instanceof AppCMSApplication && needInjection()) {
             AppCMSPresenter appCMSPresenter =
@@ -82,7 +81,6 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
             if (needInjection()) {
                 return null;
             }
-            apiKey = appCMSPresenter.getApiKey();
         }
 
         switch (uriMatcher.match(uri)) {
@@ -99,17 +97,16 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                             selectionArgs[0]);
                     Log.d(TAG, "Search URL: " + url);
                     try {
-                        List<AppCMSSearchResult> searchResultList =
-                                appCMSSearchCall.call(apiKey, url);
+                        List<AppCMSSearchResult> searchResultList = appCMSSearchCall.call(appCMSSearchUrlData.getApiKey(), url);
                         if (searchResultList != null) {
                             Log.d(TAG, "Search results received (" + searchResultList.size() + "): ");
                             cursor = new MatrixCursor(SUGGESTION_COLUMN_NAMES, searchResultList.size());
 
                             for (int i = 0; i < searchResultList.size(); i++) {
-                                Uri permalinkUri = Uri.parse(searchResultList.get(i).getPermalink());
+                                Uri permalinkUri = Uri.parse(searchResultList.get(i).getGist().getPermalink());
                                 String filmUri = permalinkUri.getLastPathSegment();
-                                String runtime = String.valueOf(searchResultList.get(i).getRuntime());
-                                String searchHintResult = searchResultList.get(i).getTitle() +
+                                String runtime = String.valueOf(searchResultList.get(i).getGist().getRuntime());
+                                String searchHintResult = searchResultList.get(i).getGist().getTitle() +
                                         "," +
                                         runtime +
                                         "," +
@@ -118,13 +115,13 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                                         permalinkUri;
 
                                 Object[] rowResult = {i,
-                                        searchResultList.get(i).getTitle(),
-                                        searchResultList.get(i).getRuntime()/ 60,
+                                        searchResultList.get(i).getGist().getTitle(),
+                                        searchResultList.get(i).getGist().getRuntime()/ 60,
                                         searchHintResult};
 
                                 cursor.addRow(rowResult);
-                                Log.d(TAG, searchResultList.get(i).getTitle());
-                                Log.d(TAG, String.valueOf(searchResultList.get(i).getRuntime())
+                                Log.d(TAG, searchResultList.get(i).getGist().getTitle());
+                                Log.d(TAG, String.valueOf(searchResultList.get(i).getGist().getRuntime())
                                         + " seconds");
                             }
                         } else {

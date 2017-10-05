@@ -71,6 +71,10 @@ public class SubscriptionRequest {
     @Expose
     boolean addEntitlement = true;
 
+    @SerializedName("referenceNo")
+    @Expose
+    String referenceNo;
+
     public String getSiteInternalName() {
         return siteInternalName;
     }
@@ -189,5 +193,13 @@ public class SubscriptionRequest {
 
     public void setAddEntitlement(boolean addEntitlement) {
         this.addEntitlement = addEntitlement;
+    }
+
+    public String getReferenceNo() {
+        return referenceNo;
+    }
+
+    public void setReferenceNo(String referenceNo) {
+        this.referenceNo = referenceNo;
     }
 }

@@ -20,9 +20,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.signature.StringSignature;
@@ -35,7 +37,6 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -55,6 +56,8 @@ public class CollectionGridItemView extends BaseView {
     private List<ItemContainer> childItems;
     private List<View> viewsToUpdateOnClickEvent;
     private boolean selectable;
+    private boolean createMultipleContainersForChildren;
+    private boolean createRoundedCorners;
 
     @Inject
     public CollectionGridItemView(Context context,
@@ -62,7 +65,9 @@ public class CollectionGridItemView extends BaseView {
                                   boolean useParentLayout,
                                   Component component,
                                   int defaultWidth,
-                                  int defaultHeight) {
+                                  int defaultHeight,
+                                  boolean createMultipleContainersForChildren,
+                                  boolean createRoundedCorners) {
         super(context);
         this.parentLayout = parentLayout;
         this.userParentLayout = useParentLayout;
@@ -70,6 +75,8 @@ public class CollectionGridItemView extends BaseView {
         this.defaultWidth = defaultWidth;
         this.defaultHeight = defaultHeight;
         this.viewsToUpdateOnClickEvent = new ArrayList<>();
+        this.createMultipleContainersForChildren = createMultipleContainersForChildren;
+        this.createRoundedCorners = createRoundedCorners;
         init();
     }
 
@@ -87,16 +94,20 @@ public class CollectionGridItemView extends BaseView {
                         defaultHeight));
 
         FrameLayout.LayoutParams layoutParams;
+        int paddingRight = 0;
         if (component.getStyles() != null) {
-            int paddingRight = (int) convertHorizontalValue(getContext(), component.getStyles().getPadding());
+            paddingRight = (int) convertHorizontalValue(getContext(), component.getStyles().getPadding());
             setPadding(0, 0, paddingRight, 0);
         } else if (getTrayPadding(getContext(), component.getLayout()) != -1.0f) {
             int trayPadding = (int) getTrayPadding(getContext(), component.getLayout());
-            int paddingRight = (int) convertHorizontalValue(getContext(), trayPadding);
+            paddingRight = (int) convertHorizontalValue(getContext(), trayPadding);
             setPadding(0, 0, paddingRight, 0);
         }
-        int horizontalMargin = (int) convertHorizontalValue(getContext(), getHorizontalMargin(getContext(), parentLayout));
+        int horizontalMargin = paddingRight;
         int verticalMargin = (int) convertVerticalValue(getContext(), getVerticalMargin(getContext(), parentLayout, height, 0));
+        if (verticalMargin < 0) {
+            verticalMargin = (int) convertVerticalValue(getContext(), getYAxis(getContext(), getLayout(), 0));
+        }
         MarginLayoutParams marginLayoutParams = new MarginLayoutParams(width, height);
         marginLayoutParams.setMargins(horizontalMargin,
                 verticalMargin,
@@ -127,12 +138,41 @@ public class CollectionGridItemView extends BaseView {
 
     @Override
     protected ViewGroup createChildrenContainer() {
-        childrenContainer = new CardView(getContext());
-        CardView.LayoutParams childContainerLayoutParams =
-                new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT);
-        childrenContainer.setLayoutParams(childContainerLayoutParams);
-        childrenContainer.setBackgroundResource(android.R.color.transparent);
+        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext())) {
+            childrenContainer = new LinearLayout(getContext());
+            ((LinearLayout) childrenContainer).setOrientation(LinearLayout.HORIZONTAL);
+            LinearLayout.LayoutParams childContainerLayoutParams =
+                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT);
+            childrenContainer.setLayoutParams(childContainerLayoutParams);
+            CardView imageChildView = new CardView(getContext());
+            LinearLayout.LayoutParams imageChildViewLayoutParams =
+                    new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
+            imageChildViewLayoutParams.weight = 2;
+            imageChildView.setLayoutParams(imageChildViewLayoutParams);
+            imageChildView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+            childrenContainer.addView(imageChildView);
+            CardView detailsChildView = new CardView(getContext());
+            LinearLayout.LayoutParams detailsChildViewLayoutParams =
+                    new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
+            detailsChildViewLayoutParams.weight = 1;
+            detailsChildView.setLayoutParams(detailsChildViewLayoutParams);
+            detailsChildView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+            childrenContainer.addView(detailsChildView);
+        } else {
+            childrenContainer = new CardView(getContext());
+            CardView.LayoutParams childContainerLayoutParams =
+                    new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT);
+            childrenContainer.setLayoutParams(childContainerLayoutParams);
+
+            if (createRoundedCorners) {
+                ((CardView) childrenContainer).setRadius(14);
+                setBackgroundResource(android.R.color.transparent);
+            } else {
+                childrenContainer.setBackgroundResource(android.R.color.transparent);
+            }
+        }
         addView(childrenContainer);
         return childrenContainer;
     }
@@ -142,7 +182,16 @@ public class CollectionGridItemView extends BaseView {
             createChildrenContainer();
         }
         childItems.add(itemContainer);
-        childrenContainer.addView(itemContainer.childView);
+
+        if (createMultipleContainersForChildren && BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext())) {
+            if (getContext().getString(R.string.app_cms_page_carousel_image_key).equalsIgnoreCase(itemContainer.component.getKey())) {
+                ((ViewGroup) childrenContainer.getChildAt(0)).addView(itemContainer.childView);
+            } else {
+                ((ViewGroup) childrenContainer.getChildAt(1)).addView(itemContainer.childView);
+            }
+        } else {
+            childrenContainer.addView(itemContainer.childView);
+        }
     }
 
     public View getChild(int index) {
@@ -169,7 +218,8 @@ public class CollectionGridItemView extends BaseView {
                           final ContentDatum data,
                           Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                           final OnClickHandler onClickHandler,
-                          final AppCMSUIKeyType viewTypeKey) {
+                          final String componentViewType,
+                          int themeColor) {
         final Component childComponent = matchComponentToView(view);
         if (childComponent != null) {
             boolean bringToFront = true;
@@ -230,18 +280,16 @@ public class CollectionGridItemView extends BaseView {
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
                         final String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getVideoImageUrl(),
-                                deviceWidth,
+                                childViewWidth,
                                 childViewHeight);
                         Log.d(TAG, "Loading image: " + imageUrl);
                         try {
                             final int imageWidth = deviceWidth;
                             final int imageHeight = childViewHeight;
-                            StringBuilder imageMetaData = new StringBuilder();
-                            imageMetaData.append(imageUrl);
-                            imageMetaData.append(System.currentTimeMillis() / 60000);
+
                             Glide.with(context)
                                     .load(imageUrl)
-                                    .signature(new StringSignature(imageMetaData.toString()))
+                                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                                     .transform(new BitmapTransformation(context) {
                                         @Override
                                         public String getId() {
@@ -312,14 +360,9 @@ public class CollectionGridItemView extends BaseView {
                             R.color.disabledButtonColor));
                     viewsToUpdateOnClickEvent.add(view);
                 }
-                view.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        onClickHandler.click(CollectionGridItemView.this,
-                                childComponent,
-                                data);
-                    }
-                });
+
+                view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
+                        childComponent, data));
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
                 if (TextUtils.isEmpty(((TextView) view).getText())) {
                     if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
@@ -339,68 +382,90 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setText(data.getGist().getDescription());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY) {
                         ((TextView) view).setText(data.getName());
-                        ((TextView) view).setTextColor(Color.parseColor(
-                                childComponent.getTextColor()));
+                        if ("AC SelectPlan 02".equals(componentViewType)) {
+                            ((TextView) view).setTextColor(themeColor);
+                        } else {
+                            ((TextView) view).setTextColor(Color.parseColor(childComponent.getTextColor()));
+                        }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY) {
-
                         int planIndex = 0;
+
                         for (int i = 0; i < data.getPlanDetails().size(); i++) {
                             if (data.getPlanDetails().get(i).getIsDefault()) {
                                 planIndex = i;
                             }
                         }
 
-                        Locale locale = null;
-
+                        Currency currency = null;
                         if (data.getPlanDetails() != null &&
                                 !data.getPlanDetails().isEmpty() &&
                                 data.getPlanDetails().get(planIndex) != null &&
-                                data.getPlanDetails().get(planIndex).getCountryCode() != null) {
+                                data.getPlanDetails().get(planIndex).getRecurringPaymentCurrencyCode() != null) {
                             try {
-                                locale = new Locale.Builder()
-                                        .setRegion(data.getPlanDetails().get(planIndex).getCountryCode())
-                                        .build();
+                                currency = Currency.getInstance(data.getPlanDetails().get(planIndex).getRecurringPaymentCurrencyCode());
                             } catch (Exception e) {
                                 Log.e(TAG, "Could not parse locale");
                             }
-                        } else {
-                            locale = getContext().getResources().getConfiguration().locale;
                         }
 
-                        Currency currency = null;
-                        if (currency != null) {
-                            currency = Currency.getInstance(locale);
-                        }
+                        if (data.getPlanDetails().get(planIndex).getStrikeThroughPrice() != 0) {
 
-                        if (data.getPlanDetails().get(planIndex).getDiscountedPrice() != 0) {
+                            double recurringPaymentAmount = data.getPlanDetails().get(planIndex).getRecurringPaymentAmount();
+                            String formattedRecurringPaymentAmount = context.getString(R.string.cost_with_fraction,
+                                    recurringPaymentAmount);
+                            if (recurringPaymentAmount - (int) recurringPaymentAmount == 0) {
+                                formattedRecurringPaymentAmount = context.getString(R.string.cost_without_fraction,
+                                        recurringPaymentAmount);
+                            }
+
+                            double strikeThroughPaymentAmount = data.getPlanDetails()
+                                    .get(planIndex).getStrikeThroughPrice();
+                            String formattedStrikeThroughPaymentAmount = context.getString(R.string.cost_with_fraction,
+                                    strikeThroughPaymentAmount);
+                            if (strikeThroughPaymentAmount - (int) strikeThroughPaymentAmount == 0) {
+                                formattedStrikeThroughPaymentAmount = context.getString(R.string.cost_without_fraction,
+                                        strikeThroughPaymentAmount);
+                            }
+
                             StringBuilder stringBuilder = new StringBuilder();
                             if (currency != null) {
                                 stringBuilder.append(currency.getSymbol());
                             }
-                            stringBuilder.append(String.valueOf(data.getPlanDetails()
-                                    .get(planIndex).getRecurringPaymentAmount()));
+                            stringBuilder.append(formattedStrikeThroughPaymentAmount);
 
-                            int strikeThroughLength = stringBuilder.length();
-                            stringBuilder.append("     ");
-                            if (currency != null) {
-                                stringBuilder.append(currency.getSymbol());
+                            if (data.getPlanDetails().get(0).getRecurringPaymentAmount() != 0) {
+                                int strikeThroughLength = stringBuilder.length();
+                                stringBuilder.append("     ");
+                                if (currency != null) {
+                                    stringBuilder.append(currency.getSymbol());
+                                }
+                                stringBuilder.append(String.valueOf(formattedRecurringPaymentAmount));
+
+                                SpannableString spannableString =
+                                        new SpannableString(stringBuilder.toString());
+                                spannableString.setSpan(new StrikethroughSpan(), 0,
+                                        strikeThroughLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                ((TextView) view).setText(spannableString);
+                            } else {
+                                ((TextView) view).setText(stringBuilder.toString());
+                            }
+                        } else {
+                            double recurringPaymentAmount = data.getPlanDetails()
+                                    .get(planIndex).getRecurringPaymentAmount();
+                            String formattedRecurringPaymentAmount = context.getString(R.string.cost_with_fraction,
+                                    recurringPaymentAmount);
+                            if (recurringPaymentAmount - (int) recurringPaymentAmount == 0) {
+                                formattedRecurringPaymentAmount = context.getString(R.string.cost_without_fraction,
+                                        recurringPaymentAmount);
                             }
 
-                            stringBuilder.append(String.valueOf(data.getPlanDetails().get(0).getDiscountedPrice()));
-
-                            SpannableString spannableString =
-                                    new SpannableString(stringBuilder.toString());
-                            spannableString.setSpan(new StrikethroughSpan(), 0,
-                                    strikeThroughLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            ((TextView) view).setText(spannableString);
-                        } else {
                             StringBuilder stringBuilder = new StringBuilder();
                             if (currency != null) {
                                 stringBuilder.append(currency.getSymbol());
                             }
-                            stringBuilder.append(data.getPlanDetails().get(0)
-                                    .getRecurringPaymentAmount());
-                            ((TextView) view).setText(String.valueOf(stringBuilder.toString()));
+
+                            stringBuilder.append(formattedRecurringPaymentAmount);
+                            ((TextView) view).setText(stringBuilder.toString());
                             ((TextView) view).setPaintFlags(((TextView) view).getPaintFlags());
                         }
 
@@ -413,6 +478,12 @@ public class CollectionGridItemView extends BaseView {
                                 childComponent.getTextColor()));
                     }
                 }
+            } else if (componentType == AppCMSUIKeyType.PAGE_PLAN_META_DATA_VIEW_KEY) {
+                if (view instanceof ViewPlansMetaDataView) {
+                    ((ViewPlansMetaDataView) view).setData(data);
+                }
+            } else if (componentType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
+                view.setBackgroundColor(getResources().getColor(R.color.colorAccent));
             }
 
             if (shouldShowView(childComponent) && bringToFront) {

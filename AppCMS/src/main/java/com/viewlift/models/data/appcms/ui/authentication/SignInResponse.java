@@ -29,7 +29,7 @@ public class SignInResponse {
 
     @SerializedName("error")
     @Expose
-    String error;
+    SigninError error;
 
     @SerializedName("userId")
     @Expose
@@ -42,6 +42,17 @@ public class SignInResponse {
     @SerializedName("isSubscribed")
     @Expose
     boolean isSubscribed;
+
+    @SerializedName("message")
+    @Expose
+    String message;
+
+    @SerializedName("provider")
+    @Expose
+    String provider;
+
+    boolean errorResponseSet = false;
+    ErrorResponse errorResponse;
 
     public String getAuthorizationToken() {
         return authorizationToken;
@@ -75,11 +86,11 @@ public class SignInResponse {
         this.name = name;
     }
 
-    public String getError() {
+    public SigninError getError() {
         return error;
     }
 
-    public void setError(String error) {
+    public void setError(SigninError error) {
         this.error = error;
     }
 
@@ -107,4 +118,36 @@ public class SignInResponse {
         isSubscribed = subscribed;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public ErrorResponse getErrorResponse() {
+        return errorResponse;
+    }
+
+    public void setErrorResponse(ErrorResponse errorResponse) {
+        this.errorResponseSet = true;
+        this.errorResponse = errorResponse;
+    }
+
+    public void setErrorResponseSet(boolean errorResponseSet) {
+        this.errorResponseSet = errorResponseSet;
+    }
+
+    public boolean isErrorResponseSet() {
+        return errorResponseSet;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
 }

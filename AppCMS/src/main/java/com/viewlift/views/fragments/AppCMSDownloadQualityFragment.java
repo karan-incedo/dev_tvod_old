@@ -112,14 +112,17 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
             ((AppCMSDownloadQualityAdapter) listDownloadQuality.getAdapter()).setItemClickListener(this);
 
             continueButton.setOnClickListener(v -> {
-                if (binder.getContentDatum() != null && binder.getResultAction1() != null) {
+                appCMSPresenter.setUserDownloadQualityPref(downloadQuality); // fix for SVFA-1724
+                if (binder != null &&
+                        binder.getContentDatum() != null &&
+                        binder.getResultAction1() != null) {
                     appCMSPresenter.editDownload(binder.getContentDatum(), binder.getResultAction1(), true);
-                } else {
-                    appCMSPresenter.setUserDownloadQualityPref(getActivity(), downloadQuality);
+
                 }
                 getActivity().finish();
             });
 
+            appCMSPresenter.setDownloadQualityScreenShowBefore(true);
             cancelButton.setOnClickListener(v -> getActivity().finish());
             pageView.setBackgroundColor(Color.TRANSPARENT);
         }
@@ -192,14 +195,20 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
     }
 
     public AppCMSViewComponent buildAppCMSViewComponent() {
-        return DaggerAppCMSViewComponent.builder()
-                .appCMSPageViewModule(new AppCMSPageViewModule(getContext(),
-                        binder.getAppCMSPageUI(),
-                        binder.getAppCMSPageAPI(),
-                        binder.getScreenName(),
-                        binder.getJsonValueKeyMap(),
-                        appCMSPresenter))
-                .build();
+        try {
+            return DaggerAppCMSViewComponent.builder()
+                    .appCMSPageViewModule(new AppCMSPageViewModule(getContext(),
+                            binder.getAppCMSPageUI(),
+                            binder.getAppCMSPageAPI(),
+                            appCMSPresenter.getAppCMSAndroidModules(),
+                            binder.getScreenName(),
+                            binder.getJsonValueKeyMap(),
+                            appCMSPresenter))
+                    .build();
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
+        return null;
     }
 
     @Override

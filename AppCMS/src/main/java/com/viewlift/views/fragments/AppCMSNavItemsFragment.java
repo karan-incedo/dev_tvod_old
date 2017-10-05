@@ -1,6 +1,5 @@
 package com.viewlift.views.fragments;
 
-
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -8,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,22 +16,29 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSNavItemsAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
-
-import com.viewlift.R;
 
 /**
  * Created by viewlift on 5/30/17.
  */
 
 public class AppCMSNavItemsFragment extends DialogFragment {
+    private static final String TAG = "NavItemsAdapter";
+
     private AppCMSPresenter appCMSPresenter;
     private AppCMSBinder appCMSBinder;
     private AppCMSNavItemsAdapter appCMSNavItemsAdapter;
+    private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
+    private final String FIREBASE_LOGIN_SCREEN_VALUE = "Login Screen";
+    private final String LOGIN_STATUS_KEY = "logged_in_status";
+    private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
+    private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
 
     public static AppCMSNavItemsFragment newInstance(Context context,
                                                      AppCMSBinder appCMSBinder,
@@ -62,68 +69,79 @@ public class AppCMSNavItemsFragment extends DialogFragment {
         int borderColor = args.getInt(getContext().getString(R.string.app_cms_border_color_key));
         int buttonColor = args.getInt(getContext().getString(R.string.app_cms_button_color_key));
 
-        appCMSBinder =
-                ((AppCMSBinder) args.getBinder(getContext().getString(R.string.fragment_page_bundle_key)));
+        try {
+            appCMSBinder =
+                    ((AppCMSBinder) args.getBinder(getContext().getString(R.string.fragment_page_bundle_key)));
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to extract appCMSBinder from args");
+        }
         View view = inflater.inflate(R.layout.fragment_menu_nav, container, false);
         RecyclerView navItemsList = (RecyclerView) view.findViewById(R.id.nav_items_list);
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
-        appCMSNavItemsAdapter = new AppCMSNavItemsAdapter(appCMSBinder.getNavigation(),
-                appCMSPresenter,
-                appCMSBinder.getJsonValueKeyMap(),
-                appCMSBinder.isUserLoggedIn(),
-                appCMSBinder.isUserSubscribed(),
-                textColor);
-        navItemsList.setAdapter(appCMSNavItemsAdapter);
-        if (!BaseView.isTablet(getContext())) {
-            appCMSPresenter.restrictPortraitOnly();
-        }
 
-        LinearLayout appCMSNavLoginContainer = (LinearLayout) view.findViewById(R.id.app_cms_nav_login_container);
-        if (appCMSPresenter.isUserLoggedIn(getContext())) {
-            appCMSNavLoginContainer.setVisibility(View.GONE);
-        } else {
-            appCMSNavLoginContainer.setVisibility(View.VISIBLE);
-            View appCMSNavItemsSeparatorView = view.findViewById(R.id.app_cms_nav_items_separator_view);
-            appCMSNavItemsSeparatorView.setBackgroundColor(textColor);
-            TextView appCMSNavItemsLoggedOutMessage = (TextView) view.findViewById(R.id.app_cms_nav_items_logged_out_message);
-            appCMSNavItemsLoggedOutMessage.setTextColor(textColor);
-            Button appCMSNavLoginButton = (Button) view.findViewById(R.id.app_cms_nav_login_button);
-            appCMSNavLoginButton.setTextColor(textColor);
-            appCMSNavLoginButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        if (appCMSBinder != null && appCMSBinder.getNavigation() != null) {
+            appCMSNavItemsAdapter = new AppCMSNavItemsAdapter(appCMSBinder.getNavigation(),
+                    appCMSPresenter,
+                    appCMSBinder.getJsonValueKeyMap(),
+                    appCMSBinder.isUserLoggedIn(),
+                    appCMSBinder.isUserSubscribed(),
+                    textColor);
+
+            navItemsList.setAdapter(appCMSNavItemsAdapter);
+            if (!BaseView.isTablet(getContext())) {
+                appCMSPresenter.restrictPortraitOnly();
+            }
+
+            LinearLayout appCMSNavLoginContainer = (LinearLayout) view.findViewById(R.id.app_cms_nav_login_container);
+            if (appCMSPresenter.isUserLoggedIn()) {
+                appCMSNavLoginContainer.setVisibility(View.GONE);
+            } else {
+                appCMSNavLoginContainer.setVisibility(View.VISIBLE);
+                View appCMSNavItemsSeparatorView = view.findViewById(R.id.app_cms_nav_items_separator_view);
+                appCMSNavItemsSeparatorView.setBackgroundColor(textColor);
+                TextView appCMSNavItemsLoggedOutMessage = (TextView) view.findViewById(R.id.app_cms_nav_items_logged_out_message);
+                appCMSNavItemsLoggedOutMessage.setTextColor(textColor);
+                Button appCMSNavLoginButton = (Button) view.findViewById(R.id.app_cms_nav_login_button);
+                appCMSNavLoginButton.setTextColor(textColor);
+                appCMSNavLoginButton.setOnClickListener(v -> {
                     if (appCMSPresenter != null) {
                         appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
                         appCMSPresenter.navigateToLoginPage();
+                        Bundle bundle = new Bundle();
+                        bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_LOGIN_SCREEN_VALUE);
+                        String firebaseEventKey = FirebaseAnalytics.Event.VIEW_ITEM;
+                        if (appCMSPresenter.isUserLoggedIn()) {
+                            appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
+                        } else {
+                            appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                        }
+                        appCMSPresenter.sendFirebaseSelectedEvents(firebaseEventKey, bundle);
                     }
-                }
-            });
-            GradientDrawable loginBorder = new GradientDrawable();
-            loginBorder.setShape(GradientDrawable.RECTANGLE);
-            loginBorder.setStroke(getContext().getResources().getInteger(R.integer.app_cms_border_stroke_width), borderColor);
-            loginBorder.setColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
-            appCMSNavLoginButton.setBackground(loginBorder);
+                });
+                GradientDrawable loginBorder = new GradientDrawable();
+                loginBorder.setShape(GradientDrawable.RECTANGLE);
+                loginBorder.setStroke(getContext().getResources().getInteger(R.integer.app_cms_border_stroke_width), borderColor);
+                loginBorder.setColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+                appCMSNavLoginButton.setBackground(loginBorder);
 
-            Button appCMSNavFreeTrialButton = (Button) view.findViewById(R.id.app_cms_nav_free_trial_button);
-            if (appCMSPresenter.getAppCMSMain()
-                    .getServiceType()
-                    .equals(getContext().getString(R.string.app_cms_main_svod_service_type_key))) {
-                appCMSNavFreeTrialButton.setTextColor(textColor);
-                appCMSNavFreeTrialButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                Button appCMSNavFreeTrialButton = (Button) view.findViewById(R.id.app_cms_nav_free_trial_button);
+                if (appCMSPresenter.getAppCMSMain()
+                        .getServiceType()
+                        .equals(getContext().getString(R.string.app_cms_main_svod_service_type_key))) {
+                    appCMSNavFreeTrialButton.setTextColor(textColor);
+                    appCMSNavFreeTrialButton.setOnClickListener(v -> {
                         if (appCMSPresenter != null) {
                             appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
                             appCMSPresenter.navigateToSubscriptionPlansPage(appCMSBinder.getPageId(),
                                     appCMSBinder.getPageName());
                         }
-                    }
-                });
-                appCMSNavFreeTrialButton.setBackgroundColor(buttonColor);
-            } else {
-                appCMSNavFreeTrialButton.setVisibility(View.INVISIBLE);
+                    });
+                    appCMSNavFreeTrialButton.setBackgroundColor(buttonColor);
+                } else {
+                    appCMSNavFreeTrialButton.setVisibility(View.INVISIBLE);
+                }
             }
         }
 

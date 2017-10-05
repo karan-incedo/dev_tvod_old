@@ -3,6 +3,8 @@
 buildscript {
     ext {
         realmVersion = "3.5.0"
+        gradleBuildVersion = "3.0.0-beta6"
+        playServicesVersion = "3.0.0"
     }
     repositories {
         jcenter()
@@ -10,9 +12,9 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-beta5'
+        classpath "com.android.tools.build:gradle:${gradleBuildVersion}"
         classpath "io.realm:realm-gradle-plugin:${realmVersion}"
-        classpath 'com.google.gms:google-services:3.0.0'
+        classpath "com.google.gms:google-services:${playServicesVersion}"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -30,7 +32,7 @@ allprojects {
         mockitoVersion = "1.10.19"
         espressoVersion = "2.2.2"
         dexmakerVersion = "1.0"
-        androidsupportVersion = "25.4.0"
+        androidsupportVersion = "23+"
         androidsupportconstraintVersion = "1.0.2"
         glideVersion = "3.8.0"
         daggerVersion = "2.9"
@@ -41,7 +43,7 @@ allprojects {
         rxjavaVersion = "1.1.4"
         jsr250_apiVersion = "1.0"
         googleAdsInteractiveMediaV3 = "3.6.0"
-        googlePlayServicesVersion = "10.2.0"
+        googlePlayServicesVersion = "10.2.1"
         crashlyticsVersion = "2.6.8@aar"
         leakcanaryVersion = "1.5.1"
         apptentiveVersion = "3.4.1"
@@ -50,10 +52,9 @@ allprojects {
         facebookSdkVersion = "[4,5)"
         urbanAirshipVersion = "8.3.2"
         appsFlyerVersion = "4.7.4@aar"
-        appsFlyerVersion = "4.7.4@aar"
         glideTransformationVersion = "2.0.2"
         threetenBpVersion = "1.0.5"
-        htmlspannerVersion = "0.4"
+        jsoupVersion = "1.10.3"
     }
 }
 

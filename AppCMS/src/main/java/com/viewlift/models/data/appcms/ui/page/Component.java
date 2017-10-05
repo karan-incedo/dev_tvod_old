@@ -98,6 +98,7 @@ public class Component implements ModuleWithComponents {
     @Expose
     String itemClickAction;
 
+
     @SerializedName("fontFamily")
     @Expose
     String fontFamily;

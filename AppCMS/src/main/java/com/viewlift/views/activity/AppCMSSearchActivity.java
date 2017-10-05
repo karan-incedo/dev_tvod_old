@@ -17,8 +17,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
@@ -28,6 +30,7 @@ import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSSearchItemAdapter;
 import com.viewlift.views.adapters.SearchSuggestionsAdapter;
+import com.viewlift.views.customviews.BaseView;
 
 import java.io.IOException;
 import java.util.List;
@@ -57,6 +60,9 @@ public class AppCMSSearchActivity extends AppCompatActivity {
 
     private final String FIREBASE_SEARCH_EVENT = "search";
     private final String FIREBASE_SEARCH_TERM = "search_term";
+    private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
+    private final String FIREBASE_SCREEN_NAME = "Search Result Screen";
+    private AppCMSPresenter appCMSPresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,12 +70,15 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         RecyclerView appCMSSearchResultsView = (RecyclerView) findViewById(R.id.app_cms_search_results);
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.search_page_loading_progressbar);
+
         appCMSSearchItemAdapter =
                 new AppCMSSearchItemAdapter(this,
                         ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent()
                                 .appCMSPresenter(),
                         null);
         appCMSSearchResultsView.setAdapter(appCMSSearchItemAdapter);
+        sendFirebaseAnalyticsEvents();
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         @SuppressWarnings("ConstantConditions")
@@ -84,6 +93,10 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent()
                         .appCMSPresenter()
                         .getAppCMSMain();
+
+        if (!BaseView.isTablet(this)) {
+            ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().restrictPortraitOnly();
+        }
 
         handoffReceiver = new BroadcastReceiver() {
             @Override
@@ -106,10 +119,25 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         appCMSSearchView.setSuggestionsAdapter(searchSuggestionsAdapter);
         appCMSSearchView.setIconifiedByDefault(false);
+        appCMSSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
 
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (newText.trim().isEmpty()) {
+                    appCMSSearchItemAdapter.setData(null);
+                    updateNoResultsDisplay(appCMSPresenter, null);
+                }
+                return false;
+            }
+        });
         LinearLayout appCMSSearchResultsContainer =
                 (LinearLayout) findViewById(R.id.app_cms_search_results_container);
-        if (appCMSMain.getBrand() != null &&
+        if (appCMSMain != null &&
+                appCMSMain.getBrand() != null &&
                 appCMSMain.getBrand().getGeneral() != null &&
                 !TextUtils.isEmpty(appCMSMain.getBrand().getGeneral().getBackgroundColor())) {
             appCMSSearchResultsContainer.setBackgroundColor(Color.parseColor(appCMSMain.getBrand()
@@ -123,6 +151,22 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         appCMSCloseButton.setOnClickListener(v -> finish());
 
         handleIntent(getIntent());
+        appCMSSearchItemAdapter.handleProgress((object) -> progressBar.setVisibility(View.VISIBLE));
+
+
+    }
+
+    private void sendFirebaseAnalyticsEvents() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_SCREEN_NAME);
+        appCMSPresenter = ((AppCMSApplication) getApplication())
+                .getAppCMSPresenterComponent().appCMSPresenter();
+        if (appCMSPresenter.getmFireBaseAnalytics() != null) {
+            //Logs an app event.
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+            //Sets whether analytics collection is enabled for this app on this device.
+            appCMSPresenter.getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
+        }
     }
 
     @Override
@@ -140,7 +184,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        final AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getApplication())
+        appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent().appCMSPresenter();
         appCMSPresenter.setNavItemToCurrentAction(this);
         finish();
@@ -149,7 +193,8 @@ public class AppCMSSearchActivity extends AppCompatActivity {
     private void handleIntent(Intent intent) {
         final AppCMSPresenter appCMSPresenter =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
-        if (appCMSSearchUrlData == null || appCMSSearchCall == null) {
+        if ((appCMSSearchUrlData == null || appCMSSearchCall == null) &&
+                appCMSPresenter.getAppCMSSearchUrlComponent() != null) {
             appCMSPresenter.getAppCMSSearchUrlComponent().inject(this);
             if (appCMSSearchUrlData == null || appCMSSearchCall == null) {
                 return;
@@ -166,26 +211,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
 
             if (Intent.ACTION_VIEW.equals(intent.getAction())) {
                 String[] searchHintResult = intent.getDataString().split(",");
-
-                String permalink = searchHintResult[3];
-                String action = getString(R.string.app_cms_action_videopage_key);
-                String title = searchHintResult[0];
-                String runtime = searchHintResult[1];
-                Log.d(TAG, "Launching " + permalink + ":" + action);
-                if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                        action,
-                        title,
-                        null,
-                        null,
-                        true,
-                        0,
-                        null)) {
-                    Log.e(TAG, "Could not launch action: " +
-                            " permalink: " +
-                            permalink +
-                            " action: " +
-                            action);
-                }
+                appCMSPresenter.openVideoPageFromSearch(searchHintResult);
 
             } else {
                 queryTerm = intent.getStringExtra(SearchManager.QUERY);
@@ -205,12 +231,14 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                     new SearchAsyncTask(new Action1<List<AppCMSSearchResult>>() {
                         @Override
                         public void call(List<AppCMSSearchResult> data) {
-                            appCMSSearchItemAdapter.setData(data);
-                            updateNoResultsDisplay(appCMSPresenter, data);
+                            if (data != null) {
+                                appCMSSearchItemAdapter.setData(data);
+                                updateNoResultsDisplay(appCMSPresenter, data);
+                            }
                         }
                     },
                             appCMSSearchCall,
-                            appCMSPresenter.getApiKey()).execute(url);
+                            appCMSPresenter.getApiKey()).execute(url, appCMSPresenter.getApiKey());
                 }
             }
         }
@@ -244,9 +272,9 @@ public class AppCMSSearchActivity extends AppCompatActivity {
 
         @Override
         protected List<AppCMSSearchResult> doInBackground(String... params) {
-            if (params.length > 0) {
+            if (params.length > 1) {
                 try {
-                    return appCMSSearchCall.call(apiKey, params[0]);
+                    return appCMSSearchCall.call(params[1], params[0]);
                 } catch (IOException e) {
                     Log.e(TAG, "I/O DialogType retrieving search data from URL: " + params[0]);
                 }

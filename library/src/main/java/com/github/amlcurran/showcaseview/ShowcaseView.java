@@ -103,6 +103,10 @@ public class ShowcaseView extends RelativeLayout
         mEndButton.setBackgroundColor(backgroundColor);
     }
 
+    public void setShowcaseColor(int showcaseColor) {
+        showcaseDrawer.setShowcaseColour(showcaseColor);
+    }
+
     protected ShowcaseView(Context context, boolean newStyle) {
         this(context, null, R.styleable.CustomTheme_showcaseViewStyle, newStyle);
     }
@@ -460,7 +464,7 @@ public class ShowcaseView extends RelativeLayout
             this.activity = activity;
             this.showcaseView = new ShowcaseView(activity, useNewStyle);
             this.showcaseView.setTarget(Target.NONE);
-            this.parent = (ViewGroup) activity.findViewById(android.R.id.content);
+            this.parent = activity.findViewById(android.R.id.content);
             this.parentIndex = parent.getChildCount();
         }
 

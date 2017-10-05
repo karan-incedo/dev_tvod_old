@@ -24,6 +24,7 @@ public class CreditBlocksView extends RelativeLayout {
     private final String starringListTitle;
     private final String starringList;
     private final int textColor;
+    private final int moreBackgroundColor;
     private final float fontsizeKey;
     private final float fontsizeValue;
 
@@ -42,6 +43,7 @@ public class CreditBlocksView extends RelativeLayout {
                             String starringListTitle,
                             String starringList,
                             int textColor,
+                            int moreBackgroundColor,
                             float fontsizeKey,
                             float fontsizeValue) {
         super(context);
@@ -54,6 +56,7 @@ public class CreditBlocksView extends RelativeLayout {
         this.starringList = starringList;
         this.starringListTitle = starringListTitle;
         this.textColor = textColor;
+        this.moreBackgroundColor = moreBackgroundColor;
         this.fontsizeKey = fontsizeKey;
         this.fontsizeValue = fontsizeValue;
         init();
@@ -69,7 +72,7 @@ public class CreditBlocksView extends RelativeLayout {
         int starringListViewId = View.generateViewId();
 
         directorListTitleView = new TextView(getContext());
-        directorListTitleView.setTypeface(keyTypeFace);
+        directorListTitleView.setTypeface(Typeface.DEFAULT_BOLD);
         directorListTitleView.setTextColor(textColor);
         if (fontsizeKey != -1.0f) {
             directorListTitleView.setTextSize(fontsizeKey);
@@ -101,7 +104,7 @@ public class CreditBlocksView extends RelativeLayout {
         addView(directorListView);
 
         starringListTitleView = new TextView(getContext());
-        starringListTitleView.setTypeface(keyTypeFace);
+        starringListTitleView.setTypeface(Typeface.DEFAULT_BOLD);
         starringListTitleView.setTextColor(textColor);
         if (fontsizeKey != -1.0f) {
             starringListTitleView.setTextSize(fontsizeKey);
@@ -154,7 +157,8 @@ public class CreditBlocksView extends RelativeLayout {
                     null,
                     directorList,
                     null,
-                    true));
+                    true,
+                    moreBackgroundColor));
         }
 
         if (!TextUtils.isEmpty(starringListTitle) && !TextUtils.isEmpty(starringList) &&
@@ -168,7 +172,8 @@ public class CreditBlocksView extends RelativeLayout {
                     null,
                     starringList,
                     null,
-                    true));
+                    true,
+                    moreBackgroundColor));
         }
     }
 }

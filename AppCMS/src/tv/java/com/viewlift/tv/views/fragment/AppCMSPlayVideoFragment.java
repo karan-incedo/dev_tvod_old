@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
 import com.google.ads.interactivemedia.v3.api.AdErrorEvent;
@@ -180,6 +181,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                                                       String imageUrl,
                                                       String closedCaptionUrl,
                                                       String parentalRating) {
+
         AppCMSPlayVideoFragment appCMSPlayVideoFragment = new AppCMSPlayVideoFragment();
         Bundle args = new Bundle();
         args.putString(context.getString(R.string.video_player_font_color_key), fontColor);
@@ -255,7 +257,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         if (!TextUtils.isEmpty(hlsUrl)) {
             videoPlayerView.setClosedCaptionEnabled(false);
             videoPlayerView.getPlayerView().getSubtitleView()
-                    .setVisibility(appCMSPresenter.getClosedCaptionPreference(mContext)
+                    .setVisibility(appCMSPresenter.getClosedCaptionPreference()
                             ? View.VISIBLE
                             : View.GONE);
             videoPlayerView.setUri(Uri.parse(hlsUrl),
@@ -336,7 +338,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         videoPlayerView.setOnClosedCaptionButtonClicked(isChecked -> {
             videoPlayerView.getPlayerView().getSubtitleView()
                     .setVisibility(isChecked ? View.VISIBLE : View.GONE);
-            appCMSPresenter.setClosedCaptionPreference(mContext, isChecked);
+            appCMSPresenter.setClosedCaptionPreference(isChecked);
         });
     }
 
@@ -384,9 +386,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 setColorFilter(Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter)) ,
                         PorterDuff.Mode.MULTIPLY
                 );
-
-
-
 
         if (!shouldRequestAds) {
             videoPlayerView.getPlayer().setPlayWhenReady(true);

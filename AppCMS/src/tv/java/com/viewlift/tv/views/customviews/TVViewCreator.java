@@ -259,7 +259,7 @@ public class TVViewCreator {
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())) {
-               // module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
+                // module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
 
                 if (null == moduleAPI
                         || moduleAPI.getContentData() == null) {
@@ -611,7 +611,7 @@ public class TVViewCreator {
                         final boolean[] queued = new boolean[1];
 
 
-                        if (appCMSPresenter.isUserLoggedIn(context)) {
+                        if (appCMSPresenter.isUserLoggedIn()) {
                             appCMSPresenter.getUserVideoStatus(
                                     moduleAPI.getContentData().get(0).getGist().getId(),
                                     userVideoStatusResponse -> {
@@ -629,7 +629,7 @@ public class TVViewCreator {
 
                         componentViewResult.componentView.setOnClickListener(v -> {
                                     Log.d(TAG, "appCMSAddToWatchlistResult: clicked");
-                                    if (appCMSPresenter.isUserLoggedIn(context)) {
+                                    if (appCMSPresenter.isUserLoggedIn()) {
                                         appCMSPresenter.editWatchlist(
                                                 moduleAPI.getContentData().get(0).getGist().getId(),
                                                 appCMSAddToWatchlistResult -> {
@@ -1061,7 +1061,8 @@ public class TVViewCreator {
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
                                             videoDescription,
                                             appCMSPresenter,
-                                            false);
+                                            false,
+                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
                             textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
 
                             final String fullText = videoDescription;
@@ -1531,6 +1532,7 @@ public class TVViewCreator {
                         starringTitle,
                         starringListSb.toString().toUpperCase(),
                         textColor,
+                        Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()),
                         Utils.getFontSizeKey(context, component.getLayout()),
                         Utils.getFontSizeValue(context, component.getLayout()));
                 componentViewResult.componentView.setFocusable(false);

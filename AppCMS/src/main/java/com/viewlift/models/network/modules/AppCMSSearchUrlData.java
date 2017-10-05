@@ -7,10 +7,14 @@ package com.viewlift.models.network.modules;
 public class AppCMSSearchUrlData {
     private String baseUrl;
     private String siteName;
+    private String apiKey;
 
-    public AppCMSSearchUrlData(String baseUrl, String siteName) {
+    public AppCMSSearchUrlData(String baseUrl,
+                               String siteName,
+                               String apiKey) {
         this.baseUrl = baseUrl;
         this.siteName = siteName;
+        this.apiKey = apiKey;
     }
 
     public String getBaseUrl() {
@@ -27,5 +31,13 @@ public class AppCMSSearchUrlData {
 
     public void setSiteName(String siteName) {
         this.siteName = siteName;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 }
