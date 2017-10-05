@@ -23,5 +23,5 @@
     <string name="app_cms_appsflyer_dev_key">5qcxTGtWfXSo746pkCDawf</string>
 
     <!-- cast receiver -->
-    <string name="chromecast_receiver_app_id"></string>
+    <string name="chromecast_receiver_app_id">3D49630B</string>
 </resources>
